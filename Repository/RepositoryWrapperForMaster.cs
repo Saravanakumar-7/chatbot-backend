@@ -86,7 +86,7 @@ namespace Repository
         private ISegmentRepository _segmentRepository;
 
         private ICustomerMasterRepository? _customerMasterRepo;
-         
+        private ICompanyMasterOtherUploadsRepository? _companyMasterOtherUploadsRepo;
 
         private ICompanyMasterRepository? _companyMasterRepo;
 
@@ -773,7 +773,17 @@ namespace Repository
         }
 
         public ICustomerMasterRepository Customermasterrepository => throw new NotImplementedException();
-
+        public ICompanyMasterOtherUploadsRepository CompanyMasterOtherUploads
+        {
+            get
+            {
+                if (_companyMasterOtherUploadsRepo == null)
+                {
+                    _companyMasterOtherUploadsRepo = new CompanyMasterOtherUploadsRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _companyMasterOtherUploadsRepo;
+            }
+        }
         public ILeadTimeRepository leadTimeRepository
         {
             get
@@ -1278,6 +1288,7 @@ namespace Repository
         public ICompanyApprovalRepository CompanyApprovalRepository => throw new NotImplementedException();
 
         public IUserRepository userRepository => throw new NotImplementedException();
+
 
         //public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
 
