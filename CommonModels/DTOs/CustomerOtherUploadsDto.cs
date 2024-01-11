@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Entities.DTOs
 {
-    public class CompanyOtherUploadsDto
+    public class CustomerOtherUploadsDto
     {
         public int Id { get; set; }
         public string? Incorporation { get; set; }
@@ -18,18 +18,14 @@ namespace Entities.DTOs
         public string? MSME { get; set; }
         public string? Cancelled_Cheque { get; set; }
         public string? Other { get; set; }
-        public string? ISO { get; set; }
-        public string? AS { get; set; }
-        public string? Medical { get; set; }
-        public string? NADCAP { get; set; }
-        public int CompanyId { get; set; }
+        public int CustomerId { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
-    public class CompanyOtherUploadsPostDto
+    public class CustomerOtherUploadsPostDto
     {
         public string? Incorporation { get; set; }
         public string? TIN { get; set; }
@@ -40,13 +36,9 @@ namespace Entities.DTOs
         public string? MSME { get; set; }
         public string? Cancelled_Cheque { get; set; }
         public string? Other { get; set; }
-        public string? ISO { get; set; }
-        public string? AS { get; set; }
-        public string? Medical { get; set; }
-        public string? NADCAP { get; set; }
-        public int CompanyId { get; set; }
+        public int CustomerId { get; set; }
     }
-    public class CompanyOtherUploadsUpdateDto
+    public class CustomerOtherUploadsUpdateDto
     {
         public int Id { get; set; }
         public string? Incorporation { get; set; }
@@ -58,11 +50,7 @@ namespace Entities.DTOs
         public string? MSME { get; set; }
         public string? Cancelled_Cheque { get; set; }
         public string? Other { get; set; }
-        public string? ISO { get; set; }
-        public string? AS { get; set; }
-        public string? Medical { get; set; }
-        public string? NADCAP { get; set; }
-        public int CompanyId { get; set; }
+        public int CustomerId { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

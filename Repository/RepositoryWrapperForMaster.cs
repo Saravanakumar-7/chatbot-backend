@@ -60,7 +60,7 @@ namespace Repository
         private IVendorDepartmentRepository? _vendorDepartment;
         private IVendorRepository? _vendorRepository;
 
-
+        private ICustomerMasterOtherUploadsRepository _customerMasterOtherUploadsRepository;
 
         private IPurchaseGroupRepository? _purchaseGroupRepo;   
         private ICostCenterRepository? _costCenterRepo; 

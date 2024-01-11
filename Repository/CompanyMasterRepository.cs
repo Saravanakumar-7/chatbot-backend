@@ -176,5 +176,13 @@ namespace Repository
             var otherUploads = await TipsMasterDbContext.CompanyOtherUploads.Where(x => x.CompanyId == Id).FirstOrDefaultAsync();
             return otherUploads;
         }
+        public async Task<string> UpdateCompanyOtherUploads(CompanyOtherUploads companyOtherUploads)
+        {
+            companyOtherUploads.LastModifiedBy = _createdBy;
+            companyOtherUploads.LastModifiedOn = DateTime.Now;
+            Update(companyOtherUploads);
+            string result = $"companyMaster of Detail {companyOtherUploads.Id} is updated successfully!";
+            return result;
+        }
     }
 }

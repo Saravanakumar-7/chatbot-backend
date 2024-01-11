@@ -212,4 +212,41 @@ namespace Repository
             return customerMasterDetails;
         }
     }
+
+    public class CustomerMasterOtherUploadsRepository : RepositoryBase<CustomerOtherUploads>, ICustomerMasterOtherUploadsRepository
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public CustomerMasterOtherUploadsRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+        }
+        public async Task<int?> CreateCustomerOtherUploads(CustomerOtherUploads customerOtherUploads)
+        {
+            customerOtherUploads.CreatedBy = _createdBy;
+            customerOtherUploads.CreatedOn = DateTime.Now;
+            customerOtherUploads.Unit = _unitname;
+            var result = await Create(customerOtherUploads);
+
+            return result.Id;
+        }
+        public async Task<CustomerOtherUploads> GetCustomerMasterOtherUploadsbyCustomerId(int Id)
+        {
+            var otherUploads = await TipsMasterDbContext.CustomerOtherUploads.Where(x => x.CustomerId == Id).FirstOrDefaultAsync();
+            return otherUploads;
+        }
+        public async Task<string> UpdateCustomerOtherUploads(CustomerOtherUploads customerOtherUploads)
+        {
+            customerOtherUploads.LastModifiedBy = _createdBy;
+            customerOtherUploads.LastModifiedOn = DateTime.Now;
+            Update(customerOtherUploads);
+            string result = $"companyMaster of Detail {customerOtherUploads.Id} is updated successfully!";
+            return result;
+        }
+    }
 }

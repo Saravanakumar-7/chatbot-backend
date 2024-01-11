@@ -9,6 +9,8 @@ using Entities.Migrations;
 using System.Net;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.StaticFiles;
+using System.ComponentModel.Design;
+using MySqlX.XDevAPI.Common;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -278,6 +280,51 @@ namespace Tips.Master.Api.Controllers
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = " CompanyOtherUploads Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CompanyMasterOtherUploads action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPut]
+        public async Task<IActionResult> UpdateCompanyMasterOtherUploads([FromBody] CompanyOtherUploadsUpdateDto companyOtherUploadsUpdateDto)
+        {
+            ServiceResponse<CompanyOtherUploadsDto> serviceResponse = new ServiceResponse<CompanyOtherUploadsDto>();
+            try
+            {
+                if (companyOtherUploadsUpdateDto is null)
+                {
+                    _logger.LogError("CompanyMasterOtherUploads object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "CompanyMaster object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid CompanyMasterOtherUploads object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                var otherUploads =await _repository.CompanyMasterOtherUploads.GetCompanyMasterOtherUploadsbyCompanyId(companyOtherUploadsUpdateDto.CompanyId);
+                var companyOtherUploads = _mapper.Map(companyOtherUploadsUpdateDto, otherUploads);
+                var result = await _repository.CompanyMasterOtherUploads.UpdateCompanyOtherUploads(companyOtherUploads);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = " CompanyMaster Successfully Updated";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
