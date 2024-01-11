@@ -60,7 +60,7 @@ namespace Repository
         private IVendorDepartmentRepository? _vendorDepartment;
         private IVendorRepository? _vendorRepository;
 
-
+        private ICustomerMasterOtherUploadsRepository? _customerMasterOtherUploadsRepo;
 
         private IPurchaseGroupRepository? _purchaseGroupRepo;   
         private ICostCenterRepository? _costCenterRepo; 
@@ -86,7 +86,7 @@ namespace Repository
         private ISegmentRepository _segmentRepository;
 
         private ICustomerMasterRepository? _customerMasterRepo;
-         
+        private ICompanyMasterOtherUploadsRepository? _companyMasterOtherUploadsRepo;
 
         private ICompanyMasterRepository? _companyMasterRepo;
 
@@ -773,7 +773,28 @@ namespace Repository
         }
 
         public ICustomerMasterRepository Customermasterrepository => throw new NotImplementedException();
-
+        public ICompanyMasterOtherUploadsRepository CompanyMasterOtherUploads
+        {
+            get
+            {
+                if (_companyMasterOtherUploadsRepo == null)
+                {
+                    _companyMasterOtherUploadsRepo = new CompanyMasterOtherUploadsRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _companyMasterOtherUploadsRepo;
+            }
+        }
+        public ICustomerMasterOtherUploadsRepository CustomerMasterOtherUploads
+        {
+            get
+            {
+                if (_customerMasterOtherUploadsRepo == null)
+                {
+                    _customerMasterOtherUploadsRepo = new CustomerMasterOtherUploadsRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _customerMasterOtherUploadsRepo;
+            }
+        }
         public ILeadTimeRepository leadTimeRepository
         {
             get
@@ -1278,6 +1299,7 @@ namespace Repository
         public ICompanyApprovalRepository CompanyApprovalRepository => throw new NotImplementedException();
 
         public IUserRepository userRepository => throw new NotImplementedException();
+
 
         //public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();
 

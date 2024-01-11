@@ -43,7 +43,8 @@ namespace Contracts
         ICompanyAddressesRepository CompanyAddressesRepository { get; }
         ICompanyContactsRepository CompanyContactsRepository { get; }
         ICompanyBankingRepository CompanyBankingRepository { get; }
-
+        ICompanyMasterOtherUploadsRepository CompanyMasterOtherUploads { get; }
+        ICustomerMasterOtherUploadsRepository CustomerMasterOtherUploads { get; }
         ICustomerMasterRepository CustomerMasterRepository { get; }
         ICustomerBankingsRepository CustomerBankingsRepository { get; }
         ICustomerAddressesRepository CustomerAddressesRepository { get; }

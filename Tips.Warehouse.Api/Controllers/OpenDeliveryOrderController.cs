@@ -528,7 +528,7 @@ namespace Tips.Warehouse.Api.Controllers
 
 
                             await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
-                            _inventoryTranctionRepository.SaveAsync();
+                            //_inventoryTranctionRepository.SaveAsync();
 
                             //// Add Bto detail in to opendeliveryorderhistory table
 
@@ -565,7 +565,7 @@ namespace Tips.Warehouse.Api.Controllers
 
 
                             await _openDeliveryOrderHistoryRepository.CreateOpenDeliveryOrderHistory(openDeliveryOrderHistoryDetails);
-                            _openDeliveryOrderHistoryRepository.SaveAsync();
+                           // _openDeliveryOrderHistoryRepository.SaveAsync();
                         }
                     }
                 }
@@ -574,6 +574,9 @@ namespace Tips.Warehouse.Api.Controllers
                 await _repository.CreateOpenDeliveryOrder(openDeliveryorder);
 
                 _repository.SaveAsync();
+                _openDeliveryOrderHistoryRepository.SaveAsync();
+                _inventoryTranctionRepository.SaveAsync();
+                _inventoryRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "OpenDeliveryorder Successfully Created";
                 serviceResponse.Success = true;

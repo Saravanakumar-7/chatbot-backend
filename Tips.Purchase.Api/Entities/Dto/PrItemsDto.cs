@@ -19,7 +19,8 @@ namespace Tips.Purchase.Api.Entities.Dto
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
         public PrStatus PrStatus { get; set; }
-       // public List<PRItemsDocumentUploadDto>? Upload { get; set; }
+        public string? ReasonforShortClose { get; set; }
+        // public List<PRItemsDocumentUploadDto>? Upload { get; set; }
         public List<PrAddProjectDto>? PrAddprojectsDtoList { get; set; }
         public List<PrAddDeliveryScheduleDto>? PrAddDeliverySchedulesDtoList { get; set; }
         public List<PrSpecialInstructionDto>? prSpecialInstructionsDtoList { get; set; }
@@ -37,6 +38,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? SpecialInstruction { get; set; }
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
+        public string? ReasonforShortClose { get; set; }
         public List<PRItemsDocumentUploadPostDto>? Upload { get; set; } 
 
         public List<PrAddProjectPostDto>? PrAddprojectsDtoPostList { get; set; }
@@ -56,6 +58,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         // public List<PRItemsDocumentUploadUpdateDto>? Upload { get; set; }
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
+        public string? ReasonforShortClose { get; set; }
         public List<PrAddProjectDtoUpdate>? PrAddprojectsDtoUpdateList { get; set; }
         public List<PrAddDeliveryScheduleUpdateDto>? PrAddDeliverySchedulesDtoUpdateList { get; set; }
         public List<PrSpecialInstructionUpdateDto>? prSpecialInstructionsUpdateList { get; set; }
@@ -69,7 +72,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? Description { get; set; }
         public string? UOM { get; set; }
         public PoPartType PartType { get; set; }
-
+        public string? ReasonforShortClose { get; set; }
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
 

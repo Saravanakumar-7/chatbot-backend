@@ -672,7 +672,7 @@ namespace Tips.Warehouse.Api.Repository
                                 eachinv.IsStockAvailable = false;
                             }
                             Update(eachinv);
-                            SaveAsync();
+                           // SaveAsync();
                             break;
                             //invdetails.Remove(eachinv);
                         }
@@ -682,7 +682,7 @@ namespace Tips.Warehouse.Api.Repository
                             eachinv.Balance_Quantity = 0;
                             eachinv.IsStockAvailable = false;
                             Update(eachinv);
-                            SaveAsync();
+                           // SaveAsync();
                             //invdetails.Remove(eachinv);
                         }
                     }
@@ -813,7 +813,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<List<Inventory>> GetInventoryByItemNo(string itemNumber)
         {
             var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber
-            && x.IsStockAvailable == true)
+           /* && x.IsStockAvailable == true*/)
                           .ToListAsync();
             return inventoryDetail;
         }

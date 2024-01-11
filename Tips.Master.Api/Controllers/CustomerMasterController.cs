@@ -271,7 +271,132 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> CreateCustomerMasterOtherUploads([FromBody] CustomerOtherUploadsPostDto customerOtherUploadsPostDto)
+        {
+            ServiceResponse<CustomerOtherUploadsDto> serviceResponse = new ServiceResponse<CustomerOtherUploadsDto>();
+            try
+            {
+                if (customerOtherUploadsPostDto is null)
+                {
+                    _logger.LogError("CustomerMasterOtherUploads object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "CustomerMaster object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid CustomerMasterOtherUploads object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                var otherUploads = _mapper.Map<CustomerOtherUploads>(customerOtherUploadsPostDto);
+                await _repository.CustomerMasterOtherUploads.CreateCustomerOtherUploads(otherUploads);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = " CustomerOtherUploads Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CustomerMasterOtherUploads action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPut]
+        public async Task<IActionResult> UpdateCustomerMasterOtherUploads([FromBody] CustomerOtherUploadsUpdateDto customerOtherUploadsUpdateDto)
+        {
+            ServiceResponse<CompanyOtherUploadsDto> serviceResponse = new ServiceResponse<CompanyOtherUploadsDto>();
+            try
+            {
+                if (customerOtherUploadsUpdateDto is null)
+                {
+                    _logger.LogError("CustomerMasterOtherUploads object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "CustomerMaster object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid CustomerMasterOtherUploads object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                var otherUploads = await _repository.CustomerMasterOtherUploads.GetCustomerMasterOtherUploadsbyCustomerId(customerOtherUploadsUpdateDto.CustomerId);
+                var customerOtherUploads = _mapper.Map(customerOtherUploadsUpdateDto, otherUploads);
+                var result = await _repository.CustomerMasterOtherUploads.UpdateCustomerOtherUploads(customerOtherUploads);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = " CustomerMaster Successfully Updated";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CustomerMasterOtherUploads action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetCustomerMasterOtherUploadsbyCompanyId(int CustomerId)
+        {
+            ServiceResponse<CustomerOtherUploadsDto> serviceResponse = new ServiceResponse<CustomerOtherUploadsDto>();
+            try
+            {
+                var otherUploads = _repository.CustomerMasterOtherUploads.GetCustomerMasterOtherUploadsbyCustomerId(CustomerId);
+                if (otherUploads == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CustomerMasterOtherUploads with Customerid hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CustomerMasterOtherUploads with id: {CustomerId}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned CustomerMasterOtherUploads with Companyid: {CustomerId}");
+                    var result = _mapper.Map<CustomerOtherUploadsDto>(otherUploads);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned CustomerMasterOtherUploads Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateCompanyMaster action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> CreateCustomerMasterFileUpload([FromBody] List<FileUploadPostDto> fileUploadPostDtos)
         {

@@ -324,12 +324,12 @@ namespace Tips.Master.Api.Controllers
                         if (serverKey == "avision")
                         {
                             var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
-                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/VendorMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/Vendor/DownloadFile?Filename={fileUploadDto.FileName}";
                         }
                         else
                         {
                             var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
-                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/VendorMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/Vendor/DownloadFile?Filename={fileUploadDto.FileName}";
                         }
 
                         //fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileUploadDto.FileName);
