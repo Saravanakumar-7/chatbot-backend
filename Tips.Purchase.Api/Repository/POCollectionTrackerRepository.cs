@@ -131,7 +131,7 @@ namespace Tips.Purchase.Api.Repository
             else
             {
                 var PODetails = from e in _tipsPurchaseDbContext.PurchaseOrders
-                                where e.VendorId == vendorId
+                                where e.VendorNumber == vendorId
                                 join d in _tipsPurchaseDbContext.POBreakDowns on e.VendorId equals d.VendorId into dept
                                 from POBreakDown in dept.DefaultIfEmpty()
                                 select new OpenPurchaseOrderDetailsDto
@@ -159,9 +159,15 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<POCollectionTrackerDetailsDto> GetPOCollectionTrackerByVendorId(string vendorId)
         {
+            //var purchaseOrderTotalValue = _tipsPurchaseDbContext.PurchaseOrders
+            //         .Where(x => x.VendorNumber == vendorId)
+            //             .Sum(s => s.TotalAmount);
+
             var purchaseOrderTotalValue = _tipsPurchaseDbContext.PurchaseOrders
-                     .Where(x => x.VendorNumber == vendorId)
-                         .Sum(s => s.TotalAmount);
+                        .Where(x => x.VendorNumber == vendorId)
+                        .OrderByDescending(x => x.CreatedOn)
+                        .Select(x=>x.TotalAmount)
+                        .FirstOrDefault();
 
             var pocollectionDetails = _tipsPurchaseDbContext.POCollectionTrackers
                 .Where(x => x.VendorId == vendorId)

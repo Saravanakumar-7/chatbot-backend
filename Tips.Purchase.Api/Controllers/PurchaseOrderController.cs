@@ -44,11 +44,12 @@ namespace Tips.Purchase.Api.Controllers
         private IPoConfirmationDateRepository _poConfirmationDateRepository;
         private IPRItemsDocumentUploadRepository _pRItemsDocumentUploadRepository;
         private IConfiguration _config;
+        private IPrItemsRepository _purchaseRequisitionItemRepository;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public PurchaseOrderController(IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository,IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
+        public PurchaseOrderController(IPrItemsRepository purchaseRequisitionItemRepository,IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository,IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
             _poItemsRepository = poItemsRepository;
@@ -61,6 +62,7 @@ namespace Tips.Purchase.Api.Controllers
             _poConfirmationHistoryRepository = poConfirmationHistoryRepository;
             _poConfirmationDateRepository = poConfirmationDateRepository;
             _pRItemsDocumentUploadRepository = pRItemsDocumentUploadRepository;
+            _purchaseRequisitionItemRepository = purchaseRequisitionItemRepository;
             _config = config;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
@@ -976,19 +978,30 @@ namespace Tips.Purchase.Api.Controllers
                     
                 }
 
-                //Changing Status in Pr
+                //Changing Status in Pr and PrItems 
                 foreach (var poItems in poItemDtoList)
                 {
-                    foreach(var prDetails in poItems.PrDetails)
+                    foreach (var prDetails in poItems.PrDetails)
                     {
-                        var prDetail = await _repository.GetPrDetailsByPrNumber(prDetails.PRNumber);
-                        if (prDetail != null)
+                        var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, prDetails.Qty);
+                        if (prItemDetail != null)
                         {
+                            prItemDetail.PrStatus = PrStatus.Closed;
+                            await _purchaseRequisitionItemRepository.UpdatePrItem(prItemDetail);
+                            _purchaseRequisitionItemRepository.SaveAsync();
+                        }
+
+                        var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber, prDetails.Qty);
+                        if (prItemClosedStatusCount == 0)
+                        {
+                            var prDetail = await _repository.GetPrDetailsByPrNumber(prDetails.PRNumber);
                             prDetail.PrStatus = PrStatus.Closed;
                             await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
                             _purchaseRequisitionRepository.SaveAsync();
                         }
                     }
+
+
                 }
 
                 serviceResponse.Data = null;
