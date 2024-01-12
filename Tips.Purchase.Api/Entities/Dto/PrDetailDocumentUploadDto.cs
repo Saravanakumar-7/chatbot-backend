@@ -16,7 +16,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string FileName { get; set; }
 
         public string FileExtension { get; set; }
-        public byte[] FileByte { get; set; }
+        public string? FileByte { get; set; }
 
         //public string FilePath { get; set; } 
     }
@@ -27,7 +27,7 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         public string FileExtension { get; set; }
 
-        public byte[] FileByte { get; set; }
+        public string? FileByte { get; set; }
     }
 
 }

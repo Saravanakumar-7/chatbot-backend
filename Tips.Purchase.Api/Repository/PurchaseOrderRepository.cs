@@ -352,11 +352,12 @@ namespace Tips.Purchase.Api.Repository
         public async Task<IEnumerable<PRNoandQtyListDto>> GetPRNumberandQtyListByItemNumber(string itemNumber)
         {
 
-            var query = from pri in _tipsPurchaseDbContext.PrItems
-                        join pdu in _tipsPurchaseDbContext.PRItemsDocumentUploads on pri.Id equals pdu.PrItemId into documentUploads
-                        from pdu in documentUploads.DefaultIfEmpty() // Left join handling no matching records
+            var query = from pri in _tipsPurchaseDbContext.PrItems 
+                        //join pdu in _tipsPurchaseDbContext.PRItemsDocumentUploads on pri.Id equals pdu.PrItemId into documentUploads
+                        //from pdu in documentUploads.DefaultIfEmpty() // Left join handling no matching records
                         join pr in _tipsPurchaseDbContext.PurchaseRequisitions on pri.PurchaseRequistionId equals pr.Id
-                        where pri.ItemNumber == itemNumber && pr.PrApprovalI && pr.PrApprovalII
+                        where pri.ItemNumber == itemNumber && pr.PrApprovalI == true && pr.PrApprovalII == true
+                        && (pri.PrStatus != PrStatus.ShortClosed && pri.PrStatus != PrStatus.Closed)
                         group new { pri, pr } by new { pr.PrNumber, pri.ItemNumber, pr.RevisionNumber } into grouped
                         select new
                         {
@@ -374,22 +375,22 @@ namespace Tips.Purchase.Api.Repository
                 PRNumber = x.PrNumber,
                 RevisionNumber = x.RevisionNumber,
                 Qty = x.Qty,
-                DocumentNames = _tipsPurchaseDbContext.PRItemsDocumentUploads
+                DocumentNames = null//_tipsPurchaseDbContext.PRItemsDocumentUploads
     //.Where(pdu => pdu.PrItemId == x.pri.Id)  // as
-    .Select(pdu => new PRItemsDocumentUpload
-    {
-        FileName = pdu.FileName,
-        FileExtension = pdu.FileExtension,
-        FilePath = pdu.FilePath,
-        DocumentFrom = pdu.DocumentFrom,
-        ParentNumber = pdu.ParentNumber,
-        Checked = pdu.Checked,
-        CreatedBy = pdu.CreatedBy,
-        CreatedOn = pdu.CreatedOn,
-        LastModifiedBy = pdu.LastModifiedBy,
-        LastModifiedOn = pdu.LastModifiedOn,
-        PrItemId = pdu.PrItemId,
-    }).ToList()
+    //.Select(pdu => new PRItemsDocumentUpload
+    //{
+    //    FileName = pdu.FileName,
+    //    FileExtension = pdu.FileExtension,
+    //    FilePath = pdu.FilePath,
+    //    DocumentFrom = pdu.DocumentFrom,
+    //    ParentNumber = pdu.ParentNumber,
+    //    Checked = pdu.Checked,
+    //    CreatedBy = pdu.CreatedBy,
+    //    CreatedOn = pdu.CreatedOn,
+    //    LastModifiedBy = pdu.LastModifiedBy,
+    //    LastModifiedOn = pdu.LastModifiedOn,
+    //    PrItemId = pdu.PrItemId,
+    //}).ToList()
             }).ToList();
 
             return prNoAndQtyList;

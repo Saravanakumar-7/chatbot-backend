@@ -881,15 +881,16 @@ namespace Tips.Purchase.Api.Controllers
                 
                 foreach (var poUploadDetail in poUploadDetails)
                 {
+                    Guid guid = Guid.NewGuid();
                     var fileContent = poUploadDetail.FileByte;
                     byte[] imageContent = Convert.FromBase64String(poUploadDetail.FileByte);
                     var poNumbers = purchaseOrderDetails.PONumber;
-                    string fileName = poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
+                    string fileName = guid.ToString() + "_" + poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                    Guid guid = Guid.NewGuid();
-                    string filename_1 = guid.ToString() + "_" + fileName;
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", guid.ToString() + "_" + fileName);
+                    
+                    //string filename_1 = guid.ToString() + "_" + fileName;
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", fileName);
                     using (MemoryStream ms = new MemoryStream(imageContent))
                     {
                         ms.Position = 0;
@@ -899,7 +900,7 @@ namespace Tips.Purchase.Api.Controllers
                         }
                         var uploadedFile = new DocumentUpload
                         {
-                            FileName = filename_1,
+                            FileName = fileName,
                             FileExtension = FileExt,
                             FilePath = filePath,
                             ParentNumber = poNumbers,
@@ -961,10 +962,27 @@ namespace Tips.Purchase.Api.Controllers
                 //}
 
                 //Update PrUploadDocu
-                if (prDetailsPostDto.Count > 0 && prDetailsPostDto[0].PrDetailDocumentUploadPostDtos !=null)
+                //if (prDetailsPostDto.Count > 0 && prDetailsPostDto[0].PrDetailDocumentUploadPostDtos !=null)
+                //{
+
+                //        foreach (var prDetailsDto in prDetailsPostDto[0].PrDetailDocumentUploadPostDtos)
+                //        {
+                //            var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
+                //            if (prUploadDocument != null)
+                //            {
+                //                prUploadDocument.Checked = true;
+                //                await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
+                //            }
+                //            _pRItemsDocumentUploadRepository.SaveAsync();
+
+                //        }
+
+                //}
+                foreach (var pritem in purchaseOrderPostDto.POItems) 
                 {
-                    
-                        foreach (var prDetailsDto in prDetailsPostDto[0].PrDetailDocumentUploadPostDtos)
+                    foreach (var pritemdetail in pritem.PrDetails)
+                    {
+                        foreach (var prDetailsDto in pritemdetail.PrDetailDocumentUploadPostDtos)
                         {
                             var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
                             if (prUploadDocument != null)
@@ -975,15 +993,38 @@ namespace Tips.Purchase.Api.Controllers
                             _pRItemsDocumentUploadRepository.SaveAsync();
 
                         }
-                    
+                    }                    
                 }
-
                 //Changing Status in Pr and PrItems 
+                //foreach (var poItems in poItemDtoList)
+                //{
+                //    foreach (var prDetails in poItems.PrDetails)
+                //    {
+                //        var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, prDetails.Qty);
+                //        if (prItemDetail != null)
+                //        {
+                //            prItemDetail.PrStatus = PrStatus.Closed;
+                //            await _purchaseRequisitionItemRepository.UpdatePrItem(prItemDetail);
+                //            _purchaseRequisitionItemRepository.SaveAsync();
+                //        }
+
+                //        var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber, prDetails.Qty);
+                //        if (prItemClosedStatusCount == 0)
+                //        {
+                //            var prDetail = await _repository.GetPrDetailsByPrNumber(prDetails.PRNumber);
+                //            prDetail.PrStatus = PrStatus.Closed;
+                //            await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
+                //            _purchaseRequisitionRepository.SaveAsync();
+                //        }
+                //    }
+
+
+                //}
                 foreach (var poItems in poItemDtoList)
                 {
                     foreach (var prDetails in poItems.PrDetails)
                     {
-                        var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, prDetails.Qty);
+                        var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber,poItems.ItemNumber);
                         if (prItemDetail != null)
                         {
                             prItemDetail.PrStatus = PrStatus.Closed;
@@ -991,7 +1032,7 @@ namespace Tips.Purchase.Api.Controllers
                             _purchaseRequisitionItemRepository.SaveAsync();
                         }
 
-                        var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber, prDetails.Qty);
+                        var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
                         if (prItemClosedStatusCount == 0)
                         {
                             var prDetail = await _repository.GetPrDetailsByPrNumber(prDetails.PRNumber);
@@ -1000,8 +1041,6 @@ namespace Tips.Purchase.Api.Controllers
                             _purchaseRequisitionRepository.SaveAsync();
                         }
                     }
-
-
                 }
 
                 serviceResponse.Data = null;
@@ -1554,11 +1593,55 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
                 var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderUpdateDto);
+                var AmountInWords = GetTotalValueInWords(purchaseOrderDetails.TotalAmount);
+                purchaseOrderDetails.AmountInWords = AmountInWords;
                 var poItemDto = purchaseOrderUpdateDto.POItems;
                 var poItemDtoList = new List<PoItem>();
                 var poIncoTermDto = purchaseOrderUpdateDto.POIncoTerms;
                 var poIncoTermsList = new List<PoIncoTerm>();
+                var poUploadDetails = purchaseOrderUpdateDto.POFiles;
+                var poDocumentUploadDtoList = new List<DocumentUpload>();
 
+                foreach (var poUploadDetail in poUploadDetails)
+                {
+                    if (poUploadDetail.Id!=null) {
+                        Guid guid = Guid.NewGuid();
+                        var fileContent = poUploadDetail.FileByte;
+                        byte[] imageContent = Convert.FromBase64String(poUploadDetail.FileByte);
+                        var poNumbers = purchaseOrderDetails.PONumber;
+                        string fileName = guid.ToString() + "_" + poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
+                        string FileExt = Path.GetExtension(fileName).ToUpper();
+
+
+                        //string filename_1 = guid.ToString() + "_" + fileName;
+                        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", fileName);
+                        using (MemoryStream ms = new MemoryStream(imageContent))
+                        {
+                            ms.Position = 0;
+                            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                            {
+                                ms.WriteTo(fileStream);
+                            }
+                            var uploadedFile = new DocumentUpload
+                            {
+                                FileName = fileName,
+                                FileExtension = FileExt,
+                                FilePath = filePath,
+                                ParentNumber = poNumbers,
+                                DocumentFrom = "PODocument",
+                            };
+                            _documentUploadRepository.CreateUploadDocumentPO(uploadedFile);
+                            _documentUploadRepository.SaveAsync();
+
+                            if (uploadedFile != null)
+                            {
+                                DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
+                                poDocumentUploadDtoList.Add(poFileDetails);
+                            }
+
+                        }
+                    }
+                }
                 if (poIncoTermDto != null)
                 {
                     for (int i = 0; i < poIncoTermDto.Count; i++)
@@ -1566,7 +1649,7 @@ namespace Tips.Purchase.Api.Controllers
                         PoIncoTerm poIncoTermDetails = _mapper.Map<PoIncoTerm>(poIncoTermDto[i]);
                         poIncoTermsList.Add(poIncoTermDetails);
                     }
-                }
+                } 
                 purchaseOrderDetails.POIncoTerms = poIncoTermsList;
 
                 if (poItemDto != null)
@@ -1574,10 +1657,12 @@ namespace Tips.Purchase.Api.Controllers
                     for (int i = 0; i < poItemDto.Count; i++)
                     {
                         PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+                        poItemDetails.BalanceQty = poItemDto[i].Qty;
+                        poItemDetails.PoPartsStatus = false;                        
                         poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
                         poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
-                        poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
+                        //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
                         poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
                         poItemDetails.PONumber = purchaseOrderUpdateDto.PONumber;
                         poItemDtoList.Add(poItemDetails);
@@ -1587,6 +1672,46 @@ namespace Tips.Purchase.Api.Controllers
                 purchaseOrderDetails.POItems = poItemDtoList;
                 await _repository.ChangePurchaseOrderVersion(purchaseOrderDetails);
                 _repository.SaveAsync();
+
+                foreach (var pritem in purchaseOrderUpdateDto.POItems)
+                {
+                    foreach (var pritemdetail in pritem.PrDetails)
+                    {
+                        foreach (var prDetailsDto in pritemdetail.PrDetailDocumentUploadUpdateDtos)
+                        {
+                            var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
+                            if (prUploadDocument != null)
+                            {
+                                prUploadDocument.Checked = true;
+                                await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
+                            }
+                            _pRItemsDocumentUploadRepository.SaveAsync();
+
+                        }
+                    }
+                }
+                foreach (var poItems in poItemDtoList)
+                {
+                    foreach (var prDetails in poItems.PrDetails)
+                    {
+                        var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, poItems.ItemNumber);
+                        if (prItemDetail != null)
+                        {
+                            prItemDetail.PrStatus = PrStatus.Closed;
+                            await _purchaseRequisitionItemRepository.UpdatePrItem(prItemDetail);
+                            _purchaseRequisitionItemRepository.SaveAsync();
+                        }
+
+                        var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
+                        if (prItemClosedStatusCount == 0)
+                        {
+                            var prDetail = await _repository.GetPrDetailsByPrNumber(prDetails.PRNumber);
+                            prDetail.PrStatus = PrStatus.Closed;
+                            await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
+                            _purchaseRequisitionRepository.SaveAsync();
+                        }
+                    }
+                }
                 serviceResponse.Data = null;
                 serviceResponse.Message = " PurchaseOrder Successfully Updated";
                 serviceResponse.Success = true;

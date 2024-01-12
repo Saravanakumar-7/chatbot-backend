@@ -91,6 +91,18 @@ namespace Tips.Master.Api
             CreateMap<CompanyBanking, CompanyBankingDtoPost>().ReverseMap();
             CreateMap<CompanyBanking, CompanyBankingDtoUpdate>().ReverseMap();
 
+            CreateMap<CompanyOtherUploads, CompanyOtherUploadsDto>().ReverseMap();
+            CreateMap<CompanyOtherUploads, CompanyOtherUploadsPostDto>().ReverseMap();
+            CreateMap<CompanyOtherUploads, CompanyOtherUploadsUpdateDto>().ReverseMap();
+
+            CreateMap<CustomerOtherUploads, CustomerOtherUploadsDto>().ReverseMap();
+            CreateMap<CustomerOtherUploads, CustomerOtherUploadsPostDto>().ReverseMap();
+            CreateMap<CustomerOtherUploads, CustomerOtherUploadsUpdateDto>().ReverseMap();
+
+            CreateMap<VendorOtherUploads, VendorOtherUploadsDto>().ReverseMap();
+            CreateMap<VendorOtherUploads, VendorOtherUploadsPostDto>().ReverseMap();
+            CreateMap<VendorOtherUploads, VendorOtherUploadsUpdateDto>().ReverseMap();
+
             CreateMap<PurchaseGroup, PurchaseGroupDto>().ReverseMap();
             CreateMap<PurchaseGroup, PurchaseGroupDtoPost>().ReverseMap();
             CreateMap<PurchaseGroup, PurchaseGroupDtoUpdate>().ReverseMap();

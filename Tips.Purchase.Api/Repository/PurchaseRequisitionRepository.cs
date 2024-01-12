@@ -663,7 +663,7 @@ namespace Tips.Purchase.Api.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<PrItem> GetPrItemByPRNo(string prNo,decimal? qty)
+        public async Task<PrItem> GetPrItemByPRNo(string prNo,string pritem)
         {
             var prId = await _tipsPurchaseDbContexts.PurchaseRequisitions
                 .Where(x => x.PrNumber == prNo)
@@ -673,7 +673,7 @@ namespace Tips.Purchase.Api.Repository
             if (prId != 0) 
             {
                 var prItems = await _tipsPurchaseDbContexts.PrItems
-                    .Where(x => x.PurchaseRequistionId == prId && x.Qty == qty)
+                    .Where(x => x.PurchaseRequistionId == prId && x.ItemNumber == pritem)
                     .FirstOrDefaultAsync();
 
                 return prItems;
@@ -684,7 +684,7 @@ namespace Tips.Purchase.Api.Repository
             }
         }
 
-        public async Task<int?> GetPrItemClosedStatusCount(string prNo, decimal? qty)
+        public async Task<int?> GetPrItemClosedStatusCount(string prNo)
         {
             var prId = await _tipsPurchaseDbContexts.PurchaseRequisitions
                .Where(x => x.PrNumber == prNo)
@@ -692,7 +692,7 @@ namespace Tips.Purchase.Api.Repository
                .FirstOrDefaultAsync();
             if (prId != 0)
             {
-                var prStatusCount = _tipsPurchaseDbContexts.PrItems.Where(x => x.PurchaseRequistionId == prId && x.Qty == qty
+                var prStatusCount = _tipsPurchaseDbContexts.PrItems.Where(x => x.PurchaseRequistionId == prId
                                                 && x.PrStatus != PrStatus.Closed).Count();
 
                 return prStatusCount;

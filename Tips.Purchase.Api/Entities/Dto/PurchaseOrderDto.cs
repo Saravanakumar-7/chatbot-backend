@@ -71,7 +71,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? Currency { get; set; }
         public int? BillToId { get; set; }
         public int? ShipToId { get; set; }
-        public List<DocumentUploadPostDto> POFiles { get; set; }
+        public List<DocumentUploadPostDto>? POFiles { get; set; }
 
         //public string? POFiles { get; set; }
         public string? CompanyAliasName { get; set; }
@@ -114,7 +114,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? Currency { get; set; }
         public string? Transports { get; set; }
         public string? Other { get; set; }
-        //public List<DocumentUploadUpdateDto> POFiles { get; set; }
+        public List<DocumentUploadUpdateDto>? POFiles { get; set; }
 
         //VendorDetails
         public string? VendorName { get; set; }
@@ -221,7 +221,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public decimal? Qty { get; set; }
         public int? RevisionNumber { get; set; }
 
-        public List<PRItemsDocumentUpload> DocumentNames { get; set; } 
+        public List<PRItemsDocumentUpload>? DocumentNames { get; set; } 
 
     }
 
