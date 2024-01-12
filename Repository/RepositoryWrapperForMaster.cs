@@ -61,7 +61,7 @@ namespace Repository
         private IVendorRepository? _vendorRepository;
 
         private ICustomerMasterOtherUploadsRepository? _customerMasterOtherUploadsRepo;
-
+        private IVendorMasterOtherUploadsRepository? _vendorMasterOtherUploadsRepo;
         private IPurchaseGroupRepository? _purchaseGroupRepo;   
         private ICostCenterRepository? _costCenterRepo; 
         private ICostingMethodRepository? _costingMethodRepo;   
@@ -793,6 +793,17 @@ namespace Repository
                     _customerMasterOtherUploadsRepo = new CustomerMasterOtherUploadsRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _customerMasterOtherUploadsRepo;
+            }
+        }
+        public IVendorMasterOtherUploadsRepository VendorOtherUploads
+        {
+            get
+            {
+                if (_vendorMasterOtherUploadsRepo == null)
+                {
+                    _vendorMasterOtherUploadsRepo = new VendorMasterOtherUploadsRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _vendorMasterOtherUploadsRepo;
             }
         }
         public ILeadTimeRepository leadTimeRepository

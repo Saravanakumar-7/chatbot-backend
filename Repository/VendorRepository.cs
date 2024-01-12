@@ -184,4 +184,40 @@ namespace Repository
         }
 
     }
+    public class VendorMasterOtherUploadsRepository : RepositoryBase<VendorOtherUploads>, IVendorMasterOtherUploadsRepository
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public VendorMasterOtherUploadsRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+        }
+        public async Task<int?> CreateVendorOtherUploads(VendorOtherUploads vendorOtherUploads)
+        {
+            vendorOtherUploads.CreatedBy = _createdBy;
+            vendorOtherUploads.CreatedOn = DateTime.Now;
+            vendorOtherUploads.Unit = _unitname;
+            var result = await Create(vendorOtherUploads);
+
+            return result.Id;
+        }
+        public async Task<VendorOtherUploads> GetVendorMasterOtherUploadsbyVendorId(int Id)
+        {
+            var otherUploads = await TipsMasterDbContext.VendorOtherUploads.Where(x => x.VendorId == Id).FirstOrDefaultAsync();
+            return otherUploads;
+        }
+        public async Task<string> UpdateVendorOtherUploads(VendorOtherUploads vendorOtherUploads)
+        {
+            vendorOtherUploads.LastModifiedBy = _createdBy;
+            vendorOtherUploads.LastModifiedOn = DateTime.Now;
+            Update(vendorOtherUploads);
+            string result = $"vendorMaster of Detail {vendorOtherUploads.Id} is updated successfully!";
+            return result;
+        }
+    }
 }

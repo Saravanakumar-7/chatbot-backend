@@ -45,6 +45,7 @@ namespace Contracts
         ICompanyBankingRepository CompanyBankingRepository { get; }
         ICompanyMasterOtherUploadsRepository CompanyMasterOtherUploads { get; }
         ICustomerMasterOtherUploadsRepository CustomerMasterOtherUploads { get; }
+        IVendorMasterOtherUploadsRepository VendorOtherUploads { get; }
         ICustomerMasterRepository CustomerMasterRepository { get; }
         ICustomerBankingsRepository CustomerBankingsRepository { get; }
         ICustomerAddressesRepository CustomerAddressesRepository { get; }

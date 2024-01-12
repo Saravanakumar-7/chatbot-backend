@@ -191,6 +191,132 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> CreateVendorMasterOtherUploads([FromBody] VendorOtherUploadsPostDto vendorOtherUploadsPostDto)
+        {
+            ServiceResponse<VendorOtherUploadsDto> serviceResponse = new ServiceResponse<VendorOtherUploadsDto>();
+            try
+            {
+                if (vendorOtherUploadsPostDto is null)
+                {
+                    _logger.LogError("VendorMasterOtherUploads object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "VendorMaster object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid VendorMasterOtherUploads object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                var otherUploads = _mapper.Map<VendorOtherUploads>(vendorOtherUploadsPostDto);
+                await _repository.VendorOtherUploads.CreateVendorOtherUploads(otherUploads);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = " VendorOtherUploads Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside VendorMasterOtherUploads action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetVendorMasterOtherUploadsbyCompanyId(int VendorId)
+        {
+            ServiceResponse<VendorOtherUploadsDto> serviceResponse = new ServiceResponse<VendorOtherUploadsDto>();
+            try
+            {
+                var otherUploads = _repository.VendorOtherUploads.GetVendorMasterOtherUploadsbyVendorId(VendorId);
+                if (otherUploads == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"VendorMasterOtherUploads with Vendorid hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"VendorMasterOtherUploads with id: {VendorId}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned VendorMasterOtherUploads with Vendorid: {VendorId}");
+                    var result = _mapper.Map<VendorOtherUploadsDto>(otherUploads);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned VendorMasterOtherUploads Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateVendorMaster action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPut]
+        public async Task<IActionResult> UpdateVendorMasterOtherUploads([FromBody] VendorOtherUploadsUpdateDto vendorOtherUploadsUpdateDto)
+        {
+            ServiceResponse<VendorOtherUploadsDto> serviceResponse = new ServiceResponse<VendorOtherUploadsDto>();
+            try
+            {
+                if (vendorOtherUploadsUpdateDto is null)
+                {
+                    _logger.LogError("VendorMasterOtherUploads object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "VendorMaster object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid VendorMasterOtherUploads object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                var otherUploads = await _repository.VendorOtherUploads.GetVendorMasterOtherUploadsbyVendorId(vendorOtherUploadsUpdateDto.VendorId);
+                var vendorOtherUploads = _mapper.Map(vendorOtherUploadsUpdateDto, otherUploads);
+                var result = await _repository.VendorOtherUploads.UpdateVendorOtherUploads(vendorOtherUploads);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = " VendorMaster Successfully Updated";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside VendorMasterOtherUploads action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
         public async Task<IActionResult> CreateVendorMasterFileUpload([FromBody] List<FileUploadPostDto> fileUploadPostDtos)
         {
             ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
