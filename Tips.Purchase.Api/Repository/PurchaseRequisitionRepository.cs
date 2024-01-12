@@ -663,11 +663,45 @@ namespace Tips.Purchase.Api.Repository
             throw new NotImplementedException();
         }
 
-        public Task<PrItem> GetPrItemById(int id)
+        public async Task<PrItem> GetPrItemByPRNo(string prNo,decimal? qty)
         {
-            throw new NotImplementedException();
+            var prId = await _tipsPurchaseDbContexts.PurchaseRequisitions
+                .Where(x => x.PrNumber == prNo)
+                .Select(x => x.Id)
+                .FirstOrDefaultAsync();
+
+            if (prId != 0) 
+            {
+                var prItems = await _tipsPurchaseDbContexts.PrItems
+                    .Where(x => x.PurchaseRequistionId == prId && x.Qty == qty)
+                    .FirstOrDefaultAsync();
+
+                return prItems;
+            }
+            else
+            {
+                return null;
+            }
         }
 
+        public async Task<int?> GetPrItemClosedStatusCount(string prNo, decimal? qty)
+        {
+            var prId = await _tipsPurchaseDbContexts.PurchaseRequisitions
+               .Where(x => x.PrNumber == prNo)
+               .Select(x => x.Id)
+               .FirstOrDefaultAsync();
+            if (prId != 0)
+            {
+                var prStatusCount = _tipsPurchaseDbContexts.PrItems.Where(x => x.PurchaseRequistionId == prId && x.Qty == qty
+                                                && x.PrStatus != PrStatus.Closed).Count();
+
+                return prStatusCount;
+            }
+            else
+            {
+                return null;
+            }
+        }
         public Task<IEnumerable<PrItem>> GetAllActivePrItems()
         {
             throw new NotImplementedException();
@@ -703,6 +737,11 @@ namespace Tips.Purchase.Api.Repository
                                         .Where(x => x.PurchaseRequistionId == prId && x.PrStatus == PrStatus.Open).Count();
 
             return prItemStatusCount;
+        }
+
+        public Task<PrItem> GetPrItemById(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 

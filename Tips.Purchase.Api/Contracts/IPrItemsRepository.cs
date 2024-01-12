@@ -12,5 +12,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<string> DeletePrItem(PrItem prItem);
         Task<PrItem> ClosePrItemSatusByPrItemId(int prItemId);
         Task<int?> GetPrItemOpenStatusCount(int prId);
+        Task<int?> GetPrItemClosedStatusCount(string prNo,decimal? qty);
+        Task<PrItem> GetPrItemByPRNo(string prNo,decimal? qty);
     }
 }
