@@ -45,6 +45,7 @@ namespace Entities
         public DbSet<CompanyOtherUploads>? CompanyOtherUploads { get; set; }
         public DbSet<CustomerMasterHeadCounting>? CustomerMasterHeadCountings { get; set; }
         public DbSet<CustomerOtherUploads>? CustomerOtherUploads { get; set; }
+        public DbSet<VendorOtherUploads>? VendorOtherUploads { get; set; }
         public DbSet<UOM> Uom { get; set; }
         public DbSet<UOC> Uoc { get; set; }
         public DbSet<Commodity> Commodity { get; set; }

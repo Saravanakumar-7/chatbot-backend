@@ -40,7 +40,7 @@ namespace Tips.Purchase.Api.Controllers
         private readonly String _createdBy;
         private readonly String _unitname;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
-        public PurchaseRequisitionController(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IPRItemsDocumentUploadRepository prItemsDocumentUploadRepository,IPrItemsRepository prItemRepository,IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository ,ILoggerManager logger, IMapper mapper, IConfiguration config)
+        public PurchaseRequisitionController(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IPRItemsDocumentUploadRepository prItemsDocumentUploadRepository, IPrItemsRepository prItemRepository, IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _prItemsDocumentUploadRepository = prItemsDocumentUploadRepository;
             _repository = repository;
@@ -63,7 +63,7 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<PurchaseRequisitionDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionDto>>();
             try
             {
-                var purchaseRequisitionDetails = await _repository.GetAllPurchaseRequisitions(pagingParameter,searchParamess);
+                var purchaseRequisitionDetails = await _repository.GetAllPurchaseRequisitions(pagingParameter, searchParamess);
                 var metadata = new
                 {
                     purchaseRequisitionDetails.TotalCount,
@@ -224,7 +224,7 @@ namespace Tips.Purchase.Api.Controllers
                                         PrDeliveryDate = prAddDeliverySchedule.PrDeliveryDate,
                                         PrDeliveryQty = prAddDeliverySchedule.PrDeliveryQty
                                     }).ToList(),
-                                 prSpecialInstructionsDtoList = prItem.prSpecialInstructionsDtoList
+                                prSpecialInstructionsDtoList = prItem.prSpecialInstructionsDtoList
                                     .Select(prSpecialInstruction => new PrSpecialInstructionDto
                                     {
                                         Id = prSpecialInstruction.Id,
@@ -469,7 +469,7 @@ namespace Tips.Purchase.Api.Controllers
                                 }
                                 prItemDtos.PRItemFiles = prd;
                             }
-                           // prItemDtos.Upload = _mapper.Map<List<PRItemsDocumentUploadDto>>(fileUploads);
+                            // prItemDtos.Upload = _mapper.Map<List<PRItemsDocumentUploadDto>>(fileUploads);
                             prItemDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(itemDetails.prAddprojectsDtoList);
                             prItemDtos.PrAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliveryScheduleDto>>(itemDetails.prAddDeliverySchedulesDtoList);
                             prItemDtos.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstructionDto>>(itemDetails.prSpecialInstructionsDtoList);
@@ -495,7 +495,7 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-       // [HttpGet]
+        // [HttpGet]
         [HttpGet]
         public async Task<ActionResult> DownloadFile(string Filename)
         {
@@ -580,7 +580,7 @@ namespace Tips.Purchase.Api.Controllers
         {
             ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
             try
-            {               
+            {
                 if (ListofFiles is null)
                 {
                     serviceResponse.Data = null;
@@ -599,16 +599,16 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError("Invalid PurchaseRequisition object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                List<string>? id_s= new List<string>();
+                List<string>? id_s = new List<string>();
                 foreach (var prUploadDetail in ListofFiles)
                 {
+                    Guid guid = Guid.NewGuid();
                     var fileContent = prUploadDetail.FileByte;
-                    byte[] imageContent = Convert.FromBase64String(prUploadDetail.FileByte);                   
-                    string fileName = prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
+                    byte[] imageContent = Convert.FromBase64String(prUploadDetail.FileByte);
+                    string fileName = guid.ToString() + "_" + prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                    Guid guid = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", guid.ToString() + "_" + fileName);
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", /*guid.ToString() + "_" +*/ fileName);
                     using (MemoryStream ms = new MemoryStream(imageContent))
                     {
                         ms.Position = 0;
@@ -621,7 +621,7 @@ namespace Tips.Purchase.Api.Controllers
                             FileName = fileName,
                             FileExtension = FileExt,
                             FilePath = filePath,
-                            FileByte= fileContent,
+                            FileByte = fileContent,
                             ParentNumber = "PRItems",
                             DocumentFrom = "PRDocument",
                         };
@@ -649,7 +649,7 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-            [HttpPost]
+        [HttpPost]
         public async Task<IActionResult> CreatePurchaseRequisition([FromBody] PurchaseRequisitionPostDto purchaseRequistionPostDto)
         {
             ServiceResponse<PurchaseRequisitionPostDto> serviceResponse = new ServiceResponse<PurchaseRequisitionPostDto>();
@@ -773,7 +773,7 @@ namespace Tips.Purchase.Api.Controllers
                 //        prItemDtoList.Add(prItemDetails);
                 //    }
                 //}
-               // var CSitemDocumentUploadDtoList = new List<PRItemsDocumentUpload>();
+                // var CSitemDocumentUploadDtoList = new List<PRItemsDocumentUpload>();
                 if (prItemDto != null)
                 {
                     for (int i = 0; i < prItemDto.Count; i++)
@@ -862,7 +862,7 @@ namespace Tips.Purchase.Api.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> GetDownloadUrlDetails_Pritems(string prNumber,string prItemNumber)
+        public async Task<IActionResult> GetDownloadUrlDetails_Pritems(string prNumber, string prItemNumber)
         {
             ServiceResponse<IEnumerable<GetDownloadUrlDto>> serviceResponse = new ServiceResponse<IEnumerable<GetDownloadUrlDto>>();
 
@@ -962,7 +962,7 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     for (int i = 0; i < prItemDto.Count; i++)
                     {
-                       // List<PRItemsDocumentUpload>? files = null;
+                        // List<PRItemsDocumentUpload>? files = null;
                         PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
                         //if (prItemDto[i].Upload != null && prItemDto[i].Upload.Count > 0)
                         //{
@@ -1161,7 +1161,7 @@ namespace Tips.Purchase.Api.Controllers
                 foreach (var item in itemMasterObject)
                 {
                     ItemMasterFileUploadDtoList newItem = new ItemMasterFileUploadDtoList();
-                    
+
                     newItem.Id = item.id;
                     newItem.FileName = item.fileName;
                     newItem.FileExtension = item.fileExtension;
@@ -1338,7 +1338,7 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPut("{PRNumber}")]
-        public async Task<IActionResult> ActivatePurchaseRequisitionApprovalI(string PRNumber,int RevNo)
+        public async Task<IActionResult> ActivatePurchaseRequisitionApprovalI(string PRNumber, int RevNo)
         {
             ServiceResponse<PurchaseRequisitionDto> serviceResponse = new ServiceResponse<PurchaseRequisitionDto>();
 
@@ -1496,7 +1496,7 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
         //delete upload document
-         
+
         [HttpDelete]
         public async Task<IActionResult> DeletePRUploadDocument(int id)
         {
@@ -1599,15 +1599,15 @@ namespace Tips.Purchase.Api.Controllers
                         var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
                         getDownloadUrlByFilenames.DownloadUrl = $"{baseUrl}/api/PurchaseRequisition/DownloadFile?Filename={getDownloadUrlByFilenames.FileName}";
                     }
-                    } 
-                    _logger.LogInfo($"Returned DownloadDetail with id: {prNumber}");
-                    var result = _mapper.Map<IEnumerable<GetPRDownloadUrlDto>>(downloadDetailByPrNumber);
-                    serviceResponse.Data = result;
-                    serviceResponse.Message = "Successfully Returned PRDownloadUrlDetail";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                
+                }
+                _logger.LogInfo($"Returned DownloadDetail with id: {prNumber}");
+                var result = _mapper.Map<IEnumerable<GetPRDownloadUrlDto>>(downloadDetailByPrNumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Successfully Returned PRDownloadUrlDetail";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
             }
             catch (Exception ex)
             {
@@ -1620,7 +1620,7 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> ShortClosePrItemSatusByPrItemId(int prItemId,string? ReasonforShortClose)
+        public async Task<IActionResult> ShortClosePrItemSatusByPrItemId(int prItemId, string? ReasonforShortClose)
         {
             ServiceResponse<PrItemsDto> serviceResponse = new ServiceResponse<PrItemsDto>();
 
