@@ -1028,6 +1028,38 @@ namespace Tips.Purchase.Api.Repository
               .SumAsync(poi => poi.BalanceQty);
         }
 
+        public async Task<PagedList<Tras_POSPReport>> Get_Tras_PurchaseOrderSPResport(PagingParameter pagingParameter)
+        {
+            var results = _tipsPurchaseDbContext.Set<Tras_POSPReport>()
+                    .FromSqlInterpolated($"CALL Purchase_Order_without_parameter")
+                    .ToList();
+
+            return PagedList<Tras_POSPReport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        public async Task<IEnumerable<Tras_POSPReport>> Get_Tras_PurchaseOrderSPReportWithParam(string VendorName, string PONumber, string PartNumber)
+        {
+            if (string.IsNullOrWhiteSpace(VendorName)
+            || string.IsNullOrWhiteSpace(PONumber)
+            || string.IsNullOrWhiteSpace(PartNumber)) ;
+
+
+            var result = _tipsPurchaseDbContext
+            .Set<Tras_POSPReport>()
+            .FromSqlInterpolated($"CALL Purchase_Order_withparameter({VendorName},{PONumber},{PartNumber})")
+            .ToList();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<Tras_POSPReport>> Get_Tras_PurchaseOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsPurchaseDbContext.Set<Tras_POSPReport>()
+                        .FromSqlInterpolated($"CALL Purchase_Order_withparameter_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+        }
     }
 
     public class UploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository

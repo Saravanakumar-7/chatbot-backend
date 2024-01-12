@@ -33,9 +33,11 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PoConfirmationHistory> PoConfirmationHistories { get; set; }
         public DbSet<PRItemsDocumentUpload> PRItemsDocumentUploads { get; set; }
         public DbSet<PurchaseOrderSPReport> PurchaseOrderSPReports { get; set; }
+        public DbSet<Tras_POSPReport> Tras_POSPReports { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PurchaseOrderSPReport>().HasNoKey();
+            modelBuilder.Entity<Tras_POSPReport>().HasNoKey();
         }
     }
 }

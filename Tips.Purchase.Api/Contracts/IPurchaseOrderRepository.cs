@@ -49,5 +49,10 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIList(PagingParameter pagingParameter,SearchParamess searchParams);
         Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIList(PagingParameter pagingParameter,SearchParamess searchParams);
+
+        Task<PagedList<Tras_POSPReport>> Get_Tras_PurchaseOrderSPResport(PagingParameter pagingParameter);
+        Task<IEnumerable<Tras_POSPReport>> Get_Tras_PurchaseOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+
+        Task<IEnumerable<Tras_POSPReport>> Get_Tras_PurchaseOrderSPReportWithParam(string VendorName, string PONumber, string PartNumber);
     }
 }

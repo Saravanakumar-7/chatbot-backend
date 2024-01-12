@@ -302,5 +302,11 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
 
     }
+    public class Tras_POSPReportDTO
+    {
+        public string? VendorName { get; set; }
+        public string? PONumber { get; set; }
+        public string? PartNumber { get; set; }
+    }
 
 }
