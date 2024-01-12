@@ -991,7 +991,7 @@ namespace Tips.Purchase.Api.Controllers
                             _purchaseRequisitionItemRepository.SaveAsync();
                         }
 
-                        var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber, prDetails.Qty);
+                        var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
                         if (prItemClosedStatusCount == 0)
                         {
                             var prDetail = await _repository.GetPrDetailsByPrNumber(prDetails.PRNumber);
