@@ -221,7 +221,7 @@ namespace Repository
             .FirstOrDefaultAsync();
             return latestBomData;
         }
-        public async Task<PagedList<EnggBom>> GetAllEnggBOM([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<PagedList<EnggBom>> GetAllEnggBOM ([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             PartType? check;
             if (Enum.TryParse<PartType>(searchParams.SearchValue, out PartType result))
