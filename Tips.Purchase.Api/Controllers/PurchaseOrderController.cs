@@ -110,6 +110,46 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllLastestPurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderDto>>();
+            try
+            {
+                var lastestPurchaseOrderDetails = await _repository.GetAllLastestPurchaseOrders(pagingParameter, searchParamess);
+                var metadata = new
+                {
+                    lastestPurchaseOrderDetails.TotalCount,
+                    lastestPurchaseOrderDetails.PageSize,
+                    lastestPurchaseOrderDetails.CurrentPage,
+                    lastestPurchaseOrderDetails.HasNext,
+                    lastestPurchaseOrderDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all LastestPurchaseOrders");
+                var result = _mapper.Map<IEnumerable<PurchaseOrderDto>>(lastestPurchaseOrderDetails);
+
+                List<DocumentUploadDto> documentUploadDtos = new List<DocumentUploadDto>();
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all LastestPurchaseOrders";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //get details by ponumber
         [HttpGet]
         public async Task<IActionResult> GetPurchaseOrderByPoNumber(string PONumber)
@@ -2060,6 +2100,42 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllLastestPendingPurchaseOrderApprovalIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var lastestPendingPOApprovalINameList = await _repository.GetAllLastestPendingPOApprovalIList(pagingParameter, searchParams);
+                var metadata = new
+                {
+                    lastestPendingPOApprovalINameList.TotalCount,
+                    lastestPendingPOApprovalINameList.PageSize,
+                    lastestPendingPOApprovalINameList.CurrentPage,
+                    lastestPendingPOApprovalINameList.HasNext,
+                    lastestPendingPOApprovalINameList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(lastestPendingPOApprovalINameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all LastestPendingApprovalIPurchaseOrder";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllLastestPendingPOApprovalINameList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAllPendingPurchaseOrderApprovalIIList([FromQuery] PagingParameter pagingParameter,[FromQuery] SearchParamess searchParams)
         {
@@ -2089,6 +2165,41 @@ namespace Tips.Purchase.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetAllPendingPOApprovalIINameList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllLastestPendingPurchaseOrderApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var lastestPendingPOApprovalIINameList = await _repository.GetAllLastestPendingPOApprovalIIList(pagingParameter, searchParams);
+                var metadata = new
+                {
+                    lastestPendingPOApprovalIINameList.TotalCount,
+                    lastestPendingPOApprovalIINameList.PageSize,
+                    lastestPendingPOApprovalIINameList.CurrentPage,
+                    lastestPendingPOApprovalIINameList.HasNext,
+                    lastestPendingPOApprovalIINameList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(lastestPendingPOApprovalIINameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all LastestPendingApprovalIIPurchaseOrder";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllLastestPendingPOApprovalIINameList action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

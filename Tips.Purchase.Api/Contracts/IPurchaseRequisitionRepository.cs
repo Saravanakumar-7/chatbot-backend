@@ -10,6 +10,7 @@ namespace Tips.Purchase.Api.Contracts
     public interface IPurchaseRequisitionRepository : IRepositoryBase<PurchaseRequisition>
     {
         Task<PagedList<PurchaseRequisition>> GetAllPurchaseRequisitions(PagingParameter pagingParameter, SearchParamess searchParamess);
+        Task<PagedList<PurchaseRequisition>> GetAllLastestPurchaseRequisitions(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<PurchaseRequisition> GetPurchaseRequisitionById(int id);
         Task<PurchaseRequisition> GetPurchaseRequisitionByPRNumber(string prNumber, int RevNo);
         Task<IEnumerable<PurchaseRequisition>> GetAllPurchaseRequisitionWithItems(PurchaseRequisitionSearchDto purchaseRequisitionSearch);
@@ -33,6 +34,8 @@ namespace Tips.Purchase.Api.Contracts
         Task<PurchaseRequisition> GetPurchaseRequisitionByPRNoAndRevNo(string prNumber, int revisionNumber);
         Task<string> GeneratePRNumberAvision();
         Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIList(PagingParameter pagingParameter ,SearchParamess searchParams);
+        Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllLastestPendingPRApprovalIList(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIIList(PagingParameter pagingParameter, SearchParamess searchParams);
+        Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllLastestPendingPRApprovalIIList(PagingParameter pagingParameter, SearchParamess searchParams);
     }
 }
