@@ -946,8 +946,7 @@ namespace Tips.Purchase.Api.Controllers
                             ParentNumber = poNumbers,
                             DocumentFrom = "PODocument",
                         };
-                        _documentUploadRepository.CreateUploadDocumentPO(uploadedFile);
-                        _documentUploadRepository.SaveAsync();
+                        _documentUploadRepository.CreateUploadDocumentPO(uploadedFile);                        
 
                         if (uploadedFile != null)
                         {
@@ -980,7 +979,7 @@ namespace Tips.Purchase.Api.Controllers
                 purchaseOrderDetails.POFiles = poDocumentUploadDtoList;
                 purchaseOrderDetails.POIncoTerms = poIncoTermList.ToList();
                 await _repository.CreatePurchaseOrder(purchaseOrderDetails);
-                _repository.SaveAsync();
+               
 
                 //Adding data in PoConfirmationDateHistory
                 //foreach (var poItems in poItemDtoList)
@@ -1033,8 +1032,7 @@ namespace Tips.Purchase.Api.Controllers
                                             prUploadDocument.Checked = true;
                                             await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
                                         }
-                                        _pRItemsDocumentUploadRepository.SaveAsync();
-
+                                        
                                     } }
                             } }
                     }
@@ -1077,16 +1075,15 @@ namespace Tips.Purchase.Api.Controllers
                         }
 
                         var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
-                        if (prItemClosedStatusCount == 0)
-                        {
                             var prDetail = await _repository.GetPrDetailsByPrNumber(prDetails.PRNumber);
-                            prDetail.PrStatus = PrStatus.Closed;
-                            await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
-                            _purchaseRequisitionRepository.SaveAsync();
-                        }
+                            prDetail.PrStatus = prItemClosedStatusCount;
+                            await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail); 
                     }
                 }
-
+                _documentUploadRepository.SaveAsync();
+                _repository.SaveAsync();
+                _pRItemsDocumentUploadRepository.SaveAsync();
+                _purchaseRequisitionRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = " PurchaseOrder Successfully Created";
                 serviceResponse.Success = true;

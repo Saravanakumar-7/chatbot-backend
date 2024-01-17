@@ -1,4 +1,5 @@
 ﻿using Tips.Purchase.Api.Entities;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Contracts
 {
@@ -12,7 +13,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<string> DeletePrItem(PrItem prItem);
         Task<PrItem> ClosePrItemSatusByPrItemId(int prItemId);
         Task<int?> GetPrItemOpenStatusCount(int prId);
-        Task<int?> GetPrItemClosedStatusCount(string prNo);
+        Task<PrStatus> GetPrItemClosedStatusCount(string prNo);
         Task<PrItem> GetPrItemByPRNo(string prNo, string pritem);
     }
 }
