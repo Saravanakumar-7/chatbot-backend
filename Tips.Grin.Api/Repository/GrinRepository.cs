@@ -386,6 +386,11 @@ namespace Tips.Grin.Api.Repository
 
             return grinDetailsbyId;
         }
+        public async Task<IEnumerable<Grins>> GetGrinDetailsByGrinIds(List<int> grinIds)
+        {
+            var grinDetailsList = await FindByCondition(x => grinIds.Contains(x.Id)).ToListAsync();
+            return grinDetailsList;
+        }
         public async Task<Grins> GetGrinByGrinNo(string grinNumber)
         {
             var grinDetailsbyGrin = await _tipsGrinDbContext.Grins.Where(x => x.GrinNumber == grinNumber)
