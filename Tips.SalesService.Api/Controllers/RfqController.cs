@@ -1448,50 +1448,50 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        private List<DocumentUpload> CoCDocumentSave(List<RfqCustomerSupportItemPostDto>? grinPartsDto, RfqCustomerSupport grins, string number, int i, List<DocumentUpload> grinPartsDocumentUploadDtoList)
-        {
-            var cocUploadDocs = grinPartsDto[i].Upload;
+        //private List<DocumentUpload> CoCDocumentSave(List<RfqCustomerSupportItemPostDto>? grinPartsDto, RfqCustomerSupport grins, string number, int i, List<DocumentUpload> grinPartsDocumentUploadDtoList)
+        //{
+        //    var cocUploadDocs = grinPartsDto[i].Upload;
 
-            foreach (var cocUpload in cocUploadDocs)
-            {
-                var fileContent = cocUpload.FileByte;
+        //    foreach (var cocUpload in cocUploadDocs)
+        //    {
+        //        var fileContent = cocUpload.FileByte;
 
-                string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
-                string FileExt = Path.GetExtension(fileName).ToUpper();
+        //        string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
+        //        string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                //Guid guid = Guid.NewGuid();
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "CSItems",/* guid.ToString() + "_" +*/ fileName);
-                using (MemoryStream ms = new MemoryStream(fileContent))
-                {
-                    ms.Position = 0;
-                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                    {
-                        ms.WriteTo(fileStream);
-                    }
-                    var uploadedFile = new DocumentUpload
-                    {
-                        FileName = fileName,
-                        FileExtension = FileExt,
-                        FilePath = filePath,
-                        ParentId = number,          //It Should be changed to GrinPartsId
-                        DocumentFrom = "CSItemDocument",
-                    };
+        //        //Guid guid = Guid.NewGuid();
+        //        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "CSItems",/* guid.ToString() + "_" +*/ fileName);
+        //        using (MemoryStream ms = new MemoryStream(fileContent))
+        //        {
+        //            ms.Position = 0;
+        //            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+        //            {
+        //                ms.WriteTo(fileStream);
+        //            }
+        //            var uploadedFile = new DocumentUpload
+        //            {
+        //                FileName = fileName,
+        //                FileExtension = FileExt,
+        //                FilePath = filePath,
+        //                ParentId = number,          //It Should be changed to GrinPartsId
+        //                DocumentFrom = "CSItemDocument",
+        //            };
 
-                    _documentUploadRepository.CreateUploadDocument(uploadedFile);
-                    _documentUploadRepository.SaveAsync();
+        //            _documentUploadRepository.CreateUploadDocument(uploadedFile);
+        //            _documentUploadRepository.SaveAsync();
 
-                    if (uploadedFile != null)
-                    {
-                        DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
-                        grinPartsDocumentUploadDtoList.Add(poFileDetails);
-                    }
+        //            if (uploadedFile != null)
+        //            {
+        //                DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
+        //                grinPartsDocumentUploadDtoList.Add(poFileDetails);
+        //            }
 
-                }
-                grins.RfqCustomerSupportItems[i].Upload = grinPartsDocumentUploadDtoList;
+        //        }
+        //        grins.RfqCustomerSupportItems[i].Upload = grinPartsDocumentUploadDtoList;
 
-            }
-            return grinPartsDocumentUploadDtoList;
-        }
+        //    }
+        //    return grinPartsDocumentUploadDtoList;
+        //}
 
         [HttpPost]
         public async Task<IActionResult> CreateRfqCustomerSupport([FromBody] RfqCustomerSupportPostDto rfqCustomerSupportDto)
@@ -1535,11 +1535,11 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     List<DocumentUpload>? files = null;
                     RfqCustomerSupportItems rfqCSItems = _mapper.Map<RfqCustomerSupportItems>(rfqCSItemDto[i]);
-                    if (rfqCSItemDto[i].Upload != null && rfqCSItemDto[i].Upload.Count > 0)
-                    {
-                        files = CoCDocumentSave(rfqCSItemDto, createRfqCS, rfqCSItems.Id.ToString(), i, CSitemDocumentUploadDtoList);
-                    }
-                    rfqCSItems.Upload = _mapper.Map<List<DocumentUpload>>(files);
+                    //if (rfqCSItemDto[i].Upload != null && rfqCSItemDto[i].Upload.Count > 0)
+                    //{
+                    //    files = CoCDocumentSave(rfqCSItemDto, createRfqCS, rfqCSItems.Id.ToString(), i, CSitemDocumentUploadDtoList);
+                    //}
+                    //rfqCSItems.Upload = _mapper.Map<List<DocumentUpload>>(files);
                     rfqCSItems.RfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqCSItemDto[i].RfqCSDeliverySchedule);
                     rfqCustomerSupportLists.Add(rfqCSItems);
 
@@ -1596,6 +1596,145 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError($"Something went wrong inside CreateRfqCustomerSupport action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateRfqCustomerSupportItemFileUpload([FromBody] List<DocumentUploadPostDto> documentUploadPostDtos)
+        {
+            ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
+            try
+            {
+                if (documentUploadPostDtos is null)
+                {
+                    _logger.LogError("RfqCustomerSupportItemFile object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "RfqCustomerSupportItemFile object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid RfqCustomerSupportItemFile object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                List<string>? id_s = new List<string>();
+                var FileUploadDetails = documentUploadPostDtos;
+                foreach (var FileUploadDetail in FileUploadDetails)
+                {
+                    Guid guids = Guid.NewGuid();
+                    byte[] fileContent = Convert.FromBase64String(FileUploadDetail.FileByte);
+                    //var itemNumber = fileUploadPostDtos.ItemNumber;
+                    string fileName = guids.ToString() + "_" + FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                    //Guid guids = Guid.NewGuid();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "CSItems", fileName);
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                        var uploadedFile = new DocumentUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            ParentId = "Rfq",
+                            DocumentFrom = "RfqCustomerSupportItemFile Document",
+                            FileByte = FileUploadDetail.FileByte
+                        };
+                        _documentUploadRepository.CreateUploadDocument(uploadedFile);
+                        _documentUploadRepository.SaveAsync();                        
+                        id_s.Add(uploadedFile.Id.ToString());
+                    }
+                }
+                serviceResponse.Data = id_s;
+                serviceResponse.Message = " RfqCustomerSupportItemFile Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside RfqCustomerSupportItemFile action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDownloadUrlDetailsforRfqCustomerSupportItemFiles(string fileids)
+        {
+            ServiceResponse<List<DocumentUploadDto>> serviceResponse = new ServiceResponse<List<DocumentUploadDto>>();
+            try
+            {
+                string serverKey = GetServerKey();
+                var itemsFiles = await _documentUploadRepository.GetDownloadUrlDetails(fileids);
+                if (itemsFiles == null)
+                {
+                    _logger.LogError($"DownloadDetail with id: {fileids}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {fileids}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid RfqCustomerSupport UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid RfqCustomerSupport UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<DocumentUploadDto> fileUploads = new List<DocumentUploadDto>();
+                if (itemsFiles != null)
+                {
+                    foreach (var fileUploadDetails in itemsFiles)
+                    {
+                        DocumentUploadDto fileUploadDto = _mapper.Map<DocumentUploadDto>(fileUploadDetails);
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                        }
+                        else
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                        }
+                                                
+                        fileUploads.Add(fileUploadDto);
+                    }
+                }
+                _logger.LogInfo($"Returned DownloadDetail with id: {fileids}");
+                
+                serviceResponse.Data = fileUploads;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ItemmasterFiles action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2302,50 +2441,50 @@ namespace Tips.SalesService.Api.Controllers
 
         //Delete RFq
 
-        private List<DocumentUpload> CocDocumentSave(List<RfqCustomerSupportItemUpdateDto>? grinPartsDto, RfqCustomerSupport grins, string number, int i, List<DocumentUpload> grinPartsDocumentUploadDtoList)
-        {
-            var cocUploadDocs = grinPartsDto[i].Upload;
+        //private List<DocumentUpload> CocDocumentSave(List<RfqCustomerSupportItemUpdateDto>? grinPartsDto, RfqCustomerSupport grins, string number, int i, List<DocumentUpload> grinPartsDocumentUploadDtoList)
+        //{
+        //    var cocUploadDocs = grinPartsDto[i].Upload;
 
-            foreach (var cocUpload in cocUploadDocs)
-            {
-                var fileContent = cocUpload.FileByte;
+        //    foreach (var cocUpload in cocUploadDocs)
+        //    {
+        //        var fileContent = cocUpload.FileByte;
 
-                string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
-                string FileExt = Path.GetExtension(fileName).ToUpper();
+        //        string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
+        //        string FileExt = Path.GetExtension(fileName).ToUpper();
 
-                //Guid guid = Guid.NewGuid();
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "CSItems",/* guid.ToString() + "_" +*/ fileName);
-                using (MemoryStream ms = new MemoryStream(fileContent))
-                {
-                    ms.Position = 0;
-                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                    {
-                        ms.WriteTo(fileStream);
-                    }
-                    var uploadedFile = new DocumentUpload
-                    {
-                        FileName = fileName,
-                        FileExtension = FileExt,
-                        FilePath = filePath,
-                        ParentId = number,          //It Should be changed to GrinPartsId
-                        DocumentFrom = "CSItemDocument",
-                    };
+        //        //Guid guid = Guid.NewGuid();
+        //        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "CSItems",/* guid.ToString() + "_" +*/ fileName);
+        //        using (MemoryStream ms = new MemoryStream(fileContent))
+        //        {
+        //            ms.Position = 0;
+        //            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+        //            {
+        //                ms.WriteTo(fileStream);
+        //            }
+        //            var uploadedFile = new DocumentUpload
+        //            {
+        //                FileName = fileName,
+        //                FileExtension = FileExt,
+        //                FilePath = filePath,
+        //                ParentId = number,          //It Should be changed to GrinPartsId
+        //                DocumentFrom = "CSItemDocument",
+        //            };
 
-                    _documentUploadRepository.CreateUploadDocument(uploadedFile);
-                    _documentUploadRepository.SaveAsync();
+        //            _documentUploadRepository.CreateUploadDocument(uploadedFile);
+        //            _documentUploadRepository.SaveAsync();
 
-                    if (uploadedFile != null)
-                    {
-                        DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
-                        grinPartsDocumentUploadDtoList.Add(poFileDetails);
-                    }
+        //            if (uploadedFile != null)
+        //            {
+        //                DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
+        //                grinPartsDocumentUploadDtoList.Add(poFileDetails);
+        //            }
 
-                }
-                //  grins.RfqCustomerSupportItems[i].Upload = grinPartsDocumentUploadDtoList;
+        //        }
+        //        //  grins.RfqCustomerSupportItems[i].Upload = grinPartsDocumentUploadDtoList;
 
-            }
-            return grinPartsDocumentUploadDtoList;
-        }
+        //    }
+        //    return grinPartsDocumentUploadDtoList;
+        //}
 
         [HttpPut]
         public async Task<IActionResult> UpdateRfqCustomerSupport([FromBody] RfqCustomerSupportUpdateDto rfqCustomerSupportUpdateDto)
@@ -2431,13 +2570,13 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     for (int i = 0; i < rfqCSItemDto.Count; i++)
                     {
-                        List<DocumentUpload>? files = null;
+                        //List<DocumentUpload>? files = null;
                         RfqCustomerSupportItems rfqCSItemDetail = _mapper.Map<RfqCustomerSupportItems>(rfqCSItemDto[i]);
-                        if (rfqCSItemDto[i].Upload != null && rfqCSItemDto[i].Upload.Count > 0)
-                        {
-                            files = CocDocumentSave(rfqCSItemDto, CS, rfqCSItemDetail.Id.ToString(), i, CSitemDocumentUploadDtoList);
-                        }
-                        rfqCSItemDetail.Upload = _mapper.Map<List<DocumentUpload>>(files);
+                        //if (rfqCSItemDto[i].Upload != null && rfqCSItemDto[i].Upload.Count > 0)
+                        //{
+                        //    files = CocDocumentSave(rfqCSItemDto, CS, rfqCSItemDetail.Id.ToString(), i, CSitemDocumentUploadDtoList);
+                        //}
+                        //rfqCSItemDetail.Upload = _mapper.Map<List<DocumentUpload>>(files);
                         rfqCSItemDetail.RfqCSDeliverySchedule = _mapper.Map<List<RfqCSDeliverySchedule>>(rfqCSItemDto[i].RfqCSDeliverySchedule);
                         rfqCSItemDetail.Id = 0;
                         rfqCsItemList.Add(rfqCSItemDetail);
