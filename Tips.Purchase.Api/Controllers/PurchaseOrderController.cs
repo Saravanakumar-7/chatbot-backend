@@ -429,6 +429,51 @@ namespace Tips.Purchase.Api.Controllers
             }
 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> Get_Tras_POReport_ConfirmationDate([FromQuery] PagingParameter pagingParameter)
+        {
+
+            ServiceResponse<IEnumerable<Tras_PO_ConfirmationDate>> serviceResponse = new ServiceResponse<IEnumerable<Tras_PO_ConfirmationDate>>();
+
+            try
+            {
+                var products = await _repository.Get_Tras_POReport_ConfirmationDate(pagingParameter);
+
+                var metadata = new
+                {
+                    products.TotalCount,
+                    products.PageSize,
+                    products.CurrentPage,
+                    products.HasNext,
+                    products.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
+                _logger.LogInfo("Returned all Get_Tras_POReport_ConfirmationDate");
+                var result = _mapper.Map<IEnumerable<Tras_PO_ConfirmationDate>>(products);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Get_Tras_POReport_ConfirmationDate Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+
+
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetPurchaseOrderSPReportWithParam([FromBody] PurchaseOrderSPReportDTO purchaseOrderSPReport)
 

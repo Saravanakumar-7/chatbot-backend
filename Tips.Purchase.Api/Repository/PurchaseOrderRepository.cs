@@ -1258,6 +1258,15 @@ namespace Tips.Purchase.Api.Repository
 
             return results;
         }
+
+        public async Task<PagedList<Tras_PO_ConfirmationDate>> Get_Tras_POReport_ConfirmationDate(PagingParameter pagingParameter)
+        {
+            var results = _tipsPurchaseDbContext.Set<Tras_PO_ConfirmationDate>()
+                    .FromSqlInterpolated($"CALL Purchaseorder_with_confirmationdates")
+                    .ToList();
+
+            return PagedList<Tras_PO_ConfirmationDate>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
     }
 
     public class UploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository
