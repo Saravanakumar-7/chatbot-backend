@@ -355,11 +355,11 @@ namespace Tips.SalesService.Api.Controllers
                 //Taking the Sourcing PP And is Primary Vendor Details 
                 List<RfqSourcingPPdetails> rfqSourcingPPdetailsList = new List<RfqSourcingPPdetails>();
                 foreach (var ppinsource in createRfqSource.RfqSourcingItems)
-                {
-                    RfqSourcingPPdetails rfqSourcingPPdetails = new RfqSourcingPPdetails();
-                    rfqSourcingPPdetails.PPItemNumber = ppinsource.ItemNumber;
-                    if (ppinsource.RfqSourcingVendors != null)
+                {                   
+                    if (ppinsource.RfqSourcingVendors != null && ppinsource.RfqSourcingVendors.Count!=0)
                     {
+                        RfqSourcingPPdetails rfqSourcingPPdetails = new RfqSourcingPPdetails();
+                        rfqSourcingPPdetails.PPItemNumber = ppinsource.ItemNumber;
                         foreach (var ppvendor in ppinsource.RfqSourcingVendors)
                         {
                             if (ppvendor.Primary == true)
@@ -400,10 +400,10 @@ namespace Tips.SalesService.Api.Controllers
                     //var rfqEnggItemsDetails = await _rfqRepository.GetRfqEnggItemByItemNumber(rfqCustomerIdObjectData.data.fgItemNumber);
                     fgitemnumber.LandedPrice = rfqCustomerIdObjectData.data.finalLandindPrice;
                     fgitemnumber.MOQCost = rfqCustomerIdObjectData.data.finalMoqcost;
-                    await _rfqEnggItemRepository.UpdateRfqEnggItemLandedandMOQ(fgitemnumber);
-                    _rfqEnggItemRepository.SaveAsync();
+                    await _rfqEnggItemRepository.UpdateRfqEnggItemLandedandMOQ(fgitemnumber);                    
                 }
                 _repository.SaveAsync();
+                _rfqEnggItemRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "RfqSourcing Created Successfully";
                 serviceResponse.Success = true;
@@ -480,11 +480,11 @@ namespace Tips.SalesService.Api.Controllers
                 //Taking the Sourcing PP And is Primary Vendor Details 
                 List<RfqSourcingPPdetails> rfqSourcingPPdetailsList = new List<RfqSourcingPPdetails>();
                 foreach (var ppinsource in updateData.RfqSourcingItems)
-                {
-                    RfqSourcingPPdetails rfqSourcingPPdetails = new RfqSourcingPPdetails();
-                    rfqSourcingPPdetails.PPItemNumber = ppinsource.ItemNumber;
-                    if (ppinsource.RfqSourcingVendors != null)
+                {                   
+                    if (ppinsource.RfqSourcingVendors != null && ppinsource.RfqSourcingVendors.Count!=0)
                     {
+                        RfqSourcingPPdetails rfqSourcingPPdetails = new RfqSourcingPPdetails();
+                        rfqSourcingPPdetails.PPItemNumber = ppinsource.ItemNumber;
                         foreach (var ppvendor in ppinsource.RfqSourcingVendors)
                         {
                             if (ppvendor.Primary == true)
@@ -525,11 +525,11 @@ namespace Tips.SalesService.Api.Controllers
                     //var rfqEnggItemsDetails = await _rfqRepository.GetRfqEnggItemByItemNumber(rfqCustomerIdObjectData.data.fgItemNumber);
                     fgitemnumber.LandedPrice = rfqCustomerIdObjectData.data.finalLandindPrice;
                     fgitemnumber.MOQCost = rfqCustomerIdObjectData.data.finalMoqcost;
-                    await _rfqEnggItemRepository.UpdateRfqEnggItemLandedandMOQ(fgitemnumber);
-                    _rfqEnggItemRepository.SaveAsync();
+                    await _rfqEnggItemRepository.UpdateRfqEnggItemLandedandMOQ(fgitemnumber);                    
                 }               
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
+                _rfqEnggItemRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "RfqSourcing Updated Successfully";
                 serviceResponse.Success = true;

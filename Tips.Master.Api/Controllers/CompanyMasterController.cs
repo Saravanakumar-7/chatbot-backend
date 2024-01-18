@@ -117,7 +117,7 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<CompanyOtherUploadsDto> serviceResponse = new ServiceResponse<CompanyOtherUploadsDto>();
             try
             {
-                var otherUploads=_repository.CompanyMasterOtherUploads.GetCompanyMasterOtherUploadsbyCompanyId(CompanyId);
+                var otherUploads=await _repository.CompanyMasterOtherUploads.GetCompanyMasterOtherUploadsbyCompanyId(CompanyId);
                 if (otherUploads == null)
                 {
                     serviceResponse.Data = null;

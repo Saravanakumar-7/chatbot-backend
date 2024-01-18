@@ -234,12 +234,12 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetVendorMasterOtherUploadsbyCompanyId(int VendorId)
+        public async Task<IActionResult> GetVendorMasterOtherUploadsbyVendorId(int VendorId)
         {
             ServiceResponse<VendorOtherUploadsDto> serviceResponse = new ServiceResponse<VendorOtherUploadsDto>();
             try
             {
-                var otherUploads = _repository.VendorOtherUploads.GetVendorMasterOtherUploadsbyVendorId(VendorId);
+                var otherUploads =await _repository.VendorOtherUploads.GetVendorMasterOtherUploadsbyVendorId(VendorId);
                 if (otherUploads == null)
                 {
                     serviceResponse.Data = null;
