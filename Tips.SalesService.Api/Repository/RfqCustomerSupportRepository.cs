@@ -161,7 +161,7 @@ namespace Tips.SalesService.Api.Repository
                             .Include(x => x.RfqCustomerSupportItems)
                             .ThenInclude(x => x.RfqCSDeliverySchedule)
                             .Include(x => x.RfqCustomerSupportItems)
-                            .ThenInclude(x => x.Upload)
+                            //.ThenInclude(x => x.Upload)
                             .Include(x => x.RfqCustomerSupportNotes)
 
                            .FirstOrDefaultAsync(); 
