@@ -56,8 +56,23 @@ namespace Repository
                 await TipsMasterDbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
-                int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+                //int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
+                //int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+
+                DateTime currentDate = DateTime.Now;
+                DateTime financeYearStart;
+
+                if (currentDate.Month >= 4) // Check if the current date is after or equal to April
+                {
+                    financeYearStart = new DateTime(currentDate.Year, 4, 1);
+                }
+                else
+                {
+                    financeYearStart = new DateTime(currentDate.Year - 1, 4, 1);
+                }
+
+                int currentYear = financeYearStart.Year % 100; // Get the last two digits of the current finance year
+                int nextYear = (financeYearStart.Year + 1) % 100; // Get the last two digits of the next finance year
 
                 return $"ASPL|CS|{currentYear:D2}-{nextYear:D2}|{customerNumberEntity.CurrentValue:D3}";
             }
