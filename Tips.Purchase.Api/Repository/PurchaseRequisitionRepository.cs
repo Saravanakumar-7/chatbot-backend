@@ -849,23 +849,20 @@ namespace Tips.Purchase.Api.Repository
             }
         }
 
-        public async Task<int?> GetPrItemClosedStatusCount(string prNo)
+        public async Task<PrStatus> GetPrItemClosedStatusCount(string prNo)
         {
             var prId = await _tipsPurchaseDbContexts.PurchaseRequisitions
                .Where(x => x.PrNumber == prNo)
                .Select(x => x.Id)
                .FirstOrDefaultAsync();
-            if (prId != 0)
-            {
-                var prStatusCount = _tipsPurchaseDbContexts.PrItems.Where(x => x.PurchaseRequistionId == prId
-                                                && x.PrStatus != PrStatus.Closed).Count();
-
-                return prStatusCount;
-            }
-            else
-            {
-                return null;
-            }
+            
+                PrStatus status=PrStatus.Open;
+                var prCount=_tipsPurchaseDbContexts.PrItems.Where(x => x.PurchaseRequistionId == prId).Count();
+                var prStatusCount =_tipsPurchaseDbContexts.PrItems.Where(x => x.PurchaseRequistionId == prId && x.PrStatus != PrStatus.Closed).Count();
+                if (prStatusCount == 0) status = PrStatus.Closed;
+                else if (prCount > prStatusCount) status = PrStatus.PartiallyClosed;
+                return status;
+                        
         }
         public Task<IEnumerable<PrItem>> GetAllActivePrItems()
         {

@@ -360,12 +360,12 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetCustomerMasterOtherUploadsbyCompanyId(int CustomerId)
+        public async Task<IActionResult> GetCustomerMasterOtherUploadsbyCustomerId(int CustomerId)
         {
             ServiceResponse<CustomerOtherUploadsDto> serviceResponse = new ServiceResponse<CustomerOtherUploadsDto>();
             try
             {
-                var otherUploads = _repository.CustomerMasterOtherUploads.GetCustomerMasterOtherUploadsbyCustomerId(CustomerId);
+                var otherUploads = await _repository.CustomerMasterOtherUploads.GetCustomerMasterOtherUploadsbyCustomerId(CustomerId);
                 if (otherUploads == null)
                 {
                     serviceResponse.Data = null;

@@ -63,9 +63,8 @@ namespace Tips.SalesService.Api.Repository
         }
 
         public async Task<RfqSourcing> GetRfqSourcingById(int id)
-
         {
-            var rfqSourcingById = await _tipsSalesServiceDbContext.RfqSourcings.Where(x => x.Id == id)
+            var rfqSourcingById = await _tipsSalesServiceDbContext.RfqSourcings.AsNoTracking().Where(x => x.Id == id)
                                .Include(t => t.RfqSourcingItems)
                                .ThenInclude(x => x.RfqSourcingVendors)
                             .FirstOrDefaultAsync();

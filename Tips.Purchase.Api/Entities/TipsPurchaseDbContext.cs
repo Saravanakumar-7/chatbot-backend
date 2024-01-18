@@ -34,10 +34,12 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PRItemsDocumentUpload> PRItemsDocumentUploads { get; set; }
         public DbSet<PurchaseOrderSPReport> PurchaseOrderSPReports { get; set; }
         public DbSet<Tras_POSPReport> Tras_POSPReports { get; set; }
+        public DbSet<Tras_PO_ConfirmationDate> Tras_POReport_ConfirmationDates { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PurchaseOrderSPReport>().HasNoKey();
             modelBuilder.Entity<Tras_POSPReport>().HasNoKey();
+            modelBuilder.Entity<Tras_PO_ConfirmationDate>().HasNoKey();
         }
     }
 }
