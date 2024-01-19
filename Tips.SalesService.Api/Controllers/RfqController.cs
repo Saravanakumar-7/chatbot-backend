@@ -1710,13 +1710,13 @@ namespace Tips.SalesService.Api.Controllers
                         DocumentUploadDto fileUploadDto = _mapper.Map<DocumentUploadDto>(fileUploadDetails);
                         if (serverKey == "avision")
                         {
-                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
-                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                            var baseUrl = $"{_config["RfqAPI"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/Rfq/DownloadFile?Filename={fileUploadDto.FileName}";
                         }
                         else
                         {
-                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
-                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                            var baseUrl = $"{_config["RfqAPI"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/Rfq/DownloadFile?Filename={fileUploadDto.FileName}";
                         }
                                                 
                         fileUploads.Add(fileUploadDto);
