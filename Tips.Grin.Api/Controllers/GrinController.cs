@@ -1081,12 +1081,12 @@ namespace Tips.Grin.Api.Controllers
                         DocumentUploadDto fileUploadDto = _mapper.Map<DocumentUploadDto>(fileUploadDetails);
                         if (serverKey == "avision")
                         {
-                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            var baseUrl = $"{_config["GrinUrl"]}";
                             fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/Grin/DownloadFile?Filename={fileUploadDto.FileName}";
                         }
                         else
                         {
-                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            var baseUrl = $"{_config["GrinUrl"]}";
                             fileUploadDto.DownloadUrl = $"{baseUrl}/api/Grin/DownloadFile?Filename={fileUploadDto.FileName}";
                         }
                         fileUploads.Add(fileUploadDto);
