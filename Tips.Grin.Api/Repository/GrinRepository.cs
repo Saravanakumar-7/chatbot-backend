@@ -463,9 +463,7 @@ namespace Tips.Grin.Api.Repository
         public async Task<int?> CreateUploadDocumentGrin(DocumentUpload documentUpload)
         {
             documentUpload.CreatedBy = _createdBy;
-            documentUpload.CreatedOn = DateTime.Now;
-           // documentUpload.LastModifiedBy = _createdBy;
-           // documentUpload.LastModifiedOn = DateTime.Now;
+            documentUpload.CreatedOn = DateTime.Now;        
 
             var result = await Create(documentUpload);
             return result.Id;
@@ -520,7 +518,30 @@ namespace Tips.Grin.Api.Repository
 
             return grinUploadDocFileNameById;
         }
+        public async Task<List<DocumentUploadDto>> GetDownloadUrlDetails(string FileIds)
+        {
+            List<DocumentUploadDto> fileUploads = new List<DocumentUploadDto>();
+            if (FileIds != null)
+            {
+                string[]? ids = FileIds.Split(',');
 
+                for (int i = 0; i < ids.Count(); i++)
+                {
+                    DocumentUploadDto? getDownloadDetails = await _tipsGrinDbContext.DocumentUploads
+                                .Where(b => b.Id == Convert.ToInt32(ids[i]))
+                                .Select(x => new DocumentUploadDto()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath
+                                }).FirstOrDefaultAsync();
+                    if (getDownloadDetails != null)
+                    fileUploads.Add(getDownloadDetails);
+                }
+            }
+            return fileUploads;
+        }
     }
     
 }

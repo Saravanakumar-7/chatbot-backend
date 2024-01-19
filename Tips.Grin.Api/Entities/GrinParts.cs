@@ -75,7 +75,7 @@ namespace Tips.Grin.Api.Entities
 
         public bool IsCOCUploaded { get; set; } = false;
 
-        public List<DocumentUpload>? CoCUpload { get; set; }
+        public string? CoCUpload { get; set; }
 
         [Precision(13, 3)]
         public decimal? SGST { get; set; }
