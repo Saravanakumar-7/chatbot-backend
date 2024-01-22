@@ -1311,8 +1311,8 @@ namespace Tips.SalesService.Api.Controllers
 
         //getsalesorderdetailbyitemnoandsalesorderId
 
-        [HttpGet]
-        public async Task<IActionResult> GetFGSalesOrderDetailsByItemNo(string itemNumber, string projectType)
+        [HttpPost]
+        public async Task<IActionResult> GetFGSalesOrderDetailsByItemNo([FromBody]string itemNumber, string projectType)
         {
             ServiceResponse<ItemDetailsForShopOrderDto> serviceResponse = new ServiceResponse<ItemDetailsForShopOrderDto>();
             try
