@@ -1317,8 +1317,10 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<ItemDetailsForShopOrderDto> serviceResponse = new ServiceResponse<ItemDetailsForShopOrderDto>();
             try
             {
-                var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
-                    "GetAllProductionBomFGListByItemNumber?", "itemNumber=", itemNumber));
+                string item = JsonConvert.SerializeObject(itemNumber);
+                var content = new StringContent(item, Encoding.UTF8, "application/json");
+                var bomDetails = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"],
+                    "GetAllProductionBomFGListByItemNumber?"), content);
 
                 var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
                 dynamic bomDetailsStringData = JsonConvert.DeserializeObject(bomDetailsString);
