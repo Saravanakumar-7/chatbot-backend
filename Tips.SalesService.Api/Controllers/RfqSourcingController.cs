@@ -470,8 +470,9 @@ namespace Tips.SalesService.Api.Controllers
                         rfqSourceItemList.Add(sourceItemDetail);
                     }
                 }
+                getRfqSourcings.RfqSourcingItems = rfqSourceItemList;
                 var updateData = _mapper.Map(rfqSourcingUpdateDto, getRfqSourcings);
-                updateData.RfqSourcingItems = rfqSourceItemList;          
+                //updateData.RfqSourcingItems = rfqSourceItemList;          
                 string result = await _repository.UpdateRfqSourcing(updateData);
                 _rfqRepository.Update(rfqIsSourcingUpdate);
 
@@ -530,6 +531,7 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 _rfqEnggItemRepository.SaveAsync();
+                _rfqRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "RfqSourcing Updated Successfully";
                 serviceResponse.Success = true;
