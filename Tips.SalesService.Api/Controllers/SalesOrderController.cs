@@ -1311,13 +1311,13 @@ namespace Tips.SalesService.Api.Controllers
 
         //getsalesorderdetailbyitemnoandsalesorderId
 
-        [HttpGet]
-        public async Task<IActionResult> GetFGSalesOrderDetailsByItemNo(string itemNumber, string projectType)
+        [HttpPost]
+        public async Task<IActionResult> GetFGSalesOrderDetailsByItemNo([FromBody] ItemdetailsDto itemdetailsDto)
         {
             ServiceResponse<ItemDetailsForShopOrderDto> serviceResponse = new ServiceResponse<ItemDetailsForShopOrderDto>();
             try
             {
-                string item = JsonConvert.SerializeObject(itemNumber);
+                string item = JsonConvert.SerializeObject(itemdetailsDto.itemNumber);
                 var content = new StringContent(item, Encoding.UTF8, "application/json");
                 var bomDetails = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"],
                     "GetAllProductionBomFGListByItemNumber?"), content);
@@ -1335,10 +1335,10 @@ namespace Tips.SalesService.Api.Controllers
                 itemDetailsDto.BomVersionNo = bomVersionNo[0] == 0 ? null : bomVersionNo;
 
 
-                var projectSODetails = await _repository.GetProjectDetailsByItemNo(itemNumber, projectType);
+                var projectSODetails = await _repository.GetProjectDetailsByItemNo(itemdetailsDto.itemNumber, itemdetailsDto.projectType);
                 foreach (var project in projectSODetails)
                 {
-                    project.SalesOrderQtyDetails = await _repository.GetSalesOrderQtyDetailsByItemNo(itemNumber, project.ProjectNumber);
+                    project.SalesOrderQtyDetails = await _repository.GetSalesOrderQtyDetailsByItemNo(itemdetailsDto.itemNumber, project.ProjectNumber);
                 }
                 itemDetailsDto.ProjectSODetails = projectSODetails;
 
