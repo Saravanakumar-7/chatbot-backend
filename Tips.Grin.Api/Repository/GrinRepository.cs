@@ -111,14 +111,14 @@ namespace Tips.Grin.Api.Repository
         //    }
         //}
 
-        public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReport()
+        public async Task<PagedList<Grin_ReportSP>> GetGrinSPReport(PagingParameter pagingParameter)
         {
 
             var results = _tipsGrinDbContext.Set<Grin_ReportSP>()
                       .FromSqlInterpolated($"CALL Grin_Report")
                       .ToList();
 
-            return results;
+            return PagedList<Grin_ReportSP>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
         public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string GrinNumber, string VendorName, string PONumber, string KPN, string MPN, string Warehouse, string Location)
         {

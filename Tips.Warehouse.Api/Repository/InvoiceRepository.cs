@@ -97,13 +97,13 @@ namespace Tips.Warehouse.Api.Repository
             return results;
         }
 
-        public async Task<IEnumerable<InvoiceSPReport>> InvoiceSPReport()
+        public async Task<PagedList<InvoiceSPReport>> InvoiceSPReport(PagingParameter pagingParameter)
         {
             var results = _tipsWarehouseDbContext.Set<InvoiceSPReport>()
                         .FromSqlInterpolated($"CALL Invoice_Report")
                         .ToList();
 
-            return results;
+            return PagedList<InvoiceSPReport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
         public async Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportWithParameter(string InvoiceNumber, string DONumber, string LeadId, string CustomerName, string CustomerAliasName, string SalesOrderNumber, string Location, string Warehouse, string KPN, string MPN, string IssuedTo)
         {

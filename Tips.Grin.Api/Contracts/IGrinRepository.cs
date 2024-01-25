@@ -34,8 +34,7 @@ namespace Tips.Grin.Api.Contracts
         Task<int?> GetGrinbinningStatusCount(string grinNo);
         Task<string> GenerateGrinNumberForAvision();
         Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string GrinNumber, string VendorName, string PONumber, string KPN, string MPN, string Warehouse, string Location);
-        //Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string GrinNumber, string VendorName, string PONumber, string KPN, string MPN, string Warehouse, string Location);
-        Task<IEnumerable<Grin_ReportSP>> GetGrinSPReport();
+        Task<PagedList<Grin_ReportSP>> GetGrinSPReport(PagingParameter pagingParameter);
         Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
     }
 }

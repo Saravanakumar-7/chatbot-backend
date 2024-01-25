@@ -686,5 +686,46 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> PickListProductionSPReport([FromQuery] PickListProductionDTO pickListProduction)
+
+        {
+            ServiceResponse<IEnumerable<PickList>> serviceResponse = new ServiceResponse<IEnumerable<PickList>>();
+            try
+            {
+                var products = await _materialIssueRepository.PickListProductionSPReport(pickListProduction?.ShopOrderNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PickListProductionSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PickListProduction hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var result = _mapper.Map<IEnumerable<PickListProductionDTO>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PickListProduction Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside PickListProduction action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace Tips.Warehouse.Api
             CreateMap<DeliveryOrderSPReport, DeliveryOrderSPReportDTO>().ReverseMap();
             CreateMap<InvoiceSPReport, InvoiceSPReportDTO>().ReverseMap();
             CreateMap<LocationTransferSPReport, LocationTransferSPReportDTO>().ReverseMap();
+            CreateMap<OpenDeliveryOrderSPReport, OpenDeliveryOrderSPReportDto>().ReverseMap();
 
             CreateMap<Invoice, InvoiceDto>().ReverseMap();
             CreateMap<Invoice, InvoicePostDto>().ReverseMap();

@@ -114,7 +114,7 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
-        public async Task<IEnumerable<DeliveryOrderSPReport>> GetDeliveryOrderSPReports(string DONumber, string CustomerName, string CustomerAliasName, string CustomerID, string SalesOrderNumber, string ProductType, string Warehouse, string Location, string KPN, string MPN)
+        public async Task<IEnumerable<DeliveryOrderSPReport>> GetDeliveryOrderSPReportsWithParam(string DONumber, string CustomerName, string CustomerAliasName, string CustomerID, string SalesOrderNumber, string ProductType, string Warehouse, string Location, string KPN, string MPN)
         {
 
             if (string.IsNullOrWhiteSpace(DONumber) || string.IsNullOrWhiteSpace(CustomerName)|| string.IsNullOrWhiteSpace(CustomerAliasName)
@@ -133,13 +133,14 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
-        public async Task<IEnumerable<DeliveryOrderSPReport>> DeliveryOrderSPReport()
+        public async Task<PagedList<DeliveryOrderSPReport>> DeliveryOrderSPReport(PagingParameter pagingParameter)
         {
             var results = _tipsWarehouseDbContext.Set<DeliveryOrderSPReport>()
                         .FromSqlInterpolated($"CALL Delivery_Order_Report")
                         .ToList();
 
-            return results;
+            return PagedList<DeliveryOrderSPReport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+
         }
         public async Task<IEnumerable<DeliveryOrderSPReport>> DeliveryOrderSPReportdate(DateTime? FromDate, DateTime? ToDate)
         {

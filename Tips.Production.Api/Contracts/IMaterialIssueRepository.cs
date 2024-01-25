@@ -20,6 +20,7 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<MaterialIssue>> SearchMaterialIssue([FromQuery] SearchParamess searchParammes);
         Task<IEnumerable<MaterialIssue>> SearchMaterialIssueDate([FromQuery] SearchDateparames searchDatesParams);
         Task<IEnumerable<MaterialIssueSPReport>> MaterialIssueSPReport();
+        Task<IEnumerable<PickList>> PickListProductionSPReport(string? ShopOrderNumber);
 
     }
 }

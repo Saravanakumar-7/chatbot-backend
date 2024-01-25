@@ -91,11 +91,7 @@ namespace Tips.Production.Api.Repository
 
             return PagedList<MaterialIssue>.ToPagedList(materialIssueDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            //var materialIssueDetails = FindAll().OrderByDescending(x => x.Id)
-            //    .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ShopOrderNumber.Contains(searchParams.SearchValue) ||
-            //       inv.ItemNumber.Contains(searchParams.SearchValue) || inv.ShopOrderQty.Equals(int.Parse(searchParams.SearchValue)))));
-
-            //return PagedList<MaterialIssue>.ToPagedList(materialIssueDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+           
         }
 
 
@@ -227,5 +223,14 @@ namespace Tips.Production.Api.Repository
             return materialIssueDetails;
         }
 
+        public async Task<IEnumerable<PickList>> PickListProductionSPReport(string? ShopOrderNumber)
+        {
+            var result = _tipsProductionDbContext
+          .Set<PickList>()
+          .FromSqlInterpolated($"CALL Pick_list_materialissue3({ShopOrderNumber})")
+          .ToList();
+
+            return result;
+        }
     }
 }

@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 using Tips.Warehouse.Api.Repository;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 using System.Security.Claims;
+using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
+using System.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -85,26 +87,40 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> OpenDeliveryOrderSPReport()
+        public async Task<IActionResult> OpenDeliveryOrderSPReport([FromQuery]PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>>();
             try
             {
-                var products = await _repository.OpenDeliveryOrderSPReport();
+                var products = await _repository.OpenDeliveryOrderSPReport(pagingParameter);
+
+                var metadata = new
+                {
+                    products.TotalCount,
+                    products.PageSize,
+                    products.CurrentPage,
+                    products.HasNext,
+                    products.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
+                _logger.LogInfo("Returned all OpenDeliveryOrderSPReport");
 
                 if (products == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"OpenDeliveryOrder hasn't been found.";
+                    serviceResponse.Message = $"OpenDeliveryOrderSPReport hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"OpenDeliveryOrder hasn't been found in db.");
+                    _logger.LogError($"OpenDeliveryOrderSPReport hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
                     serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned OpenDeliveryOrder Details";
+                    serviceResponse.Message = "Returned OpenDeliveryOrderSPReport Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -114,7 +130,7 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside OpenDeliveryOrder action";
+                serviceResponse.Message = $"Something went wrong inside OpenDeliveryOrderSPReport action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -828,16 +844,16 @@ namespace Tips.Warehouse.Api.Controllers
                 if (products == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Message = $"OpenDeliveryOrderSPReportDates hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    _logger.LogError($"OpenDeliveryOrderSPReportDates hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
                     serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned PurchaseOrder Details";
+                    serviceResponse.Message = "Returned OpenDeliveryOrderSPReportDates Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -847,60 +863,12 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside PurchaseOrder action";
+                serviceResponse.Message = $"Something went wrong inside OpenDeliveryOrderSPReportDates action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
-
-        [HttpGet()] // Adjust your route as needed
-        public async Task<IActionResult> OpenDeliveryOrderSPReportWithParam(
-            [FromQuery] string? OpenDONumber,
-            [FromQuery] string? CustomerName,
-            [FromQuery] string? CustomerAliasName,
-            [FromQuery] string? LeadId,
-            [FromQuery] string? IssuedTo,
-            [FromQuery] string? KPN,
-            [FromQuery] string? MPN,
-            [FromQuery] string? Warehouse,
-            [FromQuery] string? Location,
-            [FromQuery] string? ODOType
-)
-        {
-            ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>>();
-            try
-            {
-                var products = await _repository.OpenDeliveryOrderSPReportWithParam(OpenDONumber, CustomerName, CustomerAliasName, LeadId, IssuedTo, KPN, MPN, Warehouse, Location, ODOType);
-
-            if (products == null)
-            {
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"PurchaseOrder hasn't been found.";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                _logger.LogError($"PurchaseOrder hasn't been found in db.");
-                return NotFound(serviceResponse);
-            }
-            else
-            {
-                serviceResponse.Data = products;
-                serviceResponse.Message = "Returned PurchaseOrder Details";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-        }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside PurchaseOrder action";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-    }
-}
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOpenDeliveryOrder(int id, [FromBody] OpenDeliveryOrderDtoUpdate openDeliveryOrderDtoUpdate)
@@ -1059,5 +1027,47 @@ namespace Tips.Warehouse.Api.Controllers
             }
 
         }
+
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> OpenDeliveryOrderSPReportWithParam([FromBody] OpenDeliveryOrderSPReportDto openDeliveryOrderSPReport)
+
+        {
+            ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>>();
+            try
+            {
+                var products = await _repository.OpenDeliveryOrderSPReportWithParam(openDeliveryOrderSPReport.OpenDoNumber, openDeliveryOrderSPReport.CustomerName, openDeliveryOrderSPReport.CustomerAliasName, openDeliveryOrderSPReport.LeadId, openDeliveryOrderSPReport.IssuedTo, openDeliveryOrderSPReport.KPNno, openDeliveryOrderSPReport.MPN, openDeliveryOrderSPReport.Warehouse, openDeliveryOrderSPReport.Location, openDeliveryOrderSPReport.ODOtype);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OpenDeliveryOrderSPReportDto hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OpenDeliveryOrderSPReportDto hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var result = _mapper.Map<IEnumerable<OpenDeliveryOrderSPReportDto>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OpenDeliveryOrderSPReportDto Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside OpenDeliveryOrderSPReportDto action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 }
