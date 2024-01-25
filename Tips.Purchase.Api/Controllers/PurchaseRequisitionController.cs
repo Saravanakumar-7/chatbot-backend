@@ -1762,9 +1762,9 @@ namespace Tips.Purchase.Api.Controllers
                 }
                 else
                 {
-                    var poDetails = await _repository.GetPurchaseRequisitionById(prItemDetailByPrItemId.PurchaseRequistionId);
-                    poDetails.PrStatus = PrStatus.PartiallyClosed;
-                    await _repository.UpdatePurchaseRequisition(poDetails);
+                    var prDetails = await _repository.GetPurchaseRequisitionById(prItemDetailByPrItemId.PurchaseRequistionId);
+                    prDetails.PrStatus = PrStatus.PartiallyClosed;
+                    await _repository.UpdatePurchaseRequisition(prDetails);
                     _repository.SaveAsync();
                 }
 

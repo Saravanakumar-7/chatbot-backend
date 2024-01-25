@@ -758,7 +758,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<int?> GetSOItemOpenStatusCount(int soId)
         {
             var soItemStatusCount = _tipsSalesServiceDbContexts.SalesOrdersItems
-                                        .Where(x => x.SalesOrderId == soId && (x.StatusEnum == OrderStatus.Open || x.StatusEnum == OrderStatus.PartiallyClosed)).Count();
+                                        .Where(x => x.SalesOrderId == soId && x.StatusEnum == OrderStatus.Open).Count();
 
             return soItemStatusCount;
         }

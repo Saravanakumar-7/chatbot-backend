@@ -1300,13 +1300,26 @@ namespace Tips.Grin.Api.Controllers
         //}
 
         [HttpGet]
-        public async Task<IActionResult> GetGrinSPReport()
+        public async Task<IActionResult> GetGrinSPReport([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<Grin_ReportSP>> serviceResponse = new ServiceResponse<IEnumerable<Grin_ReportSP>>();
             try
             {
-                var products = await _repository.GetGrinSPReport();
-            if (products == null)
+                var products = await _repository.GetGrinSPReport(pagingParameter);
+
+                var metadata = new
+                {
+                    products.TotalCount,
+                    products.PageSize,
+                    products.CurrentPage,
+                    products.HasNext,
+                    products.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                _logger.LogInfo("Returned all GetGrinSPReport");
+
+                if (products == null)
             {
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Grin hasn't been found.";

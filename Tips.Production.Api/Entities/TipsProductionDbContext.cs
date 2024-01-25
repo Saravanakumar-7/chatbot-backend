@@ -13,6 +13,7 @@ namespace Tips.Production.Api.Entities
         }
         public DbSet<OQCBinningLocation> OQCBinningLocation { get; set; }
         public DbSet<OQCBinning> OQCBinning { get; set; }
+        public DbSet<PickList> PickLists { get; set; }
         public DbSet<ShopOrder> ShopOrders { get; set; }
         public DbSet<ShopOrderItem> ShopOrderItems { get; set; }
         public DbSet<ShopOrderConfirmation> ShopOrderConfirmations { get; set; }
@@ -46,6 +47,7 @@ namespace Tips.Production.Api.Entities
             modelBuilder.Entity<ShopOrderNumberSPReport>().HasNoKey();
             modelBuilder.Entity<MaterialIssueSPReport>().HasNoKey();
             modelBuilder.Entity<MaterialRequestSPReport>().HasNoKey();
+            modelBuilder.Entity<PickList>().HasNoKey();
             // Other entity configurations can be added here
 
             base.OnModelCreating(modelBuilder);

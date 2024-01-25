@@ -463,12 +463,25 @@ namespace Tips.Warehouse.Api.Controllers
 }
 
         [HttpGet]
-        public async Task<IActionResult> InvoiceSPReport()
+        public async Task<IActionResult> InvoiceSPReport([FromQuery ]PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<InvoiceSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSPReport>>();
             try
             {
-                var products = await _invoiceRepository.InvoiceSPReport();
+                var products = await _invoiceRepository.InvoiceSPReport(pagingParameter);
+                var metadata = new
+                {
+                    products.TotalCount,
+                    products.PageSize,
+                    products.CurrentPage,
+                    products.HasNext,
+                    products.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
+                _logger.LogInfo("Returned all InvoiceSPReport");
                 if (products == null)
                 {
                     serviceResponse.Data = null;

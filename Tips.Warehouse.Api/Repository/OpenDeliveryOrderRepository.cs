@@ -207,13 +207,13 @@ namespace Tips.Warehouse.Api.Repository
 
         }
 
-        public async Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReport()
+        public async Task<PagedList<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReport(PagingParameter pagingParameter)
         {
             var results = _tipsWarehouseDbContext.Set<OpenDeliveryOrderSPReport>()
                         .FromSqlInterpolated($"CALL Open_Delivery_Order_Report")
                         .ToList();
 
-            return results;
+            return PagedList<OpenDeliveryOrderSPReport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<OpenDeliveryOrder> GetOpenDeliveryOrderById(int id)

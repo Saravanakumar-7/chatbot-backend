@@ -342,14 +342,14 @@ namespace Tips.Grin.Api.Entities.DTOs
         //public string PONumber { get; set; }
 
         [Required]
-        public string VendorName { get; set; }
+        public string? VendorName { get; set; }
 
         [Required]
-        public string VendorId { get; set; }
+        public string? VendorId { get; set; }
         public string? VendorNumber { get; set; }
 
         [Required]
-        public string InvoiceNumber { get; set; }
+        public string? InvoiceNumber { get; set; }
 
         public decimal? InvoiceValue { get; set; }
 
@@ -400,12 +400,12 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public string? GrinNumber { get; set; }
 
-        public string VendorName { get; set; }
+        public string? VendorName { get; set; }
 
-        public string PONumber { get; set; }
-        public string KPN { get; set; }
+        public string? PONumber { get; set; }
+        public string? KPN { get; set; }
 
-        public string MPN { get; set; }
+        public string? MPN { get; set; }
 
         public string? Warehouse { get; set; }
 

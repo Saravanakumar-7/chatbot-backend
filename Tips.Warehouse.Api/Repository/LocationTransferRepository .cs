@@ -104,13 +104,13 @@ namespace Tips.Warehouse.Api.Repository
             }
         }
 
-        public async Task<IEnumerable<LocationTransferSPReport>> LocationTransferSPReport()
+        public async Task<PagedList<LocationTransferSPReport>> LocationTransferSPReport(PagingParameter pagingParameter)
         {
             var results = _tipsWarehouseDbContext.Set<LocationTransferSPReport>()
                         .FromSqlInterpolated($"CALL Location_Transfer_Report")
                         .ToList();
 
-            return results;
+            return PagedList<LocationTransferSPReport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<IEnumerable<LocationTransfer>> SearchLocationTransferDate([FromQuery] SearchDateParam searchDatesParams)

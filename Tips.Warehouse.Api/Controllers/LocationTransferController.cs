@@ -123,14 +123,28 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> LocationTransferSPReport()
+        public async Task<IActionResult> LocationTransferSPReport([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<LocationTransferSPReport>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSPReport>>();
             try
             {
-                var products = await _locationTransferRepository.LocationTransferSPReport();
+                var products = await _locationTransferRepository.LocationTransferSPReport(pagingParameter);
 
-            if (products == null)
+                var metadata = new
+                {
+                    products.TotalCount,
+                    products.PageSize,
+                    products.CurrentPage,
+                    products.HasNext,
+                    products.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
+                _logger.LogInfo("Returned all LocationTransferSPReport");
+
+                if (products == null)
             {
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"LocationTransfer hasn't been found.";
@@ -791,9 +805,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-         
-
-        [HttpGet("LocationTransferSPReportDates")] // Adjust your route as needed
+        [HttpGet]
         public async Task<IActionResult> LocationTransferSPReportDates([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
                 ServiceResponse<IEnumerable<LocationTransferSPReport>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSPReport>>();
