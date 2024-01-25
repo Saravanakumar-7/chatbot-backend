@@ -2569,7 +2569,7 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ShortClosePoItemSatusByPoItemId(int poItemId)
+        public async Task<IActionResult> ShortClosePoItemSatusByPoItemId(int poItemId,string? ReasonforShortClose)
         {
             ServiceResponse<PoItemsDto> serviceResponse = new ServiceResponse<PoItemsDto>();
 
@@ -2586,6 +2586,8 @@ namespace Tips.Purchase.Api.Controllers
                     return Ok(serviceResponse);
                 }
 
+                string? reasonforShortClose = ReasonforShortClose;
+                poItemDetailByPoItemId.ReasonforShortClose = reasonforShortClose;
                 poItemDetailByPoItemId.PoStatus = PoStatus.ShortClosed;
                 string result = await _poItemsRepository.UpdatePOOrderItem(poItemDetailByPoItemId);
                 _poItemsRepository.SaveAsync();

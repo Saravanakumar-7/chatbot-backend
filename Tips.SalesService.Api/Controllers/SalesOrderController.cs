@@ -1803,8 +1803,15 @@ namespace Tips.SalesService.Api.Controllers
 
                 if (soItemOpenStatuscount == 0)
                 {
-                    var salesOrderDetails = await _repository.GetSalesOrderById(soItemDetailBySOItemId.SalesOrderId);//take only main model
+                    var salesOrderDetails = await _repository.GetSalesOrderById(soItemDetailBySOItemId.SalesOrderId);
                     salesOrderDetails.SOStatus = OrderStatus.ShortClosed;
+                    await _repository.UpdateSalesOrder(salesOrderDetails);
+                    _repository.SaveAsync();
+                }
+                else
+                {
+                    var salesOrderDetails = await _repository.GetSalesOrderById(soItemDetailBySOItemId.SalesOrderId);
+                    salesOrderDetails.SOStatus = OrderStatus.PartiallyClosed;
                     await _repository.UpdateSalesOrder(salesOrderDetails);
                     _repository.SaveAsync();
                 }

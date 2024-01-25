@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc; 
-
+using Microsoft.AspNetCore.Mvc;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Repository
 {
@@ -66,6 +66,13 @@ namespace Tips.Production.Api.Repository
             Update(shopOrderItem);
             string result = $"ShopOrderItem details of {shopOrderItem.Id} is updated successfully!";
             return result;
+        }
+        public async Task<int?> GetShopOrderItemOpenStatusCount(int shopOrderId)
+        {
+            var shopOrderItemOpenStatusCount = _tipsProductionDbContext.ShopOrderItems
+                                        .Where(x => x.ShopOrderId == shopOrderId && x.Status == OrderStatus.Open).Count();
+
+            return shopOrderItemOpenStatusCount;
         }
     }
 }
