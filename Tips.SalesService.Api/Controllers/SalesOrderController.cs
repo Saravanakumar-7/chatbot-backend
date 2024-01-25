@@ -1311,14 +1311,16 @@ namespace Tips.SalesService.Api.Controllers
 
         //getsalesorderdetailbyitemnoandsalesorderId
 
-        [HttpGet]
-        public async Task<IActionResult> GetFGSalesOrderDetailsByItemNo(string itemNumber, string projectType)
+        [HttpPost]
+        public async Task<IActionResult> GetFGSalesOrderDetailsByItemNo([FromBody] ItemdetailsDto itemdetailsDto)
         {
             ServiceResponse<ItemDetailsForShopOrderDto> serviceResponse = new ServiceResponse<ItemDetailsForShopOrderDto>();
             try
             {
-                var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
-                    "GetAllProductionBomFGListByItemNumber?", "itemNumber=", itemNumber));
+                string item = JsonConvert.SerializeObject(itemdetailsDto.itemNumber);
+                var content = new StringContent(item, Encoding.UTF8, "application/json");
+                var bomDetails = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"],
+                    "GetAllProductionBomFGListByItemNumber?"), content);
 
                 var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
                 dynamic bomDetailsStringData = JsonConvert.DeserializeObject(bomDetailsString);
@@ -1333,10 +1335,10 @@ namespace Tips.SalesService.Api.Controllers
                 itemDetailsDto.BomVersionNo = bomVersionNo[0] == 0 ? null : bomVersionNo;
 
 
-                var projectSODetails = await _repository.GetProjectDetailsByItemNo(itemNumber, projectType);
+                var projectSODetails = await _repository.GetProjectDetailsByItemNo(itemdetailsDto.itemNumber, itemdetailsDto.projectType);
                 foreach (var project in projectSODetails)
                 {
-                    project.SalesOrderQtyDetails = await _repository.GetSalesOrderQtyDetailsByItemNo(itemNumber, project.ProjectNumber);
+                    project.SalesOrderQtyDetails = await _repository.GetSalesOrderQtyDetailsByItemNo(itemdetailsDto.itemNumber, project.ProjectNumber);
                 }
                 itemDetailsDto.ProjectSODetails = projectSODetails;
 
@@ -1801,8 +1803,15 @@ namespace Tips.SalesService.Api.Controllers
 
                 if (soItemOpenStatuscount == 0)
                 {
-                    var salesOrderDetails = await _repository.GetSalesOrderById(soItemDetailBySOItemId.SalesOrderId);//take only main model
+                    var salesOrderDetails = await _repository.GetSalesOrderById(soItemDetailBySOItemId.SalesOrderId);
                     salesOrderDetails.SOStatus = OrderStatus.ShortClosed;
+                    await _repository.UpdateSalesOrder(salesOrderDetails);
+                    _repository.SaveAsync();
+                }
+                else
+                {
+                    var salesOrderDetails = await _repository.GetSalesOrderById(soItemDetailBySOItemId.SalesOrderId);
+                    salesOrderDetails.SOStatus = OrderStatus.PartiallyClosed;
                     await _repository.UpdateSalesOrder(salesOrderDetails);
                     _repository.SaveAsync();
                 }

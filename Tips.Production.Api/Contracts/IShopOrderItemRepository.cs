@@ -10,6 +10,7 @@ namespace Tips.Production.Api.Contracts
         Task<decimal?> GetNotShortCloseQty(string fgItemNumber,string saItemNumber,string projectNumber,string salesOrderNumber);
         Task<long> CreateShopOrderItem(ShopOrderItem shopOrderItem);
         Task<string> UpdateShopOrderItem(ShopOrderItem shopOrderItem);
+        Task<int?> GetShopOrderItemOpenStatusCount(int shopOrderId);
         public void SaveAsync();
     }
 }

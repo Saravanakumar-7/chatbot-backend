@@ -1163,6 +1163,24 @@ namespace Tips.Production.Api.Controllers
                 string result = await _shopOrderItemRepository.UpdateShopOrderItem(soItemDetailBySOItemId);
                 _shopOrderItemRepository.SaveAsync();
 
+                //Update ShopOrder Table Status
+                var shopOrderItemOpenStatuscount = await _shopOrderItemRepository.GetShopOrderItemOpenStatusCount(soItemDetailBySOItemId.ShopOrderId);
+
+                if (shopOrderItemOpenStatuscount == 0)
+                {
+                    var shopOrderDetails = await _shopOrderRepository.GetShopOrderById(soItemDetailBySOItemId.ShopOrderId);
+                    shopOrderDetails.Status = OrderStatus.ShortClose;
+                    await _shopOrderRepository.UpdateShopOrder(shopOrderDetails);
+                    _shopOrderRepository.SaveAsync();
+                }
+                else
+                {
+                    var shopOrderDetails = await _shopOrderRepository.GetShopOrderById(soItemDetailBySOItemId.ShopOrderId);
+                    shopOrderDetails.Status = OrderStatus.PartiallyClosed;
+                    await _shopOrderRepository.UpdateShopOrder(shopOrderDetails);
+                    _shopOrderRepository.SaveAsync();
+                }
+
                 //Update PendingShopOrderConfirmationQty in SalesOrder Table
 
                 var ShopOrderDetails = await _shopOrderRepository.GetShopOrderById(soItemDetailBySOItemId.ShopOrderId);

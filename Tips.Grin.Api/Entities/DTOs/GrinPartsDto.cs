@@ -66,7 +66,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
 
-        public List<DocumentUploadDto> COCUpload { get; set; }
+        public string? COCUpload { get; set; }
         public string? SerialNo { get; set; }
         public bool IsIqcCompleted { get; set; }
 
@@ -145,7 +145,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
         public bool IsCOCUploaded { get; set; } = false;
-        public List<DocumentUpload>? CoCUpload { get; set; }
+        public string? CoCUpload { get; set; }
         public decimal? SGST { get; set; }
         public decimal? IGST { get; set; }
         public decimal? CGST { get; set; }
@@ -204,7 +204,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
         public string? Remarks { get; set; }
-        public List<DocumentUploadPostDto> COCUpload { get; set; }
+        public string? COCUpload { get; set; }
 
         //public string? COCUpload { get; set; }
         public decimal? SGST { get; set; }
@@ -265,7 +265,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
         public string? Remarks { get; set; }
-        public List<DocumentUploadDto> COCUpload { get; set; }
+        public string? COCUpload { get; set; }
         //public string? COCUpload { get; set; }
         public decimal? SGST { get; set; }
 
@@ -350,7 +350,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
         public string? SerialNo { get; set; }
-        public List<DocumentUploadDto> COCUpload { get; set; }
+        public string? COCUpload { get; set; }
 
         public bool IsIqcCompleted { get; set; }
         public bool IsBinningCompleted { get; set; }
@@ -383,8 +383,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         [NotMapped]
         [DefaultValue(false)]
         public bool IsReachItem { get; set; }        
-        [NotMapped]
-        public List<DocumentUpload>? FileUpload { get; set; }
+        //[NotMapped]
+        //public List<DocumentUpload>? FileUpload { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -458,7 +458,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
         public string? SerialNo { get; set; }
-        public List<DocumentUploadDto> COCUpload { get; set; }
+        public string? COCUpload { get; set; }
 
 
         [Precision(13, 3)]

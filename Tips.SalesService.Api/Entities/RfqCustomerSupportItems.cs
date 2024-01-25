@@ -15,7 +15,7 @@ namespace Tips.SalesService.Api.Entities
         public string RfqNumber { get; set; }
         public string? ItemNumber { get; set; }
         public string? CustomFields { get; set; }
-        public List<DocumentUpload> Upload { get; set; }
+        public string? Upload { get; set; }
 
         [Precision(13,3)]
         public decimal Qty { get; set; }

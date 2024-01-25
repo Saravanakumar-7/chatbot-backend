@@ -14,6 +14,7 @@ namespace Tips.Grin.Api.Contracts
         Task<int?> GetDocumentDetailsByGrinNo(string grinnumber);
         Task<string> DeleteGrinPartsUploadDocByGrinNo(string grinnumber);
         Task<DocumentUpload> GetUploadDocById(int id);
+        Task<List<DocumentUploadDto>> GetDownloadUrlDetails(string FileIds);
         Task<string> DeleteUploadFile(DocumentUpload documentUpload); 
     }
 }

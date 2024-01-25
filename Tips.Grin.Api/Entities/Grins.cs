@@ -68,7 +68,7 @@ namespace Tips.Grin.Api.Entities
 
         //public string? GrinDocuments { get; set; }
 
-        public List<DocumentUpload>? GrinDocuments { get; set; }
+        public string? GrinDocuments { get; set; }
 
 
         public string Unit { get; set; }

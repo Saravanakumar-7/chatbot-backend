@@ -161,8 +161,23 @@ namespace Tips.Grin.Api.Repository
                 await _tipsGrinDbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
-                int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+                //int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
+                //int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+
+                DateTime currentDate = DateTime.Now;
+                DateTime financeYearStart;
+
+                if (currentDate.Month >= 4) // Check if the current date is after or equal to April
+                {
+                    financeYearStart = new DateTime(currentDate.Year, 4, 1);
+                }
+                else
+                {
+                    financeYearStart = new DateTime(currentDate.Year - 1, 4, 1);
+                }
+
+                int currentYear = financeYearStart.Year % 100; // Get the last two digits of the current finance year
+                int nextYear = (financeYearStart.Year + 1) % 100; // Get the last two digits of the next finance year
 
                 return $"ASPL|GRN|{currentYear:D2}-{nextYear:D2}|{grinNumberEntity.CurrentValue:D4}";
             }
@@ -375,7 +390,7 @@ namespace Tips.Grin.Api.Repository
         public async Task<Grins> GetGrinById(int id)
         {
             var grinDetailsbyId = await _tipsGrinDbContext.Grins.Where(x => x.Id == id)
-                                    .Include(t => t.GrinDocuments)
+                                   // .Include(t => t.GrinDocuments)
               .Include(t => t.GrinParts)
               //.ThenInclude(c => c.CoCUpload)
               .Include(t => t.GrinParts)
@@ -385,6 +400,11 @@ namespace Tips.Grin.Api.Repository
                                .FirstOrDefaultAsync();
 
             return grinDetailsbyId;
+        }
+        public async Task<IEnumerable<Grins>> GetGrinDetailsByGrinIds(List<int> grinIds)
+        {
+            var grinDetailsList = await FindByCondition(x => grinIds.Contains(x.Id)).ToListAsync();
+            return grinDetailsList;
         }
         public async Task<Grins> GetGrinByGrinNo(string grinNumber)
         {
@@ -443,9 +463,7 @@ namespace Tips.Grin.Api.Repository
         public async Task<int?> CreateUploadDocumentGrin(DocumentUpload documentUpload)
         {
             documentUpload.CreatedBy = _createdBy;
-            documentUpload.CreatedOn = DateTime.Now;
-           // documentUpload.LastModifiedBy = _createdBy;
-           // documentUpload.LastModifiedOn = DateTime.Now;
+            documentUpload.CreatedOn = DateTime.Now;        
 
             var result = await Create(documentUpload);
             return result.Id;
@@ -500,7 +518,30 @@ namespace Tips.Grin.Api.Repository
 
             return grinUploadDocFileNameById;
         }
+        public async Task<List<DocumentUploadDto>> GetDownloadUrlDetails(string FileIds)
+        {
+            List<DocumentUploadDto> fileUploads = new List<DocumentUploadDto>();
+            if (FileIds != null)
+            {
+                string[]? ids = FileIds.Split(',');
 
+                for (int i = 0; i < ids.Count(); i++)
+                {
+                    DocumentUploadDto? getDownloadDetails = await _tipsGrinDbContext.DocumentUploads
+                                .Where(b => b.Id == Convert.ToInt32(ids[i]))
+                                .Select(x => new DocumentUploadDto()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath
+                                }).FirstOrDefaultAsync();
+                    if (getDownloadDetails != null)
+                    fileUploads.Add(getDownloadDetails);
+                }
+            }
+            return fileUploads;
+        }
     }
     
 }

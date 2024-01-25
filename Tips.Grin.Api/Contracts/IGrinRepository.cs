@@ -25,7 +25,7 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<Grins>> GetAllGrinsWithItems(GrinSearchDto grinSearchDto);
         Task<IEnumerable<Grins>> SearchGrins([FromQuery] SearchParames searchParames);
         Task<IEnumerable<Grins>> SearchGrinsDate([FromQuery] SearchDateParames searchParames);
-
+        Task<IEnumerable<Grins>> GetGrinDetailsByGrinIds(List<int> grinIds);
         Task<IEnumerable<GrinNumberListDto>> GetAllActiveGrinNoList();
         Task<IEnumerable<GrinNoForIqcAndBinning>> GetAllGrinNumberWhereBinningComplete();
         Task<IEnumerable<GrinNoForIqcAndBinning>> GetAllGrinNumberForIqc();

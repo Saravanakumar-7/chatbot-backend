@@ -99,11 +99,21 @@ namespace Tips.Grin.Api.Controllers
 
                 var iQCList = await _iQCConfirmationRepository.SearchIQCConfirmationDate(searchDateParam);
 
+                // Get all the unique GrinIds from the iQCList
+                var grinIds = iQCList
+                    .Select(iqc => iqc.GrinId)
+                    .Distinct()
+                    .ToList();
+
                 // Get all the unique GrinPartIds from the iQCList
                 var grinPartIds = iQCList
                     .SelectMany(iqc => iqc.IQCConfirmationItems.Select(item => item.GrinPartId))
                     .Distinct()
                     .ToList();
+
+                // Fetch all the required Grin details in a single query and store them in a dictionary
+                var grinDetails = await _grinRepository.GetGrinDetailsByGrinIds(grinIds);
+                var grinDetailsLookup = grinDetails.ToDictionary(gp => gp.Id, gp => gp);
 
                 // Fetch all the required GrinPart details in a single query and store them in a dictionary
                 var grinPartDetails = await _grinPartsRepository.GetGrinPartsDetailsByGrinPartIds(grinPartIds);
@@ -121,7 +131,18 @@ namespace Tips.Grin.Api.Controllers
                     CreatedOn = iqc.CreatedOn,
                     LastModifiedBy = iqc.LastModifiedBy,
                     LastModifiedOn = iqc.LastModifiedOn,
-                    // ...
+                    VendorName = grinDetailsLookup[iqc.GrinId].VendorName,
+                    VendorId = grinDetailsLookup[iqc.GrinId].VendorId,
+                    InvoiceNumber = grinDetailsLookup[iqc.GrinId].InvoiceNumber,
+                    InvoiceValue = grinDetailsLookup[iqc.GrinId].InvoiceValue,
+                    InvoiceDate = grinDetailsLookup[iqc.GrinId].InvoiceDate,
+                    AWBNumber1 = grinDetailsLookup[iqc.GrinId].AWBNumber1,
+                    AWBDate1 = grinDetailsLookup[iqc.GrinId].AWBDate1,
+                    AWBNumber2 = grinDetailsLookup[iqc.GrinId].AWBNumber2,
+                    AWBDate2 = grinDetailsLookup[iqc.GrinId].AWBDate2,
+                    BENumber = grinDetailsLookup[iqc.GrinId].BENumber,
+                    BEDate = grinDetailsLookup[iqc.GrinId].BEDate,
+                    TotalInvoiceValue = grinDetailsLookup[iqc.GrinId].TotalInvoiceValue,
 
                     IQCConfirmationItems = iqc.IQCConfirmationItems.Select(item => new IQCConfirmationItemsReportDto
                     {
@@ -168,11 +189,21 @@ namespace Tips.Grin.Api.Controllers
             {
                 var iQCList = await _iQCConfirmationRepository.SearchIQCConfirmation(searchParams);
 
+                // Get all the unique GrinIds from the iQCList
+                var grinIds = iQCList
+                    .Select(iqc => iqc.GrinId)
+                    .Distinct()
+                    .ToList();
+
                 // Get all the unique GrinPartIds from the iQCList
                 var grinPartIds = iQCList
                     .SelectMany(iqc => iqc.IQCConfirmationItems.Select(item => item.GrinPartId))
                     .Distinct()
                     .ToList();
+
+                // Fetch all the required Grin details in a single query and store them in a dictionary
+                var grinDetails = await _grinRepository.GetGrinDetailsByGrinIds(grinIds);
+                var grinDetailsLookup = grinDetails.ToDictionary(gp => gp.Id, gp => gp);
 
                 // Fetch all the required GrinPart details in a single query and store them in a dictionary
                 var grinPartDetails = await _grinPartsRepository.GetGrinPartsDetailsByGrinPartIds(grinPartIds);
@@ -190,7 +221,18 @@ namespace Tips.Grin.Api.Controllers
                     CreatedOn = iqc.CreatedOn,
                     LastModifiedBy = iqc.LastModifiedBy,
                     LastModifiedOn = iqc.LastModifiedOn,
-                    // ...
+                    VendorName = grinDetailsLookup[iqc.GrinId].VendorName,
+                    VendorId = grinDetailsLookup[iqc.GrinId].VendorId,
+                    InvoiceNumber = grinDetailsLookup[iqc.GrinId].InvoiceNumber,
+                    InvoiceValue = grinDetailsLookup[iqc.GrinId].InvoiceValue,
+                    InvoiceDate = grinDetailsLookup[iqc.GrinId].InvoiceDate,
+                    AWBNumber1 = grinDetailsLookup[iqc.GrinId].AWBNumber1,
+                    AWBDate1 = grinDetailsLookup[iqc.GrinId].AWBDate1,
+                    AWBNumber2 = grinDetailsLookup[iqc.GrinId].AWBNumber2,
+                    AWBDate2 = grinDetailsLookup[iqc.GrinId].AWBDate2,
+                    BENumber = grinDetailsLookup[iqc.GrinId].BENumber,
+                    BEDate = grinDetailsLookup[iqc.GrinId].BEDate,
+                    TotalInvoiceValue = grinDetailsLookup[iqc.GrinId].TotalInvoiceValue,
 
                     IQCConfirmationItems = iqc.IQCConfirmationItems.Select(item => new IQCConfirmationItemsReportDto
                     {
@@ -238,11 +280,21 @@ namespace Tips.Grin.Api.Controllers
             {
                 var iQCList = await _iQCConfirmationRepository.GetAllIQCConfirmationWithItems(iQCConfirmationSearch);
 
+                // Get all the unique GrinIds from the iQCList
+                var grinIds = iQCList
+                    .Select(iqc => iqc.GrinId)
+                    .Distinct()
+                    .ToList();
+
                 // Get all the unique GrinPartIds from the iQCList
                 var grinPartIds = iQCList
                     .SelectMany(iqc => iqc.IQCConfirmationItems.Select(item => item.GrinPartId))
                     .Distinct()
                     .ToList();
+
+                // Fetch all the required Grin details in a single query and store them in a dictionary
+                var grinDetails = await _grinRepository.GetGrinDetailsByGrinIds(grinIds);
+                var grinDetailsLookup = grinDetails.ToDictionary(gp => gp.Id, gp => gp);
 
                 // Fetch all the required GrinPart details in a single query and store them in a dictionary
                 var grinPartDetails = await _grinPartsRepository.GetGrinPartsDetailsByGrinPartIds(grinPartIds);
@@ -260,7 +312,18 @@ namespace Tips.Grin.Api.Controllers
                     CreatedOn = iqc.CreatedOn,
                     LastModifiedBy = iqc.LastModifiedBy,
                     LastModifiedOn = iqc.LastModifiedOn,
-                    // ...
+                    VendorName = grinDetailsLookup[iqc.GrinId].VendorName,
+                    VendorId = grinDetailsLookup[iqc.GrinId].VendorId,
+                    InvoiceNumber = grinDetailsLookup[iqc.GrinId].InvoiceNumber,
+                    InvoiceValue = grinDetailsLookup[iqc.GrinId].InvoiceValue,
+                    InvoiceDate = grinDetailsLookup[iqc.GrinId].InvoiceDate,
+                    AWBNumber1 = grinDetailsLookup[iqc.GrinId].AWBNumber1,
+                    AWBDate1 = grinDetailsLookup[iqc.GrinId].AWBDate1,
+                    AWBNumber2 = grinDetailsLookup[iqc.GrinId].AWBNumber2,
+                    AWBDate2 = grinDetailsLookup[iqc.GrinId].AWBDate2,
+                    BENumber = grinDetailsLookup[iqc.GrinId].BENumber,
+                    BEDate = grinDetailsLookup[iqc.GrinId].BEDate,
+                    TotalInvoiceValue = grinDetailsLookup[iqc.GrinId].TotalInvoiceValue,
 
                     IQCConfirmationItems = iqc.IQCConfirmationItems.Select(item => new IQCConfirmationItemsReportDto
                     {

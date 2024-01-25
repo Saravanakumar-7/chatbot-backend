@@ -2267,8 +2267,8 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllProductionBomFGListByItemNumber(string itemNumber)
+        [HttpPost]
+        public async Task<IActionResult> GetAllProductionBomFGListByItemNumber([FromBody]string itemNumber)
         {
             ServiceResponse<IEnumerable<ProductionBomRevisionNumber>> serviceResponse = new ServiceResponse<IEnumerable<ProductionBomRevisionNumber>>();
             try

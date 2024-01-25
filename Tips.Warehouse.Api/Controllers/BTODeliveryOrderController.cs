@@ -569,22 +569,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
                 var months = Convert.ToString(date.Month.ToString("D2"));
-                var years = Convert.ToString(date.ToString("yy"));
-
-                //var newcount = await _repository.GetBTONumberAutoIncrementCount(date);
-
-                //if (newcount > 0)
-                //{
-                //    var number = newcount + 1;
-                //    string e = String.Format("{0:D4}", number);
-                //    bTODeliveryOrder.BTONumber = days + months + years + "BTO" + (e);
-                //}
-                //else
-                //{
-                //    var count = 1;
-                //    var e = count.ToString("D4");
-                //    bTODeliveryOrder.BTONumber = days + months + years + "BTO" + (e);
-                //}
+                var years = Convert.ToString(date.ToString("yy"));               
 
                 if (serverKey == "trasccon")
                 {
@@ -611,10 +596,7 @@ namespace Tips.Warehouse.Api.Controllers
                     {
                         BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderItemsListDto[i]);
                         bTODeliveryOrderItemsDetails.QtyDistribution = _mapper.Map<List<BtoDeliveryOrderItemQtyDistribution>>(bTODeliveryOrderItemsListDto[i].QtyDistribution);
-                        //foreach(var dis in bTODeliveryOrderItemsDetails.QtyDistridution)
-                        //{
-                        //    dis.PartNumber = bTODeliveryOrderItemsDetails.FGItemNumber;
-                        //}
+                        
                         bTODeliveryOrderItemsDetails.OrderBalanceQty = bTODeliveryOrderItemsDetails.FGOrderQty - bTODeliveryOrderItemsDetails.DispatchQty;
                         bTODeliveryOrderItemsDetails.BalanceDoQty = bTODeliveryOrderItemsDetails.DispatchQty;
                         bTODeliveryOrderItemsDetails.BTONumber = bTODeliveryOrder.BTONumber;

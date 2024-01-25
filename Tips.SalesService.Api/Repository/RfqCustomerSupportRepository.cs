@@ -161,7 +161,7 @@ namespace Tips.SalesService.Api.Repository
                             .Include(x => x.RfqCustomerSupportItems)
                             .ThenInclude(x => x.RfqCSDeliverySchedule)
                             .Include(x => x.RfqCustomerSupportItems)
-                            .ThenInclude(x => x.Upload)
+                            //.ThenInclude(x => x.Upload)
                             .Include(x => x.RfqCustomerSupportNotes)
 
                            .FirstOrDefaultAsync(); 
@@ -639,8 +639,23 @@ namespace Tips.SalesService.Api.Repository
                 await _tipsSalesServiceDbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
 
-                int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
-                int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+                //int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
+                //int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+
+                DateTime currentDate = DateTime.Now;
+                DateTime financeYearStart;
+
+                if (currentDate.Month >= 4) // Check if the current date is after or equal to April
+                {
+                    financeYearStart = new DateTime(currentDate.Year, 4, 1);
+                }
+                else
+                {
+                    financeYearStart = new DateTime(currentDate.Year - 1, 4, 1);
+                }
+
+                int currentYear = financeYearStart.Year % 100; // Get the last two digits of the current finance year
+                int nextYear = (financeYearStart.Year + 1) % 100; // Get the last two digits of the next finance year
 
                 return $"ASPL|RFQ|{currentYear:D2}-{nextYear:D2}|{rfqNumberEntity.CurrentValue:D4}";
             }
@@ -1736,6 +1751,31 @@ namespace Tips.SalesService.Api.Repository
 
             var result = await Create(documentUpload);
             return result.Id;
+        }
+        public async Task<List<DocumentUploadDto>> GetDownloadUrlDetails(string FileIds)
+        {
+            List<DocumentUploadDto> fileUploads = new List<DocumentUploadDto>();
+            if (FileIds != null)
+            {
+                string[]? ids = FileIds.Split(',');
+
+                for (int i = 0; i < ids.Count(); i++)
+                {
+                    DocumentUploadDto? getDownloadDetails = await _tipsSalesServiceDbContext.DocumentUploads
+                                .Where(b => b.Id == Convert.ToInt32(ids[i]))
+                                .Select(x => new DocumentUploadDto()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath,
+                                    //FileByte = x.FileByte
+                                }).FirstOrDefaultAsync();
+                    if (getDownloadDetails != null)
+                        fileUploads.Add(getDownloadDetails);
+                }
+            }
+            return fileUploads;
         }
     }
 }

@@ -165,18 +165,18 @@ namespace Tips.Grin.Api.Controllers
                                 ExpiryDate = grinParts.ExpiryDate,
                                 ManufactureDate = grinParts.ManufactureDate,
 
-                                COCUpload = grinParts.CoCUpload
-                                    .Select(documentUpload => new DocumentUploadDto
-                                    {
-                                        Id = documentUpload.Id,
-                                        FileName = documentUpload.FileName,
-                                        FileExtension = documentUpload.FileExtension,
-                                        FilePath = documentUpload.FilePath,
-                                        CreatedBy = documentUpload.CreatedBy,
-                                        CreatedOn = documentUpload.CreatedOn,
-                                        LastModifiedBy = documentUpload.LastModifiedBy,
-                                        LastModifiedOn = documentUpload.LastModifiedOn,
-                                    }).ToList(),
+                                COCUpload = grinParts.CoCUpload,
+                                    //.Select(documentUpload => new DocumentUploadDto
+                                    //{
+                                    //    Id = documentUpload.Id,
+                                    //    FileName = documentUpload.FileName,
+                                    //    FileExtension = documentUpload.FileExtension,
+                                    //    FilePath = documentUpload.FilePath,
+                                    //    CreatedBy = documentUpload.CreatedBy,
+                                    //    CreatedOn = documentUpload.CreatedOn,
+                                    //    LastModifiedBy = documentUpload.LastModifiedBy,
+                                    //    LastModifiedOn = documentUpload.LastModifiedOn,
+                                    //}).ToList(),
 
                                 SGST = grinParts.SGST,
                                 IGST = grinParts.IGST,
@@ -260,18 +260,18 @@ namespace Tips.Grin.Api.Controllers
                                 ExpiryDate = grinParts.ExpiryDate,
                                 ManufactureDate = grinParts.ManufactureDate,
 
-                                COCUpload = grinParts.CoCUpload
-                                    .Select(documentUpload => new DocumentUploadDto
-                                    {
-                                        Id = documentUpload.Id,
-                                        FileName = documentUpload.FileName,
-                                        FileExtension = documentUpload.FileExtension,
-                                        FilePath = documentUpload.FilePath,
-                                        CreatedBy = documentUpload.CreatedBy,
-                                        CreatedOn = documentUpload.CreatedOn,
-                                        LastModifiedBy = documentUpload.LastModifiedBy,
-                                        LastModifiedOn = documentUpload.LastModifiedOn,
-                                    }).ToList(),
+                                COCUpload = grinParts.CoCUpload,
+                                    //.Select(documentUpload => new DocumentUploadDto
+                                    //{
+                                    //    Id = documentUpload.Id,
+                                    //    FileName = documentUpload.FileName,
+                                    //    FileExtension = documentUpload.FileExtension,
+                                    //    FilePath = documentUpload.FilePath,
+                                    //    CreatedBy = documentUpload.CreatedBy,
+                                    //    CreatedOn = documentUpload.CreatedOn,
+                                    //    LastModifiedBy = documentUpload.LastModifiedBy,
+                                    //    LastModifiedOn = documentUpload.LastModifiedOn,
+                                    //}).ToList(),
 
                                 SGST = grinParts.SGST,
                                 IGST = grinParts.IGST,
@@ -356,18 +356,18 @@ namespace Tips.Grin.Api.Controllers
                                 ExpiryDate = grinParts.ExpiryDate,
                                 ManufactureDate = grinParts.ManufactureDate,
 
-                                COCUpload = grinParts.CoCUpload
-                                    .Select(documentUpload => new DocumentUploadDto
-                                    {
-                                        Id = documentUpload.Id,
-                                        FileName = documentUpload.FileName,
-                                        FileExtension = documentUpload.FileExtension,
-                                        FilePath = documentUpload.FilePath,
-                                        CreatedBy = documentUpload.CreatedBy,
-                                        CreatedOn = documentUpload.CreatedOn,
-                                        LastModifiedBy = documentUpload.LastModifiedBy,
-                                        LastModifiedOn = documentUpload.LastModifiedOn,
-                                    }).ToList(),
+                                COCUpload = grinParts.CoCUpload,
+                                    //.Select(documentUpload => new DocumentUploadDto
+                                    //{
+                                    //    Id = documentUpload.Id,
+                                    //    FileName = documentUpload.FileName,
+                                    //    FileExtension = documentUpload.FileExtension,
+                                    //    FilePath = documentUpload.FilePath,
+                                    //    CreatedBy = documentUpload.CreatedBy,
+                                    //    CreatedOn = documentUpload.CreatedOn,
+                                    //    LastModifiedBy = documentUpload.LastModifiedBy,
+                                    //    LastModifiedOn = documentUpload.LastModifiedOn,
+                                    //}).ToList(),
 
                                 SGST = grinParts.SGST,
                                 IGST = grinParts.IGST,
@@ -496,9 +496,6 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
-
-
         [HttpPost]
         public async Task<IActionResult> CreateGrin([FromBody] GrinPostDto grinPostDto)
         {
@@ -564,8 +561,8 @@ namespace Tips.Grin.Api.Controllers
                 var grinCal = _mapper.Map<List<GrinPartscalculationofAvgcost>>(grinPartsDto);
                 List<GrinParts> grinPartsList = new List<GrinParts>();
                 //var grinPartsList = new List<GrinParts>();
-                var grinDocumentUploadDtoList = new List<DocumentUpload>();
-                var grinPartsDocumentUploadDtoList = new List<DocumentUpload>();
+                //var grinDocumentUploadDtoList = new List<DocumentUpload>();
+                //var grinPartsDocumentUploadDtoList = new List<DocumentUpload>();
 
                 //// grin upload
                 var othercosttotal = grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.Transport;
@@ -716,21 +713,21 @@ namespace Tips.Grin.Api.Controllers
                 //grins.GrinDocuments = grinPostDto.GrinDocuments;
 
 
-                if (grins.GrinDocuments != null && grins.GrinDocuments.Count > 0)
-                {
-                    await GrinDocumentSave(grinPostDto, grins, grinDocumentUploadDtoList);
-                }
-                if (grinPartsDto != null)
-                {
-                    for (int i = 0; i < grinPartsDto.Count; i++)
-                    {
-                        if (grinPartsDto[i].COCUpload != null && grinPartsDto[i].COCUpload.Count > 0)
-                        {
-                            CoCDocumentSave(grinPartsDto, grins, grins.GrinNumber, i, grinPartsDocumentUploadDtoList);
-                        }
+                //if (grins.GrinDocuments != null && grins.GrinDocuments.Count > 0)
+                //{
+                //    await GrinDocumentSave(grinPostDto, grins, grinDocumentUploadDtoList);
+                //}
+                //if (grinPartsDto != null)
+                //{
+                //    for (int i = 0; i < grinPartsDto.Count; i++)
+                //    {
+                //        if (grinPartsDto[i].COCUpload != null && grinPartsDto[i].COCUpload.Count > 0)
+                //        {
+                //            CoCDocumentSave(grinPartsDto, grins, grins.GrinNumber, i, grinPartsDocumentUploadDtoList);
+                //        }
 
-                    }
-                }
+                //    }
+                //}
 
                 await _repository.CreateGrin(grins);
                 _repository.SaveAsync();
@@ -892,94 +889,226 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-        private void CoCDocumentSave(List<GrinPartsPostDto>? grinPartsDto, Grins grins, string number, int i, List<DocumentUpload> grinPartsDocumentUploadDtoList)
+        //private void CoCDocumentSave(List<GrinPartsPostDto>? grinPartsDto, Grins grins, string number, int i, List<DocumentUpload> grinPartsDocumentUploadDtoList)
+        //{
+        //    var cocUploadDocs = grinPartsDto[i].COCUpload;
+
+        //    foreach (var cocUpload in cocUploadDocs)
+        //    {
+        //        var fileContent = cocUpload.FileByte;
+
+        //        string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
+        //        string FileExt = Path.GetExtension(fileName).ToUpper();
+
+        //        //Guid guid = Guid.NewGuid();
+        //        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload",/* guid.ToString() + "_" +*/ fileName);
+        //        using (MemoryStream ms = new MemoryStream(fileContent))
+        //        {
+        //            ms.Position = 0;
+        //            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+        //            {
+        //                ms.WriteTo(fileStream);
+        //            }
+        //            var uploadedFile = new DocumentUpload
+        //            {
+        //                FileName = fileName,
+        //                FileExtension = FileExt,
+        //                FilePath = filePath,
+        //                ParentId = number + "-" + "I",          //It Should be changed to GrinPartsId
+        //                DocumentFrom = "GrinCoCDocument",
+        //            };
+
+        //            _documentUploadRepository.CreateUploadDocumentGrin(uploadedFile);
+        //            _documentUploadRepository.SaveAsync();
+
+        //            if (uploadedFile != null)
+        //            {
+        //                DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
+        //                grinPartsDocumentUploadDtoList.Add(poFileDetails);
+        //            }
+
+        //        }
+        //        grins.GrinParts[i].CoCUpload = grinPartsDocumentUploadDtoList;
+
+        //    }
+        //}
+
+        //private async Task GrinDocumentSave(GrinPostDto grinPostDto, Grins grins, List<DocumentUpload> grinDocumentUploadDtoList)
+        //{
+        //    var grinUploadDetails = grinPostDto.GrinDocuments;
+        //    foreach (var grinUploadDetail in grinUploadDetails)
+        //    {
+        //        var fileContent = grinUploadDetail.FileByte;
+        //        var grinNumber = grins.GrinNumber;
+        //        string fileName = grinUploadDetail.FileName + "." + grinUploadDetail.FileExtension;
+        //        string FileExt = Path.GetExtension(fileName).ToUpper();
+
+        //        //Guid guid = Guid.NewGuid();
+        //        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument",/*guid.ToString() + "_" +*/ fileName);
+        //        using (MemoryStream ms = new MemoryStream(fileContent))
+        //        {
+        //            ms.Position = 0;
+        //            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+        //            {
+        //                ms.WriteTo(fileStream);
+        //            }
+        //            var uploadedFiles = new DocumentUpload
+        //            {
+        //                FileName = fileName,
+        //                FileExtension = FileExt,
+        //                FilePath = filePath,
+        //                ParentId = grinNumber,
+        //                DocumentFrom = "GrinDocument",
+
+        //            };
+
+        //            DocumentUpload poFileDetailsd = _mapper.Map<DocumentUpload>(uploadedFiles);
+
+        //            await _documentUploadRepository.CreateUploadDocumentGrin(poFileDetailsd);
+        //            _documentUploadRepository.SaveAsync();
+
+        //            if (uploadedFiles != null)
+        //            {
+        //                DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFiles);
+        //                grinDocumentUploadDtoList.Add(poFileDetails);
+        //            }
+        //        }
+        //        grins.GrinDocuments = grinDocumentUploadDtoList;
+        //    }
+        //}
+        [HttpPost]
+        public async Task<IActionResult> CreateGrinFileUpload([FromBody] List<DocumentUploadPostDto> fileUploadPostDtos)
         {
-            var cocUploadDocs = grinPartsDto[i].COCUpload;
-
-            foreach (var cocUpload in cocUploadDocs)
+            ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
+            try
             {
-                var fileContent = cocUpload.FileByte;
-
-                string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
-                string FileExt = Path.GetExtension(fileName).ToUpper();
-
-                //Guid guid = Guid.NewGuid();
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload",/* guid.ToString() + "_" +*/ fileName);
-                using (MemoryStream ms = new MemoryStream(fileContent))
+                if (fileUploadPostDtos is null)
                 {
-                    ms.Position = 0;
-                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                    {
-                        ms.WriteTo(fileStream);
-                    }
-                    var uploadedFile = new DocumentUpload
-                    {
-                        FileName = fileName,
-                        FileExtension = FileExt,
-                        FilePath = filePath,
-                        ParentId = number + "-" + "I",          //It Should be changed to GrinPartsId
-                        DocumentFrom = "GrinCoCDocument",
-                    };
-
-                    _documentUploadRepository.CreateUploadDocumentGrin(uploadedFile);
-                    _documentUploadRepository.SaveAsync();
-
-                    if (uploadedFile != null)
-                    {
-                        DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
-                        grinPartsDocumentUploadDtoList.Add(poFileDetails);
-                    }
-
+                    _logger.LogError("GrinFile object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "GrinFile object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
                 }
-                grins.GrinParts[i].CoCUpload = grinPartsDocumentUploadDtoList;
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid GrinFile object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                List<string>? id_s = new List<string>();
+                var FileUploadDetails = fileUploadPostDtos;
+                foreach (var FileUploadDetail in FileUploadDetails)
+                {
+                    Guid guids = Guid.NewGuid();
+                    byte[] fileContent = Convert.FromBase64String(FileUploadDetail.FileByte);
+                    string fileName = guids.ToString() + "_" + FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", fileName);
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                        var uploadedFile = new DocumentUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            ParentId = "GrinFile",
+                            DocumentFrom = "GrinFile Document",
+                            FileByte = FileUploadDetail.FileByte
+                        };
+                        await _documentUploadRepository.CreateUploadDocumentGrin(uploadedFile);
+                        _documentUploadRepository.SaveAsync();
+                        id_s.Add(uploadedFile.Id.ToString());
 
+                    }
+                }
+                serviceResponse.Data = id_s;
+                serviceResponse.Message = " GrinFile Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GrinFile action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
-
-        private async Task GrinDocumentSave(GrinPostDto grinPostDto, Grins grins, List<DocumentUpload> grinDocumentUploadDtoList)
+        [HttpGet]
+        public async Task<IActionResult> GetDownloadUrlDetailsforGrinFiles(string fileids)
         {
-            var grinUploadDetails = grinPostDto.GrinDocuments;
-            foreach (var grinUploadDetail in grinUploadDetails)
+            ServiceResponse<List<DocumentUploadDto>> serviceResponse = new ServiceResponse<List<DocumentUploadDto>>();
+            try
             {
-                var fileContent = grinUploadDetail.FileByte;
-                var grinNumber = grins.GrinNumber;
-                string fileName = grinUploadDetail.FileName + "." + grinUploadDetail.FileExtension;
-                string FileExt = Path.GetExtension(fileName).ToUpper();
-
-                //Guid guid = Guid.NewGuid();
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument",/*guid.ToString() + "_" +*/ fileName);
-                using (MemoryStream ms = new MemoryStream(fileContent))
+                string serverKey = GetServerKey();
+                var itemsFiles = await _documentUploadRepository.GetDownloadUrlDetails(fileids);
+                if (itemsFiles == null)
                 {
-                    ms.Position = 0;
-                    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                    _logger.LogError($"DownloadDetail with id: {fileids}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {fileids}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Grin UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Grin UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<DocumentUploadDto> fileUploads = new List<DocumentUploadDto>();
+                if (itemsFiles != null)
+                {
+                    foreach (var fileUploadDetails in itemsFiles)
                     {
-                        ms.WriteTo(fileStream);
-                    }
-                    var uploadedFiles = new DocumentUpload
-                    {
-                        FileName = fileName,
-                        FileExtension = FileExt,
-                        FilePath = filePath,
-                        ParentId = grinNumber,
-                        DocumentFrom = "GrinDocument",
-
-                    };
-
-                    DocumentUpload poFileDetailsd = _mapper.Map<DocumentUpload>(uploadedFiles);
-
-                    await _documentUploadRepository.CreateUploadDocumentGrin(poFileDetailsd);
-                    _documentUploadRepository.SaveAsync();
-
-                    if (uploadedFiles != null)
-                    {
-                        DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFiles);
-                        grinDocumentUploadDtoList.Add(poFileDetails);
+                        DocumentUploadDto fileUploadDto = _mapper.Map<DocumentUploadDto>(fileUploadDetails);
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["GrinUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/Grin/DownloadFile?Filename={fileUploadDto.FileName}";
+                        }
+                        else
+                        {
+                            var baseUrl = $"{_config["GrinUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/Grin/DownloadFile?Filename={fileUploadDto.FileName}";
+                        }
+                        fileUploads.Add(fileUploadDto);
                     }
                 }
-                grins.GrinDocuments = grinDocumentUploadDtoList;
+                _logger.LogInfo($"Returned DownloadDetail with id: {fileids}");
+                serviceResponse.Data = fileUploads;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside Grin action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
-
         private string GetServerKey()
         {
             var serverName = Environment.MachineName;
@@ -1469,7 +1598,7 @@ namespace Tips.Grin.Api.Controllers
 
                     Guid guid = Guid.NewGuid();
                     string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", guid.ToString() + "_" + fileName);
-                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(fileContent)))
                     {
                         ms.Position = 0;
                         using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
@@ -1542,7 +1671,7 @@ namespace Tips.Grin.Api.Controllers
 
                     Guid guid = Guid.NewGuid();
                     string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload", guid.ToString() + "_" + fileName);
-                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(fileContent)))
                     {
                         ms.Position = 0;
                         using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
