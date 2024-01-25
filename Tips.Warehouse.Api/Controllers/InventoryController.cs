@@ -1333,7 +1333,7 @@ namespace Tips.Warehouse.Api.Controllers
 
         //for material request tracker
 
-        private Inventory MRInsertWipDetailsInInventoryWhenIssuedQtyIsMore(Inventory inventoryDetail, decimal issueQty, string shopOrderNumber)
+        private Inventory MRInsertWipDetailsInInventoryWhenIssuedQtyIsMore(Inventory inventoryDetail, decimal issueQty, string? shopOrderNumber)
         {
             //Inventory wipInventory = _mapper.Map<Inventory>(inventoryDetail);
 
@@ -1419,6 +1419,7 @@ namespace Tips.Warehouse.Api.Controllers
                         IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNoandLocationandwarehouse(materialIssueQty.PartNumber, Location.Location, Location.Warehouse, materialIssueQty.ProjectNumber);
                         foreach (var invItem in inventories)
                         {
+                            invItem.shopOrderNo = updateInventoryBalanceQty[0].ShopOrderNumber;
                             var shopOrderNumber = invItem.shopOrderNo;
                             decimal stock = invItem.Balance_Quantity;
                             if (stock <= issuedQty)
