@@ -40,6 +40,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string FileExtension { get; set; }
         public string FilePath { get; set; }
         public string DownloadUrl { get; set; }
+        public string? FileByte { get; set; }
     }
     public class GetPRDownloadUrlDto
     {

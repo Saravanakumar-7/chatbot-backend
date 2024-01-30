@@ -468,7 +468,8 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<Inventory?> GetInventorybyItemProjectWarehouseLocation(string itemNumber, string projectNumber, string warehouse, string location)
         {
-            var invdetails = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber && x.Warehouse == warehouse && x.Location == location).FirstOrDefaultAsync();
+            var invdetails = await _tipsWarehouseDbContext.Inventories
+                .Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber && x.Warehouse == warehouse && x.Location == location).FirstOrDefaultAsync();
             return invdetails;
         }
         public async Task<List<InventoryQtyforDO>> GetInventorybyItemandProject(string itemNumber, string projectNumber)

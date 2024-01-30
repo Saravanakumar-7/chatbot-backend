@@ -11,6 +11,7 @@ using Tips.Purchase.Api.Entities.DTOs;
 using System.Reflection;
 using Tips.Purchase.Api.Entities.Enums;
 using System.Collections.Generic;
+using Entities.DTOs;
 
 namespace Tips.Purchase.Api.Repository
 {
@@ -57,6 +58,31 @@ namespace Tips.Purchase.Api.Repository
             {
                 return null;
             }
+        }
+        public async Task<List<GetDownloadUrlDto>> GetDownloadUrlPrItemsDetails(string FileIds)
+        {
+            List<GetDownloadUrlDto> downloadUrls = new List<GetDownloadUrlDto>();
+            if (FileIds != null)
+            {
+                string[]? ids = FileIds.Split(',');
+
+                for (int i = 0; i < ids.Count(); i++)
+                {
+                    GetDownloadUrlDto getDownloadDetails = await _tipsPurchaseDbContext.PRItemsDocumentUploads
+                                .Where(b => b.Id == Convert.ToInt32(ids[i]))
+                                .Select(x => new GetDownloadUrlDto()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath,
+                                    FileByte = x.FileByte
+                                }).FirstOrDefaultAsync();
+                    if (getDownloadDetails != null)
+                        downloadUrls.Add(getDownloadDetails);
+                }
+            }
+            return downloadUrls;
         }
         public async Task<long> CreatePurchaseRequisition(PurchaseRequisition purchaseRequisitions)
         {

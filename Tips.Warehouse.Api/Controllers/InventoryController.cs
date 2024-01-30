@@ -825,7 +825,7 @@ namespace Tips.Warehouse.Api.Controllers
             try
             {
                 var InventoryDetails = await _inventoryRepository.GetInventoryByItemNo(itemNumber);
-                if (InventoryDetails == null)
+                if (InventoryDetails.Count()== 0)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"Inventory Details hasn't been found";
