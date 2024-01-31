@@ -20,6 +20,7 @@ using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
 using Tips.SalesService.Api.Entities.Enum;
+using Tips.SalesService.Api.Repository;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.SalesService.Api.Controllers
@@ -33,6 +34,7 @@ namespace Tips.SalesService.Api.Controllers
         private ISalesAdditionalChargesRepository _salesAdditionalChargesRepository;
         private ISoConfirmationDateRepository _soConfirmationDateRepository;
         private ISoConfirmationDateHistoryRepository _soConfirmationDateHistoryRepository;
+        private IQuoteRepository _quoteRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private ISalesOrderHistoryRepository _salesOrderHistory;
@@ -42,7 +44,7 @@ namespace Tips.SalesService.Api.Controllers
         private readonly String _createdBy;
         private readonly String _unitname;
         public SalesOrderController(ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
-            ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, IHttpContextAccessor httpContextAccessor,
+            ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, IQuoteRepository quoteRepository , IHttpContextAccessor httpContextAccessor,
             ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
@@ -53,6 +55,7 @@ namespace Tips.SalesService.Api.Controllers
             _salesAdditionalChargesRepository = salesAdditionalChargesRepository;
             _soConfirmationDateRepository = soConfirmationDateRepository;
             _soConfirmationDateHistoryRepository = soConfirmationDateHistoryRepository;
+            _quoteRepository = quoteRepository;
             _httpClient = httpClient;
             _config = config;
             _httpContextAccessor = httpContextAccessor;
@@ -262,6 +265,10 @@ namespace Tips.SalesService.Api.Controllers
                     int salesOrderStatus = (int)salesOrderStatus1;
 
                     List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x => x.ItemNumber).Distinct().ToList();
+                    //List<(string,string)> itemNumberList =salesOrderById?.SalesOrdersItems?
+                    //                                     .Select(x => ( x.ItemNumber,  x.ProjectNumber))
+                    //                                                .Distinct()
+                    //                                                  .ToList();
 
 
                     if (itemNumberList != null)
@@ -408,6 +415,13 @@ namespace Tips.SalesService.Api.Controllers
                 createSalesOrder.SalesOrdersItems = salesOrderItemsList;
                 createSalesOrder.SalesOrderAdditionalCharges = SalesAdditionalChargesList.ToList();
                 await _repository.CreateSalesOrder(createSalesOrder);
+
+                //ShortClose Quote Once SalesOrder Created
+                var quoteDetails =await _quoteRepository.GetQuoteByQuoteNumber(createSalesOrder.QuoteNumber);
+                quoteDetails.QuoteStatus = OrderStatus.Closed;
+                _quoteRepository.UpdateQuote(quoteDetails);
+                _quoteRepository.SaveAsync();
+
                 _repository.SaveAsync();
 
                 serviceResponse.Data = null;

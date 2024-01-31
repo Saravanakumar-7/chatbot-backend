@@ -488,6 +488,14 @@ namespace Tips.SalesService.Api.Repository
 
             return quoteDetails;
         }
+        public async Task<Quote> GetQuoteByQuoteNumber(string quoteNumber)
+        {
+            var quoteDetails = await _tipsSalesServiceDbContext.Quotes.Where(x => x.QuoteNumber == quoteNumber)
+                               
+                               .FirstOrDefaultAsync();
+
+            return quoteDetails;
+        }
 
         public async Task<string> UpdateQuote(Quote quote)
         {

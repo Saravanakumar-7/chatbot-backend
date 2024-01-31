@@ -24,7 +24,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 2)]
         public decimal? OrderBalanceQty { get; set; }
-        public int? FGStock { get; set; }
+        public decimal? FGStock { get; set; }
 
         [Precision(13, 2)]
         public decimal? DispatchQty { get; set; }
@@ -71,7 +71,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 2)]
         public decimal? OrderBalanceQty { get; set; }
-        public int? FGStock { get; set; }
+        public decimal? FGStock { get; set; }
 
         [Precision(13, 2)]
         public decimal? DispatchQty { get; set; }
@@ -108,7 +108,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 2)]
         public decimal? OrderBalanceQty { get; set; }
-        public int? FGStock { get; set; }
+        public decimal? FGStock { get; set; }
 
         [Precision(13, 2)]
         public decimal? DispatchQty { get; set; }

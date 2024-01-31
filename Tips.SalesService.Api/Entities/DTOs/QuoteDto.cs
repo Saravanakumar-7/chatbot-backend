@@ -13,7 +13,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerId { get; set; }
         public string? RoomName { get; set; }
         public string? SalesPerson { get; set; }
-
+        public OrderStatus QuoteStatus { get; set; }
         public string? generalDiscountType { get; set; }
         public string? QuoteRef { get; set; }
 

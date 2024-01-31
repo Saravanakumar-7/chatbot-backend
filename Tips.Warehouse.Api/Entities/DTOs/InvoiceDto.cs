@@ -15,7 +15,6 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? CustomerId { get; set; }
         public string? CompanyName { get; set; }
         public string? Remarks { get; set; }
-        public string? SerialNumber { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -38,7 +37,6 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         public string? CompanyName { get; set; }
          public string? Remarks { get; set; }
-        public string? SerialNumber { get; set; }
 
 
         public List<InvoiceChildItemPostDto>? InvoiceChildItems { get; set; }
@@ -57,7 +55,6 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? CompanyName { get; set; }
         public string? DOType { get; set; }
         public string? Remarks { get; set; }
-        public string? SerialNumber { get; set; }
         public string? Unit { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
@@ -99,7 +96,6 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? CustomerId { get; set; }
         public string? CompanyName { get; set; }
         public string? Remarks { get; set; }
-        public string? SerialNumber { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
