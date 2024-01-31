@@ -575,6 +575,7 @@ namespace Tips.Production.Api.Controllers
                         var updateInventoryBalanceQty = mapper.Map<UpdateInventoryBalanceQty>(item);
                         updateInventoryBalanceQty.ProjectNumber = projectNo;
                         updateInventoryBalanceQty.MRNumber = mRNumber;
+                        updateInventoryBalanceQty.ShopOrderNumber = shopOrderNumber;
                         return updateInventoryBalanceQty;
                     })
                     .ToList();

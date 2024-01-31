@@ -548,11 +548,12 @@ namespace Tips.Warehouse.Api.Controllers
                             }
                             else
                             {
-                                exInv.ReferenceID = returnOpenDeliveryOrderParts.ODONumber;
-                                exInv.ReferenceIDFrom = "Return Open Delivery Order";
+                                //exInv.ReferenceID = returnOpenDeliveryOrderParts.ODONumber;
+                                //exInv.ReferenceIDFrom = "Return Open Delivery Order";
                                 exInv.IsStockAvailable = true;
                                 exInv.Balance_Quantity += eachbin.DistributingQty;
                                 await _inventoryRepository.UpdateInventory(exInv);
+                                _inventoryRepository.SaveAsync();
                             }
 
                             InventoryTranction inventoryTranction = new InventoryTranction();

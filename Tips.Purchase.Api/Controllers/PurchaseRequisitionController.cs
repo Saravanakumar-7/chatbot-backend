@@ -490,22 +490,22 @@ namespace Tips.Purchase.Api.Controllers
                             //        fileUploads.Add(fileUploadDto);
                             //    }
                             //}
-                            if (itemDetails.PRFileIds == null || itemDetails.PRFileIds == "")
-                            {
-                                prItemDtos.PRItemFiles = null;
-                            }
-                            else
-                            {
-                                List<PRItemsDocumentUploadDto> prd = new List<PRItemsDocumentUploadDto>();
-                                string[]? ids = itemDetails.PRFileIds.Split(',');
-                                for (int i = 0; i < ids.Count(); i++)
-                                {
-                                    var file1 = await _prItemsDocumentUploadRepository.GetUploadDocById(Convert.ToInt32(ids[i]));
-                                    PRItemsDocumentUploadDto doc = _mapper.Map<PRItemsDocumentUploadDto>(file1);
-                                    prd.Add(doc);
-                                }
-                                prItemDtos.PRItemFiles = prd;
-                            }
+                            //if (itemDetails.PRFileIds == null || itemDetails.PRFileIds == "")
+                            //{
+                            //    prItemDtos.PRItemFiles = null;
+                            //}
+                            //else
+                            //{
+                            //    List<PRItemsDocumentUploadDto> prd = new List<PRItemsDocumentUploadDto>();
+                            //    string[]? ids = itemDetails.PRFileIds.Split(',');
+                            //    for (int i = 0; i < ids.Count(); i++)
+                            //    {
+                            //        var file1 = await _prItemsDocumentUploadRepository.GetUploadDocById(Convert.ToInt32(ids[i]));
+                            //        PRItemsDocumentUploadDto doc = _mapper.Map<PRItemsDocumentUploadDto>(file1);
+                            //        prd.Add(doc);
+                            //    }
+                            //    prItemDtos.PRItemFiles = prd;
+                            //}
                             // prItemDtos.Upload = _mapper.Map<List<PRItemsDocumentUploadDto>>(fileUploads);
                             prItemDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(itemDetails.prAddprojectsDtoList);
                             prItemDtos.PrAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliveryScheduleDto>>(itemDetails.prAddDeliverySchedulesDtoList);
@@ -761,14 +761,14 @@ namespace Tips.Purchase.Api.Controllers
                 var prUploadDetails = purchaseRequistionPostDto.PrFiles;
                 foreach (var prUploadDetail in prUploadDetails)
                 {
+                    Guid guid = Guid.NewGuid();
                     var fileContent = prUploadDetail.FileByte;
                     byte[] imageContent = Convert.FromBase64String(prUploadDetail.FileByte);
                     var prNumbers = purchaseRequisitionDetails.PrNumber;
-                    string fileName = prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
+                    string fileName = guid.ToString() + "_" + prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
-
-                    Guid guid = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", guid.ToString() + "_" + fileName);
+                   
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", fileName);
                     using (MemoryStream ms = new MemoryStream(imageContent))
                     {
                         ms.Position = 0;
@@ -947,6 +947,74 @@ namespace Tips.Purchase.Api.Controllers
                     }
                 }
                 _logger.LogInfo($"Returned DownloadDetail with id: {prNumber}");
+                //var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(getDownloadDetailByPoNumber);
+                serviceResponse.Data = downloadUrls;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside PRFiles action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDownloadUrlDetails_PritemsFiles(string FileIds)
+        {
+            ServiceResponse<IEnumerable<GetDownloadUrlDto>> serviceResponse = new ServiceResponse<IEnumerable<GetDownloadUrlDto>>();
+
+            try
+            {
+                string serverKey = GetServerKey();
+
+                var getDownloadDetailByPrNumber = await _repository.GetDownloadUrlPrItemsDetails(FileIds);
+
+                if (getDownloadDetailByPrNumber.Count() == 0)
+                {
+                    _logger.LogError($"DownloadDetail with id: {FileIds}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {FileIds}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseRequisition UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseRequisition UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<GetDownloadUrlDto> downloadUrls = new List<GetDownloadUrlDto>();
+                if (getDownloadDetailByPrNumber != null)
+                {
+                    foreach (var getDownloadUrlByFilename in getDownloadDetailByPrNumber)
+                    {
+                        GetDownloadUrlDto downloadUrlDto = _mapper.Map<GetDownloadUrlDto>(getDownloadUrlByFilename);
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["PurchaseBaseUrl"]}";
+                            downloadUrlDto.DownloadUrl = $"{baseUrl}/apigateway/tips/PurchaseRequisition/DownloadFile?Filename={downloadUrlDto.FileName}";
+                        }
+                        else
+                        {
+                            var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
+                            downloadUrlDto.DownloadUrl = $"{baseUrl}/api/PurchaseRequisition/DownloadFile?Filename={downloadUrlDto.FileName}";
+                        }
+                        downloadUrls.Add(downloadUrlDto);
+                    }
+                }
+                _logger.LogInfo($"Returned DownloadDetail with id: {FileIds}");
                 //var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(getDownloadDetailByPoNumber);
                 serviceResponse.Data = downloadUrls;
                 serviceResponse.Message = "Success";

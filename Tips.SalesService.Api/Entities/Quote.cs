@@ -15,7 +15,7 @@ namespace Tips.SalesService.Api.Entities
         public string? CustomerAliasName { get; set; }
         public string? CustomerId { get; set; }
         public string? RoomName { get; set; }
-
+        public OrderStatus QuoteStatus { get; set; }
         public string? QuoteRef { get; set; }
         public string? generalDiscountType { get; set; }        
 

@@ -579,7 +579,7 @@ namespace Tips.SalesService.Api.Repository
                   FgItemNumber = fgItemNumber,
                   SalesOrderQty = g.Sum(x => x.OrderQty),
                   OpenSalesOrderQty = g.Sum(x => x.OrderQty) - g.Sum(x => x.ShopOrderQty),
-                  RequiredQty = (g.Sum(x => x.OrderQty) - g.Sum(x => x.ShopOrderQty)) * BomQty,
+                  RequiredQty = (g.Sum(x => x.OrderQty)) * BomQty,
                   Description = g.First().Description // Assuming Description is a property of SalesOrdersItems
               })
               .ToListAsync();

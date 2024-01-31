@@ -291,8 +291,8 @@ namespace Tips.Warehouse.Api.Controllers
                             }
                             else
                             {
-                                exInv.ReferenceID = returnInvoiceDetails.InvoiceNumber;
-                                exInv.ReferenceIDFrom = "Return Invoice";
+                                //exInv.ReferenceID = returnInvoiceDetails.InvoiceNumber;
+                                //exInv.ReferenceIDFrom = "Return Invoice";
                                 exInv.IsStockAvailable = true;
                                 exInv.Balance_Quantity += eachbin.DistributingQty;
                                 await _inventoryRepository.UpdateInventory(exInv);

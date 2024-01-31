@@ -94,7 +94,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public string? Purpose { get; set; }
 
-       public List<DocumentUploadUpdateDto>? PrFiles { get; set; }
+       //public List<DocumentUploadUpdateDto>? PrFiles { get; set; }
 
         public string? DeliveryTerms { get; set; }
 

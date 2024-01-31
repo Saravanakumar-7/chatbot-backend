@@ -332,12 +332,12 @@ namespace Tips.Grin.Api.Controllers
                             inventory.ReferenceIDFrom = "OpenGrin";
                             inventory.ShopOrderNo = "";
                             inventory.Unit = "";
-                            inventory.LotNumber = "";
+                            inventory.LotNumber = openGrinDetails.OpenGrinNumber + openGrinParts.Id;
 
 
                             var json = JsonConvert.SerializeObject(inventory);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
-                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), data);
                         }
                     }
                 }

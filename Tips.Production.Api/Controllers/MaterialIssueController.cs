@@ -191,9 +191,9 @@ namespace Tips.Production.Api.Controllers
                             decimal balanceQuantity = 0;
                         //var partnumber = materialIssueDetailById.materialIssueItems[i].PartNumber;
                         //var projectnumber = materialIssueDetailById.materialIssueItems[i].ProjectNumber;
-                        var partnumber = groupedMaterialIssueItemDtoList[i].PartNumber;
-                        var projectnumber = groupedMaterialIssueItemDtoList[i].ProjectNumber;
-                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                        var partnumber = Uri.EscapeDataString(groupedMaterialIssueItemDtoList[i].PartNumber);
+                        var projectnumber = Uri.EscapeDataString(groupedMaterialIssueItemDtoList[i].ProjectNumber);
+                         var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
                               "GetInventoryStockByItemAndProjectNo?", "itemNumber=", partnumber, "&projectNumber=", projectnumber));
                         if (inventoryObjectResult != null && inventoryObjectResult.StatusCode == HttpStatusCode.OK)
                         {
