@@ -490,22 +490,22 @@ namespace Tips.Purchase.Api.Controllers
                             //        fileUploads.Add(fileUploadDto);
                             //    }
                             //}
-                            if (itemDetails.PRFileIds == null || itemDetails.PRFileIds == "")
-                            {
-                                prItemDtos.PRItemFiles = null;
-                            }
-                            else
-                            {
-                                List<PRItemsDocumentUploadDto> prd = new List<PRItemsDocumentUploadDto>();
-                                string[]? ids = itemDetails.PRFileIds.Split(',');
-                                for (int i = 0; i < ids.Count(); i++)
-                                {
-                                    var file1 = await _prItemsDocumentUploadRepository.GetUploadDocById(Convert.ToInt32(ids[i]));
-                                    PRItemsDocumentUploadDto doc = _mapper.Map<PRItemsDocumentUploadDto>(file1);
-                                    prd.Add(doc);
-                                }
-                                prItemDtos.PRItemFiles = prd;
-                            }
+                            //if (itemDetails.PRFileIds == null || itemDetails.PRFileIds == "")
+                            //{
+                            //    prItemDtos.PRItemFiles = null;
+                            //}
+                            //else
+                            //{
+                            //    List<PRItemsDocumentUploadDto> prd = new List<PRItemsDocumentUploadDto>();
+                            //    string[]? ids = itemDetails.PRFileIds.Split(',');
+                            //    for (int i = 0; i < ids.Count(); i++)
+                            //    {
+                            //        var file1 = await _prItemsDocumentUploadRepository.GetUploadDocById(Convert.ToInt32(ids[i]));
+                            //        PRItemsDocumentUploadDto doc = _mapper.Map<PRItemsDocumentUploadDto>(file1);
+                            //        prd.Add(doc);
+                            //    }
+                            //    prItemDtos.PRItemFiles = prd;
+                            //}
                             // prItemDtos.Upload = _mapper.Map<List<PRItemsDocumentUploadDto>>(fileUploads);
                             prItemDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(itemDetails.prAddprojectsDtoList);
                             prItemDtos.PrAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliveryScheduleDto>>(itemDetails.prAddDeliverySchedulesDtoList);
@@ -761,14 +761,14 @@ namespace Tips.Purchase.Api.Controllers
                 var prUploadDetails = purchaseRequistionPostDto.PrFiles;
                 foreach (var prUploadDetail in prUploadDetails)
                 {
+                    Guid guid = Guid.NewGuid();
                     var fileContent = prUploadDetail.FileByte;
                     byte[] imageContent = Convert.FromBase64String(prUploadDetail.FileByte);
                     var prNumbers = purchaseRequisitionDetails.PrNumber;
-                    string fileName = prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
+                    string fileName = guid.ToString() + "_" + prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
-
-                    Guid guid = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", guid.ToString() + "_" + fileName);
+                   
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", fileName);
                     using (MemoryStream ms = new MemoryStream(imageContent))
                     {
                         ms.Position = 0;

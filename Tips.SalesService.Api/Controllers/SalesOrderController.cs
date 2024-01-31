@@ -1081,6 +1081,7 @@ namespace Tips.SalesService.Api.Controllers
                                 salesOrderItem.BalanceQty -= dispatchedQty;
                                 salesOrderItem.DispatchQty += dispatchedQty;
                                 dispatchedQty = 0;
+                                salesOrderItem.StatusEnum = OrderStatus.PartiallyClosed;
                             }
                             else
                             {
@@ -1110,7 +1111,12 @@ namespace Tips.SalesService.Api.Controllers
                     }
                 }
                 _salesOrderItemsRepository.SaveAsync();
-
+                var salesdetails = await _repository.GetSalesOrderById(salesOrderDispatchQtyDto[0].SalesOrderId);
+                int? count = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.Closed).Count();               
+                if (count == 0) salesdetails.SOStatus= OrderStatus.Closed;           
+                else if(count > 0) salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                await _repository.UpdateSalesOrder(salesdetails);
+                _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SalesOrder Successfully Updated";
                 serviceResponse.Success = true;
