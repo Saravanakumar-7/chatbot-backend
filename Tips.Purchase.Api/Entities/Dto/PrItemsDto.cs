@@ -15,7 +15,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? UOM { get; set; }
         public PoPartType PartType { get; set; }
         public string? SpecialInstruction { get; set; }
-        public List<PRItemsDocumentUploadDto>? PRItemFiles { get; set; }
+        //public List<PRItemsDocumentUploadDto>? PRItemFiles { get; set; }
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
         public PrStatus PrStatus { get; set; }
