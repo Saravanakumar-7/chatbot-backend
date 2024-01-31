@@ -767,9 +767,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> LocationTransferSPReportWithParam([FromBody] LocationTransferSPReportDTO locationTransferSPReport)
+        public async Task<IActionResult> LocationTransferSPReportWithParam([FromBody] LocationTransferSPReportWithParamDTO locationTransferSPReport)
         {
-            ServiceResponse<IEnumerable<LocationTransferSPReport>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSPReport>>();
+            ServiceResponse<IEnumerable<LocationTransferSPReportDTO>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSPReportDTO>>();
             try
             {
                 var products = await _locationTransferRepository.LocationTransferSPReportWithParam(locationTransferSPReport.FromPartNumber, locationTransferSPReport.FromPartType, locationTransferSPReport.FromWarehouse, locationTransferSPReport.FromLocation, locationTransferSPReport.FromProjectNumber, locationTransferSPReport.ToPartNumber, locationTransferSPReport.ToPartType, locationTransferSPReport.ToWarehouse, locationTransferSPReport.ToLocation, locationTransferSPReport.ToProjectNumber);
@@ -787,7 +787,7 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     var result = _mapper.Map<IEnumerable<LocationTransferSPReportDTO>>(products);
 
-                    serviceResponse.Data = products;
+                    serviceResponse.Data = result;
                     serviceResponse.Message = "Returned LocationTransfer Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

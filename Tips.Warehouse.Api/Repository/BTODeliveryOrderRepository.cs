@@ -141,7 +141,7 @@ namespace Tips.Warehouse.Api.Repository
        || string.IsNullOrWhiteSpace(KPN)
        || string.IsNullOrWhiteSpace(MPN));
 
-            var result = _tipsWarehouseDbContext
+            var result =  _tipsWarehouseDbContext
             .Set<DeliveryOrderSPReport>()
             .FromSqlInterpolated($"CALL Delivery_Order_Report_withparameter({DONumber},{CustomerName},{CustomerAliasName},{CustomerID},{SalesOrderNumber},{ProductType},{Warehouse},{Location},{KPN},{MPN})")
             .ToList();

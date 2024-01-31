@@ -180,13 +180,13 @@ namespace Tips.Warehouse.Api.Controllers
 }
 
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetDeliveryOrderSPReportsWithParam([FromBody] DeliveryOrderSPReportDTO deliveryOrderSPReport)
+        public async Task<IActionResult> GetDeliveryOrderSPReportsWithParam([FromBody] DeliveryOrderReportWithParamDTO deliveryOrderSPReport)
         {
-            ServiceResponse<IEnumerable<DeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderSPReport>>();
+            ServiceResponse<List<DeliveryOrderSPReportDTO>> serviceResponse = new ServiceResponse<List<DeliveryOrderSPReportDTO>>();
             try
             {
-                var products = await _repository.GetDeliveryOrderSPReportsWithParam(deliveryOrderSPReport.DoNumber, deliveryOrderSPReport.CustomerName, deliveryOrderSPReport.CustomerAliasName, deliveryOrderSPReport.CustomerId, deliveryOrderSPReport.SalesOrderNumber, deliveryOrderSPReport.ProductType, deliveryOrderSPReport.Warehouse, deliveryOrderSPReport.Location, deliveryOrderSPReport.KPN, deliveryOrderSPReport.MPN);
-
+                var products = await _repository.GetDeliveryOrderSPReportsWithParam(deliveryOrderSPReport.DoNumber, deliveryOrderSPReport.CustomerName, deliveryOrderSPReport.CustomerAliasName, deliveryOrderSPReport.CustomerId, deliveryOrderSPReport.SalesOrderNumber, deliveryOrderSPReport.ProductType, deliveryOrderSPReport.Warehouse, deliveryOrderSPReport.Location, deliveryOrderSPReport.KPN,deliveryOrderSPReport.MPN);
+                    
                 if (products == null)
                 {
                     serviceResponse.Data = null;
@@ -198,9 +198,9 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 else
                 {
-                    var result = _mapper.Map<IEnumerable<DeliveryOrderSPReport>>(products);
+                    var result = _mapper.Map<List<DeliveryOrderSPReportDTO>>(products);
 
-                    serviceResponse.Data = products;
+                    serviceResponse.Data = result;
                     serviceResponse.Message = "Returned DeliveryOrder Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

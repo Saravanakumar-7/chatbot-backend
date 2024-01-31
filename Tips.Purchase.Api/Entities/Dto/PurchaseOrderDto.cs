@@ -297,11 +297,25 @@ namespace Tips.Purchase.Api.Entities.DTOs
     public class PurchaseOrderSPReportDTO
     {
         public string? VendorName { get; set; }
+
         public string? PONumber { get; set; }
         public string? PartNumber { get; set; }
+        public decimal? Qty { get; set; }
+        public decimal? TotalWithTax { get; set; }
+        public string? UOM { get; set; }
+        public string? UOC { get; set; }
+        public decimal? BalanceQty { get; set; }
 
 
     }
+
+    public class PurchaseOrderSPReportWithParamDTO
+    {
+        public string? VendorName { get; set; }
+        public string? PONumber { get; set; }
+        public string? PartNumber { get; set; }
+    }
+
     public class Tras_POSPReportDTO
     {
         public string? VendorName { get; set; }

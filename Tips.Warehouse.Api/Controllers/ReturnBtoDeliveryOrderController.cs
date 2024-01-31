@@ -127,9 +127,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> ReturnDOSPReportWithParam([FromBody] ReturnDOSPReportDTO returnDOSPReportDTO)
+        public async Task<IActionResult> ReturnDOSPReportWithParam([FromBody] ReturnDOSPReportWithParamDTO returnDOSPReportDTO)
         {
-            ServiceResponse<IEnumerable<ReturnDOSPReport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnDOSPReport>>();
+            ServiceResponse<IEnumerable<ReturnDOSPReportDTO>> serviceResponse = new ServiceResponse<IEnumerable<ReturnDOSPReportDTO>>();
             try
             {
                 var products = await _repository.ReturnDOSPReportWithParam(returnDOSPReportDTO.DoNumber, returnDOSPReportDTO.CustomerName, returnDOSPReportDTO.CustomerAliasName, returnDOSPReportDTO.LeadId, returnDOSPReportDTO.SalesOrderNumber, returnDOSPReportDTO.Location, returnDOSPReportDTO.Warehouse, returnDOSPReportDTO.ProductType, returnDOSPReportDTO.TypeOfSolution, returnDOSPReportDTO.KPN, returnDOSPReportDTO.MPN);
@@ -145,9 +145,9 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 else
                 {
-                    var result = _mapper.Map<IEnumerable<ReturnDOSPReport>>(products);
+                    var result = _mapper.Map<IEnumerable<ReturnDOSPReportDTO>>(products);
 
-                    serviceResponse.Data = products;
+                    serviceResponse.Data = result;
                     serviceResponse.Message = "Returned ReturnDOSPReport Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

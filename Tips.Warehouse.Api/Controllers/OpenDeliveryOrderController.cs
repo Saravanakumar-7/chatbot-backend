@@ -1030,10 +1030,10 @@ namespace Tips.Warehouse.Api.Controllers
 
 
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> OpenDeliveryOrderSPReportWithParam([FromBody] OpenDeliveryOrderSPReportDto openDeliveryOrderSPReport)
+        public async Task<IActionResult> OpenDeliveryOrderSPReportWithParam([FromBody] OpenDeliveryOrderSPReportWithParamDto openDeliveryOrderSPReport)
 
         {
-            ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>>();
+            ServiceResponse<IEnumerable<OpenDeliveryOrderSPReportDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReportDto>>();
             try
             {
                 var products = await _repository.OpenDeliveryOrderSPReportWithParam(openDeliveryOrderSPReport.OpenDoNumber, openDeliveryOrderSPReport.CustomerName, openDeliveryOrderSPReport.CustomerAliasName, openDeliveryOrderSPReport.LeadId, openDeliveryOrderSPReport.IssuedTo, openDeliveryOrderSPReport.KPNno, openDeliveryOrderSPReport.MPN, openDeliveryOrderSPReport.Warehouse, openDeliveryOrderSPReport.Location, openDeliveryOrderSPReport.ODOtype);
@@ -1051,7 +1051,7 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     var result = _mapper.Map<IEnumerable<OpenDeliveryOrderSPReportDto>>(products);
 
-                    serviceResponse.Data = products;
+                    serviceResponse.Data = result;
                     serviceResponse.Message = "Returned OpenDeliveryOrderSPReportDto Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

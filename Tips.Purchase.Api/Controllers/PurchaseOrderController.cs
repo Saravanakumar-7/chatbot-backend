@@ -475,10 +475,10 @@ namespace Tips.Purchase.Api.Controllers
 
 
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetPurchaseOrderSPReportWithParam([FromBody] PurchaseOrderSPReportDTO purchaseOrderSPReport)
+        public async Task<IActionResult> GetPurchaseOrderSPReportWithParam([FromBody] PurchaseOrderSPReportWithParamDTO purchaseOrderSPReport)
 
         {
-            ServiceResponse<IEnumerable<PurchaseOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReport>>();
+            ServiceResponse<IEnumerable<PurchaseOrderSPReportDTO>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReportDTO>>();
             try
             {
                 var products = await _repository.GetPurchaseOrderSPReportWithParam(purchaseOrderSPReport.VendorName, purchaseOrderSPReport.PONumber, purchaseOrderSPReport.PartNumber);
@@ -496,7 +496,7 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var result = _mapper.Map<IEnumerable<PurchaseOrderSPReportDTO>>(products);
 
-                    serviceResponse.Data = products;
+                    serviceResponse.Data = result;
                     serviceResponse.Message = "Returned PurchaseOrder Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

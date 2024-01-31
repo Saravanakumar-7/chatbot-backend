@@ -171,9 +171,9 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> InvoiceSPReportWithParameter([FromBody] InvoiceSPReportDTO invoiceSPReport)
+        public async Task<IActionResult> InvoiceSPReportWithParameter([FromBody] InvoiceSPReportWithParamDTO invoiceSPReport)
         {
-            ServiceResponse<IEnumerable<InvoiceSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSPReport>>();
+            ServiceResponse<IEnumerable<InvoiceSPReportDTO>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSPReportDTO>>();
             try
             {
                 var products = await _invoiceRepository.InvoiceSPReportWithParameter(invoiceSPReport.InvoiceNumber, invoiceSPReport.DONumber, invoiceSPReport.LeadId, invoiceSPReport.CustomerName, invoiceSPReport.CustomerAliasName, invoiceSPReport.SalesOrderNumber, invoiceSPReport.Location, invoiceSPReport.Warehouse, invoiceSPReport.KPN, invoiceSPReport.MPN, invoiceSPReport.IssuedTo);
@@ -190,7 +190,7 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     var result = _mapper.Map<IEnumerable<InvoiceSPReportDTO>>(products);
 
-                    serviceResponse.Data = products;
+                    serviceResponse.Data = result;
                     serviceResponse.Message = "Returned Invoice Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
