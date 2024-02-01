@@ -1463,7 +1463,7 @@ namespace Tips.Purchase.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdatePOUploadDocument([FromBody] List<DocumentUploadPostDto> uploadDocumentDto, string poNumber)
         {
-            ServiceResponse<DocumentUploadPostDto> serviceResponse = new ServiceResponse<DocumentUploadPostDto>();
+            ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
             try
             {
                 if (uploadDocumentDto is null)
@@ -1483,8 +1483,8 @@ namespace Tips.Purchase.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid PurchaseOrder UploadDocument sent from client.");
                     return BadRequest(serviceResponse);
-                } 
-
+                }
+                List<string>? id_s = new List<string>();
                 foreach (var poUploadDetail in uploadDocumentDto)
                 {
                     Guid guid = Guid.NewGuid();
@@ -1512,14 +1512,16 @@ namespace Tips.Purchase.Api.Controllers
                             DocumentFrom = "PODocument",
 
                         };
-                        var poUploadDoc = _mapper.Map<DocumentUpload>(uploadedFile);
+                        //var poUploadDoc = _mapper.Map<DocumentUpload>(uploadedFile);
 
-                        await _documentUploadRepository.CreateUploadDocumentPO(poUploadDoc);
+                        await _documentUploadRepository.CreateUploadDocumentPO(uploadedFile);
                         _documentUploadRepository.SaveAsync();
+
+                        id_s.Add(uploadedFile.Id.ToString());
                     }
                 }
 
-                serviceResponse.Data = null;
+                serviceResponse.Data = id_s;
                 serviceResponse.Message = " POUploadDocument Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
