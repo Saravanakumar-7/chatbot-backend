@@ -175,17 +175,17 @@ namespace Tips.Purchase.Api.Controllers
                     PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetailbyPONumber);
                     List<PoItemsDto> poItemDtoList = new List<PoItemsDto>();
                     var poIncoTermList = _mapper.Map<IEnumerable<PoIncoTerm>>(purchaseOrderDto.POIncoTerms);
-                    List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
+                    //List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
 
-                    if (purchaseOrderDto.POFiles.Count() != 0)
-                    {
-                        foreach (var documentUploadDetails in purchaseOrderDto.POFiles)
-                        {
-                            DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
-                            documentUplaodDtoList.Add(poItemDtos);
-                        }
-                    }
-                    purchaseOrderDto.POFiles = documentUplaodDtoList;
+                    //if (purchaseOrderDto.POFiles.Count() != 0)
+                    //{
+                    //    foreach (var documentUploadDetails in purchaseOrderDto.POFiles)
+                    //    {
+                    //        DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
+                    //        documentUplaodDtoList.Add(poItemDtos);
+                    //    }
+                    //}
+                    //purchaseOrderDto.POFiles = documentUplaodDtoList;
 
                     var poIncoTermDto = purchaseOrderDto.POIncoTerms;
 
@@ -616,17 +616,17 @@ namespace Tips.Purchase.Api.Controllers
                     PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetail);
                     List<PoItemsDto> poItemDtoList = new List<PoItemsDto>();
 
-                    List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
+                    //List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
 
-                    if (purchaseOrderDto.POFiles.Count() != 0)
-                    {
-                        foreach (var documentUploadDetails in purchaseOrderDto.POFiles)
-                        {
-                            DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
-                            documentUplaodDtoList.Add(poItemDtos);
-                        }
-                    }
-                    purchaseOrderDto.POFiles = documentUplaodDtoList;
+                    //if (purchaseOrderDto.POFiles.Count() != 0)
+                    //{
+                    //    foreach (var documentUploadDetails in purchaseOrderDto.POFiles)
+                    //    {
+                    //        DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
+                    //        documentUplaodDtoList.Add(poItemDtos);
+                    //    }
+                    //}
+                    //purchaseOrderDto.POFiles = documentUplaodDtoList;
 
                     var poIncoTermDto = purchaseOrderDto.POIncoTerms;
 
@@ -700,17 +700,17 @@ namespace Tips.Purchase.Api.Controllers
                     PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetailbyId);
                     List<PoItemsDto> poItemDtoList = new List<PoItemsDto>();
 
-                    List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
+                    //List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
 
-                    if (purchaseOrderDto.POFiles.Count() != 0)
-                    {
-                        foreach (var documentUploadDetails in purchaseOrderDto.POFiles)
-                        {
-                            DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
-                            documentUplaodDtoList.Add(poItemDtos);
-                        }
-                    }
-                    purchaseOrderDto.POFiles = documentUplaodDtoList;
+                    //if (purchaseOrderDto.POFiles.Count() != 0)
+                    //{
+                    //    foreach (var documentUploadDetails in purchaseOrderDto.POFiles)
+                    //    {
+                    //        DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
+                    //        documentUplaodDtoList.Add(poItemDtos);
+                    //    }
+                    //}
+                    //purchaseOrderDto.POFiles = documentUplaodDtoList;
 
                     var poIncoTermDto = purchaseOrderDto.POIncoTerms;
 
@@ -926,7 +926,7 @@ namespace Tips.Purchase.Api.Controllers
                 var prDetailsPostDto = poItemDto[0].PrDetails;
                 var poFile = purchaseOrderPostDto.POFiles;
                 var poItemDtoList = new List<PoItem>();
-                var poDocumentUploadDtoList = new List<DocumentUpload>();
+                //var poDocumentUploadDtoList = new List<DocumentUpload>();
                 var poIncoTermList = _mapper.Map<IEnumerable<PoIncoTerm>>(purchaseOrderPostDto.POIncoTerms);
 
                 var date = DateTime.Now;
@@ -962,46 +962,46 @@ namespace Tips.Purchase.Api.Controllers
                 }
                 //// Po Upload
 
-                var poUploadDetails = purchaseOrderPostDto.POFiles;
+                //var poUploadDetails = purchaseOrderPostDto.POFiles;
                 
-                foreach (var poUploadDetail in poUploadDetails)
-                {
-                    Guid guid = Guid.NewGuid();
-                    var fileContent = poUploadDetail.FileByte;
-                    byte[] imageContent = Convert.FromBase64String(poUploadDetail.FileByte);
-                    var poNumbers = purchaseOrderDetails.PONumber;
-                    string fileName = guid.ToString() + "_" + poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
-                    string FileExt = Path.GetExtension(fileName).ToUpper();
+                //foreach (var poUploadDetail in poUploadDetails)
+                //{
+                //    Guid guid = Guid.NewGuid();
+                //    var fileContent = poUploadDetail.FileByte;
+                //    byte[] imageContent = Convert.FromBase64String(poUploadDetail.FileByte);
+                //    var poNumbers = purchaseOrderDetails.PONumber;
+                //    string fileName = guid.ToString() + "_" + poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
+                //    string FileExt = Path.GetExtension(fileName).ToUpper();
 
                     
-                    //string filename_1 = guid.ToString() + "_" + fileName;
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", fileName);
-                    using (MemoryStream ms = new MemoryStream(imageContent))
-                    {
-                        ms.Position = 0;
-                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                        {
-                            ms.WriteTo(fileStream);
-                        }
-                        var uploadedFile = new DocumentUpload
-                        {
-                            FileName = fileName,
-                            FileExtension = FileExt,
-                            FilePath = filePath,
-                            ParentNumber = poNumbers,
-                            DocumentFrom = "PODocument",
-                        };
-                        _documentUploadRepository.CreateUploadDocumentPO(uploadedFile);                        
+                //    //string filename_1 = guid.ToString() + "_" + fileName;
+                //    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", fileName);
+                //    using (MemoryStream ms = new MemoryStream(imageContent))
+                //    {
+                //        ms.Position = 0;
+                //        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                //        {
+                //            ms.WriteTo(fileStream);
+                //        }
+                //        var uploadedFile = new DocumentUpload
+                //        {
+                //            FileName = fileName,
+                //            FileExtension = FileExt,
+                //            FilePath = filePath,
+                //            ParentNumber = poNumbers,
+                //            DocumentFrom = "PODocument",
+                //        };
+                //        _documentUploadRepository.CreateUploadDocumentPO(uploadedFile);                        
 
-                        if (uploadedFile != null)
-                        {
-                            DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
-                            poDocumentUploadDtoList.Add(poFileDetails);
-                        }
+                //        if (uploadedFile != null)
+                //        {
+                //            DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
+                //            poDocumentUploadDtoList.Add(poFileDetails);
+                //        }
 
-                    }
+                //    }
 
-                }
+                //}
 
                 if (poItemDto != null)
                 {
@@ -1021,7 +1021,7 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
                 purchaseOrderDetails.POItems = poItemDtoList;
-                purchaseOrderDetails.POFiles = poDocumentUploadDtoList;
+               // purchaseOrderDetails.POFiles = poDocumentUploadDtoList;
                 purchaseOrderDetails.POIncoTerms = poIncoTermList.ToList();
                 await _repository.CreatePurchaseOrder(purchaseOrderDetails);
                
@@ -1487,13 +1487,13 @@ namespace Tips.Purchase.Api.Controllers
 
                 foreach (var poUploadDetail in uploadDocumentDto)
                 {
+                    Guid guid = Guid.NewGuid();
                     var fileContent = poUploadDetail.FileByte;
                     byte[] imageContent = Convert.FromBase64String(poUploadDetail.FileByte);
-                    string fileName = poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
+                    string fileName = guid.ToString() + "_" + poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
                     string FileExt = Path.GetExtension(fileName).ToUpper();
-
-                    Guid guid = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", /*guid.ToString() + "_" */ fileName);
+                   
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", fileName);
                     using (MemoryStream ms = new MemoryStream(imageContent))
                     {
                         ms.Position = 0;
@@ -1651,7 +1651,73 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetDownloadUrlDetails_PoFiles(string FileIds)
+        {
+            ServiceResponse<IEnumerable<GetDownloadUrlDto>> serviceResponse = new ServiceResponse<IEnumerable<GetDownloadUrlDto>>();
 
+            try
+            {
+                string serverKey = GetServerKey();
+
+                var getDownloadDetailByPoNumber = await _repository.GetDownloadUrlPoDetails(FileIds);
+
+                if (getDownloadDetailByPoNumber.Count() == 0)
+                {
+                    _logger.LogError($"DownloadDetail with id: {FileIds}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {FileIds}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseRequisition UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseRequisition UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<GetDownloadUrlDto> downloadUrls = new List<GetDownloadUrlDto>();
+                if (getDownloadDetailByPoNumber != null)
+                {
+                    foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
+                    {
+                        GetDownloadUrlDto downloadUrlDto = _mapper.Map<GetDownloadUrlDto>(getDownloadUrlByFilename);
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["PurchaseBaseUrl"]}";
+                            downloadUrlDto.DownloadUrl = $"{baseUrl}/apigateway/tips/PurchaseOrder/DownloadFile?Filename={downloadUrlDto.FileName}";
+                        }
+                        else
+                        {
+                            var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
+                            downloadUrlDto.DownloadUrl = $"{baseUrl}/api/PurchaseOrder/DownloadFile?Filename={downloadUrlDto.FileName}";
+                        }
+                        downloadUrls.Add(downloadUrlDto);
+                    }
+                }
+                _logger.LogInfo($"Returned DownloadDetail with id: {FileIds}");
+                //var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(getDownloadDetailByPoNumber);
+                serviceResponse.Data = downloadUrls;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside PRFiles action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpPut]
         public async Task<IActionResult> UpdatePurchaseOrder([FromBody] PurchaseOrderUpdateDto purchaseOrderUpdateDto)

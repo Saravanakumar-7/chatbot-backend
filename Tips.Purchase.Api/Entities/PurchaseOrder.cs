@@ -70,7 +70,7 @@ namespace Tips.Purchase.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<DocumentUpload>? POFiles { get; set; }
+        public string? POFiles { get; set; }
 
         public List<PoItem>? POItems { get; set; }
         public List<PoIncoTerm>? POIncoTerms { get; set; }

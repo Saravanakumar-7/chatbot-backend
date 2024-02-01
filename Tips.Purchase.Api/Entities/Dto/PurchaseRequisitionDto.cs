@@ -23,7 +23,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public string? Purpose { get; set; }
 
-        public List<DocumentUploadDto>? PrFiles { get; set; }
+        public string? PrFiles { get; set; }
 
         public string? DeliveryTerms { get; set; }
         public bool PrApprovalI { get; set; }
@@ -63,7 +63,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public string? Purpose { get; set; }
 
-        public List<DocumentUploadPostDto>? PrFiles { get; set; }
+        public string? PrFiles { get; set; }
 
         public string? DeliveryTerms { get; set; }
 
@@ -94,7 +94,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public string? Purpose { get; set; }
 
-       //public List<DocumentUploadUpdateDto>? PrFiles { get; set; }
+        public string? PrFiles { get; set; }
 
         public string? DeliveryTerms { get; set; }
 
@@ -128,7 +128,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public string? Purpose { get; set; }
 
-        public List<DocumentUploadDto>? PrFiles { get; set; }
+        public string? PrFiles { get; set; }
 
         public string? DeliveryTerms { get; set; }
         public bool PrApprovalI { get; set; }
@@ -179,7 +179,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public string? Purpose { get; set; }
 
-        public List<DocumentUploadDto>? PrFiles { get; set; }
+        public string? PrFiles { get; set; }
 
         public string? DeliveryTerms { get; set; }
         public bool PrApprovalI { get; set; }

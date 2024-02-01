@@ -76,7 +76,31 @@ namespace Tips.Purchase.Api.Repository
             var result = await Create(purchaseOrder);
             return result;
         }
+        public async Task<List<GetDownloadUrlDto>> GetDownloadUrlPoDetails(string FileIds)
+        {
+            List<GetDownloadUrlDto> downloadUrls = new List<GetDownloadUrlDto>();
+            if (FileIds != null)
+            {
+                string[]? ids = FileIds.Split(',');
 
+                for (int i = 0; i < ids.Count(); i++)
+                {
+                    GetDownloadUrlDto getDownloadDetails = await _tipsPurchaseDbContext.DocumentUploads
+                                .Where(b => b.Id == Convert.ToInt32(ids[i]))
+                                .Select(x => new GetDownloadUrlDto()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath,
+                                    FileByte = x.FileByte
+                                }).FirstOrDefaultAsync();
+                    if (getDownloadDetails != null)
+                        downloadUrls.Add(getDownloadDetails);
+                }
+            }
+            return downloadUrls;
+        }
         public async Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string poNumber)
         {
             //grin 
@@ -573,7 +597,7 @@ namespace Tips.Purchase.Api.Repository
         {
             var activePurchaseOrderDetails = FindAll().OrderByDescending(on => on.Id)
                                 .Where(x => x.Status != Status.Closed)
-                                .Include(o => o.POFiles)
+                               // .Include(o => o.POFiles)
                                 .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
                                 .Include(m => m.POItems)
@@ -1011,7 +1035,8 @@ namespace Tips.Purchase.Api.Repository
             var purchaseOrderDetails = FindAll().Where(inv => (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
             inv.VendorName.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue) ||
             inv.RevisionNumber.Equals(searchrev) || inv.PODate.Equals(searchDate)))
-            .OrderByDescending(on => on.Id).Include(o => o.POFiles).Include(t => t.POItems).ThenInclude(x => x.POAddprojects)
+            .OrderByDescending(on => on.Id)//.Include(o => o.POFiles)
+            .Include(t => t.POItems).ThenInclude(x => x.POAddprojects)
             .Include(m => m.POItems).ThenInclude(i => i.POAddDeliverySchedules).Include(itm => itm.POItems)
             .ThenInclude(po => po.POSpecialInstructions).Include(itm => itm.POItems).ThenInclude(po => po.POConfirmationDates)
             .Include(itm => itm.POItems).ThenInclude(po => po.PrDetails).Include(itm => itm.POIncoTerms);
@@ -1091,7 +1116,7 @@ namespace Tips.Purchase.Api.Repository
                      (searchDate.HasValue && inv.PODate == searchDate))
                 )
                 .OrderByDescending(on => on.Id)
-                .Include(o => o.POFiles)
+                //.Include(o => o.POFiles)
                 .Include(t => t.POItems).ThenInclude(x => x.POAddprojects)
                 .Include(m => m.POItems).ThenInclude(i => i.POAddDeliverySchedules)
                 .Include(itm => itm.POItems).ThenInclude(po => po.POSpecialInstructions)
@@ -1108,7 +1133,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PurchaseOrder> GetPurchaseOrderById(int id)
         {
             var purchaseOrderDetailById = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.Id == id)
-                                                .Include(o => o.POFiles)
+                                                //.Include(o => o.POFiles)
 
                 .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
@@ -1131,7 +1156,7 @@ namespace Tips.Purchase.Api.Repository
         {
             var purchaseOrderDetailbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders
                 .Where(x => x.PONumber == poNumber && x.IsDeleted == false && x.IsModified == false)
-                .Include(o => o.POFiles)
+                //.Include(o => o.POFiles)
                 .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
                                 .Include(m => m.POItems)
@@ -1153,7 +1178,7 @@ namespace Tips.Purchase.Api.Repository
         {
             var purchaseOrderDetail = await _tipsPurchaseDbContext.PurchaseOrders
                 .Where(x => x.PONumber == poNumber && x.RevisionNumber == revisionNumber && x.IsDeleted == false)
-                .Include(o => o.POFiles)
+                //.Include(o => o.POFiles)
                 .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
                                 .Include(m => m.POItems)

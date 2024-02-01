@@ -155,17 +155,17 @@ namespace Tips.Purchase.Api.Controllers
                     PurchaseRequisitionDto purchaseRequisitionDto = _mapper.Map<PurchaseRequisitionDto>(purchaseRequisitionDetail);
                     List<PrItemsDto> prItemDtoList = new List<PrItemsDto>();
 
-                    List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
+                    //List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
 
-                    if (purchaseRequisitionDto.PrFiles.Count() != 0)
-                    {
-                        foreach (var documentUploadDetails in purchaseRequisitionDto.PrFiles)
-                        {
-                            DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
-                            documentUplaodDtoList.Add(poItemDtos);
-                        }
-                    }
-                    purchaseRequisitionDto.PrFiles = documentUplaodDtoList;
+                    //if (purchaseRequisitionDto.PrFiles.Count() != 0)
+                    //{
+                    //    foreach (var documentUploadDetails in purchaseRequisitionDto.PrFiles)
+                    //    {
+                    //        DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
+                    //        documentUplaodDtoList.Add(poItemDtos);
+                    //    }
+                    //}
+                    //purchaseRequisitionDto.PrFiles = documentUplaodDtoList;
                     if (purchaseRequisitionDetail.PrItemsDtoList != null)
                     {
                         foreach (var prItemDetails in purchaseRequisitionDetail.PrItemsDtoList)
@@ -715,7 +715,7 @@ namespace Tips.Purchase.Api.Controllers
                 var purchaseRequisitionDetails = _mapper.Map<PurchaseRequisition>(purchaseRequistionPostDto);
                 var prItemDto = purchaseRequistionPostDto.PrItemsDtoPostList;
                 var prItemDtoList = new List<PrItem>();
-                var poDocumentUploadDtoList = new List<DocumentUpload>();
+                //var poDocumentUploadDtoList = new List<DocumentUpload>();
 
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
@@ -758,45 +758,45 @@ namespace Tips.Purchase.Api.Controllers
 
                 //// Pr Upload
 
-                var prUploadDetails = purchaseRequistionPostDto.PrFiles;
-                foreach (var prUploadDetail in prUploadDetails)
-                {
-                    Guid guid = Guid.NewGuid();
-                    var fileContent = prUploadDetail.FileByte;
-                    byte[] imageContent = Convert.FromBase64String(prUploadDetail.FileByte);
-                    var prNumbers = purchaseRequisitionDetails.PrNumber;
-                    string fileName = guid.ToString() + "_" + prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
-                    string FileExt = Path.GetExtension(fileName).ToUpper();
+               // var prUploadDetails = purchaseRequistionPostDto.PrFiles;
+                //foreach (var prUploadDetail in prUploadDetails)
+                //{
+                //    Guid guid = Guid.NewGuid();
+                //    var fileContent = prUploadDetail.FileByte;
+                //    byte[] imageContent = Convert.FromBase64String(prUploadDetail.FileByte);
+                //    var prNumbers = purchaseRequisitionDetails.PrNumber;
+                //    string fileName = guid.ToString() + "_" + prUploadDetail.FileName + "." + prUploadDetail.FileExtension;
+                //    string FileExt = Path.GetExtension(fileName).ToUpper();
                    
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", fileName);
-                    using (MemoryStream ms = new MemoryStream(imageContent))
-                    {
-                        ms.Position = 0;
-                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                        {
-                            ms.WriteTo(fileStream);
-                        }
-                        var uploadedFile = new DocumentUpload
-                        {
-                            FileName = fileName,
-                            FileExtension = FileExt,
-                            FilePath = filePath,
-                            ParentNumber = prNumbers,
-                            DocumentFrom = "PRDocument",
-                        };
+                //    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", fileName);
+                //    using (MemoryStream ms = new MemoryStream(imageContent))
+                //    {
+                //        ms.Position = 0;
+                //        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                //        {
+                //            ms.WriteTo(fileStream);
+                //        }
+                //        var uploadedFile = new DocumentUpload
+                //        {
+                //            FileName = fileName,
+                //            FileExtension = FileExt,
+                //            FilePath = filePath,
+                //            ParentNumber = prNumbers,
+                //            DocumentFrom = "PRDocument",
+                //        };
 
-                        _prdocumentUploadRepository.CreateUploadDocumentPO(uploadedFile);
-                        _prdocumentUploadRepository.SaveAsync();
+                //        _prdocumentUploadRepository.CreateUploadDocumentPO(uploadedFile);
+                //        _prdocumentUploadRepository.SaveAsync();
 
-                        if (uploadedFile != null)
-                        {
-                            DocumentUpload prFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
-                            poDocumentUploadDtoList.Add(prFileDetails);
-                        }
+                //        if (uploadedFile != null)
+                //        {
+                //            DocumentUpload prFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
+                //            poDocumentUploadDtoList.Add(prFileDetails);
+                //        }
 
-                    }
+                //    }
 
-                }
+                //}
 
 
                 //if (prItemDto != null)
@@ -830,7 +830,7 @@ namespace Tips.Purchase.Api.Controllers
                 }
                 purchaseRequisitionDetails.PrItemsDtoList = prItemDtoList;
 
-                purchaseRequisitionDetails.PrFiles = poDocumentUploadDtoList;
+                //purchaseRequisitionDetails.PrFiles = poDocumentUploadDtoList;
                 await _repository.CreatePurchaseRequisition(purchaseRequisitionDetails);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;

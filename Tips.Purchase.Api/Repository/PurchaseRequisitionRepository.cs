@@ -226,7 +226,7 @@ namespace Tips.Purchase.Api.Repository
         {
             var purchaseRequisitionDetail = await _tipsPurchaseDbContext.PurchaseRequisitions
             .Where(x => x.PrNumber == prNumber && x.RevisionNumber == revisionNumber && x.IsDeleted == false)
-            .Include(o => o.PrFiles)
+           // .Include(o => o.PrFiles)
             .Include(t => t.PrItemsDtoList)
             .ThenInclude(x => x.prAddprojectsDtoList)
             .Include(m => m.PrItemsDtoList)
@@ -325,7 +325,7 @@ namespace Tips.Purchase.Api.Repository
         {
             var activePurchaseRequsitionDetails = FindAll()
                                 .Where(x=>x.Status != Status.Closed)
-                                .Include(o => o.PrFiles)
+                                //.Include(o => o.PrFiles)
                                 .Include(t => t.PrItemsDtoList)
                                 .ThenInclude(x => x.prAddprojectsDtoList)
                                 .Include(m => m.PrItemsDtoList)
@@ -662,7 +662,7 @@ namespace Tips.Purchase.Api.Repository
               || inv.PrNumber.Contains(searchParams.SearchValue)
               || inv.RevisionNumber.Equals(searchrev)
               || inv.PrDate.Equals(searchDate)))
-            .Include(f => f.PrFiles)
+            //.Include(f => f.PrFiles)
             .Include(t => t.PrItemsDtoList)
                                   .ThenInclude(x => x.prAddprojectsDtoList)
                                   .Include(m => m.PrItemsDtoList)
@@ -716,7 +716,7 @@ namespace Tips.Purchase.Api.Repository
                     || (searchDate.HasValue && inv.PrDate == searchDate))
                 )
                 
-                .Include(f => f.PrFiles)
+               // .Include(f => f.PrFiles)
                 .Include(t => t.PrItemsDtoList)
                     .ThenInclude(x => x.prAddprojectsDtoList)
                 .Include(m => m.PrItemsDtoList)
@@ -732,7 +732,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PurchaseRequisition> GetPurchaseRequisitionById(int id)
         {
             var purchaseRequistionDetailById = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.Id == id)
-                                 .Include(o => o.PrFiles)
+                                 //.Include(o => o.PrFiles)
                                  //.Include(itm => itm.PrItemsDtoList)
                                  //.ThenInclude(x => x.Upload)
                                  .Include(t => t.PrItemsDtoList)
@@ -751,7 +751,7 @@ namespace Tips.Purchase.Api.Repository
         {
             var purchaseRequistionByPRNumber = await _tipsPurchaseDbContext.PurchaseRequisitions.
                 Where(x => x.PrNumber == prNumber && x.RevisionNumber == RevNo)
-                                  .Include(o => o.PrFiles)
+                                 // .Include(o => o.PrFiles)
                                   .Include(t => t.PrItemsDtoList)
                                 .ThenInclude(x => x.prAddprojectsDtoList)
                                 .Include(m => m.PrItemsDtoList)
