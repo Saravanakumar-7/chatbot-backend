@@ -372,14 +372,15 @@ namespace Tips.Master.Api.Controllers
                 if (serverKey == "avision")
                 {
                     var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
-                   // fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
-                    getDownloadDetailByPoNumber.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadFile?Filename={getDownloadDetailByPoNumber.FileName}";
+                    getDownloadDetailByPoNumber.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadImage?Filename={getDownloadDetailByPoNumber.FileName}";
                 }
                 else
                 {
+                   // var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                   //// fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                   // getDownloadDetailByPoNumber.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={getDownloadDetailByPoNumber.FileName}";
                     var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
-                   // fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
-                    getDownloadDetailByPoNumber.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={getDownloadDetailByPoNumber.FileName}";
+                    getDownloadDetailByPoNumber.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadImage?Filename={getDownloadDetailByPoNumber.FileName}";
                 }
                 //var baseUrl = $"{Request.Scheme}://{_config["ItemMasterBaseUrl"]}";
                 //    getDownloadDetailByPoNumber.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={getDownloadDetailByPoNumber.FileName}";
