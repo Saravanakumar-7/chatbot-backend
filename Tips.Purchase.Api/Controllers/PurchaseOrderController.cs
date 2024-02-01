@@ -1461,7 +1461,7 @@ namespace Tips.Purchase.Api.Controllers
         //update uploaded files
 
         [HttpPost]
-        public async Task<IActionResult> UpdatePOUploadDocument([FromBody] List<DocumentUploadPostDto> uploadDocumentDto, string poNumber)
+        public async Task<IActionResult> UpdatePOUploadDocument([FromBody] List<DocumentUploadPostDto> uploadDocumentDto)
         {
             ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
             try
@@ -1507,7 +1507,7 @@ namespace Tips.Purchase.Api.Controllers
                             FileName = fileName,
                             FileExtension = FileExt,
                             FilePath = filePath,
-                            ParentNumber = poNumber,
+                            ParentNumber = "Purchase Order",
                             //PurchaseOrderId = Id,
                             DocumentFrom = "PODocument",
 
