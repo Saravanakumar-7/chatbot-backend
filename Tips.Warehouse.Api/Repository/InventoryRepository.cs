@@ -376,6 +376,14 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryDetail;
         }
+        public async Task<decimal> GetStockDetailsForAllLocationWarehouseByItemNoAndProjectNo(string ItemNumber,string projectNo)
+        {
+            var inventoryDetail = _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber && 
+            x.ProjectNumber == projectNo  && x.IsStockAvailable == true)
+                          .Sum(x => x.Balance_Quantity);
+
+            return inventoryDetail;
+        }
         public async Task<IEnumerable<Inventory>> GetAllInventoryWithItems(InventorySearchDto inventorySearch)
         {
             using (var context = _tipsWarehouseDbContext)

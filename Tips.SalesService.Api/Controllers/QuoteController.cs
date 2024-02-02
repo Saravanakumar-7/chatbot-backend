@@ -85,6 +85,7 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<QuoteDto> serviceResponse = new ServiceResponse<QuoteDto>();
             try
             {
+                string serverKey = GetServerKey();
                 var quoteDetails = await _repository.GetQuoteById(id);
                 var rfqnumber = quoteDetails.RFQNumber;
                 //var customerId = await _rfqRepository.GetCustomerIdByRfqNumber(rfqnumber);
@@ -118,15 +119,32 @@ namespace Tips.SalesService.Api.Controllers
 
                     foreach (var quoteItems in quoteGeneralList)
                     {
-                        var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?", "ItemNumber=", quoteItems.ItemNumber));
-                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        dynamic inventoryObject = inventoryObjectData;
+                        if (serverKey == "keus")
+                        {
+                            var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?",
+                                                                                                                                            "ItemNumber=", quoteItems.ItemNumber));
+                            var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                            dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                            dynamic inventoryObject = inventoryObjectData;
 
-                        // Convert double to decimal
-                        decimal availableStock = Convert.ToDecimal(inventoryObject);
+                            // Convert double to decimal
+                            decimal availableStock = Convert.ToDecimal(inventoryObject);
 
-                        quoteItems.AvailableStock = availableStock;
+                            quoteItems.AvailableStock = availableStock;
+                        }
+                        else
+                        {
+                            var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNoAndProjectNo?",
+                                                                                                                                "ItemNumber=", quoteItems.ItemNumber, "&ProjectNo=",rfqnumber));
+                            var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                            dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                            dynamic inventoryObject = inventoryObjectData;
+
+                            // Convert double to decimal
+                            decimal availableStock = Convert.ToDecimal(inventoryObject);
+
+                            quoteItems.AvailableStock = availableStock;
+                        }
                     }
 
                     var quoteAdditionalChargesList = _mapper.Map<IEnumerable<QuoteAdditionalChargesDto>>(quoteDetails.QuoteAdditionalCharges);

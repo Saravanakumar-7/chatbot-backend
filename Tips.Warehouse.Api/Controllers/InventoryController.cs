@@ -688,6 +688,44 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
         [HttpGet]
+        public async Task<IActionResult> GetStockDetailsForAllLocationWarehouseByItemNoAndProjectNo(string itemNumber ,string projectNo)
+        {
+            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+            try
+            {
+                decimal InventoryDetails = await _inventoryRepository.GetStockDetailsForAllLocationWarehouseByItemNoAndProjectNo(itemNumber, projectNo);
+                if (InventoryDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory Details hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with itemNumber And ProjectNumber: {itemNumber},{projectNo}, is invalid");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with Itemnumber And ProjectNumber: {itemNumber},{projectNo}");
+                    //var result = InventoryDetails;
+                    //serviceResponse.Data = result;
+                    //serviceResponse.Message = "Returned InventoryDetails with id Successfully";
+                    //serviceResponse.Success = true;
+                    //serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(InventoryDetails);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<ConsumptionReport>>> CoverageReport()
         {
             ServiceResponse<IEnumerable<ConsumptionReport>> serviceResponse = new ServiceResponse<IEnumerable<ConsumptionReport>>();
