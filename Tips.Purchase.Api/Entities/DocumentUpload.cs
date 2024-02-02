@@ -18,7 +18,7 @@ namespace Tips.Purchase.Api.Entities
         public string FileExtension { get; set; }
 
         public string FilePath { get; set; }
-        public string FileByte { get; set; }
+        public string? FileByte { get; set; }
         public string DocumentFrom { get; set; }
 
         public string ParentNumber { get; set; } 
