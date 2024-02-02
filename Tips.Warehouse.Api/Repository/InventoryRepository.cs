@@ -371,7 +371,8 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<decimal> GetStockDetailsForAllLocationWarehouseByItemNo(string ItemNumber)
         {
-            var inventoryDetail = _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true)
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
+            var inventoryDetail = _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true && !skipWareHouse.Contains(x.Warehouse))
                           .Sum(x => x.Balance_Quantity);
 
             return inventoryDetail;

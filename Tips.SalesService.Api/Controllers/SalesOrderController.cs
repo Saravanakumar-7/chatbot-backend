@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
@@ -232,7 +233,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var salesOrderById = await _repository.GetSalesOrderById(id);
-
+                string serverKey = GetServerKey();
                 if (salesOrderById == null)
                 {
                     serviceResponse.Data = null;
@@ -263,46 +264,66 @@ namespace Tips.SalesService.Api.Controllers
                     SalesOrderStatus salesOrderStatus1 = salesOrderDto.SalesOrderStatus;
                     //int salesOrderStatus = 1;
                     int salesOrderStatus = (int)salesOrderStatus1;
-
-                    List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x => x.ItemNumber).Distinct().ToList();
-                    //List<(string,string)> itemNumberList =salesOrderById?.SalesOrdersItems?
-                    //                                     .Select(x => ( x.ItemNumber,  x.ProjectNumber))
-                    //                                                .Distinct()
-                    //                                                  .ToList();
-
-
-                    if (itemNumberList != null)
+                    if (serverKey == "keus")
                     {
-                        var json = JsonConvert.SerializeObject(itemNumberList);
-                        var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        var inventoryQtyResponse = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetAvailableStockQtyForSalesOrderItems?", "salesOrderNo=", salesOrderNo, "&salesOrderStatus=", salesOrderStatus), data);
+                        List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x => x.ItemNumber).Distinct().ToList();    
+                        if (itemNumberList != null)
+                        {
+                            var json = JsonConvert.SerializeObject(itemNumberList);
+                            var data = new StringContent(json, Encoding.UTF8, "application/json");
+                            var inventoryQtyResponse = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetAvailableStockQtyForSalesOrderItems?", "salesOrderNo=", salesOrderNo, "&salesOrderStatus=", salesOrderStatus), data);
 
-                        var inventoryItemQtyDetails = await inventoryQtyResponse.Content.ReadAsStringAsync();
+                            var inventoryItemQtyDetails = await inventoryQtyResponse.Content.ReadAsStringAsync();
 
 
-                        Dictionary<string, decimal> inventoryItemWithStockDetails = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(inventoryItemQtyDetails);
+                            Dictionary<string, decimal> inventoryItemWithStockDetails = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(inventoryItemQtyDetails);
 
+
+                            foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
+                            {
+                                SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
+                                salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
+                                salesOrderItemsDtos.SoConfirmationDates = _mapper.Map<List<SoConfirmationDateDto>>(salesOrderItemDetails.SoConfirmationDates);
+                                string itemNumber = salesOrderItemsDtos.ItemNumber;
+                                if (inventoryItemWithStockDetails.ContainsKey(itemNumber))
+                                {
+                                    salesOrderItemsDtos.AvailableStock = inventoryItemWithStockDetails[itemNumber];
+                                }
+                                else
+                                {
+                                    salesOrderItemsDtos.AvailableStock = 0;
+                                }
+
+
+                                salesOrderItemsDtoList.Add(salesOrderItemsDtos);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        List<(string, string)> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x => (x.ItemNumber, x.ProjectNumber)).Distinct().ToList();                       
 
                         foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
                         {
                             SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
                             salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
                             salesOrderItemsDtos.SoConfirmationDates = _mapper.Map<List<SoConfirmationDateDto>>(salesOrderItemDetails.SoConfirmationDates);
-                            string itemNumber = salesOrderItemsDtos.ItemNumber;
-                            if (inventoryItemWithStockDetails.ContainsKey(itemNumber))
+                            string itemNumber = salesOrderItemsDtos.ItemNumber;                            
+                            
+                            var inventoryQtyResponse = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByItemNo?", "itemNumber=", itemNumber, "&projectNo=", itemNumberList.Where(x=>x.Item1==itemNumber).Select(x=>x.Item2)));
+                            var inventoryItemQtyDetails = await inventoryQtyResponse.Content.ReadAsStringAsync();
+                            var inventoryItemWithStockDetails = JsonConvert.DeserializeObject<InventoryItemdetailsDto>(inventoryItemQtyDetails);
+                            if (inventoryItemWithStockDetails!=null)
                             {
-                                salesOrderItemsDtos.AvailableStock = inventoryItemWithStockDetails[itemNumber];
+                                salesOrderItemsDtos.AvailableStock = inventoryItemWithStockDetails.data.Sum(x=>x.balance_Quantity);
                             }
                             else
                             {
                                 salesOrderItemsDtos.AvailableStock = 0;
                             }
-
-
                             salesOrderItemsDtoList.Add(salesOrderItemsDtos);
                         }
                     }
-
 
 
 

@@ -60,7 +60,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         //public int SalesOrderId { get; set; }
 
         public DateTime RequestedDate { get; set; }
-        public string? Remarks { get; set; } 
+        public string? Remarks { get; set; }
         public List<ScheduleDateDto>? ScheduleDates { get; set; }
         public List<SoConfirmationDateDto> SoConfirmationDates { get; set; }
 
@@ -72,7 +72,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? Description { get; set; }
         //public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
-  
+
 
         //[Precision(13, 3)]
         //[DefaultValue(0)]
@@ -110,7 +110,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? RoomName { get; set; }
         public string? DiscountType { get; set; }
         public DateTime RequestedDate { get; set; }
-        public string? Remarks { get; set; } 
+        public string? Remarks { get; set; }
         public List<ScheduleDatePostDto>? ScheduleDates { get; set; }
 
     }
@@ -119,9 +119,9 @@ namespace Tips.SalesService.Api.Entities.Dto
 
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
-      //  public string? SalesOrderNumber { get; set; }
+        //  public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
- 
+
         [Precision(13, 3)]
         public decimal BalanceQty { get; set; }
 
@@ -160,8 +160,8 @@ namespace Tips.SalesService.Api.Entities.Dto
         [Precision(18, 3)]
         public decimal? TotalAmount { get; set; }
         public DateTime RequestedDate { get; set; }
-        public string? Remarks { get; set; } 
- public List<ScheduleDateUpdateDto>? ScheduleDates { get; set; }
+        public string? Remarks { get; set; }
+        public List<ScheduleDateUpdateDto>? ScheduleDates { get; set; }
 
     }
     public class ListOfProjectNoDto
@@ -223,7 +223,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal[] BomVersionNo { get; set; }
         public List<ProjectSOSADetailDto>? ProjectSODetails { get; set; }
 
-    } 
+    }
 
     public class ShopOrderReleaseQtyDto
     {
@@ -242,7 +242,7 @@ namespace Tips.SalesService.Api.Entities.Dto
     }
     public class ItemDetailsForShopOrderDto
     {
-        public string ItemNumber { get; set; }
+        public string ItemNumber { get; set; }
         public PartType ItemType { get; set; }
         public decimal[] BomVersionNo { get; set; }
         public List<ProjectSODetailDto>? ProjectSODetails { get; set; }
@@ -353,7 +353,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public PartType PartType { get; set; }
 
 
-    } 
+    }
     public class SoItemConfirmationDateDto
     {
         public int SalesOrderId { get; set; }
@@ -364,7 +364,43 @@ namespace Tips.SalesService.Api.Entities.Dto
 
     public class ProjectDetailDto
     {
-        public string FGItemNumber { get; set; } 
+        public string FGItemNumber { get; set; }
         public List<ProjectDetailDto> ProjectDetailDtos { get; set; }
     }
+
+    public class InventoryItemdetailsDto
+    {
+        public Datum[] data { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
+        public int statusCode { get; set; }
+    }
+
+    public class Datum
+    {
+        public int id { get; set; }
+        public string partNumber { get; set; }
+        public string lotNumber { get; set; }
+        public string mftrPartNumber { get; set; }
+        public string description { get; set; }
+        public string projectNumber { get; set; }
+        public int balance_Quantity { get; set; }
+        public string uom { get; set; }
+        public bool isStockAvailable { get; set; }
+        public string warehouse { get; set; }
+        public string location { get; set; }
+        public string unit { get; set; }
+        public string grinNo { get; set; }
+        public int? grinPartId { get; set; }
+        public int partType { get; set; }
+        public string grinMaterialType { get; set; }
+        public string referenceID { get; set; }
+        public string referenceIDFrom { get; set; }
+        public string shopOrderNo { get; set; }
+        public string createdBy { get; set; }
+        public DateTime createdOn { get; set; }
+        public string lastModifiedBy { get; set; }
+        public DateTime? lastModifiedOn { get; set; }
+    }
+
 }
