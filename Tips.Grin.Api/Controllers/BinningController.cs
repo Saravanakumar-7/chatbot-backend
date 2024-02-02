@@ -524,6 +524,7 @@ namespace Tips.Grin.Api.Controllers
 
                         BinningItems binningItems = _mapper.Map<BinningItems>(binningsItemsDto[i]);
                         binningItems.binningLocations = _mapper.Map<List<BinningLocation>>(binningsItemsDto[i].binningLocations);
+                        binningItems.IsBinningCompleted = true;
                         binningItemList.Add(binningItems);
 
 
