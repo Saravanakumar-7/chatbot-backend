@@ -38,5 +38,6 @@ namespace Tips.Purchase.Api.Contracts
         Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIIList(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllLastestPendingPRApprovalIIList(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<List<GetDownloadUrlDto>> GetDownloadUrlPrItemsDetails(string FileIds);
+        Task<PurchaseRequisition> GetPurchaseRequisitionByPRNo(string prNumber);
     }
 }
