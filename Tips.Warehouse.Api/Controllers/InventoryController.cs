@@ -2318,14 +2318,14 @@ namespace Tips.Warehouse.Api.Controllers
             return Ok();
         }
 
-        [HttpGet("{itemNumber}")]
-        public async Task<ActionResult<decimal>> GetTotalStockOfItemNumber(string itemNumber)
+        [HttpGet]
+        public async Task<ActionResult<decimal>> GetTotalStockOfItemNumber(string saItemNumber)
         {
             var inventoryServiceResponse = new ServiceResponse<decimal>();
 
             try
             {
-                decimal stockAvailable = await _inventoryRepository.GetTotalStockOfItemNumber(itemNumber);
+                decimal stockAvailable = await _inventoryRepository.GetTotalStockOfItemNumber(saItemNumber);
 
                 inventoryServiceResponse.Data = stockAvailable;
                 inventoryServiceResponse.Message = "Retrieved stock available quantity";

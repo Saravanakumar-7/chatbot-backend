@@ -751,8 +751,10 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<IEnumerable<GetInventoryItemNoAndDescriptionList>> GetInventoryItemNoAndDescriptionByProjectNo(string projectNumber)
         {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
+
             IEnumerable<GetInventoryItemNoAndDescriptionList> inventoryDetails = await _tipsWarehouseDbContext.Inventories.
-                Where(x => x.ProjectNumber == projectNumber)
+                Where(x => x.ProjectNumber == projectNumber && !skipWareHouse.Contains(x.Warehouse) && !skipWareHouse.Contains(x.Location))
                  .Select(x => new GetInventoryItemNoAndDescriptionList()
                  {
                      PartNumber = x.PartNumber,
