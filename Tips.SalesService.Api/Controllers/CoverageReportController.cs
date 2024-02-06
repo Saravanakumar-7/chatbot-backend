@@ -129,8 +129,7 @@ namespace Tips.SalesService.Api.Controllers
                                         decimal balanceQuantity = (decimal)Inventory.balance_Quantity; ; // Convert to decimal
                                         coverageReport.Stock =  balanceQuantity;
 
-                                        // Calculate OpenSOQty
-                                        coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
+                                        
 
                                         PartType itemPartType = coverageReport.PartType;
 
@@ -158,7 +157,8 @@ namespace Tips.SalesService.Api.Controllers
                                                 }
                                             }
                                         }
-
+                                        // Calculate OpenSOQty
+                                        coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
                                         // Calculate BalanceToOrder
 
                                         var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
