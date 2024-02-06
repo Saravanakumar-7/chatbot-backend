@@ -229,12 +229,13 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<ODODetailsDto> GetODODetailsByItemNo(string itemNumber)
         {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
             decimal Stock = _tipsWarehouseDbContext.Inventories
-                .Where(x => x.PartNumber == itemNumber)
+                .Where(x => x.PartNumber == itemNumber && !skipWareHouse.Contains(x.Warehouse))
                 .Sum(x => x.Balance_Quantity);
 
             var projectNumbers = await _tipsWarehouseDbContext.Inventories
-                            .Where(x => x.PartNumber == itemNumber)
+                            .Where(x => x.PartNumber == itemNumber && !skipWareHouse.Contains(x.Warehouse))
                             .Select(s => new ODODetailsDto()
                             {
                                 ItemNumber = s.ProjectNumber,
@@ -248,8 +249,9 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<List<WarehouseDetailsDto>> GetWarehouseODOByItemNo(string itemNumber)
         {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
             var projectNumbers = await _tipsWarehouseDbContext.Inventories
-                                .Where(x => x.PartNumber == itemNumber)
+                                .Where(x => x.PartNumber == itemNumber && !skipWareHouse.Contains(x.Warehouse))
                                 .Select(s => new WarehouseDetailsDto()
                                 {
                                     WarehouseName = s.Warehouse,
@@ -261,8 +263,9 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<List<LocationDetailsDto>> GetLocationODOByItemNo(string itemNumber, string warehouse)
         {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
             var projectNumbers = await _tipsWarehouseDbContext.Inventories
-                                .Where(x => x.PartNumber == itemNumber && x.Warehouse == warehouse)
+                                .Where(x => x.PartNumber == itemNumber && x.Warehouse == warehouse && !skipWareHouse.Contains(x.Warehouse))
                                 .Select(s => new LocationDetailsDto()
                                 {
                                     LocationName = s.Location,
