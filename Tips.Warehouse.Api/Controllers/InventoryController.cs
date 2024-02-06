@@ -653,10 +653,10 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetStockDetailsForAllLocationWarehouseByItemNo(string itemNumber)
         {
-            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+            ServiceResponse<decimal?> serviceResponse = new ServiceResponse<decimal?>();
             try
             {
-                decimal InventoryDetails = await _inventoryRepository.GetStockDetailsForAllLocationWarehouseByItemNo(itemNumber);
+                decimal? InventoryDetails = await _inventoryRepository.GetStockDetailsForAllLocationWarehouseByItemNo(itemNumber);
                 if (InventoryDetails == null)
                 {
                     serviceResponse.Data = null;
@@ -669,11 +669,11 @@ namespace Tips.Warehouse.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Inventory with Itemnumber: {itemNumber}");
-                    //var result = InventoryDetails;
-                    //serviceResponse.Data = result;
-                    //serviceResponse.Message = "Returned InventoryDetails with id Successfully";
-                    //serviceResponse.Success = true;
-                    //serviceResponse.StatusCode = HttpStatusCode.OK;
+                    var result = InventoryDetails;
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned InventoryDetails with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(InventoryDetails);
                 }
             }

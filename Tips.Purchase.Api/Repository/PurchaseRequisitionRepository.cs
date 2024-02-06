@@ -237,7 +237,20 @@ namespace Tips.Purchase.Api.Repository
 
             return purchaseRequisitionDetail;
         }
+        public async Task<PurchaseRequisition> GetPurchaseRequisitionByPRNo(string prNumber)
+        {
+            var purchaseRequisitionDetail = await _tipsPurchaseDbContext.PurchaseRequisitions
+            .Where(x => x.PrNumber == prNumber).OrderByDescending(x=>x.RevisionNumber)            
+            .Include(t => t.PrItemsDtoList)
+            .ThenInclude(x => x.prAddprojectsDtoList)
+            .Include(m => m.PrItemsDtoList)
+            .ThenInclude(i => i.prAddDeliverySchedulesDtoList)
+            .Include(itm => itm.PrItemsDtoList)
+             .ThenInclude(pr => pr.prSpecialInstructionsDtoList)
+            .FirstOrDefaultAsync();
 
+            return purchaseRequisitionDetail;
+        }        
         public async Task<IEnumerable<PurchaseRequisition>> SearchPurchaseRequisitionDate([FromQuery] SearchDatesParams searchDatesParams)
         {
             var purchaseRequsisitionDetails = _tipsPurchaseDbContext.PurchaseRequisitions
