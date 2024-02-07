@@ -125,7 +125,7 @@ namespace Tips.SalesService.Api.Controllers
                                                                                                                                             "ItemNumber=", quoteItems.ItemNumber));
                             var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                             dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                            dynamic inventoryObject = inventoryObjectData;
+                            dynamic inventoryObject = inventoryObjectData.data;
 
                             // Convert double to decimal
                             decimal availableStock = Convert.ToDecimal(inventoryObject);
