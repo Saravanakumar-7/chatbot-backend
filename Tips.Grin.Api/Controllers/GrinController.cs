@@ -45,6 +45,7 @@ namespace Tips.Grin.Api.Controllers
     {
         private IGrinRepository _repository;
         private IGrinPartsRepository _grinPartsRepository;
+        private IWeightedAvgRateRepository _weightedAvgRateRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IDocumentUploadRepository _documentUploadRepository;
@@ -55,11 +56,12 @@ namespace Tips.Grin.Api.Controllers
 
 
         public GrinController(IGrinRepository repository, IHttpContextAccessor httpContextAccessor, IDocumentUploadRepository documentUploadRepository, IGrinPartsRepository grinPartsRepository,
-            IWebHostEnvironment webHostEnvironment, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+            IWeightedAvgRateRepository weightedAvgRateRepository,IWebHostEnvironment webHostEnvironment, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _repository = repository;
             _httpContextAccessor = httpContextAccessor;
             _grinPartsRepository = grinPartsRepository;
+            _weightedAvgRateRepository = weightedAvgRateRepository;
             _logger = logger;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
@@ -2044,6 +2046,47 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult>GetWeighted_AvgRateDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        {
+            ServiceResponse<IEnumerable<WeightedAvgRateDto>> serviceResponse = new ServiceResponse<IEnumerable<WeightedAvgRateDto>>();
+
+            try
+            {
+                var avgDetails = await _weightedAvgRateRepository.GetWeighted_AvgRateDetails(pagingParameter, searchParams);
+                var metadata = new
+                {
+                    avgDetails.TotalCount,
+                    avgDetails.PageSize,
+                    avgDetails.CurrentPage,
+                    avgDetails.HasNext,
+                    avgDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
+                _logger.LogInfo("Returned all avgDetails");
+
+                var result = _mapper.Map<IEnumerable<WeightedAvgRateDto>>(avgDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all GrinsParts Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        
 
     }
 }
