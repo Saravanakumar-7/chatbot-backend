@@ -238,6 +238,19 @@ namespace Repository
 
             return itemNumberListDto;
         }
+        public async Task<IEnumerable<ItemNoListDtos>> GetAllIsPRRequiredStatusTruePPItemNoList()
+        {
+            IEnumerable<ItemNoListDtos> itemNumberListDto = await TipsMasterDbContext.ItemMasters
+                               .Where(x => x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG && x.IsPRRequired == true)
+                               .Select(c => new ItemNoListDtos()
+                               {
+                                   ItemNumber = c.ItemNumber,
+                                   Description = c.Description,
+                               })
+                             .ToListAsync();
+
+            return itemNumberListDto;
+        }
         public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllFgTgItemMasterItemNoList()
         {
             IEnumerable<ItemMasterIdNoListDto> getAllActiveItemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters
@@ -396,6 +409,23 @@ namespace Repository
 
             return itemMasterIdNoListDto;
         }
+
+        public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllOpenGrinStatusTrueItemMasterIdNoList()
+        {
+            IEnumerable<ItemMasterIdNoListDto> itemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters
+                                .Where(x => x.OpenGrin == true)
+                                .Select(c => new ItemMasterIdNoListDto()
+                                {
+                                    id = c.Id,
+                                    ItemNumber = c.ItemNumber,
+                                    Description = c.Description,
+                                    Uom = c.Uom
+                                })
+                              .ToListAsync();
+
+            return itemMasterIdNoListDto;
+        }
+
         public async Task<IEnumerable<FileUpload>> GetAllItemMasterFileUploadList(string itemNumber)
         {
             IEnumerable<FileUpload> itemMasterFileUploadList = await TipsMasterDbContext.fileUploads

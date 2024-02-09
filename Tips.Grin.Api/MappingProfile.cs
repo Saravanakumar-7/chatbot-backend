@@ -10,6 +10,7 @@ namespace Tips.Grin.Api
         public MappingProfile()
         {
             CreateMap<Grin_ReportSP, GrinReportWithParam>().ReverseMap();
+            CreateMap<ProjectNumbersDtoPost, GrinUpdateProjectBalQtyDetailsDto>().ReverseMap();
 
             CreateMap<Grins, GrinDto>().ReverseMap();
             CreateMap<Grins, GrinPostDto>().ReverseMap();

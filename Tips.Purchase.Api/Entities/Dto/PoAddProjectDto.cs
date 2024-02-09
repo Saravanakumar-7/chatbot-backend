@@ -9,7 +9,9 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal ProjectQty { get; set; }
- 
+        public decimal BalanceQty { get; set; }
+        public decimal ReceivedQty { get; set; }
+
     }
     public class PoAddProjectPostDto
     {
@@ -25,7 +27,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal ProjectQty { get; set; }
-   
+
     }
     public class PoAddProjectReportDto
     {
@@ -35,6 +37,15 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? ProjectNumber { get; set; }
 
         [Precision(13, 3)]
+        public decimal ProjectQty { get; set; }
+        public decimal BalanceQty { get; set; }
+        public decimal ReceivedQty { get; set; }
+
+    }
+    public class PoProjectNoUpdateQtyDetailsDto
+    {
+        public string ItemNumber { get; set; }
+        public string ProjectNumber { get; set; }
         public decimal ProjectQty { get; set; }
 
     }

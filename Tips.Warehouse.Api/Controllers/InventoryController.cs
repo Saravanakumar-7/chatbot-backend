@@ -934,6 +934,53 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        //passing list of item number in consumption report
+        [HttpPost]
+        public async Task<IActionResult> GetConsumptionInventoryByItemAndProjectNotest2(List<InventoryItemNoAndProjectNoDto> ItemNoAndProjectNoList)
+        {
+            ServiceResponse<List<ConsumptionInventoryByProjectNoDto>> serviceResponse = new ServiceResponse<List<ConsumptionInventoryByProjectNoDto>>();
+
+            try
+            {
+                foreach (var item in ItemNoAndProjectNoList)
+                {
+
+                    var InventoryDetails = await _inventoryRepository.GetConsumptionInventoryByItemNoAndProjectNotest1(item.FGItemNumber, item.ProjectNumber);
+
+                    if (InventoryDetails == null || InventoryDetails.Count <=0)
+                    {
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"Inventory Details hasn't been found";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        _logger.LogError($"Inventory with itemNumber and ProjectNumber is invalid");
+                        return NotFound(serviceResponse);
+
+                    }
+                    else
+                    {
+                        _logger.LogInfo($"Returned Inventory with Itemnumber and ProjectNumber");
+                        var result = _mapper.Map<List<ConsumptionInventoryByProjectNoDto>>(InventoryDetails);
+                        serviceResponse.Data = result;
+                        serviceResponse.Message = "Returned InventoryDetails with id Successfully";
+                        serviceResponse.Success = true;
+                        serviceResponse.StatusCode = HttpStatusCode.OK;
+                        return Ok(serviceResponse);
+                    }
+                }
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in inventory action GetConsumptionInventoryByItemAndProjectNotest2: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         //consumption report by itemnumber
         [HttpGet]
@@ -998,6 +1045,45 @@ namespace Tips.Warehouse.Api.Controllers
                     //var result = _mapper.Map<ConsumptionChildItemInventoryDto>(InventoryDetails);
                     serviceResponse.Data = InventoryDetails;
                     serviceResponse.Message = "Returned InventoryDetails with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"In GetConsumptionChildItemStockWithWipQty error: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetConsumptionChildItemStockWithWipQtyByProjectNo(string projectNo,List<string> itemNumberList)
+        {
+            ServiceResponse<List<ConsumptionChildItemInventoryDto>> serviceResponse = new ServiceResponse<List<ConsumptionChildItemInventoryDto>>();
+            try
+            {
+                var InventoryDetails = await _inventoryRepository.GetConsumptionChildItemStockWithWipQtyByProjectNo(projectNo,itemNumberList);
+                if (InventoryDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory Details hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"In GetConsumptionChildItemStockWithWipQtyByProjectNo ItemNumber List is Empty");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with Itemnumber List and projectNo in GetConsumptionChildItemStockWithWipQtyByProjectNo");
+                    //var result = _mapper.Map<ConsumptionInventoryDto>(InventoryDetails);
+                    //var result = _mapper.Map<ConsumptionChildItemInventoryDto>(InventoryDetails);
+                    serviceResponse.Data = InventoryDetails;
+                    serviceResponse.Message = "Returned InventoryDetails with Itemnumber List and projectNo  Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -2326,6 +2412,30 @@ namespace Tips.Warehouse.Api.Controllers
             try
             {
                 decimal stockAvailable = await _inventoryRepository.GetTotalStockOfItemNumber(saItemNumber);
+
+                inventoryServiceResponse.Data = stockAvailable;
+                inventoryServiceResponse.Message = "Retrieved stock available quantity";
+                inventoryServiceResponse.Success = true;
+
+                return Ok(inventoryServiceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeleteInventory action: {ex.Message}");
+                inventoryServiceResponse.Success = false;
+                inventoryServiceResponse.Message = "Error getting stock available";
+                return StatusCode(500, inventoryServiceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<ActionResult<decimal>> GetTotalStockOfSAItemNumberAndProjectNo(string saItemNumber , string projectNumber)
+        {
+            var inventoryServiceResponse = new ServiceResponse<decimal>();
+
+            try
+            {
+                decimal stockAvailable = await _inventoryRepository.GetTotalStockOfSAItemNumberAndProjectNo(saItemNumber,projectNumber);
 
                 inventoryServiceResponse.Data = stockAvailable;
                 inventoryServiceResponse.Message = "Retrieved stock available quantity";

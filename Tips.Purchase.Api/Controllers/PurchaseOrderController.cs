@@ -45,11 +45,12 @@ namespace Tips.Purchase.Api.Controllers
         private IPRItemsDocumentUploadRepository _pRItemsDocumentUploadRepository;
         private IConfiguration _config;
         private IPrItemsRepository _purchaseRequisitionItemRepository;
+        private IPoAddprojectRepository _poAddprojectRepository;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public PurchaseOrderController(IPrItemsRepository purchaseRequisitionItemRepository,IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository,IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
+        public PurchaseOrderController(IPrItemsRepository purchaseRequisitionItemRepository,IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository,IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository,IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository,IPoAddprojectRepository poAddprojectRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
             _poItemsRepository = poItemsRepository;
@@ -63,6 +64,7 @@ namespace Tips.Purchase.Api.Controllers
             _poConfirmationDateRepository = poConfirmationDateRepository;
             _pRItemsDocumentUploadRepository = pRItemsDocumentUploadRepository;
             _purchaseRequisitionItemRepository = purchaseRequisitionItemRepository;
+            _poAddprojectRepository = poAddprojectRepository;
             _config = config;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
@@ -541,6 +543,32 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetListOfOpenPOQtyByItemNoListByProjectNo(string projectNo,List<string> itemNumberList)
+        {
+            //openpurchaseorderdto
+            ServiceResponse<IEnumerable<OpenPoQuantityDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenPoQuantityDto>>();
+            try
+            {
+                var revNumberDetailsbyPONumber = await _poItemsRepository.GetListOfOpenPOQtyByItemNoListByProjectNo(projectNo,itemNumberList);
+                var result = _mapper.Map<IEnumerable<OpenPoQuantityDto>>(revNumberDetailsbyPONumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Open PurchaseOrder Details By ProjectNo and ItemNo List";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetListOfOpenPOQtyByItemNoListByProjectNo action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetPRNumberandQtyListByItemNumber(string itemMaster)
         {
@@ -1012,6 +1040,12 @@ namespace Tips.Purchase.Api.Controllers
                         poItemDetails.PoPartsStatus = false;
                         poItemDetails.PONumber = purchaseOrderDetails.PONumber;
                         poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                        for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                        {
+                            PoAddProject poaddproject = poItemDetails.POAddprojects[j];
+                            poaddproject.BalanceQty = poaddproject.ProjectQty;
+                        }
+
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
                         poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
                         //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
@@ -1814,6 +1848,12 @@ namespace Tips.Purchase.Api.Controllers
                         poItemDetails.BalanceQty = poItemDto[i].Qty;
                         poItemDetails.PoPartsStatus = false;                        
                         poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                        for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                        {
+                            PoAddProject poaddproject = poItemDetails.POAddprojects[j];
+                            poaddproject.BalanceQty = poaddproject.ProjectQty;
+                        }
+
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
                         poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
                         //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
@@ -1942,6 +1982,50 @@ namespace Tips.Purchase.Api.Controllers
             _poItemsRepository.SaveAsync();
             return Ok();
         }
+
+        //pass data from grin using _httpclient service to purchase
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePoProjectNoBalanceQtyDetails([FromBody] List<PoProjectNoUpdateQtyDetailsDto> poProjectNoUpdateBalQtyDetails)
+        {
+            foreach (var item in poProjectNoUpdateBalQtyDetails)
+            {
+                IEnumerable<PoAddProject> poProjectNoDetails = await _poAddprojectRepository.GetPOProjectNoDetailsByProjectNo(item.ItemNumber,item.ProjectNumber);
+                //var PoorderItem = poItems.FirstOrDefault();
+                decimal dispatchedQty = item.ProjectQty;
+
+                foreach (var poProjectNos in poProjectNoDetails)
+                {
+                    poProjectNos.ReceivedQty = item.ProjectQty;
+                    if (poProjectNos.BalanceQty >= dispatchedQty)
+                    {
+                        if (poProjectNos.BalanceQty == dispatchedQty)
+                        {
+                            poProjectNos.PoAddProjectStatus = true;
+                        }
+                        poProjectNos.BalanceQty -= dispatchedQty;
+                        dispatchedQty = 0;
+                        break;
+                    }
+                    else
+                    {
+                        dispatchedQty -= poProjectNos.BalanceQty;
+                        poProjectNos.BalanceQty = 0;
+                    }
+
+                    await _poAddprojectRepository.UpdatePoAddproject(poProjectNos);
+
+                    if (dispatchedQty <= 0)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            _poAddprojectRepository.SaveAsync();
+            return Ok();
+        }
+
         //pass data from grin qty using _httpclient service to purchase
 
         [HttpPost]

@@ -314,9 +314,8 @@ namespace Tips.Grin.Api.Repository
                     .Include(item => item.GrinParts)
                     .ThenInclude(pr => pr.ProjectNumbers)
                     .Include(item => item.GrinParts)
-                    .ThenInclude(pr => pr.CoCUpload)
-                    .Include(o => o.OtherCharges)
-                    .Include(item => item.GrinDocuments);
+                    .Include(o => o.OtherCharges);
+                    //.Include(item => item.GrinDocuments);
                 }
                 return query.ToList();
             }
@@ -330,9 +329,8 @@ namespace Tips.Grin.Api.Repository
             .Include(itm => itm.GrinParts)
             .ThenInclude(pr => pr.ProjectNumbers)
             .Include(item => item.GrinParts)
-                    .ThenInclude(pr => pr.CoCUpload)
                     .Include(o => o.OtherCharges)
-                     .Include(item => item.GrinDocuments)
+                     //.Include(item => item.GrinDocuments)
             .ToList();
             return grinDetails;
         }
@@ -346,7 +344,7 @@ namespace Tips.Grin.Api.Repository
                     query = query.Where(po => po.GrinNumber.Contains(searchParames.SearchValue)
                     || po.VendorName.Contains(searchParames.SearchValue)
                     || po.InvoiceDate.ToString().Contains(searchParames.SearchValue)
-                   //|| po.InvoiceNumber.Equals(int.Parse(searchParames.SearchValue))
+                                   //|| po.InvoiceNumber.Equals(int.Parse(searchParames.SearchValue))
                                    || po.VendorId.Contains(searchParames.SearchValue)
                     || po.GrinParts.Any(s => s.ItemNumber.Contains(searchParames.SearchValue) ||
                     s.ItemDescription.Contains(searchParames.SearchValue)
@@ -355,9 +353,9 @@ namespace Tips.Grin.Api.Repository
                         .Include(item => item.GrinParts)
                     .ThenInclude(pr => pr.ProjectNumbers)
                     .Include(item => item.GrinParts)
-                    .ThenInclude(pr => pr.CoCUpload)
-                    .Include(o => o.OtherCharges)
-                    .Include(item => item.GrinDocuments); 
+                    //.ThenInclude(pr => pr.CoCUpload)
+                    .Include(o => o.OtherCharges);
+                    //.Include(item => item.GrinDocuments); 
                 }
                 return query.ToList();
             }

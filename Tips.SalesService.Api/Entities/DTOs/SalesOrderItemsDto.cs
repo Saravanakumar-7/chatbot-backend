@@ -354,6 +354,22 @@ namespace Tips.SalesService.Api.Entities.Dto
 
 
     }
+    public class SalesOrderFGandBalanceQtyByProjectNo
+    {
+        public string? FGItemNumber { get; set; }
+        public string? Description { get; set; }
+        public string? ProjectNumber { get; set; }
+        public decimal Balance_Qty { get; set; }
+        public PartType PartType { get; set; }
+
+
+    }
+    public class SalesOrderItemNoAndProjectNoDto
+    {
+        public string? FGItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
+
     public class SoItemConfirmationDateDto
     {
         public int SalesOrderId { get; set; }
