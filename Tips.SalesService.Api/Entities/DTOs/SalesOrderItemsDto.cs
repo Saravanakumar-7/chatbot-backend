@@ -358,6 +358,7 @@ namespace Tips.SalesService.Api.Entities.Dto
     {
         public string? FGItemNumber { get; set; }
         public string? Description { get; set; }
+        public string? UOM { get; set; }
         public string? ProjectNumber { get; set; }
         public decimal Balance_Qty { get; set; }
         public PartType PartType { get; set; }

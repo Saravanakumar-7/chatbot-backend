@@ -1261,7 +1261,9 @@ namespace Tips.Purchase.Api.Controllers
                             PONumber = src.PONumber,
                             ItemNumber = src.ItemNumber,
                             ProjectNumber = PoAddProject.ProjectNumber,
-                            ProjectQty = PoAddProject.ProjectQty
+                            ProjectQty = PoAddProject.ProjectQty,
+                            BalanceQty = PoAddProject.BalanceQty,
+                            ReceivedQty = PoAddProject.ReceivedQty
                         })
                             )
                         )
@@ -1345,7 +1347,9 @@ namespace Tips.Purchase.Api.Controllers
                             PONumber = src.PONumber,
                             ItemNumber = src.ItemNumber,
                             ProjectNumber = PoAddProject.ProjectNumber,
-                            ProjectQty = PoAddProject.ProjectQty
+                            ProjectQty = PoAddProject.ProjectQty,
+                            BalanceQty = PoAddProject.BalanceQty,
+                            ReceivedQty = PoAddProject.ReceivedQty
                         })
                             )
                         )
@@ -1427,7 +1431,9 @@ namespace Tips.Purchase.Api.Controllers
                             PONumber = src.PONumber,
                             ItemNumber = src.ItemNumber,
                             ProjectNumber = PoAddProject.ProjectNumber,
-                            ProjectQty = PoAddProject.ProjectQty
+                            ProjectQty = PoAddProject.ProjectQty,
+                            BalanceQty = PoAddProject.BalanceQty,
+                            ReceivedQty = PoAddProject.ReceivedQty
                         })
                             )
                         )

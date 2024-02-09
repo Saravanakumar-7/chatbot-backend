@@ -154,6 +154,7 @@ namespace Tips.SalesService.Api.Controllers
                                             ItemNumber = salesOrderDetails.FGItemNumber,
                                             Description = salesOrderDetails.Description,
                                             ProjectNumber = salesOrderDetails.ProjectNumber,
+                                            UOM = salesOrderDetails.UOM,
                                             TotalRequiredQty = salesOrderDetails.Balance_Qty,
                                             PartType = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault()
                                         };
@@ -217,6 +218,7 @@ namespace Tips.SalesService.Api.Controllers
                                 ItemNumber = salesOrderDetails.FGItemNumber,
                                 Description = salesOrderDetails.Description,
                                 ProjectNumber = salesOrderDetails.ProjectNumber,
+                                UOM = salesOrderDetails.UOM,
                                 TotalRequiredQty = salesOrderDetails.Balance_Qty,
                                 PartType = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault()
                             };
@@ -486,6 +488,7 @@ namespace Tips.SalesService.Api.Controllers
                                     ItemNumber = item.ItemNumber,
                                     Description = item.Description,
                                     ProjectNumber = projectNumber,
+                                    UOM = item.UOM,
                                     PartType = item.PartType,
                                     RequiredQty = item.RequiredQty,
                                     Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),

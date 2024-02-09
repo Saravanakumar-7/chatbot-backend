@@ -2503,6 +2503,7 @@ namespace Tips.Master.Api.Controllers
                         {
                             ItemNumber = group.Key,
                             Description = group.First().Description,
+                            UOM = group.First().UOM,
                             PartType = group.First().PartType,
                             RequiredQty = group.Sum(item => item.RequiredQty)
                         })
@@ -2611,6 +2612,7 @@ namespace Tips.Master.Api.Controllers
                             {
                                 ItemNumber = enggChildItem.ItemNumber,
                                 Description = enggChildItem.Description,
+                                UOM = enggChildItem.UOM,
                                 PartType = enggChildItem.PartType,
                                 RequiredQty = enggChildItem.Quantity * requiredQty
 

@@ -27,6 +27,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
         public string? ProjectNumber { get; set; }
+        public string? UOM { get; set; }
         public PartType PartType { get; set; }
         public decimal? OpenSOQty { get; set; }
         public decimal Stock { get; set; }

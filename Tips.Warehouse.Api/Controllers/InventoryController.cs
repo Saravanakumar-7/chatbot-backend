@@ -674,7 +674,7 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.Message = "Returned InventoryDetails with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(InventoryDetails);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
