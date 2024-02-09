@@ -11,6 +11,7 @@ namespace Tips.Grin.Api
         {
             CreateMap<Grin_ReportSP, GrinReportWithParam>().ReverseMap();
             CreateMap<ProjectNumbersDtoPost, GrinUpdateProjectBalQtyDetailsDto>().ReverseMap();
+            CreateMap<WeightedAvgRate, WeightedAvgRateDto>().ReverseMap();
 
             CreateMap<Grins, GrinDto>().ReverseMap();
             CreateMap<Grins, GrinPostDto>().ReverseMap();
