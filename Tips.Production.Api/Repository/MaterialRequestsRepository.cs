@@ -190,6 +190,8 @@ namespace Tips.Production.Api.Repository
 
         public async Task<string> UpdateMaterialRequest(MaterialRequests request)
         {
+            request.IssuedBy = _createdBy;
+            request.IssuedOn = DateTime.Now;
             request.LastModifiedBy = _createdBy;
             request.LastModifiedOn = DateTime.Now;
             Update(request);
