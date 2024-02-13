@@ -2885,7 +2885,7 @@ namespace Tips.Purchase.Api.Controllers
                 }
                 else
                 {
-                    var result = _mapper.Map<IEnumerable<Tras_POSPReportDTO>>(products);
+                    var result = _mapper.Map<IEnumerable<Tras_POSPReport>>(products);
 
                     serviceResponse.Data = products;
                     serviceResponse.Message = "Returned Tras_PurchaseOrder Details";
