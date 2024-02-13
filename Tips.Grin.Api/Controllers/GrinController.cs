@@ -853,6 +853,32 @@ namespace Tips.Grin.Api.Controllers
                 }
                 var responses = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdateBalanceQtyDetails"), datas);
 
+                ////update balance qty  in PoAddProject table for grin concept
+                if (grinPartsDto.Count() > 0)
+                {
+                    foreach (var grinparts in grinPartsDto)
+                    { 
+                        List<GrinUpdateProjectBalQtyDetailsDto> projectNameDtos = new List<GrinUpdateProjectBalQtyDetailsDto>();
+                        foreach (var projectNo in grinparts.ProjectNumbers)
+                        {
+                            var grinPartsProjectNoDtoDetail = _mapper.Map<GrinUpdateProjectBalQtyDetailsDto>(projectNo);
+                            grinPartsProjectNoDtoDetail.ItemNumber = grinparts.ItemNumber;
+                            projectNameDtos.Add(grinPartsProjectNoDtoDetail);
+                        }
+                    
+                            var jsonss = JsonConvert.SerializeObject(projectNameDtos);
+                            var datasss = new StringContent(jsonss, Encoding.UTF8, "application/json");
+                            // Include the token in the Authorization header
+                            var tokens = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                            if (!string.IsNullOrEmpty(tokens) && tokens.StartsWith("Bearer "))
+                            {
+                                var token = tokens.Substring(7);
+                                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                            }
+                            var results = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdatePoProjectNoBalanceQtyDetails"), datasss);
+                        
+                    }
+                }
                 //Update PoStatus in Purchase order And PoItem table
 
                 var grinPartsDetails = _mapper.Map<List<GrinQtyPoStatusUpdateDto>>(grinPartsDto);

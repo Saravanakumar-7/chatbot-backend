@@ -335,6 +335,13 @@ namespace Tips.Warehouse.Api.Entities.DTOs
        public decimal Balance_Quantity { get; set; }
 
     }
+    public class ConsumptionInventoryByProjectNoDto
+    {
+        public string PartNumber { get; set; }
+        public string ProjectNumber { get; set; }
+        public decimal Balance_Quantity { get; set; }
+
+    }
     public class ConsumptionChildItemInventoryDto
     {
         public string PartNumber { get; set; }
@@ -370,6 +377,11 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public string PartNumber { get; set; }
         public string Description { get; set; }
+    }
+    public class InventoryItemNoAndProjectNoDto
+    {
+        public string? FGItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
     }
 
 }

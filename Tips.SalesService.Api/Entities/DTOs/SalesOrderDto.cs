@@ -311,7 +311,15 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal RequiredQty { get; set; }
          
     }
+    public class CoverageReportChildItemReqQtyDataByProjectNoDto
+    {
+        public string ItemNumber { get; set; }
+        public string Description { get; set; }
+        public string UOM { get; set; }
+        public PartType PartType { get; set; }
+        public decimal RequiredQty { get; set; }
 
+    }
 
     public class SalesOrderSPResportDTO
     {

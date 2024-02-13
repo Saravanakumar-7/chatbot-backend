@@ -228,6 +228,33 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllIsPRRequiredStatusTruePPItemNoList()
+        {
+            ServiceResponse<IEnumerable<ItemNoListDtos>> serviceResponse = new ServiceResponse<IEnumerable<ItemNoListDtos>>();
+
+            try
+            {
+                var purchasePartItemNo = await _repository.ItemMasterRepository.GetAllPurchasePartItemNoList();
+                _logger.LogInfo("Returned all IsPRRequiredStatus True ItemNumber with PurchasePart");
+                var result = _mapper.Map<IEnumerable<ItemNoListDtos>>(purchasePartItemNo);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all IsPRRequiredStatusTrue ItemNumberList Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         //test file path 
         //[HttpGet("{filename}")]
         //public async Task<ActionResult> GetFilePath(string filename)
@@ -1651,6 +1678,33 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetAllItemMasterIdNoList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllOpenGrinStatusTrueItemMasterIdNoList()
+        {
+            ServiceResponse<IEnumerable<ItemMasterIdNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterIdNoListDto>>();
+            try
+            {
+                var itemMasterDetails = await _repository.ItemMasterRepository.GetAllItemMasterIdNoList();
+                //_logger.LogInfo("Returned all CustomerMaster");
+                var result = _mapper.Map<IEnumerable<ItemMasterIdNoListDto>>(itemMasterDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all OpenGrinStatusTrue ItemMasterIdNoList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllOpenGrinStatusTrueItemMasterIdNoList action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

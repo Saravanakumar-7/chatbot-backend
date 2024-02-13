@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NLog.Filters;
 using Org.BouncyCastle.Asn1.Misc;
+using System.Reflection;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 using Tips.Purchase.Api.Contracts;
@@ -1476,7 +1477,7 @@ namespace Tips.Purchase.Api.Repository
                      (pi.PoStatus == PoStatus.Open || pi.PoStatus == PoStatus.PartiallyClosed)
                  )
              )
-             .Select(x => x.Id) 
+             .Select(x => x.Id)
              .ToListAsync(); // Assuming you want to materialize the result as a list
 
             openPurchaseOrderDto = await _tipsPurchaseDbContext.PoItems.
@@ -1489,7 +1490,59 @@ namespace Tips.Purchase.Api.Repository
                }).FirstOrDefaultAsync();
 
             return openPurchaseOrderDto;
-            
+
+        }
+        public async Task<OpenPurchaseOrderByProjectNoDto?> GetOpenPOTGDetailsByItemAndProjecNoForCoverage(string itemNumber, string projectNo)
+        {
+            OpenPurchaseOrderByProjectNoDto? openPurchaseOrderDto = new OpenPurchaseOrderByProjectNoDto();
+            var openPoNumbers = await _tipsPurchaseDbContext.PurchaseOrders
+            .Where(po =>
+                 (po.Status == Status.Open || po.Status == Status.PartiallyClosed) &&
+                 po.IsDeleted == false &&
+                 po.IsShortClosed == false &&
+                 po.POApprovalI == true &&
+                 po.POApprovalII == true &&
+                 po.IsModified == false &&
+                 po.POItems.Any(pi =>
+                     pi.ItemNumber == itemNumber &&
+                     pi.BalanceQty > 0 &&
+                     pi.PartType == PoPartType.TG &&
+                     (pi.PoStatus == PoStatus.Open || pi.PoStatus == PoStatus.PartiallyClosed) &&
+                     pi.POAddprojects.Any(pr => pr.ProjectNumber == projectNo)
+                 )
+             )
+             .Select(x => x.Id)
+             .ToListAsync(); // Assuming you want to materialize the result as a list
+
+            openPurchaseOrderDto = await _tipsPurchaseDbContext.PoItems.
+                Where(x => x.ItemNumber == itemNumber && openPoNumbers.Contains(x.PurchaseOrderId) && x.POAddprojects.Any(pr => pr.ProjectNumber == projectNo))
+                .GroupBy(g => new { g.ItemNumber })
+                .Select(group => new OpenPurchaseOrderByProjectNoDto
+                {
+                    ItemNumber = group.Key.ItemNumber,
+
+                    BalanceQty = group.Sum(c => c.BalanceQty)
+                }).FirstOrDefaultAsync();
+
+            return openPurchaseOrderDto;
+            //    openPurchaseOrderDto = await (
+            //    from poItem in _tipsPurchaseDbContext.PoItems
+            //    join poAddProject in _tipsPurchaseDbContext.PoAddProjects
+            //        on poItem.Id equals poAddProject.POItemDetailId
+            //    where openPoNumbers.Contains(poItem.PurchaseOrderId)
+            //          && poItem.ItemNumber == itemNumber && poAddProject.ProjectNumber == projectNo
+            //    group new { poItem, poAddProject } by new { poItem.ItemNumber, poAddProject.ProjectNumber } into grouped
+            //    select new OpenPurchaseOrderByProjectNoDto
+            //    {
+            //        ItemNumber = grouped.Key.ItemNumber,
+            //        ProjectNumber = grouped.Key.ProjectNumber,
+            //        BalanceQty = grouped.Sum(x => x.poItem.BalanceQty)
+            //    }
+            //).FirstOrDefaultAsync();
+
+            //return openPurchaseOrderDto;
+
+
         }
         public async Task<List<OpenPurchaseOrderDto>> GetOpenPODetailsByItem(string itemNumber)
         {
@@ -1521,6 +1574,24 @@ namespace Tips.Purchase.Api.Repository
                 .Where(x => poStatus.Contains(x.PurchaseOrder.PoStatus) && poStatus.Contains(x.PoStatus)
                     && itemNumberList.Contains(x.ItemNumber) && x.PurchaseOrder.IsDeleted == false
                     && x.PurchaseOrder.IsModified == false)
+                .GroupBy(i => new { i.ItemNumber })
+                .Select(gr => new OpenPoQuantityDto
+                {
+                    ItemNumber = gr.Key.ItemNumber,
+                    OpenPoQty = gr.Sum(x => x.BalanceQty)
+                }).ToListAsync();
+            return openPoQtyList;
+
+        }
+        public async Task<List<OpenPoQuantityDto>> GetListOfOpenPOQtyByItemNoListByProjectNo(string projectNo ,List<string> itemNumberList)
+        {
+            var poStatus = new List<PoStatus> { PoStatus.Open, PoStatus.PartiallyClosed };
+
+            List<OpenPoQuantityDto> openPoQtyList = await _tipsPurchaseDbContext.PoItems
+                .Include(x => x.PurchaseOrder)
+                .Where(x => poStatus.Contains(x.PurchaseOrder.PoStatus) && poStatus.Contains(x.PoStatus)
+                    && itemNumberList.Contains(x.ItemNumber) && x.PurchaseOrder.IsDeleted == false
+                    && x.PurchaseOrder.IsModified == false && x.POAddprojects.Any(pr =>pr.ProjectNumber == projectNo))
                 .GroupBy(i => new { i.ItemNumber })
                 .Select(gr => new OpenPoQuantityDto
                 {
@@ -1563,4 +1634,64 @@ namespace Tips.Purchase.Api.Repository
 
 
     }
-}
+    public class PoAddprojectRepository : RepositoryBase<PoAddProject>, IPoAddprojectRepository
+    {
+        private TipsPurchaseDbContext _tipsPurchaseDbContexts;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public PoAddprojectRepository(TipsPurchaseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        {
+            _tipsPurchaseDbContexts = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+        }
+        public async Task<IEnumerable<PoAddProject>> GetPOProjectNoDetailsByProjectNo(string itemNumber,string projectNo)
+        {
+            var poItemsDetailsByitemNo = await _tipsPurchaseDbContexts.PoItems
+                 .Where(x => x.ItemNumber == itemNumber)
+                 .Select(x =>x.Id)
+                          .ToListAsync();
+
+            var poProjectNoDetailsByProjectNo = await _tipsPurchaseDbContexts.PoAddProjects
+                 .Where(x => x.ProjectNumber == projectNo && x.PoAddProjectStatus != true && poItemsDetailsByitemNo.Contains(x.POItemDetailId))
+                          .ToListAsync();
+
+            return poProjectNoDetailsByProjectNo;
+        }
+        public Task<IEnumerable<PoAddProject>> GetAllPoAddprojects()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<PoAddProject> GetPoAddprojectById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable<PoAddProject>> GetAllActivePoAddprojects()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int?> CreatePoAddproject(PoAddProject poAddproject)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<string> UpdatePoAddproject(PoAddProject poAddproject)
+        {
+            Update(poAddproject);
+            string result = $"PoAddproject of Detail {poAddproject.Id} is updated successfully!";
+            return result;
+        }
+
+        public Task<string> DeletePoAddproject(PoAddProject poAddproject)
+        {
+            throw new NotImplementedException();
+        }
+    }
+ }

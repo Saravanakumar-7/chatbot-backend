@@ -855,6 +855,24 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryDetails;
         }
+        public async Task<List<ConsumptionInventoryByProjectNoDto>> GetConsumptionInventoryByItemNoAndProjectNotest1(string ItemNumber,string projectNo)
+        {
+            List<PartType>? partTypes = new List<PartType> { PartType.FG, PartType.TG };
+
+            var inventoryDetails = await _tipsWarehouseDbContext.Inventories
+            .Where(x => x.PartNumber == ItemNumber && x.ProjectNumber == projectNo && x.IsStockAvailable == true && x.Balance_Quantity > 0
+            && partTypes.Contains(x.PartType) /*&& x.Warehouse =="FG"*/)
+            .GroupBy(x =>new { x.PartNumber,x.ProjectNumber })
+            .Select(group => new ConsumptionInventoryByProjectNoDto
+            {
+                PartNumber = group.Key.PartNumber,
+                ProjectNumber = group.Key.ProjectNumber,
+                Balance_Quantity = group.Sum(x => x.Balance_Quantity) // Calculate the sum of quantities
+            })
+            .ToListAsync();
+
+            return inventoryDetails;
+        }
 
         public async Task<ConsumptionInventoryDto> GetConsumptionInventoryByItemNo(string itemNumber)
         {
@@ -903,6 +921,31 @@ namespace Tips.Warehouse.Api.Repository
 
             var itemStock = await _tipsWarehouseDbContext.Inventories
                 .Where(x => itemNumberList.Contains(x.PartNumber) && x.IsStockAvailable == true && x.Balance_Quantity > 0 &&
+                            partTypes.Contains(x.PartType) && !skipWareHouse.Contains(x.Warehouse))
+                .GroupBy(x => x.PartNumber)
+                .Select(group => new ConsumptionChildItemInventoryDto
+                {
+                    PartNumber = group.Key,
+                    BalanceQuantity = group.Any(x => x.Warehouse != wipWarehouse)
+                        ? group.Where(x => x.Warehouse != wipWarehouse).Sum(x => x.Balance_Quantity)
+                        : 0, // Sum Balance_Quantity only when Warehouse is not "WIP"
+                    WipQuantity = group.Any(x => x.Warehouse == wipWarehouse)
+                        ? group.Where(x => x.Warehouse == wipWarehouse).Sum(x => x.Balance_Quantity)
+                        : 0 // Set WIPQty based on presence of WIP warehouse
+                })
+                .ToListAsync();
+
+            return itemStock;
+        }
+        public async Task<List<ConsumptionChildItemInventoryDto>> GetConsumptionChildItemStockWithWipQtyByProjectNo(string projectNo,List<string> itemNumberList)
+        {
+            var partTypes = new PartType[] { PartType.PurchasePart };
+            string[] skipWareHouse = { "Reject", "Scrap", "Rework", "FG" };
+
+            string wipWarehouse = "WIP";
+
+            var itemStock = await _tipsWarehouseDbContext.Inventories
+                .Where(x => itemNumberList.Contains(x.PartNumber)&& x.ProjectNumber == projectNo && x.IsStockAvailable == true && x.Balance_Quantity > 0 &&
                             partTypes.Contains(x.PartType) && !skipWareHouse.Contains(x.Warehouse))
                 .GroupBy(x => x.PartNumber)
                 .Select(group => new ConsumptionChildItemInventoryDto
@@ -1163,6 +1206,15 @@ namespace Tips.Warehouse.Api.Repository
             return await _tipsWarehouseDbContext.Inventories
         .Where(i => i.PartNumber == itemNumber && i.IsStockAvailable == true && i.Balance_Quantity > 0
                 && !locationNames.Contains(i.Location))
+        .SumAsync(i => i.Balance_Quantity);
+        }
+
+        public async Task<decimal> GetTotalStockOfSAItemNumberAndProjectNo(string itemNumber , string projectNo)
+        {
+            var locationNames = new string[] { "Rework", "Scrap" };
+            return await _tipsWarehouseDbContext.Inventories
+        .Where(i => i.PartNumber == itemNumber && i.ProjectNumber == projectNo && i.IsStockAvailable == true && i.Balance_Quantity > 0
+                && !locationNames.Contains(i.Location) && i.PartType == PartType.SA)
         .SumAsync(i => i.Balance_Quantity);
         }
 

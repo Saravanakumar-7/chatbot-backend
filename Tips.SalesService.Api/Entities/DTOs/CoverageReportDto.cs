@@ -69,5 +69,19 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? BalanceToOrder { get; set; }
         
     }
+    public class CoverageReportByProjectNumberDtoForChildItem
+    {
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? UOM { get; set; }
+        public PartType PartType { get; set; }
+        public decimal? RequiredQty { get; set; }
+        public decimal? Stock { get; set; }
+        public decimal? WipQty { get; set; }
+        public decimal? OpenPoQty { get; set; }
+        public decimal? BalanceToOrder { get; set; }
+
+    }
 
 }
