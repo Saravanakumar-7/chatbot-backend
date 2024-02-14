@@ -2614,6 +2614,7 @@ namespace Tips.Master.Api.Controllers
                                 Description = enggChildItem.Description,
                                 UOM = enggChildItem.UOM,
                                 PartType = enggChildItem.PartType,
+                                //if(enggChildItem.ScrapAllowanceType )
                                 RequiredQty = enggChildItem.Quantity * requiredQty
 
                             };

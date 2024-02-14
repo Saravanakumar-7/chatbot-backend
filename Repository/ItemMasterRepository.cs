@@ -464,6 +464,15 @@ namespace Repository
             return getItemMasterByItemNo;
         }
 
+        public async Task<string> GetClosedIqcItemMasterItemNo(string ItemNumber)
+        {
+           var iqcCloseditemMasterItemNoList = await FindByCondition(x => x.ItemNumber == ItemNumber && x.IsIQCRequired == false)
+                            .Select(x => x.ItemNumber)            
+                            .FirstOrDefaultAsync();
+
+            return iqcCloseditemMasterItemNoList;
+        }
+
         public async Task<List<ItemWithPartTypeDto>> GetItemPartTypeByItemNo(List<string> ItemNumberList)
         {
             var itemWithPartTypes = await FindByCondition(x => ItemNumberList.Contains(x.ItemNumber))

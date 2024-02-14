@@ -11,5 +11,6 @@ namespace Tips.Grin.Api.Contracts
         Task<int?> CreateIqcItem(IQCConfirmationItems iQCConfirmationItems);
         Task<IQCConfirmationItems> GetIQCConfirmationItemsDetailsbyGrinPartId(int GrinPartId);
         Task<string> UpdateIqcItems(IQCConfirmationItems iqcConfirmationItems);
+        Task<int?> GetIQCConformationCount(int iqcId);
     }
 }

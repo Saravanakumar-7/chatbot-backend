@@ -11,7 +11,6 @@ namespace Tips.Purchase.Api.Entities
 
         [Precision(13, 3)]
         public decimal ProjectQty { get; set; }
-        [Precision(13, 3)]
         public decimal BalanceQty { get; set; }
         [Precision(13, 3)]
         public decimal ReceivedQty { get; set; }
