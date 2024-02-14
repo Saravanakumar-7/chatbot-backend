@@ -597,7 +597,14 @@ namespace Tips.Production.Api.Controllers
                 updateMaterialReqquest.MaterialRequestItems = materialReqItemList;
                 var updateMaterialReq = _mapper.Map(materialRequestUpdateDto, getMaterialRequest);
                 // updateMaterialReq.MaterialRequestItems = materialReqItemList;
-                updateMaterialReqquest.MrStatus = MaterialStatus.Closed;
+                int? totalitems = updateMaterialReq.MaterialRequestItems.Count();
+                if (totalitems > 0)
+                {
+                    if ((updateMaterialReq.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.Open).Count()) == totalitems) updateMaterialReq.MrStatus = MaterialStatus.Open;
+                    else if ((updateMaterialReq.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.FullyIssued).Count()) == totalitems) updateMaterialReq.MrStatus = MaterialStatus.Closed;
+                    else if (((updateMaterialReq.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.PartiallyIssued).Count()) > 0) || (updateMaterialReq.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.Open).Count() > 0)) updateMaterialReq.MrStatus = MaterialStatus.PartiallyClosed;
+
+                }
                 string result = await _materialRequestRepository.UpdateMaterialRequest(updateMaterialReq);
                 _materialRequestRepository.SaveAsync(); 
 

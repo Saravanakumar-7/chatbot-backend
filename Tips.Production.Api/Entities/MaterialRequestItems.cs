@@ -1,6 +1,7 @@
 ﻿using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities
 {
@@ -17,7 +18,7 @@ namespace Tips.Production.Api.Entities
 
         [Precision(13, 3)]
         public decimal IssuedQty { get; set; }
-        public bool IssueStatus { get; set; }
+        public IssuedStatus IssueStatus { get; set; }
 
         [Precision(13, 3)]
         public decimal? RequiredQty { get; set; }

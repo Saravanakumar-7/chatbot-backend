@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Entities.Enums;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
@@ -16,7 +17,7 @@ namespace Tips.Production.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? IssuedQty { get; set; }
 
-        public bool IssueStatus { get; set; }
+        public IssuedStatus IssueStatus { get; set; }
 
         [Precision(13, 3)]
         public decimal? RequiredQty { get; set; }
@@ -54,6 +55,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? IssuedQty { get; set; }
+        public IssuedStatus IssueStatus { get; set; }
         public string? MftrPartNumber { get; set; }
         public PartType PartType { get; set; }
         public string? Stock { get; set; }
@@ -133,7 +135,7 @@ namespace Tips.Production.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? IssuedQty { get; set; }
 
-        public bool IssueStatus { get; set; }
+        public IssuedStatus IssueStatus { get; set; }
 
         [Precision(13, 3)]
         public decimal? RequiredQty { get; set; }
