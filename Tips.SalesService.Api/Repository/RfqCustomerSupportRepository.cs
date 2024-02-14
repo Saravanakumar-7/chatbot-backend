@@ -41,7 +41,7 @@ namespace Tips.SalesService.Api.Repository
             rfqCustomerSupport.CreatedBy = _createdBy;
             rfqCustomerSupport.CreatedOn = DateTime.Now;
             rfqCustomerSupport.Unit = _unitname;
-            rfqCustomerSupport.RevisionNumber = 1;
+            //rfqCustomerSupport.RevisionNumber = 1;
              var result = await Create(rfqCustomerSupport);
             return result.Id;
         }
