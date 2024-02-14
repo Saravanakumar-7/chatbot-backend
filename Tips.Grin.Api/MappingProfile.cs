@@ -9,6 +9,12 @@ namespace Tips.Grin.Api
     {
         public MappingProfile()
         {
+            CreateMap<Grins, GrinIQCConfirmationSaveDto>().ReverseMap();
+            CreateMap<GrinParts, GrinIQCConfirmationItemsSaveDto>().ReverseMap();
+
+            CreateMap<IQCConfirmation, GrinIQCConfirmationSaveDto>().ReverseMap();
+            CreateMap<IQCConfirmationItems, GrinIQCConfirmationItemsSaveDto>().ReverseMap();
+
             CreateMap<Grin_ReportSP, GrinReportWithParam>().ReverseMap();
             CreateMap<ProjectNumbersDtoPost, GrinUpdateProjectBalQtyDetailsDto>().ReverseMap();
             CreateMap<WeightedAvgRate, WeightedAvgRateDto>().ReverseMap();

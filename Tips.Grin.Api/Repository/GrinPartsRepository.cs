@@ -117,7 +117,12 @@ namespace Tips.Grin.Api.Repository
 
             return grinPartsBinningStatusCount;
         }
+        public async Task<int?> GetGrinPartsCount(int grinId)
+        {
+            var grinPartsBinningStatusCount = _tipsGrinDbContext.GrinParts.Where(x => x.GrinsId == grinId ).Count();
 
+            return grinPartsBinningStatusCount;
+        }
         //pass grinparts id and get the details
 
         //public async Task<string> GetGrinPartsDetailsByPartsId(GrinParts grinParts)

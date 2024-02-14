@@ -2608,15 +2608,31 @@ namespace Tips.Master.Api.Controllers
                     {
                         if (enggChildItem.PartType != PartType.SA)
                         {
+                            decimal requiredQuantity;
+
+                            if (enggChildItem.ScrapAllowanceType == "percentage")
+                            {
+                                requiredQuantity = (enggChildItem.Quantity + (enggChildItem.Quantity * Convert.ToDecimal(enggChildItem.ScrapAllowance)) * requiredQty);
+                            }
+                            else if (enggChildItem.ScrapAllowanceType == "number")
+                            {
+                                 requiredQuantity = (enggChildItem.Quantity + Convert.ToDecimal(enggChildItem.ScrapAllowance) * requiredQty);
+                            }
+                            else
+                            {
+                                 requiredQuantity = enggChildItem.Quantity * requiredQty;
+                            }
+
                             BomCoverageReportChildItemReqQtyByProjectNoDto bomCoverageReportChildItemReqQty = new BomCoverageReportChildItemReqQtyByProjectNoDto
                             {
                                 ItemNumber = enggChildItem.ItemNumber,
                                 Description = enggChildItem.Description,
                                 UOM = enggChildItem.UOM,
                                 PartType = enggChildItem.PartType,
-                                RequiredQty = enggChildItem.Quantity * requiredQty
+                                RequiredQty = requiredQuantity
 
                             };
+                          
                             bomCoverageList.Add(bomCoverageReportChildItemReqQty);
                         }
                         else

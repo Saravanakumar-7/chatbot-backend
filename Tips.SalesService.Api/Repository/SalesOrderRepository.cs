@@ -57,18 +57,42 @@ namespace Tips.SalesService.Api.Repository
         }
         //recieveable report 
 
+        // public async Task<IEnumerable<RecievableCustomer>> GetRecievableCustomersWithCustomerID(string CustomerId)
+        // {
+        //     if (string.IsNullOrWhiteSpace(CustomerId));
+        //     {
+        //         var results = _tipsSalesServiceDbContext.Set<RecievableCustomer>()
+        //.FromSqlInterpolated($"CALL Recievable_Report_forCustomer({CustomerId})")
+        //.ToList();
+
+        //         return results;
+        //     }
+        // }
+
         public async Task<IEnumerable<RecievableCustomer>> GetRecievableCustomersWithCustomerID(string CustomerId)
         {
-            if (string.IsNullOrWhiteSpace(CustomerId));
+            if (string.IsNullOrWhiteSpace(CustomerId))
             {
-                var results = _tipsSalesServiceDbContext.Set<RecievableCustomer>()
-       .FromSqlInterpolated($"CALL Recievable_Report_forCustomer({CustomerId})")
-       .ToList();
+                throw new ArgumentException("Customer ID cannot be null or empty.");
+            }
+
+            try
+            {
+                var results = await _tipsSalesServiceDbContext.Set<RecievableCustomer>()
+                    .FromSqlInterpolated($"CALL Recievable_Report_forCustomer({CustomerId})")
+                    .ToListAsync();
 
                 return results;
             }
+            catch (Exception ex)
+            {
+    
+                Console.WriteLine($"An error occurred while executing the stored procedure: {ex.Message}");
+                return Enumerable.Empty<RecievableCustomer>(); 
+            }
         }
-         
+
+
         public async Task<PagedList<SalesOrderSPResport>> GetSalesOrderSPResport(PagingParameter pagingParameter)
         {
             var results = _tipsSalesServiceDbContext.Set<SalesOrderSPResport>()

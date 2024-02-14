@@ -236,7 +236,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var purchasePartItemNo = await _repository.ItemMasterRepository.GetAllPurchasePartItemNoList();
+                var purchasePartItemNo = await _repository.ItemMasterRepository.GetAllIsPRRequiredStatusTruePPItemNoList();
                 _logger.LogInfo("Returned all IsPRRequiredStatus True ItemNumber with PurchasePart");
                 var result = _mapper.Map<IEnumerable<ItemNoListDtos>>(purchasePartItemNo);
                 serviceResponse.Data = result;
@@ -1690,7 +1690,7 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<IEnumerable<ItemMasterIdNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterIdNoListDto>>();
             try
             {
-                var itemMasterDetails = await _repository.ItemMasterRepository.GetAllItemMasterIdNoList();
+                var itemMasterDetails = await _repository.ItemMasterRepository.GetAllOpenGrinStatusTrueItemMasterIdNoList();
                 //_logger.LogInfo("Returned all CustomerMaster");
                 var result = _mapper.Map<IEnumerable<ItemMasterIdNoListDto>>(itemMasterDetails);
                 serviceResponse.Data = result;
@@ -1750,6 +1750,55 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllClosedIqcItemMasterItemNoList(List<string> itemNoList)
+        {
+            ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
+
+            try
+            {
+                List<string> itemNoListDtos = new List<string>();
+                foreach (var itemNo in itemNoList)
+                {
+                    var closedIqcItemMasterItemNoList = await _repository.ItemMasterRepository.GetClosedIqcItemMasterItemNo(itemNo);
+                    if (!string.IsNullOrEmpty(closedIqcItemMasterItemNoList))
+                    {
+                        itemNoListDtos.Add(closedIqcItemMasterItemNoList);
+                    }
+                }
+                if (itemNoListDtos.Count == 0)
+                {
+                    _logger.LogError($"Itemmasters with id: {itemNoList}, haven't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"No matching items found in the database.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned ClosedIqcItemMasterItemNumberList with ItemNo: {itemNoList}");
+                    var result = _mapper.Map<List<string>>(itemNoListDtos);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned All ClosedIqcItemMasterItemNumberList";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetAllClosedIqcItemMasterItemNoList action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Internal server error: {ex.Message}{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> GetItemMasterFileUploadListByItemNumber(string ItemNumber)
         {

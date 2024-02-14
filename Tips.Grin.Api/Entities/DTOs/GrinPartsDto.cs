@@ -29,7 +29,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Required]
         public string ItemDescription { get; set; }
-        public string? PONumber { get; set; } 
+        public string? PONumber { get; set; }
 
         [Required]
         public string MftrItemNumber { get; set; }
@@ -111,11 +111,11 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
         public List<ProjectNumbersDto>? ProjectNumbers { get; set; }
-       
+
 
     }
     public class GrinPartscalculationofAvgcost
-    {        
+    {
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? LotNumber { get; set; }
@@ -382,7 +382,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public bool IsShelfLife { get; set; }
         [NotMapped]
         [DefaultValue(false)]
-        public bool IsReachItem { get; set; }        
+        public bool IsReachItem { get; set; }
         //[NotMapped]
         //public List<DocumentUpload>? FileUpload { get; set; }
         public string? CreatedBy { get; set; }
@@ -475,6 +475,15 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? Duties { get; set; }
         public List<ProjectNumbersReportDto>? ProjectNumbers { get; set; }
 
+
+    }
+    public class GrinIQCConfirmationItemsSaveDto
+    {
+        public string? ItemNumber { get; set; }
+        public int GrinPartId { get; set; }
+        public decimal? ReceivedQty { get; set; }
+        public decimal AcceptedQty { get; set; }
+        public decimal RejectedQty { get; set; }
 
     }
 }

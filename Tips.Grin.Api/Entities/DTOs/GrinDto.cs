@@ -436,4 +436,12 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
     }
+    public class GrinIQCConfirmationSaveDto
+    {
+        public string? GrinNumber { get; set; }
+        public int GrinId { get; set; }
+
+        public GrinIQCConfirmationItemsSaveDto GrinIQCConfirmationItemsPostDtos { get; set; }
+
+    }
 }
