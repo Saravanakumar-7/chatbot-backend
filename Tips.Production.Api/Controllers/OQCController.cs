@@ -330,7 +330,7 @@ namespace Tips.Production.Api.Controllers
                     inventory.Description = Desc;
                     inventory.ProjectNumber = projectNo;
                     inventory.Balance_Quantity = oQCCreate.AcceptedQty;
-                    inventory.UOM = "uom";
+                    inventory.UOM = uom;
                     inventory.Warehouse = "FG";
                     inventory.Location = "FG";
                     inventory.GrinNo = "";
@@ -359,7 +359,7 @@ namespace Tips.Production.Api.Controllers
                     inventory1.Description = Desc;
                     inventory1.ProjectNumber = projectNo;
                     inventory1.Balance_Quantity = oQCCreate.RejectedQty;
-                    inventory1.UOM = "UOM";
+                    inventory1.UOM = uom;
                     inventory1.Warehouse = "Scrap";
                     inventory1.Location = "Reject";
                     inventory1.GrinNo = "";

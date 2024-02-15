@@ -228,7 +228,7 @@ namespace Repository
         public async Task<IEnumerable<ItemNoListDtos>> GetAllPurchasePartItemNoList()
         {
             IEnumerable<ItemNoListDtos> itemNumberListDto = await TipsMasterDbContext.ItemMasters
-                               .Where(x => x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG)
+                               .Where(x => (x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG) && x.IsActive == true)
                                .Select(c => new ItemNoListDtos()
                                {
                                    ItemNumber = c.ItemNumber,
@@ -254,7 +254,7 @@ namespace Repository
         public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllFgTgItemMasterItemNoList()
         {
             IEnumerable<ItemMasterIdNoListDto> getAllActiveItemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters
-                                .Where(c => c.ItemType == PartType.FG || c.ItemType == PartType.TG)
+                                .Where(c => (c.ItemType == PartType.FG || c.ItemType == PartType.TG)&&c.IsActive==true)
                                 .Select(c => new ItemMasterIdNoListDto()
                                 {
                                     id = c.Id,
@@ -294,7 +294,7 @@ namespace Repository
         public async Task<IEnumerable<ItemMaster>> GetAllFGItems()
         {
             var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id)
-                .Where(inv => inv.ItemType == PartType.FG)
+                .Where(inv => (inv.ItemType == PartType.FG)&&inv.IsActive==true)
             .Include(t => t.ItemmasterAlternate)
             .Include(t => t.ItemMasterApprovedVendor)
             //.Include(t => t.ItemMasterFileUpload)
@@ -305,7 +305,7 @@ namespace Repository
 
         public async Task<IEnumerable<ItemMaster>> GetAllSAPurchasePartItems()
         {
-            var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id).Where(inv => inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart)
+            var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id).Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart)&&inv.IsActive==true)
             .Include(t => t.ItemmasterAlternate)
             .Include(t => t.ItemMasterApprovedVendor)
             //.Include(t => t.ItemMasterFileUpload)
@@ -317,7 +317,7 @@ namespace Repository
 
         public async Task<IEnumerable<ItemMaster>> GetAllSAItems()
         {
-            var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id).Where(inv => inv.ItemType == PartType.SA)
+            var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id).Where(inv => (inv.ItemType == PartType.SA) && inv.IsActive == true)
             .Include(t => t.ItemmasterAlternate)
             .Include(t => t.ItemMasterApprovedVendor)
             //.Include(t => t.ItemMasterFileUpload)
@@ -342,7 +342,7 @@ namespace Repository
         public async Task<IEnumerable<ItemMaster>> GetAllFgSaFruItems()
         {
             var itemmasterFgSaFRUDetails = FindAll().OrderByDescending(a => a.Id)
-               .Where(a=>a.ItemType == PartType.SA || a.ItemType == PartType.FG || a.ItemType == PartType.FRU)
+               .Where(a=>(a.ItemType == PartType.SA || a.ItemType == PartType.FG || a.ItemType == PartType.FRU)&& a.IsActive==true)
                          //.Include(c => c.FileUpload)
                           //  .Include(x => x.ImageUpload)
                             .Include(t => t.ItemmasterAlternate)
@@ -397,7 +397,7 @@ namespace Repository
 
         public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllItemMasterIdNoList()
         {
-            IEnumerable<ItemMasterIdNoListDto> itemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters
+            IEnumerable<ItemMasterIdNoListDto> itemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters.Where(x=>x.IsActive==true)
                                 .Select(c => new ItemMasterIdNoListDto()
                                 {
                                     id = c.Id,
