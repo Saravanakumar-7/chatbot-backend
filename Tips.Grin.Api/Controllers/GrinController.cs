@@ -938,7 +938,7 @@ namespace Tips.Grin.Api.Controllers
                                         grinIQCConfirmationItemsSaveDto.ItemNumber = grins.GrinParts[i].ItemNumber;
                                         grinIQCConfirmationItemsSaveDto.GrinPartId = grins.GrinParts[i].Id;
                                         grinIQCConfirmationItemsSaveDto.ReceivedQty = grins.GrinParts[i].Qty;
-                                        grinIQCConfirmationItemsSaveDto.AcceptedQty = grins.GrinParts[i].AcceptedQty;
+                                        grinIQCConfirmationItemsSaveDto.AcceptedQty = grins.GrinParts[i].Qty;
                                         grinIQCConfirmationItemsSaveDto.RejectedQty = grins.GrinParts[i].RejectedQty;
                                         iqcGrinDetails.GrinIQCConfirmationItemsPostDtos = grinIQCConfirmationItemsSaveDto;
 
@@ -1098,7 +1098,7 @@ namespace Tips.Grin.Api.Controllers
                     dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                     dynamic itemMasterObject = itemMasterObjectData.data;
                     //Inventory Update Code
-                    decimal acceptedQty = iqcConfirmationItemsDto.AcceptedQty;
+                    decimal? acceptedQty = iqcConfirmationItemsDto.AcceptedQty;
                     decimal rejectedQty = iqcConfirmationItemsDto.RejectedQty;
                     var grinPartsId = iqcConfirmationItemsDto.GrinPartId;
                     var grinPartsDetail = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinPartsId);
@@ -1201,7 +1201,7 @@ namespace Tips.Grin.Api.Controllers
 
                         //InventoryTranction Update Code
 
-                        decimal acceptedQuantity = iqcConfirmationItemsDto.AcceptedQty;
+                        decimal? acceptedQuantity = iqcConfirmationItemsDto.AcceptedQty;
                         var inventoryTranctionObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryTranctionAPI"],
                             "GetInventoryTranctionDetailsByGrinNoandGrinId?", "GrinNo=", grinNo, "&GrinPartsId=",
                             grinPartsId, "&ItemNumber=", itemNo, "&ProjectNumber=", projectNos));
@@ -1356,7 +1356,7 @@ namespace Tips.Grin.Api.Controllers
                     dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                     dynamic itemMasterObject = itemMasterObjectData.data;
                     //Inventory Update Code
-                    decimal acceptedQty = iqcConfirmationItemsDto.AcceptedQty;
+                    decimal? acceptedQty = iqcConfirmationItemsDto.AcceptedQty;
                     var grinPartsId = iqcConfirmationItemsDto.GrinPartId;
                     var grinPartsDetail = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinPartsId);
                     foreach (var projectNo in grinPartsDetail.ProjectNumbers)

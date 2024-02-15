@@ -482,7 +482,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public int GrinPartId { get; set; }
         public decimal? ReceivedQty { get; set; }
-        public decimal AcceptedQty { get; set; }
+        public decimal? AcceptedQty { get; set; }
         public decimal RejectedQty { get; set; }
 
     }
