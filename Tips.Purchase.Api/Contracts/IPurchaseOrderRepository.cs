@@ -55,7 +55,8 @@ namespace Tips.Purchase.Api.Contracts
         Task<PagedList<Tras_POSPReport>> Get_Tras_PurchaseOrderSPResport(PagingParameter pagingParameter);
         Task<PagedList<Tras_PO_ConfirmationDate>> Get_Tras_POReport_ConfirmationDate(PagingParameter pagingParameter);
         Task<IEnumerable<Tras_POSPReport>> Get_Tras_PurchaseOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
-
+        Task<PurchaseOrder_ReportDto> GetPurchaseOrderReportswithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<PurchaseOrder_ReportDto> GetPurchaseOrderReportswithPara(string? ItemNumber, string? PONumber, string? VendorName, int? POStatus);
         Task<IEnumerable<Tras_POSPReport>> Get_Tras_PurchaseOrderSPReportWithParam(string VendorName, string PONumber, string PartNumber);
     }
 }

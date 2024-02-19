@@ -12,6 +12,7 @@ using Entities.DTOs;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 
 namespace Tips.Production.Api.Repository
 {
@@ -31,12 +32,20 @@ namespace Tips.Production.Api.Repository
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
+        public async Task<List<PickListDTO?>> GetPickListReport(string? ShopOrderNumber)
+        {
+            var result = _tipsProductionDbContext
+            .Set<PickListDTO>()
+            .FromSqlInterpolated($"CALL Piclist({ShopOrderNumber})")
+            .ToList();
 
+            return result;
+        }
 
         public async Task<int?> CreateShopOrder(ShopOrder shopOrder)
         {
             shopOrder.CreatedBy = _createdBy;
-            shopOrder.CreatedOn = DateTime.Now;            
+            shopOrder.CreatedOn = DateTime.Now;
             shopOrder.Unit = _unitname;
             var result = await Create(shopOrder);
             return result.Id;
@@ -265,13 +274,13 @@ namespace Tips.Production.Api.Repository
         public async Task<IEnumerable<ListOfShopOrderDto>> GetAllActiveShopOrderNoListByProjectNo(string projectNo, PartType partType)
         {
             var shopOrderItemListByProjectNo = await _tipsProductionDbContext.ShopOrderItems
-                           .Where(x => x.ProjectNumber == projectNo )
+                           .Where(x => x.ProjectNumber == projectNo)
                            .Select(x => x.ShopOrderId)
                            .Distinct().ToListAsync();
 
 
             var shopOrderNoListByProjectNo = await _tipsProductionDbContext.ShopOrders
-                                .Where(x => shopOrderItemListByProjectNo.Contains(x.Id) 
+                                .Where(x => shopOrderItemListByProjectNo.Contains(x.Id)
                                 && x.ItemType == partType && x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2)
                                 .Select(s => new ListOfShopOrderDto()
                                 {
@@ -305,13 +314,13 @@ namespace Tips.Production.Api.Repository
         public async Task<ShopOrder> GetShopOrderBySalesOrderNo(string salesOrderNo)
         {
             var shopOrderBySalesOrderNo = await _tipsProductionDbContext.ShopOrders
-                .Include (x => x.ShopOrderItems)
-                .Where (z => z.ShopOrderItems.FirstOrDefault().SalesOrderNumber == salesOrderNo)
+                .Include(x => x.ShopOrderItems)
+                .Where(z => z.ShopOrderItems.FirstOrDefault().SalesOrderNumber == salesOrderNo)
                              .FirstOrDefaultAsync();
             return shopOrderBySalesOrderNo;
         }
 
-        public async Task<List<string>> GetShopOrderNoListBySalesOrderNo(string salesOrderNo,string itemNumber)
+        public async Task<List<string>> GetShopOrderNoListBySalesOrderNo(string salesOrderNo, string itemNumber)
         {
             var shopOrderNoList = await _tipsProductionDbContext.ShopOrderItems
                 .Where(x => x.SalesOrderNumber == salesOrderNo && x.FGItemNumber == itemNumber)
@@ -343,7 +352,7 @@ namespace Tips.Production.Api.Repository
         public async Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByItemType(string itemType)
         {
             IEnumerable<ListOfShopOrderDto> shopOrderByItemType = await _tipsProductionDbContext.ShopOrders
-                           .Where(x => x.ItemType == (PartType)Enum.Parse(typeof(PartType),itemType)).Select(x => new ListOfShopOrderDto()
+                           .Where(x => x.ItemType == (PartType)Enum.Parse(typeof(PartType), itemType)).Select(x => new ListOfShopOrderDto()
                            {
                                Id = x.Id,
                                ShopOrderNumber = x.ShopOrderNumber,
@@ -388,6 +397,6 @@ namespace Tips.Production.Api.Repository
 
             return (getAllShopOrder);
 
-        }     
+        }
     }
 }

@@ -18,7 +18,7 @@ using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
 using Tips.Warehouse.Api.Repository;
 //aravind
-namespace Tips.Warehouse.Api.Controllers 
+namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
@@ -94,7 +94,7 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> DeliveryOrderSPReport([FromQuery]PagingParameter pagingParameter)
+        public async Task<IActionResult> DeliveryOrderSPReport([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<DeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderSPReport>>();
             try
@@ -115,23 +115,23 @@ namespace Tips.Warehouse.Api.Controllers
 
 
                 if (products == null)
-            {
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"DeliveryOrder hasn't been found.";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                _logger.LogError($"DeliveryOrder hasn't been found in db.");
-                return NotFound(serviceResponse);
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DeliveryOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"DeliveryOrder hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned DeliveryOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
             }
-            else
-            {
-                serviceResponse.Data = products;
-                serviceResponse.Message = "Returned DeliveryOrder Details";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-        }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
@@ -140,44 +140,44 @@ namespace Tips.Warehouse.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
-    }
-}
+            }
+        }
         [HttpGet]
-        public async Task<IActionResult> DeliveryOrderSPReportdate([FromQuery] DateTime? FromDate,[FromQuery] DateTime? ToDate)
+        public async Task<IActionResult> DeliveryOrderSPReportdate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
             ServiceResponse<IEnumerable<DeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderSPReport>>();
             try
-             {
-                   var products = await _repository.DeliveryOrderSPReportdate(FromDate, ToDate);
+            {
+                var products = await _repository.DeliveryOrderSPReportdate(FromDate, ToDate);
 
-                    if (products == null)
+                if (products == null)
                 {
-                     serviceResponse.Data = null;
+                    serviceResponse.Data = null;
                     serviceResponse.Message = $"DeliveryOrder hasn't been found.";
-                     serviceResponse.Success = false;
+                    serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"DeliveryOrder hasn't been found in db.");
-                        return NotFound(serviceResponse);
-                 }
-                   else
-         {
-                      serviceResponse.Data = products;
-                     serviceResponse.Message = "Returned DeliveryOrder Details";
-                        serviceResponse.Success = true;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned DeliveryOrder Details";
+                    serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
-    }
-}
+                }
+            }
             catch (Exception ex)
             {
-    _logger.LogError(ex.Message);
-    serviceResponse.Data = null;
-    serviceResponse.Message = $"Something went wrong inside DeliveryOrder action";
-    serviceResponse.Success = false;
-    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-    return StatusCode(500, serviceResponse);
-}
-}
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside DeliveryOrder action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetDeliveryOrderSPReportsWithParam([FromBody] DeliveryOrderReportWithParamDTO deliveryOrderSPReport)
@@ -185,8 +185,8 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<List<DeliveryOrderSPReportDTO>> serviceResponse = new ServiceResponse<List<DeliveryOrderSPReportDTO>>();
             try
             {
-                var products = await _repository.GetDeliveryOrderSPReportsWithParam(deliveryOrderSPReport.DoNumber, deliveryOrderSPReport.CustomerName, deliveryOrderSPReport.CustomerAliasName, deliveryOrderSPReport.CustomerId, deliveryOrderSPReport.SalesOrderNumber, deliveryOrderSPReport.ProductType, deliveryOrderSPReport.Warehouse, deliveryOrderSPReport.Location, deliveryOrderSPReport.KPN,deliveryOrderSPReport.MPN);
-                    
+                var products = await _repository.GetDeliveryOrderSPReportsWithParam(deliveryOrderSPReport.DoNumber, deliveryOrderSPReport.CustomerName, deliveryOrderSPReport.CustomerAliasName, deliveryOrderSPReport.CustomerId, deliveryOrderSPReport.SalesOrderNumber, deliveryOrderSPReport.ProductType, deliveryOrderSPReport.Warehouse, deliveryOrderSPReport.Location, deliveryOrderSPReport.KPN, deliveryOrderSPReport.MPN);
+
                 if (products == null)
                 {
                     serviceResponse.Data = null;
@@ -217,7 +217,7 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-            [HttpGet("{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetBTODeliveryOrderById(int id)
         {
             ServiceResponse<BTODeliveryOrderDto> serviceResponse = new ServiceResponse<BTODeliveryOrderDto>();
@@ -569,7 +569,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
                 var months = Convert.ToString(date.Month.ToString("D2"));
-                var years = Convert.ToString(date.ToString("yy"));               
+                var years = Convert.ToString(date.ToString("yy"));
 
                 if (serverKey == "trasccon")
                 {
@@ -596,7 +596,7 @@ namespace Tips.Warehouse.Api.Controllers
                     {
                         BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderItemsListDto[i]);
                         bTODeliveryOrderItemsDetails.QtyDistribution = _mapper.Map<List<BtoDeliveryOrderItemQtyDistribution>>(bTODeliveryOrderItemsListDto[i].QtyDistribution);
-                        
+
                         bTODeliveryOrderItemsDetails.OrderBalanceQty = bTODeliveryOrderItemsDetails.FGOrderQty - bTODeliveryOrderItemsDetails.DispatchQty;
                         bTODeliveryOrderItemsDetails.BalanceDoQty = bTODeliveryOrderItemsDetails.DispatchQty;
                         bTODeliveryOrderItemsDetails.BTONumber = bTODeliveryOrder.BTONumber;
@@ -613,14 +613,14 @@ namespace Tips.Warehouse.Api.Controllers
                         {
                             await _inventoryRepository.UpdateInventoryforBTO(bTODeliveryOrderItemsDetails.QtyDistribution);
                         }
-           
+
                         //}
 
 
                         ////Add BTO Detail Into Inventory transaction Table
                         foreach (var eachbin in bTODeliveryOrderItemsDetails.QtyDistribution)
                         {
-                            InventoryTranction inventoryTranction = new InventoryTranction();           
+                            InventoryTranction inventoryTranction = new InventoryTranction();
                             inventoryTranction.PartNumber = bTODoItemList[i].FGItemNumber;
                             inventoryTranction.MftrPartNumber = bTODoItemList[i].FGItemNumber;
                             inventoryTranction.PartType = PartType.FG;
@@ -773,7 +773,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
 
-             
+
 
                 if (serverKey == "trasccon")
                 {
@@ -799,8 +799,8 @@ namespace Tips.Warehouse.Api.Controllers
                     for (int i = 0; i < bTODeliveryOrderItemsListDto.Count; i++)
                     {
                         BTODeliveryOrderItems bTODeliveryOrderItemsDetails = _mapper.Map<BTODeliveryOrderItems>(bTODeliveryOrderItemsListDto[i]);
-                     
-                 
+
+
                         bTODeliveryOrderItemsDetails.OrderBalanceQty = bTODeliveryOrderItemsDetails.FGOrderQty - bTODeliveryOrderItemsDetails.DispatchQty;
                         bTODeliveryOrderItemsDetails.BalanceDoQty = bTODeliveryOrderItemsDetails.DispatchQty;
                         bTODeliveryOrderItemsDetails.BTONumber = bTODeliveryOrder.BTONumber;
@@ -830,8 +830,8 @@ namespace Tips.Warehouse.Api.Controllers
                                     {
                                         inventory.IsStockAvailable = false;
                                     }
-                                   
-                                    
+
+
                                 }
                                 else if (dispatchQuantity != 0 && stockAvailable < dispatchQuantity)
                                 {
@@ -839,7 +839,7 @@ namespace Tips.Warehouse.Api.Controllers
                                     inventory.Balance_Quantity = 0;
                                     inventory.IsStockAvailable = false;
 
-                                 
+
                                 }
 
                                 _inventoryRepository.Update(inventory);
@@ -852,7 +852,7 @@ namespace Tips.Warehouse.Api.Controllers
                         }
 
 
-                      
+
 
 
 

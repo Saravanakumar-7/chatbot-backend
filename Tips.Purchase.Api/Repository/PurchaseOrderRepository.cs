@@ -1309,6 +1309,40 @@ namespace Tips.Purchase.Api.Repository
 
             return PagedList<Tras_PO_ConfirmationDate>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        public async Task<PurchaseOrder_ReportDto> GetPurchaseOrderReportswithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var poconfirmmation= _tipsPurchaseDbContext.Set<poconfirmation_report_Dto>()
+                    .FromSqlInterpolated($"CALL poconfirmation_report_withdate({FromDate},{ToDate})")
+                    .ToList();
+            var podeliveryschedule= _tipsPurchaseDbContext.Set<podeliveryschedule_report_Dto>()
+                    .FromSqlInterpolated($"CALL podeliveryschedule_report_withdate({FromDate},{ToDate})")
+                    .ToList();
+            var poproject= _tipsPurchaseDbContext.Set<poproject_report_Dto>()
+                    .FromSqlInterpolated($"CALL poproject_report_withdate({FromDate},{ToDate})")
+                    .ToList();
+            PurchaseOrder_ReportDto purchaseOrderReportDto =new PurchaseOrder_ReportDto();
+            purchaseOrderReportDto.poconfirmation_Report_Dtos = poconfirmmation;
+            purchaseOrderReportDto.podeliveryschedule_Report_Dtos = podeliveryschedule;
+            purchaseOrderReportDto.poproject_Report_Dtos = poproject;
+            return purchaseOrderReportDto;
+        }
+        public async Task<PurchaseOrder_ReportDto> GetPurchaseOrderReportswithPara(string? ItemNumber, string? PONumber, string? VendorName, int? POStatus)
+        {
+            var poconfirmmation = _tipsPurchaseDbContext.Set<poconfirmation_report_Dto>()
+                    .FromSqlInterpolated($"CALL poconfirmation_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus})")
+                    .ToList();
+            var podeliveryschedule = _tipsPurchaseDbContext.Set<podeliveryschedule_report_Dto>()
+                    .FromSqlInterpolated($"CALL podeliveryschedule_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus})")
+                    .ToList();
+            var poproject = _tipsPurchaseDbContext.Set<poproject_report_Dto>()
+                    .FromSqlInterpolated($"CALL poproject_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus})")
+                    .ToList();
+            PurchaseOrder_ReportDto purchaseOrderReportDto = new PurchaseOrder_ReportDto();
+            purchaseOrderReportDto.poconfirmation_Report_Dtos = poconfirmmation;
+            purchaseOrderReportDto.podeliveryschedule_Report_Dtos = podeliveryschedule;
+            purchaseOrderReportDto.poproject_Report_Dtos = poproject;
+            return purchaseOrderReportDto;
+        }
     }
 
     public class UploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository

@@ -24,12 +24,12 @@ namespace Tips.Production.Api.Controllers
         private IShopOrderRepository _shopOrderRepository;
         private IShopOrderItemRepository _shopOrderItemRepository;
         private ILoggerManager _logger;
-        private IMapper _mapper; 
+        private IMapper _mapper;
         private IMaterialIssueRepository _materialIssueRepository;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public ShopOrderController(IShopOrderItemRepository shopOrderItemRepository, IShopOrderRepository shopOrderRepository, 
+        public ShopOrderController(IShopOrderItemRepository shopOrderItemRepository, IShopOrderRepository shopOrderRepository,
             IMaterialIssueRepository materialIssueRepository, ILoggerManager logger,
             IMapper mapper, IConfiguration config, HttpClient httpClient)
         {
@@ -49,7 +49,7 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var shopOrderDetails = await _shopOrderRepository.GetAllShopOrders(pagingParameter,searchParamess);
+                var shopOrderDetails = await _shopOrderRepository.GetAllShopOrders(pagingParameter, searchParamess);
                 var metadata = new
                 {
                     shopOrderDetails.TotalCount,
@@ -267,9 +267,9 @@ namespace Tips.Production.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned ShopOrder with id: {id}");
-                    ShopOrderDto shopOrderDto =  _mapper.Map<ShopOrderDto>(shopOrderDetailById);
-                     
-                    List<ShopOrderItemDto> shopOrderItemDtos= new List<ShopOrderItemDto>();
+                    ShopOrderDto shopOrderDto = _mapper.Map<ShopOrderDto>(shopOrderDetailById);
+
+                    List<ShopOrderItemDto> shopOrderItemDtos = new List<ShopOrderItemDto>();
                     if (shopOrderDetailById.ShopOrderItems != null)
                     {
                         foreach (var shopOrderItemdetail in shopOrderDetailById.ShopOrderItems)
@@ -354,7 +354,7 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllShopOrderNoListByProjectNo(string projectNo,PartType partType)
+        public async Task<IActionResult> GetAllShopOrderNoListByProjectNo(string projectNo, PartType partType)
         {
             ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
 
@@ -409,7 +409,7 @@ namespace Tips.Production.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var shopOrder = _mapper.Map<ShopOrder>(shopOrderPostDto);
-                var shopOrderDto = shopOrderPostDto.ShopOrderItems; 
+                var shopOrderDto = shopOrderPostDto.ShopOrderItems;
 
 
                 var ShoporderItemList = new List<ShopOrderItem>();
@@ -452,9 +452,9 @@ namespace Tips.Production.Api.Controllers
                     var soNumber = await _shopOrderRepository.GenerateSONumberForAvision();
                     shopOrder.ShopOrderNumber = soNumber;
                 }
-                else if(serverKey == "keus")
+                else if (serverKey == "keus")
                 {
-                   
+
                     var date = DateTime.Now;
                     var days = Convert.ToString(date.Day.ToString("D2"));
                     var months = Convert.ToString(date.Month.ToString("D2"));
@@ -472,7 +472,7 @@ namespace Tips.Production.Api.Controllers
                 await _shopOrderRepository.CreateShopOrder(shopOrder);
 
                 _shopOrderRepository.SaveAsync();
-                 
+
 
                 // After Shop Order Creation Material Issue also should be created.
                 await CreateMaterialIssueDetails(shopOrder);
@@ -530,7 +530,7 @@ namespace Tips.Production.Api.Controllers
                 List<MaterialIssueItem> materialIssueItemList = new List<MaterialIssueItem>();
 
                 for (int i = 0; i < shopOrder.ShopOrderItems.Count(); i++)
-                {                   
+                {
                     if (i == 0)
                     {
                         var fgNumber = shopOrder.ItemNumber;
@@ -544,7 +544,7 @@ namespace Tips.Production.Api.Controllers
                     {
                         continue;
                     }
-                        if (bomData != null)
+                    if (bomData != null)
                     {
                         foreach (var bom in bomData.enggChildItemDtos)
                         {
@@ -713,13 +713,13 @@ namespace Tips.Production.Api.Controllers
                 var shopOrders = _mapper.Map<ShopOrder>(shopOrderDetailById);
                 var shopOrderItemDto = ShopOrderDtoUpdate.ShopOrderItems;
                 var shopOrderItemList = new List<ShopOrderItem>();
-                if(shopOrderItemDto != null)
-                for (int i = 0; i < shopOrderItemDto.Count; i++)
-                {
-                    ShopOrderItem shoporderItemDetail = _mapper.Map<ShopOrderItem>(shopOrderItemDto[i]);
-                    shopOrderItemList.Add(shoporderItemDetail);
+                if (shopOrderItemDto != null)
+                    for (int i = 0; i < shopOrderItemDto.Count; i++)
+                    {
+                        ShopOrderItem shoporderItemDetail = _mapper.Map<ShopOrderItem>(shopOrderItemDto[i]);
+                        shopOrderItemList.Add(shoporderItemDetail);
 
-                }
+                    }
                 shopOrders.ShopOrderItems = shopOrderItemList;
                 var updateShopOrder = _mapper.Map(ShopOrderDtoUpdate, shopOrderDetailById);
                 string result = await _shopOrderRepository.UpdateShopOrder(updateShopOrder);
@@ -826,13 +826,13 @@ namespace Tips.Production.Api.Controllers
 
         //[HttpGet("salesOrderNo")]
         [HttpGet]
-        public async Task<IActionResult> GetShopOrderNoListBySalesOrderNo(string salesOrderNo,string itemNumber)
+        public async Task<IActionResult> GetShopOrderNoListBySalesOrderNo(string salesOrderNo, string itemNumber)
         {
             ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
 
             try
             {
-                var shopOrderNoList = await _shopOrderRepository.GetShopOrderNoListBySalesOrderNo(salesOrderNo,itemNumber);
+                var shopOrderNoList = await _shopOrderRepository.GetShopOrderNoListBySalesOrderNo(salesOrderNo, itemNumber);
                 if (shopOrderNoList == null)
                 {
                     _logger.LogError($"ShopOrder with id: {salesOrderNo}, hasn't been found in db.");
@@ -1223,7 +1223,7 @@ namespace Tips.Production.Api.Controllers
             ServiceResponse<decimal?> serviceResponse = new ServiceResponse<decimal?>();
             try
             {
-                var notShortCloseQty = await _shopOrderItemRepository.GetNotShortCloseQty(fgItemNumber,saItemNumber,projectNumber,salesOrderNumber);
+                var notShortCloseQty = await _shopOrderItemRepository.GetNotShortCloseQty(fgItemNumber, saItemNumber, projectNumber, salesOrderNumber);
                 if (notShortCloseQty == null)
                 {
                     _logger.LogError($"ShopOrder Release Quantity is getting Null Values");
@@ -1233,7 +1233,7 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-                 
+
                 serviceResponse.Data = notShortCloseQty;
                 serviceResponse.Message = "Get ShopOrder Qunatity successfully";
                 serviceResponse.Success = true;
@@ -1251,6 +1251,45 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
+        [HttpGet]
+        public async Task<IActionResult> PickListReport(string? ShopOrderNumber)
+        {
+            ServiceResponse<List<PickListGetDTO>?> serviceResponse = new ServiceResponse<List<PickListGetDTO>?>();
+            try
+            {
+                if (ShopOrderNumber == null)
+                {
+                    _logger.LogError($"ShopOrder is getting Null Values");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ShopOrder is getting Null Values";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+                var piclists = await _shopOrderRepository.GetPickListReport(ShopOrderNumber);
+                List<PickListGetDTO>? result = new List<PickListGetDTO>();
+                foreach (var pic in piclists)
+                {
+                    PickListGetDTO pickListGetDTO = _mapper.Map<PickListGetDTO>(pic);
+                    List<Invdata>? invdatas = JsonConvert.DeserializeObject<List<Invdata>>(pic.InventoryData);
+                    pickListGetDTO.InventoryDatas = invdatas;
+                    result.Add(pickListGetDTO);
+                }
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Get PickListReport successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside PickListReport action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace Tips.Production.Api
     {
         public MappingProfile()
         {
-            CreateMap<PickList, PickListProductionDTO>().ReverseMap();
+            CreateMap<PickListGetDTO, PickListDTO>().ReverseMap();
 
 
             CreateMap<ShopOrder, ShopOrderDto>().ReverseMap();

@@ -2904,5 +2904,77 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> PurchaseOrderReportswithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<PurchaseOrder_ReportDto> serviceResponse = new ServiceResponse<PurchaseOrder_ReportDto>();
+            try
+            {
+                var result = await _repository.GetPurchaseOrderReportswithDate(FromDate,ToDate);
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $" PurchaseOrderReportswithDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"DeliveryOrder hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned  PurchaseOrderReportswithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside PurchaseOrderReportswithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> PurchaseOrderReportswithPara(string? ItemNumber, string? PONumber, string? VendorName, int? POStatus)
+        {
+            ServiceResponse<PurchaseOrder_ReportDto> serviceResponse = new ServiceResponse<PurchaseOrder_ReportDto>();
+            try
+            {
+                var result = await _repository.GetPurchaseOrderReportswithPara(ItemNumber, PONumber, VendorName,POStatus);
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $" PurchaseOrderReportswithPara hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"DeliveryOrder hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned  PurchaseOrderReportswithPara Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside PurchaseOrderReportswithPara action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

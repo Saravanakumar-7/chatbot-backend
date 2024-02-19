@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Microsoft.EntityFrameworkCore;
 using Tips.Production.Api.Entities;
+using Tips.Production.Api.Entities.DTOs;
 
 namespace Tips.Production.Api.Entities
 {
@@ -41,13 +42,14 @@ namespace Tips.Production.Api.Entities
         public DbSet<ShopOrderNumberSPReport> ShopOrderNumberSPReports { get; set; }
         public DbSet<MaterialIssueSPReport> MaterialIssueSPReports { get; set; }
         public DbSet<MaterialRequestSPReport> MaterialRequestSPReports { get; set; }
-
+        public DbSet<PickListDTO> PickListDTOs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ShopOrderNumberSPReport>().HasNoKey();
             modelBuilder.Entity<MaterialIssueSPReport>().HasNoKey();
             modelBuilder.Entity<MaterialRequestSPReport>().HasNoKey();
             modelBuilder.Entity<PickList>().HasNoKey();
+            modelBuilder.Entity<PickListDTO>().HasNoKey();
             // Other entity configurations can be added here
 
             base.OnModelCreating(modelBuilder);

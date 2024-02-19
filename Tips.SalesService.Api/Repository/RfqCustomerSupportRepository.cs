@@ -1351,7 +1351,7 @@ namespace Tips.SalesService.Api.Repository
             decimal rfqrev = rfqnoandrev.RevisionNumber;
             var rfqEngg = await _tipsSalesServiceDbContext.RfqEnggs
                 .Where(x => x.RFQNumber == rfqnoandrev.RfqNumber && x.RevisionNumber == rfqrev).OrderByDescending(x => x.Id).Select(x => x.Id).FirstOrDefaultAsync();
-            var rfqEnggItems = await _tipsSalesServiceDbContext.RfqEnggItems.Where(x => x.RfqEnggId == rfqEngg).OrderByDescending(x => x.Id).ToListAsync();
+            var rfqEnggItems = await _tipsSalesServiceDbContext.RfqEnggItems.Where(x => x.RfqEnggId == rfqEngg && x.CostingBomVersionNo!=null).OrderByDescending(x => x.Id).ToListAsync();
             return rfqEnggItems;
 
         }

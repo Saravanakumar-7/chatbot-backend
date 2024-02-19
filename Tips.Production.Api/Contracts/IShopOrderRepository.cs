@@ -10,7 +10,7 @@ namespace Tips.Production.Api.Contracts
 {
     public interface IShopOrderRepository 
     {
- 
+        Task<List<PickListDTO?>> GetPickListReport(string? ShopOrderNumber);
         Task<PagedList<ShopOrder>> GetAllShopOrders(PagingParameter pagingParameter, SearchParamess searchParamess);
         Task<ShopOrder> GetShopOrderById(int id);
         Task<int?> CreateShopOrder(ShopOrder shopOrder);

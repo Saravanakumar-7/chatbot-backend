@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Tips.Purchase.Api.Entities.Dto;
 
 namespace Tips.Purchase.Api.Entities
 {
@@ -35,11 +36,17 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PurchaseOrderSPReport> PurchaseOrderSPReports { get; set; }
         public DbSet<Tras_POSPReport> Tras_POSPReports { get; set; }
         public DbSet<Tras_PO_ConfirmationDate> Tras_POReport_ConfirmationDates { get; set; }
+        public DbSet<poconfirmation_report_Dto> poconfirmation_Report_Dtos { get; set; }
+        public DbSet<podeliveryschedule_report_Dto> podeliveryschedule_Report_Dtos { get; set; }
+        public DbSet<poproject_report_Dto> poproject_Report_Dtos { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PurchaseOrderSPReport>().HasNoKey();
             modelBuilder.Entity<Tras_POSPReport>().HasNoKey();
             modelBuilder.Entity<Tras_PO_ConfirmationDate>().HasNoKey();
+            modelBuilder.Entity<poconfirmation_report_Dto>().HasNoKey();
+            modelBuilder.Entity<podeliveryschedule_report_Dto>().HasNoKey();
+            modelBuilder.Entity<poproject_report_Dto>().HasNoKey();
         }
     }
 }

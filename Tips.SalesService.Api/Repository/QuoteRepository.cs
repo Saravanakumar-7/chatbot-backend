@@ -194,15 +194,15 @@ namespace Tips.SalesService.Api.Repository
       .Where(e => e.RfqNumber == rfqNumber && e.ReleaseStatus == true && e.RfqCustomerSupportId == rfqCsId)
       .ToList();
 
-            var itemNumbers = rfqItems.Select(e => e.ItemNumber).Distinct().ToList();
+            //var itemNumbers = rfqItems.Select(e => e.ItemNumber).Distinct().ToList();
 
             var postdata = new List<CsItemDetailsForQuoteDto>();
 
-            foreach (var itemNumber in itemNumbers)
-            {
-                var items = rfqItems.Where(e => e.ItemNumber == itemNumber).ToList();
+            //foreach (var itemNumber in itemNumbers)
+            //{
+            //    var items = rfqItems.Where(e => e.ItemNumber == itemNumber).ToList();
 
-                foreach (var rfqItem in items)
+                foreach (var rfqItem in rfqItems)
                 {
                     ItemPriceList itemPriceList = null;
 
@@ -269,10 +269,85 @@ namespace Tips.SalesService.Api.Repository
                         postdata.Add(itemDetails);
                    
                 }
-                }
+               // }
             }
 
 
+            return postdata;
+
+            //foreach (var itemNumber in itemNumbers)
+            //{
+            //    var items = rfqItems.Where(e => e.ItemNumber == itemNumber).ToList();
+
+            //    foreach (var rfqItem in items)
+            //    {
+            //        ItemPriceList itemPriceList = null;
+
+            //        foreach (var priceListName in latestPriceListName)
+            //        {
+            //            itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
+            //                .Where(d => d.ItemNumber == rfqItem.ItemNumber && d.PriceListName == priceListName)
+            //                .OrderByDescending(d => d.CreatedOn)
+            //                .FirstOrDefault();
+            //            if (itemPriceList != null)
+            //            {
+            //                break;
+            //            }
+            //        }
+            //        if (itemPriceList != null)
+            //        {
+            //            var itemdetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
+            //                $"GetItemMasterByItemNumber?ItemNumber={rfqItem.ItemNumber}"));
+
+            //            var inventoryObjectString = await itemdetails.Content.ReadAsStringAsync();
+            //            dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+            //            dynamic itemobject = inventoryObjectData.data;
+
+            //            int? Imageid = itemobject.imageUpload;
+            //            string? imgbyte = null;
+            //            if (Imageid != null)
+            //            {
+            //                var itemimage = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
+            //               $"GetDownloadUrlDetailsforItemImage?imageid={Imageid}"));
+
+            //                var inventoryObjectStrin = await itemimage.Content.ReadAsStringAsync();
+            //                var inventoryObjectDat = JsonConvert.DeserializeObject<GetitemImageDetailDto>(inventoryObjectStrin);
+            //                var imagy = inventoryObjectDat.data;
+            //                //byte[]? fileBytes = Convert.FromBase64String(imagy.fileByte);  // Use appropriate conversion method
+
+            //                //// Convert byte array to string using UTF-8 encoding
+            //                //string? fileString = Encoding.UTF8.GetString(fileBytes);
+            //                imgbyte = imagy.downloadUrl;
+            //            }
+            //            var itemDetails = new CsItemDetailsForQuoteDto
+            //            {
+            //                LeadId = rfqDetail.LeadId,
+            //                RFQNumber = rfqItem.RfqNumber,
+            //                CustomerName = rfqDetail.CustomerName,
+            //                CustomerAliasName = rfqDetail.CustomerAliasName,
+            //                RoomName = rfqItem.RoomName,
+            //                CustomerId = rfqDetail.CustomerId,
+            //                ItemNumber = rfqItem.ItemNumber,
+            //                Description = rfqItem.Description,
+            //                CustomFields = rfqItem.CustomFields,
+            //                PriceListName = itemPriceList.PriceListName,
+            //                Qty = rfqItem.Qty,
+            //                UnitPrice = itemPriceList.LeastCost,
+            //                LeastCostPlus = itemPriceList.LeastCostPlus,
+            //                LeastCostminus = itemPriceList.LeastCostminus,
+            //                DiscountMinus = itemPriceList.DiscountMinus,
+            //                DiscountPlus = itemPriceList.DiscountPlus,
+            //                Markup = itemPriceList.Markup,
+            //                CreatedOn = itemPriceList.CreatedOn,
+            //                IsDiscountApplicable = itemPriceList.IsDiscountApplicable,
+            //                ImageURL = imgbyte
+            //            };
+
+            //            postdata.Add(itemDetails);
+
+            //        }
+            //    }
+            //}
 
             //var leftOuterJoin = from e in _tipsSalesServiceDbContext.RfqCustomerSupportItems
             //                    where e.RfqNumber == rfqNumber && e.ReleaseStatus == true
@@ -303,7 +378,7 @@ namespace Tips.SalesService.Api.Repository
             //var postdata = leftOuterJoin.ToList();
 
 
-            return postdata;
+
         }
 
         public async Task<IEnumerable<rfqEnggItemDetailsForQuoteDto>> GetAllRfqEnggDetailsByRfqNo(string rfqNumber)
