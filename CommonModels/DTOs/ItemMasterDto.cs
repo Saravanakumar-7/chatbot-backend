@@ -337,7 +337,16 @@ namespace Entities.DTOs
         public string FileExtension { get; set; }
         public string FilePath { get; set; }
         public string? FileByte { get; set; }
-        public string DownloadUrl { get; set; }
+        public string? DownloadUrl { get; set; }
+    }
+    public class GetDownloadUrlswithitemnumber
+    {
+        public int Id { get; set; }
+        public string? Itemnumber { get; set; }
+        public string FileName { get; set; }
+        public string FileExtension { get; set; }      
+        
+        public string? DownloadUrl { get; set; }
     }
     public class ItemMasterIdNoListDto
     {

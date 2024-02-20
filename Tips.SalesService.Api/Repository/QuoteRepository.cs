@@ -112,14 +112,14 @@ namespace Tips.SalesService.Api.Repository
         }
 
         public async Task<Quote> ChangeQuoteVersion(Quote quote)
-        {            
+        {
             var getIdByRfqNumber = _tipsSalesServiceDbContext.Quotes
                 .Where(x => x.RFQNumber == quote.RFQNumber)
                 .OrderByDescending(x => x.Id)
                 .Select(x => x.Id)
                 .FirstOrDefault();
             var getOldRevisionNumber = _tipsSalesServiceDbContext.Quotes
-                .Where(x => x.Id == getIdByRfqNumber)                
+                .Where(x => x.Id == getIdByRfqNumber)
                 .FirstOrDefault();
             getOldRevisionNumber.LastModifiedBy = _createdBy;
             getOldRevisionNumber.LastModifiedOn = DateTime.Now;
@@ -133,7 +133,7 @@ namespace Tips.SalesService.Api.Repository
             quote.Unit = _unitname;
             var result = await Create(quote);
             return result;
-        } 
+        }
         //public async Task<Quote> GetVendorMasterById(int id)
         //{
         //    var getVendorMasterbyId = await _tipsSalesServiceDbContext.quotes.Where(x => x.Id == id)
@@ -177,24 +177,33 @@ namespace Tips.SalesService.Api.Repository
         {
 
             var rfqDetail = await _tipsSalesServiceDbContext.Rfqs
-                .Where(x => x.RfqNumber == rfqNumber)
+                .Where(x => x.RfqNumber == rfqNumber).OrderByDescending(m => m.RevisionNumber)
                 .FirstOrDefaultAsync();
 
             var rfqCDetail = await _tipsSalesServiceDbContext.RfqCustomerSupports
-               .Where(x => x.RfqNumber == rfqNumber)
+               .Where(x => x.RfqNumber == rfqNumber && x.RevisionNumber == rfqDetail.RevisionNumber)
                .FirstOrDefaultAsync();
 
-            var rfqCsId = _tipsSalesServiceDbContext.RfqCustomerSupports
-                .OrderByDescending(x => x.Id)
-                .Where(x => x.RfqNumber == rfqNumber)
-                .Select(x=>x.Id)
-                .FirstOrDefault();
+            
+
+            //var rfqCsId = _tipsSalesServiceDbContext.RfqCustomerSupports
+            //    .OrderByDescending(x => x.Id)
+            //    .Where(x => x.RfqNumber == rfqNumber)
+            //    .Select(x=>x.Id)
+            //    .FirstOrDefault();
 
             var rfqItems = _tipsSalesServiceDbContext.RfqCustomerSupportItems
-      .Where(e => e.RfqNumber == rfqNumber && e.ReleaseStatus == true && e.RfqCustomerSupportId == rfqCsId)
-      .ToList();
+                  .Where(e => e.RfqNumber == rfqNumber && e.ReleaseStatus == true && e.RfqCustomerSupportId == rfqCDetail.Id)
+                  .ToList();
 
-            //var itemNumbers = rfqItems.Select(e => e.ItemNumber).Distinct().ToList();
+            var itemNumbers = rfqItems.Select(e => e.ItemNumber).Distinct().ToList();
+            var data_1 = JsonConvert.SerializeObject(itemNumbers);
+            var content = new StringContent(data_1, Encoding.UTF8, "application/json");
+            var baseurl = _config["ItemMasterMainAPI"];
+            var itemdetails = await _httpClient.PostAsync($"{baseurl}GetItemsImageUrls", content);
+            var ItemObjectString = await itemdetails.Content.ReadAsStringAsync();
+            var itemObjectData = JsonConvert.DeserializeObject<Itemnumberimages>(ItemObjectString);
+            var itemobject = itemObjectData.data;
 
             var postdata = new List<CsItemDetailsForQuoteDto>();
 
@@ -202,238 +211,79 @@ namespace Tips.SalesService.Api.Repository
             //{
             //    var items = rfqItems.Where(e => e.ItemNumber == itemNumber).ToList();
 
-                foreach (var rfqItem in rfqItems)
+            foreach (var rfqItem in rfqItems)
+            {
+                ItemPriceList itemPriceList = null;
+
+                //foreach (var priceListName in latestPriceListName)
+                //{
+                itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
+                    .Where(d => d.ItemNumber == rfqItem.ItemNumber && latestPriceListName.Contains(d.PriceListName))
+                    .OrderByDescending(d => d.CreatedOn)
+                    .FirstOrDefault();
+                //if (itemPriceList != null)
+                //{
+                //    break;
+                //}
+                //}
+                if (itemPriceList != null)
                 {
-                    ItemPriceList itemPriceList = null;
+                    //var itemdetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
+                    //    $"GetItemMasterByItemNumber?ItemNumber={rfqItem.ItemNumber}"));
 
-                    foreach (var priceListName in latestPriceListName)
+                    //var inventoryObjectString = await itemdetails.Content.ReadAsStringAsync();
+                    //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                    //dynamic itemobject = inventoryObjectData.data;
+
+                    //int? Imageid = itemobject.imageUpload;
+                    //string? imgbyte=null;
+                    //if(Imageid != null)
+                    //{
+                    //    var itemimage = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
+                    //   $"GetDownloadUrlDetailsforItemImage?imageid={Imageid}"));
+
+                    //    var inventoryObjectStrin = await itemimage.Content.ReadAsStringAsync();
+                    //    var inventoryObjectDat = JsonConvert.DeserializeObject<GetitemImageDetailDto>(inventoryObjectStrin);
+                    //    var imagy = inventoryObjectDat.data;
+                    //    //byte[]? fileBytes = Convert.FromBase64String(imagy.fileByte);  // Use appropriate conversion method
+
+                    //    //// Convert byte array to string using UTF-8 encoding
+                    //    //string? fileString = Encoding.UTF8.GetString(fileBytes);
+                    //    imgbyte = imagy.downloadUrl;
+                    //} 
+                    var itemDetails = new CsItemDetailsForQuoteDto
                     {
-                        itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
-                            .Where(d => d.ItemNumber == rfqItem.ItemNumber && d.PriceListName == priceListName)
-                            .OrderByDescending(d => d.CreatedOn)
-                            .FirstOrDefault();
-                        if (itemPriceList != null)
-                        {
-                            break;
-                        }
-                    }
-                    if (itemPriceList != null)
-                    {
-                        var itemdetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
-                            $"GetItemMasterByItemNumber?ItemNumber={rfqItem.ItemNumber}"));
-
-                        var inventoryObjectString = await itemdetails.Content.ReadAsStringAsync();
-                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        dynamic itemobject = inventoryObjectData.data;
-
-                        int? Imageid = itemobject.imageUpload;
-                        string? imgbyte=null;
-                        if(Imageid != null)
-                        {
-                            var itemimage = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
-                           $"GetDownloadUrlDetailsforItemImage?imageid={Imageid}"));
-
-                            var inventoryObjectStrin = await itemimage.Content.ReadAsStringAsync();
-                            var inventoryObjectDat = JsonConvert.DeserializeObject<GetitemImageDetailDto>(inventoryObjectStrin);
-                            var imagy = inventoryObjectDat.data;
-                            //byte[]? fileBytes = Convert.FromBase64String(imagy.fileByte);  // Use appropriate conversion method
-
-                            //// Convert byte array to string using UTF-8 encoding
-                            //string? fileString = Encoding.UTF8.GetString(fileBytes);
-                            imgbyte = imagy.downloadUrl;
-                        } 
-                        var itemDetails = new CsItemDetailsForQuoteDto
-                        {
-                            LeadId = rfqDetail.LeadId,
-                            RFQNumber = rfqItem.RfqNumber,
-                            CustomerName = rfqDetail.CustomerName,
-                            CustomerAliasName = rfqDetail.CustomerAliasName,
-                            RoomName = rfqItem.RoomName,
-                            CustomerId = rfqDetail.CustomerId,
-                            ItemNumber = rfqItem.ItemNumber,
-                            Description = rfqItem.Description,
-                            CustomFields = rfqItem.CustomFields,
-                            PriceListName = itemPriceList.PriceListName,
-                            Qty = rfqItem.Qty,
-                            UnitPrice = itemPriceList.LeastCost,
-                            LeastCostPlus = itemPriceList.LeastCostPlus,
-                            LeastCostminus = itemPriceList.LeastCostminus,
-                            DiscountMinus = itemPriceList.DiscountMinus,
-                            DiscountPlus = itemPriceList.DiscountPlus,
-                            Markup = itemPriceList.Markup,
-                            CreatedOn = itemPriceList.CreatedOn,
-                            IsDiscountApplicable = itemPriceList.IsDiscountApplicable,
-                            ImageURL = imgbyte
-                        };
-
-                        postdata.Add(itemDetails);
-                   
+                        LeadId = rfqDetail.LeadId,
+                        RFQNumber = rfqItem.RfqNumber,
+                        CustomerName = rfqDetail.CustomerName,
+                        CustomerAliasName = rfqDetail.CustomerAliasName,
+                        RoomName = rfqItem.RoomName,
+                        CustomerId = rfqDetail.CustomerId,
+                        ItemNumber = rfqItem.ItemNumber,
+                        Description = rfqItem.Description,
+                        CustomFields = rfqItem.CustomFields,
+                        PriceListName = itemPriceList.PriceListName,
+                        Qty = rfqItem.Qty,
+                        UnitPrice = itemPriceList.LeastCost,
+                        LeastCostPlus = itemPriceList.LeastCostPlus,
+                        LeastCostminus = itemPriceList.LeastCostminus,
+                        DiscountMinus = itemPriceList.DiscountMinus,
+                        DiscountPlus = itemPriceList.DiscountPlus,
+                        Markup = itemPriceList.Markup,
+                        CreatedOn = itemPriceList.CreatedOn,
+                        IsDiscountApplicable = itemPriceList.IsDiscountApplicable,
+                        ImageURL = itemobject.Where(x => x.itemnumber == rfqItem.ItemNumber).Select(x => x.downloadUrl).FirstOrDefault()
+                    };
+                    postdata.Add(itemDetails);
                 }
-               // }
             }
 
-
             return postdata;
-
-            //foreach (var itemNumber in itemNumbers)
-            //{
-            //    var items = rfqItems.Where(e => e.ItemNumber == itemNumber).ToList();
-
-            //    foreach (var rfqItem in items)
-            //    {
-            //        ItemPriceList itemPriceList = null;
-
-            //        foreach (var priceListName in latestPriceListName)
-            //        {
-            //            itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
-            //                .Where(d => d.ItemNumber == rfqItem.ItemNumber && d.PriceListName == priceListName)
-            //                .OrderByDescending(d => d.CreatedOn)
-            //                .FirstOrDefault();
-            //            if (itemPriceList != null)
-            //            {
-            //                break;
-            //            }
-            //        }
-            //        if (itemPriceList != null)
-            //        {
-            //            var itemdetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
-            //                $"GetItemMasterByItemNumber?ItemNumber={rfqItem.ItemNumber}"));
-
-            //            var inventoryObjectString = await itemdetails.Content.ReadAsStringAsync();
-            //            dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-            //            dynamic itemobject = inventoryObjectData.data;
-
-            //            int? Imageid = itemobject.imageUpload;
-            //            string? imgbyte = null;
-            //            if (Imageid != null)
-            //            {
-            //                var itemimage = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
-            //               $"GetDownloadUrlDetailsforItemImage?imageid={Imageid}"));
-
-            //                var inventoryObjectStrin = await itemimage.Content.ReadAsStringAsync();
-            //                var inventoryObjectDat = JsonConvert.DeserializeObject<GetitemImageDetailDto>(inventoryObjectStrin);
-            //                var imagy = inventoryObjectDat.data;
-            //                //byte[]? fileBytes = Convert.FromBase64String(imagy.fileByte);  // Use appropriate conversion method
-
-            //                //// Convert byte array to string using UTF-8 encoding
-            //                //string? fileString = Encoding.UTF8.GetString(fileBytes);
-            //                imgbyte = imagy.downloadUrl;
-            //            }
-            //            var itemDetails = new CsItemDetailsForQuoteDto
-            //            {
-            //                LeadId = rfqDetail.LeadId,
-            //                RFQNumber = rfqItem.RfqNumber,
-            //                CustomerName = rfqDetail.CustomerName,
-            //                CustomerAliasName = rfqDetail.CustomerAliasName,
-            //                RoomName = rfqItem.RoomName,
-            //                CustomerId = rfqDetail.CustomerId,
-            //                ItemNumber = rfqItem.ItemNumber,
-            //                Description = rfqItem.Description,
-            //                CustomFields = rfqItem.CustomFields,
-            //                PriceListName = itemPriceList.PriceListName,
-            //                Qty = rfqItem.Qty,
-            //                UnitPrice = itemPriceList.LeastCost,
-            //                LeastCostPlus = itemPriceList.LeastCostPlus,
-            //                LeastCostminus = itemPriceList.LeastCostminus,
-            //                DiscountMinus = itemPriceList.DiscountMinus,
-            //                DiscountPlus = itemPriceList.DiscountPlus,
-            //                Markup = itemPriceList.Markup,
-            //                CreatedOn = itemPriceList.CreatedOn,
-            //                IsDiscountApplicable = itemPriceList.IsDiscountApplicable,
-            //                ImageURL = imgbyte
-            //            };
-
-            //            postdata.Add(itemDetails);
-
-            //        }
-            //    }
-            //}
-
-            //var leftOuterJoin = from e in _tipsSalesServiceDbContext.RfqCustomerSupportItems
-            //                    where e.RfqNumber == rfqNumber && e.ReleaseStatus == true
-            //                    join d in _tipsSalesServiceDbContext.ItemPriceLists on e.ItemNumber equals d.ItemNumber into dept
-            //                    from ItemPriceList in dept.DefaultIfEmpty()
-            //                    select new CsItemDetailsForQuoteDto
-            //                    {
-            //                        RFQNumber = e.RfqNumber,
-            //                        CustomerName = rfqDetail.CustomerName,
-            //                        CustomerAliasName = rfqDetail.CustomerAliasName,
-            //                        RoomName = e.RoomName,
-            //                        CustomerId = rfqDetail.CustomerId,
-            //                        ItemNumber = e.ItemNumber,
-            //                        Description = e.Description,
-            //                        CustomFields = e.CustomFields,
-            //                        PriceListName = ItemPriceList.PriceListName,
-            //                        Qty = e.Qty,
-            //                        UnitPrice = ItemPriceList.LeastCost,
-            //                        LeastCostPlus = ItemPriceList.LeastCostPlus,
-            //                        LeastCostminus = ItemPriceList.LeastCostminus,
-            //                        DiscountMinus = ItemPriceList.DiscountMinus,
-            //                        DiscountPlus = ItemPriceList.DiscountPlus,
-            //                        Markup = ItemPriceList.Markup,
-            //                        CreatedOn = ItemPriceList.CreatedOn,
-            //                        IsDiscountApplicable = ItemPriceList.IsDiscountApplicable
-            //                    };
-
-            //var postdata = leftOuterJoin.ToList();
-
-
-
         }
 
         public async Task<IEnumerable<rfqEnggItemDetailsForQuoteDto>> GetAllRfqEnggDetailsByRfqNo(string rfqNumber)
         {
-           
-            //    var rfqEnggId = await _tipsSalesServiceDbContext.RfqEnggs
-            //      .Where(x => x.RFQNumber == rfqNumber)
-            //        .OrderByDescending(x => x.RevisionNumber)
-            //         .Select(x => x.Id)
-            //   .FirstOrDefaultAsync();
 
-
-            //    var releaseLpDetails = _tipsSalesServiceDbContext.RfqEnggItems
-            //        .Where(x=>x.RfqEnggId == rfqEnggId)
-            //.GroupJoin(
-            //    _tipsSalesServiceDbContext.RfqEnggs.Where(e => e.RFQNumber == rfqNumber && e.Id == rfqEnggId),
-            //    e => e.RfqEnggId,
-            //    eng => eng.Id,
-            //    (e, engGroup) => new { RfqEnggItem = e, RfqEnggs = engGroup })
-            //.SelectMany(
-            //    x => x.RfqEnggs.DefaultIfEmpty(),
-            //    (x, eng) => new { x.RfqEnggItem, RfqEngg = eng })
-            //.GroupJoin(
-            //    _tipsSalesServiceDbContext.ReleaseLps.Where(r => r.RfqNumber == rfqNumber),
-            //    x => new { x.RfqEnggItem.ItemNumber, RfqNumber = x.RfqEngg.RFQNumber },
-            //    rel => new { ItemNumber = rel.ItemNo, rel.RfqNumber },
-            //    (x, relGroup) => new { x.RfqEnggItem, x.RfqEngg, ReleaseLps = relGroup })
-            //.SelectMany(
-            //    x => x.ReleaseLps.DefaultIfEmpty(),
-            //    (x, rel) => new rfqEnggItemDetailsForQuoteDto
-            //    {
-            //        RfqNumber = x.RfqEngg.RFQNumber,
-            //        CustomerName = x.RfqEngg.CustomerName,
-            //        Rev = x.RfqEnggItem.RfqEngg.RevisionNumber,
-            //        CustomFields = x.RfqEnggItem.CustomFields,
-            //        DateOnLpCreation = rel.DateOnLpCreation,
-            //        CustomerItemNumber = x.RfqEnggItem.CustomerItemNumber,
-            //        ItemNumber = x.RfqEnggItem.ItemNumber,
-            //        Description = x.RfqEnggItem.Description,
-            //        CostingBomVersionNo = x.RfqEnggItem.CostingBomVersionNo,
-            //        ReleaseStatus = x.RfqEnggItem.ReleaseStatus,
-            //        Qty = x.RfqEnggItem.Qty,
-            //        UOC = rel.UOC,
-            //        LeastCost = rel.LeastCost,
-            //        LeastCostPlus = rel.LeastCostPlus,
-            //        LeastCostminus = rel.LeastCostminus,
-            //        DiscountPlus = rel.DiscountPlus,
-            //        DiscountMinus = rel.DiscountMinus,
-            //        Markup = rel.Markup,
-            //        PriceList = rel.PriceList,
-            //        ValidThrough = rel.ValidThrough,
-            //        IsDiscountApplicable = rel.IsDiscountApplicable
-            //    })
-            //.Distinct()
-            //.ToList();
 
             var rfqDetail = await _tipsSalesServiceDbContext.Rfqs
                  .Where(x => x.RfqNumber == rfqNumber)
@@ -450,18 +300,26 @@ namespace Tips.SalesService.Api.Repository
                 .FirstOrDefault();
 
             var rfqEnggItems = _tipsSalesServiceDbContext.RfqEnggItems
-      .Where(e => e.ReleaseStatus == true && e.RfqEnggId == rfqEnggId)
-      .ToList();
+        .Where(e => e.ReleaseStatus == true && e.RfqEnggId == rfqEnggId)
+        .ToList();
 
             var itemNumbers = rfqEnggItems.Select(e => e.ItemNumber).Distinct().ToList();
+            var data_1 = JsonConvert.SerializeObject(itemNumbers);
+            var content = new StringContent(data_1, Encoding.UTF8, "application/json");
+            var baseurl = _config["ItemMasterMainAPI"];
+            var itemdetails = await _httpClient.PostAsync($"{baseurl}GetItemsImageUrls", content);
+            var ItemObjectString = await itemdetails.Content.ReadAsStringAsync();
+            var itemObjectData = JsonConvert.DeserializeObject<Itemnumberimages>(ItemObjectString);
+            var itemobject = itemObjectData.data;
+
 
             var postdata = new List<rfqEnggItemDetailsForQuoteDto>();
 
-            foreach (var itemNumber in itemNumbers)
-            {
-                var items = rfqEnggItems.Where(e => e.ItemNumber == itemNumber).ToList();
+            //foreach (var itemNumber in itemNumbers)
+            //{
+            //    var items = rfqEnggItems.Where(e => e.ItemNumber == itemNumber).ToList();
 
-                foreach (var rfqItem in items)
+                foreach (var rfqItem in rfqEnggItems)
                 {
 
                     //var itemPriceList = _tipsSalesServiceDbContext.ReleaseLps
@@ -469,6 +327,7 @@ namespace Tips.SalesService.Api.Repository
                     //    .OrderByDescending(d => d.CreatedOn)
                     //    .FirstOrDefault();
                     //
+
                     var itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
                         .Where(d => d.ItemNumber == rfqItem.ItemNumber)
                         .OrderByDescending(d => d.CreatedOn)
@@ -476,25 +335,25 @@ namespace Tips.SalesService.Api.Repository
 
                     if (itemPriceList != null)
                     {
-                        var itemdetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
-                            $"GetItemMasterByItemNumber?ItemNumber={rfqItem.ItemNumber}"));
+                        //var itemdetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
+                        //    $"GetItemMasterByItemNumber?ItemNumber={rfqItem.ItemNumber}"));
 
-                        var inventoryObjectString = await itemdetails.Content.ReadAsStringAsync();
-                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        dynamic itemobject = inventoryObjectData.data;
+                        //var inventoryObjectString = await itemdetails.Content.ReadAsStringAsync();
+                        //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        //dynamic itemobject = inventoryObjectData.data;
 
-                        int? Imageid = itemobject.imageUpload;
-                        string? imgbyte = null;
-                        if (Imageid != null)
-                        {
-                            var itemimage = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
-                           $"GetDownloadUrlDetailsforItemImage?imageid={Imageid}"));
+                        //int? Imageid = itemobject.imageUpload;
+                        //string? imgbyte = null;
+                        //if (Imageid != null)
+                        //{
+                        //    var itemimage = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
+                        //   $"GetDownloadUrlDetailsforItemImage?imageid={Imageid}"));
 
-                            var inventoryObjectStrin = await itemimage.Content.ReadAsStringAsync();
-                            var inventoryObjectDat = JsonConvert.DeserializeObject<GetitemImageDetailDto>(inventoryObjectStrin);
-                            var imagy = inventoryObjectDat.data;                            
-                            imgbyte = imagy.downloadUrl;
-                        }
+                        //    var inventoryObjectStrin = await itemimage.Content.ReadAsStringAsync();
+                        //    var inventoryObjectDat = JsonConvert.DeserializeObject<GetitemImageDetailDto>(inventoryObjectStrin);
+                        //    var imagy = inventoryObjectDat.data;
+                        //    imgbyte = imagy.downloadUrl;
+                        
                         var itemDetails = new rfqEnggItemDetailsForQuoteDto
                         {
                             RfqNumber = rfqDetail.RfqNumber,
@@ -518,13 +377,13 @@ namespace Tips.SalesService.Api.Repository
                             PriceListName = itemPriceList.PriceListName,
                             ValidThrough = itemPriceList.ValidThrough,
                             IsDiscountApplicable = itemPriceList.IsDiscountApplicable,
-                            ImageURL = imgbyte
+                            ImageURL = itemobject.Where(x => x.itemnumber == rfqItem.ItemNumber).Select(x => x.downloadUrl).FirstOrDefault()
                         };
 
                         postdata.Add(itemDetails);
                     }
                 }
-            }
+            
             return postdata;
         }
 
@@ -551,7 +410,7 @@ namespace Tips.SalesService.Api.Repository
             return PagedList<Quote>.ToPagedList(quoteDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-            public async Task<Quote> GetQuoteById(int id)
+        public async Task<Quote> GetQuoteById(int id)
         {
             var quoteDetails = await _tipsSalesServiceDbContext.Quotes.Where(x => x.Id == id)
                                .Include(t => t.QuoteGenerals)
@@ -566,7 +425,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<Quote> GetQuoteByQuoteNumber(string quoteNumber)
         {
             var quoteDetails = await _tipsSalesServiceDbContext.Quotes.Where(x => x.QuoteNumber == quoteNumber)
-                               
+
                                .FirstOrDefaultAsync();
 
             return quoteDetails;

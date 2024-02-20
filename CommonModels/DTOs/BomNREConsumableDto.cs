@@ -45,10 +45,10 @@ namespace Entities.DTOs
         public string? NREItemNumber { get; set; }
 
         [Precision(13, 3)]
-        public int? NREQuantity { get; set; }
+        public decimal? NREQuantity { get; set; }
 
         [Precision(18, 3)]
-        public int? NRECost { get; set; }
+        public decimal? NRECost { get; set; }
 
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }

@@ -37,6 +37,7 @@ namespace Contracts
         Task<IEnumerable<ItemNoListDtos>> GetAllIsPRRequiredStatusTruePPItemNoList();
         Task<IEnumerable<ItemMasterIdNoListDto>> GetAllOpenGrinStatusTrueItemMasterIdNoList();
         Task<string> GetClosedIqcItemMasterItemNo(string ItemNumber);
-
+        Task<Dictionary<string, int?>> GetItemsImageIds(List<string> ItemNumbers);
+        Task<List<GetDownloadUrlswithitemnumber>> GetImageDetails(Dictionary<string, int?> itemImageids);
     }
 }
