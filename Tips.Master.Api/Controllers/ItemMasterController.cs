@@ -1914,5 +1914,55 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> GetItemsImageUrls([FromBody]List<string> ItemNumbers)
+        {
+            ServiceResponse<List<GetDownloadUrlswithitemnumber>> serviceResponse = new ServiceResponse<List<GetDownloadUrlswithitemnumber>>();
+            try
+            {
+                string serverKey = GetServerKey();
+                var getItemImageIds = await _repository.ItemMasterRepository.GetItemsImageIds(ItemNumbers);
+                var itemimageurls = await _repository.ItemMasterRepository.GetImageDetails(getItemImageIds);
+                if (itemimageurls == null)
+                {
+                    _logger.LogError($"Itemmasters hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Itemmasters with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    foreach (var items in itemimageurls) {
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            items.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadImage?Filename={items.FileName}";
+                        }
+                        else
+                        {                            
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            items.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadImage?Filename={items.FileName}";
+                        }
+                    }
+                    _logger.LogInfo($"Returned Itemmasters Imageurls");                    
+                    serviceResponse.Data = itemimageurls;
+                    serviceResponse.Message = "Returned All ItemMasterByItemNumber:";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetItemMasterandimageIds action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Internal server error: {ex.Message}{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }       
     }
 }

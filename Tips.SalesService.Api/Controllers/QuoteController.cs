@@ -110,8 +110,8 @@ namespace Tips.SalesService.Api.Controllers
 
                     //foreach (var quoteItems in quoteGeneralList)
                     //{ 
-                    //    var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?", "ItemNumber=", quoteItems.ItemNumber));
-                    //    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                    //    var priceListNamesResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?", "ItemNumber=", quoteItems.ItemNumber));
+                    //    var inventoryObjectString = await priceListNamesResult.Content.ReadAsStringAsync();
                     //    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                     //    dynamic inventoryObject = inventoryObjectData;
                     //    quoteItems.AvailableStock = inventoryObject.ToDecimal();
@@ -190,16 +190,16 @@ namespace Tips.SalesService.Api.Controllers
 
                 //get latest price list name from master
 
-                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["PriceListAPI"],
+                var priceListNamesResult = await _httpClient.GetAsync(string.Concat(_config["PriceListAPI"],
                              "GetLatestPriceListName?"));
 
-                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                dynamic inventoryObject = inventoryObjectData.data;
+                var priceListNamesString = await priceListNamesResult.Content.ReadAsStringAsync();
+                dynamic priceListNamesData = JsonConvert.DeserializeObject(priceListNamesString);
+                dynamic priceListNamesObject = priceListNamesData.data;
 
                 List<string> priceListNames = new List<string>();
 
-                foreach (var item in inventoryObject)
+                foreach (var item in priceListNamesObject)
                 {
                     // Assuming "pricelistname" is a property of each item
                     string priceListName = item.pricelist;

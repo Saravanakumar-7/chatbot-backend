@@ -244,9 +244,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ShortClosedRemarks { get; set; }
     }
 
-    public class GetitemImageDetailDto
+   
+    public class Itemnumberimages
     {
-        public Datum data { get; set; }
+        public List<Datum>? data { get; set; }
         public string message { get; set; }
         public bool success { get; set; }
         public int statusCode { get; set; }
@@ -255,11 +256,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class Datum
     {
         public int id { get; set; }
-        public string fileName { get; set; }
-        public string fileExtension { get; set; }
-        public string filePath { get; set; }
-        public string? fileByte { get; set; }
-        public string downloadUrl { get; set; }
+        public string? itemnumber { get; set; }
+        public string? fileName { get; set; }
+        public string? fileExtension { get; set; }
+        public string? downloadUrl { get; set; }
     }
 
 }

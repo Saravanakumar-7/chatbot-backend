@@ -34,11 +34,11 @@ namespace Repository
         {
             itemMaster.CreatedBy = _createdBy;
             itemMaster.CreatedOn = DateTime.Now;
-           // itemMaster.LastModifiedBy = _createdBy;
-           // itemMaster.LastModifiedOn = DateTime.Now;
+            // itemMaster.LastModifiedBy = _createdBy;
+            // itemMaster.LastModifiedOn = DateTime.Now;
             itemMaster.Unit = _unitname;
             var result = await Create(itemMaster);
-            
+
             return result.Id;
         }
         public async Task<GetDownloadUrlDtos> GetDownloadUrlDetails(long itemMasterId)
@@ -53,23 +53,38 @@ namespace Repository
                                      FileByte = x.FileByte
                                  }).FirstOrDefaultAsync();
 
-            //.Select(x => new GetDownloadUrlDtos()
-            //{
-            //    Id = x.Id,
-            //    FileName = x.FileName,
-            //    FileExtension = x.FileExtension,
-            //    FilePath = x.FilePath,
-            //    FileByte=x.FileByte
-            //});
-
             return getDownloadDetails;
+        }
+        public async Task<List<GetDownloadUrlswithitemnumber>> GetImageDetails(Dictionary<string, int?> itemImageids)
+        {
+            List<GetDownloadUrlswithitemnumber> downloadDetailsList = new List<GetDownloadUrlswithitemnumber>();
+            foreach (var itemdetails in itemImageids)
+            {
+                string itemNumber = itemdetails.Key;
+                int? imageId = itemdetails.Value;
+                GetDownloadUrlswithitemnumber? getDownloadDetails = await TipsMasterDbContext.imageUploads
+                .Where(b => b.Id == imageId).Select(x => new GetDownloadUrlswithitemnumber
+                {
+                     Id = x.Id,
+                     FileName = x.FileName,
+                     FileExtension = x.FileExtension                                     
+                })
+                .FirstOrDefaultAsync();
+
+                if (getDownloadDetails != null)
+                {
+                    getDownloadDetails.Itemnumber = itemNumber;
+                    downloadDetailsList.Add(getDownloadDetails);
+                }
+            }
+            return downloadDetailsList;
         }
         public async Task<string> DeleteItemMaster(ItemMaster itemMaster)
         {
             Delete(itemMaster);
             string result = $"ItemMaster details of {itemMaster.Id} is deleted successfully!";
             return result;
-        }         
+        }
 
         public async Task<IEnumerable<ItemMaster>> GetAllActiveItemMasters()
         {
@@ -203,14 +218,14 @@ namespace Repository
                     .Include("ItemMasterApprovedVendor").Include("ItemMasterRouting")
                     .Include("ItemMasterWarehouse");
                 if (itemMasterSearch != null || (itemMasterSearch.ItemNumber.Any())
-                    && itemMasterSearch.ItemType.Any() && itemMasterSearch.Commodity.Any() && itemMasterSearch.MaterialGroup.Any() 
+                    && itemMasterSearch.ItemType.Any() && itemMasterSearch.Commodity.Any() && itemMasterSearch.MaterialGroup.Any()
                     && itemMasterSearch.PurchaseGroup.Any()
                     && itemMasterSearch.Department.Any())
 
                 {
                     query = query.Where
                         (item => (itemMasterSearch.ItemType.Any() ? itemMasterSearch.ItemType.Contains(item.ItemType) : true)
-                        &&(itemMasterSearch.ItemNumber.Any() ? itemMasterSearch.ItemNumber.Contains(item.ItemNumber) : true)
+                        && (itemMasterSearch.ItemNumber.Any() ? itemMasterSearch.ItemNumber.Contains(item.ItemNumber) : true)
                         && (itemMasterSearch.Commodity.Any() ? itemMasterSearch.Commodity.Contains(item.Commodity) : true)
                         && (itemMasterSearch.MaterialGroup.Any() ? itemMasterSearch.MaterialGroup.Contains(item.MaterialGroup) : true)
                         && (itemMasterSearch.PurchaseGroup.Any() ? itemMasterSearch.PurchaseGroup.Contains(item.PurchaseGroup) : true)
@@ -254,7 +269,7 @@ namespace Repository
         public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllFgTgItemMasterItemNoList()
         {
             IEnumerable<ItemMasterIdNoListDto> getAllActiveItemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters
-                                .Where(c => (c.ItemType == PartType.FG || c.ItemType == PartType.TG)&&c.IsActive==true)
+                                .Where(c => (c.ItemType == PartType.FG || c.ItemType == PartType.TG) && c.IsActive == true)
                                 .Select(c => new ItemMasterIdNoListDto()
                                 {
                                     id = c.Id,
@@ -294,7 +309,7 @@ namespace Repository
         public async Task<IEnumerable<ItemMaster>> GetAllFGItems()
         {
             var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id)
-                .Where(inv => (inv.ItemType == PartType.FG)&&inv.IsActive==true)
+                .Where(inv => (inv.ItemType == PartType.FG) && inv.IsActive == true)
             .Include(t => t.ItemmasterAlternate)
             .Include(t => t.ItemMasterApprovedVendor)
             //.Include(t => t.ItemMasterFileUpload)
@@ -305,7 +320,7 @@ namespace Repository
 
         public async Task<IEnumerable<ItemMaster>> GetAllSAPurchasePartItems()
         {
-            var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id).Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart)&&inv.IsActive==true)
+            var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id).Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart) && inv.IsActive == true)
             .Include(t => t.ItemmasterAlternate)
             .Include(t => t.ItemMasterApprovedVendor)
             //.Include(t => t.ItemMasterFileUpload)
@@ -313,7 +328,7 @@ namespace Repository
             .Include(d => d.ItemMasterWarehouse);
             return itemmasterFgDetails;
         }
-         
+
 
         public async Task<IEnumerable<ItemMaster>> GetAllSAItems()
         {
@@ -325,7 +340,7 @@ namespace Repository
             .Include(d => d.ItemMasterWarehouse);
             return itemmasterSADetails;
         }
-       public async Task<IEnumerable<ItemMaster>> GetAllFgSaItems()
+        public async Task<IEnumerable<ItemMaster>> GetAllFgSaItems()
         {
             var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id).Where(inv => inv.ItemType == PartType.SA || inv.ItemType == PartType.FG)
             .Include(c => c.FileUpload)
@@ -342,16 +357,16 @@ namespace Repository
         public async Task<IEnumerable<ItemMaster>> GetAllFgSaFruItems()
         {
             var itemmasterFgSaFRUDetails = FindAll().OrderByDescending(a => a.Id)
-               .Where(a=>(a.ItemType == PartType.SA || a.ItemType == PartType.FG || a.ItemType == PartType.FRU)&& a.IsActive==true)
-                         //.Include(c => c.FileUpload)
-                          //  .Include(x => x.ImageUpload)
+               .Where(a => (a.ItemType == PartType.SA || a.ItemType == PartType.FG || a.ItemType == PartType.FRU) && a.IsActive == true)
+                            //.Include(c => c.FileUpload)
+                            //  .Include(x => x.ImageUpload)
                             .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 //.Include(m => m.ItemMasterFileUpload)
                                 .Include(s => s.ItemMasterRouting)
                                 .Include(f => f.ItemMasterWarehouse).ToList();
             return itemmasterFgSaFRUDetails;
-             
+
 
         }
 
@@ -382,7 +397,7 @@ namespace Repository
         public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllActiveItemMasterIdNoList()
         {
             IEnumerable<ItemMasterIdNoListDto> getAllActiveItemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters
-                                .Where(x=>x.IsActive == true)
+                                .Where(x => x.IsActive == true)
                                 .Select(c => new ItemMasterIdNoListDto()
                                 {
                                     id = c.Id,
@@ -397,13 +412,13 @@ namespace Repository
 
         public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllItemMasterIdNoList()
         {
-            IEnumerable<ItemMasterIdNoListDto> itemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters.Where(x=>x.IsActive==true)
+            IEnumerable<ItemMasterIdNoListDto> itemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters.Where(x => x.IsActive == true)
                                 .Select(c => new ItemMasterIdNoListDto()
                                 {
                                     id = c.Id,
                                     ItemNumber = c.ItemNumber,
                                     Description = c.Description,
-                                    Uom=c.Uom
+                                    Uom = c.Uom
                                 })
                               .ToListAsync();
 
@@ -443,7 +458,7 @@ namespace Repository
                                     CreatedOn = c.CreatedOn,
                                     LastModifiedBy = c.LastModifiedBy,
                                     LastModifiedOn = c.LastModifiedOn,
-                                   
+
                                 })
                               .ToListAsync();
 
@@ -452,8 +467,8 @@ namespace Repository
         public async Task<ItemMaster> GetItemMasterByItemNumber(string ItemNumber)
         {
             var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == ItemNumber)
-                // .Include(c => c.FileUpload)
-               // .Include(x => x.ImageUpload)
+                 // .Include(c => c.FileUpload)
+                 // .Include(x => x.ImageUpload)
                  .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 //.Include(m => m.ItemMasterFileUpload)
@@ -463,12 +478,16 @@ namespace Repository
                              .FirstOrDefaultAsync();
             return getItemMasterByItemNo;
         }
-
+        public async Task<Dictionary<string, int?>> GetItemsImageIds(List<string> ItemNumbers)
+        {
+            Dictionary<string, int?> imageIds = await FindAll().Where(x => ItemNumbers.Contains(x.ItemNumber) && x.ImageUpload != null).Select(x => new { x.ItemNumber, x.ImageUpload }).ToDictionaryAsync(x => x.ItemNumber, x => x.ImageUpload);
+            return imageIds;
+        }
         public async Task<string> GetClosedIqcItemMasterItemNo(string ItemNumber)
         {
-           var iqcCloseditemMasterItemNoList = await FindByCondition(x => x.ItemNumber == ItemNumber && x.IsIQCRequired == false)
-                            .Select(x => x.ItemNumber)            
-                            .FirstOrDefaultAsync();
+            var iqcCloseditemMasterItemNoList = await FindByCondition(x => x.ItemNumber == ItemNumber && x.IsIQCRequired == false)
+                             .Select(x => x.ItemNumber)
+                             .FirstOrDefaultAsync();
 
             return iqcCloseditemMasterItemNoList;
         }
@@ -508,7 +527,7 @@ namespace Repository
                                     Uom = itemMasterUom
 
                                 }).ToListAsync();
-                                
+
             return itemMasterDetails;
 
         }
@@ -532,8 +551,8 @@ namespace Repository
         {
             fileUpload.CreatedBy = _createdBy;
             fileUpload.CreatedOn = DateTime.Now;
-           // fileUpload.LastModifiedBy = _createdBy;
-           // fileUpload.LastModifiedOn = DateTime.Now;
+            // fileUpload.LastModifiedBy = _createdBy;
+            // fileUpload.LastModifiedOn = DateTime.Now;
             var result = await Create(fileUpload);
             return result.Id;
         }
@@ -542,7 +561,7 @@ namespace Repository
         {
             fileUpload.CreatedBy = _createdBy;
             fileUpload.CreatedOn = DateTime.Now;
-           // fileUpload.LastModifiedBy = _createdBy;
+            // fileUpload.LastModifiedBy = _createdBy;
             //fileUpload.LastModifiedOn = DateTime.Now;
             var result = await Create(fileUpload);
             return result.Id;
@@ -553,7 +572,7 @@ namespace Repository
             if (FileIds != null)
             {
                 string[]? ids = FileIds.Split(',');
-                
+
                 for (int i = 0; i < ids.Count(); i++)
                 {
                     FileUploadDto getDownloadDetails = await TipsMasterDbContext.fileUploads
@@ -564,10 +583,10 @@ namespace Repository
                                     FileName = x.FileName,
                                     FileExtension = x.FileExtension,
                                     FilePath = x.FilePath,
-                                    FileByte=x.FileByte
+                                    FileByte = x.FileByte
                                 }).FirstOrDefaultAsync();
                     if (getDownloadDetails != null)
-                    fileUploads.Add(getDownloadDetails);
+                        fileUploads.Add(getDownloadDetails);
                 }
             }
             return fileUploads;
@@ -590,21 +609,21 @@ namespace Repository
         }
         public async Task DeleteImage(int Id)
         {
-                // Retrieve the record to delete
-                var imageToDelete = TipsMasterDbContext.imageUploads.FirstOrDefault(i => i.Id == Id);
-                if (imageToDelete != null)
-                {
+            // Retrieve the record to delete
+            var imageToDelete = TipsMasterDbContext.imageUploads.FirstOrDefault(i => i.Id == Id);
+            if (imageToDelete != null)
+            {
                 // Remove the record from the context and then save changes
                 TipsMasterDbContext.imageUploads.Remove(imageToDelete);
                 //TipsMasterDbContext.SaveChanges();
-                }           
+            }
         }
         public async Task<int?> ImageUploadDocument(ImageUpload imageUpload)
         {
             imageUpload.CreatedBy = _createdBy;
             imageUpload.CreatedOn = DateTime.Now;
-          //  imageUpload.LastModifiedBy = _createdBy;
-           // imageUpload.LastModifiedOn = DateTime.Now;
+            //  imageUpload.LastModifiedBy = _createdBy;
+            // imageUpload.LastModifiedOn = DateTime.Now;
             var result = await Create(imageUpload);
             return result.Id;
         }
