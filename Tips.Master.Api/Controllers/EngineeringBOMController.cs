@@ -15,6 +15,7 @@ using Entities.Enums;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 using System;
 using MySqlX.XDevAPI.Common;
+using Microsoft.IdentityModel.Tokens;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -34,7 +35,7 @@ namespace Tips.Master.Api.Controllers
         private IMapper _mapper;
         private IReleaseCostBomRepository _releaseCostBomRepository;
         private IEnggBomRepository _enggBomRepository;
-        public EngineeringBOMController(HttpClient httpClient, IConfiguration config,IEnggBomRepository enggBomRepository, IRepositoryWrapperForMaster repository,IReleaseProductBomRepository releaseProductBomRepository, IReleaseCostBomRepository releaseCostBomRepository, IReleaseEnggBomRepository releaseEnggBomRepository, ILoggerManager logger, IMapper mapper)
+        public EngineeringBOMController(HttpClient httpClient, IConfiguration config, IEnggBomRepository enggBomRepository, IRepositoryWrapperForMaster repository, IReleaseProductBomRepository releaseProductBomRepository, IReleaseCostBomRepository releaseCostBomRepository, IReleaseEnggBomRepository releaseEnggBomRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
@@ -42,7 +43,7 @@ namespace Tips.Master.Api.Controllers
             _config = config;
             _mapper = mapper;
             _releaseCostBomRepository = releaseCostBomRepository;
-             _releaseEnggBomRepository = releaseEnggBomRepository;
+            _releaseEnggBomRepository = releaseEnggBomRepository;
             _releaseProductBomRepository = releaseProductBomRepository;
             _enggBomRepository = enggBomRepository;
         }
@@ -349,7 +350,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetEnggBomByItemNoAndRevNo(string itemNumber,decimal revisionNumber)
+        public async Task<IActionResult> GetEnggBomByItemNoAndRevNo(string itemNumber, decimal revisionNumber)
         {
             ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
 
@@ -412,7 +413,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                decimal revisionNo = await _releaseProductBomRepository.GetLatestProductionBomByItemNumber(fgPartNumber); 
+                decimal revisionNo = await _releaseProductBomRepository.GetLatestProductionBomByItemNumber(fgPartNumber);
 
                 if (revisionNo == null)
                 {
@@ -425,7 +426,7 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
-                    _logger.LogInfo($"Production Bom latest Version with fgPartNumber: {fgPartNumber}");                    
+                    _logger.LogInfo($"Production Bom latest Version with fgPartNumber: {fgPartNumber}");
                     serviceResponse.Data = revisionNo;
                     serviceResponse.Message = $"Production Bom latest Version with fgPartNumber: {fgPartNumber}";
                     serviceResponse.Success = true;
@@ -494,7 +495,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
-        } 
+        }
         [HttpPost]
         public async Task<IActionResult> CreateEnggBom([FromBody] EnggBomPostDto enggBomPostDto)
         {
@@ -692,7 +693,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-            
+
                 var enggBomList = _mapper.Map<EnggBom>(enggBomUpdateDto);
 
                 var enggNre = enggBomUpdateDto.BomNREConsumableUpdateDto;
@@ -1314,7 +1315,7 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                
+
                 var productionBomDetailsById = await _releaseProductBomRepository.GetProductionBomById(id);
 
 
@@ -1423,15 +1424,15 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetProductionBomByItemAndBomVersionNo(string itemNumber,decimal bomVersionNo)
+        public async Task<IActionResult> GetProductionBomByItemAndBomVersionNo(string itemNumber, decimal bomVersionNo)
         {
             ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
 
             try
             {
-                
+
                 var productionBomDetailsById = await _releaseProductBomRepository
-                                               .GetProductionBomByItemAndBomVersionNo(itemNumber,bomVersionNo);
+                                               .GetProductionBomByItemAndBomVersionNo(itemNumber, bomVersionNo);
 
 
                 if (productionBomDetailsById == null)
@@ -1495,7 +1496,7 @@ namespace Tips.Master.Api.Controllers
                 }
 
                 var release = _mapper.Map<ProductionBom>(releaseProductBomDtoPost);
-                release.IsReleaseProductCompleted= true;
+                release.IsReleaseProductCompleted = true;
                 await _releaseProductBomRepository.CreateReleaseProductBom(release);
                 _repository.SaveAsync();
                 await _releaseCostBomRepository.ReleasedCostBomByItemAndRevisionNumber(releaseProductBomDtoPost.ItemNumber, releaseProductBomDtoPost.ReleaseVersion);
@@ -1737,7 +1738,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                var dom= _mapper.Map<EnggBomGroup>(enggbomGroupEntity);
+                var dom = _mapper.Map<EnggBomGroup>(enggbomGroupEntity);
                 _mapper.Map(dom, enggbomGroupEntity);
                 string result = await _repository.EnggBomGroupRepository.UpdateEnggBomGroup(enggbomGroupEntity);
                 _logger.LogInfo(result);
@@ -1974,7 +1975,7 @@ namespace Tips.Master.Api.Controllers
                 }
                 var enggcustomFieldEntity = _mapper.Map<List<EnggCustomField>>(enggcustomFieldDtoPost);
 
-                foreach( var enggCustomFielddetails in enggcustomFieldEntity)
+                foreach (var enggCustomFielddetails in enggcustomFieldEntity)
                 {
                     _repository.EnggCustomFieldRepository.CreateEnggCustomField(enggCustomFielddetails);
 
@@ -2196,7 +2197,7 @@ namespace Tips.Master.Api.Controllers
         {
             ServiceResponse<IEnumerable<ReleaseEnggBomDto>> serviceResponse = new ServiceResponse<IEnumerable<ReleaseEnggBomDto>>();
             try
-            { 
+            {
 
                 var costingBomVersionDetails = await _enggBomRepository.GetAllEnggBomVersionListByItemNumber(itemNumber);
                 var result = _mapper.Map<IEnumerable<ReleaseEnggBomDto>>(costingBomVersionDetails);
@@ -2268,7 +2269,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetAllProductionBomFGListByItemNumber([FromBody]string itemNumber)
+        public async Task<IActionResult> GetAllProductionBomFGListByItemNumber([FromBody] string itemNumber)
         {
             ServiceResponse<IEnumerable<ProductionBomRevisionNumber>> serviceResponse = new ServiceResponse<IEnumerable<ProductionBomRevisionNumber>>();
             try
@@ -2349,7 +2350,7 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<ProductionBomRevisionNumberAndQty> serviceResponse = new ServiceResponse<ProductionBomRevisionNumberAndQty>();
             try
             {
-                 var productionBomDetails = await _releaseProductBomRepository.GetAllProductionBomSAListByItemNumber(itemNumber);
+                var productionBomDetails = await _releaseProductBomRepository.GetAllProductionBomSAListByItemNumber(itemNumber);
                 if (productionBomDetails == null)
                 {
                     serviceResponse.Data = null;
@@ -2410,7 +2411,8 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 List<BomCoverageReportChildItemReqQtyDto> bomCoverageList = new List<BomCoverageReportChildItemReqQtyDto>();
-                if (openFGCoverageDetails != null) {
+                if (openFGCoverageDetails != null)
+                {
 
                     foreach (var item in openFGCoverageDetails)
                     {
@@ -2421,10 +2423,10 @@ namespace Tips.Master.Api.Controllers
                         if (productionBomMaxVersion != null)
                         {
                             await ChildItemRequiredQtyForCoverage(bomCoverageList, item.ItemNumber, item.BalanceToOrder);
-                        } 
+                        }
                     }
                     //changed
-                    
+
                 }
                 var itemsRequiredQtyGrouped = bomCoverageList
                         .GroupBy(item => item.ItemNumber)
@@ -2491,7 +2493,7 @@ namespace Tips.Master.Api.Controllers
                         //var enggDetail = _enggBomRepository.GetAllLatestRevBOMIsReleaseEnggBom(itemNo);
                         if (productionBomMaxVersion != null)
                         {
-                            await ChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, item.ItemNumber, item.BalanceToOrder,item.ProjectNumber);
+                            await ChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, item.ItemNumber, item.BalanceToOrder, item.ProjectNumber);
                         }
                     }
                     //changed
@@ -2525,7 +2527,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        private async Task ChildItemRequiredQtyForCoverage(List<BomCoverageReportChildItemReqQtyDto> bomCoverageList, string itemNumber,decimal requiredQty)
+        private async Task ChildItemRequiredQtyForCoverage(List<BomCoverageReportChildItemReqQtyDto> bomCoverageList, string itemNumber, decimal requiredQty)
         {
             var productionBomMaxVersion = await _releaseProductBomRepository
                                         .GetLatestProductionBomByItemNumber(itemNumber);
@@ -2565,14 +2567,14 @@ namespace Tips.Master.Api.Controllers
                                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                 dynamic inventoryObject = inventoryObjectData.data;
-                                openSAQty = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject): 0;
+                                openSAQty = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
                             }
 
-                             // get stock from inventory
+                            // get stock from inventory
                             decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
                             decimal newRequiredQtySA = requiredQtySA - openSAQty;
                             newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
-                            decimal newOpenSAQty = requiredQtySA >= openSAQty ? 0 : (openSAQty- requiredQtySA);
+                            decimal newOpenSAQty = requiredQtySA >= openSAQty ? 0 : (openSAQty - requiredQtySA);
                             if (saItemOpenStock.ContainsKey(saItemNumber))
                             {
                                 saItemOpenStock[saItemNumber] = newOpenSAQty;
@@ -2582,7 +2584,8 @@ namespace Tips.Master.Api.Controllers
                                 saItemOpenStock.Add(saItemNumber, newOpenSAQty);
                             }
 
-                            if (newRequiredQtySA <=0) {
+                            if (newRequiredQtySA <= 0)
+                            {
                                 continue;
                             }
                             await ChildItemRequiredQtyForCoverage(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA);
@@ -2590,93 +2593,112 @@ namespace Tips.Master.Api.Controllers
 
                     }
                 }
-            } 
+            }
         }
 
-        private async Task ChildItemRequiredQtyForCoverageReportByProjectNo(List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList, string itemNumber, decimal requiredQty,string projectNo)
+        private async Task ChildItemRequiredQtyForCoverageReportByProjectNo(List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList, string itemNumber, decimal requiredQty, string projectNo)
         {
-            var productionBomMaxVersion = await _releaseProductBomRepository
-                                        .GetLatestProductionBomByItemNumber(itemNumber);
-            Dictionary<string, decimal> saItemOpenStock = new Dictionary<string, decimal>();
-            if (productionBomMaxVersion >= 0)
+            try
             {
-                var enggBomDetail = await _enggBomRepository
-                      .GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);
-                if (enggBomDetail != null)
+                var productionBomMaxVersion = await _releaseProductBomRepository
+                                            .GetLatestProductionBomByItemNumber(itemNumber);
+                Dictionary<string, decimal> saItemOpenStock = new Dictionary<string, decimal>();
+                if (productionBomMaxVersion >= 0)
                 {
-                    foreach (var enggChildItem in enggBomDetail?.EnggChildItems)
+                    var enggBomDetail = await _enggBomRepository
+                          .GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);
+                    if (enggBomDetail != null)
                     {
-                        if (enggChildItem.PartType != PartType.SA)
+                        foreach (var enggChildItem in enggBomDetail?.EnggChildItems)
                         {
-                            decimal requiredQuantity;
+                            if (enggChildItem.PartType != PartType.SA)
+                            {
+                                decimal requiredQuantity;
+                                if (string.IsNullOrEmpty(enggChildItem.ScrapAllowance) || Convert.ToDecimal(enggChildItem.ScrapAllowance) == 0)
+                                {
+                                    requiredQuantity = enggChildItem.Quantity * requiredQty;
 
-                            if (enggChildItem.ScrapAllowanceType == "percentage")
-                            {
-                                requiredQuantity = (enggChildItem.Quantity + (enggChildItem.Quantity * Convert.ToDecimal(enggChildItem.ScrapAllowance)) * requiredQty);
-                            }
-                            else if (enggChildItem.ScrapAllowanceType == "number")
-                            {
-                                 requiredQuantity = (enggChildItem.Quantity + Convert.ToDecimal(enggChildItem.ScrapAllowance) * requiredQty);
+                                }
+
+                                else
+                                {
+                                    decimal scrappercent = Convert.ToDecimal(enggChildItem.ScrapAllowance);
+                                    if (enggChildItem.ScrapAllowanceType == "Percentage")
+                                    {
+                                        decimal scrapvalue = scrappercent / 100;
+                                        requiredQuantity = (enggChildItem.Quantity + (enggChildItem.Quantity * scrapvalue)) * requiredQty;
+
+                                    }
+                                    else if (enggChildItem.ScrapAllowanceType == "number")
+                                    {
+                                        requiredQuantity = (enggChildItem.Quantity + scrappercent) * requiredQty;
+                                    }
+                                    else
+                                    {
+                                        requiredQuantity = enggChildItem.Quantity * requiredQty;
+                                    }
+
+                                }
+
+                                BomCoverageReportChildItemReqQtyByProjectNoDto bomCoverageReportChildItemReqQty = new BomCoverageReportChildItemReqQtyByProjectNoDto
+                                {
+                                    ItemNumber = enggChildItem.ItemNumber,
+                                    Description = enggChildItem.Description,
+                                    UOM = enggChildItem.UOM,
+                                    PartType = enggChildItem.PartType,
+                                    RequiredQty = requiredQuantity
+
+                                };
+
+                                bomCoverageList.Add(bomCoverageReportChildItemReqQty);
                             }
                             else
                             {
-                                 requiredQuantity = enggChildItem.Quantity * requiredQty;
+                                decimal openSAStock = 0;
+                                string saItemNumber = enggChildItem.ItemNumber;
+                                if (saItemOpenStock.ContainsKey(saItemNumber))
+                                {
+                                    openSAStock = saItemOpenStock[saItemNumber];
+                                }
+                                else
+                                {
+                                    var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                                      "GetTotalStockOfSAItemNumberAndProjectNo?", "itemNumber=", saItemNumber, "&ProjectNumber=", projectNo));
+
+                                    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                                    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                                    dynamic inventoryObject = inventoryObjectData.data;
+                                    openSAStock = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
+                                }
+
+                                // get stock from inventory
+                                decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
+                                decimal newRequiredQtySA = requiredQtySA - openSAStock;
+                                newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
+                                decimal newOpenSAStock = requiredQtySA >= openSAStock ? 0 : (openSAStock - requiredQtySA);
+                                if (saItemOpenStock.ContainsKey(saItemNumber))
+                                {
+                                    saItemOpenStock[saItemNumber] = newOpenSAStock;
+                                }
+                                else
+                                {
+                                    saItemOpenStock.Add(saItemNumber, newOpenSAStock);
+                                }
+
+                                if (newRequiredQtySA <= 0)
+                                {
+                                    continue;
+                                }
+                                await ChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA, projectNo);
                             }
 
-                            BomCoverageReportChildItemReqQtyByProjectNoDto bomCoverageReportChildItemReqQty = new BomCoverageReportChildItemReqQtyByProjectNoDto
-                            {
-                                ItemNumber = enggChildItem.ItemNumber,
-                                Description = enggChildItem.Description,
-                                UOM = enggChildItem.UOM,
-                                PartType = enggChildItem.PartType,
-                                RequiredQty = requiredQuantity
-
-                            };
-                          
-                            bomCoverageList.Add(bomCoverageReportChildItemReqQty);
                         }
-                        else
-                        {
-                            decimal openSAStock = 0;
-                            string saItemNumber = enggChildItem.ItemNumber;
-                            if (saItemOpenStock.ContainsKey(saItemNumber))
-                            {
-                                openSAStock = saItemOpenStock[saItemNumber];
-                            }
-                            else
-                            {
-                                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                                  "GetTotalStockOfSAItemNumberAndProjectNo?", "itemNumber=", saItemNumber , "&ProjectNumber=" ,projectNo));
-
-                                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                                dynamic inventoryObject = inventoryObjectData.data;
-                                openSAStock = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
-                            }
-
-                            // get stock from inventory
-                            decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
-                            decimal newRequiredQtySA = requiredQtySA - openSAStock;
-                            newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
-                            decimal newOpenSAStock = requiredQtySA >= openSAStock ? 0 : (openSAStock - requiredQtySA);
-                            if (saItemOpenStock.ContainsKey(saItemNumber))
-                            {
-                                saItemOpenStock[saItemNumber] = newOpenSAStock;
-                            }
-                            else
-                            {
-                                saItemOpenStock.Add(saItemNumber, newOpenSAStock);
-                            }
-
-                            if (newRequiredQtySA <= 0)
-                            {
-                                continue;
-                            }
-                            await ChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA, projectNo);
-                        }
-
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
             }
         }
 
@@ -2703,19 +2725,19 @@ namespace Tips.Master.Api.Controllers
             EnggBom bomDetails = await _enggBomRepository.GetAllLatestRevAndIsReleaseEnggBom(itemNumber);
 
             if (bomDetails != null)
+            {
+                EnggBom enggBom = new EnggBom
                 {
-                     EnggBom enggBom = new EnggBom
-                    {
-                        ItemNumber = bomDetails.ItemNumber,
-                     };
+                    ItemNumber = bomDetails.ItemNumber,
+                };
 
-                    return enggBom;
-                }
+                return enggBom;
+            }
             return null;
         }
 
 
-       
+
         private async Task<List<CoverageReportDto>> CalculateTotalRequiredQtyRecursive(EnggBom enggBOM, decimal parentQty)
         {
             List<CoverageReportDto> result = new List<CoverageReportDto>();
@@ -2764,15 +2786,15 @@ namespace Tips.Master.Api.Controllers
                                     dto.OpenPoQty = dto.OpenPoQty + purchase.balanceQty;
                                 }
                             }
-                        }                        
+                        }
 
                         foreach (var childSAChildQty in childSAChildQtyList)
-                        { 
+                        {
 
                             dto.ChildItemNumber = maxRevisionBOM.ItemNumber;
 
                             dto.TotalRequiredQty = parentQty * childSAQty * childSAChildQty.TotalRequiredQty;
-                             result.Add(dto);
+                            result.Add(dto);
                         }
 
                     }
@@ -2876,7 +2898,7 @@ namespace Tips.Master.Api.Controllers
 
         //                    result.Add(dto);
         //                }
-                        
+
         //            }
         //        }
         //    }
@@ -2954,7 +2976,7 @@ namespace Tips.Master.Api.Controllers
                 }
             }
 
-            return 0; 
+            return 0;
         }
 
 
