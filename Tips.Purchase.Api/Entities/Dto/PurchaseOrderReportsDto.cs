@@ -295,5 +295,11 @@ namespace Tips.Purchase.Api.Entities.Dto
         public List<podeliveryschedule_report_Dto>? podeliveryschedule_Report_Dtos { get; set; }
         public List<poproject_report_Dto>? poproject_Report_Dtos { get; set; }
     }
-
+    public class PurchaseOrder_ReportGetDto
+    {
+        public string? ItemNumber { get; set; }
+        public string? PONumber { get; set; } 
+        public string? VendorName { get; set; }
+        public int? POStatus { get; set; }
+    }
 }

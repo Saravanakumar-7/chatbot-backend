@@ -2940,13 +2940,13 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpGet]
-        public async Task<IActionResult> PurchaseOrderReportswithPara(string? ItemNumber, string? PONumber, string? VendorName, int? POStatus)
+        [HttpPost]
+        public async Task<IActionResult> PurchaseOrderReportswithPara([FromBody] PurchaseOrder_ReportGetDto paramsforPurchase)
         {
             ServiceResponse<PurchaseOrder_ReportDto> serviceResponse = new ServiceResponse<PurchaseOrder_ReportDto>();
             try
             {
-                var result = await _repository.GetPurchaseOrderReportswithPara(ItemNumber, PONumber, VendorName,POStatus);
+                var result = await _repository.GetPurchaseOrderReportswithPara(paramsforPurchase.ItemNumber, paramsforPurchase.PONumber, paramsforPurchase.VendorName, paramsforPurchase.POStatus);
                 if (result == null)
                 {
                     serviceResponse.Data = null;

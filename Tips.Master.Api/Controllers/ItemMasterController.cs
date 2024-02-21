@@ -1963,6 +1963,49 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
-        }       
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteItemMasterFile(int id)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                var fileToDelete = await _repository.FileUploadRepository.GetFileUploadByIdAsync(id);
+
+                if (fileToDelete == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"File with ID {id} not found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+
+                // Delete file from database
+                _repository.FileUploadRepository.Delete(fileToDelete);
+                _repository.SaveAsync();
+
+                // Delete file from folder
+                if (System.IO.File.Exists(fileToDelete.FilePath))
+                {
+                    System.IO.File.Delete(fileToDelete.FilePath);
+                }
+
+                serviceResponse.Data = $"File with ID {id} deleted successfully";
+                serviceResponse.Message = "File deleted successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeleteItemMasterFile action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong, try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

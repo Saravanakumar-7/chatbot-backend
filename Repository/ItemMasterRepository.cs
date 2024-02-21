@@ -556,7 +556,14 @@ namespace Repository
             var result = await Create(fileUpload);
             return result.Id;
         }
-
+        public async void Delete(FileUpload fileUpload)
+        {
+           TipsMasterDbContext.fileUploads.Remove(fileUpload);
+        }
+        public async Task<FileUpload> GetFileUploadByIdAsync(int id)
+        {
+            return await TipsMasterDbContext.fileUploads.FirstOrDefaultAsync(x => x.Id == id);
+        }
         public async Task<int?> CreateImageUploadDocument(FileUpload fileUpload)
         {
             fileUpload.CreatedBy = _createdBy;

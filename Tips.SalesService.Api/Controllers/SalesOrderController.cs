@@ -439,10 +439,11 @@ namespace Tips.SalesService.Api.Controllers
 
                 //ShortClose Quote Once SalesOrder Created
                 var quoteDetails =await _quoteRepository.GetQuoteByQuoteNumber(createSalesOrder.QuoteNumber);
-                quoteDetails.QuoteStatus = OrderStatus.Closed;
-                _quoteRepository.UpdateQuote(quoteDetails);
-                _quoteRepository.SaveAsync();
-
+                if (quoteDetails!=null) {
+                    quoteDetails.QuoteStatus = OrderStatus.Closed;
+                    _quoteRepository.UpdateQuote(quoteDetails);
+                    _quoteRepository.SaveAsync();
+                }
                 _repository.SaveAsync();
 
                 serviceResponse.Data = null;
