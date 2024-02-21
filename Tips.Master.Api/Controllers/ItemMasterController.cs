@@ -274,8 +274,8 @@ namespace Tips.Master.Api.Controllers
         public async Task<ActionResult> DownloadFile(string Filename)
         {
             ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
-
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", Filename);
+            var filename = Uri.UnescapeDataString(Filename);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", filename);
             var provider = new FileExtensionContentTypeProvider();
             if (!provider.TryGetContentType(filePath, out var ContentType))
             {
@@ -482,15 +482,16 @@ namespace Tips.Master.Api.Controllers
                     foreach (var fileUploadDetails in itemsFiles)
                     {
                         FileUploadDto fileUploadDto = _mapper.Map<FileUploadDto>(fileUploadDetails);
+                        var filename=Uri.EscapeDataString(fileUploadDto.FileName);
                         if (serverKey == "avision")
                         {
                             var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
-                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadFile?Filename={filename}";
                         }
                         else
                         {
                             var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
-                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={filename}";
                         }
 
                         //fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileUploadDto.FileName);
