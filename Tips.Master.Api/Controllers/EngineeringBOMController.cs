@@ -2623,7 +2623,7 @@ namespace Tips.Master.Api.Controllers
                                 else
                                 {
                                     decimal scrappercent = Convert.ToDecimal(enggChildItem.ScrapAllowance);
-                                    if (enggChildItem.ScrapAllowanceType == "Percentage")
+                                    if (enggChildItem.ScrapAllowanceType == "percentage")
                                     {
                                         decimal scrapvalue = scrappercent / 100;
                                         requiredQuantity = (enggChildItem.Quantity + (enggChildItem.Quantity * scrapvalue)) * requiredQty;
@@ -2631,7 +2631,7 @@ namespace Tips.Master.Api.Controllers
                                     }
                                     else if (enggChildItem.ScrapAllowanceType == "number")
                                     {
-                                        requiredQuantity = (enggChildItem.Quantity + scrappercent) * requiredQty;
+                                        requiredQuantity = (enggChildItem.Quantity * requiredQty) + scrappercent;
                                     }
                                     else
                                     {
