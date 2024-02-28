@@ -20,7 +20,7 @@ namespace Tips.Warehouse.Api.Repository
         private readonly String _unitname;
 
         public InvoiceRepository(TipsWarehouseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
-    {
+        {
             _tipsWarehouseDbContext = repositoryContext;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
@@ -28,16 +28,16 @@ namespace Tips.Warehouse.Api.Repository
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
-    public async Task<long?> CreateInvoice(Invoice invoice)
+        public async Task<long?> CreateInvoice(Invoice invoice)
         {
             var date = DateTime.Now;
-        invoice.CreatedBy = _createdBy;
-        invoice.CreatedOn = date.Date;
-        //Guid invoiceNumber = Guid.NewGuid();
-        //invoice.InvoiceNo = " IN-" + invoiceNumber.ToString();
-        invoice.Unit = _unitname;
-        var result = await Create(invoice);
-        return result.Id;
+            invoice.CreatedBy = _createdBy;
+            invoice.CreatedOn = date.Date;
+            //Guid invoiceNumber = Guid.NewGuid();
+            //invoice.InvoiceNo = " IN-" + invoiceNumber.ToString();
+            invoice.Unit = _unitname;
+            var result = await Create(invoice);
+            return result.Id;
         }
         public async Task<int?> GetInvoiceNumberAutoIncrementCount(DateTime date)
         {
@@ -102,8 +102,8 @@ namespace Tips.Warehouse.Api.Repository
                 throw ex;
             }
         }
-       
-            public async Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate)
+
+        public async Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsWarehouseDbContext.Set<InvoiceSPReport>()
                          .FromSqlInterpolated($"CALL Invoice_Report_withparameter_invoicedate({FromDate},{ToDate})")
@@ -120,27 +120,14 @@ namespace Tips.Warehouse.Api.Repository
 
             return PagedList<InvoiceSPReport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-        public async Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportWithParameter(string InvoiceNumber, string DONumber, string LeadId, string CustomerName, string CustomerAliasName, string SalesOrderNumber, string Location, string Warehouse, string KPN, string MPN, string IssuedTo)
+        public async Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportWithParameter(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName, string? CustomerAliasName, string? SalesOrderNumber, string? Location, string? Warehouse, string? KPN, string? MPN, string? IssuedTo)
         {
-            {
-                if (string.IsNullOrWhiteSpace(InvoiceNumber)
-           || string.IsNullOrWhiteSpace(DONumber)
-           || string.IsNullOrWhiteSpace(LeadId)
-           || string.IsNullOrWhiteSpace(CustomerName)
-           || string.IsNullOrWhiteSpace(CustomerAliasName)
-           || string.IsNullOrWhiteSpace(Location)
-           || string.IsNullOrWhiteSpace(Warehouse)
-           || string.IsNullOrWhiteSpace(KPN)
-           || string.IsNullOrWhiteSpace(MPN)
-           || string.IsNullOrWhiteSpace(IssuedTo)) ;
+            var result = _tipsWarehouseDbContext.Set<InvoiceSPReport>()
+                            .FromSqlInterpolated($"CALL Invoice_Report_withparameter({InvoiceNumber},{DONumber},{CustomerId},{CustomerName},{CustomerAliasName},{SalesOrderNumber},{Location},{Warehouse},{KPN},{MPN},{IssuedTo})")
+                            .ToList();
 
-                var result = _tipsWarehouseDbContext
-                .Set<InvoiceSPReport>()
-                .FromSqlInterpolated($"CALL Invoice_Report_withparameter({InvoiceNumber},{DONumber},{LeadId},{CustomerName},{SalesOrderNumber},{CustomerAliasName},{Location},{Warehouse},{KPN},{MPN},{IssuedTo})")
-                .ToList();
+            return result;
 
-                return result;
-            }
         }
         public async Task<PagedList<Invoice>> GetAllInvoices([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
@@ -222,21 +209,21 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<Invoice> GetInvoiceById(int id)
         {
-        var getInvoiceListById = await _tipsWarehouseDbContext.invoices
-                        .Where(x => x.Id == id)
-                        .Include(o => o.InvoiceAdditionalCharges)
-                        .Include(k => k.invoiceChildItems)
-                        .FirstOrDefaultAsync();
-        return getInvoiceListById;
+            var getInvoiceListById = await _tipsWarehouseDbContext.invoices
+                            .Where(x => x.Id == id)
+                            .Include(o => o.InvoiceAdditionalCharges)
+                            .Include(k => k.invoiceChildItems)
+                            .FirstOrDefaultAsync();
+            return getInvoiceListById;
         }
 
         public async Task<string> UpdateInvoice(Invoice invoice)
         {
-        invoice.LastModifiedBy = _createdBy;
-        invoice.LastModifiedOn = DateTime.Now;
-        Update(invoice);
-        string result = $"Invoice details of {invoice.Id} is updated successfully!";
-        return result;
+            invoice.LastModifiedBy = _createdBy;
+            invoice.LastModifiedOn = DateTime.Now;
+            Update(invoice);
+            string result = $"Invoice details of {invoice.Id} is updated successfully!";
+            return result;
         }
 
         public async Task<string> DeleteInvoice(Invoice invoice)
@@ -280,4 +267,4 @@ namespace Tips.Warehouse.Api.Repository
             return getInvoiceChildItemDetails;
         }
     }
-    }
+}

@@ -1033,7 +1033,7 @@ namespace Tips.Warehouse.Api.Controllers
         public async Task<IActionResult> OpenDeliveryOrderSPReportWithParam([FromBody] OpenDeliveryOrderSPReportWithParamDto openDeliveryOrderSPReport)
 
         {
-            ServiceResponse<IEnumerable<OpenDeliveryOrderSPReportDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReportDto>>();
+            ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>>();
             try
             {
                 var products = await _repository.OpenDeliveryOrderSPReportWithParam(openDeliveryOrderSPReport.OpenDoNumber, openDeliveryOrderSPReport.CustomerName, openDeliveryOrderSPReport.CustomerAliasName, openDeliveryOrderSPReport.LeadId, openDeliveryOrderSPReport.IssuedTo, openDeliveryOrderSPReport.KPNno, openDeliveryOrderSPReport.MPN, openDeliveryOrderSPReport.Warehouse, openDeliveryOrderSPReport.Location, openDeliveryOrderSPReport.ODOtype);
@@ -1049,9 +1049,9 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 else
                 {
-                    var result = _mapper.Map<IEnumerable<OpenDeliveryOrderSPReportDto>>(products);
+                    //var result = _mapper.Map<IEnumerable<OpenDeliveryOrderSPReport>>(products);
 
-                    serviceResponse.Data = result;
+                    serviceResponse.Data = products;
                     serviceResponse.Message = "Returned OpenDeliveryOrderSPReportDto Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

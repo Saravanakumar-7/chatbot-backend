@@ -21,6 +21,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<PagedList<LocationTransferSPReport>> LocationTransferSPReport(PagingParameter pagingParameter);
         Task<IEnumerable<LocationTransferSPReport>> LocationTransferSPReportWithParam(string FromPartNumber, string FromPartType, string FromWarehouse, string FromLocation, string FromProjectNumber, string ToPartnumber, string ToPartType, string ToWarehouse, string ToLocation, string ToProjectNumber);
         Task<IEnumerable<LocationTransferSPReport>> LocationTransferSPReportDates(DateTime? FromDate, DateTime? ToDate);
-
+        Task<IEnumerable<MRNSPReportDto>> MRNSPReportWithParam(string? ProjectNumber, string? ShopOrderType, string? ShopOrderNumber, string? PartNumber, string? PartType);
+        Task<IEnumerable<MRNSPReportDto>> MRNSPReportDates(DateTime? FromDate, DateTime? ToDate);
     }
 }

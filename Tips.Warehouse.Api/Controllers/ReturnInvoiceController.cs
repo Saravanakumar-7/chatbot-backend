@@ -824,7 +824,7 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> ReturnInvoiceSPReportWithParameter([FromBody] ReturnInvoiceSPReportWithParamDTO returnInvoiceSPReportDTO)
         {
-            ServiceResponse<IEnumerable<ReturnInvoiceSPReportDTO>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceSPReportDTO>>();
+            ServiceResponse<IEnumerable<ReturnInvoiceSPResport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceSPResport>>();
             try
             {
                 var products = await _returnInvoiceRepository.ReturnInvoiceSPReportWithParameter(returnInvoiceSPReportDTO.InvoiceNumber, returnInvoiceSPReportDTO.DoNumber, returnInvoiceSPReportDTO.CustomerName, returnInvoiceSPReportDTO.CustomerAliasName, returnInvoiceSPReportDTO.SalesOrderNumber, returnInvoiceSPReportDTO.Location, returnInvoiceSPReportDTO.Warehouse, returnInvoiceSPReportDTO.KPN, returnInvoiceSPReportDTO.MPN, returnInvoiceSPReportDTO.IssuedTo);
@@ -839,9 +839,9 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 else
                 {
-                    var result = _mapper.Map<IEnumerable<ReturnInvoiceSPReportDTO>>(products);
+                    //var result = _mapper.Map<IEnumerable<ReturnInvoiceSPReportDTO>>(products);
 
-                    serviceResponse.Data = result;
+                    serviceResponse.Data = products;
                     serviceResponse.Message = "Returned ReturnInvoiceSPReport Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

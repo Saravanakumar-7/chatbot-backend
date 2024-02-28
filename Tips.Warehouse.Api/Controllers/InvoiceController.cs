@@ -46,7 +46,7 @@ namespace Tips.Warehouse.Api.Controllers
             _config = config;
             _bTODeliveryOrderItemsRepository = bTODeliveryOrderItemsRepository;
             _httpContextAccessor = httpContextAccessor;
-            
+
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
@@ -69,7 +69,7 @@ namespace Tips.Warehouse.Api.Controllers
                     getAllInvoicesList.HasNext,
                     getAllInvoicesList.HasPreviuos
                 };
-                
+
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 var result = _mapper.Map<IEnumerable<InvoiceDto>>(getAllInvoicesList);
                 serviceResponse.Data = result;
@@ -173,10 +173,10 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> InvoiceSPReportWithParameter([FromBody] InvoiceSPReportWithParamDTO invoiceSPReport)
         {
-            ServiceResponse<IEnumerable<InvoiceSPReportDTO>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSPReportDTO>>();
+            ServiceResponse<IEnumerable<InvoiceSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSPReport>>();
             try
             {
-                var products = await _invoiceRepository.InvoiceSPReportWithParameter(invoiceSPReport.InvoiceNumber, invoiceSPReport.DONumber, invoiceSPReport.LeadId, invoiceSPReport.CustomerName, invoiceSPReport.CustomerAliasName, invoiceSPReport.SalesOrderNumber, invoiceSPReport.Location, invoiceSPReport.Warehouse, invoiceSPReport.KPN, invoiceSPReport.MPN, invoiceSPReport.IssuedTo);
+                var products = await _invoiceRepository.InvoiceSPReportWithParameter(invoiceSPReport.InvoiceNumber, invoiceSPReport.DONumber, invoiceSPReport.CustomerId, invoiceSPReport.CustomerName, invoiceSPReport.CustomerAliasName, invoiceSPReport.SalesOrderNumber, invoiceSPReport.Location, invoiceSPReport.Warehouse, invoiceSPReport.KPN, invoiceSPReport.MPN, invoiceSPReport.IssuedTo);
                 if (products == null)
                 {
                     serviceResponse.Data = null;
@@ -188,9 +188,7 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 else
                 {
-                    var result = _mapper.Map<IEnumerable<InvoiceSPReportDTO>>(products);
-
-                    serviceResponse.Data = result;
+                    serviceResponse.Data = products;
                     serviceResponse.Message = "Returned Invoice Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -354,7 +352,7 @@ namespace Tips.Warehouse.Api.Controllers
                            SalesOrderId = invoiceAdditionalCharges.SalesOrderId,
                            DONumber = invoiceAdditionalCharges.DONumber,
                            AdditionalChargesLabelName = invoiceAdditionalCharges.AdditionalChargesLabelName,
-                           AddtionalChargesValueType = invoiceAdditionalCharges.AddtionalChargesValueType,               
+                           AddtionalChargesValueType = invoiceAdditionalCharges.AddtionalChargesValueType,
                            AddtionalChargesValueAmount = invoiceAdditionalCharges.AddtionalChargesValueAmount,
                            TotalValue = invoiceAdditionalCharges.TotalValue,
                            InvoicedValue = invoiceAdditionalCharges.InvoicedValue,
@@ -363,7 +361,7 @@ namespace Tips.Warehouse.Api.Controllers
                            UTGST = invoiceAdditionalCharges.UTGST,
                            SGST = invoiceAdditionalCharges.SGST,
                            SalesAdditionalChargeId = invoiceAdditionalCharges.SalesAdditionalChargeId,
-                         
+
                        })
                            )
                        );
@@ -425,9 +423,9 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-         
+
         [HttpGet] // Adjust your route as needed
-        public async Task<IActionResult> InvoiceSPReportDate([FromQuery] DateTime? FromDate,[FromQuery] DateTime? ToDate)
+        public async Task<IActionResult> InvoiceSPReportDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
             ServiceResponse<IEnumerable<InvoiceSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSPReport>>();
             try
@@ -436,21 +434,21 @@ namespace Tips.Warehouse.Api.Controllers
                 if (products == null)
                 {
                     serviceResponse.Data = null;
-                serviceResponse.Message = $"Invoice hasn't been found.";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                _logger.LogError($"Invoice hasn't been found in db.");
-                return NotFound(serviceResponse);
+                    serviceResponse.Message = $"Invoice hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Invoice hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Invoice Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
             }
-            else
-            {
-                serviceResponse.Data = products;
-                serviceResponse.Message = "Returned Invoice Details";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-        }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
@@ -459,11 +457,11 @@ namespace Tips.Warehouse.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
-    }
-}
+            }
+        }
 
         [HttpGet]
-        public async Task<IActionResult> InvoiceSPReport([FromQuery ]PagingParameter pagingParameter)
+        public async Task<IActionResult> InvoiceSPReport([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<InvoiceSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSPReport>>();
             try
@@ -485,30 +483,30 @@ namespace Tips.Warehouse.Api.Controllers
                 if (products == null)
                 {
                     serviceResponse.Data = null;
-        serviceResponse.Message = $"Invoice hasn't been found.";
-        serviceResponse.Success = false;
-        serviceResponse.StatusCode = HttpStatusCode.NotFound;
-        _logger.LogError($"Invoice hasn't been found in db.");
-        return NotFound(serviceResponse);
-    }
-            else
-    {
-        serviceResponse.Data = products;
-        serviceResponse.Message = "Returned Invoice Details";
-        serviceResponse.Success = true;
-        serviceResponse.StatusCode = HttpStatusCode.OK;
-        return Ok(serviceResponse);
-    }
-}
+                    serviceResponse.Message = $"Invoice hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Invoice hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Invoice Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
             catch (Exception ex)
             {
-    _logger.LogError(ex.Message);
-    serviceResponse.Data = null;
-    serviceResponse.Message = $"Something went wrong inside Invoice action";
-    serviceResponse.Success = false;
-    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-    return StatusCode(500, serviceResponse);
-}
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside Invoice action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
         }
 
         private string GetServerKey()
@@ -531,7 +529,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
         [HttpPost]
-        public async Task< IActionResult> CreateInvoice([FromBody] InvoicePostDto invoicePostDto)
+        public async Task<IActionResult> CreateInvoice([FromBody] InvoicePostDto invoicePostDto)
         {
             ServiceResponse<InvoicePostDto> serviceResponse = new ServiceResponse<InvoicePostDto>();
 
@@ -601,7 +599,7 @@ namespace Tips.Warehouse.Api.Controllers
                     var invoiceNumber = await _invoiceRepository.GenerateInvoiceNumber();
                     invoice.InvoiceNumber = dateFormat + invoiceNumber;
                 }
-                else if(serverKey == "avision")
+                else if (serverKey == "avision")
                 {
                     var invoiceNumber = await _invoiceRepository.GenerateInvoiceNumberAvision();
                     invoice.InvoiceNumber = invoiceNumber;
@@ -621,7 +619,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                         var invoiceQty = invoiceChildItem.InvoicedQty;
                         var doNumber = invoiceitemsDto[i].DONumber;
-                    
+
                         //DO Balance qty and Invoiced qty update method
                         invoiceQty = await DoItemBalanceQtyUpdateBasedOnInvoiceQty(invoiceChildItem, invoiceQty, doNumber);
 
@@ -637,7 +635,7 @@ namespace Tips.Warehouse.Api.Controllers
                 await _invoiceRepository.CreateInvoice(invoice);
                 _invoiceRepository.SaveAsync();
 
-                
+
                 //Sales order additional charge update method
                 await SoAdditonalChargeUpdateOnInvoiceCreate(InvoiceAdditionalChargesList);
 

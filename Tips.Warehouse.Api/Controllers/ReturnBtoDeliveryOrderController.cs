@@ -129,10 +129,10 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> ReturnDOSPReportWithParam([FromBody] ReturnDOSPReportWithParamDTO returnDOSPReportDTO)
         {
-            ServiceResponse<IEnumerable<ReturnDOSPReportDTO>> serviceResponse = new ServiceResponse<IEnumerable<ReturnDOSPReportDTO>>();
+            ServiceResponse<IEnumerable<ReturnDOSPReport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnDOSPReport>>();
             try
             {
-                var products = await _repository.ReturnDOSPReportWithParam(returnDOSPReportDTO.DoNumber, returnDOSPReportDTO.CustomerName, returnDOSPReportDTO.CustomerAliasName, returnDOSPReportDTO.LeadId, returnDOSPReportDTO.SalesOrderNumber, returnDOSPReportDTO.Location, returnDOSPReportDTO.Warehouse, returnDOSPReportDTO.ProductType, returnDOSPReportDTO.TypeOfSolution, returnDOSPReportDTO.KPN, returnDOSPReportDTO.MPN);
+                var products = await _repository.ReturnDOSPReportWithParam(returnDOSPReportDTO.DoNumber, returnDOSPReportDTO.CustomerName, returnDOSPReportDTO.CustomerAliasName, returnDOSPReportDTO.LeadId, returnDOSPReportDTO.SalesOrderNumber, returnDOSPReportDTO.ProductType, returnDOSPReportDTO.TypeOfSolution, returnDOSPReportDTO.Warehouse, returnDOSPReportDTO.Location, returnDOSPReportDTO.KPN, returnDOSPReportDTO.MPN);
 
                 if (products == null)
                 {
@@ -144,10 +144,8 @@ namespace Tips.Warehouse.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                 else
-                {
-                    var result = _mapper.Map<IEnumerable<ReturnDOSPReportDTO>>(products);
-
-                    serviceResponse.Data = result;
+                {                   
+                    serviceResponse.Data = products;
                     serviceResponse.Message = "Returned ReturnDOSPReport Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
