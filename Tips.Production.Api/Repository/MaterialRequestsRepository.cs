@@ -44,6 +44,42 @@ namespace Tips.Production.Api.Repository
 
             return results;
         }
+        public async Task<IEnumerable<MaterialRequestSPReport>> GetMaterialRequestSPReportWithParam(string? mRNumber, string? projectNo, string? KPN,
+                                                                                                   string? shoporderNo)
+        {
+            var result = _tipsProductionDbContext
+            .Set<MaterialRequestSPReport>()
+            .FromSqlInterpolated($"Material_Request_ReportWithParameter({mRNumber},{projectNo},{KPN},{shoporderNo})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<MaterialRequestSPReport>> GetMaterialIssueAgainstMaterialRequestSPReportWithParam(string? mRNumber, string? projectType,
+                                                                                                             string? projectNo, string? shopOrderNo,  string? KPN)
+        {
+            var result = _tipsProductionDbContext
+            .Set<MaterialRequestSPReport>()
+            .FromSqlInterpolated($"Materialissue_against_Materialrequest_Report_withparameter({mRNumber},{projectType},{projectNo},{shopOrderNo},{KPN})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<MaterialRequestSPReport>> GetMaterialRequestSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsProductionDbContext.Set<MaterialRequestSPReport>()
+                      .FromSqlInterpolated($"Material_Request_ReportWithParameter_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<MaterialRequestSPReport>> GetMaterialIssueAgainstMaterialRequestSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsProductionDbContext.Set<MaterialRequestSPReport>()
+                      .FromSqlInterpolated($"Materialissue_against_Materialrequest_withparameter_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
         public async Task<string> DeleteMaterialRequest(MaterialRequests request)
         {
             Delete(request);

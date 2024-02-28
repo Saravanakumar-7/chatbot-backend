@@ -129,18 +129,10 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
-        public async Task<IEnumerable<DeliveryOrderSPReport>> GetDeliveryOrderSPReportsWithParam(string DONumber, string CustomerName, string CustomerAliasName, string CustomerID, string SalesOrderNumber, string ProductType, string Warehouse, string Location, string KPN, string MPN)
+        public async Task<IEnumerable<DeliveryOrderSPReport>> GetDeliveryOrderSPReportsWithParam(string DONumber, string CustomerName, string CustomerAliasName, 
+                                                                                                    string CustomerID, string SalesOrderNumber, string ProductType, 
+                                                                                                    string Warehouse, string Location, string KPN, string MPN)
         {
-
-            if (string.IsNullOrWhiteSpace(DONumber) || string.IsNullOrWhiteSpace(CustomerName)|| string.IsNullOrWhiteSpace(CustomerAliasName)
-       || string.IsNullOrWhiteSpace(CustomerID)
-       || string.IsNullOrWhiteSpace(SalesOrderNumber)
-       || string.IsNullOrWhiteSpace(ProductType)
-       || string.IsNullOrWhiteSpace(Warehouse)
-       || string.IsNullOrWhiteSpace(Location)
-       || string.IsNullOrWhiteSpace(KPN)
-       || string.IsNullOrWhiteSpace(MPN));
-
             var result =  _tipsWarehouseDbContext
             .Set<DeliveryOrderSPReport>()
             .FromSqlInterpolated($"CALL Delivery_Order_Report_withparameter({DONumber},{CustomerName},{CustomerAliasName},{CustomerID},{SalesOrderNumber},{ProductType},{Warehouse},{Location},{KPN},{MPN})")

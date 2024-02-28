@@ -109,4 +109,11 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public List<MaterialIssueItemsDto> materialIssueItems { get; set; }
     }
+    public class MaterialIssueReportWithParamDto
+    {
+        public string? ShopOrderNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? SalesOrderNumber { get; set; }
+    }
 }

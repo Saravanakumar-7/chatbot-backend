@@ -35,6 +35,9 @@ namespace Tips.Production.Api.Contracts
         Task<string> GenerateSONumber();
         Task<string> GenerateSONumberForKeus();
         Task<IEnumerable<ShopOrderNumberSPReport>> ShopOrderNumberSPReport();
+        Task<IEnumerable<ShopOrderNumberSPReport>> GetShopOrderSPReportWithParam(string? shopOrderNo, string? projectType,
+                                                                                                  string? projectNo, string? salesOrderNo, string? KPN, string? MPN);
+        Task<IEnumerable<ShopOrderNumberSPReport>> GetShopOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         public void SaveAsync();
     }
 }

@@ -120,26 +120,15 @@ namespace Tips.Grin.Api.Repository
 
             return PagedList<Grin_ReportSP>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-        public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string GrinNumber, string VendorName, string PONumber, string KPN, string MPN, string Warehouse, string Location)
+        public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string? GrinNumber, string? VendorName, string? PONumber, 
+                                                                                                    string? KPN, string? MPN, string? Warehouse, string? Location)
         {
-            {
-
-                if (string.IsNullOrWhiteSpace(GrinNumber)
-              || string.IsNullOrWhiteSpace(VendorName)
-              || string.IsNullOrWhiteSpace(PONumber)
-              || string.IsNullOrWhiteSpace(KPN)
-              || string.IsNullOrWhiteSpace(MPN)
-              || string.IsNullOrWhiteSpace(Warehouse)
-              || string.IsNullOrWhiteSpace(Location)) ;
-
-
                 var result = _tipsGrinDbContext
                 .Set<Grin_ReportSP>()
                 .FromSqlInterpolated($"CALL Grin_Report_withparameter({GrinNumber},{VendorName},{PONumber},{KPN},{MPN},{Warehouse},{Location})")
                 .ToList();
 
                 return result;
-            }
         }
         public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {

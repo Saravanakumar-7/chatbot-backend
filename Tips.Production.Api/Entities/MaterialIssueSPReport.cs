@@ -8,21 +8,21 @@ namespace Tips.Production.Api.Entities
     {
         public string? ShopOrderNumber { get; set; }
         public DateTime? ShopOrderDate { get; set; }
-        public string? ItemNumber { get; set; }
-        public ProjectType ProjectType { get; set; }
+        public ProjectType? ProjectType { get; set; }
 
-        public PartType ItemType { get; set; }
-        public decimal BomVersion { get; set; }
+        public PartType? ItemType { get; set; }
+        public decimal? BOMVersion { get; set; }
         public string? ProjectNumber { get; set; }
-        public decimal OrderQty { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public decimal? SalesorderQnty { get; set; }
+        public decimal? ReleaseQty { get; set; }
 
-        [Precision(13, 3)]
-        public decimal BalanceQty { get; set; }
+        public string? KPN { get; set; }
         public string? MPN { get; set; }
         public string? Description { get; set; }
-        public decimal IssuedQty { get; set; }
+        public decimal? AvailableQnty { get; set; }
+        public decimal? IssuedQty { get; set; }
         public string? UOM { get; set; }
-        public decimal Quantity { get; set; }
         public string? Remarks { get; set; }
     }
 }

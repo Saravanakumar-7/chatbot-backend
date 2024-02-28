@@ -93,7 +93,80 @@ namespace Tips.Production.Api.Controllers
 
             return Ok(products);
         }
+        [HttpPost]
+        public async Task<IActionResult> GetMaterialIssueSPReportWithParam([FromBody] MaterialIssueReportWithParamDto materialIssueReportWithParamDto)
+        {
+            ServiceResponse<IEnumerable<MaterialIssueSPReport>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueSPReport>>();
+            try
+            {
+                var products = await _materialIssueRepository.GetMaterialIssueSPReportWithParam(materialIssueReportWithParamDto.ShopOrderNumber,
+                                                                            materialIssueReportWithParamDto.ItemNumber, materialIssueReportWithParamDto.ProjectNumber,
+                                                                            materialIssueReportWithParamDto.SalesOrderNumber);
 
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"MaterialIssue hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"MaterialIssue hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned MaterialIssue Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetMaterialIssueSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetMaterialIssueSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<MaterialIssueSPReport>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueSPReport>>();
+            try
+            {
+                var products = await _materialIssueRepository.GetMaterialIssueSPReportWithDate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"MaterialIssue hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"MaterialIssue hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned MaterialIssue Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetMaterialIssueSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         private string GetServerKey()
         {
             var serverName = Environment.MachineName;

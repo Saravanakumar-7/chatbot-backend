@@ -138,4 +138,13 @@ namespace Tips.Production.Api.Entities.DTOs
         public List<ShopOrderItemReportDto>? ShopOrderItems { get; set; }
 
     }
+    public class ShopOrderReportWithParamDto
+    {
+        public string? ShopOrderNumber { get; set; }
+        public string? ProjectType { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? KPN { get; set; }
+        public string? MPN { get; set; }
+    }
 }

@@ -4,12 +4,11 @@ namespace Tips.Warehouse.Api.Entities
 {
     public class DeliveryOrderSPReport
     {
-        public string DoNumber { get; set; }
+        public string? DoNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
-        public string? CustomerId { get; set; }
-        public string SalesOrderNumber { get; set; }
-        [Precision(13, 1)]
+        public string? CustomerLeadId { get; set; }
+        public string? SalesOrderNumber { get; set; }
         public int? SalesOrderRevisionNumber { get; set; }
         public DateTime? DODate { get; set; }
         public string? ProductType { get; set; }
@@ -17,7 +16,6 @@ namespace Tips.Warehouse.Api.Entities
         public string? OrderType { get; set; }
         public string? Location { get; set; }
         public string? Warehouse { get; set; }
-        public string? IssuedTo { get; set; }
         public string? IssuedBy { get; set; }
         public string? KPN { get; set; }
         public string? MPN { get; set; }
@@ -25,7 +23,7 @@ namespace Tips.Warehouse.Api.Entities
         public decimal? UnitPrice { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
-        public decimal? AvailableQty { get; set; }
+        public decimal? avaliableQty { get; set; }
         public decimal? OrderBalanceQty { get; set; }
         public decimal? DispatchQty { get; set; }
         public string? SerialNo { get; set; }

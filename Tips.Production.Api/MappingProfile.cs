@@ -12,7 +12,6 @@ namespace Tips.Production.Api
         {
             CreateMap<PickListGetDTO, PickListDTO>().ReverseMap();
 
-
             CreateMap<ShopOrder, ShopOrderDto>().ReverseMap();
             CreateMap<ShopOrder, ShopOrderPostDto>().ReverseMap();
             CreateMap<ShopOrder, ShopOrderUpdateDto>().ReverseMap();

@@ -44,6 +44,24 @@ namespace Tips.Production.Api.Repository
 
             return results;
         }
+        public async Task<IEnumerable<MaterialIssueSPReport>> GetMaterialIssueSPReportWithParam(string? shopOrderNo, string? ItemNo, string? projectNo,
+                                                                                                   string? salesOrderNo)
+        {
+            var result = _tipsProductionDbContext
+            .Set<MaterialIssueSPReport>()
+            .FromSqlInterpolated($"Material_Issue_Report_withparameter({shopOrderNo},{ItemNo},{projectNo},{salesOrderNo})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<MaterialIssueSPReport>> GetMaterialIssueSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsProductionDbContext.Set<MaterialIssueSPReport>()
+                      .FromSqlInterpolated($"Material_Issue_Report_withparameter_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
         public async Task<string> DeleteMaterialIssue(MaterialIssue materialIssue)
         {
             Delete(materialIssue);

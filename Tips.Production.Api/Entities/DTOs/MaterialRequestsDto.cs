@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using Tips.Production.Api.Entities.Enums;
 using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
@@ -104,6 +105,22 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public List<MaterialRequestItemsReportDto>? MaterialRequestItems { get; set; }
     }
+    public class MaterialRequestReportWithParamDto
+    {
+        public string? MRNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? KPN { get; set; }
+        public string? ShopOrderNumber { get; set; }
+    }
+    public class MaterialIssueAgainstMaterialRequestReportWithParamDto
+    {
+        public string? MRNumber { get; set; }
+        public string? ProjectType {  get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? KPN { get; set; }
+        public string? ShopOrderNumber { get; set; }
+    }
+
 }
     
 

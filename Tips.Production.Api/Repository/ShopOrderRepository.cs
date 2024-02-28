@@ -58,7 +58,24 @@ namespace Tips.Production.Api.Repository
 
             return results;
         }
+        public async Task<IEnumerable<ShopOrderNumberSPReport>> GetShopOrderSPReportWithParam(string? shopOrderNo, string? projectType,
+                                                                                                  string? projectNo,string? salesOrderNo, string? KPN, string? MPN)
+        {
+            var result = _tipsProductionDbContext
+            .Set<ShopOrderNumberSPReport>()
+            .FromSqlInterpolated($"Shop_Order_Report_withparameter({shopOrderNo},{projectType},{projectNo},{salesOrderNo},{KPN},{MPN})")
+            .ToList();
 
+            return result;
+        }
+        public async Task<IEnumerable<ShopOrderNumberSPReport>> GetShopOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsProductionDbContext.Set<ShopOrderNumberSPReport>()
+                      .FromSqlInterpolated($"Shop_Order_Report_withparameter_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
         public async Task<string> GenerateSONumber()
         {
             using var transaction = await _tipsProductionDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);

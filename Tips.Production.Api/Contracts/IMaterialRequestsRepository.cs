@@ -25,6 +25,12 @@ namespace Tips.Production.Api.Contracts
         Task<string> GenerateMRNumberForAvision();
         Task<MaterialRequests> GetMaterialReqByShopOrderNumber(string ShopOrderNo);
         Task<IEnumerable<MaterialRequestSPReport>> MaterialRequestSPReport();
+        Task<IEnumerable<MaterialRequestSPReport>> GetMaterialRequestSPReportWithParam(string? mRNumber, string? projectNo, string? KPN,
+                                                                                                   string? shoporderNo);
+        Task<IEnumerable<MaterialRequestSPReport>> GetMaterialRequestSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<MaterialRequestSPReport>> GetMaterialIssueAgainstMaterialRequestSPReportWithParam(string? mRNumber, string? projectType, 
+                                                                                                string? projectNo, string? KPN,string? shoporderNo);
+        Task<IEnumerable<MaterialRequestSPReport>> GetMaterialIssueAgainstMaterialRequestSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         public void SaveAsync();
     }
 }

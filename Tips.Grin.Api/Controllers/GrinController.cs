@@ -1809,12 +1809,16 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetGrinSPReportWithParam([FromBody] GrinReportWithParam grinReportWithParam)
+        public async Task<IActionResult> GetGrinSPReportWithParam([FromBody] GrinReportWithParamDto grinReportWithParam)
         {
-            ServiceResponse<IEnumerable<GrinReportWithParam>> serviceResponse = new ServiceResponse<IEnumerable<GrinReportWithParam>>();
+            ServiceResponse<IEnumerable<Grin_ReportSP>> serviceResponse = new ServiceResponse<IEnumerable<Grin_ReportSP>>();
             try
             {
-                var products = await _repository.GetGrinSPReportWithParam(grinReportWithParam.GrinNumber, grinReportWithParam.VendorName, grinReportWithParam.PONumber, grinReportWithParam.KPN, grinReportWithParam.MPN, grinReportWithParam.Warehouse, grinReportWithParam.Location);
+                    var products = await _repository.GetGrinSPReportWithParam(grinReportWithParam.GrinNumber, grinReportWithParam.VendorName,
+                                                                                grinReportWithParam.PONumber, grinReportWithParam.KPN,
+                                                                                grinReportWithParam.MPN, grinReportWithParam.Warehouse,
+                                                                                grinReportWithParam.Location);
+                
                 if (products == null)
                 {
                     serviceResponse.Data = null;
@@ -1826,8 +1830,8 @@ namespace Tips.Grin.Api.Controllers
                 }
                 else
                 {
-                    var result = _mapper.Map<IEnumerable<GrinReportWithParam>>(products);
-                    serviceResponse.Data = result;
+                   
+                    serviceResponse.Data = products;
                     serviceResponse.Message = "Returned Grin Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -1838,7 +1842,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside Grin action";
+                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithParam action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1930,7 +1934,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-        [HttpGet()] // Adjust your route as needed
+        [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetGrinSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
             ServiceResponse<IEnumerable<Grin_ReportSP>> serviceResponse = new ServiceResponse<IEnumerable<Grin_ReportSP>>();
@@ -1960,7 +1964,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside Grin action";
+                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithDate action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
