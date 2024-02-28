@@ -769,7 +769,7 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> LocationTransferSPReportWithParam([FromBody] LocationTransferSPReportWithParamDTO locationTransferSPReport)
         {
-            ServiceResponse<IEnumerable<LocationTransferSPReportDTO>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSPReportDTO>>();
+            ServiceResponse<IEnumerable<LocationTransferSPReport>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSPReport>>();
             try
             {
                 var products = await _locationTransferRepository.LocationTransferSPReportWithParam(locationTransferSPReport.FromPartNumber, locationTransferSPReport.FromPartType, locationTransferSPReport.FromWarehouse, locationTransferSPReport.FromLocation, locationTransferSPReport.FromProjectNumber, locationTransferSPReport.ToPartNumber, locationTransferSPReport.ToPartType, locationTransferSPReport.ToWarehouse, locationTransferSPReport.ToLocation, locationTransferSPReport.ToProjectNumber);
@@ -785,9 +785,9 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 else
                 {
-                    var result = _mapper.Map<IEnumerable<LocationTransferSPReportDTO>>(products);
+                   // var result = _mapper.Map<IEnumerable<LocationTransferSPReportDTO>>(products);
 
-                    serviceResponse.Data = result;
+                    serviceResponse.Data = products;
                     serviceResponse.Message = "Returned LocationTransfer Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -943,5 +943,78 @@ namespace Tips.Warehouse.Api.Controllers
             }
 
         }
+
+        [HttpPost]
+        public async Task<IActionResult> MRNSPReportWithParam([FromBody] MRNSPReportGetDto mRNSPReportGetDto)
+        {
+            ServiceResponse<IEnumerable<MRNSPReportDto>> serviceResponse = new ServiceResponse<IEnumerable<MRNSPReportDto>>();
+            try
+            {
+                var products = await _locationTransferRepository.MRNSPReportWithParam(mRNSPReportGetDto.ProjectNumber, mRNSPReportGetDto.ShopOrderType, mRNSPReportGetDto.ShopOrderNumber, mRNSPReportGetDto.PartNumber, mRNSPReportGetDto.PartType);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"MRN hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"MRN hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned MRN Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside MRN action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> MRNSPReportDates([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<MRNSPReportDto>> serviceResponse = new ServiceResponse<IEnumerable<MRNSPReportDto>>();
+            try
+            {
+                var products = await _locationTransferRepository.MRNSPReportDates(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"MRN hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"MRN hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned MRN Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside MRN action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 }

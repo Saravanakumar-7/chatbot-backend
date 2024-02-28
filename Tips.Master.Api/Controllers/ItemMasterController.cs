@@ -289,8 +289,8 @@ namespace Tips.Master.Api.Controllers
         public async Task<ActionResult> DownloadImage(string Filename)
         {
             ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
-
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", Filename);
+            var filename = Uri.UnescapeDataString(Filename);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", filename);
             var provider = new FileExtensionContentTypeProvider();
             if (!provider.TryGetContentType(filePath, out var ContentType))
             {

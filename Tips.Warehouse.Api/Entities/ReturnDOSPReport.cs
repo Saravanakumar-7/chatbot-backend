@@ -10,8 +10,9 @@ namespace Tips.Warehouse.Api.Entities
         public string? LeadId { get; set; }
         public string? SalesOrderNumber { get; set; }
         [Precision(13, 1)]
-        public decimal? RevisionNumber { get; set; }
+        public int? RevisionNumber { get; set; }
         public DateTime? DODate { get; set; }
+        public string? RDODate { get; set; }
         public string? ProductType { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? OrderType { get; set; }
@@ -20,7 +21,7 @@ namespace Tips.Warehouse.Api.Entities
         //public string? IssuedTo { get; set; }
         public string? IssuedBy { get; set; }
         public string? KPN { get; set; }
-        //  public string? MPN { get; set; }
+        public string? MPN { get; set; }
         public string? Description { get; set; }
         public decimal? UnitPrice { get; set; }
         public string? UOC { get; set; }

@@ -138,9 +138,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public string? InvoiceNumber { get; set; }
         public string? DONumber { get; set; }
+        public string? CustomerId { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
-        public string? LeadId { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string? Location { get; set; }
         public string? Warehouse { get; set; }

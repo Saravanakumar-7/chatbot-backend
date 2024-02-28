@@ -165,29 +165,35 @@ namespace Tips.Warehouse.Api.Repository
         //}
         public async Task<IEnumerable<LocationTransferSPReport>> LocationTransferSPReportWithParam(string FromPartNumber, string FromPartType, string FromWarehouse, string FromLocation, string FromProjectNumber, string ToPartnumber, string ToPartType, string ToWarehouse, string ToLocation, string ToProjectNumber)
         {
-            {
-                if (string.IsNullOrWhiteSpace(FromPartNumber)
-           || string.IsNullOrWhiteSpace(FromPartType)
-           || string.IsNullOrWhiteSpace(FromWarehouse)
-           || string.IsNullOrWhiteSpace(FromLocation)
-           || string.IsNullOrWhiteSpace(FromProjectNumber)
-           || string.IsNullOrWhiteSpace(ToPartnumber)
-           || string.IsNullOrWhiteSpace(ToPartType)
-           || string.IsNullOrWhiteSpace(ToWarehouse)
-           || string.IsNullOrWhiteSpace(ToLocation)
-           || string.IsNullOrWhiteSpace(ToProjectNumber));
+           
                 var result = _tipsWarehouseDbContext
                 .Set<LocationTransferSPReport>()
                 .FromSqlInterpolated($"CALL Location_Transfer_Report_withparameter({FromPartNumber},{FromPartType},{FromWarehouse},{FromLocation},{FromProjectNumber},{ToPartnumber},{ToPartType},{ToWarehouse},{ToLocation},{ToProjectNumber})")
                 .ToList();
                 return result;
-            }
+            
 
+        }
+        public async Task<IEnumerable<MRNSPReportDto>> MRNSPReportWithParam(string? ProjectNumber,string? ShopOrderType,string? ShopOrderNumber,string? PartNumber,string? PartType)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<MRNSPReportDto>()
+            .FromSqlInterpolated($"CALL MRN_Report_with_parameter({ProjectNumber},{ShopOrderType},{ShopOrderNumber},{PartNumber},{PartType})")
+            .ToList();
+            return result;
         }
         public async Task<IEnumerable<LocationTransferSPReport>> LocationTransferSPReportDates(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsWarehouseDbContext.Set<LocationTransferSPReport>()
                          .FromSqlInterpolated($"CALL Location_Transfer_Report_withparameter_withdate({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<MRNSPReportDto>> MRNSPReportDates(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<MRNSPReportDto>()
+                         .FromSqlInterpolated($"CALL MRN_Report_with_date({FromDate},{ToDate})")
                          .ToList();
 
             return results;

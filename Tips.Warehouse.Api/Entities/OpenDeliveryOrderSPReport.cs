@@ -1,7 +1,10 @@
-﻿namespace Tips.Warehouse.Api.Entities
+﻿using System.Drawing.Printing;
+
+namespace Tips.Warehouse.Api.Entities
 {
     public class OpenDeliveryOrderSPReport
     {
+        public int id { get; set; }
         public string OpenDONumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
@@ -9,16 +12,18 @@
         public string? IssuedTo { get; set; }
         public string? IssuedBy { get; set; }
         public string? KPNno { get; set; }
-        public string? MPN { get; set; }
+        //public string? MPN { get; set; }
         public string? ItemDescription { get; set; }
         public string? Location { get; set; }
         public string? Warehouse { get; set; }
-        public string? ODOtype { get; set; }
+        public string? DOtype { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
         public decimal? Avaliablestk { get; set; }
         public decimal? Dispatchstk { get; set; }
         public string? SerialNo { get; set; }
         public string? Remarks { get; set; }
+        public int? ItemMasterId { get; set; }
+        public string? ManufacturerPartNo { get; set; }
     }
 }

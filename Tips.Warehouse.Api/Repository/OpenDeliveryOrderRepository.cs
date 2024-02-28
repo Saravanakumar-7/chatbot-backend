@@ -111,25 +111,14 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReportWithParam(string OpenDONumber, string CustomerName, string CustomerAliasName, string LeadId, string IssuedTo, string KPN, string MPN, string Warehouse, string Location, string ODOType)
         {
-            {
-                if (string.IsNullOrWhiteSpace(OpenDONumber)
-           || string.IsNullOrWhiteSpace(CustomerName)
-           || string.IsNullOrWhiteSpace(CustomerAliasName)
-           || string.IsNullOrWhiteSpace(LeadId)
-           || string.IsNullOrWhiteSpace(IssuedTo)
-           || string.IsNullOrWhiteSpace(KPN)
-           || string.IsNullOrWhiteSpace(MPN)
-           || string.IsNullOrWhiteSpace(Warehouse)
-           || string.IsNullOrWhiteSpace(Location)
-           || string.IsNullOrWhiteSpace(ODOType)) ;
-
+                            
                 var result = _tipsWarehouseDbContext
                 .Set<OpenDeliveryOrderSPReport>()
                 .FromSqlInterpolated($"CALL Open_Delivery_Order_Report_withparameter({OpenDONumber},{CustomerName},{CustomerAliasName},{LeadId},{IssuedTo},{KPN},{MPN},{Warehouse},{Location},{ODOType})")
                 .ToList();
 
                 return result;
-            }
+            
 
         }
 
