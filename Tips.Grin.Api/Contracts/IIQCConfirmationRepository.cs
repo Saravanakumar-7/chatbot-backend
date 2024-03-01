@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Tips.Grin.Api.Entities;
 using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Tips.Grin.Api.Controllers;
 
 namespace Tips.Grin.Api.Contracts
 {
@@ -23,6 +24,9 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<IQCConfirmation>> GetAllIQCConfirmationWithItems(IQCConfirmationSearchDto iQCConfirmationSearch);
         Task<IEnumerable<IQCConfirmation>> SearchIQCConfirmation([FromQuery] SearchParames searchParames);
         Task<IEnumerable<IQCConfirmation>> SearchIQCConfirmationDate([FromQuery] SearchDateParames searchParames);
+        Task<PagedList<IQCConfirmation_SPReport>> GetIQCConfirmationSPReport(PagingParameter pagingParameter);
+        Task<IEnumerable<IQCConfirmation_SPReport>> GetIQCConfirmationSPReportWithParam(string? GrinNumber, string? itemNo);
+        Task<IEnumerable<IQCConfirmation_SPReport>> GetIQCConfirmationSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
 
     }
 }

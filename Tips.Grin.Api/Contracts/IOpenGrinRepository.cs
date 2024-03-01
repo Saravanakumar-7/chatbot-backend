@@ -21,5 +21,6 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<OpenGrin>> SearchOpenGrinDate(SearchDateParames searchParames);
         Task<IEnumerable<OpenGrinDataListDto>> GetAllOpenGrinDataList();
         Task<string> GenerateOpenGrinNumberForAvision();
+        Task<PagedList<OpenGrin_SPReport>> GetOpenGrinSPReport(PagingParameter pagingParameter);
     }
 }

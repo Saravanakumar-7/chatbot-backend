@@ -13,6 +13,7 @@ using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using Tips.Grin.Api.Controllers;
 
 namespace Tips.Grin.Api.Repository
 {
@@ -40,6 +41,34 @@ namespace Tips.Grin.Api.Repository
             var result = await Create(iQCConfirmation);
             return result.Id;
         }
+
+        public async Task<PagedList<IQCConfirmation_SPReport>> GetIQCConfirmationSPReport(PagingParameter pagingParameter)
+        {
+
+            var results = _tipsGrinDbContext.Set<IQCConfirmation_SPReport>()
+                      .FromSqlInterpolated($"CALL iqc_confirmation_without_parameter")
+                      .ToList();
+
+            return PagedList<IQCConfirmation_SPReport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+        public async Task<IEnumerable<IQCConfirmation_SPReport>> GetIQCConfirmationSPReportWithParam(string? GrinNumber, string? itemNo)
+        {
+            var result = _tipsGrinDbContext
+            .Set<IQCConfirmation_SPReport>()
+            .FromSqlInterpolated($"CALL iqc_confirmation_with_parameters({GrinNumber},{itemNo})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<IQCConfirmation_SPReport>> GetIQCConfirmationSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<IQCConfirmation_SPReport>()
+                      .FromSqlInterpolated($"CALL iqc_confirmation_with_parameter_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+
         public async Task<IEnumerable<IQCConfirmation>> SearchIQCConfirmation([FromQuery] SearchParames searchParames)
         {
            

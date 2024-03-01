@@ -163,4 +163,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ShopOrderNo { get; set; }
 
     }
+    public class IQCConfirmationReportWithParamDto
+    {
+        public string? GrinNumber { get; set; }
+        public string? ItemNumber { get; set; }
+    }
 }
