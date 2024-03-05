@@ -464,6 +464,8 @@ namespace Tips.Warehouse.Api.Repository
             inventory.CreatedBy = _createdBy;
             inventory.CreatedOn = DateTime.Now;
             inventory.Unit = _unitname;
+            if (inventory.Balance_Quantity == 0) inventory.IsStockAvailable = false;
+            else inventory.IsStockAvailable = true;
             var result = await Create(inventory);
 
             return result.Id;
@@ -1105,6 +1107,8 @@ namespace Tips.Warehouse.Api.Repository
         {
             inventory.LastModifiedBy = _createdBy;
             inventory.LastModifiedOn = DateTime.Now;
+            if (inventory.Balance_Quantity == 0) inventory.IsStockAvailable = false;
+            else inventory.IsStockAvailable = true;
             Update(inventory);
             string result = $"materialIssue of Detail {inventory.Id} is updated successfully!";
             return result;
