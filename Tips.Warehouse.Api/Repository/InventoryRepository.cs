@@ -1089,7 +1089,7 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<List<Inventory>> GetFGInventoryStockByItem(string itemNumber)
         {
-            var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.Warehouse == "FG" && x.Location == "FG")
+            var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.Warehouse == "FG" && x.Location == "FG" && x.Balance_Quantity>0)
                           .ToListAsync();
 
             return getInventoryById;

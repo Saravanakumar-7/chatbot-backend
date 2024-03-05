@@ -467,9 +467,19 @@ namespace Tips.Warehouse.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                 else
-                {
+                {                   
+                    List<Inventory> inventory = new List<Inventory>();
+                    foreach (var eachinv in InventoryDetails)
+                    {
+                        if (inventory.Count != 0)
+                        {
+                            var inv = inventory.Where(x => x.shopOrderNo == eachinv.shopOrderNo).FirstOrDefault();
+                            inv.Balance_Quantity=inv.Balance_Quantity+eachinv.Balance_Quantity;
+                        }
+                        else inventory.Add(eachinv);
+                    }
                     _logger.LogInfo($"Returned Inventory with Itemnumber : {itemNumber} ");
-                    var result = _mapper.Map<List<InventoryDto>>(InventoryDetails);
+                    var result = _mapper.Map<List<InventoryDto>>(inventory);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned Inventory with id Successfully";
                     serviceResponse.Success = true;

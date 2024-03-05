@@ -719,7 +719,7 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(500, serviceResponse);
                 }
-                _logger.LogError($"Something went wrong inside CreateBTODelivaryOrder action: {response}");
+                _logger.LogError($"CreateBTODelivaryOrder action: {response}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = " BTODeliveryOrder Successfully Created";
                 serviceResponse.Success = true;
