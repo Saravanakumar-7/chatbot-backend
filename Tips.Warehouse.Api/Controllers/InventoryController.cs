@@ -474,7 +474,8 @@ namespace Tips.Warehouse.Api.Controllers
                         if (inventory.Count != 0)
                         {
                             var inv = inventory.Where(x => x.shopOrderNo == eachinv.shopOrderNo).FirstOrDefault();
-                            inv.Balance_Quantity=inv.Balance_Quantity+eachinv.Balance_Quantity;
+                            if(inv!=null)inv.Balance_Quantity=inv.Balance_Quantity+eachinv.Balance_Quantity;
+                            else inventory.Add(eachinv);
                         }
                         else inventory.Add(eachinv);
                     }
