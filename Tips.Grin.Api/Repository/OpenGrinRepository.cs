@@ -34,7 +34,23 @@ namespace Tips.Grin.Api.Repository
             var result = await Create(openGrin);
             return result;
         }
+        public async Task<IEnumerable<OpenGrin_SPReport>> GetOpenGrinSPReportWithParam(string? openGrinNumber, string? senderName, string? receiptRefNo)
+        {
+            var result = _tipsGrinDbContext
+            .Set<OpenGrin_SPReport>()
+            .FromSqlInterpolated($"CALL Open_Grin_Report_withparameter({openGrinNumber},{senderName},{receiptRefNo})")
+            .ToList();
 
+            return result;
+        }
+        public async Task<IEnumerable<OpenGrin_SPReport>> GetOpenGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<OpenGrin_SPReport>()
+                      .FromSqlInterpolated($"CALL Open_Grin_Report_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
         public async Task<string> DeleteOpenGrin(OpenGrin openGrin)
         {
             Delete(openGrin);

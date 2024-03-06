@@ -133,4 +133,10 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ReceiptRefNo { get; set; }
         public bool CustomerSupplied { get; set; }
     }
+    public class OpenGrinReportWithParamDto
+    {
+        public string? OpenGrinNumber { get; set; }
+        public string? SenderName { get; set; }
+        public string? ReceiptRefNo { get; set; }
+    }
 }

@@ -295,14 +295,29 @@ namespace Tips.SalesService.Api.Entities.Dto
     {
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
+
         public string? Description { get; set; }
         public string? SalesOrderNumber { get; set; }
-        public string? PriceList { get; set; }
-        public decimal? AvailableStock { get; set; }
-
         public string? ProjectNumber { get; set; }
-        public OrderStatus StatusEnum { get; set; }
 
+        public OrderStatus StatusEnum { get; set; }
+        public string? UOM { get; set; }
+        public string? Currency { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? BasicAmount { get; set; }
+        [Precision(13, 3)]
+        public decimal? Discount { get; set; }
+        public string? RoomName { get; set; }
+        public string? DiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal UnitPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal OrderQty { get; set; }
         [Precision(13, 3)]
         public decimal BalanceQty { get; set; }
 
@@ -311,14 +326,6 @@ namespace Tips.SalesService.Api.Entities.Dto
 
         [Precision(13, 3)]
         public decimal ShopOrderQty { get; set; }
-        public string? UOM { get; set; }
-        public string? Currency { get; set; }
-
-        [Precision(18, 3)]
-        public decimal? UnitPrice { get; set; }
-
-        [Precision(13, 3)]
-        public decimal OrderQty { get; set; }
 
         [Precision(13, 3)]
         public decimal? SGST { get; set; }
@@ -328,20 +335,8 @@ namespace Tips.SalesService.Api.Entities.Dto
         public decimal? UTGST { get; set; }
         [Precision(13, 3)]
         public decimal? IGST { get; set; }
-
-        [Precision(18, 3)]
-        public decimal? TotalAmount { get; set; }
-
-        [Precision(18, 3)]
-        public decimal? BasicAmount { get; set; }
-
-        [Precision(13, 3)]
-        public decimal? Discount { get; set; }
-        public string? RoomName { get; set; }
-        public string? DiscountType { get; set; }
-        //public int SalesOrderId { get; set; }
-
         public DateTime RequestedDate { get; set; }
+        public string? PriceList { get; set; }
         public string? Remarks { get; set; }
         public List<ScheduleDateReportDto>? ScheduleDates { get; set; }
 

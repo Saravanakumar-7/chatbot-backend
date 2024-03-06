@@ -38,6 +38,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int? Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? SalesOrderNumber { get; set; }
+        public string? ProjectNumber { get; set; }
         public DateTime? Date { get; set; }
 
         [Precision(13, 1)]
