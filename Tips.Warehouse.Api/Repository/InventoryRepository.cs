@@ -1098,7 +1098,7 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<List<Inventory>> GetSAInventoryStockByItem(string itemNumber)
         {
-            var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.Warehouse == "SA" && x.Location == "SA")
+            var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.Warehouse == "SA" && x.Location == "SA" && x.Balance_Quantity > 0)
                           .ToListAsync();
 
             return getInventoryById;
