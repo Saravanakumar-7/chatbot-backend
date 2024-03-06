@@ -464,6 +464,8 @@ namespace Tips.Warehouse.Api.Repository
             inventory.CreatedBy = _createdBy;
             inventory.CreatedOn = DateTime.Now;
             inventory.Unit = _unitname;
+            if (inventory.Balance_Quantity == 0) inventory.IsStockAvailable = false;
+            else inventory.IsStockAvailable = true;
             var result = await Create(inventory);
 
             return result.Id;
@@ -1089,14 +1091,14 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<List<Inventory>> GetFGInventoryStockByItem(string itemNumber)
         {
-            var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.Warehouse == "FG" && x.Location == "FG")
+            var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.Warehouse == "FG" && x.Location == "FG" && x.Balance_Quantity>0)
                           .ToListAsync();
 
             return getInventoryById;
         }
         public async Task<List<Inventory>> GetSAInventoryStockByItem(string itemNumber)
         {
-            var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.Warehouse == "SA" && x.Location == "SA")
+            var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.Warehouse == "SA" && x.Location == "SA" && x.Balance_Quantity > 0)
                           .ToListAsync();
 
             return getInventoryById;
@@ -1105,6 +1107,8 @@ namespace Tips.Warehouse.Api.Repository
         {
             inventory.LastModifiedBy = _createdBy;
             inventory.LastModifiedOn = DateTime.Now;
+            if (inventory.Balance_Quantity == 0) inventory.IsStockAvailable = false;
+            else inventory.IsStockAvailable = true;
             Update(inventory);
             string result = $"materialIssue of Detail {inventory.Id} is updated successfully!";
             return result;

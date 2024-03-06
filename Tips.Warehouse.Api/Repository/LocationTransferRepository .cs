@@ -132,8 +132,9 @@ namespace Tips.Warehouse.Api.Repository
         //}
         public async Task<List<LocationTransferFromDto>> GetProjectLocWareFromInventoryByItemNo(string itemNumber)
         {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
             var inventoryDetails = await _tipsWarehouseDbContext.Inventories
-                .Where(x => x.PartNumber == itemNumber && x.IsStockAvailable == true)
+                .Where(x => x.PartNumber == itemNumber && x.Balance_Quantity>0 && !skipWareHouse.Contains(x.Warehouse))
                 .GroupBy(x => new { x.ProjectNumber, x.Location, x.Warehouse })
                 .Select(group => new LocationTransferFromDto
                 {
