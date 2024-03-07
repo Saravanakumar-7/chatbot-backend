@@ -2514,6 +2514,7 @@ namespace Tips.SalesService.Api.Controllers
                 oldversionRFQdetails.RfqNumber = rfqCustomerSupportUpdateDto.RfqNumber;
                 oldversionRFQdetails.RevisionNumber = rfqCustomerSupportUpdateDto.RevisionNumber;
                 oldversionRFQdetails.CustomerId = rfqCustomerSupportUpdateDto.CustomerId;
+                oldversionRFQdetails.LeadId = rfqCustomerSupportUpdateDto.CustomerId;
                 oldversionRFQdetails.CustomerName = rfqCustomerSupportUpdateDto.CustomerName;
                 oldversionRFQdetails.CustomerAliasName = rfqCustomerSupportUpdateDto.CustomerAliasName;
                 oldversionRFQdetails.CustomerRfqNumber = rfqCustomerSupportUpdateDto.CustomerRfqNumber;
@@ -2594,6 +2595,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 RfqCustomerSupport oldCSdetails = await _repository.GetRfqCustomerSupportDetailsbyrfqnumber(rfqCustomerSupportUpdateDto.RfqNumber);
                 oldCSdetails.Id = 0;
+                oldCSdetails.LeadId = oldversionRFQdetails.LeadId;
                 oldCSdetails.CustomerName = oldversionRFQdetails.CustomerName;
                 oldCSdetails.RevisionNumber = oldversionRFQdetails.RevisionNumber;
                 oldCSdetails.CustomerAliasName = oldversionRFQdetails.CustomerAliasName;
