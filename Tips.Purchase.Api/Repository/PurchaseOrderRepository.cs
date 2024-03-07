@@ -1248,10 +1248,10 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPONumberListByVendorId(string vendorId)
         {
-            Status[] status = { Status.Open, Status.PartiallyClosed };
+            PoStatus[] status = { PoStatus.Open, PoStatus.PartiallyClosed };
 
             IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
-                           .Where(x => x.VendorId == vendorId && status.Contains(x.Status) && x.POApprovalII == true).Select(x => new PurchaseOrderIdNameListDto()
+                           .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.POApprovalII == true).Select(x => new PurchaseOrderIdNameListDto()
                            {
                                Id = x.Id,
                                PONumber = x.PONumber
