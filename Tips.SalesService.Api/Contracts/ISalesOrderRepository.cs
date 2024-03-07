@@ -40,7 +40,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> GenerateSONumberForAvision();
         Task<PagedList<SalesOrderSPResport>> GetSalesOrderSPResport(PagingParameter pagingParameter);
         Task<IEnumerable<RecievableCustomer>> GetRecievableCustomersWithCustomerID(string CustomerId);
-        Task<IEnumerable<SalesOrderSPResport>> GetSalesorderReportWithParam(string CustomerName, string SalesOrderNumber, string PartNumber);
-        Task<IEnumerable<SalesOrderSPResport>> GetSalesorderReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<SalesOrderSPResport>> GetSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string PartNumber);
+        Task<IEnumerable<SalesOrderSPResport>> GetSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
     }
 }

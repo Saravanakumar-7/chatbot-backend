@@ -1457,12 +1457,12 @@ namespace Tips.SalesService.Api.Controllers
         //    }
         //}
         [HttpGet()] // Adjust your route as needed
-        public async Task<IActionResult> GetSalesorderReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        public async Task<IActionResult> GetSalesOrderSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
             ServiceResponse<IEnumerable<SalesOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPResport>>();
             try
             {
-                var products = await _repository.GetSalesorderReportWithDate(FromDate, ToDate);
+                var products = await _repository.GetSalesOrderSPReportWithDate(FromDate, ToDate);
                 if (products == null)
                 {
                     serviceResponse.Data = null;
@@ -1534,13 +1534,13 @@ namespace Tips.SalesService.Api.Controllers
 //            }
 //        }
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetSalesorderReportWithParam([FromBody] SalesOrderSPResportDTO salesOrderSPResport)
+        public async Task<IActionResult> GetSalesOrderSPReportWithParam([FromBody] SalesOrderSPResportDTO salesOrderSPResport)
 
         {
             ServiceResponse<IEnumerable<SalesOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPResport>>();
             try
             {
-                var products = await _repository.GetSalesorderReportWithParam(salesOrderSPResport.CustomerName, salesOrderSPResport.SalesOrderNumber, salesOrderSPResport.PartNumber);
+                var products = await _repository.GetSalesOrderSPReportWithParam(salesOrderSPResport.CustomerName, salesOrderSPResport.SalesOrderNumber, salesOrderSPResport.PartNumber);
 
                 if (products == null)
                 {

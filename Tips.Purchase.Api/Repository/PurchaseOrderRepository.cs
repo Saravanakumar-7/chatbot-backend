@@ -1005,14 +1005,8 @@ namespace Tips.Purchase.Api.Repository
                         group details by details.PONumber into groupedDetails
                         select new PurchaseOrderIdNameListDto
                         {
-                            //Id = groupedDetails.OrderByDescending(d => d.RevisionNumber).FirstOrDefault()?.Id,
-                            //PONumber = groupedDetails.Key,
-                            // Replace these with the actual properties of your PurchaseOrder entity
-                            // ... Add more properties as needed
                             PONumber = groupedDetails.Key,
-                            // Replace these with the desired columns
-                            // You can include any column from the table
-                            Id = groupedDetails.Max(d => d.Id),
+                            RevisionNumber = groupedDetails.Max(d => d.RevisionNumber),
                         };
 
             return query;
