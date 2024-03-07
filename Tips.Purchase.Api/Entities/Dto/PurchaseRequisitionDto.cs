@@ -224,4 +224,11 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
 
     }
+    public class PurchaseRequisitionSPReportWithParamDTO
+    {
+        public string? PrNumber { get; set; }
+        public string? ProcurementType { get; set; }
+        public string? ShippingMode { get; set; }
+        public string? PrStatus { get; set; }
+    }
 }

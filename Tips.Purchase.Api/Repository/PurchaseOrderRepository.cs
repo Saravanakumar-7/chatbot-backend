@@ -793,10 +793,6 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParam(string VendorName, string PONumber, string PartNumber)
         {
-            if (string.IsNullOrWhiteSpace(VendorName)
-             || string.IsNullOrWhiteSpace(PONumber)
-             || string.IsNullOrWhiteSpace(PartNumber)) ;
-
 
             var result = _tipsPurchaseDbContext
             .Set<PurchaseOrderSPReport>()
@@ -975,28 +971,53 @@ namespace Tips.Purchase.Api.Repository
         }
 
 
+        //public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalINameList()
+        //{
+        //    //IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders
+        //    //                .Where(x => x.POApprovalI == false).Select(x => new PurchaseOrderIdNameListDto()
+        //    //                {
+        //    //                    Id = x.Id,
+        //    //                    PONumber = x.PONumber,
+        //    //                }).Distinct().ToListAsync();
+
+        //    var pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders
+        //     .Where(x => x.POApprovalI == false && x.POApprovalII == false && x.IsModified == false && x.IsDeleted == false)
+        //     .Select(g => new { g.Id, g.PONumber, g.RevisionNumber })
+        //    .ToListAsync();
+
+        //    //IEnumerable<PurchaseOrderIdNameListDto> approval1PendingList = pendingPOApprovalINameList
+        //    //    .GroupBy(x => x.PONumber)
+        //    //    .Select(g => new PurchaseOrderIdNameListDto()
+        //    //    {
+        //    //        Id = g.OrderByDescending(x => x.RevisionNumber).FirstOrDefault().Id,
+        //    //        PONumber = g.Key,
+        //    //    });
+
+        //}
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalINameList()
         {
-            //IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders
-            //                .Where(x => x.POApprovalI == false).Select(x => new PurchaseOrderIdNameListDto()
-            //                {
-            //                    Id = x.Id,
-            //                    PONumber = x.PONumber,
-            //                }).Distinct().ToListAsync();
+            var pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders
+                .Where(x => x.POApprovalI == false && x.POApprovalII == false && x.IsModified == false && x.IsDeleted == false)
+                .Select(g => new { g.Id, g.PONumber, g.RevisionNumber})
+                .ToListAsync();
 
-            IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders
-            .Where(x => x.POApprovalI == false && x.IsModified == false)
-            .GroupBy(x => x.PONumber)
-            .Select(g => new PurchaseOrderIdNameListDto()
-            {
-                Id = g.OrderByDescending(x => x.RevisionNumber).FirstOrDefault().Id,
-                PONumber = g.Key
-            })
-            .ToListAsync();
+            var query = from details in pendingPOApprovalINameList
+                        group details by details.PONumber into groupedDetails
+                        select new PurchaseOrderIdNameListDto
+                        {
+                            //Id = groupedDetails.OrderByDescending(d => d.RevisionNumber).FirstOrDefault()?.Id,
+                            //PONumber = groupedDetails.Key,
+                            // Replace these with the actual properties of your PurchaseOrder entity
+                            // ... Add more properties as needed
+                            PONumber = groupedDetails.Key,
+                            // Replace these with the desired columns
+                            // You can include any column from the table
+                            Id = groupedDetails.Max(d => d.Id),
+                        };
 
-            return pendingPOApprovalINameList;
-
+            return query;
         }
+
 
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIINameList()
         {

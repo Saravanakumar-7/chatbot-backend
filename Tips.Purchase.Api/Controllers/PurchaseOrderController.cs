@@ -326,7 +326,7 @@ namespace Tips.Purchase.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.NotFound;
                 _logger.LogError($"PurchaseOrder hasn't been found in db.");
-                return NotFound(serviceResponse);
+                return Ok(serviceResponse);
             }
             else
             {
@@ -341,7 +341,7 @@ namespace Tips.Purchase.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside PurchaseOrder action";
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderSPReportWithDate action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -480,7 +480,7 @@ namespace Tips.Purchase.Api.Controllers
         public async Task<IActionResult> GetPurchaseOrderSPReportWithParam([FromBody] PurchaseOrderSPReportWithParamDTO purchaseOrderSPReport)
 
         {
-            ServiceResponse<IEnumerable<PurchaseOrderSPReportDTO>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReportDTO>>();
+            ServiceResponse<IEnumerable<PurchaseOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReport>>();
             try
             {
                 var products = await _repository.GetPurchaseOrderSPReportWithParam(purchaseOrderSPReport.VendorName, purchaseOrderSPReport.PONumber, purchaseOrderSPReport.PartNumber);
@@ -492,13 +492,12 @@ namespace Tips.Purchase.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"PurchaseOrder hasn't been found in db.");
-                    return NotFound(serviceResponse);
+                    return Ok(serviceResponse);
                 }
                 else
                 {
-                    var result = _mapper.Map<IEnumerable<PurchaseOrderSPReportDTO>>(products);
 
-                    serviceResponse.Data = result;
+                    serviceResponse.Data = products;
                     serviceResponse.Message = "Returned PurchaseOrder Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -509,7 +508,7 @@ namespace Tips.Purchase.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside PurchaseOrder action";
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderSPReportWithParam action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

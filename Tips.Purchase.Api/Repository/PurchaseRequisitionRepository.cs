@@ -96,6 +96,24 @@ namespace Tips.Purchase.Api.Repository
             var result = await Create(purchaseRequisitions);
             return result.Id;
         }
+        public async Task<IEnumerable<PurchaseRequisitionSPReport>> GetPurchaseRequisitionsSPReportWithParam(string PrNumber, string ProcurementType, string ShippingMode, string PrStatus)
+        {
+
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseRequisitionSPReport>()
+            .FromSqlInterpolated($"CALL Purchaserequisition_with_parameters({PrNumber},{ProcurementType},{ShippingMode},{PrStatus})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<PurchaseRequisitionSPReport>> GetPurchaseRequisitionsSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsPurchaseDbContext.Set<PurchaseRequisitionSPReport>()
+                        .FromSqlInterpolated($"CALL Purchaserequisition_with_date_parameters({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+        }
         public async Task<int?> GetPRNumberAutoIncrementCount(DateTime date)
         {
             var getPRNumberAutoIncrementCount = _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.CreatedOn == date.Date).Count();

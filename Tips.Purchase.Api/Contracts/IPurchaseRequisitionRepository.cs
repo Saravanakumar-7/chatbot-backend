@@ -4,6 +4,7 @@ using Tips.Purchase.Api.Entities;
 using Contracts;
 using Tips.Purchase.Api.Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Contracts
 {
@@ -39,5 +40,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllLastestPendingPRApprovalIIList(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<List<GetDownloadUrlDto>> GetDownloadUrlPrItemsDetails(string FileIds);
         Task<PurchaseRequisition> GetPurchaseRequisitionByPRNo(string prNumber);
+        Task<IEnumerable<PurchaseRequisitionSPReport>> GetPurchaseRequisitionsSPReportWithParam(string PrNumber, string ProcurementType, string ShippingMode, string PrStatus);
+        Task<IEnumerable<PurchaseRequisitionSPReport>> GetPurchaseRequisitionsSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
     }
 }

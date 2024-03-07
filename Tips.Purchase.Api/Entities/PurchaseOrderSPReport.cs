@@ -4,7 +4,7 @@
     {
         public string? VendorName { get; set; }
         public string? PONumber { get; set; }
-        public string? PartNumber { get; set; }
+        public string? KPN { get; set; }
         public decimal? Qty { get; set; }
         public decimal? TotalWithTax { get; set; }
         public string? UOM { get; set; }
