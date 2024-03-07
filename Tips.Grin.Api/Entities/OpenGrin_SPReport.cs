@@ -7,7 +7,7 @@ namespace Tips.Grin.Api.Entities
         public string? OpenGrinNumber { get; set; }
         public string? SenderName { get; set; }
         public string? SenderId { get; set; }
-        public DateTime? CreatedOn { get; set; }
+        public DateTime? Opengrindate { get; set; }
         public string? KPN { get; set; }
         public string? Description { get; set; }
         public PartType? ItemType { get; set; }

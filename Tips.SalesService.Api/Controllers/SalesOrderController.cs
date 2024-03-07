@@ -493,19 +493,10 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var salesOrderList = await _repository.SearchSalesOrderDate(searchDateParam);
-
-                //_logger.LogInfo("Returned all SalesOrders");
-                //var config = new MapperConfiguration(cfg =>
-                //{
-                //    cfg.AddProfile<MappingProfile>();
-                //    cfg.CreateMap<SalesOrderDto, SalesOrder>().ReverseMap()
-                //        .ForMember(dest => dest.SalesOrdersItems, opt => opt.MapFrom(src => src.SalesOrdersItems));
-                //});
-
-                //var mapper = config.CreateMapper();
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<SalesOrder, SalesOrderReportDto>();
                     cfg.CreateMap<SalesOrderItems, SalesOrderItemsReportDto>()
                         .ForMember(dest => dest.ScheduleDates, opt => opt.MapFrom(src => src.ScheduleDates
                         .Select(scheduleDate => new ScheduleDateReportDto
@@ -513,6 +504,7 @@ namespace Tips.SalesService.Api.Controllers
                             Id = scheduleDate.Id,
                             ItemNumber = src.ItemNumber,
                             SalesOrderNumber = src.SalesOrderNumber,
+                            ProjectNumber = src.ProjectNumber,
                             Date = scheduleDate.Date,
                             Quantity = scheduleDate.Quantity
                         })
@@ -548,32 +540,50 @@ namespace Tips.SalesService.Api.Controllers
                 var salesOrderList = await _repository.SearchSalesOrder(searchParams);
 
                 _logger.LogInfo("Returned all SalesOrders");
-                //var config = new MapperConfiguration(cfg =>
-                //{
-                //    cfg.AddProfile<MappingProfile>();
-                //    cfg.CreateMap<SalesOrderDto, SalesOrder>().ReverseMap()
-                //        .ForMember(dest => dest.SalesOrdersItems, opt => opt.MapFrom(src => src.SalesOrdersItems));
-                //});
-
-                //var mapper = config.CreateMapper();
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<SalesOrder, SalesOrderReportDto>();
-                    cfg.CreateMap<SalesOrderItems, SalesOrderItemsReportDto>()
-                        .ForMember(dest => dest.ScheduleDates, opt => opt.MapFrom(src => src.ScheduleDates
-                        .Select(scheduleDate => new ScheduleDateReportDto
+                cfg.CreateMap<SalesOrder, SalesOrderReportDto>()
+                .ForMember(dest => dest.SalesOrdersItems, opt => opt.MapFrom(src => src.SalesOrdersItems
+                        .Select(prItem => new SalesOrderItemsReportDto
                         {
-                            Id = scheduleDate.Id,
-                            ItemNumber = src.ItemNumber,
-                            SalesOrderNumber = src.SalesOrderNumber,
-                            Date = scheduleDate.Date,
-                            Quantity = scheduleDate.Quantity
+                            Id = prItem.Id,
+                            ItemNumber = prItem.ItemNumber,
+                            Description = prItem.Description,
+                            SalesOrderNumber = prItem.SalesOrderNumber,
+                            PriceList = prItem.PriceList,
+                            ProjectNumber = prItem.ProjectNumber,
+                            StatusEnum = prItem.StatusEnum,
+                            BalanceQty = prItem.BalanceQty,
+                            DispatchQty = prItem.DispatchQty,
+                            ShopOrderQty = prItem.ShopOrderQty,
+                            UOM = prItem.UOM,
+                            Currency = prItem.Currency,
+                            UnitPrice = prItem.UnitPrice,
+                            OrderQty = prItem.OrderQty,
+                            SGST = prItem.SGST,
+                            CGST = prItem.CGST,
+                            UTGST = prItem.UTGST,
+                            IGST = prItem.IGST,
+                            TotalAmount = prItem.TotalAmount,
+                            BasicAmount = prItem.BasicAmount,
+                            Discount = prItem.Discount,
+                            RoomName = prItem.RoomName,
+                            DiscountType = prItem.DiscountType,
+                            RequestedDate = prItem.RequestedDate,
+                            Remarks = prItem.Remarks,
+                            ScheduleDates = prItem.ScheduleDates
+                                .Select(scheduleDate => new ScheduleDateReportDto
+                                {
+                                    Id = scheduleDate.Id,
+                                    ItemNumber = prItem.ItemNumber,
+                                    SalesOrderNumber = src.SalesOrderNumber,
+                                    Date = scheduleDate.Date,
+                                    Quantity = scheduleDate.Quantity,
+                                }).ToList()
                         })
-                            )
-                        );
+                     ));
                 });
-
                 var mapper = config.CreateMapper();
                 var result = mapper.Map<IEnumerable<SalesOrderReportDto>>(salesOrderList);
                 serviceResponse.Data = result;
