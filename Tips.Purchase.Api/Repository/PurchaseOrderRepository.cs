@@ -1006,6 +1006,7 @@ namespace Tips.Purchase.Api.Repository
                         select new PurchaseOrderIdNameListDto
                         {
                             PONumber = groupedDetails.Key,
+                            Id = groupedDetails.Select(d => d.Id).FirstOrDefault(),
                             RevisionNumber = groupedDetails.Max(d => d.RevisionNumber),
                         };
 
