@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Tips.Grin.Api.Controllers
+namespace Tips.Grin.Api.Entities
 {
     public class IQCConfirmation_SPReport
     {
