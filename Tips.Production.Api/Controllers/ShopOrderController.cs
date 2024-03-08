@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using AutoMapper;
 using Contracts;
@@ -28,8 +29,10 @@ namespace Tips.Production.Api.Controllers
         private IMaterialIssueRepository _materialIssueRepository;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-
-        public ShopOrderController(IShopOrderItemRepository shopOrderItemRepository, IShopOrderRepository shopOrderRepository,
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ShopOrderController(IShopOrderItemRepository shopOrderItemRepository, IShopOrderRepository shopOrderRepository, IHttpContextAccessor httpContextAccessor,
             IMaterialIssueRepository materialIssueRepository, ILoggerManager logger,
             IMapper mapper, IConfiguration config, HttpClient httpClient)
         {
@@ -40,6 +43,10 @@ namespace Tips.Production.Api.Controllers
             _shopOrderItemRepository = shopOrderItemRepository;
             _httpClient = httpClient;
             _config = config;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         [HttpGet]
@@ -603,6 +610,7 @@ namespace Tips.Production.Api.Controllers
                 materialIssue.ShopOrderQty = shopOrder.TotalSOReleaseQty;
                 materialIssue.ItemNumber = shopOrder.ItemNumber;
                 materialIssue.MaterialIssuedStatus = IssuedStatus.Open;
+                materialIssue.IsShortClosed = false;
                 List<MaterialIssueItem> materialIssueItemList = new List<MaterialIssueItem>();
 
                 for (int i = 0; i < shopOrder.ShopOrderItems.Count(); i++)
@@ -1197,9 +1205,15 @@ namespace Tips.Production.Api.Controllers
                 }
 
                 shortCloseShopOrderById.IsShortClosed = true;
-                //shortCloseShopOrderById.ShortClosedBy = "Admin";
-                //shortCloseShopOrderById.ShortClosedOn = DateTime.Now;
+                shortCloseShopOrderById.ShortClosedBy = _createdBy;
+                shortCloseShopOrderById.ShortClosedOn = DateTime.Now;
                 string result = await _shopOrderRepository.UpdateShopOrder(shortCloseShopOrderById);
+                //Get Matterial Issue Details
+                var materialIssue = await _materialIssueRepository.GetMaterialIssueByShopOrderNo(shortCloseShopOrderById.ShopOrderNumber);
+                materialIssue.IsShortClosed = true;
+                await _materialIssueRepository.UpdateMaterialIssue(materialIssue);
+
+                _materialIssueRepository.SaveAsync();
                 _shopOrderRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ShopOrder have been closed";

@@ -136,7 +136,7 @@ namespace Tips.Production.Api.Repository
         public async Task<IEnumerable<ShopOrderDetailsDto>> GetShopOrderDetailsByItemNo(string itemNumber)
         {
             var shopOrderDetails = await _tipsProductionDbContext.ShopOrders
-                .Where(x => x.ItemNumber == itemNumber)
+                .Where(x => x.ItemNumber == itemNumber && x.IsShortClosed== false)
                 .Select(s => new ShopOrderDetailsDto()
                 {
                     ShopOrderNumber = s.ShopOrderNumber,

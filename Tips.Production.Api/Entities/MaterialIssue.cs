@@ -22,7 +22,7 @@ namespace Tips.Production.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public IssuedStatus MaterialIssuedStatus { get; set; } = IssuedStatus.Open;
-
+        public bool IsShortClosed { get; set; }
         public List<MaterialIssueItem> materialIssueItems { get; set; }
     }
 }
