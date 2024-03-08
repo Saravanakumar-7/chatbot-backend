@@ -4,6 +4,7 @@
     {
         public string? CustomerName { get; set; }
         public string? SalesOrderNumber { get; set; }
+        public DateTime? sodate { get; set; }
         public string? PartNumber { get; set; }
         public decimal? OrderQty { get; set; }
         public decimal? TotalAmount { get; set; }

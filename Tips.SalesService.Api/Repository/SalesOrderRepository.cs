@@ -103,14 +103,8 @@ namespace Tips.SalesService.Api.Repository
 
 
         }
-        public async Task<IEnumerable<SalesOrderSPResport>> GetSalesorderReportWithParam(string CustomerName, string SalesOrderNumber, string PartNumber)
+        public async Task<IEnumerable<SalesOrderSPResport>> GetSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string PartNumber)
         {
-            {
-
-                if (string.IsNullOrWhiteSpace(CustomerName)
-              || string.IsNullOrWhiteSpace(SalesOrderNumber)
-              || string.IsNullOrWhiteSpace(PartNumber)) ;
-
 
                 var result = _tipsSalesServiceDbContext
                 .Set<SalesOrderSPResport>()
@@ -118,10 +112,10 @@ namespace Tips.SalesService.Api.Repository
                 .ToList();
 
                 return result;
-            }
+            
         }
 
-        public async Task<IEnumerable<SalesOrderSPResport>> GetSalesorderReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        public async Task<IEnumerable<SalesOrderSPResport>> GetSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsSalesServiceDbContext.Set<SalesOrderSPResport>()
                         .FromSqlInterpolated($"CALL SalesOrder_withparameter_withdate({FromDate},{ToDate})")
