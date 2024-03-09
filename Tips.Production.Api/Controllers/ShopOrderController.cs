@@ -611,6 +611,7 @@ namespace Tips.Production.Api.Controllers
                 materialIssue.ItemNumber = shopOrder.ItemNumber;
                 materialIssue.MaterialIssuedStatus = IssuedStatus.Open;
                 materialIssue.IsShortClosed = false;
+                materialIssue.BomRevisionNo = shopOrder.BomRevisionNo;
                 List<MaterialIssueItem> materialIssueItemList = new List<MaterialIssueItem>();
 
                 for (int i = 0; i < shopOrder.ShopOrderItems.Count(); i++)

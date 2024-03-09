@@ -471,63 +471,68 @@ namespace Tips.Purchase.Api.Repository
             return PagedList<PurchaseRequisitionIdNameListDto>.ToPagedList(pendingPRApprovalIList, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllLastestPendingPRApprovalIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        public async Task<PagedList<PurchaseRequisition>> GetAllLastestPendingPRApprovalIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
-            IQueryable<PurchaseRequisitionIdNameListDto> lastestPendingPRApprovalIList = _tipsPurchaseDbContext.PurchaseRequisitions
-               .Where(x => x.PrApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed)               
-               .OrderByDescending(x => x.Id)
-               .Select(pr => new PurchaseRequisitionIdNameListDto()
-               {
-                   Id = pr.Id,
-                   PrNumber = pr.PrNumber,
-                   PrDate = pr.PrDate,
-                   RevisionNumber = pr.RevisionNumber,
-                   ProcurementType = pr.ProcurementType,
-                   Purpose = pr.Purpose,
-                   DeliveryTerms = pr.DeliveryTerms,
-                   PrApprovalI = pr.PrApprovalI,
-                   PrApprovedIDate = pr.PrApprovedIDate,
-                   PrApprovedIBy = pr.PrApprovedIBy,
-                   PrApprovalII = pr.PrApprovalII,
-                   PrApprovedIIDate = pr.PrApprovedIIDate,
-                   PrApprovedIIBy = pr.PrApprovedIIBy,
-                   PaymentTerms = pr.PaymentTerms,
-                   ShippingMode = pr.ShippingMode,
-                   RetentionPeriod = pr.RetentionPeriod,
-                   SpecialTermsConditions = pr.SpecialTermsConditions,
-                   Unit = pr.Unit,
-                   CreatedBy = pr.CreatedBy,
-                   CreatedOn = pr.CreatedOn,
-                   LastModifiedBy = pr.LastModifiedBy,
-                   LastModifiedOn = pr.LastModifiedOn,
-               })
-               .GroupBy(x => x.PrNumber)
-               .Select(group => group.OrderByDescending(x => x.RevisionNumber).First());
+            var lastestPendingPRApprovalIList = _tipsPurchaseDbContext.PurchaseRequisitions
+               .Where(x => (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
+            x.PrNumber.Contains(searchParams.SearchValue) || x.Purpose.Contains(searchParams.SearchValue) ||
+            x.DeliveryTerms.Equals(searchParams.SearchValue) || x.ShippingMode.Equals(searchParams.SearchValue) || x.PrApprovedIBy.Equals(searchParams.SearchValue)
+            || x.PrApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue))||((x.PrApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseRequisitions.Where(r => r.PrNumber == x.PrNumber).Max(r => r.RevisionNumber))))
+               .OrderByDescending(x => x.Id);
 
-            if (searchParams != null && !string.IsNullOrEmpty(searchParams.SearchValue))
-            {
-                string searchValue = searchParams.SearchValue.ToLower();
+            return PagedList<PurchaseRequisition>.ToPagedList(lastestPendingPRApprovalIList, pagingParameter.PageNumber, pagingParameter.PageSize);
+            //   .Select(pr => new PurchaseRequisitionIdNameListDto()
+            //   {
+            //       Id = pr.Id,
+            //       PrNumber = pr.PrNumber,
+            //       PrDate = pr.PrDate,
+            //       RevisionNumber = pr.RevisionNumber,
+            //       ProcurementType = pr.ProcurementType,
+            //       Purpose = pr.Purpose,
+            //       DeliveryTerms = pr.DeliveryTerms,
+            //       PrApprovalI = pr.PrApprovalI,
+            //       PrApprovedIDate = pr.PrApprovedIDate,
+            //       PrApprovedIBy = pr.PrApprovedIBy,
+            //       PrApprovalII = pr.PrApprovalII,
+            //       PrApprovedIIDate = pr.PrApprovedIIDate,
+            //       PrApprovedIIBy = pr.PrApprovedIIBy,
+            //       PaymentTerms = pr.PaymentTerms,
+            //       ShippingMode = pr.ShippingMode,
+            //       RetentionPeriod = pr.RetentionPeriod,
+            //       SpecialTermsConditions = pr.SpecialTermsConditions,
+            //       Unit = pr.Unit,
+            //       CreatedBy = pr.CreatedBy,
+            //       CreatedOn = pr.CreatedOn,
+            //       LastModifiedBy = pr.LastModifiedBy,
+            //       LastModifiedOn = pr.LastModifiedOn,
+            //   })
+            //   .GroupBy(x => x.PrNumber)
+            //   .Select(group => group.OrderByDescending(x => x.RevisionNumber).First());
 
-                lastestPendingPRApprovalIList = lastestPendingPRApprovalIList
-                    .Where(item =>
-                        item.PrNumber.ToLower().Contains(searchValue) ||
-                        item.Purpose.ToLower().Contains(searchValue) ||
-                        item.DeliveryTerms.ToLower().Contains(searchValue) ||
-                        item.ShippingMode.ToLower().Contains(searchValue) ||
-                        item.PrApprovedIBy.ToLower().Contains(searchValue) ||
-                        item.PrApprovedIIBy.ToLower().Contains(searchValue) ||
-                        item.ProcurementType.ToLower().Contains(searchValue)
-                    ).OrderByDescending(x => x.Id);
-            }
+            //if (searchParams != null && !string.IsNullOrEmpty(searchParams.SearchValue))
+            //{
+            //    string searchValue = searchParams.SearchValue.ToLower();
 
-            int totalCount = await lastestPendingPRApprovalIList.CountAsync();
+            //    lastestPendingPRApprovalIList = lastestPendingPRApprovalIList
+            //        .Where(item =>
+            //            item.PrNumber.ToLower().Contains(searchValue) ||
+            //            item.Purpose.ToLower().Contains(searchValue) ||
+            //            item.DeliveryTerms.ToLower().Contains(searchValue) ||
+            //            item.ShippingMode.ToLower().Contains(searchValue) ||
+            //            item.PrApprovedIBy.ToLower().Contains(searchValue) ||
+            //            item.PrApprovedIIBy.ToLower().Contains(searchValue) ||
+            //            item.ProcurementType.ToLower().Contains(searchValue)
+            //        ).OrderByDescending(x => x.Id);
+            //}
 
-            var result = await lastestPendingPRApprovalIList
-                .Skip((pagingParameter.PageNumber - 1) * pagingParameter.PageSize)
-                .Take(pagingParameter.PageSize)
-                .ToListAsync();
+            //int totalCount = await lastestPendingPRApprovalIList.CountAsync();
 
-            return new PagedList<PurchaseRequisitionIdNameListDto>(result, totalCount, pagingParameter.PageNumber, pagingParameter.PageSize);
+            //var result = await lastestPendingPRApprovalIList
+            //    .Skip((pagingParameter.PageNumber - 1) * pagingParameter.PageSize)
+            //    .Take(pagingParameter.PageSize)
+            //    .ToListAsync();
+
+            //return new PagedList<PurchaseRequisitionIdNameListDto>(result, totalCount, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
 
@@ -587,63 +592,68 @@ namespace Tips.Purchase.Api.Repository
             return PagedList<PurchaseRequisitionIdNameListDto>.ToPagedList(pendingPRApprovalIIList, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllLastestPendingPRApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        public async Task<PagedList<PurchaseRequisition>> GetAllLastestPendingPRApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
-            IQueryable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIIList = _tipsPurchaseDbContext.PurchaseRequisitions
-               .Where(x => x.PrApprovalI == true && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed)                
-               .OrderByDescending(x => x.Id)
-               .Select(pr => new PurchaseRequisitionIdNameListDto()
-               {
-                   Id = pr.Id,
-                   PrNumber = pr.PrNumber,
-                   PrDate = pr.PrDate,
-                   RevisionNumber = pr.RevisionNumber,
-                   ProcurementType = pr.ProcurementType,
-                   Purpose = pr.Purpose,
-                   DeliveryTerms = pr.DeliveryTerms,
-                   PrApprovalI = pr.PrApprovalI,
-                   PrApprovedIDate = pr.PrApprovedIDate,
-                   PrApprovedIBy = pr.PrApprovedIBy,
-                   PrApprovalII = pr.PrApprovalII,
-                   PrApprovedIIDate = pr.PrApprovedIIDate,
-                   PrApprovedIIBy = pr.PrApprovedIIBy,
-                   PaymentTerms = pr.PaymentTerms,
-                   ShippingMode = pr.ShippingMode,
-                   RetentionPeriod = pr.RetentionPeriod,
-                   SpecialTermsConditions = pr.SpecialTermsConditions,
-                   Unit = pr.Unit,
-                   CreatedBy = pr.CreatedBy,
-                   CreatedOn = pr.CreatedOn,
-                   LastModifiedBy = pr.LastModifiedBy,
-                   LastModifiedOn = pr.LastModifiedOn,
-               })
-               .GroupBy(x => x.PrNumber)
-               .Select(group => group.OrderByDescending(x => x.RevisionNumber).First());
+            var pendingPRApprovalIIList = _tipsPurchaseDbContext.PurchaseRequisitions
+               .Where(x => (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
+            x.PrNumber.Contains(searchParams.SearchValue) || x.Purpose.Contains(searchParams.SearchValue) ||
+            x.DeliveryTerms.Equals(searchParams.SearchValue) || x.ShippingMode.Equals(searchParams.SearchValue) || x.PrApprovedIBy.Equals(searchParams.SearchValue)
+            || x.PrApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue)) || ((x.PrApprovalI == true && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseRequisitions.Where(r => r.PrNumber == x.PrNumber).Max(r => r.RevisionNumber))))
+               .OrderByDescending(x => x.Id);
 
-            if (searchParams != null && !string.IsNullOrEmpty(searchParams.SearchValue))
-            {
-                string searchValue = searchParams.SearchValue.ToLower();
+            return PagedList<PurchaseRequisition>.ToPagedList(pendingPRApprovalIIList, pagingParameter.PageNumber, pagingParameter.PageSize);
+            //   .Select(pr => new PurchaseRequisitionIdNameListDto()
+            //   {
+            //       Id = pr.Id,
+            //       PrNumber = pr.PrNumber,
+            //       PrDate = pr.PrDate,
+            //       RevisionNumber = pr.RevisionNumber,
+            //       ProcurementType = pr.ProcurementType,
+            //       Purpose = pr.Purpose,
+            //       DeliveryTerms = pr.DeliveryTerms,
+            //       PrApprovalI = pr.PrApprovalI,
+            //       PrApprovedIDate = pr.PrApprovedIDate,
+            //       PrApprovedIBy = pr.PrApprovedIBy,
+            //       PrApprovalII = pr.PrApprovalII,
+            //       PrApprovedIIDate = pr.PrApprovedIIDate,
+            //       PrApprovedIIBy = pr.PrApprovedIIBy,
+            //       PaymentTerms = pr.PaymentTerms,
+            //       ShippingMode = pr.ShippingMode,
+            //       RetentionPeriod = pr.RetentionPeriod,
+            //       SpecialTermsConditions = pr.SpecialTermsConditions,
+            //       Unit = pr.Unit,
+            //       CreatedBy = pr.CreatedBy,
+            //       CreatedOn = pr.CreatedOn,
+            //       LastModifiedBy = pr.LastModifiedBy,
+            //       LastModifiedOn = pr.LastModifiedOn,
+            //   })
+            //   .GroupBy(x => x.PrNumber)
+            //   .Select(group => group.OrderByDescending(x => x.RevisionNumber).First());
 
-                pendingPRApprovalIIList = pendingPRApprovalIIList
-                    .Where(item =>
-                        item.PrNumber.ToLower().Contains(searchValue) ||
-                        item.Purpose.ToLower().Contains(searchValue) ||
-                        item.DeliveryTerms.ToLower().Contains(searchValue) ||
-                        item.ShippingMode.ToLower().Contains(searchValue) ||
-                        item.PrApprovedIBy.ToLower().Contains(searchValue) ||
-                        item.PrApprovedIIBy.ToLower().Contains(searchValue) ||
-                        item.ProcurementType.ToLower().Contains(searchValue)
-                    ).OrderByDescending(x => x.Id);
-            }
+            //if (searchParams != null && !string.IsNullOrEmpty(searchParams.SearchValue))
+            //{
+            //    string searchValue = searchParams.SearchValue.ToLower();
 
-            int totalCount = await pendingPRApprovalIIList.CountAsync();
+            //    pendingPRApprovalIIList = pendingPRApprovalIIList
+            //        .Where(item =>
+            //            item.PrNumber.ToLower().Contains(searchValue) ||
+            //            item.Purpose.ToLower().Contains(searchValue) ||
+            //            item.DeliveryTerms.ToLower().Contains(searchValue) ||
+            //            item.ShippingMode.ToLower().Contains(searchValue) ||
+            //            item.PrApprovedIBy.ToLower().Contains(searchValue) ||
+            //            item.PrApprovedIIBy.ToLower().Contains(searchValue) ||
+            //            item.ProcurementType.ToLower().Contains(searchValue)
+            //        ).OrderByDescending(x => x.Id);
+            //}
 
-            var result = await pendingPRApprovalIIList
-                .Skip((pagingParameter.PageNumber - 1) * pagingParameter.PageSize)
-                .Take(pagingParameter.PageSize)
-                .ToListAsync();
+            //int totalCount = await pendingPRApprovalIIList.CountAsync();
 
-            return new PagedList<PurchaseRequisitionIdNameListDto>(result, totalCount, pagingParameter.PageNumber, pagingParameter.PageSize);
+            //var result = await pendingPRApprovalIIList
+            //    .Skip((pagingParameter.PageNumber - 1) * pagingParameter.PageSize)
+            //    .Take(pagingParameter.PageSize)
+            //    .ToListAsync();
+
+            //return new PagedList<PurchaseRequisitionIdNameListDto>(result, totalCount, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
 
@@ -738,24 +748,14 @@ namespace Tips.Purchase.Api.Repository
                 searchDate = null;
             }
 
-            var purchaseRequisitionDetails = FindAll()
-                .OrderByDescending(on => on.Id)
-                .Where(inv =>
-                    (string.IsNullOrWhiteSpace(searchParams.SearchValue)
-                    || inv.PrNumber.Contains(searchParams.SearchValue)
-                    || (searchrev.HasValue && inv.RevisionNumber == searchrev)
-                    || (searchDate.HasValue && inv.PrDate == searchDate))
-                )
-                
-               // .Include(f => f.PrFiles)
-                .Include(t => t.PrItemsDtoList)
-                    .ThenInclude(x => x.prAddprojectsDtoList)
-                .Include(m => m.PrItemsDtoList)
-                    .ThenInclude(i => i.prAddDeliverySchedulesDtoList)
-                .Include(itm => itm.PrItemsDtoList)
-                    .ThenInclude(pr => pr.prSpecialInstructionsDtoList)
-                    .GroupBy(inv => inv.PrNumber)
-                .Select(group => group.OrderByDescending(inv => inv.RevisionNumber).First());
+            var purchaseRequisitionDetails = FindAll().OrderByDescending(on => on.Id).Where(inv =>(string.IsNullOrWhiteSpace(searchParams.SearchValue)
+                    || inv.PrNumber.Contains(searchParams.SearchValue) || (searchrev.HasValue && inv.RevisionNumber == searchrev)
+                    || (searchDate.HasValue && inv.PrDate == searchDate)) 
+                    && (inv.RevisionNumber == _tipsPurchaseDbContext.PurchaseRequisitions.Where(r => r.PrNumber == inv.PrNumber).Max(r => r.RevisionNumber)))
+                .Include(t => t.PrItemsDtoList).ThenInclude(x => x.prAddprojectsDtoList)
+                    .Include(m => m.PrItemsDtoList).ThenInclude(i => i.prAddDeliverySchedulesDtoList).Include(itm => itm.PrItemsDtoList)
+                    .ThenInclude(pr => pr.prSpecialInstructionsDtoList).GroupBy(inv => inv.PrNumber)
+                    .Select(group => group.OrderByDescending(inv => inv.RevisionNumber).First());
 
             return PagedList<PurchaseRequisition>.ToPagedList(purchaseRequisitionDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }

@@ -13,6 +13,7 @@ namespace Entities.DTOs
         public int Id { get; set; }
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
+        public string? ItemDescription { get; set; }
         public string? ItemType { get; set; }
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; }
@@ -26,6 +27,7 @@ namespace Entities.DTOs
     {
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
+        public string? ItemDescription { get; set; }
         public string? ItemType { get; set; }
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; }
@@ -36,6 +38,7 @@ namespace Entities.DTOs
         public int Id { get; set; }
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
+        public string? ItemDescription { get; set; }
         public string? ItemType { get; set; }
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; } 

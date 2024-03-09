@@ -30,6 +30,8 @@ builder.Services.AddScoped<IPoConfirmationDateHistoryRepository, PoConfirmationD
 builder.Services.AddScoped<IPoConfirmationDateRepository, PoConfirmationDateRepository>();
 builder.Services.AddScoped<IPoConfirmationHistoryRepository, PoConfirmationHistoryRepository>();
 builder.Services.AddScoped<IPrItemsRepository, PurchaseRequisitionItemRepository>();
+builder.Services.AddScoped<IPoAddprojectRepository, PoAddprojectRepository>();
+
 
 
 builder.Services.AddControllers();
