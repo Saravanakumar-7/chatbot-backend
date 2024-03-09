@@ -49,9 +49,9 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParam(string VendorName, string PONumber, string PartNumber);
         Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIList(PagingParameter pagingParameter,SearchParamess searchParams);
-        Task<PagedList<PurchaseOrderIdNameListDto>> GetAllLastestPendingPOApprovalIList(PagingParameter pagingParameter, SearchParamess searchParams);
+        Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIList(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIList(PagingParameter pagingParameter,SearchParamess searchParams);
-        Task<PagedList<PurchaseOrderIdNameListDto>> GetAllLastestPendingPOApprovalIIList(PagingParameter pagingParameter, SearchParamess searchParams);
+        Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIIList(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<PagedList<Tras_POSPReport>> Get_Tras_PurchaseOrderSPResport(PagingParameter pagingParameter);
         Task<PagedList<Tras_PO_ConfirmationDate>> Get_Tras_POReport_ConfirmationDate(PagingParameter pagingParameter);
         Task<IEnumerable<Tras_POSPReport>> Get_Tras_PurchaseOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);

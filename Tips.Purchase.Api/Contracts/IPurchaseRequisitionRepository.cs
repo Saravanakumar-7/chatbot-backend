@@ -35,9 +35,9 @@ namespace Tips.Purchase.Api.Contracts
         Task<PurchaseRequisition> GetPurchaseRequisitionByPRNoAndRevNo(string prNumber, int revisionNumber);
         Task<string> GeneratePRNumberAvision();
         Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIList(PagingParameter pagingParameter ,SearchParamess searchParams);
-        Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllLastestPendingPRApprovalIList(PagingParameter pagingParameter, SearchParamess searchParams);
+        Task<PagedList<PurchaseRequisition>> GetAllLastestPendingPRApprovalIList(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIIList(PagingParameter pagingParameter, SearchParamess searchParams);
-        Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllLastestPendingPRApprovalIIList(PagingParameter pagingParameter, SearchParamess searchParams);
+        Task<PagedList<PurchaseRequisition>> GetAllLastestPendingPRApprovalIIList(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<List<GetDownloadUrlDto>> GetDownloadUrlPrItemsDetails(string FileIds);
         Task<PurchaseRequisition> GetPurchaseRequisitionByPRNo(string prNumber);
         Task<IEnumerable<PurchaseRequisitionSPReport>> GetPurchaseRequisitionsSPReportWithParam(string PrNumber, string ProcurementType, string ShippingMode, string PrStatus);

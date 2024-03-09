@@ -153,7 +153,7 @@ namespace Repository
             getOldRevisionNumber.LastModifiedBy = _createdBy;
             getOldRevisionNumber.LastModifiedOn = DateTime.Now;
             Update(getOldRevisionNumber);
-            enggBom.RevisionNumber = getOldRevisionNumber.RevisionNumber;
+            //enggBom.RevisionNumber = getOldRevisionNumber.RevisionNumber;
             var result = await Create(enggBom);
             return result;
 

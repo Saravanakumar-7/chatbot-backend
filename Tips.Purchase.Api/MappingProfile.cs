@@ -15,6 +15,7 @@ namespace Tips.Purchase.Api
             CreateMap<PurchaseOrder, PurchaseOrderDto>().ReverseMap();
             CreateMap<PurchaseOrder, PurchaseOrderPostDto>().ReverseMap();
             CreateMap<PurchaseOrder, PurchaseOrderUpdateDto>().ReverseMap();
+            CreateMap<PurchaseOrder, PurchaseOrderIdNameListDto>().ReverseMap();
 
             CreateMap<PoItem, PoItemsDto>().ReverseMap();
             CreateMap<PoItem, PoItemsPostDto>().ReverseMap();
@@ -26,13 +27,12 @@ namespace Tips.Purchase.Api
 
             CreateMap<PoAddDeliverySchedule, PoAddDeliveryScheduleDto>().ReverseMap();
             CreateMap<PoAddDeliverySchedule, PoAddDeliverySchedulePostDto>().ReverseMap();
-            CreateMap<PoAddDeliverySchedule, PoAddDeliveryScheduleUpdateDto>().ReverseMap();
-
-       
+            CreateMap<PoAddDeliverySchedule, PoAddDeliveryScheduleUpdateDto>().ReverseMap();       
 
             CreateMap<PurchaseRequisition, PurchaseRequisitionDto>().ReverseMap();
             CreateMap<PurchaseRequisition, PurchaseRequisitionPostDto>().ReverseMap();
             CreateMap<PurchaseRequisition, PurchaseRequisitionUpdateDto>().ReverseMap();
+            CreateMap<PurchaseRequisition, PurchaseRequisitionIdNameListDto>().ReverseMap();
 
             CreateMap<PrItem, PrItemsDto>().ReverseMap();
             CreateMap<PrItem, PrItemsPostDto>().ReverseMap();

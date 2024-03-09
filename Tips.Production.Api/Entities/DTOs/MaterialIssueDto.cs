@@ -11,8 +11,8 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ShopOrderNumber { get; set; }
         public DateTime? ShopOrderDate { get; set; }
         public string? ItemNumber { get; set; }
+        public decimal? BomRevisionNo { get; set; }
         public ProjectType ProjectType { get; set; }
-
         public PartType ItemType { get; set; }
         [Precision(13, 3)]
         public decimal? ShopOrderQty { get; set; }
@@ -22,7 +22,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public IssuedStatus MaterialIssuedStatus { get; set; }
-
+        public bool IsShortClosed { get; set; }
         public List<MaterialIssueItemDto> materialIssueItems { get; set; }
     }
 
@@ -31,10 +31,11 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ShopOrderNumber { get; set; }
         public DateTime? ShopOrderDate { get; set; }
         public ProjectType ProjectType { get; set; }
-
         public string? ItemNumber { get; set; }
+        public decimal? BomRevisionNo { get; set; }
         public PartType ItemType { get; set; }
         public decimal? ShopOrderQty { get; set; }
+        public bool IsShortClosed { get; set; }
         public List<MaterialIssueItemPostDto> MaterialIssueItems { get; set; }
 
     }
@@ -44,7 +45,6 @@ namespace Tips.Production.Api.Entities.DTOs
         public int Id { get; set; }
         public string? ShopOrderNumber { get; set; }
         public ProjectType ProjectType { get; set; }
-
         public DateTime? ShopOrderDate { get; set; }
         public string? ItemNumber { get; set; }
         public PartType ItemType { get; set; }
@@ -52,6 +52,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public IssuedStatus MaterialIssuedStatus { get; set; }
+        public bool IsShortClosed { get; set; }
         public List<MaterialIssueItemUpdateDto> MaterialIssueItems { get; set; }
     }
     public class MaterialIssueIdNameList
@@ -95,11 +96,13 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ShopOrderNumber { get; set; }
         public DateTime? ShopOrderDate { get; set; }
         public string? ItemNumber { get; set; }
+        public decimal? BomRevisionNo { get; set; }
         public ProjectType ProjectType { get; set; }
         public string? ProjectNumber { get; set; }
         public PartType ItemType { get; set; }
         [Precision(13, 3)]
         public decimal? ShopOrderQty { get; set; }
+        public bool IsShortClosed { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

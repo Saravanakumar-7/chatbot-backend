@@ -720,18 +720,18 @@ namespace Tips.Master.Api.Controllers
                     }
                 }
                 enggBomList.EnggChildItems = enggChildItemList;
-
                 var data = _mapper.Map(enggBomUpdateDto, enggBomList);
-                await _repository.EnggBomRepository.UpdateEnggBomVersion(data);
                 if (revisionType == 0)
                 {
-                    enggBomList.RevisionNumber = enggBomList.RevisionNumber + Convert.ToDecimal(0.1);
+                    data.RevisionNumber = data.RevisionNumber + Convert.ToDecimal(0.1);
                 }
                 else
                 {
-                    var revRound = Math.Round(enggBomList.RevisionNumber);
-                    enggBomList.RevisionNumber = revRound + Convert.ToDecimal(1.0);
+                    var revRound = Math.Round(data.RevisionNumber);
+                    data.RevisionNumber = revRound + Convert.ToDecimal(1.0);
                 }
+                
+                await _repository.EnggBomRepository.UpdateEnggBomVersion(data);
                 //_logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
