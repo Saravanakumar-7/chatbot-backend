@@ -171,6 +171,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public int GrinPartId { get; set; }
 
-        public List<BinningLocationSaveDto>? BinningLocations { get; set; }
+        // Change property name to match the main class
+        public BinningLocationSaveDto? BinningLocations { get; set; }
     }
 }

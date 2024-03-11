@@ -32,6 +32,8 @@ namespace Entities.DTOs
 
         public string? ScrapAllowanceType { get; set; }
         public string? CustomFields { get; set; }
+        public string? Designator { get; set; }
+        public string? FootPrint { get; set; }
 
         [DefaultValue(true)]
         public bool IsActive { get; set; }
@@ -72,6 +74,8 @@ namespace Entities.DTOs
 
         public string? ScrapAllowanceType { get; set; }
         public string? CustomFields { get; set; }
+        public string? Designator { get; set; }
+        public string? FootPrint { get; set; }
         [DefaultValue(true)]
         public bool IsActive { get; set; }
 
@@ -105,6 +109,8 @@ namespace Entities.DTOs
 
         public string? ScrapAllowanceType { get; set; }
         public string? CustomFields { get; set; }
+        public string? Designator { get; set; }
+        public string? FootPrint { get; set; }
 
         [DefaultValue(true)]
         public bool IsActive { get; set; }

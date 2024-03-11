@@ -210,6 +210,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public string? GrinNumber { get; set; }
 
-        public List<BinningItemsSaveDto>? BinningItems { get; set; }
+
+        public BinningItemsSaveDto? BinningItems { get; set; }
     }
 }
