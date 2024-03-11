@@ -754,8 +754,7 @@ namespace Tips.Purchase.Api.Repository
                     && (inv.RevisionNumber == _tipsPurchaseDbContext.PurchaseRequisitions.Where(r => r.PrNumber == inv.PrNumber).Max(r => r.RevisionNumber)))
                 .Include(t => t.PrItemsDtoList).ThenInclude(x => x.prAddprojectsDtoList)
                     .Include(m => m.PrItemsDtoList).ThenInclude(i => i.prAddDeliverySchedulesDtoList).Include(itm => itm.PrItemsDtoList)
-                    .ThenInclude(pr => pr.prSpecialInstructionsDtoList).GroupBy(inv => inv.PrNumber)
-                    .Select(group => group.OrderByDescending(inv => inv.RevisionNumber).First());
+                    .ThenInclude(pr => pr.prSpecialInstructionsDtoList);
 
             return PagedList<PurchaseRequisition>.ToPagedList(purchaseRequisitionDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
