@@ -720,18 +720,18 @@ namespace Tips.Master.Api.Controllers
                     }
                 }
                 enggBomList.EnggChildItems = enggChildItemList;
+
                 var data = _mapper.Map(enggBomUpdateDto, enggBomList);
+                await _repository.EnggBomRepository.UpdateEnggBomVersion(data);
                 if (revisionType == 0)
                 {
-                    data.RevisionNumber = data.RevisionNumber + Convert.ToDecimal(0.1);
+                    enggBomList.RevisionNumber = enggBomList.RevisionNumber + Convert.ToDecimal(0.1);
                 }
                 else
                 {
-                    var revRound = Math.Round(data.RevisionNumber);
-                    data.RevisionNumber = revRound + Convert.ToDecimal(1.0);
+                    var revRound = Math.Round(enggBomList.RevisionNumber);
+                    enggBomList.RevisionNumber = revRound + Convert.ToDecimal(1.0);
                 }
-                
-                await _repository.EnggBomRepository.UpdateEnggBomVersion(data);
                 //_logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -2979,6 +2979,52 @@ namespace Tips.Master.Api.Controllers
             return 0;
         }
 
+        [HttpPut]
+        public async Task<IActionResult> GetAltenatesintoMftrNo()
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                var itemno = await _repository.EnggBomRepository.GetChildItemsLists();
+                foreach (var item in itemno)
+                {
+                    var mftrs = await _repository.ItemMasterRepository.GetItemMasterByItemNumber(item.ItemNumber);
+                    if (mftrs != null)
+                    {
+                        string? mftrno = null;
+                        if (mftrs.ItemmasterAlternate != null)
+                        {
+                            foreach (var mftr in mftrs.ItemmasterAlternate)
+                            {
+                                if (mftrno == null)
+                                    mftrno = mftr.ManufacturerPartNo;
+                                else
+                                    mftrno = mftrno + "," + mftr.ManufacturerPartNo;
+                            }
+                            item.MftrItemNumbers = mftrno;
+                            await _repository.EnggChildItemsRepository.UpdateEnggChilditems(item);
+                            _repository.SaveAsync();
+                        }
+                    }
+                }
+
+                serviceResponse.Data = "Successfull";
+                serviceResponse.Message = "Returned all Engineering Boms Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
 
     }
 }

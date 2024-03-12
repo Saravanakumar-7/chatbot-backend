@@ -153,7 +153,7 @@ namespace Repository
             getOldRevisionNumber.LastModifiedBy = _createdBy;
             getOldRevisionNumber.LastModifiedOn = DateTime.Now;
             Update(getOldRevisionNumber);
-            //enggBom.RevisionNumber = getOldRevisionNumber.RevisionNumber;
+            enggBom.RevisionNumber = getOldRevisionNumber.RevisionNumber;
             var result = await Create(enggBom);
             return result;
 
@@ -221,7 +221,13 @@ namespace Repository
             .FirstOrDefaultAsync();
             return latestBomData;
         }
-        public async Task<PagedList<EnggBom>> GetAllEnggBOM ([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<List<EnggChildItem>> GetChildItemsLists()
+        {
+            var list = await _tipsMasterDbContext.EnggChildItems.ToListAsync();
+            return list;
+        }
+
+        public async Task<PagedList<EnggBom>> GetAllEnggBOM([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             PartType? check;
             if (Enum.TryParse<PartType>(searchParams.SearchValue, out PartType result))
@@ -1376,6 +1382,7 @@ namespace Repository
             string result = $"EnggBomGroup Detail {enggbomGroup.Id} is updated successfully!";
             return result;
         }
+
     }
     public class EnggCustomFieldRepository : RepositoryBase<EnggCustomField>, IEnggCustomFieldRepository
     {
@@ -1515,6 +1522,29 @@ namespace Repository
         public Task<string> UpdateEnggNREConsumable(NREConsumable bomNREConsumable)
         {
             throw new NotImplementedException();
+        }
+    }
+    public class EnggChildItemsRepository : RepositoryBase<EnggChildItem>, IEnggChildItemsRepository
+    {
+        private TipsMasterDbContext _tipsMasterDbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public EnggChildItemsRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        {
+            _tipsMasterDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+        }
+
+        public async Task<string> UpdateEnggChilditems(EnggChildItem enggChildItem)
+        {
+            Update(enggChildItem);
+            string result = $"EnggBomGroup Detail {enggChildItem.Id} is updated successfully!";
+            return result;
         }
     }
 }
