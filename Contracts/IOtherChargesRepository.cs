@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface IOtherChargesRepository : IRepositoryBase<OtherCharges>
     {
-        Task<IEnumerable<OtherCharges>> GetAllOtherCharges();
+        Task<IEnumerable<OtherCharges>> GetAllOtherCharges(SearchParames searchParams);
         Task<OtherCharges> GetOtherChargesById(int id);
-        Task<IEnumerable<OtherCharges>> GetAllActiveOtherCharges();
+        Task<IEnumerable<OtherCharges>> GetAllActiveOtherCharges(SearchParames searchParams);
         Task<int?> CreateOtherCharges(OtherCharges otherCharges);
         Task<string> UpdateOtherCharges(OtherCharges otherCharges);
         Task<string> DeleteOtherCharges(OtherCharges otherCharges);

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
@@ -42,15 +43,19 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<OtherCharges>> GetAllActiveOtherCharges()
+        public async Task<IEnumerable<OtherCharges>> GetAllActiveOtherCharges([FromQuery] SearchParames searchParams)
         {
-            var otherChargesActiveDetails = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return otherChargesActiveDetails;
+            var otherChargesDetails = FindAll().OrderByDescending(x => x.Id)
+                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.OtherChargesName.Contains(searchParams.SearchValue) ||
+                                     inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return otherChargesDetails;
         }
 
-        public async Task<IEnumerable<OtherCharges>> GetAllOtherCharges()
+        public async Task<IEnumerable<OtherCharges>> GetAllOtherCharges([FromQuery] SearchParames searchParams)
         {
-            var otherChargesDetails = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
+            var otherChargesDetails = FindAll().OrderByDescending(x => x.Id)
+                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.OtherChargesName.Contains(searchParams.SearchValue) ||
+                                     inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return otherChargesDetails;
         }
 

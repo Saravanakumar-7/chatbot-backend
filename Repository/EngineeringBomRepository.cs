@@ -158,6 +158,15 @@ namespace Repository
             return result;
 
         }
+        public async Task<IEnumerable<EnggBomSPReport>> GetEnggBomSPReportWithParam(string? bomId)
+        {
+            var result = _tipsMasterDbContext
+            .Set<EnggBomSPReport>()
+            .FromSqlInterpolated($"CALL enggbom_report_parameter({bomId})")
+            .ToList();
+
+            return result;
+        }
 
         public async Task<int?> CreateEnggBom(EnggBom enggBom)
         {
