@@ -123,7 +123,7 @@ namespace Repository
         private INoOfRoomRepository? _noOfRoomRepo;
         private ITypeOfRoomRepository? _typeOfRoomRepo;
         private IConvertionrateRepository? _convertionrateRepository;
-
+        private IEnggChildItemsRepository? _enggChildItemsRepository;
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
@@ -433,6 +433,17 @@ namespace Repository
                     _enggBomNREConsumableRepository = new EngineeringNREConsumableRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _enggBomNREConsumableRepository;
+            }
+        }
+        public IEnggChildItemsRepository EnggChildItemsRepository
+        {
+            get
+            {
+                if (_enggChildItemsRepository == null)
+                {
+                    _enggChildItemsRepository = new EnggChildItemsRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _enggChildItemsRepository;
             }
         }
 
@@ -1263,7 +1274,7 @@ namespace Repository
                 return _formsAccessRepository;
             }
         }
-
+       
         public IVendorContactRepository VendorContactRepository => throw new NotImplementedException();
 
         public IVendorAddressRepository VendorAddressRepository => throw new NotImplementedException();
