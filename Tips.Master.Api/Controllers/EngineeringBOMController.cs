@@ -3016,7 +3016,7 @@ namespace Tips.Master.Api.Controllers
 
             return 0;
         }
-
+        //Below API is just to take from item master and put in enggchild items[
         [HttpPut]
         public async Task<IActionResult> GetAltenatesintoMftrNo()
         {
@@ -3063,6 +3063,6 @@ namespace Tips.Master.Api.Controllers
             }
 
         }
-
+        //]
     }
 }

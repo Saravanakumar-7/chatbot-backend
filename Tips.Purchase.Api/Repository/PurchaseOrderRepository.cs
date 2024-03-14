@@ -908,7 +908,7 @@ namespace Tips.Purchase.Api.Repository
             x.VendorName.Contains(searchParams.SearchValue) || x.PONumber.Contains(searchParams.SearchValue) ||
             x.VendorId.Equals(searchParams.SearchValue) || x.VendorAddress.Equals(searchParams.SearchValue) || x.POApprovedIBy.Equals(searchParams.SearchValue)
             || x.POApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue))
-            || ((x.POApprovalI == true && x.POApprovalII == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))))
+            && ((x.POApprovalI == true && x.POApprovalII == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))))
                 .OrderByDescending(x => x.Id);
 
             return PagedList<PurchaseOrder>.ToPagedList(lastestPendingPOApprovalIINameList, pagingParameter.PageNumber, pagingParameter.PageSize);
