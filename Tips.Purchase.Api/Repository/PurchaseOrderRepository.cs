@@ -1679,7 +1679,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<int?> GetPoItemsPartiallyClosedStatusCount(string poNumber)
         {
             var poItemsPartiallyClosedStatusCount = _tipsPurchaseDbContext.PoItems.Where(x => x.PONumber == poNumber
-                                                            && x.PoStatus == PoStatus.PartiallyClosed).Count();
+                                                            && x.PoStatus == PoStatus.PartiallyClosed && x.PoStatus == PoStatus.Open).Count();
 
             return poItemsPartiallyClosedStatusCount;
         }
