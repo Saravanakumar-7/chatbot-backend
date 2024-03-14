@@ -23,13 +23,13 @@ namespace Tips.Master.Api.Controllers
             _mapper = mapper;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllOtherCharges()
+        public async Task<IActionResult> GetAllOtherCharges([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<OtherChargesDto>> serviceResponse = new ServiceResponse<IEnumerable<OtherChargesDto>>();
 
             try
             {
-                var otherChargesList = await _repository.OtherChargesRepository.GetAllOtherCharges();
+                var otherChargesList = await _repository.OtherChargesRepository.GetAllOtherCharges(searchParams);
                 _logger.LogInfo("Returned all OtherCharges");
                 var result = _mapper.Map<IEnumerable<OtherChargesDto>>(otherChargesList);
                 serviceResponse.Data = result;
@@ -49,13 +49,13 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveOtherCharges()
+        public async Task<IActionResult> GetAllActiveOtherCharges([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<OtherChargesDto>> serviceResponse = new ServiceResponse<IEnumerable<OtherChargesDto>>();
 
             try
             {
-                var otherChargesList = await _repository.OtherChargesRepository.GetAllActiveOtherCharges();
+                var otherChargesList = await _repository.OtherChargesRepository.GetAllActiveOtherCharges(searchParams);
                 _logger.LogInfo("Returned all OtherCharges");
                 var result = _mapper.Map<IEnumerable<OtherChargesDto>>(otherChargesList);
                 serviceResponse.Data = result;

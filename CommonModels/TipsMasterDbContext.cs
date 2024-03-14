@@ -159,6 +159,12 @@ namespace Entities
         public DbSet<VendorId> VendorIds { get; set; }
         public DbSet<CSNOs>? CSNOs { get; set; }
         public DbSet<Convertionrate> Convertionrates { get; set; }
+        public DbSet<EnggBomSPReport> EnggBomSPReports { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<EnggBomSPReport>().HasNoKey();
+        }
 
 
     }

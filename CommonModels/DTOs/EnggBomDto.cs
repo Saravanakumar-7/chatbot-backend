@@ -182,5 +182,10 @@ namespace Entities.DTOs
         public decimal? CostingBomVersionNo { get; set; }
 
     }
+    public class EnggBomSPReportDto
+    {
+        public string? BOMId { get; set; }
+    }
+
 
 }
