@@ -477,7 +477,7 @@ namespace Tips.Purchase.Api.Repository
                .Where(x => (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
             x.PrNumber.Contains(searchParams.SearchValue) || x.Purpose.Contains(searchParams.SearchValue) ||
             x.DeliveryTerms.Equals(searchParams.SearchValue) || x.ShippingMode.Equals(searchParams.SearchValue) || x.PrApprovedIBy.Equals(searchParams.SearchValue)
-            || x.PrApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue))||((x.PrApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseRequisitions.Where(r => r.PrNumber == x.PrNumber).Max(r => r.RevisionNumber))))
+            || x.PrApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue))&&((x.PrApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseRequisitions.Where(r => r.PrNumber == x.PrNumber).Max(r => r.RevisionNumber))))
                .OrderByDescending(x => x.Id);
 
             return PagedList<PurchaseRequisition>.ToPagedList(lastestPendingPRApprovalIList, pagingParameter.PageNumber, pagingParameter.PageSize);
@@ -598,7 +598,7 @@ namespace Tips.Purchase.Api.Repository
                .Where(x => (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
             x.PrNumber.Contains(searchParams.SearchValue) || x.Purpose.Contains(searchParams.SearchValue) ||
             x.DeliveryTerms.Equals(searchParams.SearchValue) || x.ShippingMode.Equals(searchParams.SearchValue) || x.PrApprovedIBy.Equals(searchParams.SearchValue)
-            || x.PrApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue)) || ((x.PrApprovalI == true && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseRequisitions.Where(r => r.PrNumber == x.PrNumber).Max(r => r.RevisionNumber))))
+            || x.PrApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue)) && ((x.PrApprovalI == true && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseRequisitions.Where(r => r.PrNumber == x.PrNumber).Max(r => r.RevisionNumber))))
                .OrderByDescending(x => x.Id);
 
             return PagedList<PurchaseRequisition>.ToPagedList(pendingPRApprovalIIList, pagingParameter.PageNumber, pagingParameter.PageSize);
