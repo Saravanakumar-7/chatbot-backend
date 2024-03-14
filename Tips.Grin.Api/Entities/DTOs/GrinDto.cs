@@ -183,6 +183,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? BECurrencyValue { get; set; }
         public string? GrinDocuments { get; set; }
         public string? GateEntryNo { get; set; }
+        public decimal? TotalInvoiceValue { get; set; }
 
         //public string? GrinDocuments { get; set; }
 
