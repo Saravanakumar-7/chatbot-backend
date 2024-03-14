@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Grin.Api.Entities.DTOs
 {
@@ -65,7 +66,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? Warehouse { get; set; }
 
         public string? Location { get; set; }
-
+        [Precision(13, 3)]
         public decimal Qty { get; set; }
 
     }
