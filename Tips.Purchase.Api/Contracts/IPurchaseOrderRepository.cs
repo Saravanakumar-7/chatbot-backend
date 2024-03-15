@@ -58,5 +58,6 @@ namespace Tips.Purchase.Api.Contracts
         Task<PurchaseOrder_ReportDto> GetPurchaseOrderReportswithDate(DateTime? FromDate, DateTime? ToDate);
         Task<PurchaseOrder_ReportDto> GetPurchaseOrderReportswithPara(string? ItemNumber, string? PONumber, string? VendorName, int? POStatus);
         Task<IEnumerable<Tras_POSPReport>> Get_Tras_PurchaseOrderSPReportWithParam(string VendorName, string PONumber, string PartNumber);
+        Task<PurchaseOrder> GetPurchaseOrderItemsByPONumber(string poNumber);
     }
 }
