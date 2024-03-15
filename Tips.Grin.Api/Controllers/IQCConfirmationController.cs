@@ -1078,10 +1078,10 @@ namespace Tips.Grin.Api.Controllers
                     //Updating IQC Status in Grin
                     //var grinNumber = iQCCreate.GrinNumber;
                     var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNumber);
-                    foreach (var gParts in grinDetails.GrinParts)
-                    {
-                        gParts.IsIqcCompleted = true;
-                    }
+                    //foreach (var gParts in grinDetails.GrinParts)
+                    //{
+                    //    gParts.IsIqcCompleted = true;
+                    //}
                     grinDetails.IsIqcCompleted = true;
                     await _grinRepository.UpdateGrin(grinDetails);
                     if (getItemmResp == HttpStatusCode.OK && createInvfromGrin == HttpStatusCode.OK && getInvdetailsGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK)

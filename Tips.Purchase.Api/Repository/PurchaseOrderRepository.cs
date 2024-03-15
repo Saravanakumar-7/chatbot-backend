@@ -1191,7 +1191,29 @@ namespace Tips.Purchase.Api.Repository
                                 .ThenInclude(po => po.PrDetails)
                                 .Include(itm => itm.POIncoTerms)
                                 .FirstOrDefaultAsync();
+            return purchaseOrderDetailbyPONumber;
+        }
 
+        public async Task<PurchaseOrder> GetPurchaseOrderItemsByPONumber(string poNumber)
+        {
+            var purchaseOrderDetailbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders
+                .Where(x => x.PONumber == poNumber && x.IsDeleted == false && x.IsModified == false)
+                //.Include(o => o.POFiles)
+                .Include(t => t.POItems)
+                                .ThenInclude(x => x.POAddprojects)
+                                .Include(m => m.POItems)
+                                .ThenInclude(i => i.POAddDeliverySchedules)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.POSpecialInstructions)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.POConfirmationDates)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.PrDetails)
+                                .Include(itm => itm.POIncoTerms)
+                                .FirstOrDefaultAsync();
+            purchaseOrderDetailbyPONumber.POItems = purchaseOrderDetailbyPONumber.POItems
+        .Where(item => item.PoStatus == PoStatus.Open || item.PoStatus == PoStatus.PartiallyClosed)
+        .ToList();
 
             return purchaseOrderDetailbyPONumber;
         }
@@ -1679,7 +1701,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<int?> GetPoItemsPartiallyClosedStatusCount(string poNumber)
         {
             var poItemsPartiallyClosedStatusCount = _tipsPurchaseDbContext.PoItems.Where(x => x.PONumber == poNumber
-                                                            && x.PoStatus == PoStatus.PartiallyClosed && x.PoStatus == PoStatus.Open).Count();
+                                                            && x.PoStatus == PoStatus.PartiallyClosed || x.PoStatus == PoStatus.Open).Count();
 
             return poItemsPartiallyClosedStatusCount;
         }

@@ -1753,7 +1753,7 @@ namespace Tips.Grin.Api.Controllers
                 var grinList = _mapper.Map<Grins>(grinDto);
 
                 var grinPartsDto = grinDto.GrinParts;
-
+                var grinCal = _mapper.Map<List<GrinPartscalculationofAvgcost>>(grinPartsDto);
                 var GrinpartsList = new List<GrinParts>();
                 //for (int i = 0; i < grinPartsDto.Count; i++)
                 //{
@@ -1764,24 +1764,26 @@ namespace Tips.Grin.Api.Controllers
                 //    //
 
                 //}
-                var totalGrinCost = (grinList.Freight + grinList.Insurance + grinList.LoadingorUnLoading + grinList.Transport) * grinList.CurrencyConversion;
-                if (grinPartsDto != null)
+                
+                var othercosttotal = grinList.Freight + grinList.Insurance + grinList.LoadingorUnLoading + grinList.Transport;
+                decimal? conversionrate = 1;
+                if (grinList.CurrencyConversion > 1) conversionrate = grinList.CurrencyConversion;
+                foreach (var gPart in grinCal)
                 {
-                    for (int i = 0; i < grinPartsDto.Count; i++)
-                    {
-                        GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
-                        grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
-                        decimal? EP = grinParts.Qty * grinParts.UnitPrice;
-                        decimal? a = totalGrinCost * grinParts.Qty;
-                        decimal? b = (EP / a) * totalGrinCost;
-                        decimal? c = EP + b;
-                        grinParts.AverageCost = c / grinParts.Qty;
-
-                        GrinpartsList.Add(grinParts);
-
-                    }
+                    decimal? EP = gPart.Qty * gPart.UnitPrice;
+                    decimal? Itemwithtax = gPart.SGST + gPart.IGST + gPart.CGST + gPart.UTGST + gPart.Duties;
+                    gPart.EPwithTax = (EP + (EP * (Itemwithtax / 100))) * conversionrate;
+                    gPart.EPforSingleQty = gPart.EPwithTax / gPart.Qty;
                 }
-
+                decimal? SumofEPwithtax = grinCal.Sum(x => x.EPwithTax);
+                foreach (var gPart in grinCal)
+                {
+                    decimal? distriduteOthercostforitem = (gPart.EPwithTax / SumofEPwithtax) * othercosttotal;
+                    decimal? distriduteOthercostforitemsSingleQty = distriduteOthercostforitem / gPart.Qty;
+                    gPart.AverageCost = distriduteOthercostforitemsSingleQty + gPart.EPforSingleQty;
+                    GrinParts grinParts = _mapper.Map<GrinParts>(gPart);
+                    GrinpartsList.Add(grinParts);
+                }
 
                 var data = _mapper.Map(grinDto, updategrin);
 

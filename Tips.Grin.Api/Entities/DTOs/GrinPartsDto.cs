@@ -320,6 +320,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Required]
         public string ManufactureBatchNumber { get; set; }
+        public string? Remarks { get; set; }
 
         [Required]
         [Precision(18, 3)]

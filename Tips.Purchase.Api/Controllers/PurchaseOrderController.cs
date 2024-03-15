@@ -236,6 +236,89 @@ namespace Tips.Purchase.Api.Controllers
 
 
         }
+        [HttpGet]
+        public async Task<IActionResult> GetPurchaseOrderItemsByPoNumber(string PONumber)
+        {
+            ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
+            try
+            {
+                var purchaseOrderDetailbyPONumber = await _repository.GetPurchaseOrderItemsByPONumber(PONumber);
+
+                if (purchaseOrderDetailbyPONumber == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder  hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder with id: {PONumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {PONumber}");
+
+                    PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetailbyPONumber);
+                    List<PoItemsDto> poItemDtoList = new List<PoItemsDto>();
+                    var poIncoTermList = _mapper.Map<IEnumerable<PoIncoTerm>>(purchaseOrderDto.POIncoTerms);
+                    //List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
+
+                    //if (purchaseOrderDto.POFiles.Count() != 0)
+                    //{
+                    //    foreach (var documentUploadDetails in purchaseOrderDto.POFiles)
+                    //    {
+                    //        DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
+                    //        documentUplaodDtoList.Add(poItemDtos);
+                    //    }
+                    //}
+                    //purchaseOrderDto.POFiles = documentUplaodDtoList;
+
+                    var poIncoTermDto = purchaseOrderDto.POIncoTerms;
+
+                    var poIncoTermsList = new List<PoIncoTermDto>();
+                    if (poIncoTermDto != null)
+                    {
+                        for (int i = 0; i < poIncoTermDto.Count; i++)
+                        {
+                            PoIncoTermDto poIncoTermDetails = _mapper.Map<PoIncoTermDto>(poIncoTermDto[i]);
+                            poIncoTermsList.Add(poIncoTermDetails);
+                        }
+                    }
+                    purchaseOrderDto.POIncoTerms = poIncoTermsList;
+
+                    if (purchaseOrderDetailbyPONumber.POItems != null)
+                    {
+                        foreach (var poItemDetails in purchaseOrderDetailbyPONumber.POItems)
+                        {
+                            PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
+                            poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
+                            poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
+                            poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
+                            poItemDtos.POConfirmationDates = _mapper.Map<List<PoConfirmationDateDto>>(poItemDetails.POConfirmationDates);
+                            poItemDtos.PrDetails = _mapper.Map<List<PrDetailsDto>>(poItemDetails.PrDetails);
+                            poItemDtoList.Add(poItemDtos);
+                        }
+                    }
+
+                    purchaseOrderDto.POItems = poItemDtoList;
+                    serviceResponse.Data = purchaseOrderDto;
+                    serviceResponse.Message = "Returned GetPurchaseOrderItemsByPoNumber Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside PurchaseOrderByPONumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+
+        }
 
         [HttpGet("{PONumber}")]
         public async Task<IActionResult> GetAllRevisionNumberListByPoNumber(string PONumber)
