@@ -34,6 +34,8 @@
         public string? PartNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public decimal? Balance_Quantity { get; set; }
+        public string? Warehouse { get; set; }
+        public string? LotNumber { get; set; }
     }
 
 }
