@@ -926,7 +926,6 @@ namespace Tips.Grin.Api.Controllers
         public async Task<IActionResult> CreateBinningItems([FromBody] BinningSaveDto binningSaveDto)
         {
             ServiceResponse<BinningSaveDto> serviceResponse = new ServiceResponse<BinningSaveDto>();
-            //Binning binningDetails = null;
             try
             {
                 if (binningSaveDto == null)
@@ -947,16 +946,26 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
+                var binningDetail = new Binning();
 
-                var binningDetail = _mapper.Map<Binning>(binningSaveDto);
+                binningDetail.GrinNumber = binningSaveDto.GrinNumber;
+
+                List<BinningItems>? binningItemsEntityList = new List<BinningItems>();
+                BinningItems binningItemsEntity = new BinningItems();
+                binningItemsEntity.ItemNumber = binningSaveDto.BinningItems.ItemNumber;
+                binningItemsEntity.GrinPartId = binningSaveDto.BinningItems.GrinPartId;
+                binningItemsEntity.binningLocations = _mapper.Map<List<BinningLocation>>(binningSaveDto.BinningItems.binningLocations);
+                binningItemsEntityList.Add(binningItemsEntity);
+                binningDetail.BinningItems = binningItemsEntityList;
 
                 var binningsItemsDto = binningSaveDto.BinningItems;
-                var binningItems = _mapper.Map<BinningItems>(binningsItemsDto);
+                var binningItems = binningDetail.BinningItems[0];
                 var grinNumber = binningDetail.GrinNumber;
                 var existingBinningDetails = await _binningRepository.GetExistingBinningDetailsByGrinNo(grinNumber);
 
                 if (existingBinningDetails != null)
                 {
+                    //Updating Binning Status in BinningItem
 
                     binningItems.BinningId = existingBinningDetails.Id;
                     binningItems.IsBinningCompleted = true;
@@ -1138,6 +1147,8 @@ namespace Tips.Grin.Api.Controllers
                 }
                 else
                 {
+                    //Updating Binning Status in BinningItem
+
                     binningItems.IsBinningCompleted = true;
                     binningDetail.BinningItems = new List<BinningItems> { binningItems};
                     await _binningRepository.CreateBinning(binningDetail);
@@ -1157,6 +1168,36 @@ namespace Tips.Grin.Api.Controllers
                     iqcItemDetails.IsBinningCompleted = true;
                     await _iQCConfirmationItemsRepository.UpdateIqcItems(iqcItemDetails);
                     _iQCConfirmationItemsRepository.SaveAsync();
+
+
+                    //Updating Binning Status in Grin
+
+                    var grinPartsBinningStatuscount = await _grinPartsRepository.GetGrinPartsBinningStatusCount(grinPartDetails.GrinsId);
+
+                    if (grinPartsBinningStatuscount == 0)
+                    {
+                        var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNumber);
+                        grinDetails.IsBinningCompleted = true;
+                        await _grinRepository.UpdateGrin(grinDetails);
+                        _grinRepository.SaveAsync();
+                    }
+
+                    //Updating Binning Status in IQC & Binning
+
+                    var grinBinningStatuscount = await _grinRepository.GetGrinbinningStatusCount(grinNumber);
+
+                    if (grinBinningStatuscount > 0)
+                    {
+                        var iqcDetails = await _iQCConfirmationRepository.GetIqcDetailsbyGrinNo(grinNumber);
+                        iqcDetails.IsBinningCompleted = true;
+                        await _iQCConfirmationRepository.UpdateIqc(iqcDetails);
+                        _iQCConfirmationRepository.SaveAsync();
+
+                        var binningDetails = await _binningRepository.GetBinningDetailsByGrinNumber(grinNumber);
+                        binningDetails.IsBinningCompleted = true;
+                        await _binningRepository.UpdateBinning(binningDetails);
+                        _binningRepository.SaveAsync();
+                    }
 
                     // Inventory Update Code
                     string grinPartId = "";

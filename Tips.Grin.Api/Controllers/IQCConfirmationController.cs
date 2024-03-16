@@ -682,6 +682,7 @@ namespace Tips.Grin.Api.Controllers
                             return BadRequest(serviceResponse);
                         }
 
+                        //Updating IQC Status in IqcItem Level
 
                         iQCConfirmationItems.IsIqcCompleted = true;
                         await _iQCConfirmationItemsRepository.CreateIqcItem(iQCConfirmationItems);
@@ -867,6 +868,9 @@ namespace Tips.Grin.Api.Controllers
                             serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                             return BadRequest(serviceResponse);
                         }
+
+                        //Updating IQC Status in IqcItem Level
+
                         iQCConfirmationItems.IsIqcCompleted = true;
                         iQCItemList.Add(iQCConfirmationItems);
 
@@ -1060,7 +1064,7 @@ namespace Tips.Grin.Api.Controllers
                         }
 
                         ////update accepted qty and rejected qty in grin model
-
+                        //Updating IQC Status in GrinParts
                         var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iQCConfirmationItems.GrinPartId, iQCConfirmationItems.AcceptedQty.ToString(), iQCConfirmationItems.RejectedQty.ToString());
 
                         var grinParts = _mapper.Map<GrinParts>(updatedGrinPartsQty);
@@ -1069,21 +1073,17 @@ namespace Tips.Grin.Api.Controllers
 
                     }
 
-
+                    //Updating IQC Status in IQC
                     iQCCreate.IQCConfirmationItems = iQCItemList;
                     iQCCreate.IsIqcCompleted = true;
                     await _iQCConfirmationRepository.CreateIqc(iQCCreate);
 
 
                     //Updating IQC Status in Grin
-                    //var grinNumber = iQCCreate.GrinNumber;
                     var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNumber);
-                    //foreach (var gParts in grinDetails.GrinParts)
-                    //{
-                    //    gParts.IsIqcCompleted = true;
-                    //}
                     grinDetails.IsIqcCompleted = true;
                     await _grinRepository.UpdateGrin(grinDetails);
+
                     if (getItemmResp == HttpStatusCode.OK && createInvfromGrin == HttpStatusCode.OK && getInvdetailsGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK)
                     {
                         _grinPartsRepository.SaveAsync();
@@ -1588,6 +1588,8 @@ namespace Tips.Grin.Api.Controllers
                         return BadRequest(serviceResponse);
                     }
 
+                    //Updating IQC Status in IqcItem
+
                     iqcConfirmationItems.IsIqcCompleted = true;
                     await _iQCConfirmationItemsRepository.CreateIqcItem(iqcConfirmationItems);
 
@@ -1596,7 +1598,7 @@ namespace Tips.Grin.Api.Controllers
 
                     grinPartsDetails.IsIqcCompleted = true;
                     await _grinPartsRepository.UpdateGrinQty(grinPartsDetails);
-                    // _grinPartsRepository.SaveAsync();
+                    _grinPartsRepository.SaveAsync();
 
                     //Updating IQC Status in Grin
 
@@ -1605,8 +1607,9 @@ namespace Tips.Grin.Api.Controllers
                     if (grinPartsIqcStatuscount == 0)
                     {
                         var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNumber);
-                        //grinDetails.IsIqcCompleted = true;
+                        grinDetails.IsIqcCompleted = true;
                         await _grinRepository.UpdateGrin(grinDetails);
+                        _grinRepository.SaveAsync();
 
                     }
 
@@ -1828,15 +1831,13 @@ namespace Tips.Grin.Api.Controllers
 
                     var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iqcConfirmationItems.GrinPartId, iqcConfirmationItems.AcceptedQty.ToString(), iqcConfirmationItems.RejectedQty.ToString());
 
-                    var iQCCreates = _mapper.Map<GrinParts>(updatedGrinPartsQty);
-                    iQCCreates.IsIqcCompleted = true;
-                    string result = await _grinPartsRepository.UpdateGrinQty(iQCCreates);
+                    var grinParts = _mapper.Map<GrinParts>(updatedGrinPartsQty);
+                    string result = await _grinPartsRepository.UpdateGrinQty(grinParts);
                     if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && getInvTrancGrinId == HttpStatusCode.OK && updateInvTranc == HttpStatusCode.OK && createInvTranc == HttpStatusCode.OK)
                     {
+                        _iQCConfirmationItemsRepository.SaveAsync();
                         _grinPartsRepository.SaveAsync();
                         _iQCConfirmationRepository.SaveAsync();
-                        _grinRepository.SaveAsync();
-                        _iQCConfirmationItemsRepository.SaveAsync();
                     }
                     serviceResponse.Data = null;
                     serviceResponse.Message = "IQCConfirmationItems Created Successfully";
@@ -1873,6 +1874,8 @@ namespace Tips.Grin.Api.Controllers
                         return BadRequest(serviceResponse);
                     }
 
+                    //Updating IQC Status in IqcItem
+
                     iqcConfirmationItems.IsIqcCompleted = true;
                     iqcConfirmation.IQCConfirmationItems = new List<IQCConfirmationItems> { iqcConfirmationItems };
                     await _iQCConfirmationRepository.CreateIqc(iqcConfirmation);
@@ -1883,6 +1886,32 @@ namespace Tips.Grin.Api.Controllers
                     grinPartsDetails.IsIqcCompleted = true;
                     await _grinPartsRepository.UpdateGrinQty(grinPartsDetails);
                     _grinPartsRepository.SaveAsync();
+
+                    //Updating IQC Status in Grin
+
+                    var grinPartsIqcStatuscount = await _grinPartsRepository.GetGrinPartsIqcStatusCount(grinPartsDetails.GrinsId);
+
+                    if (grinPartsIqcStatuscount == 0)
+                    {
+                        var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNumber);
+                        grinDetails.IsIqcCompleted = true;
+                        await _grinRepository.UpdateGrin(grinDetails);
+                        _grinRepository.SaveAsync();
+
+                    }
+
+                    //Updating IQC Status in IQC
+
+                    var grinIqcStatuscount = await _grinRepository.GetGrinIqcStatusCount(grinNumber);
+
+                    if (grinIqcStatuscount > 0)
+                    {
+                        var iqcDetails = await _iQCConfirmationRepository.GetIqcDetailsbyGrinNo(grinNumber);
+                        iqcDetails.IsIqcCompleted = true;
+                        await _iQCConfirmationRepository.UpdateIqc(iqcDetails);
+
+                    }
+
                     var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
                           "GetItemMasterByItemNumber?", "&ItemNumber=", iqcConfirmationItemsDto.ItemNumber));
                     //if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
@@ -2065,10 +2094,8 @@ namespace Tips.Grin.Api.Controllers
 
                     var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iqcConfirmationItems.GrinPartId, iqcConfirmationItems.AcceptedQty.ToString(), iqcConfirmationItems.RejectedQty.ToString());
 
-                    var iQCCreates = _mapper.Map<GrinParts>(updatedGrinPartsQty);
-                    iQCCreates.IsIqcCompleted = true;
-                    string result = await _grinPartsRepository.UpdateGrinQty(iQCCreates);
-
+                    var grinParts = _mapper.Map<GrinParts>(updatedGrinPartsQty);
+                    string result = await _grinPartsRepository.UpdateGrinQty(grinParts);
                     _grinPartsRepository.SaveAsync();
 
                     serviceResponse.Data = null;
