@@ -184,7 +184,7 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetSalesOrderSPResport([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetSalesOrderSPReport([FromQuery] PagingParameter pagingParameter)
         {
             //var products = await _repository.GetSalesOrderSPResport(pagingParameter);
 
@@ -192,7 +192,7 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var products = await _repository.GetSalesOrderSPResport(pagingParameter);
+                var products = await _repository.GetSalesOrderSPReport(pagingParameter);
 
                 var metadata = new
                 {
