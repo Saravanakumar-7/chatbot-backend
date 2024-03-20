@@ -383,5 +383,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? FGItemNumber { get; set; }
         public string? ProjectNumber { get; set; }
     }
+    public class InventoryQtyForWeightedAvgCostDto
+    {
+        public string PartNumber { get; set; }
+        public decimal BalanceQty { get; set; }
+    }
 
 }

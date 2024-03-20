@@ -397,27 +397,28 @@ namespace Tips.Warehouse.Api.Controllers
                 var openDeliveryorder = _mapper.Map<OpenDeliveryOrder>(openDeliveryOrderDtoPost);
                 var openDeliveryOrderItemsDtoList = new List<OpenDeliveryOrderParts>();
 
-                openDeliveryorder.OpenDeliveryOrderParts = openDeliveryOrderparts.ToList();
+                openDeliveryorder.OpenDeliveryOrderParts = openDeliveryOrderparts;
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
 
+                string? odoNumber = null;
                 if (serverKey == "trasccon")
                 {
                     var dateFormat = days + months + years;
-                    var odoNumber = await _repository.GenerateODONumber();
+                    odoNumber = await _repository.GenerateODONumber();
                     openDeliveryorder.OpenDONumber = dateFormat + odoNumber;
                 }
                 else if (serverKey == "keus")
                 {
                     var dateFormat = days + months + years;
-                    var odoNumber = await _repository.GenerateODONumber();
+                    odoNumber = await _repository.GenerateODONumber();
                     openDeliveryorder.OpenDONumber = dateFormat + odoNumber;
                 }
                 else
                 {
-                    var odoNumber = await _repository.GenerateODONumberAvision();
+                    odoNumber = await _repository.GenerateODONumberAvision();
                     openDeliveryorder.OpenDONumber = odoNumber;
                 }
 
@@ -428,7 +429,7 @@ namespace Tips.Warehouse.Api.Controllers
                     {
                         OpenDeliveryOrderParts OpenDeliveryOrderItemsDetails = _mapper.Map<OpenDeliveryOrderParts>(openDeliveryOrderitemsList[i]);
                         OpenDeliveryOrderItemsDetails.QtyDistribution= _mapper.Map<List<OpenDeliveryOrderPartsQtyDistribution>>(openDeliveryOrderitemsList[i].QtyDistribution);
-                        OpenDeliveryOrderItemsDetails.ODONumber = openDeliveryorder.OpenDONumber;
+                        OpenDeliveryOrderItemsDetails.ODONumber = odoNumber;
                         openDeliveryOrderItemsDtoList.Add(OpenDeliveryOrderItemsDetails);
 
                         //Update Inventory balanced Quantity 

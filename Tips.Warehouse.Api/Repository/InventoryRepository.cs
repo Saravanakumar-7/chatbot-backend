@@ -665,36 +665,36 @@ namespace Tips.Warehouse.Api.Repository
                 }
             }
         }
-        public async Task UpdateInventoryforODO(List<OpenDeliveryOrderPartsQtyDistribution> ODOitemDis)
+        public async Task UpdateInventoryforODO(List<OpenDeliveryOrderPartsQtyDistribution> ODOItemsLocationWiseList)
         {
-            var itemNumber = ODOitemDis.Select(x => x.PartNumber).FirstOrDefault();
-            var projectNumber = ODOitemDis.Select(x => x.ProjectNumber).FirstOrDefault();
-            var invdetails = await FindAll().Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber).ToListAsync();
-            foreach (var eachDis in ODOitemDis)
+            var itemNumber = ODOItemsLocationWiseList.Select(x => x.PartNumber).FirstOrDefault();
+            var projectNumber = ODOItemsLocationWiseList.Select(x => x.ProjectNumber).FirstOrDefault();
+            var dataFromInventory = await FindAll().Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber).ToListAsync();
+            foreach (var odoItemDetail in ODOItemsLocationWiseList)
             {
-                foreach (var eachinv in invdetails)
+                foreach (var inventoryItemDetail in dataFromInventory)
                 {
-                    if (eachinv.Warehouse == eachDis.Warehouse && eachinv.Location == eachDis.Location)
+                    if (inventoryItemDetail.Warehouse == odoItemDetail.Warehouse && inventoryItemDetail.Location == odoItemDetail.Location)
                     {
-                        if (eachDis.DistributingQty <= eachinv.Balance_Quantity)
+                        if (odoItemDetail.DistributingQty <= inventoryItemDetail.Balance_Quantity)
                         {
-                            eachinv.Balance_Quantity = eachinv.Balance_Quantity - eachDis.DistributingQty;
-                            if (eachinv.Balance_Quantity == 0)
+                            inventoryItemDetail.Balance_Quantity = inventoryItemDetail.Balance_Quantity - odoItemDetail.DistributingQty;
+                            if (inventoryItemDetail.Balance_Quantity == 0)
                             {
-                                eachinv.IsStockAvailable = false;
+                                inventoryItemDetail.IsStockAvailable = false;
                             }
-                            Update(eachinv);
+                            Update(inventoryItemDetail);
                            // SaveAsync();
                             break;
                             //invdetails.Remove(eachinv);
                         }
-                        else if (eachDis.DistributingQty > eachinv.Balance_Quantity)
+                        else if (odoItemDetail.DistributingQty > inventoryItemDetail.Balance_Quantity)
                         {
-                            eachDis.DistributingQty = eachDis.DistributingQty - eachinv.Balance_Quantity;
-                            eachinv.Balance_Quantity = 0;
-                            eachinv.IsStockAvailable = false;
-                            Update(eachinv);
-                           // SaveAsync();
+                            odoItemDetail.DistributingQty = odoItemDetail.DistributingQty - inventoryItemDetail.Balance_Quantity;
+                            inventoryItemDetail.Balance_Quantity = 0;
+                            inventoryItemDetail.IsStockAvailable = false;
+                            Update(inventoryItemDetail);
+                            // SaveAsync();
                             //invdetails.Remove(eachinv);
                         }
                     }
@@ -779,6 +779,22 @@ namespace Tips.Warehouse.Api.Repository
                  .ToListAsync();
 
             return getInventoryDetailsById;
+        }
+        public async Task<IEnumerable<InventoryQtyForWeightedAvgCostDto>> GetInventoryQtybyItemNo(string itemNo)
+        {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework" };
+
+            var inventoryQtyByItemNo = await _tipsWarehouseDbContext.Inventories
+                .Where(x => x.PartNumber == itemNo && !skipWareHouse.Contains(x.Warehouse) && !skipWareHouse.Contains(x.Location) 
+                                                                                        && x.Balance_Quantity>0 && x.IsStockAvailable == true)
+                 .GroupBy(x => new { x.PartNumber })
+                    .Select(group => new InventoryQtyForWeightedAvgCostDto
+                    {
+                        PartNumber = group.Key.PartNumber,
+                        BalanceQty = group.Sum(x => x.Balance_Quantity)
+                    }).ToListAsync();
+
+            return inventoryQtyByItemNo;
         }
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse, string projectNumber)
 
