@@ -93,7 +93,7 @@ namespace Tips.SalesService.Api.Repository
         }
 
 
-        public async Task<PagedList<SalesOrderSPResport>> GetSalesOrderSPResport(PagingParameter pagingParameter)
+        public async Task<PagedList<SalesOrderSPResport>> GetSalesOrderSPReport(PagingParameter pagingParameter)
         {
             var results = _tipsSalesServiceDbContext.Set<SalesOrderSPResport>()
                       .FromSqlInterpolated($"CALL Sales_Order_without_parameter_Report")
