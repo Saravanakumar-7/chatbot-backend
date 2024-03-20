@@ -215,17 +215,17 @@ namespace Tips.SalesService.Api.Repository
             {
                 ItemPriceList itemPriceList = null;
 
-                //foreach (var priceListName in latestPriceListName)
-                //{
-                itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
-                    .Where(d => d.ItemNumber == rfqItem.ItemNumber && latestPriceListName.Contains(d.PriceListName))
-                    .OrderByDescending(d => d.CreatedOn)
-                    .FirstOrDefault();
-                //if (itemPriceList != null)
-                //{
-                //    break;
-                //}
-                //}
+                foreach (var priceListName in latestPriceListName)
+                {
+                    itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
+                        .Where(d => d.ItemNumber == rfqItem.ItemNumber && d.PriceListName== priceListName)
+                        .OrderByDescending(d => d.CreatedOn)
+                        .FirstOrDefault();
+                    if (itemPriceList != null)
+                    {
+                        break;
+                    }
+                }
                 if (itemPriceList != null)
                 {
                     //var itemdetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
