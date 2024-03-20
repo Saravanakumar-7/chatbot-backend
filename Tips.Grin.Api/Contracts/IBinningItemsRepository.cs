@@ -9,6 +9,7 @@ namespace Tips.Grin.Api.Contracts
     {
         Task<BinningItems> CreateBinningItems(BinningItems binningItems);
         Task<IEnumerable<BinningItems>> GetAllBinningItems();
+        Task<string> UpdateBinningItems(BinningItems binningItems);
 
     }
 }
