@@ -1284,14 +1284,35 @@ namespace Tips.SalesService.Api.Controllers
 
             IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderBySalesOrderNoandItemNo(shopOrderReleaseQtyDto.SalesOrderNumber
                                                                                              , shopOrderReleaseQtyDto.FGItemNumber, shopOrderReleaseQtyDto.ProjectNumber);
-            var orderItem = salesOrderItems.FirstOrDefault();
-            if (orderItem.OrderQty != orderItem.ShopOrderQty)
-            {
-                orderItem.ShopOrderQty += shopOrderReleaseQtyDto.ReleaseQty;
-                await _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+            if (salesOrderItems.Count() > 0)
+                foreach (var item in salesOrderItems)
+                {
+                    if (item.BalanceQty>=shopOrderReleaseQtyDto.ReleaseQty)
+                    {
+                        item.ShopOrderQty += shopOrderReleaseQtyDto.ReleaseQty;
+                        await _salesOrderItemsRepository.UpdateSalesOrderItem(item);
 
-                _salesOrderItemsRepository.SaveAsync();
-            }
+                        _salesOrderItemsRepository.SaveAsync();
+                        break;
+                    }
+                    else
+                    {
+                        item.ShopOrderQty = item.BalanceQty;
+                        shopOrderReleaseQtyDto.ReleaseQty -= item.BalanceQty;
+                        await _salesOrderItemsRepository.UpdateSalesOrderItem(item);
+
+                        _salesOrderItemsRepository.SaveAsync();
+                    }
+                }
+            else return NotFound();
+            //var orderItem = salesOrderItems.FirstOrDefault();
+            //if (orderItem.BalanceQty != orderItem.ShopOrderQty)
+            //{
+            //    orderItem.ShopOrderQty += shopOrderReleaseQtyDto.ReleaseQty;
+            //    await _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+
+            //    _salesOrderItemsRepository.SaveAsync();
+            //}
             return Ok();
         }
         //Update Pending shoporder Qty in salesorder

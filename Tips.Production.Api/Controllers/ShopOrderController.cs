@@ -513,6 +513,15 @@ namespace Tips.Production.Api.Controllers
                             var jsons = JsonConvert.SerializeObject(shopOrderDetail);
                             var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
                             var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateShopOrderQty?"), datas);
+                            if(responses.StatusCode!=HttpStatusCode.OK)
+                            {
+                                _logger.LogError($"Something went wrong inside CreateShopOrder action");
+                                serviceResponse.Data = null;
+                                serviceResponse.Message = $"Something went wrong in sales Order update";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                                return StatusCode(404, serviceResponse);
+                            }
                         }
                         ShoporderItemList.Add(shopOrderItemDetail);
 
