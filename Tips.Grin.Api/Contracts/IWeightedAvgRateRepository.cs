@@ -8,7 +8,7 @@ namespace Tips.Grin.Api.Contracts
 {
     public interface IWeightedAvgRateRepository : IRepositoryBase<WeightedAvgRate>
     {
-        Task<PagedList<WeightedAvgRate>> GetWeighted_AvgRateDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams);
+        Task<IEnumerable<WeightedAvgRate>> GetWeighted_AvgRateDetails([FromQuery] SearchParams searchParams);
 
 
     }

@@ -97,6 +97,33 @@ namespace Tips.Warehouse.Api.Controllers
 
         }
 
+        //WeightedAvgCost
+        [HttpGet]
+        public async Task<IActionResult> GetInventoryQtybyItemNo(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<InventoryQtyForWeightedAvgCostDto>> serviceResponse = new ServiceResponse<IEnumerable<InventoryQtyForWeightedAvgCostDto>>();
+            try
+            {
+                var getAlldetails = await _inventoryRepository.GetInventoryQtybyItemNo(itemNumber);
+
+                serviceResponse.Data = getAlldetails;
+                serviceResponse.Message = "Returned all Inventory";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
         // GET: api/<InventoryController>
         [HttpGet]
         public async Task<IActionResult> GetAllInventory([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)

@@ -217,7 +217,7 @@ namespace Tips.Grin.Api.Repository
             string result = $"IQCItems details of {iqcConfirmationItems.Id} is updated successfully!";
             return result;
         }
-        public async Task<int?> GetIQCConformationCount(int iqcId)
+        public async Task<int?> GetIQCConformationItemsCount(int iqcId)
         {
             var grinPartsBinningStatusCount = _tipsGrinDbContext.IQCConfirmationItems.Where(x => x.IQCConfirmationId == iqcId).Count();
 

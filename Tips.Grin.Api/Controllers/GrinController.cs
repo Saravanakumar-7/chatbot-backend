@@ -32,6 +32,7 @@ using System.Net.Http.Headers;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Azure;
 using Mysqlx.Crud;
+using Org.BouncyCastle.Asn1.Anssi;
 
 //Test
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -49,6 +50,7 @@ namespace Tips.Grin.Api.Controllers
         private IIQCConfirmationRepository _iQCConfirmationRepository;
         private IIQCConfirmationItemsRepository _iQCConfirmationItemsRepository;
         private IWeightedAvgRateRepository _weightedAvgRateRepository;
+        private IWeightedAvgCostRepository _weightedAvgCostRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IDocumentUploadRepository _documentUploadRepository;
@@ -60,7 +62,7 @@ namespace Tips.Grin.Api.Controllers
 
         public GrinController(IIQCConfirmationRepository iQCConfirmationRepository,
          IIQCConfirmationItemsRepository iQCConfirmationItemsRepository, IGrinRepository repository, IHttpContextAccessor httpContextAccessor, IDocumentUploadRepository documentUploadRepository, IGrinPartsRepository grinPartsRepository,
-            IWeightedAvgRateRepository weightedAvgRateRepository, IWebHostEnvironment webHostEnvironment, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+            IWeightedAvgRateRepository weightedAvgRateRepository, IWeightedAvgCostRepository weightedAvgCostRepository, IWebHostEnvironment webHostEnvironment, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _repository = repository;
             _httpContextAccessor = httpContextAccessor;
@@ -68,6 +70,7 @@ namespace Tips.Grin.Api.Controllers
             _iQCConfirmationRepository = iQCConfirmationRepository;
             _iQCConfirmationItemsRepository = iQCConfirmationItemsRepository;
             _weightedAvgRateRepository = weightedAvgRateRepository;
+            _weightedAvgCostRepository = weightedAvgCostRepository;
             _logger = logger;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
@@ -537,7 +540,7 @@ namespace Tips.Grin.Api.Controllers
                 var days = Convert.ToString(date.Day.ToString("D2"));
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
-
+                HttpStatusCode invStatusCode = HttpStatusCode.OK;
                 //var newcount = await _repository.GetGrinNumberAutoIncrementCount(date);
 
                 //if (newcount > 0)
@@ -568,11 +571,9 @@ namespace Tips.Grin.Api.Controllers
                 var grinPartsDto = grinPostDto.GrinParts;
                 var grinCal = _mapper.Map<List<GrinPartscalculationofAvgcost>>(grinPartsDto);
                 List<GrinParts> grinPartsList = new List<GrinParts>();
-                //var grinPartsList = new List<GrinParts>();
-                //var grinDocumentUploadDtoList = new List<DocumentUpload>();
-                //var grinPartsDocumentUploadDtoList = new List<DocumentUpload>();
+                
+                //AvgCost Calculation
 
-                //// grin upload
                 var othercosttotal = grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.Transport;
                 decimal? conversionrate = 1;
                 if (grins.CurrencyConversion > 1) conversionrate = grins.CurrencyConversion;
@@ -592,153 +593,66 @@ namespace Tips.Grin.Api.Controllers
                     GrinParts grinParts = _mapper.Map<GrinParts>(gPart);
                     grinPartsList.Add(grinParts);
                 }
-
-                ////parts coc upload
-
-                //var grinPartsDetails = grinPostDto.GrinParts;
-                //foreach (var grinCoCUpload in grinPartsDetails)
-                //{
-
-                //    var cocUploadDocs = grinCoCUpload.COCUpload;
-
-                //    foreach (var cocUpload in cocUploadDocs)
-                //    {
-                //        var fileContent = cocUpload.FileByte;
-                //        var grinNumber = grins.GrinNumber;
-                //        string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
-                //        string FileExt = Path.GetExtension(fileName).ToUpper();
-
-                //        Guid guid = Guid.NewGuid();
-                //        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload", guid.ToString() + "_" + fileName);
-                //        using (MemoryStream ms = new MemoryStream(fileContent))
-                //        {
-                //            ms.Position = 0;
-                //            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                //            {
-                //                ms.WriteTo(fileStream);
-                //            }
-                //            var uploadedFile = new DocumentUpload
-                //            {
-                //                FileName = fileName,
-                //                FileExtension = FileExt,
-                //                FilePath = filePath,
-                //                ParentId = grinNumber,
-                //                DocumentFrom = "GrinCoCDocument",
-                //            };
-
-                //            _documentUploadRepository.CreateUploadDocumentGrin(uploadedFile);
-                //            _documentUploadRepository.SaveAsync();
-
-                //            if (uploadedFile != null)
-                //            {
-                //                DocumentUpload poFileDetail = _mapper.Map<DocumentUpload>(uploadedFile);
-                //                grinPartsDocumentUploadDtoList.Add(poFileDetail);
-                //            }
-                //        }
-
-                //    }
-
-                //}
-
-                //end cocupload
-                //var totalGrinCost = (grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.Transport) * grins.CurrencyConversion;
-                //if (grinPartsDto != null)//&& totalGrinCost != 0
-                //{
-                //    decimal? EP = 0;
-                //    for (int i = 0; i < grinPartsDto.Count; i++)
-                //    {
-                //        decimal? a = (grinPartsDto[i].Qty * grinPartsDto[i].UnitPrice);
-                //        EP += a;
-                //    }
-                //for (int i = 0; i < grinCal.Count; i++)
-                //{
-                //    GrinParts grinParts = _mapper.Map<GrinParts>(grinCal[i]);
-                //    //grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinCal[i].ProjectNumbers);
-                //    //if (EP != 0)
-                //    //{
-                //    //    decimal? a = (grinParts.Qty * grinParts.UnitPrice);
-                //    //    decimal? b = (a / EP) * totalGrinCost;
-                //    //    decimal? c = a + b;
-                //    //    grinParts.AverageCost = c / grinParts.Qty;
-                //    //}
-                //    //else
-                //    //{
-                //    //    grinParts.AverageCost = 0;
-                //    //}
-                //    grinPartsList.Add(grinParts);
-
-                //}
-                //}
-
-
-
-                //if (grinPartsDto != null)
-                //{
-                //    decimal? sumOfTotal = 0;
-                //    decimal? total = 0;
-
-                //    for (int i = 0; i < grinPartsDto.Count; i++)
-                //    {
-                //        GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
-                //        sumOfTotal += grinParts.Qty * grinParts.UnitPrice;
-                //    }
-                //    var totalGrinCost = grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.CurrencyConversion + grins.Transport + grins.BECurrencyValue;
-                //    if (totalGrinCost != 0)
-                //    {
-                //        for (int i = 0; i < grinPartsDto.Count; i++)
-                //        { 
-
-                //            GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);
-                //            total = grinParts.Qty * grinParts.UnitPrice;
-                //            var Cost = totalGrinCost * total / sumOfTotal;
-                //            var finalCost = Cost / grinParts.Qty;
-                //            var weightageCost = grinParts.UnitPrice + finalCost;
-                //            total = 0;
-                //            grinParts.AverageCost = weightageCost;
-                //            grinParts.ItemType = grinPartsDto[i].ItemType;
-                //            grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
-                //            grinPartsList.Add(grinParts);
-
-                //        }
-                //    }
-                //    else
-                //    {
-                //        for (int i = 0; i < grinPartsDto.Count; i++)
-                //        {
-                //            GrinParts grinParts = _mapper.Map<GrinParts>(grinPartsDto[i]);                    
-                //            grinParts.ItemType = grinPartsDto[i].ItemType;
-                //            grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
-                //            grinPartsList.Add(grinParts);
-
-                //        }
-
-                //    }
-                //}
-
+                foreach (var grinParts in grinPartsList)
+                {
+                    if (grinParts.ItemNumber != null)
+                    {
+                        var existingAvgCostData = await _weightedAvgCostRepository.GetWeightedAvgCostDetailsByItemNo(grinParts.ItemNumber);
+                        if (existingAvgCostData == null)
+                        {
+                            WeightedAvgCost WeightedAvgCostData = new WeightedAvgCost();
+                            WeightedAvgCostData.ItemNumber = grinParts.ItemNumber;
+                            WeightedAvgCostData.AverageCost = grinParts.AverageCost;
+                            await _weightedAvgCostRepository.CreateWeightedAvgCost(WeightedAvgCostData);
+                            _weightedAvgCostRepository.SaveAsync();
+                        }
+                        else
+                        {
+                            var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                           "GetInventoryQtybyItemNo?", "itemNumber=", grinParts.ItemNumber));
+                            if (inventoryObjectResult.StatusCode == HttpStatusCode.OK)
+                            {
+                                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                                dynamic inventoryObject = inventoryObjectData.data;
+                                foreach (var invDetails in inventoryObject)
+                                {
+                                    decimal inventryStock = Convert.ToDecimal(invDetails.balanceQty);
+                                    if (invDetails.balanceQty == 0)
+                                    {
+                                        WeightedAvgCost WeightedAvgCostData = new WeightedAvgCost();
+                                        WeightedAvgCostData.AverageCost = grinParts.AverageCost;
+                                        await _weightedAvgCostRepository.UpdateWeightedAvgCostQty(WeightedAvgCostData);
+                                        _weightedAvgCostRepository.SaveAsync();
+                                    }
+                                    else
+                                    {
+                                        var oldAvgCost = existingAvgCostData.AverageCost * inventryStock;
+                                        // a= OldAverageCost * InventoryQty 
+                                        var grinTotal = grinParts.Qty * grinParts.AverageCost;
+                                        // b = GrinQty*GrinAverageAverageCos
+                                        var TotalQty = inventryStock + grinParts.Qty;
+                                        // c = InventoryQty + GrinQty
+                                        var newWeightedAvgCost = (oldAvgCost + grinTotal) / TotalQty;
+                                        //Ans= (a+b)/c; 
+                                        WeightedAvgCost WeightedAvgCostData = new WeightedAvgCost();
+                                        WeightedAvgCostData.ItemNumber = grinParts.ItemNumber;
+                                        WeightedAvgCostData.AverageCost = newWeightedAvgCost;
+                                        await _weightedAvgCostRepository.UpdateWeightedAvgCostQty(WeightedAvgCostData);
+                                        _weightedAvgCostRepository.SaveAsync();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 grins.GrinParts = grinPartsList;
                 grins.IsGrinCompleted = true;
-                //grins.GrinDocuments = grinDocumentUploadDtoList;
-                //grins.GrinDocuments = grinPostDto.GrinDocuments;
-
-
-                //if (grins.GrinDocuments != null && grins.GrinDocuments.Count > 0)
-                //{
-                //    await GrinDocumentSave(grinPostDto, grins, grinDocumentUploadDtoList);
-                //}
-                //if (grinPartsDto != null)
-                //{
-                //    for (int i = 0; i < grinPartsDto.Count; i++)
-                //    {
-                //        if (grinPartsDto[i].COCUpload != null && grinPartsDto[i].COCUpload.Count > 0)
-                //        {
-                //            CoCDocumentSave(grinPartsDto, grins, grins.GrinNumber, i, grinPartsDocumentUploadDtoList);
-                //        }
-
-                //    }
-                //}
 
                 await _repository.CreateGrin(grins);
                 _repository.SaveAsync();
+
+
 
                 if (grins.GrinParts != null)
                 {
@@ -1048,7 +962,7 @@ namespace Tips.Grin.Api.Controllers
                     //Updating IQC and Grin Main Level Status
 
                     var grinPartsCount = await _grinPartsRepository.GetGrinPartsCount(GrinId);
-                    var iqcConfomationCount = await _iQCConfirmationItemsRepository.GetIQCConformationCount(existingIqcConfirmation.Id);
+                    var iqcConfomationCount = await _iQCConfirmationItemsRepository.GetIQCConformationItemsCount(existingIqcConfirmation.Id);
 
                     if (grinPartsCount == iqcConfomationCount)
                     {
@@ -1201,98 +1115,97 @@ namespace Tips.Grin.Api.Controllers
 
                         //InventoryTranction Update Code
 
-                        decimal? acceptedQuantity = iqcConfirmationItemsDto.AcceptedQty;
-                        var inventoryTranctionObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryTranctionAPI"],
-                            "GetInventoryTranctionDetailsByGrinNoandGrinId?", "GrinNo=", grinNo, "&GrinPartsId=",
-                            grinPartsId, "&ItemNumber=", itemNo, "&ProjectNumber=", projectNos));
-                        if (inventoryTranctionObjectResult.StatusCode != HttpStatusCode.OK) getInvTrancGrinId = inventoryTranctionObjectResult.StatusCode;
-                        var inventoryTranctionObjectString = await inventoryTranctionObjectResult.Content.ReadAsStringAsync();
-                        dynamic inventoryTranctionObjectData = JsonConvert.DeserializeObject(inventoryTranctionObjectString);
-                        dynamic inventoryTranctionObject = inventoryTranctionObjectData.data;
-                        if (inventoryTranctionObject != null)
-                        {
-                            decimal balanceQty = inventoryTranctionObject.issued_Quantity;
+                        //decimal? acceptedQuantity = iqcConfirmationItemsDto.AcceptedQty;
+                        //var inventoryTranctionObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryTranctionAPI"],
+                        //    "GetInventoryTranctionDetailsByGrinNoandGrinId?", "GrinNo=", grinNo, "&GrinPartsId=",
+                        //    grinPartsId, "&ItemNumber=", itemNo, "&ProjectNumber=", projectNos));
+                        //if (inventoryTranctionObjectResult.StatusCode != HttpStatusCode.OK) getInvTrancGrinId = inventoryTranctionObjectResult.StatusCode;
+                        //var inventoryTranctionObjectString = await inventoryTranctionObjectResult.Content.ReadAsStringAsync();
+                        //dynamic inventoryTranctionObjectData = JsonConvert.DeserializeObject(inventoryTranctionObjectString);
+                        //dynamic inventoryTranctionObject = inventoryTranctionObjectData.data;
+                        //if (inventoryTranctionObject != null)
+                        //{
+                        //    decimal balanceQty = inventoryTranctionObject.issued_Quantity;
 
-                            if (inventoryTranctionObject.issued_Quantity <= acceptedQuantity && inventoryTranctionObject.issued_Quantity != 0)
-                            {
-                                inventoryTranctionObject.warehouse = "IQC";
-                                inventoryTranctionObject.from_Location = "IQC";
-                                inventoryTranctionObject.tO_Location = "IQC";
-                                inventoryTranctionObject.referenceIDFrom = "GRIN";
-                                acceptedQuantity -= balanceQty;
+                        //    if (inventoryTranctionObject.issued_Quantity <= acceptedQuantity && inventoryTranctionObject.issued_Quantity != 0)
+                        //    {
+                        //        inventoryTranctionObject.warehouse = "IQC";
+                        //        inventoryTranctionObject.from_Location = "IQC";
+                        //        inventoryTranctionObject.tO_Location = "IQC";
+                        //        inventoryTranctionObject.referenceIDFrom = "GRIN";
+                        //        acceptedQuantity -= balanceQty;
 
-                            }
-                            else if (inventoryTranctionObject.issued_Quantity > acceptedQuantity)
-                            {
-                                if (acceptedQuantity == 0)
-                                {
-                                    inventoryTranctionObject.issued_Quantity = acceptedQuantity;
-                                    inventoryTranctionObject.warehouse = "IQC";
-                                    inventoryTranctionObject.from_Location = "IQC";
-                                    inventoryTranctionObject.tO_Location = "IQC";
-                                    inventoryTranctionObject.referenceIDFrom = "GRIN";
-                                    inventoryTranctionObject.isStockAvailable = false;
-                                }
-                                else
-                                {
-                                    inventoryTranctionObject.issued_Quantity = acceptedQuantity;
-                                    inventoryTranctionObject.warehouse = "IQC";
-                                    inventoryTranctionObject.from_Location = "IQC";
-                                    inventoryTranctionObject.tO_Location = "IQC";
-                                    inventoryTranctionObject.referenceIDFrom = "GRIN";
-                                    acceptedQuantity = 0;
-                                }
-                            }
+                        //    }
+                        //    else if (inventoryTranctionObject.issued_Quantity > acceptedQuantity)
+                        //    {
+                        //        if (acceptedQuantity == 0)
+                        //        {
+                        //            inventoryTranctionObject.issued_Quantity = acceptedQuantity;
+                        //            inventoryTranctionObject.warehouse = "IQC";
+                        //            inventoryTranctionObject.from_Location = "IQC";
+                        //            inventoryTranctionObject.tO_Location = "IQC";
+                        //            inventoryTranctionObject.referenceIDFrom = "GRIN";
+                        //            inventoryTranctionObject.isStockAvailable = false;
+                        //        }
+                        //        else
+                        //        {
+                        //            inventoryTranctionObject.issued_Quantity = acceptedQuantity;
+                        //            inventoryTranctionObject.warehouse = "IQC";
+                        //            inventoryTranctionObject.from_Location = "IQC";
+                        //            inventoryTranctionObject.tO_Location = "IQC";
+                        //            inventoryTranctionObject.referenceIDFrom = "GRIN";
+                        //            acceptedQuantity = 0;
+                        //        }
+                        //    }
 
-                            var json = JsonConvert.SerializeObject(inventoryTranctionObject);
-                            var data = new StringContent(json, Encoding.UTF8, "application/json");
-                            HttpResponseMessage response = await _httpClient.PutAsync(string.Concat(_config["InventoryTranctionAPI"],
-                                "UpdateInventoryTranction?id=", inventoryTranctionObject.id), data);
-                            if (response.StatusCode != HttpStatusCode.OK) updateInvTranc = response.StatusCode;
-                        }
-                        else
-                        {
-                            IQCInventoryTranctionDto iqcInventoryTranctionDto = new IQCInventoryTranctionDto();
-                            iqcInventoryTranctionDto.PartNumber = grinPartsDetails.ItemNumber;
-                            iqcInventoryTranctionDto.LotNumber = grinPartsDetails.LotNumber;
-                            iqcInventoryTranctionDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
-                            iqcInventoryTranctionDto.Description = grinPartsDetails.ItemDescription;
-                            iqcInventoryTranctionDto.ProjectNumber = projectNo.ProjectNumber;
-                            iqcInventoryTranctionDto.Issued_Quantity = Convert.ToDecimal(projectNo.ProjectQty);
-                            iqcInventoryTranctionDto.UOM = grinPartsDetails.UOM;
-                            iqcInventoryTranctionDto.Warehouse = "IQC";
-                            iqcInventoryTranctionDto.From_Location = "IQC";
-                            iqcInventoryTranctionDto.TO_Location = "IQC";
-                            iqcInventoryTranctionDto.GrinNo = grinNo;
-                            iqcInventoryTranctionDto.GrinPartId = grinPartsDetails.Id;
-                            iqcInventoryTranctionDto.PartType = grinPartsDetails.ItemType;  //We need to check this
-                            iqcInventoryTranctionDto.ReferenceID = Convert.ToString(grinPartsDetails.Id);
-                            iqcInventoryTranctionDto.ReferenceIDFrom = "GRIN";
-                            iqcInventoryTranctionDto.GrinMaterialType = "";
-                            iqcInventoryTranctionDto.ShopOrderNo = "";
-                            iqcInventoryTranctionDto.IsStockAvailable = true;
+                        //    var json = JsonConvert.SerializeObject(inventoryTranctionObject);
+                        //    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        //    HttpResponseMessage response = await _httpClient.PutAsync(string.Concat(_config["InventoryTranctionAPI"],
+                        //        "UpdateInventoryTranction?id=", inventoryTranctionObject.id), data);
+                        //    if (response.StatusCode != HttpStatusCode.OK) updateInvTranc = response.StatusCode;
+                        //}
+                        //else
+                        //{
+                        //    IQCInventoryTranctionDto iqcInventoryTranctionDto = new IQCInventoryTranctionDto();
+                        //    iqcInventoryTranctionDto.PartNumber = grinPartsDetails.ItemNumber;
+                        //    iqcInventoryTranctionDto.LotNumber = grinPartsDetails.LotNumber;
+                        //    iqcInventoryTranctionDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
+                        //    iqcInventoryTranctionDto.Description = grinPartsDetails.ItemDescription;
+                        //    iqcInventoryTranctionDto.ProjectNumber = projectNo.ProjectNumber;
+                        //    iqcInventoryTranctionDto.Issued_Quantity = Convert.ToDecimal(projectNo.ProjectQty);
+                        //    iqcInventoryTranctionDto.UOM = grinPartsDetails.UOM;
+                        //    iqcInventoryTranctionDto.Warehouse = "IQC";
+                        //    iqcInventoryTranctionDto.From_Location = "IQC";
+                        //    iqcInventoryTranctionDto.TO_Location = "IQC";
+                        //    iqcInventoryTranctionDto.GrinNo = grinNo;
+                        //    iqcInventoryTranctionDto.GrinPartId = grinPartsDetails.Id;
+                        //    iqcInventoryTranctionDto.PartType = grinPartsDetails.ItemType;  //We need to check this
+                        //    iqcInventoryTranctionDto.ReferenceID = Convert.ToString(grinPartsDetails.Id);
+                        //    iqcInventoryTranctionDto.ReferenceIDFrom = "GRIN";
+                        //    iqcInventoryTranctionDto.GrinMaterialType = "";
+                        //    iqcInventoryTranctionDto.ShopOrderNo = "";
+                        //    iqcInventoryTranctionDto.IsStockAvailable = true;
 
-                            var json = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
-                            var data = new StringContent(json, Encoding.UTF8, "application/json");
-                            // Include the token in the Authorization header
-                            var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
-                            if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
-                            {
-                                var token = tokenValues.Substring(7);
-                                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                            }
-                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data);
-                            if (response.StatusCode != HttpStatusCode.OK) createInvTranc = response.StatusCode;
-                        }
+                        //    var json = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
+                        //    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                        //    // Include the token in the Authorization header
+                        //    var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                        //    if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+                        //    {
+                        //        var token = tokenValues.Substring(7);
+                        //        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        //    }
+                        //    var response = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data);
+                        //    if (response.StatusCode != HttpStatusCode.OK) createInvTranc = response.StatusCode;
+                        //}
                     }
 
                     ////update accepted qty and rejected qty in grin model
 
                     var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iqcConfirmationItems.GrinPartId, iqcConfirmationItems.AcceptedQty.ToString(), iqcConfirmationItems.RejectedQty.ToString());
 
-                    var iQCCreates = _mapper.Map<GrinParts>(updatedGrinPartsQty);
-                   // iQCCreates.IsIqcCompleted = true;
-                    string result = await _grinPartsRepository.UpdateGrinQty(iQCCreates);
+                    var grinParts = _mapper.Map<GrinParts>(updatedGrinPartsQty);
+                    string result = await _grinPartsRepository.UpdateGrinQty(grinParts);
                     if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && getInvTrancGrinId == HttpStatusCode.OK && updateInvTranc == HttpStatusCode.OK && createInvTranc == HttpStatusCode.OK)
                     {
                         _grinPartsRepository.SaveAsync();
@@ -1334,7 +1247,7 @@ namespace Tips.Grin.Api.Controllers
 
                     //Updating IQC and Grin Main Level Status
                     var grinPartsCount = await _grinPartsRepository.GetGrinPartsCount(GrinId);
-                    var iqcConfomationCount = await _iQCConfirmationItemsRepository.GetIQCConformationCount(iqcConfirmation.Id);
+                    var iqcConfomationCount = await _iQCConfirmationItemsRepository.GetIQCConformationItemsCount(iqcConfirmation.Id);
 
                     if (grinPartsCount == iqcConfomationCount)
                     {
@@ -1445,9 +1358,8 @@ namespace Tips.Grin.Api.Controllers
 
                     var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iqcConfirmationItems.GrinPartId, iqcConfirmationItems.AcceptedQty.ToString(), iqcConfirmationItems.RejectedQty.ToString());
 
-                    var iQCCreates = _mapper.Map<GrinParts>(updatedGrinPartsQty);
-                    //iQCCreates.IsIqcCompleted = true;
-                    string result = await _grinPartsRepository.UpdateGrinQty(iQCCreates);
+                    var grinParts = _mapper.Map<GrinParts>(updatedGrinPartsQty);
+                    string result = await _grinPartsRepository.UpdateGrinQty(grinParts);
 
                     _grinPartsRepository.SaveAsync();
 
@@ -2634,23 +2546,14 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetWeighted_AvgRateDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        public async Task<IActionResult> GetWeighted_AvgRateDetails([FromQuery] SearchParams searchParams)
         {
             ServiceResponse<IEnumerable<WeightedAvgRateDto>> serviceResponse = new ServiceResponse<IEnumerable<WeightedAvgRateDto>>();
 
             try
             {
-                var avgDetails = await _weightedAvgRateRepository.GetWeighted_AvgRateDetails(pagingParameter, searchParams);
-                var metadata = new
-                {
-                    avgDetails.TotalCount,
-                    avgDetails.PageSize,
-                    avgDetails.CurrentPage,
-                    avgDetails.HasNext,
-                    avgDetails.HasPreviuos
-                };
-
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                var avgDetails = await _weightedAvgRateRepository.GetWeighted_AvgRateDetails(searchParams);
+              
 
 
                 _logger.LogInfo("Returned all avgDetails");

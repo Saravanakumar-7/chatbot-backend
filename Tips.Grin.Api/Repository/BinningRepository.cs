@@ -294,6 +294,12 @@ namespace Tips.Grin.Api.Repository
             .Include(v => v.binningLocations);
             return binningItemsDetails;
         }
+        public async Task<string> UpdateBinningItems(BinningItems binningItems)
+        {
+            Update(binningItems);
+            string result = $"binningItems details of {binningItems.Id} is updated successfully!";
+            return result;
+        }
 
     }
 

@@ -55,6 +55,8 @@ namespace Tips.Warehouse.Api
 
             CreateMap<OpenDeliveryOrderParts, OpenDeliveryOrderPartsDto>().ReverseMap();
             CreateMap<OpenDeliveryOrderParts, OpenDeliveryOrderPartsDtoPost>().ReverseMap();
+
+
             CreateMap<OpenDeliveryOrderParts, OpenDeliveryOrderPartsDtoUpdate>().ReverseMap();
             
             CreateMap<BTODeliveryOrder, BTODeliveryOrderDto>().ReverseMap();

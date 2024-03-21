@@ -12,12 +12,12 @@ namespace Tips.Grin.Api.Repository
         {
         }
 
-        public async Task<PagedList<WeightedAvgRate>> GetWeighted_AvgRateDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        public async Task<IEnumerable<WeightedAvgRate>> GetWeighted_AvgRateDetails([FromQuery] SearchParams searchParams)
         {   
                  var weightedAvgDetails = FindAll().OrderByDescending(x => x.Id)
                 .Where(inv => (string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Itemnumber.Contains(searchParams.SearchValue)));
 
-                   return PagedList<WeightedAvgRate>.ToPagedList(weightedAvgDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+                   return weightedAvgDetails;
         }
     }
 }
