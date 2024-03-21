@@ -115,7 +115,11 @@ namespace Tips.Production.Api.Repository
 
             return btoIddNameList;
         }
-
+        public async Task<decimal?> GetOQCAcceptedQty(string Itemnumber, string ShopOrderNumber)
+        {
+            var AcceptedQty = await _tipsProductionDbContext.oQCs.Where(x => x.ItemNumber == Itemnumber && x.ShopOrderNumber == ShopOrderNumber).SumAsync(x=>x.AcceptedQty);
+            return AcceptedQty;
+        }
         public async Task<OQC> GetOQCById(int id)
         {
             var oQCDedtailsById = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();

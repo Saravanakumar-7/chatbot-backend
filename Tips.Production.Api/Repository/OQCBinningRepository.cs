@@ -45,6 +45,11 @@ namespace Tips.Production.Api.Repository
 
             return PagedList<OQCBinning>.ToPagedList(OQCDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        public async Task<decimal?> GetOqcBinningShopOrderQty(string Itemnumber, string ShopOrderNumber)
+        {
+            var ShopOrderQty = await _tipsProductionDbContext.OQCBinning.Where(x => x.ItemNumber == Itemnumber && x.ShopOrderNumber == ShopOrderNumber).SumAsync(x=>x.ShopOrderQty);
+            return ShopOrderQty;
+        }
     }
     
 }

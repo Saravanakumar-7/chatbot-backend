@@ -32,8 +32,8 @@ namespace Tips.Production.Api.Controllers
         private readonly IConfiguration _config;
         private IMapper _mapper;
         private IShopOrderRepository _shopOrderRepo;
-
-        public OQCController(IOQCRepository oQCRepository, IShopOrderRepository shopOrderRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        private IOQCBinningRepository _oQCBinningRepository;
+        public OQCController(IOQCRepository oQCRepository, IOQCBinningRepository oQCBinningRepository, IShopOrderRepository shopOrderRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _oQCRepository = oQCRepository;
             _logger = logger;
@@ -41,6 +41,7 @@ namespace Tips.Production.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _shopOrderRepo = shopOrderRepository;
+            _oQCBinningRepository= oQCBinningRepository;
         }
       
         [HttpGet]
@@ -639,5 +640,34 @@ namespace Tips.Production.Api.Controllers
             }
 
         }
+        [HttpGet]
+        public async Task<IActionResult> GetStockByItemFromOqc(string Itemnumber , string ShopOrderNumber)
+        {
+            ServiceResponse<decimal?> serviceResponse = new ServiceResponse<decimal?>();
+            try
+            {
+                var OQCAcceptedQty = await _oQCRepository.GetOQCAcceptedQty(Itemnumber, ShopOrderNumber);
+                var OqcBinningQty = await _oQCBinningRepository.GetOqcBinningShopOrderQty(Itemnumber, ShopOrderNumber);
+                decimal? result;
+                if (OqcBinningQty!=null) result=OQCAcceptedQty-OqcBinningQty;
+                else result=OQCAcceptedQty;
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All GetFGStockByItemFromOqc";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetFGStockByItemFromOqc action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
     }
 }
