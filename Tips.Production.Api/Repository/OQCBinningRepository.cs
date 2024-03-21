@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
+using Tips.Production.Api.Entities.DTOs;
 
 namespace Tips.Production.Api.Repository
 {
@@ -45,9 +46,15 @@ namespace Tips.Production.Api.Repository
 
             return PagedList<OQCBinning>.ToPagedList(OQCDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-        public async Task<decimal?> GetOqcBinningShopOrderQty(string Itemnumber, string ShopOrderNumber)
+        public async Task<List<OQCStock>?> GetOqcBinningShopOrderQty(string Itemnumber)
         {
-            var ShopOrderQty = await _tipsProductionDbContext.OQCBinning.Where(x => x.ItemNumber == Itemnumber && x.ShopOrderNumber == ShopOrderNumber).SumAsync(x=>x.ShopOrderQty);
+            var ShopOrderQty = await _tipsProductionDbContext.OQCBinning.Where(x => x.ItemNumber == Itemnumber).GroupBy(x => new { x.ItemNumber, x.ShopOrderNumber })
+            .Select(g => new OQCStock
+            {
+                ItemNumber = g.Key.ItemNumber,
+                ShopOrderNumber = g.Key.ShopOrderNumber,
+                TotalAcceptedQty = g.Sum(x => x.ShopOrderQty)
+            }).ToListAsync();
             return ShopOrderQty;
         }
     }

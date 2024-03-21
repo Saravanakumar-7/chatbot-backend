@@ -125,4 +125,10 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ShopOrderNo { get; set; }
 
     }
+    public class OQCStock
+    {
+        public string ItemNumber { get; set; }
+        public string ShopOrderNumber { get; set; }
+        public decimal TotalAcceptedQty { get; set; }
+    }
 }

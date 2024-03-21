@@ -641,15 +641,23 @@ namespace Tips.Production.Api.Controllers
 
         }
         [HttpGet]
-        public async Task<IActionResult> GetStockByItemFromOqc(string Itemnumber , string ShopOrderNumber)
+        public async Task<IActionResult> GetStockByItemFromOqc(string Itemnumber)
         {
-            ServiceResponse<decimal?> serviceResponse = new ServiceResponse<decimal?>();
+            ServiceResponse<List<OQCStock>> serviceResponse = new ServiceResponse<List<OQCStock>>();
             try
             {
-                var OQCAcceptedQty = await _oQCRepository.GetOQCAcceptedQty(Itemnumber, ShopOrderNumber);
-                var OqcBinningQty = await _oQCBinningRepository.GetOqcBinningShopOrderQty(Itemnumber, ShopOrderNumber);
-                decimal? result;
-                if (OqcBinningQty!=null) result=OQCAcceptedQty-OqcBinningQty;
+                var OQCAcceptedQty = await _oQCRepository.GetOQCAcceptedQty(Itemnumber);
+                var OqcBinningQty = await _oQCBinningRepository.GetOqcBinningShopOrderQty(Itemnumber);
+                List<OQCStock>? result=new List<OQCStock>();
+                if (OqcBinningQty!=null)
+                {
+                    foreach(var Pro in OqcBinningQty)
+                    {
+                        var OqcBin = OQCAcceptedQty.Where(x => x.ShopOrderNumber == Pro.ShopOrderNumber).FirstOrDefault();
+                        OqcBin.TotalAcceptedQty -= Pro.TotalAcceptedQty;
+                        result.Add(OqcBin);
+                    }
+                }
                 else result=OQCAcceptedQty;
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned All GetFGStockByItemFromOqc";

@@ -68,7 +68,7 @@ namespace Tips.Production.Api.Repository
                 //return null;
             }
         }
-       
+
         public async Task<IEnumerable<OQC>> GetAllOQCWithItems(OQCSearchDto oQCSearch)
         {
             using (var context = _tipsProductionDbContext)
@@ -115,9 +115,15 @@ namespace Tips.Production.Api.Repository
 
             return btoIddNameList;
         }
-        public async Task<decimal?> GetOQCAcceptedQty(string Itemnumber, string ShopOrderNumber)
+        public async Task<List<OQCStock>?> GetOQCAcceptedQty(string Itemnumber)
         {
-            var AcceptedQty = await _tipsProductionDbContext.oQCs.Where(x => x.ItemNumber == Itemnumber && x.ShopOrderNumber == ShopOrderNumber).SumAsync(x=>x.AcceptedQty);
+            var AcceptedQty = await _tipsProductionDbContext.oQCs.Where(x => x.ItemNumber == Itemnumber).GroupBy(x => new { x.ItemNumber, x.ShopOrderNumber })
+            .Select(g => new OQCStock
+            {
+            ItemNumber = g.Key.ItemNumber,
+            ShopOrderNumber = g.Key.ShopOrderNumber,
+            TotalAcceptedQty = g.Sum(x => x.AcceptedQty)
+            }).ToListAsync();
             return AcceptedQty;
         }
         public async Task<OQC> GetOQCById(int id)
