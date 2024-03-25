@@ -1,6 +1,7 @@
 ﻿using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
@@ -20,6 +21,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal AcceptedQty { get; set; }
         [Precision(13, 3)]
         public decimal RejectedQty { get; set; }
+        public ShopOrderConformationStatus IsOQCBinningDone { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

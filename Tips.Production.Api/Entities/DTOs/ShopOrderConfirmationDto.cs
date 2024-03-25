@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using Entities.Enums;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
@@ -23,8 +24,8 @@ namespace Tips.Production.Api.Entities.DTOs
         [Required]
         [Precision(13, 3)]
         public decimal WipConfirmedQty { get; set; }
-        [DefaultValue(false)]
-        public bool IsOQCDone { get; set; }
+        public ShopOrderConformationStatus IsOQCDone { get; set; }
+        public ShopOrderConformationStatus IsOQCBinningDone { get; set; }
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
         public string? Unit { get; set; }
