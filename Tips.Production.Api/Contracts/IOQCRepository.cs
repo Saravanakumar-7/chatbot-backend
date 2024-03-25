@@ -13,6 +13,7 @@ namespace Tips.Production.Api.Contracts
         Task<int?> CreateOQC(OQC oqc);
         Task<string> UpdateOQC(OQC oqc);
         Task<string> DeleteOQC(OQC oqc);
+        Task<List<OQC>?> GetOQCbyShopOrrderNo(string ShoporderNo);
         void SaveAsync();
         Task<IEnumerable<ShopOrderConfirmationItemNoListDto>> GetShopOrderConfirmationItemNoByFGItemType();
         Task<IEnumerable<ShopOrderConfirmationItemNoListDto>> GetShopOrderConfirmationItemNoBySAItemType();

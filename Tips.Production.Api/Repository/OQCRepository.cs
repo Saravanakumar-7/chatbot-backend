@@ -10,6 +10,7 @@ using System.Security.Claims;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Repository
 {
@@ -44,7 +45,11 @@ namespace Tips.Production.Api.Repository
             string result = $"OQC details of {oqc.Id} is deleted successfully!";
             return result;
         }
-
+        public async Task<List<OQC>> GetOQCbyShopOrrderNo(string ShoporderNo)
+        {
+            var OQC = await FindAll().Where(x => x.ShopOrderNumber == ShoporderNo).ToListAsync();
+            return OQC;
+        }
         public async Task<PagedList<OQC>> GetAllOQC([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             var OQCDetails = FindAll().OrderByDescending(x => x.Id)
@@ -153,7 +158,7 @@ namespace Tips.Production.Api.Repository
         public async Task<IEnumerable<ShopOrderConfirmationItemNoListDto>> GetShopOrderConfirmationItemNoByFGItemType()
         {
             var shopOrderConfirmationItmNoList = await _tipsProductionDbContext.ShopOrderConfirmations
-               .Where(x => x.ItemType == PartType.FG && x.IsOQCDone == false && x.IsDeleted == false)
+               .Where(x => x.ItemType == PartType.FG && x.IsOQCDone == ShopOrderConformationStatus.Open && x.IsDeleted == false)
                .Select(s => new ShopOrderConfirmationItemNoListDto()
                {
                    ItemNumber = s.ItemNumber,
@@ -167,7 +172,7 @@ namespace Tips.Production.Api.Repository
         public async Task<IEnumerable<ShopOrderConfirmationItemNoListDto>> GetShopOrderConfirmationItemNoBySAItemType()
         {
             var shopOrderConfirmationItmNoList = await _tipsProductionDbContext.ShopOrderConfirmations
-                .Where(x => x.ItemType == PartType.SA && x.IsOQCDone == false && x.IsDeleted == false)
+                .Where(x => x.ItemType == PartType.SA && x.IsOQCDone == ShopOrderConformationStatus.Open && x.IsDeleted == false)
                 .Select(s => new ShopOrderConfirmationItemNoListDto()
                 {
                     ItemNumber = s.ItemNumber,

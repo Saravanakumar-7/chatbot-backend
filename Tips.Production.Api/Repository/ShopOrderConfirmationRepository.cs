@@ -100,7 +100,7 @@ namespace Tips.Production.Api.Repository
         
         public async Task<IEnumerable<ShopOrderConfirmation>> GetOpenDataForOqcByShopOrderNo(string shopOrderNo)
         {
-            var openDataForOqcByShopOrderNoList = await FindByCondition(x => x.ShopOrderNumber == shopOrderNo &&  x.IsOQCDone == false).ToListAsync();           
+            var openDataForOqcByShopOrderNoList = await FindByCondition(x => x.ShopOrderNumber == shopOrderNo &&  x.IsOQCDone == ShopOrderConformationStatus.Open).ToListAsync();           
             return openDataForOqcByShopOrderNoList;
 
         }

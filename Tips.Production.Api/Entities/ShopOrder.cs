@@ -41,6 +41,9 @@ namespace Tips.Production.Api.Entities
         public bool IsDeleted { get; set; } = false;
         [DefaultValue(0)]
         public OrderStatus Status { get; set; } = OrderStatus.Open;
+        public ShopOrderConformationStatus ShopOrderConfirmationStatus { get; set; }
+        public ShopOrderConformationStatus OQCStatus { get; set; }
+        public ShopOrderConformationStatus OQCBinningStatus { get; set; }
         [DefaultValue(false)]
         public bool IsShortClosed { get; set; } = false;
         public string? ShortClosedBy { get; set; }

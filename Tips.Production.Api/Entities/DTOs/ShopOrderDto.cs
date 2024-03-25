@@ -29,7 +29,9 @@ namespace Tips.Production.Api.Entities.DTOs
         public bool IsDeleted { get; set; } = false;
 
         public OrderStatus Status { get; set; }
-
+        public ShopOrderConformationStatus ShopOrderConfirmationStatus { get; set; }
+        public ShopOrderConformationStatus OQCStatus { get; set; }
+        public ShopOrderConformationStatus OQCBinningStatus { get; set; }
         public bool IsShortClosed { get; set; }
         public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }

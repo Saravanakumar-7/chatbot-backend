@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities
 {
@@ -28,8 +29,8 @@ namespace Tips.Production.Api.Entities
         [Required]
         [Precision(13, 3)]
         public decimal WipConfirmedQty { get; set; }
-        [DefaultValue(false)]
-        public bool IsOQCDone { get; set; }
+        public ShopOrderConformationStatus IsOQCDone { get; set; }
+        public ShopOrderConformationStatus IsOQCBinningDone { get; set; }
         [DefaultValue(false)]
         public bool IsDeleted { get; set; }
         public string? Unit { get; set; }

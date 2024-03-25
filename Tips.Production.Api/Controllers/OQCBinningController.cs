@@ -3,11 +3,14 @@ using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Drawing;
 using System.Net;
 using System.Text;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Entities.Enums;
+using Tips.Production.Api.Repository;
 
 namespace Tips.Production.Api.Controllers
 {
@@ -19,14 +22,20 @@ namespace Tips.Production.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private IMapper _mapper;
-        private IOQCBinningRepository _oQCBinningRepository;  
-        public OQCBinningController(IOQCBinningRepository oQCBinningRepository,ILoggerManager logger, HttpClient httpClient, IConfiguration config, IMapper mapper)
+        private IOQCBinningRepository _oQCBinningRepository;
+        private IOQCRepository _oQCRepository;
+        private IShopOrderConfirmationRepository _shopOrderConfirmationRepository;
+        private IShopOrderRepository _shopOrderRepo;
+        public OQCBinningController(IOQCRepository oQCRepository, IShopOrderRepository shopOrderRepository, IShopOrderConfirmationRepository shopOrderConfirmationRepository, IOQCBinningRepository oQCBinningRepository, ILoggerManager logger, HttpClient httpClient, IConfiguration config, IMapper mapper)
         {
             _logger = logger;
             _httpClient = httpClient;
             _config = config;
             _mapper = mapper;
-            _oQCBinningRepository= oQCBinningRepository;
+            _oQCBinningRepository = oQCBinningRepository;
+            _oQCRepository = oQCRepository;
+            _shopOrderConfirmationRepository = shopOrderConfirmationRepository;
+            _shopOrderRepo = shopOrderRepository;
         }
 
         [HttpPost]
@@ -63,8 +72,8 @@ namespace Tips.Production.Api.Controllers
                         if (loc.Warehouse == ex.Warehouse && loc.Location == ex.Location)
                         {
                             ex.Quantity = ex.Quantity + loc.Quantity;
-                            flag=1;
-                        }           
+                            flag = 1;
+                        }
                     }
                     if (flag == 0)
                     {
@@ -81,12 +90,12 @@ namespace Tips.Production.Api.Controllers
                 var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetInventoryStockByItemAndShopOrderNo?itemNumber={oQCBinningPostDto.ItemNumber}&shopordernumber={oQCBinningPostDto.ShopOrderNumber}");
                 var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
                 var vendorUOC = JsonConvert.DeserializeObject<OQCBinningInventoryDto>(rfqCustomerIdString);
-                var oqcbinninglocations= _mapper.Map<List<OQCBinningLocation>>(postoqcbinning.oQCBinningLocations);
-                decimal binningqty=0;
+                var oqcbinninglocations = _mapper.Map<List<OQCBinningLocation>>(postoqcbinning.oQCBinningLocations);
+                decimal binningqty = 0;
                 foreach (var loc in oqcbinninglocations)
                 {
                     binningqty = loc.Quantity + binningqty;
-                }                              
+                }
                 vendorUOC.data.Balance_Quantity = vendorUOC.data.Balance_Quantity - binningqty;
                 var updateInventory = _mapper.Map<OQCBinningInventoryUpdateDto>(vendorUOC.data);
                 var httpClientHandler_1 = new HttpClientHandler();
@@ -97,8 +106,8 @@ namespace Tips.Production.Api.Controllers
                 var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
                 await _httpClient.PutAsync($"{rfqApiUrl_1}UpdateInventory?Id={vendorUOC.data.Id}", content);
                 foreach (var loc in sumbin)
-                {                    
-                    var newinv = _mapper.Map<OQCBinningInventoryUpdateDto>(updateInventory);                   
+                {
+                    var newinv = _mapper.Map<OQCBinningInventoryUpdateDto>(updateInventory);
                     newinv.GrinPartId = null;
                     newinv.Warehouse = loc.Warehouse;
                     newinv.Location = loc.Location;
@@ -107,6 +116,27 @@ namespace Tips.Production.Api.Controllers
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
                     var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
                 }
+                var qtyamt = binningqty;
+                var qtySO = binningqty;
+                var oqcstatus = await _oQCRepository.GetOQCbyShopOrrderNo(postoqcbinning.ShopOrderNumber);
+                if (oqcstatus != null)
+                    foreach (var Oq in oqcstatus)
+                    {
+                        if(Oq.AcceptedQty== binningqty) { Oq.IsOQCBinningDone = ShopOrderConformationStatus.FullyDone; break; }
+                        if(Oq.AcceptedQty > binningqty) { Oq.IsOQCBinningDone = ShopOrderConformationStatus.PartiallyDone; }
+                        if(Oq.AcceptedQty < binningqty) { Oq.IsOQCBinningDone=ShopOrderConformationStatus.FullyDone;binningqty -= Oq.AcceptedQty; }
+                    }
+                var WOC= await _shopOrderConfirmationRepository.GetAllShopOrderConfirmationByShopOrderNo(postoqcbinning.ShopOrderNumber);
+                if (WOC != null)
+                    foreach (var woc in WOC)
+                    {
+                        if (woc.WipConfirmedQty == qtyamt) { woc.IsOQCDone = ShopOrderConformationStatus.FullyDone; break; }
+                        if (woc.WipConfirmedQty > qtyamt) { woc.IsOQCDone = ShopOrderConformationStatus.PartiallyDone; break; }
+                        if (woc.WipConfirmedQty < qtyamt) { woc.IsOQCDone = ShopOrderConformationStatus.FullyDone; qtyamt -= woc.WipConfirmedQty; }
+                    }
+                var shopOrderDetail = await _shopOrderRepo.GetShopOrderDetailsByShopOrderNo(postoqcbinning.ShopOrderNumber);                
+                if (shopOrderDetail.TotalSOReleaseQty == qtySO) shopOrderDetail.OQCBinningStatus = ShopOrderConformationStatus.FullyDone;
+                if (shopOrderDetail.TotalSOReleaseQty > qtySO) shopOrderDetail.OQCBinningStatus = ShopOrderConformationStatus.PartiallyDone;
                 _logger.LogInfo("aftergettingdata");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "OQCBinning Created Successfully";
@@ -114,7 +144,7 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal Server Error";

@@ -15,6 +15,7 @@ using Newtonsoft.Json;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Entities.Enums;
 using Tips.Production.Api.Repository;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 using static Org.BouncyCastle.Math.EC.ECCurve;
@@ -25,6 +26,7 @@ namespace Tips.Production.Api.Controllers
     [ApiController]
     public class OQCController : ControllerBase
     {
+        private IShopOrderConfirmationRepository _shopOrderConfirmationRepository;
         private IOQCRepository _oQCRepository;
         private IItemMasterRepository _itemMasterRepository;
         private ILoggerManager _logger;
@@ -33,7 +35,7 @@ namespace Tips.Production.Api.Controllers
         private IMapper _mapper;
         private IShopOrderRepository _shopOrderRepo;
         private IOQCBinningRepository _oQCBinningRepository;
-        public OQCController(IOQCRepository oQCRepository, IOQCBinningRepository oQCBinningRepository, IShopOrderRepository shopOrderRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        public OQCController(IShopOrderConfirmationRepository shopOrderConfirmationRepository, IOQCRepository oQCRepository, IOQCBinningRepository oQCBinningRepository, IShopOrderRepository shopOrderRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _oQCRepository = oQCRepository;
             _logger = logger;
@@ -41,23 +43,24 @@ namespace Tips.Production.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _shopOrderRepo = shopOrderRepository;
-            _oQCBinningRepository= oQCBinningRepository;
+            _oQCBinningRepository = oQCBinningRepository;
+            _shopOrderConfirmationRepository = shopOrderConfirmationRepository;
         }
-      
+
         [HttpGet]
         public async Task<IActionResult> GetAllOQC([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<OQCDto>> serviceResponse = new ServiceResponse<IEnumerable<OQCDto>>();
             try
             {
-                var oQCDetails = await _oQCRepository.GetAllOQC(pagingParameter,searchParamess);
-                 var metadata = new
+                var oQCDetails = await _oQCRepository.GetAllOQC(pagingParameter, searchParamess);
+                var metadata = new
                 {
-                     oQCDetails.TotalCount,
-                     oQCDetails.PageSize,
-                     oQCDetails.CurrentPage,
-                     oQCDetails.HasNext,
-                     oQCDetails.HasPreviuos
+                    oQCDetails.TotalCount,
+                    oQCDetails.PageSize,
+                    oQCDetails.CurrentPage,
+                    oQCDetails.HasNext,
+                    oQCDetails.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
@@ -246,10 +249,20 @@ namespace Tips.Production.Api.Controllers
                 await _oQCRepository.CreateOQC(oQCCreate);
                 _oQCRepository.SaveAsync();
 
-                var shopOrderDetails = await _shopOrderRepo.GetShopOrderByShopOrderNo(oQCPostDto.ShopOrderNumber);               
-                shopOrderDetails.OqcQty = shopOrderDetails.OqcQty + oQCPostDto.AcceptedQty;                
+                var shopOrderDetails = await _shopOrderRepo.GetShopOrderByShopOrderNo(oQCPostDto.ShopOrderNumber);
+                shopOrderDetails.OqcQty = shopOrderDetails.OqcQty + oQCPostDto.AcceptedQty;
+                if (shopOrderDetails.TotalSOReleaseQty == shopOrderDetails.OqcQty) shopOrderDetails.OQCStatus = ShopOrderConformationStatus.FullyDone;
+                if (shopOrderDetails.TotalSOReleaseQty > shopOrderDetails.OqcQty) shopOrderDetails.OQCStatus = ShopOrderConformationStatus.PartiallyDone;
                 await _shopOrderRepo.UpdateShopOrder(shopOrderDetails);
                 _shopOrderRepo.SaveAsync();
+                var SOConfirmations = await _shopOrderConfirmationRepository.GetAllShopOrderConfirmationByShopOrderNo(shopOrderDetails.ShopOrderNumber);
+                var OQCQty = shopOrderDetails.OqcQty;
+                foreach (var soCon in SOConfirmations)
+                {
+                    if (soCon.WipConfirmedQty == OQCQty) { soCon.IsOQCDone = ShopOrderConformationStatus.FullyDone; break; }
+                    if (soCon.WipConfirmedQty > OQCQty) { soCon.IsOQCDone = ShopOrderConformationStatus.PartiallyDone; break; }
+                    if (soCon.WipConfirmedQty < OQCQty) { soCon.IsOQCDone = ShopOrderConformationStatus.FullyDone; OQCQty -= soCon.WipConfirmedQty; }
+                }
                 var shopOrderItemDetail = shopOrderDetails?.ShopOrderItems?.FirstOrDefault();
                 var projectNo = shopOrderItemDetail?.ProjectNumber;
                 if (oQCCreate.ItemType == PartType.SA) //sa
@@ -257,7 +270,7 @@ namespace Tips.Production.Api.Controllers
                     var ItemNumber = oQCCreate.ItemNumber;
                     var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
                             "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
-                    _logger.LogInfo("getitemmasterdata"+ Convert.ToString(itemMasterObjectResult));
+                    _logger.LogInfo("getitemmasterdata" + Convert.ToString(itemMasterObjectResult));
                     var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
                     dynamic itemMatserObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                     dynamic itemMasterTranctionObject = itemMatserObjectData.data;
@@ -278,9 +291,9 @@ namespace Tips.Production.Api.Controllers
                     inventory.ReferenceID = oQCCreate.Id.ToString();
                     inventory.ReferenceIDFrom = "Final OQC";
                     inventory.ShopOrderNo = oQCCreate.ShopOrderNumber;
-                    
 
-                    
+
+
                     _logger.LogInfo("getitemmasterdata" + Convert.ToString(inventory));
                     var json = JsonConvert.SerializeObject(inventory);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
@@ -310,7 +323,7 @@ namespace Tips.Production.Api.Controllers
                     var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
                     var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
 
-                   
+
                 }
                 else
                 {
@@ -377,7 +390,7 @@ namespace Tips.Production.Api.Controllers
                     //var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
 
                     var json1 = JsonConvert.SerializeObject(inventory1);
-                    var data1 = new StringContent(json1, Encoding.UTF8, "application/json"); 
+                    var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
                     var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
 
 
@@ -648,17 +661,17 @@ namespace Tips.Production.Api.Controllers
             {
                 var OQCAcceptedQty = await _oQCRepository.GetOQCAcceptedQty(Itemnumber);
                 var OqcBinningQty = await _oQCBinningRepository.GetOqcBinningShopOrderQty(Itemnumber);
-                List<OQCStock>? result=new List<OQCStock>();
-                if (OqcBinningQty!=null)
+                List<OQCStock>? result = new List<OQCStock>();
+                if (OqcBinningQty != null)
                 {
-                    foreach(var Pro in OqcBinningQty)
+                    foreach (var Pro in OqcBinningQty)
                     {
                         var OqcBin = OQCAcceptedQty.Where(x => x.ShopOrderNumber == Pro.ShopOrderNumber).FirstOrDefault();
                         OqcBin.TotalAcceptedQty -= Pro.TotalAcceptedQty;
                         result.Add(OqcBin);
                     }
                 }
-                else result=OQCAcceptedQty;
+                else result = OQCAcceptedQty;
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned All GetFGStockByItemFromOqc";
                 serviceResponse.Success = true;
