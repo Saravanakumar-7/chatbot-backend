@@ -125,6 +125,7 @@ namespace Tips.Production.Api.Controllers
                         if(Oq.AcceptedQty== binningqty) { Oq.IsOQCBinningDone = ShopOrderConformationStatus.FullyDone; break; }
                         if(Oq.AcceptedQty > binningqty) { Oq.IsOQCBinningDone = ShopOrderConformationStatus.PartiallyDone; }
                         if(Oq.AcceptedQty < binningqty) { Oq.IsOQCBinningDone=ShopOrderConformationStatus.FullyDone;binningqty -= Oq.AcceptedQty; }
+                        _oQCRepository.UpdateOQC(Oq);
                     }
                 var WOC= await _shopOrderConfirmationRepository.GetAllShopOrderConfirmationByShopOrderNo(postoqcbinning.ShopOrderNumber);
                 if (WOC != null)
@@ -133,10 +134,15 @@ namespace Tips.Production.Api.Controllers
                         if (woc.WipConfirmedQty == qtyamt) { woc.IsOQCDone = ShopOrderConformationStatus.FullyDone; break; }
                         if (woc.WipConfirmedQty > qtyamt) { woc.IsOQCDone = ShopOrderConformationStatus.PartiallyDone; break; }
                         if (woc.WipConfirmedQty < qtyamt) { woc.IsOQCDone = ShopOrderConformationStatus.FullyDone; qtyamt -= woc.WipConfirmedQty; }
+                        _shopOrderConfirmationRepository.UpdateShopOrderConfirmation(woc);
                     }
                 var shopOrderDetail = await _shopOrderRepo.GetShopOrderDetailsByShopOrderNo(postoqcbinning.ShopOrderNumber);                
                 if (shopOrderDetail.TotalSOReleaseQty == qtySO) shopOrderDetail.OQCBinningStatus = ShopOrderConformationStatus.FullyDone;
                 if (shopOrderDetail.TotalSOReleaseQty > qtySO) shopOrderDetail.OQCBinningStatus = ShopOrderConformationStatus.PartiallyDone;
+                _shopOrderRepo.UpdateShopOrder(shopOrderDetail);
+                _oQCRepository.SaveAsync();
+                _shopOrderConfirmationRepository.SaveAsync();
+                _shopOrderRepo.SaveAsync();
                 _logger.LogInfo("aftergettingdata");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "OQCBinning Created Successfully";

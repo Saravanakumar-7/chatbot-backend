@@ -262,7 +262,9 @@ namespace Tips.Production.Api.Controllers
                     if (soCon.WipConfirmedQty == OQCQty) { soCon.IsOQCDone = ShopOrderConformationStatus.FullyDone; break; }
                     if (soCon.WipConfirmedQty > OQCQty) { soCon.IsOQCDone = ShopOrderConformationStatus.PartiallyDone; break; }
                     if (soCon.WipConfirmedQty < OQCQty) { soCon.IsOQCDone = ShopOrderConformationStatus.FullyDone; OQCQty -= soCon.WipConfirmedQty; }
+                    _shopOrderConfirmationRepository.UpdateShopOrderConfirmation(soCon);
                 }
+                _shopOrderConfirmationRepository.SaveAsync();
                 var shopOrderItemDetail = shopOrderDetails?.ShopOrderItems?.FirstOrDefault();
                 var projectNo = shopOrderItemDetail?.ProjectNumber;
                 if (oQCCreate.ItemType == PartType.SA) //sa
