@@ -151,6 +151,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? KPN { get; set; }
         public string? MPN { get; set; }
         public string? ProductType { get; set; }
+        public string? ProjectNumber { get; set; }
 
     }
 }

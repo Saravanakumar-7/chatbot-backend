@@ -10,7 +10,7 @@ namespace Tips.Purchase.Api.Entities
         [Key]
         public int Id { get; set; }
         public string? PONumber { get; set; }
-        
+
         public string? AmountInWords { get; set; }
 
         public DateTime PODate { get; set; }
@@ -50,6 +50,12 @@ namespace Tips.Purchase.Api.Entities
         public bool POApprovalII { get; set; } = false;
         public string? POApprovedIIBy { get; set; }
         public DateTime POApprovedIIDate { get; set; }
+        public bool? POApprovalIII { get; set; } = false;
+        public string? POApprovedIIIBy { get; set; }
+        public DateTime? POApprovedIIIDate { get; set; }
+        public bool? POApprovalIV { get; set; } = false;
+        public string? POApprovedIVBy { get; set; }
+        public DateTime? POApprovedIVDate { get; set; }
         public bool IsDeleted { get; set; } = false;
 
         [DefaultValue(0)]

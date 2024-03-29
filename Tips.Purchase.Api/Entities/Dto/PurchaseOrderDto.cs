@@ -38,7 +38,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? POFiles { get; set; }
 
         //Terms
-        public string? RetentionPeriod { get; set; } 
+        public string? RetentionPeriod { get; set; }
         public string? SpecialTermsAndConditions { get; set; }
         public bool IsDeleted { get; set; } = false;
 
@@ -53,6 +53,12 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public bool POApprovalII { get; set; }
         public DateTime POApprovedIIDate { get; set; }
         public string? POApprovedIIBy { get; set; }
+        public bool? POApprovalIII { get; set; }
+        public string? POApprovedIIIBy { get; set; }
+        public DateTime? POApprovedIIIDate { get; set; }
+        public bool? POApprovalIV { get; set; }
+        public string? POApprovedIVBy { get; set; }
+        public DateTime? POApprovedIVDate { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -136,7 +142,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         //Terms
         public string? RetentionPeriod { get; set; }
-        public string? SpecialTermsAndConditions { get; set; } 
+        public string? SpecialTermsAndConditions { get; set; }
         public decimal TotalAmount { get; set; }
 
         public string? Unit { get; set; }
@@ -195,6 +201,12 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public bool POApprovalII { get; set; }
         public DateTime POApprovedIIDate { get; set; }
         public string? POApprovedIIBy { get; set; }
+        public bool? POApprovalIII { get; set; }
+        public string? POApprovedIIIBy { get; set; }
+        public DateTime? POApprovedIIIDate { get; set; }
+        public bool? POApprovalIV { get; set; }
+        public string? POApprovedIVBy { get; set; }
+        public DateTime? POApprovedIVDate { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -221,7 +233,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public decimal? Qty { get; set; }
         public int? RevisionNumber { get; set; }
 
-        public List<PRItemsDocumentUpload>? DocumentNames { get; set; } 
+        public List<PRItemsDocumentUpload>? DocumentNames { get; set; }
 
     }
 

@@ -1,6 +1,7 @@
 ﻿using Entities.Helper;
 using Entities;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Contracts
 {
@@ -17,5 +18,6 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<ReturnInvoiceSPResport>> ReturnInvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<ReturnInvoiceSPResport>> ReturnInvoiceSPReportWithParameter(string InvoiceNumber, string DoNumber, string CustomerName,string CustomerAliasName, string SalesOrderNumber, string Location, string Warehouse, string KPN, string MPN, string IssuedTo);
         Task<ReturnInvoice> GetReturnInvoiceById(int id);
+        Task<IEnumerable<ReturnInvoiceNumberListDto>> GetReturnInvoiceNumberList();
     }
 }

@@ -32,10 +32,10 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
 
-        public ReturnOpenDeliveryOrderController(IReturnOpenDeliveryOrderRepository repository, 
+        public ReturnOpenDeliveryOrderController(IReturnOpenDeliveryOrderRepository repository,
             IInventoryTranctionRepository inventoryTranctionRepository, IOpenDeliveryOrderHistoryRepository openDeliveryOrderHistoryRepository,
-            IOpenDeliveryOrderPartsRepository openDeliveryOrderPartsRepository,IReturnOpenDeliveryOrderPartsRepository returnOpenDeliveryOrderPartsRepository
-            , IInventoryRepository inventoryRepository, HttpClient httpClient, IHttpContextAccessor httpContextAccessor, 
+            IOpenDeliveryOrderPartsRepository openDeliveryOrderPartsRepository, IReturnOpenDeliveryOrderPartsRepository returnOpenDeliveryOrderPartsRepository
+            , IInventoryRepository inventoryRepository, HttpClient httpClient, IHttpContextAccessor httpContextAccessor,
             IConfiguration config, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
@@ -403,14 +403,14 @@ namespace Tips.Warehouse.Api.Controllers
                         openDeliveryOrderHistory.CustomerId = returnOpenDeliveryOrder.CustomerId;
                         openDeliveryOrderHistory.Description = returnOpenDeliveryOrder.Description;
                         openDeliveryOrderHistory.ResponsiblePerson = returnOpenDeliveryOrder.ResponsiblePerson;
-                        openDeliveryOrderHistory.ReasonForIssuingStock = returnOpenDeliveryOrder.ReasonforIssuingStock;        
+                        openDeliveryOrderHistory.ReasonForIssuingStock = returnOpenDeliveryOrder.ReasonforIssuingStock;
                         openDeliveryOrderHistory.IssuedTo = returnOpenDeliveryOrder.IssuedTo;
                         openDeliveryOrderHistory.ODOType = returnOpenDeliveryOrder.ODOType;
                         openDeliveryOrderHistory.ODODate = Convert.ToDateTime(returnOpenDeliveryOrder.ODODate);
                         openDeliveryOrderHistory.Unit = _unitname;
 
                         openDeliveryOrderHistory.ItemNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
-                        openDeliveryOrderHistory.ItemDescription = returnOpenDeliveryOrderPartsDtoList[i].Description;                        
+                        openDeliveryOrderHistory.ItemDescription = returnOpenDeliveryOrderPartsDtoList[i].Description;
                         openDeliveryOrderHistory.ItemType = returnOpenDeliveryOrderPartsDtoList[i].ItemType;
                         openDeliveryOrderHistory.UnitPrice = Convert.ToDecimal(returnOpenDeliveryOrderPartsDtoList[i].UnitPrice);
                         openDeliveryOrderHistory.UOC = returnOpenDeliveryOrderPartsDtoList[i].UOC;
@@ -438,7 +438,7 @@ namespace Tips.Warehouse.Api.Controllers
                     }
                 }
                 returnOpenDeliveryOrder.ReturnOpenDeliveryOrderParts = returnOpenDeliveryOrderPartsDtoList;
-                
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = " ReturnODODeliveryOrder created Successfully";
                 serviceResponse.Success = true;
@@ -623,7 +623,7 @@ namespace Tips.Warehouse.Api.Controllers
                             openDeliveryOrderHistory.UOC = returnOpenDeliveryOrderPartsDtoList[i].UOC;
                             openDeliveryOrderHistory.UOM = returnOpenDeliveryOrderPartsDtoList[i].UOM;
                             openDeliveryOrderHistory.StockAvailable = Convert.ToDecimal(returnOpenDeliveryOrderPartsDtoList[i].StockAvailable);
-                            openDeliveryOrderHistory.Warehouse =eachbin.Warehouse;
+                            openDeliveryOrderHistory.Warehouse = eachbin.Warehouse;
                             openDeliveryOrderHistory.Location = eachbin.Location;
                             openDeliveryOrderHistory.LocationStock = Convert.ToDecimal(returnOpenDeliveryOrderPartsDtoList[i].LocationStock);
                             openDeliveryOrderHistory.Remark = returnOpenDeliveryOrderPartsDtoList[i].Remarks;
@@ -881,6 +881,44 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside ReturnOpenDeliveryOrderSPReport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetReturnOpenDeliveryOrderNumberList()
+        {
+            ServiceResponse<IEnumerable<ReturnODONumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<ReturnODONumberListDto>>();
+
+            try
+            {
+                var returnOpenDeliveryOrderNumberList = await _repository.GetReturnOpenDeliveryOrderNumberList();
+                if (returnOpenDeliveryOrderNumberList == null)
+                {
+                    _logger.LogError("ReturnOpenDeliveryOrderNo Not Found");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ReturnOpenDeliveryOrderNo Not Found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo("Returned ReturnOpenDeliveryOrderNo");
+                    var result = _mapper.Map<IEnumerable<ReturnODONumberListDto>>(returnOpenDeliveryOrderNumberList);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "ReturnOpenDeliveryOrderNo Successfully Returned";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong GetReturnOpenDeliveryOrderNumberList Details: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

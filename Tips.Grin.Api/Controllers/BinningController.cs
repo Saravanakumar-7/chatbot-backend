@@ -592,6 +592,11 @@ namespace Tips.Grin.Api.Controllers
                     {
                         foreach (var binningsItem in binningsItemsDto)
                         {
+                            var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
+                            "GetItemMasterByItemNumber?", "&ItemNumber=", binningsItem.ItemNumber));
+                            var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                            dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                            dynamic itemMasterObject = itemMasterObjectData.data;
 
                             var binningLocations = binningsItem.binningLocations;
 
@@ -631,6 +636,8 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObjectNew.Description = grinPartsDetails.ItemDescription;
                                     inventoryObjectNew.ProjectNumber = location.ProjectNumber;
                                     inventoryObjectNew.Balance_Quantity = location.Qty;
+                                    inventoryObjectNew.Max = itemMasterObject.max;
+                                    inventoryObjectNew.Min = itemMasterObject.min;
                                     inventoryObjectNew.UOM = grinPartsDetails.UOM;
                                     inventoryObjectNew.Warehouse = location.Warehouse;
                                     inventoryObjectNew.Location = location.Location;
@@ -752,6 +759,12 @@ namespace Tips.Grin.Api.Controllers
                     {
                         foreach (var binningsItem in binningsItemsDto)
                         {
+                            var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
+                            "GetItemMasterByItemNumber?", "&ItemNumber=", binningsItem.ItemNumber));
+                            var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                            dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                            dynamic itemMasterObject = itemMasterObjectData.data;
+
                             var binningLocations = binningsItem.binningLocations;
 
                             int j = 0;
@@ -790,6 +803,8 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObjectNew.Description = grinPartsDetails.ItemDescription;
                                     inventoryObjectNew.ProjectNumber = location.ProjectNumber;
                                     inventoryObjectNew.Balance_Quantity = location.Qty;
+                                    inventoryObjectNew.Max = itemMasterObject.max;
+                                    inventoryObjectNew.Min = itemMasterObject.min;
                                     inventoryObjectNew.UOM = grinPartsDetails.UOM;
                                     inventoryObjectNew.Warehouse = location.Warehouse;
                                     inventoryObjectNew.Location = location.Location;
@@ -1206,6 +1221,12 @@ namespace Tips.Grin.Api.Controllers
 
                     if (binningsItemsDto != null)
                     {
+                        var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
+                            "GetItemMasterByItemNumber?", "&ItemNumber=", binningsItemsDto.ItemNumber));
+                        var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                        dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                        dynamic itemMasterObject = itemMasterObjectData.data;
+
                         var binningLocations = binningsItemsDto.binningLocations;
                         foreach (var location in binningLocations)
                         {
@@ -1242,6 +1263,8 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryObjectNew.Description = grinPartsDetails.ItemDescription;
                                 inventoryObjectNew.ProjectNumber = location.ProjectNumber;
                                 inventoryObjectNew.Balance_Quantity = location.Qty;
+                                inventoryObjectNew.Max = itemMasterObject.max;
+                                inventoryObjectNew.Min = itemMasterObject.min;
                                 inventoryObjectNew.UOM = grinPartsDetails.UOM;
                                 inventoryObjectNew.Warehouse = location.Warehouse;
                                 inventoryObjectNew.Location = location.Location;
@@ -1388,6 +1411,11 @@ namespace Tips.Grin.Api.Controllers
 
                     if (binningsItemsDto != null)
                     {
+                        var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
+                            "GetItemMasterByItemNumber?", "&ItemNumber=", binningsItemsDto.ItemNumber));
+                        var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                        dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                        dynamic itemMasterObject = itemMasterObjectData.data;
 
                         var binningLocations = binningsItemsDto.binningLocations;
                         foreach (var location in binningLocations)
@@ -1425,6 +1453,8 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryObjectNew.Description = grinPartsDetails.ItemDescription;
                                 inventoryObjectNew.ProjectNumber = location.ProjectNumber;
                                 inventoryObjectNew.Balance_Quantity = location.Qty;
+                                inventoryObjectNew.Max = itemMasterObject.max;
+                                inventoryObjectNew.Min = itemMasterObject.min;
                                 inventoryObjectNew.UOM = grinPartsDetails.UOM;
                                 inventoryObjectNew.Warehouse = location.Warehouse;
                                 inventoryObjectNew.Location = location.Location;

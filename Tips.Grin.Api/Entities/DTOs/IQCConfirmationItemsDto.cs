@@ -7,7 +7,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public int? Id { get; set; }
         public string? PONumber { get; set; }
-        public int GrinPartId { get; set; } 
+        public int GrinPartId { get; set; }
         public string? ItemNumber { get; set; }
         public string ItemDescription { get; set; }
         public string MftrItemNumber { get; set; }
@@ -108,6 +108,8 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public string ProjectNumber { get; set; }
         public decimal Balance_Quantity { get; set; }
+        public decimal? Max { get; set; }
+        public decimal? Min { get; set; }
         public string? UOM { get; set; }
 
         public string? Warehouse { get; set; }

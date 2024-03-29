@@ -662,23 +662,39 @@ namespace Tips.Production.Api.Controllers
             try
             {
                 var OQCAcceptedQty = await _oQCRepository.GetOQCAcceptedQty(Itemnumber);
-                var OqcBinningQty = await _oQCBinningRepository.GetOqcBinningShopOrderQty(Itemnumber);
-                List<OQCStock>? result = new List<OQCStock>();
-                if (OqcBinningQty != null)
+                if (OQCAcceptedQty != null && OQCAcceptedQty.Count() > 0)
                 {
-                    foreach (var Pro in OqcBinningQty)
+                    var OqcBinningQty = await _oQCBinningRepository.GetOqcBinningShopOrderQty(Itemnumber);
+                    List<OQCStock>? result = new List<OQCStock>();
+                    if (OqcBinningQty != null && OqcBinningQty.Count() > 0)
                     {
-                        var OqcBin = OQCAcceptedQty.Where(x => x.ShopOrderNumber == Pro.ShopOrderNumber).FirstOrDefault();
-                        OqcBin.TotalAcceptedQty -= Pro.TotalAcceptedQty;
-                        result.Add(OqcBin);
+                        foreach (var Pro in OQCAcceptedQty)
+                        {
+                            var OqcBin = OqcBinningQty.Where(x => x.ShopOrderNumber == Pro.ShopOrderNumber).FirstOrDefault();
+                            if (OqcBin != null)
+                            {
+                                Pro.TotalAcceptedQty -= OqcBin.TotalAcceptedQty;
+                                if (Pro.TotalAcceptedQty > 0) result.Add(Pro);
+                                else continue;
+                            }
+                            else result.Add(Pro);
+                        }
                     }
+                    else result.AddRange(OQCAcceptedQty);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned All GetFGStockByItemFromOqc";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
-                else result = OQCAcceptedQty;
-                serviceResponse.Data = result;
-                serviceResponse.Message = "Returned All GetFGStockByItemFromOqc";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
+                else
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"No ShopOrder Found for itemnumber: {Itemnumber}";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
             }
             catch (Exception ex)
             {

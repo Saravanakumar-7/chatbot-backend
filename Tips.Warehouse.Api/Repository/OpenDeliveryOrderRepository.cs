@@ -111,14 +111,14 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReportWithParam(string OpenDONumber, string CustomerName, string CustomerAliasName, string LeadId, string IssuedTo, string KPN, string MPN, string Warehouse, string Location, string ODOType)
         {
-                            
-                var result = _tipsWarehouseDbContext
-                .Set<OpenDeliveryOrderSPReport>()
-                .FromSqlInterpolated($"CALL Open_Delivery_Order_Report_withparameter({OpenDONumber},{CustomerName},{CustomerAliasName},{LeadId},{IssuedTo},{KPN},{MPN},{Warehouse},{Location},{ODOType})")
-                .ToList();
 
-                return result;
-            
+            var result = _tipsWarehouseDbContext
+            .Set<OpenDeliveryOrderSPReport>()
+            .FromSqlInterpolated($"CALL Open_Delivery_Order_Report_withparameter({OpenDONumber},{CustomerName},{CustomerAliasName},{LeadId},{IssuedTo},{KPN},{MPN},{Warehouse},{Location},{ODOType})")
+            .ToList();
+
+            return result;
+
 
         }
 
@@ -209,7 +209,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var getOpenDeliveryOrderDetailsById = await _tipsWarehouseDbContext.OpenDeliveryOrders
                                 .Where(x => x.Id == id)
-                               .Include(x => x.OpenDeliveryOrderParts).ThenInclude(x=>x.QtyDistribution)
+                               .Include(x => x.OpenDeliveryOrderParts).ThenInclude(x => x.QtyDistribution)
                                .FirstOrDefaultAsync();
 
             return getOpenDeliveryOrderDetailsById;
@@ -280,7 +280,7 @@ namespace Tips.Warehouse.Api.Repository
                                {
                                    Id = x.Id,
 
-                                   CustomerName = x.CustomerName
+                                   ODONumber = x.OpenDONumber
 
                                })
                                .OrderByDescending(x => x.Id)

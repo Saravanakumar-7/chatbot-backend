@@ -291,19 +291,19 @@ namespace Tips.SalesService.Api.Controllers
                 //change
                 var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
                 var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
-                var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"), itemNoListString);
+                var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemMasterPartTypeAndMinByItemNumber"), itemNoListString);
 
                 var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
                 dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
                 //List<ItemNoWithPartTypeDto> itemNoWithPartType = (List<ItemNoWithPartTypeDto>)itemNoPartTypeData.data;
 
-                List<ItemNoWithPartTypeDto> itemNoWithPartType = new List<ItemNoWithPartTypeDto>();
+                List<ItemNoWithPartTypeAndMinDto> itemNoWithPartTypeAndMin = new List<ItemNoWithPartTypeAndMinDto>();
 
                 //for this loop we need to check
                 foreach (var item in itemNoPartTypeData.data)
                 {
-                    ItemNoWithPartTypeDto dto = JsonConvert.DeserializeObject<ItemNoWithPartTypeDto>(item.ToString());
-                    itemNoWithPartType.Add(dto);
+                    ItemNoWithPartTypeAndMinDto dto = JsonConvert.DeserializeObject<ItemNoWithPartTypeAndMinDto>(item.ToString());
+                    itemNoWithPartTypeAndMin.Add(dto);
                 }
 
                 var salesOrderItemListjson = JsonConvert.SerializeObject(itemNumberList);
@@ -329,7 +329,8 @@ namespace Tips.SalesService.Api.Controllers
                                         {
                                             ItemNumber = salesOrderDetails.FGItemNumber,
                                             TotalRequiredQty = salesOrderDetails.Balance_Qty,
-                                            PartType = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault()
+                                            PartType = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
+                                            MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault()
                                         };
 
                                         decimal balanceQuantity = (decimal)Inventory.balance_Quantity; ; // Convert to decimal
@@ -363,6 +364,18 @@ namespace Tips.SalesService.Api.Controllers
                                                 }
                                             }
                                         }
+                                        //Calculate OpenRetailSOQty
+                                        var fGItemNumber = salesOrderDetails.FGItemNumber;
+
+                                        var salesOrderRetailDetails = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGRetailItemDetails(fGItemNumber);
+                                        if (salesOrderRetailDetails != null)
+                                        {
+                                            coverageReport.OpenRetailSOQty = salesOrderRetailDetails.Balance_Qty;
+                                        }
+                                        else
+                                        {
+                                            coverageReport.OpenRetailSOQty = 0;
+                                        }
                                         // Calculate OpenSOQty
                                         coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
                                         // Calculate BalanceToOrder
@@ -389,7 +402,8 @@ namespace Tips.SalesService.Api.Controllers
                             {
                                 ItemNumber = salesOrderDetails.FGItemNumber,
                                 TotalRequiredQty = salesOrderDetails.Balance_Qty,
-                                PartType = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault()
+                                PartType = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
+                                MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault()
                             };
 
                             decimal balanceQuantity = 0;
@@ -397,6 +411,12 @@ namespace Tips.SalesService.Api.Controllers
 
                             // Calculate OpenSOQty
                             coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
+
+                            //Calculate OpenRetailSOQty
+                            var fGItemNumber = salesOrderDetails.FGItemNumber;
+
+                            var salesOrderRetailDetails = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGRetailItemDetails(fGItemNumber);
+                            coverageReport.OpenRetailSOQty = salesOrderRetailDetails.Balance_Qty;
 
                             PartType itemPartType = coverageReport.PartType;
 

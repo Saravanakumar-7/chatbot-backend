@@ -20,5 +20,6 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> GetSOItemOpenStatusCount(int soId);
         Task<SalesOrderItems> GetSalesOrderItemDetailsById(int soItemId);
         Task<List<SalesOrderFGandBalanceQtyByProjectNo>> GetAllSalesOrderFGOrTGItemDetailsByProjectNo(string projectNo);
+        Task<SalesOrderRetailFGandBalanceQty> GetAllSalesOrderFGOrTGRetailItemDetails(string fGItemNumber);
     }
 }

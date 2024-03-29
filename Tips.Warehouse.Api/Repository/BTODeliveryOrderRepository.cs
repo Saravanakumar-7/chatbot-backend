@@ -129,13 +129,13 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
-        public async Task<IEnumerable<DeliveryOrderSPReport>> GetDeliveryOrderSPReportsWithParam(string DONumber, string CustomerName, string CustomerAliasName, 
-                                                                                                    string CustomerID, string SalesOrderNumber, string ProductType, 
-                                                                                                    string Warehouse, string Location, string KPN, string MPN)
+        public async Task<IEnumerable<DeliveryOrderSPReport>> GetDeliveryOrderSPReportsWithParam(string DONumber, string CustomerName, string CustomerAliasName,
+                                                                                                    string CustomerID, string SalesOrderNumber, string ProductType,
+                                                                                                    string Warehouse, string Location, string KPN, string MPN, string ProjectNumber)
         {
-            var result =  _tipsWarehouseDbContext
+            var result = _tipsWarehouseDbContext
             .Set<DeliveryOrderSPReport>()
-            .FromSqlInterpolated($"CALL Delivery_Order_Report_withparameter({DONumber},{CustomerName},{CustomerAliasName},{CustomerID},{SalesOrderNumber},{ProductType},{Warehouse},{Location},{KPN},{MPN})")
+            .FromSqlInterpolated($"CALL Delivery_Order_Report_withparameter({DONumber},{CustomerName},{CustomerAliasName},{CustomerID},{SalesOrderNumber},{ProductType},{Warehouse},{Location},{KPN},{MPN},{ProjectNumber})")
             .ToList();
 
             return result;
@@ -186,10 +186,10 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<IEnumerable<BTODeliveryOrder>> GetAllBTODeliveryOrderWithItems(BTODeliveryOrderSearchDto bTODeliveryOrderSearch)
         {
             using (var context = _tipsWarehouseDbContext)
-            { 
+            {
                 var query = _tipsWarehouseDbContext.bTODeliveryOrder.Include("bTODeliveryOrderItems");
                 if (bTODeliveryOrderSearch != null || (bTODeliveryOrderSearch.SalesOrderNumber.Any())
-                 && bTODeliveryOrderSearch.BTONumber.Any() && bTODeliveryOrderSearch.CustomerName.Any() 
+                 && bTODeliveryOrderSearch.BTONumber.Any() && bTODeliveryOrderSearch.CustomerName.Any()
                  && bTODeliveryOrderSearch.PONumber.Any() && bTODeliveryOrderSearch.IssuedTo.Any())
 
                 {
@@ -327,7 +327,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<BTODeliveryOrder> GetBTODeliveryOrderById(int id)
         {
             var getBTODeliveryOrderDetailsbyId = await _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.Id == id)
-                                .Include(t => t.bTODeliveryOrderItems).ThenInclude(x=>x.QtyDistribution)
+                                .Include(t => t.bTODeliveryOrderItems).ThenInclude(x => x.QtyDistribution)
                                 //.ThenInclude(s => s.BTOSerialNumbers)
                                 .FirstOrDefaultAsync();
 
@@ -352,10 +352,10 @@ namespace Tips.Warehouse.Api.Repository
                                .Select(x => new BtoIDNameList()
                                {
                                    Id = x.Id,
-                                   
+
                                    BTONumber = x.BTONumber,
 
-                                   IssuedTo= x.IssuedTo
+                                   IssuedTo = x.IssuedTo
 
                                })
                                .OrderByDescending(x => x.Id)
@@ -384,7 +384,7 @@ namespace Tips.Warehouse.Api.Repository
             var btoDeliveryOrderDetails = await _tipsWarehouseDbContexts.bTODeliveryOrderItems
                     .Where(x => x.FGItemNumber == itemNumber && x.BTONumber == BtoDeliveryNumber && x.DoStatus != Status.Closed)
                           .ToListAsync();
-            
+
             return btoDeliveryOrderDetails;
         }
 
@@ -403,20 +403,20 @@ namespace Tips.Warehouse.Api.Repository
         //    //var Quantity = Convert.ToDecimal(Qty);
         //    btoDeliveryOrderDetails.InvoicedQty = btoDeliveryOrderDetails.InvoicedQty + Qty;
         //    btoDeliveryOrderDetails.BalanceDoQty = btoDeliveryOrderDetails.DispatchQty - btoDeliveryOrderDetails.InvoicedQty;
-            
+
         //    Update(btoDeliveryOrderDetails);
         //    return btoDeliveryOrderDetails;
         //}
-       
-        
+
+
         public async Task<BTODeliveryOrderItems> GetBtoDelieveryOrderItemDetails(int btoDeliveryOrderPartsId)
         {
             var getBTODeliveryOrderItemDetails = await _tipsWarehouseDbContexts.bTODeliveryOrderItems
-                    .Where(x => x.Id == btoDeliveryOrderPartsId).Include(x=>x.QtyDistribution)
-                          .FirstOrDefaultAsync(); 
+                    .Where(x => x.Id == btoDeliveryOrderPartsId).Include(x => x.QtyDistribution)
+                          .FirstOrDefaultAsync();
             return getBTODeliveryOrderItemDetails;
         }
-        
+
 
     }
 
@@ -434,11 +434,11 @@ namespace Tips.Warehouse.Api.Repository
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
-         
+
 
         public async Task<long> CreateBTODeliveryOrderHistory(BTODeliveryOrderHistory bTODeliveryOrderHistory)
         {
-             bTODeliveryOrderHistory.CreatedBy = _createdBy;
+            bTODeliveryOrderHistory.CreatedBy = _createdBy;
             bTODeliveryOrderHistory.CreatedOn = DateTime.Now;
             bTODeliveryOrderHistory.Unit = _unitname;
             var result = await Create(bTODeliveryOrderHistory);
@@ -452,7 +452,7 @@ namespace Tips.Warehouse.Api.Repository
                     || (string.IsNullOrEmpty(searchParams.SearchValue)
                     || inv.BTONumber.Contains(searchParams.SearchValue)
                     || inv.PONumber.Contains(searchParams.SearchValue)
-                    || inv.CustomerName.Contains(searchParams.SearchValue)))&&(inv.UniqeId!=null)   );
+                    || inv.CustomerName.Contains(searchParams.SearchValue))) && (inv.UniqeId != null));
 
 
             return PagedList<BTODeliveryOrderHistory>.ToPagedList(getAllBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
@@ -481,7 +481,7 @@ namespace Tips.Warehouse.Api.Repository
         //            .Where(x => x.UniqeId != null)
         //            .OrderByDescending(x => x.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-          
+
 
         //    return getAllBTODetails;
         //}
@@ -495,7 +495,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<IEnumerable<BTODeliveryOrderHistory>> GetBtoHistoryDetailsByBtoNo(string btoNumber, string uniqueId)
         {
             var BtoHistoryDetails = await _tipsWarehouseDbContext.BTODeliveryOrderHistories
-              .Where(x => x.BTONumber == btoNumber && x.UniqeId == uniqueId)                
+              .Where(x => x.BTONumber == btoNumber && x.UniqeId == uniqueId)
                         .ToListAsync();
             return BtoHistoryDetails;
         }
@@ -504,7 +504,7 @@ namespace Tips.Warehouse.Api.Repository
             var btoHistoryNumber = await _tipsWarehouseDbContext.BTODeliveryOrderHistories
                 .Where(x => x.BTONumber.StartsWith(btoNumber) && x.UniqeId != null).OrderByDescending(x => x.Id)
                 .Select(x => x.BTONumber).FirstOrDefaultAsync();
-                    
+
             return btoHistoryNumber;
         }
     }

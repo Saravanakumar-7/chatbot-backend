@@ -67,8 +67,9 @@ builder.Services.AddScoped<ISourceDetailsRepository, SourceDetailsRepository>();
 builder.Services.AddScoped<IRoomNameRepository, RoomNameRepository>();
 builder.Services.AddScoped<IProductTypeRepository, ProductTypeRepository>();
 builder.Services.AddScoped<ITypeSolutionRepository, TypeSolutionRepository>();
+builder.Services.AddScoped<ITypeOfRoomRepository, TypeOfRoomRepository>();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddHttpClient(); 
+builder.Services.AddHttpClient();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -86,7 +87,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
- 
+
 
 app.UseCors("CorsPolicy");
 app.UseAuthentication();

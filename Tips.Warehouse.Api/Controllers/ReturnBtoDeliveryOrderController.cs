@@ -38,7 +38,7 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public ReturnBtoDeliveryOrderController(IReturnBtoDeliveryOrderRepository repository, IInventoryTranctionRepository inventoryTranctionRepository , IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository , IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryRepository inventoryRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public ReturnBtoDeliveryOrderController(IReturnBtoDeliveryOrderRepository repository, IInventoryTranctionRepository inventoryTranctionRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryRepository inventoryRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
             _logger = logger;
@@ -144,7 +144,7 @@ namespace Tips.Warehouse.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                 else
-                {                   
+                {
                     serviceResponse.Data = products;
                     serviceResponse.Message = "Returned ReturnDOSPReport Details";
                     serviceResponse.Success = true;
@@ -284,7 +284,7 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<IEnumerable<ReturnBtoDeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ReturnBtoDeliveryOrderDto>>();
             try
             {
-                var returnBtoDetails = await _repository.GetAllReturnBtoDeliveryOrderDetails(pagingParameter,searchParams);
+                var returnBtoDetails = await _repository.GetAllReturnBtoDeliveryOrderDetails(pagingParameter, searchParams);
                 var metadata = new
                 {
                     returnBtoDetails.TotalCount,
@@ -474,14 +474,14 @@ namespace Tips.Warehouse.Api.Controllers
                     _logger.LogError("Invalid ReturnBtoDeliveryOrder object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                               
+
 
                 var returnBtoDeliveryOrder = _mapper.Map<ReturnBtoDeliveryOrder>(returnBtoDeliveryOrderPostDto);
 
                 var returnBtoDeliveryOrderitemsDto = returnBtoDeliveryOrderPostDto.ReturnBtoDeliveryOrderItemsPostDtos;
                 //var getBtoNumber = returnBtoDeliveryOrderPostDto.BTONumber;
                 //var returnBtoNumberCount = await _repository.GetReturnBtoDeliveryOrderByBtoNo(getBtoNumber);
-             
+
 
                 var returnBtoDeliveryOrderItemsDtoList = new List<ReturnBtoDeliveryOrderItems>();
 
@@ -489,7 +489,7 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     Guid guid = Guid.NewGuid();
                     var btohistoryNo = await _bTODeliveryOrderHistoryRepository.GetBTONumberCount(returnBtoDeliveryOrder.BTONumber);
-                    
+
                     for (int i = 0; i < returnBtoDeliveryOrderitemsDto.Count; i++)
                     {
 
@@ -532,7 +532,7 @@ namespace Tips.Warehouse.Api.Controllers
                         //{
                         foreach (var eachbin in returnBtoDeliveryOrderItems.QtyDistribution)
                         {
-                            var exInv = await _inventoryRepository.GetInventorybyItemProjectWarehouseLocation(returnBtoDeliveryOrderItems.FGPartNumber, eachbin.ProjectNumber, eachbin.Warehouse,eachbin.Location);
+                            var exInv = await _inventoryRepository.GetInventorybyItemProjectWarehouseLocation(returnBtoDeliveryOrderItems.FGPartNumber, eachbin.ProjectNumber, eachbin.Warehouse, eachbin.Location);
                             if (exInv == null)
                             {
                                 Inventory inventory = new Inventory();
@@ -677,7 +677,7 @@ namespace Tips.Warehouse.Api.Controllers
                             bTODeliveryOrderHistory.Discount = getBtoDeliveryOrderDetails.Discount;
                             bTODeliveryOrderHistory.NetValue = getBtoDeliveryOrderDetails.NetValue;
                             bTODeliveryOrderHistory.Location = eachbin.Location;
-                            bTODeliveryOrderHistory.Warehouse= eachbin.Warehouse;
+                            bTODeliveryOrderHistory.Warehouse = eachbin.Warehouse;
                             bTODeliveryOrderHistory.DispatchQty = eachbin.DistributingQty;
                             //bTODeliveryOrderHistory.InvoicedQty = getBtoDeliveryOrderDetails.InvoicedQty;
                             bTODeliveryOrderHistory.SerialNo = returnSerialNumber;
@@ -716,7 +716,7 @@ namespace Tips.Warehouse.Api.Controllers
                     var token = tokenValues.Substring(7);
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 }
-                var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"],"ReturnDOUpdateDispatchDetails"), data);
+                var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnDOUpdateDispatchDetails"), data);
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = " ReturnBTODeliveryOrder created Successfully";
@@ -1089,6 +1089,44 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError($"Something went wrong inside DeleteReturnBtoDeliveryOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetReturnBTODeliveryOrderNumberList()
+        {
+            ServiceResponse<IEnumerable<ReturnBTONumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<ReturnBTONumberListDto>>();
+
+            try
+            {
+                var returnBTODeliveryOrderNumberList = await _repository.GetReturnBtoDeliveryOrderNumberList();
+                if (returnBTODeliveryOrderNumberList == null)
+                {
+                    _logger.LogError("ReturnBtoDeliveryOrderNo Not Found");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ReturnBtoDeliveryOrderNo Not Found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo("Returned ReturnBtoDeliveryOrderNos");
+                    var result = _mapper.Map<IEnumerable<ReturnBTONumberListDto>>(returnBTODeliveryOrderNumberList);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "ReturnBtoDeliveryOrderNos Successfully Returned";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong GetReturnBtoDeliveryOrderNumberList Details: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

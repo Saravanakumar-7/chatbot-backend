@@ -40,10 +40,10 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-      
+
 
         public List<BinningItemsDto>? BinningItems { get; set; }
-       
+
     }
 
 
@@ -55,7 +55,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         //public string? PONumber { get; set; }
         //public string? VendorName { get; set; }
         //public DateTime? InvoiceDate { get; set; }
-        
+
 
         public List<BinningItemsPostDto>? BinningItems { get; set; }
 
@@ -77,7 +77,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         //public string? LastModifiedBy { get; set; }
         //public DateTime? LastModifiedOn { get; set; }
         public List<BinningItemsUpdateDto>? BinningItems { get; set; }
-        
+
 
     }
     public class BinningIdNameListDto
@@ -107,6 +107,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string ProjectNumber { get; set; }
         [Required]
         public decimal Balance_Quantity { get; set; }
+        public decimal? Max { get; set; }
+        public decimal? Min { get; set; }
         [Required]
         public string? UOM { get; set; }
 

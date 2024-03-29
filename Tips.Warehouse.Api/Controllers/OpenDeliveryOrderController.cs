@@ -87,7 +87,7 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> OpenDeliveryOrderSPReport([FromQuery]PagingParameter pagingParameter)
+        public async Task<IActionResult> OpenDeliveryOrderSPReport([FromQuery] PagingParameter pagingParameter)
         {
             ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>>();
             try
@@ -428,7 +428,7 @@ namespace Tips.Warehouse.Api.Controllers
                     for (int i = 0; i < openDeliveryOrderitemsList.Count; i++)
                     {
                         OpenDeliveryOrderParts OpenDeliveryOrderItemsDetails = _mapper.Map<OpenDeliveryOrderParts>(openDeliveryOrderitemsList[i]);
-                        OpenDeliveryOrderItemsDetails.QtyDistribution= _mapper.Map<List<OpenDeliveryOrderPartsQtyDistribution>>(openDeliveryOrderitemsList[i].QtyDistribution);
+                        OpenDeliveryOrderItemsDetails.QtyDistribution = _mapper.Map<List<OpenDeliveryOrderPartsQtyDistribution>>(openDeliveryOrderitemsList[i].QtyDistribution);
                         OpenDeliveryOrderItemsDetails.ODONumber = odoNumber;
                         openDeliveryOrderItemsDtoList.Add(OpenDeliveryOrderItemsDetails);
 
@@ -582,7 +582,7 @@ namespace Tips.Warehouse.Api.Controllers
 
 
                             await _openDeliveryOrderHistoryRepository.CreateOpenDeliveryOrderHistory(openDeliveryOrderHistoryDetails);
-                           // _openDeliveryOrderHistoryRepository.SaveAsync();
+                            // _openDeliveryOrderHistoryRepository.SaveAsync();
                         }
                     }
                 }
@@ -1006,11 +1006,11 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllOpenDeliveryOrderIdNameList()
         {
-            ServiceResponse<IEnumerable<BtoIDNameList>> serviceResponse = new ServiceResponse<IEnumerable<BtoIDNameList>>();
+            ServiceResponse<IEnumerable<OpenDeliveryOrderIdNameList>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderIdNameList>>();
             try
             {
                 var listOfAllOpenDeliveryOrderIdNames = await _repository.GetAllOpenDeliveryOrderIdNameList();
-                var result = _mapper.Map<IEnumerable<BtoIDNameList>>(listOfAllOpenDeliveryOrderIdNames);
+                var result = _mapper.Map<IEnumerable<OpenDeliveryOrderIdNameList>>(listOfAllOpenDeliveryOrderIdNames);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned All listOfAllOpenDeliveryOrderIdNames";
                 serviceResponse.Success = true;

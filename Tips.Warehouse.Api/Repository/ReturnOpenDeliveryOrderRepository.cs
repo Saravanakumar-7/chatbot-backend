@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -58,7 +59,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<ReturnOpenDeliveryOrder> GetReturnOpenDeliveryOrderById(int id)
         {
             var returODODetailsById = await _tipsWarehouseDbContext.ReturnOpenDeliveryOrders.Where(x => x.Id == id)
-                                .Include(t => t.ReturnOpenDeliveryOrderParts).ThenInclude(t=>t.QtyDistribution)
+                                .Include(t => t.ReturnOpenDeliveryOrderParts).ThenInclude(t => t.QtyDistribution)
                                 .FirstOrDefaultAsync();
 
 
@@ -100,6 +101,19 @@ namespace Tips.Warehouse.Api.Repository
             Update(returnOpenDeliveryOrder);
             string result = $"ReturnOpenDeliveryOrder of Detail {returnOpenDeliveryOrder.Id} is updated successfully!";
             return result;
+        }
+        public async Task<IEnumerable<ReturnODONumberListDto>> GetReturnOpenDeliveryOrderNumberList()
+        {
+
+            IEnumerable<ReturnODONumberListDto> returnOpenDeliveryOrderNoList = await _tipsWarehouseDbContext.ReturnOpenDeliveryOrders
+                                .Select(x => new ReturnODONumberListDto()
+                                {
+                                    ReturnODONumber = x.ODONumber
+
+                                })
+                              .ToListAsync();
+
+            return returnOpenDeliveryOrderNoList;
         }
     }
 }

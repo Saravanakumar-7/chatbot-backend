@@ -15,6 +15,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string Description { get; set; }
         public string ProjectNumber { get; set; }
         public decimal Balance_Quantity { get; set; }
+        public decimal? Max { get; set; }
+        public decimal? Min { get; set; }
         public string? UOM { get; set; }
         public bool IsStockAvailable { get; set; }
         public string Warehouse { get; set; }
@@ -48,6 +50,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ProjectNumber { get; set; }
         [Required]
         public decimal Balance_Quantity { get; set; }
+        public decimal? Max { get; set; }
+        public decimal? Min { get; set; }
         [Required]
         public string? UOM { get; set; }
 
@@ -63,7 +67,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ReferenceID { get; set; }
         [Required]
         public string? ReferenceIDFrom { get; set; }
-        public string? ShopOrderNo { get; set; } 
+        public string? ShopOrderNo { get; set; }
 
     }
     public class InventoryDtoUpdate
@@ -80,6 +84,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         [Required]
         public string ProjectNumber { get; set; }
         public decimal Balance_Quantity { get; set; }
+        public decimal? Max { get; set; }
+        public decimal? Min { get; set; }
         public string? UOM { get; set; }
         public string Warehouse { get; set; }
         public string? Location { get; set; }
@@ -104,6 +110,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         public string ProjectNumber { get; set; }
         public decimal Balance_Quantity { get; set; }
+        public decimal? Max { get; set; }
+        public decimal? Min { get; set; }
         public string? UOM { get; set; }
 
         public string? Warehouse { get; set; }
@@ -305,14 +313,14 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ShopOrderNo { get; set; }
 
     }
-    
+
 
     public class InventoryDtoForMaterialIssue
     {
         public string PartNumber { get; set; }
         public string ProjectNumber { get; set; }
         public decimal IssueQty { get; set; }
-        
+
         public string ShopOrderNumber { get; set; }
         public decimal Bomversion { get; set; }
 
@@ -326,13 +334,13 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         public decimal NewConvertedToFgQty { get; set; }
         public string? DataFrom { get; set; }
-        public string? MRNumber { get; set; } 
+        public string? MRNumber { get; set; }
     }
 
     public class ConsumptionInventoryDto
     {
         public string PartNumber { get; set; }
-       public decimal Balance_Quantity { get; set; }
+        public decimal Balance_Quantity { get; set; }
 
     }
     public class ConsumptionInventoryByProjectNoDto
@@ -359,7 +367,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     }
     public class InventoryQtyforDO
     {
-        public string Warehouse { get; set; }       
+        public string Warehouse { get; set; }
         public List<InventoryQtyforDOLocation>? inventoryQtyforDOLocations { get; set; }
     }
     public class InventoryQtyforDOLocation

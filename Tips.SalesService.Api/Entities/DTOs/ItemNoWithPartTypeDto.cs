@@ -9,4 +9,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
             public PartType PartType { get; set; }
        
     }
+    public class ItemNoWithPartTypeAndMinDto
+    {
+        public string ItemNumber { get; set; }
+
+        public PartType PartType { get; set; }
+        public decimal Min { get; set; }
+
+    }
 }

@@ -496,5 +496,12 @@ namespace Entities.DTOs
 
         public PartType PartType { get; set; }
     }
+    public class ItemWithPartTypeAndMinDto
+    {
+        public string ItemNumber { get; set; }
+
+        public PartType PartType { get; set; }
+        public decimal Min { get; set; }
+    }
 
 }

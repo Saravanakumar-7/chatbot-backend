@@ -5,7 +5,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 {
     public class InvoiceDto
     {
-        
+
         public int Id { get; set; }
         public string? InvoiceNumber { get; set; }
         public string? ProjectNumber { get; set; }
@@ -26,7 +26,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
     }
 
-    public class InvoicePostDto 
+    public class InvoicePostDto
     {
         public string? DOType { get; set; }
         public string? ProjectNumber { get; set; }
@@ -36,7 +36,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? CustomerId { get; set; }
 
         public string? CompanyName { get; set; }
-         public string? Remarks { get; set; }
+        public string? Remarks { get; set; }
 
 
         public List<InvoiceChildItemPostDto>? InvoiceChildItems { get; set; }
@@ -74,7 +74,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public List<string> InvoiceNumber { get; set; }
         public List<string> CustomerName { get; set; }
         public List<string> CompanyName { get; set; }
- 
+
     }
 
     public class SalesOrderAdditionalChargesUpdate
@@ -147,5 +147,28 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? KPN { get; set; }
         public string? MPN { get; set; }
         public string? IssuedTo { get; set; }
+    }
+    public class DoNoInvoiceDto
+    {
+
+        public int Id { get; set; }
+        public string? DONumber { get; set; }
+        public string? InvoiceNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? CustomerName { get; set; }
+        public string? DOType { get; set; }
+        public string? CustomerAliasName { get; set; }
+        public string? CustomerId { get; set; }
+        public string? CompanyName { get; set; }
+        public string? Remarks { get; set; }
+        public string? Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+
+        public List<DoNoInvoiceChildItemDto>? invoiceChildItems { get; set; }
+        public List<DoNoInvoiceAdditionalChargesDto>? InvoiceAdditionalCharges { get; set; }
+
     }
 }

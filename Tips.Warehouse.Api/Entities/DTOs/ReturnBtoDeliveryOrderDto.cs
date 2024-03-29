@@ -61,7 +61,10 @@
 
         public List<ReturnBtoDeliveryOrderItemsUpdateDto>? ReturnBtoDeliveryOrderItemsUpdateDtos { get; set; }
     }
+    public class ReturnBTONumberListDto
+    {
+        public string? ReturnBTONumber { get; set; }
+    }
 
-   
-    
+
 }

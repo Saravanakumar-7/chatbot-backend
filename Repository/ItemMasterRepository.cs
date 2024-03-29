@@ -503,7 +503,18 @@ namespace Repository
                 ).ToListAsync();
             return itemWithPartTypes;
         }
-
+        public async Task<List<ItemWithPartTypeAndMinDto>> GetItemMasterPartTypeAndMinByItemNumber(List<string> ItemNumberList)
+        {
+            var itemWithPartTypes = await FindByCondition(x => ItemNumberList.Contains(x.ItemNumber))
+                .Select(s => new ItemWithPartTypeAndMinDto
+                {
+                    ItemNumber = s.ItemNumber,
+                    PartType = s.ItemType,
+                    Min = s.Min
+                }
+                ).ToListAsync();
+            return itemWithPartTypes;
+        }
         public async Task<List<ItemMasterMtrPartNoDto>> GetItemMasterByPartNo(string partNumber)
         {
             var itemMasterDescription = await TipsMasterDbContext.ItemMasters

@@ -39,5 +39,6 @@ namespace Contracts
         Task<string> GetClosedIqcItemMasterItemNo(string ItemNumber);
         Task<Dictionary<string, int?>> GetItemsImageIds(List<string> ItemNumbers);
         Task<List<GetDownloadUrlswithitemnumber>> GetImageDetails(Dictionary<string, int?> itemImageids);
+        Task<List<ItemWithPartTypeAndMinDto>> GetItemMasterPartTypeAndMinByItemNumber(List<string> ItemNumberList);
     }
 }

@@ -403,15 +403,15 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
-                   // var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
-                   //// fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
-                   // getDownloadDetailByPoNumber.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={getDownloadDetailByPoNumber.FileName}";
+                    // var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                    //// fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={fileUploadDto.FileName}";
+                    // getDownloadDetailByPoNumber.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={getDownloadDetailByPoNumber.FileName}";
                     var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
                     getDownloadDetailByPoNumber.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadImage?Filename={getDownloadDetailByPoNumber.FileName}";
                 }
                 //var baseUrl = $"{Request.Scheme}://{_config["ItemMasterBaseUrl"]}";
                 //    getDownloadDetailByPoNumber.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={getDownloadDetailByPoNumber.FileName}";
-                
+
                 _logger.LogInfo($"Returned DownloadDetail with id: {imageid}");
                 var result = _mapper.Map<GetDownloadUrlDtos>(getDownloadDetailByPoNumber);
                 serviceResponse.Data = result;
@@ -482,7 +482,7 @@ namespace Tips.Master.Api.Controllers
                     foreach (var fileUploadDetails in itemsFiles)
                     {
                         FileUploadDto fileUploadDto = _mapper.Map<FileUploadDto>(fileUploadDetails);
-                        var filename=Uri.EscapeDataString(fileUploadDto.FileName);
+                        var filename = Uri.EscapeDataString(fileUploadDto.FileName);
                         if (serverKey == "avision")
                         {
                             var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
@@ -1877,6 +1877,44 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GetItemMasterPartTypeAndMinByItemNumber(List<string> itemNumberList)
+        {
+            ServiceResponse<List<ItemWithPartTypeAndMinDto>> serviceResponse = new ServiceResponse<List<ItemWithPartTypeAndMinDto>>();
+
+            try
+            {
+                var itemMasterDetailsByItemNumber = await _repository.ItemMasterRepository.GetItemMasterPartTypeAndMinByItemNumber(itemNumberList);
+                if (itemMasterDetailsByItemNumber == null)
+                {
+                    _logger.LogError($"some Itemmasters Not found in action method GetItemMasterPartTypeAndMinByItemNumber");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Itemmasters Not found in action method GetItemMasterPartTypeAndMinByItemNumber.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = itemMasterDetailsByItemNumber;
+                    serviceResponse.Message = "Returned All Item PartType and Min:";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetItemMasterPartTypeAndMinByItemNumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Internal server error: {ex.Message}{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetItemMasterDetailsForMNRByItemNo(string ItemNumber)
         {
@@ -1916,7 +1954,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> GetItemsImageUrls([FromBody]List<string> ItemNumbers)
+        public async Task<IActionResult> GetItemsImageUrls([FromBody] List<string> ItemNumbers)
         {
             ServiceResponse<List<GetDownloadUrlswithitemnumber>> serviceResponse = new ServiceResponse<List<GetDownloadUrlswithitemnumber>>();
             try
@@ -1935,19 +1973,20 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
-                    foreach (var items in itemimageurls) {
+                    foreach (var items in itemimageurls)
+                    {
                         if (serverKey == "avision")
                         {
                             var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
                             items.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadImage?Filename={items.FileName}";
                         }
                         else
-                        {                            
+                        {
                             var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
                             items.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadImage?Filename={items.FileName}";
                         }
                     }
-                    _logger.LogInfo($"Returned Itemmasters Imageurls");                    
+                    _logger.LogInfo($"Returned Itemmasters Imageurls");
                     serviceResponse.Data = itemimageurls;
                     serviceResponse.Message = "Returned All ItemMasterByItemNumber:";
                     serviceResponse.Success = true;

@@ -34,10 +34,25 @@ namespace Tips.Warehouse.Api.Repository
             var result = await Create(returnBtoDeliveryOrder);
             return result.Id;
         }
+
+        public async Task<IEnumerable<ReturnBTONumberListDto>> GetReturnBtoDeliveryOrderNumberList()
+        {
+
+            IEnumerable<ReturnBTONumberListDto> returnBTODeliveryOrderNoList = await _tipsWarehouseDbContext.ReturnBtoDeliveryOrders
+                                .Select(x => new ReturnBTONumberListDto()
+                                {
+                                    ReturnBTONumber = x.ReturnBTONumber
+
+                                })
+                              .ToListAsync();
+
+            return returnBTODeliveryOrderNoList;
+        }
+
         public async Task<IEnumerable<ReturnDOSPReport>> ReturnDeliveryOrderSPReportDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsWarehouseDbContext.Set<ReturnDOSPReport>()
-                     .FromSqlInterpolated($"CALL Return_DeliveryOrder_Report_withDate({FromDate},{ToDate})")
+                     .FromSqlInterpolated($"CALL returndeliveryorder_with_returntable_with_date({FromDate},{ToDate})")
                      .ToList();
 
             return results;
@@ -46,7 +61,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var result = _tipsWarehouseDbContext
             .Set<ReturnDOSPReport>()
-            .FromSqlInterpolated($"CALL Return_DeliveryOrder_Report_withparameter({DoNumber},{CustomerName},{CustomerAliasName},{LeadId},{SalesOrderNumber},{ProductType},{TypeOfSolution},{Warehouse},{Location},{KPN},{MPN})")
+            .FromSqlInterpolated($"CALL returndeliveryorder_with_returntable_with_parameters({DoNumber},{CustomerName},{CustomerAliasName},{LeadId},{SalesOrderNumber},{ProductType},{TypeOfSolution},{Warehouse},{Location},{KPN},{MPN})")
             .ToList();
 
             return result;

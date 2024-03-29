@@ -49,4 +49,8 @@
 
         public List<ReturnInvoiceItemDtoUpdate>? ReturnInvoiceItems { get; set; }
     }
+    public class ReturnInvoiceNumberListDto
+    {
+        public string? ReturnInvoiceNumber { get; set; }
+    }
 }

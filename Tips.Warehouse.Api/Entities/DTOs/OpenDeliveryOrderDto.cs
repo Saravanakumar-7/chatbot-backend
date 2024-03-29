@@ -67,7 +67,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class OpenDeliveryOrderIdNameList
     {
         public int Id { get; set; }
-        public string? CustomerName { get; set; }
+        public string? ODONumber { get; set; }
+        //public string? CustomerName { get; set; }
     }
     public class OpenDeliveryOrderSearchDto
     {

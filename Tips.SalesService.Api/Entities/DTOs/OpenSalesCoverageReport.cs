@@ -16,6 +16,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public PartType PartType { get; set; }
         public decimal? OpenSOQty { get; set; }
+        public decimal? OpenRetailSOQty { get; set; }
+        public decimal? MSL { get; set; }
         public decimal Stock { get; set; }
         public decimal OpenPoQty { get; set; }
         public decimal BalanceToOrder { get; set; }

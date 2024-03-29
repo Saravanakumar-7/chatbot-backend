@@ -607,6 +607,27 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
+
         //create Iqc
 
 
@@ -617,6 +638,8 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
+
                 if (iQCConfirmationPostDto == null)
                 {
                     _logger.LogError("IQCConfirmation details object sent from client is null.");
@@ -770,6 +793,8 @@ namespace Tips.Grin.Api.Controllers
                                     grinInventoryDto.Description = grinPartsDetails.ItemDescription;
                                     grinInventoryDto.ProjectNumber = projectNos;
                                     //grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iQCConfirmationItems.RejectedQty);
+                                    grinInventoryDto.Max = itemMasterObject.max;
+                                    grinInventoryDto.Min = itemMasterObject.min;
                                     grinInventoryDto.UOM = grinPartsDetails.UOM;
                                     grinInventoryDto.Warehouse = "Reject";
                                     grinInventoryDto.Location = "Reject";
@@ -914,6 +939,40 @@ namespace Tips.Grin.Api.Controllers
                         string result = await _grinPartsRepository.UpdateGrinQty(grinParts);
                         _grinPartsRepository.SaveAsync();
 
+                        //Updating binning Status in GrinParts
+                        if (iQCDto[i].AcceptedQty == 0)
+                        {
+                            var grinPartsData = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(iQCDto[i].GrinPartId);
+                            grinPartsData.IsBinningCompleted = true;
+                            if (grinPartsData.Remarks == null || string.IsNullOrWhiteSpace(grinPartsData.Remarks))
+                            {
+                                grinPartsData.Remarks = "Iqc Rejected for all";
+                            }
+                            else
+                            {
+                                grinPartsData.Remarks = grinPartsData.Remarks + "[Iqc Rejected for all]";
+                            }
+                            await _grinPartsRepository.UpdateGrinQty(grinPartsData);
+                            _grinPartsRepository.SaveAsync();
+                        }
+
+                        //Updating Binning Status in IqcItems
+                        if (iQCDto[i].AcceptedQty == 0)
+                        {
+                            var iqcItemData = await _iQCConfirmationItemsRepository.GetIQCConfirmationItemsDetailsbyGrinPartId(iQCDto[i].GrinPartId);
+                            iqcItemData.IsBinningCompleted = true;
+                            if (iqcItemData.Remarks == null || string.IsNullOrWhiteSpace(iqcItemData.Remarks))
+                            {
+                                iqcItemData.Remarks = "Iqc Rejected for all";
+                            }
+                            else
+                            {
+                                iqcItemData.Remarks = iqcItemData.Remarks + "[Iqc Rejected for all]";
+                            }
+                            await _iQCConfirmationItemsRepository.UpdateIqcItems(iqcItemData);
+                            _iQCConfirmationItemsRepository.SaveAsync();
+                        }
+
                     }
 
                     //Updating IQC Status in Grin
@@ -955,6 +1014,17 @@ namespace Tips.Grin.Api.Controllers
                 }
                 else
                 {
+                    if (serverKey == "avision")
+                    {
+                        var grinNum = iQCCreate.GrinNumber;
+                        if (grinNum != null)
+                        {
+                            var iqcNum = grinNum.Replace("GRIN", "IQC");
+                            iQCCreate.IQCNumber = iqcNum;
+                        }
+
+                    }
+
                     for (int i = 0; i < iQCDto.Count; i++)
                     {
                         IQCConfirmationItems iQCConfirmationItems = _mapper.Map<IQCConfirmationItems>(iQCDto[i]);
@@ -1069,6 +1139,8 @@ namespace Tips.Grin.Api.Controllers
                                     grinInventoryDto.Description = grinPartsDetails.ItemDescription;
                                     grinInventoryDto.ProjectNumber = projectNos;
                                     //grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iQCConfirmationItems.RejectedQty);
+                                    grinInventoryDto.Max = itemMasterObject.max;
+                                    grinInventoryDto.Min = itemMasterObject.min;
                                     grinInventoryDto.UOM = grinPartsDetails.UOM;
                                     grinInventoryDto.Warehouse = "Reject";
                                     grinInventoryDto.Location = "Reject";
@@ -1203,42 +1275,76 @@ namespace Tips.Grin.Api.Controllers
                             //}
                         }
 
-                            ////update accepted qty and rejected qty in grin model
-                            //Updating IQC Status in GrinParts
-                            var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iQCConfirmationItems.GrinPartId, iQCConfirmationItems.AcceptedQty.ToString(), iQCConfirmationItems.RejectedQty.ToString());
+                        ////update accepted qty and rejected qty in grin model
+                        //Updating IQC Status in GrinParts
+                        var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iQCConfirmationItems.GrinPartId, iQCConfirmationItems.AcceptedQty.ToString(), iQCConfirmationItems.RejectedQty.ToString());
 
-                            var grinParts = _mapper.Map<GrinParts>(updatedGrinPartsQty);
-                            grinParts.IsIqcCompleted = true;
-                            string result = await _grinPartsRepository.UpdateGrinQty(grinParts);
+                        var grinParts = _mapper.Map<GrinParts>(updatedGrinPartsQty);
+                        grinParts.IsIqcCompleted = true;
+                        string result = await _grinPartsRepository.UpdateGrinQty(grinParts);
 
-                        
+                        //Updating binning Status in GrinParts
+                        if (iQCDto[i].AcceptedQty == 0)
+                        {
+                            var grinPartsData = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(iQCDto[i].GrinPartId);
+                            grinPartsData.IsBinningCompleted = true;
+                            if (grinPartsData.Remarks == null || string.IsNullOrWhiteSpace(grinPartsData.Remarks))
+                            {
+                                grinPartsData.Remarks = "Iqc Rejected for all";
+                            }
+                            else
+                            {
+                                grinPartsData.Remarks = grinPartsData.Remarks + "[Iqc Rejected for all]";
+                            }
+                            await _grinPartsRepository.UpdateGrinQty(grinPartsData);
+                            _grinPartsRepository.SaveAsync();
+                        }
+
+                        //Updating Binning Status in IqcItems
+                        if (iQCDto[i].AcceptedQty == 0)
+                        {
+                            var iqcItemData = await _iQCConfirmationItemsRepository.GetIQCConfirmationItemsDetailsbyGrinPartId(iQCDto[i].GrinPartId);
+                            iqcItemData.IsBinningCompleted = true;
+                            if (iqcItemData.Remarks == null || string.IsNullOrWhiteSpace(iqcItemData.Remarks))
+                            {
+                                iqcItemData.Remarks = "Iqc Rejected for all";
+                            }
+                            else
+                            {
+                                iqcItemData.Remarks = iqcItemData.Remarks + "[Iqc Rejected for all]";
+                            }
+                            await _iQCConfirmationItemsRepository.UpdateIqcItems(iqcItemData);
+                            _iQCConfirmationItemsRepository.SaveAsync();
+                        }
+
+
                     }
 
-                        //Updating IQC Status in IQC
-                        iQCCreate.IQCConfirmationItems = iQCItemList;
-                        iQCCreate.IsIqcCompleted = true;
-                        await _iQCConfirmationRepository.CreateIqc(iQCCreate);
+                    //Updating IQC Status in IQC
+                    iQCCreate.IQCConfirmationItems = iQCItemList;
+                    iQCCreate.IsIqcCompleted = true;
+                    await _iQCConfirmationRepository.CreateIqc(iQCCreate);
 
 
-                        //Updating IQC Status in Grin
-                        var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNumber);
-                        grinDetails.IsIqcCompleted = true;
-                        await _grinRepository.UpdateGrin(grinDetails);
+                    //Updating IQC Status in Grin
+                    var grinDetails = await _grinRepository.GetGrinByGrinNo(grinNumber);
+                    grinDetails.IsIqcCompleted = true;
+                    await _grinRepository.UpdateGrin(grinDetails);
 
-                        if (getItemmResp == HttpStatusCode.OK && createInvfromGrin == HttpStatusCode.OK && getInvdetailsGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK)
-                        {
-                            _grinPartsRepository.SaveAsync();
-                            _iQCConfirmationRepository.SaveAsync();
-                            _grinRepository.SaveAsync();
-                        }
-                    
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = "IQCConfirmation Successfully Created";
-                        serviceResponse.Success = true;
-                        serviceResponse.StatusCode = HttpStatusCode.OK;
-                        return Created("IQCConfirmationById", serviceResponse);
+                    if (getItemmResp == HttpStatusCode.OK && createInvfromGrin == HttpStatusCode.OK && getInvdetailsGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK)
+                    {
+                        _grinPartsRepository.SaveAsync();
+                        _iQCConfirmationRepository.SaveAsync();
+                        _grinRepository.SaveAsync();
+                    }
 
-                    
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "IQCConfirmation Successfully Created";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Created("IQCConfirmationById", serviceResponse);
+
+
                 }
 
             }
@@ -1674,6 +1780,8 @@ namespace Tips.Grin.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
+
                 if (iqcConfirmationSaveDto is null)
                 {
                     _logger.LogError("Create IQCConfirmation object sent from the client is null.");
@@ -1742,6 +1850,40 @@ namespace Tips.Grin.Api.Controllers
                     grinPartsDetails.IsIqcCompleted = true;
                     await _grinPartsRepository.UpdateGrinQty(grinPartsDetails);
                     _grinPartsRepository.SaveAsync();
+
+                    //Updating binning Status in GrinParts
+                    if (iqcConfirmationItems.AcceptedQty == 0)
+                    {
+                        var grinPartsData = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(iqcConfirmationItems.GrinPartId);
+                        grinPartsData.IsBinningCompleted = true;
+                        if (grinPartsData.Remarks == null || string.IsNullOrWhiteSpace(grinPartsData.Remarks))
+                        {
+                            grinPartsData.Remarks = "Iqc Rejected for all";
+                        }
+                        else
+                        {
+                            grinPartsData.Remarks = grinPartsData.Remarks + "[Iqc Rejected for all]";
+                        }
+                        await _grinPartsRepository.UpdateGrinQty(grinPartsData);
+                        _grinPartsRepository.SaveAsync();
+                    }
+
+                    //Updating Binning Status in IqcItems
+                    if (iqcConfirmationItems.AcceptedQty == 0)
+                    {
+                        var iqcItemData = await _iQCConfirmationItemsRepository.GetIQCConfirmationItemsDetailsbyGrinPartId(iqcConfirmationItems.GrinPartId);
+                        iqcItemData.IsBinningCompleted = true;
+                        if (iqcItemData.Remarks == null || string.IsNullOrWhiteSpace(iqcItemData.Remarks))
+                        {
+                            iqcItemData.Remarks = "Iqc Rejected for all";
+                        }
+                        else
+                        {
+                            iqcItemData.Remarks = iqcItemData.Remarks + "[Iqc Rejected for all]";
+                        }
+                        await _iQCConfirmationItemsRepository.UpdateIqcItems(iqcItemData);
+                        _iQCConfirmationItemsRepository.SaveAsync();
+                    }
 
                     //Updating IQC Status in Grin
 
@@ -1852,7 +1994,9 @@ namespace Tips.Grin.Api.Controllers
                                 grinInventoryDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
                                 grinInventoryDto.Description = grinPartsDetails.ItemDescription;
                                 grinInventoryDto.ProjectNumber = projectNos;
-                                // grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iqcConfirmationItemsDto.RejectedQty);
+                                grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iqcConfirmationItemsDto.RejectedQty);
+                                grinInventoryDto.Max = itemMasterObject.max;
+                                grinInventoryDto.Min = itemMasterObject.min;
                                 grinInventoryDto.UOM = grinPartsDetails.UOM;
                                 grinInventoryDto.Warehouse = "Reject";
                                 grinInventoryDto.Location = "Reject";
@@ -1990,6 +2134,17 @@ namespace Tips.Grin.Api.Controllers
                 }
                 else
                 {
+                    if (serverKey == "avision")
+                    {
+                        var grinNum = iqcConfirmation.GrinNumber;
+                        if (grinNum != null)
+                        {
+                            var iqcNum = grinNum.Replace("GRIN", "IQC");
+                            iqcConfirmation.IQCNumber = iqcNum;
+                        }
+
+                    }
+
                     var grinPartId = iqcConfirmationItemsDto.GrinPartId;
                     var grinPartsDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinPartId);
                     if (iqcConfirmationItemsDto.GrinPartId != grinPartsDetails.Id)
@@ -2029,6 +2184,40 @@ namespace Tips.Grin.Api.Controllers
                     grinPartsDetails.IsIqcCompleted = true;
                     await _grinPartsRepository.UpdateGrinQty(grinPartsDetails);
                     _grinPartsRepository.SaveAsync();
+
+                    //Updating binning Status in GrinParts
+                    if (iqcConfirmationItems.AcceptedQty == 0)
+                    {
+                        var grinPartsData = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(iqcConfirmationItems.GrinPartId);
+                        grinPartsData.IsBinningCompleted = true;
+                        if (grinPartsData.Remarks == null || string.IsNullOrWhiteSpace(grinPartsData.Remarks))
+                        {
+                            grinPartsData.Remarks = "Iqc Rejected for all";
+                        }
+                        else
+                        {
+                            grinPartsData.Remarks = grinPartsData.Remarks + "[Iqc Rejected for all]";
+                        }
+                        await _grinPartsRepository.UpdateGrinQty(grinPartsData);
+                        _grinPartsRepository.SaveAsync();
+                    }
+
+                    //Updating Binning Status in IqcItems
+                    if (iqcConfirmationItems.AcceptedQty == 0)
+                    {
+                        var iqcItemData = await _iQCConfirmationItemsRepository.GetIQCConfirmationItemsDetailsbyGrinPartId(iqcConfirmationItems.GrinPartId);
+                        iqcItemData.IsBinningCompleted = true;
+                        if (iqcItemData.Remarks == null || string.IsNullOrWhiteSpace(iqcItemData.Remarks))
+                        {
+                            iqcItemData.Remarks = "Iqc Rejected for all";
+                        }
+                        else
+                        {
+                            iqcItemData.Remarks = iqcItemData.Remarks + "[Iqc Rejected for all]";
+                        }
+                        await _iQCConfirmationItemsRepository.UpdateIqcItems(iqcItemData);
+                        _iQCConfirmationItemsRepository.SaveAsync();
+                    }
 
                     //Updating IQC Status in Grin
 
@@ -2125,6 +2314,8 @@ namespace Tips.Grin.Api.Controllers
                                 grinInventoryDto.Description = grinPartsDetails.ItemDescription;
                                 grinInventoryDto.ProjectNumber = projectNos;
                                 grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iqcConfirmationItemsDto.RejectedQty);
+                                grinInventoryDto.Max = itemMasterObject.max;
+                                grinInventoryDto.Min = itemMasterObject.min;
                                 grinInventoryDto.UOM = grinPartsDetails.UOM;
                                 grinInventoryDto.Warehouse = "Reject";
                                 grinInventoryDto.Location = "Reject";

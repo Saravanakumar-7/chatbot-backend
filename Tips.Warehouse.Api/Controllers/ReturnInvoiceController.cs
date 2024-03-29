@@ -128,7 +128,7 @@ namespace Tips.Warehouse.Api.Controllers
                     {
                         foreach (var returnInvoiceitemDetails in getReturnInvoiceDetailById.ReturnInvoiceItems)
                         {
-                            ReturnInvoiceItemDto returnInvoiceItemDto= _mapper.Map<ReturnInvoiceItemDto>(returnInvoiceitemDetails);
+                            ReturnInvoiceItemDto returnInvoiceItemDto = _mapper.Map<ReturnInvoiceItemDto>(returnInvoiceitemDetails);
                             returnInvoiceItemDto.QtyDistribution = _mapper.Map<List<ReturnInvoiceItemQtyDistributionDto>>(returnInvoiceitemDetails.QtyDistribution);
                             returnInvoiceItemDtos.Add(returnInvoiceItemDto);
                         }
@@ -853,6 +853,44 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside ReturnInvoiceSPReport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetReturnInvoiceNumberList()
+        {
+            ServiceResponse<IEnumerable<ReturnInvoiceNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceNumberListDto>>();
+
+            try
+            {
+                var returnOpenDeliveryOrderNumberList = await _returnInvoiceRepository.GetReturnInvoiceNumberList();
+                if (returnOpenDeliveryOrderNumberList == null)
+                {
+                    _logger.LogError("ReturnInvoicenumber Not Found");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ReturnInvoicenumber Not Found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo("Returned ReturnInvoicenumber");
+                    var result = _mapper.Map<IEnumerable<ReturnInvoiceNumberListDto>>(returnOpenDeliveryOrderNumberList);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "ReturnInvoicenumber Successfully Returned";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong GetReturnInvoiceNumberList Details: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using NLog;
 using Tips.Purchase.Api.Contracts;
 using Tips.Purchase.Api.Extensions;
@@ -17,6 +18,15 @@ builder.Services.ConfigureLoggerService();
 //builder.Services.ConfigureMSSqlContext(builder.Configuration);
 builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.Configure<KestrelServerOptions>(option =>
+{
+    option.Limits.MaxRequestBodySize = 1073741824;
+});
+builder.Services.Configure<IISServerOptions>(option =>
+{
+    option.MaxRequestBodySize = 1073741824;
+});
+
 var key = builder.Configuration["Jwt:key"];
 builder.Services.ConfigureJwtToken(builder.Configuration);
 builder.Services.AddScoped<IPurchaseRequisitionRepository, PurchaseRequisitionRepository>();
@@ -31,8 +41,6 @@ builder.Services.AddScoped<IPoConfirmationDateRepository, PoConfirmationDateRepo
 builder.Services.AddScoped<IPoConfirmationHistoryRepository, PoConfirmationHistoryRepository>();
 builder.Services.AddScoped<IPrItemsRepository, PurchaseRequisitionItemRepository>();
 builder.Services.AddScoped<IPoAddprojectRepository, PoAddprojectRepository>();
-
-
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

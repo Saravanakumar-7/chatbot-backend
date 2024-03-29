@@ -58,4 +58,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         public List<ReturnOpenDeliveryOrderPartsUpdateDto>? ReturnOpenDeliveryOrderPartsUpdateDtos { get; set; }
     }
+    public class ReturnODONumberListDto
+    {
+        public string? ReturnODONumber { get; set; }
+    }
 }

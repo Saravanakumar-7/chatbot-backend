@@ -349,6 +349,10 @@ namespace Tips.SalesService.Api.Entities.Dto
 
 
     }
+    public class SalesOrderRetailFGandBalanceQty
+    {
+        public decimal Balance_Qty { get; set; }
+    }
     public class SalesOrderFGandBalanceQtyByProjectNo
     {
         public string? FGItemNumber { get; set; }

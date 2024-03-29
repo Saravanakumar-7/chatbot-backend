@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -88,14 +89,14 @@ namespace Tips.Warehouse.Api.Repository
             return getReturnInvoiceDetails;
         }
 
-        
+
 
 
         public async Task<ReturnInvoice> GetReturnInvoiceById(int id)
         {
             var getReturnInvoiceListById = await _tipsWarehouseDbContext.ReturnInvoices
                       .Where(x => x.Id == id)
-                      .Include(k => k.ReturnInvoiceItems).ThenInclude(x=>x.QtyDistribution)
+                      .Include(k => k.ReturnInvoiceItems).ThenInclude(x => x.QtyDistribution)
                        .FirstOrDefaultAsync();
             return getReturnInvoiceListById;
         }
@@ -107,6 +108,19 @@ namespace Tips.Warehouse.Api.Repository
             Update(returnInvoice);
             string result = $"returnInvoice details of {returnInvoice.Id} is updated successfully!";
             return result;
+        }
+        public async Task<IEnumerable<ReturnInvoiceNumberListDto>> GetReturnInvoiceNumberList()
+        {
+
+            IEnumerable<ReturnInvoiceNumberListDto> returnInvoiceNumberList = await _tipsWarehouseDbContext.ReturnInvoices
+                                .Select(x => new ReturnInvoiceNumberListDto()
+                                {
+                                    ReturnInvoiceNumber = x.InvoiceNumber
+
+                                })
+                              .ToListAsync();
+
+            return returnInvoiceNumberList;
         }
     }
 }

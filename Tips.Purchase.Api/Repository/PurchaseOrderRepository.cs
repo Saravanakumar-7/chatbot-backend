@@ -715,116 +715,6 @@ namespace Tips.Purchase.Api.Repository
             return new PagedList<PurchaseOrderIdNameListDto>(result, totalCount, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
-        {
-            var lastestPendingPOApprovalINameList = _tipsPurchaseDbContext.PurchaseOrders
-                .Where(x => (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
-            x.VendorName.Contains(searchParams.SearchValue) || x.PONumber.Contains(searchParams.SearchValue) ||
-            x.VendorId.Equals(searchParams.SearchValue) || x.VendorAddress.Equals(searchParams.SearchValue) || x.POApprovedIBy.Equals(searchParams.SearchValue)
-            || x.POApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue))
-            && ((x.POApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))))
-                .OrderByDescending(x => x.Id);
-
-                return PagedList<PurchaseOrder>.ToPagedList(lastestPendingPOApprovalINameList,pagingParameter.PageNumber, pagingParameter.PageSize);
-            //    .Select(g => new PurchaseOrderIdNameListDto()
-            //    {
-            //        Id = g.Id,
-            //        PONumber = g.PONumber,
-            //        PODate = g.PODate,
-            //        RevisionNumber = g.RevisionNumber,
-            //        BillToId = g.BillToId,
-            //        ShipToId = g.ShipToId,
-            //        ProcurementType = g.ProcurementType,
-            //        Currency = g.Currency,
-            //        CompanyAliasName = g.CompanyAliasName,
-            //        PoConfirmationStatus = g.PoConfirmationStatus,
-            //        VendorName = g.VendorName,
-            //        VendorId = g.VendorId,
-            //        VendorNumber = g.VendorNumber,
-            //        QuotationReferenceNumber = g.QuotationReferenceNumber,
-            //        QuotationDate = g.QuotationDate,
-            //        VendorAddress = g.VendorAddress,
-            //        DeliveryTerms = g.DeliveryTerms,
-            //        PaymentTerms = g.PaymentTerms,
-            //        ShippingMode = g.ShippingMode,
-            //        ShipTo = g.ShipTo,
-            //        BillTo = g.BillTo,
-            //        RetentionPeriod = g.RetentionPeriod,
-            //        SpecialTermsAndConditions = g.SpecialTermsAndConditions,
-            //        IsDeleted = g.IsDeleted,
-            //        IsShortClosed = g.IsShortClosed,
-            //        ShortClosedBy = g.ShortClosedBy,
-            //        ShortClosedOn = g.ShortClosedOn,
-            //        TotalAmount = g.TotalAmount,
-            //        POApprovalI = g.POApprovalI,
-            //        POApprovedIDate = g.POApprovedIDate,
-            //        POApprovedIBy = g.POApprovedIBy,
-            //        POApprovalII = g.POApprovalII,
-            //        POApprovedIIDate = g.POApprovedIIDate,
-            //        POApprovedIIBy = g.POApprovedIIBy,
-            //        Unit = g.Unit,
-            //        CreatedBy = g.CreatedBy,
-            //        CreatedOn = g.CreatedOn,
-            //        LastModifiedBy = g.LastModifiedBy,
-            //        LastModifiedOn = g.LastModifiedOn,
-            //    })
-            //    .GroupBy(x => x.PONumber)
-            //    .Select(group => group.OrderByDescending(x => x.RevisionNumber).First());
-
-            //if (searchParams != null && !string.IsNullOrEmpty(searchParams.SearchValue))
-            //{
-            //    string searchValue = searchParams.SearchValue.ToLower();
-
-            //    lastestPendingPOApprovalINameList = lastestPendingPOApprovalINameList
-            //        .Where(item =>
-            //            item.PONumber.ToLower().Contains(searchValue) ||
-            //            item.VendorName.ToLower().Contains(searchValue) ||
-            //            item.VendorId.ToLower().Contains(searchValue) ||
-            //            item.VendorAddress.ToLower().Contains(searchValue) ||
-            //            item.POApprovedIBy.ToLower().Contains(searchValue) ||
-            //            item.POApprovedIIBy.ToLower().Contains(searchValue) ||
-            //            item.ProcurementType.ToLower().Contains(searchValue)
-            //        ).OrderByDescending(x => x.Id);
-            //}
-
-            //int totalCount = await lastestPendingPOApprovalINameList.CountAsync();
-
-            //var result = await lastestPendingPOApprovalINameList
-            //    .Skip((pagingParameter.PageNumber - 1) * pagingParameter.PageSize)
-            //    .Take(pagingParameter.PageSize)
-            //    .ToListAsync();
-
-
-        }
-
-
-        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParam(string VendorName, string PONumber, string PartNumber)
-        {
-
-            var result = _tipsPurchaseDbContext
-            .Set<PurchaseOrderSPReport>()
-            .FromSqlInterpolated($"CALL Purchase_Order_withparameter({VendorName},{PONumber},{PartNumber})")
-            .ToList();
-
-            return result;
-        }
-        public async Task<PagedList<PurchaseOrderSPReport>> GetPurchaseOrderSPResport(PagingParameter pagingParameter)
-        {
-            var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReport>()
-                     .FromSqlInterpolated($"CALL Purchase_Order_without_parameter")
-                     .ToList();
-
-            return PagedList<PurchaseOrderSPReport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
-        }
-
-        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
-        {
-            var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReport>()
-                        .FromSqlInterpolated($"CALL Purchase_Order_withparameter_withdate({FromDate},{ToDate})")
-                        .ToList();
-
-            return results;
-        }
         public async Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
             IQueryable<PurchaseOrderIdNameListDto> pendingPOApprovalIINameList = _tipsPurchaseDbContext.PurchaseOrders
@@ -901,6 +791,183 @@ namespace Tips.Purchase.Api.Repository
 
         }
 
+        public async Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIIListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+
+            IQueryable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList = _tipsPurchaseDbContext.PurchaseOrders
+            .Where(x => x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed).OrderByDescending(x => x.Id)
+            .Select(g => new PurchaseOrderIdNameListDto()
+            {
+                Id = g.Id,
+                PONumber = g.PONumber,
+                PODate = g.PODate,
+                RevisionNumber = g.RevisionNumber,
+                BillToId = g.BillToId,
+                ShipToId = g.ShipToId,
+                ProcurementType = g.ProcurementType,
+                Currency = g.Currency,
+                CompanyAliasName = g.CompanyAliasName,
+                PoConfirmationStatus = g.PoConfirmationStatus,
+                VendorName = g.VendorName,
+                VendorId = g.VendorId,
+                VendorNumber = g.VendorNumber,
+                QuotationReferenceNumber = g.QuotationReferenceNumber,
+                QuotationDate = g.QuotationDate,
+                VendorAddress = g.VendorAddress,
+                DeliveryTerms = g.DeliveryTerms,
+                PaymentTerms = g.PaymentTerms,
+                ShippingMode = g.ShippingMode,
+                ShipTo = g.ShipTo,
+                BillTo = g.BillTo,
+                RetentionPeriod = g.RetentionPeriod,
+                SpecialTermsAndConditions = g.SpecialTermsAndConditions,
+                IsDeleted = g.IsDeleted,
+                IsShortClosed = g.IsShortClosed,
+                ShortClosedBy = g.ShortClosedBy,
+                ShortClosedOn = g.ShortClosedOn,
+                TotalAmount = g.TotalAmount,
+                POApprovalI = g.POApprovalI,
+                POApprovedIDate = g.POApprovedIDate,
+                POApprovedIBy = g.POApprovedIBy,
+                POApprovalII = g.POApprovalII,
+                POApprovedIIDate = g.POApprovedIIDate,
+                POApprovedIIBy = g.POApprovedIIBy,
+                POApprovalIII = g.POApprovalIII,
+                POApprovedIIIDate = g.POApprovedIIIDate,
+                POApprovedIIIBy = g.POApprovedIIIBy,
+                POApprovalIV = g.POApprovalIV,
+                POApprovedIVDate = g.POApprovedIVDate,
+                POApprovedIVBy = g.POApprovedIVBy,
+                Unit = g.Unit,
+                CreatedBy = g.CreatedBy,
+                CreatedOn = g.CreatedOn,
+                LastModifiedBy = g.LastModifiedBy,
+                LastModifiedOn = g.LastModifiedOn,
+
+            });
+            if (searchParams != null && !string.IsNullOrEmpty(searchParams.SearchValue))
+            {
+                string searchValue = searchParams.SearchValue.ToLower();
+
+                pendingPOApprovalINameList = pendingPOApprovalINameList
+                    .Where(item =>
+                        item.PONumber.ToLower().Contains(searchValue) ||
+                        item.VendorName.ToLower().Contains(searchValue) ||
+                        item.VendorId.ToLower().Contains(searchValue) ||
+                        item.VendorAddress.ToLower().Contains(searchValue) ||
+                        item.POApprovedIBy.ToLower().Contains(searchValue) ||
+                        item.POApprovedIIBy.ToLower().Contains(searchValue) ||
+                        item.POApprovedIIIBy.ToLower().Contains(searchValue) ||
+                        item.ProcurementType.ToLower().Contains(searchValue)
+                    ).OrderByDescending(x => x.Id);
+            }
+
+            int totalCount = await pendingPOApprovalINameList.CountAsync();
+
+            var result = await pendingPOApprovalINameList
+                .Skip((pagingParameter.PageNumber - 1) * pagingParameter.PageSize)
+                .Take(pagingParameter.PageSize)
+                .ToListAsync();
+
+            return new PagedList<PurchaseOrderIdNameListDto>(result, totalCount, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        public async Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIVListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+
+            IQueryable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList = _tipsPurchaseDbContext.PurchaseOrders
+            .Where(x => x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed).OrderByDescending(x => x.Id)
+            .Select(g => new PurchaseOrderIdNameListDto()
+            {
+                Id = g.Id,
+                PONumber = g.PONumber,
+                PODate = g.PODate,
+                RevisionNumber = g.RevisionNumber,
+                BillToId = g.BillToId,
+                ShipToId = g.ShipToId,
+                ProcurementType = g.ProcurementType,
+                Currency = g.Currency,
+                CompanyAliasName = g.CompanyAliasName,
+                PoConfirmationStatus = g.PoConfirmationStatus,
+                VendorName = g.VendorName,
+                VendorId = g.VendorId,
+                VendorNumber = g.VendorNumber,
+                QuotationReferenceNumber = g.QuotationReferenceNumber,
+                QuotationDate = g.QuotationDate,
+                VendorAddress = g.VendorAddress,
+                DeliveryTerms = g.DeliveryTerms,
+                PaymentTerms = g.PaymentTerms,
+                ShippingMode = g.ShippingMode,
+                ShipTo = g.ShipTo,
+                BillTo = g.BillTo,
+                RetentionPeriod = g.RetentionPeriod,
+                SpecialTermsAndConditions = g.SpecialTermsAndConditions,
+                IsDeleted = g.IsDeleted,
+                IsShortClosed = g.IsShortClosed,
+                ShortClosedBy = g.ShortClosedBy,
+                ShortClosedOn = g.ShortClosedOn,
+                TotalAmount = g.TotalAmount,
+                POApprovalI = g.POApprovalI,
+                POApprovedIDate = g.POApprovedIDate,
+                POApprovedIBy = g.POApprovedIBy,
+                POApprovalII = g.POApprovalII,
+                POApprovedIIDate = g.POApprovedIIDate,
+                POApprovedIIBy = g.POApprovedIIBy,
+                POApprovalIII = g.POApprovalIII,
+                POApprovedIIIDate = g.POApprovedIIIDate,
+                POApprovedIIIBy = g.POApprovedIIIBy,
+                POApprovalIV = g.POApprovalIV,
+                POApprovedIVDate = g.POApprovedIVDate,
+                POApprovedIVBy = g.POApprovedIVBy,
+                Unit = g.Unit,
+                CreatedBy = g.CreatedBy,
+                CreatedOn = g.CreatedOn,
+                LastModifiedBy = g.LastModifiedBy,
+                LastModifiedOn = g.LastModifiedOn,
+
+            });
+            if (searchParams != null && !string.IsNullOrEmpty(searchParams.SearchValue))
+            {
+                string searchValue = searchParams.SearchValue.ToLower();
+
+                pendingPOApprovalINameList = pendingPOApprovalINameList
+                    .Where(item =>
+                        item.PONumber.ToLower().Contains(searchValue) ||
+                        item.VendorName.ToLower().Contains(searchValue) ||
+                        item.VendorId.ToLower().Contains(searchValue) ||
+                        item.VendorAddress.ToLower().Contains(searchValue) ||
+                        item.POApprovedIBy.ToLower().Contains(searchValue) ||
+                        item.POApprovedIIBy.ToLower().Contains(searchValue) ||
+                        item.POApprovedIIIBy.ToLower().Contains(searchValue) ||
+                        item.POApprovedIVBy.ToLower().Contains(searchValue) ||
+                        item.ProcurementType.ToLower().Contains(searchValue)
+                    ).OrderByDescending(x => x.Id);
+            }
+
+            int totalCount = await pendingPOApprovalINameList.CountAsync();
+
+            var result = await pendingPOApprovalINameList
+                .Skip((pagingParameter.PageNumber - 1) * pagingParameter.PageSize)
+                .Take(pagingParameter.PageSize)
+                .ToListAsync();
+
+            return new PagedList<PurchaseOrderIdNameListDto>(result, totalCount, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        public async Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            var lastestPendingPOApprovalINameList = _tipsPurchaseDbContext.PurchaseOrders
+                .Where(x => (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
+            x.VendorName.Contains(searchParams.SearchValue) || x.PONumber.Contains(searchParams.SearchValue) ||
+            x.VendorId.Equals(searchParams.SearchValue) || x.VendorAddress.Equals(searchParams.SearchValue) || x.POApprovedIBy.Equals(searchParams.SearchValue)
+            || x.POApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue))
+            && ((x.POApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))))
+                .OrderByDescending(x => x.Id);
+
+            return PagedList<PurchaseOrder>.ToPagedList(lastestPendingPOApprovalINameList, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+        }
+
         public async Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
             var lastestPendingPOApprovalIINameList = _tipsPurchaseDbContext.PurchaseOrders
@@ -912,106 +979,40 @@ namespace Tips.Purchase.Api.Repository
                 .OrderByDescending(x => x.Id);
 
             return PagedList<PurchaseOrder>.ToPagedList(lastestPendingPOApprovalIINameList, pagingParameter.PageNumber, pagingParameter.PageSize);
-            //    .Select(g => new PurchaseOrderIdNameListDto()
-            //    {
-            //        Id = g.Id,
-            //        PONumber = g.PONumber,
-            //        PODate = g.PODate,
-            //        RevisionNumber = g.RevisionNumber,
-            //        BillToId = g.BillToId,
-            //        ShipToId = g.ShipToId,
-            //        ProcurementType = g.ProcurementType,
-            //        Currency = g.Currency,
-            //        CompanyAliasName = g.CompanyAliasName,
-            //        PoConfirmationStatus = g.PoConfirmationStatus,
-            //        VendorName = g.VendorName,
-            //        VendorId = g.VendorId,
-            //        VendorNumber = g.VendorNumber,
-            //        QuotationReferenceNumber = g.QuotationReferenceNumber,
-            //        QuotationDate = g.QuotationDate,
-            //        VendorAddress = g.VendorAddress,
-            //        DeliveryTerms = g.DeliveryTerms,
-            //        PaymentTerms = g.PaymentTerms,
-            //        ShippingMode = g.ShippingMode,
-            //        ShipTo = g.ShipTo,
-            //        BillTo = g.BillTo,
-            //        RetentionPeriod = g.RetentionPeriod,
-            //        SpecialTermsAndConditions = g.SpecialTermsAndConditions,
-            //        IsDeleted = g.IsDeleted,
-            //        IsShortClosed = g.IsShortClosed,
-            //        ShortClosedBy = g.ShortClosedBy,
-            //        ShortClosedOn = g.ShortClosedOn,
-            //        TotalAmount = g.TotalAmount,
-            //        POApprovalI = g.POApprovalI,
-            //        POApprovedIDate = g.POApprovedIDate,
-            //        POApprovedIBy = g.POApprovedIBy,
-            //        POApprovalII = g.POApprovalII,
-            //        POApprovedIIDate = g.POApprovedIIDate,
-            //        POApprovedIIBy = g.POApprovedIIBy,
-            //        Unit = g.Unit,
-            //        CreatedBy = g.CreatedBy,
-            //        CreatedOn = g.CreatedOn,
-            //        LastModifiedBy = g.LastModifiedBy,
-            //        LastModifiedOn = g.LastModifiedOn,
-            //    })
-            //    .GroupBy(x => x.PONumber)
-            //    .Select(group => group.OrderByDescending(x => x.RevisionNumber).First());
 
-            //if (searchParams != null && !string.IsNullOrEmpty(searchParams.SearchValue))
-            //{
-            //    string searchValue = searchParams.SearchValue.ToLower();
-
-            //    lastestPendingPOApprovalIINameList = lastestPendingPOApprovalIINameList
-            //        .Where(item =>
-            //            item.PONumber.ToLower().Contains(searchValue) ||
-            //            item.VendorName.ToLower().Contains(searchValue) ||
-            //            item.VendorId.ToLower().Contains(searchValue) ||
-            //            item.VendorAddress.ToLower().Contains(searchValue) ||
-            //            item.POApprovedIBy.ToLower().Contains(searchValue) ||
-            //            item.POApprovedIIBy.ToLower().Contains(searchValue) ||
-            //            item.ProcurementType.ToLower().Contains(searchValue)
-            //        ).OrderByDescending(x => x.Id);
-            //}
-
-            //int totalCount = await lastestPendingPOApprovalIINameList.CountAsync();
-
-            //var result = await lastestPendingPOApprovalIINameList
-            //    .Skip((pagingParameter.PageNumber - 1) * pagingParameter.PageSize)
-            //    .Take(pagingParameter.PageSize)
-            //    .ToListAsync();
-
-            //return new PagedList<PurchaseOrderIdNameListDto>(result, totalCount, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
+        public async Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIIIListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            var lastestPendingPOApprovalIINameList = _tipsPurchaseDbContext.PurchaseOrders
+                .Where(x => (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
+            x.VendorName.Contains(searchParams.SearchValue) || x.PONumber.Contains(searchParams.SearchValue) ||
+            x.VendorId.Equals(searchParams.SearchValue) || x.VendorAddress.Equals(searchParams.SearchValue) || x.POApprovedIBy.Equals(searchParams.SearchValue)
+            || x.POApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue))
+            && ((x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))))
+                .OrderByDescending(x => x.Id);
 
-        //public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalINameList()
-        //{
-        //    //IEnumerable<PurchaseOrderIdNameListDto> pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders
-        //    //                .Where(x => x.POApprovalI == false).Select(x => new PurchaseOrderIdNameListDto()
-        //    //                {
-        //    //                    Id = x.Id,
-        //    //                    PONumber = x.PONumber,
-        //    //                }).Distinct().ToListAsync();
+            return PagedList<PurchaseOrder>.ToPagedList(lastestPendingPOApprovalIINameList, pagingParameter.PageNumber, pagingParameter.PageSize);
 
-        //    var pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders
-        //     .Where(x => x.POApprovalI == false && x.POApprovalII == false && x.IsModified == false && x.IsDeleted == false)
-        //     .Select(g => new { g.Id, g.PONumber, g.RevisionNumber })
-        //    .ToListAsync();
+        }
+        public async Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIVListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            var lastestPendingPOApprovalIINameList = _tipsPurchaseDbContext.PurchaseOrders
+                .Where(x => (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
+            x.VendorName.Contains(searchParams.SearchValue) || x.PONumber.Contains(searchParams.SearchValue) ||
+            x.VendorId.Equals(searchParams.SearchValue) || x.VendorAddress.Equals(searchParams.SearchValue) || x.POApprovedIBy.Equals(searchParams.SearchValue)
+            || x.POApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue))
+            && ((x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))))
+                .OrderByDescending(x => x.Id);
 
-        //    //IEnumerable<PurchaseOrderIdNameListDto> approval1PendingList = pendingPOApprovalINameList
-        //    //    .GroupBy(x => x.PONumber)
-        //    //    .Select(g => new PurchaseOrderIdNameListDto()
-        //    //    {
-        //    //        Id = g.OrderByDescending(x => x.RevisionNumber).FirstOrDefault().Id,
-        //    //        PONumber = g.Key,
-        //    //    });
+            return PagedList<PurchaseOrder>.ToPagedList(lastestPendingPOApprovalIINameList, pagingParameter.PageNumber, pagingParameter.PageSize);
 
-        //}
+        }
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalINameList()
         {
             var pendingPOApprovalINameList = await _tipsPurchaseDbContext.PurchaseOrders
                 .Where(x => x.POApprovalI == false && x.POApprovalII == false && x.IsModified == false && x.IsDeleted == false)
-                .Select(g => new { g.Id, g.PONumber, g.RevisionNumber})
+                .Select(g => new { g.Id, g.PONumber, g.RevisionNumber })
                 .ToListAsync();
 
             var query = from details in pendingPOApprovalINameList
@@ -1025,7 +1026,6 @@ namespace Tips.Purchase.Api.Repository
 
             return query;
         }
-
 
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIINameList()
         {
@@ -1041,6 +1041,34 @@ namespace Tips.Purchase.Api.Repository
 
 
             return pendingPOApprovalIINameList;
+        }
+
+        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParam(string VendorName, string PONumber, string PartNumber)
+        {
+
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseOrderSPReport>()
+            .FromSqlInterpolated($"CALL Purchase_Order_withparameter({VendorName},{PONumber},{PartNumber})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<PagedList<PurchaseOrderSPReport>> GetPurchaseOrderSPResport(PagingParameter pagingParameter)
+        {
+            var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReport>()
+                     .FromSqlInterpolated($"CALL Purchase_Order_without_parameter")
+                     .ToList();
+
+            return PagedList<PurchaseOrderSPReport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReport>()
+                        .FromSqlInterpolated($"CALL Purchase_Order_withparameter_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
         }
 
         public async Task<PagedList<PurchaseOrder>> GetAllPurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
@@ -1120,7 +1148,7 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<PagedList<PurchaseOrder>> GetAllLastestPurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
-             int? searchrev;
+            int? searchrev;
             DateTime? searchDate;
             try
             {
@@ -1146,7 +1174,7 @@ namespace Tips.Purchase.Api.Repository
             .Include(t => t.POItems).ThenInclude(x => x.POAddprojects)
             .Include(m => m.POItems).ThenInclude(i => i.POAddDeliverySchedules).Include(itm => itm.POItems)
             .ThenInclude(po => po.POSpecialInstructions).Include(itm => itm.POItems).ThenInclude(po => po.POConfirmationDates)
-            .Include(itm => itm.POItems).ThenInclude(po => po.PrDetails).Include(itm => itm.POIncoTerms);          
+            .Include(itm => itm.POItems).ThenInclude(po => po.PrDetails).Include(itm => itm.POIncoTerms);
 
             return PagedList<PurchaseOrder>.ToPagedList(purchaseOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
@@ -1292,7 +1320,24 @@ namespace Tips.Purchase.Api.Repository
             PoStatus[] status = { PoStatus.Open, PoStatus.PartiallyClosed };
 
             IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
-                           .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.POApprovalII == true).Select(x => new PurchaseOrderIdNameListDto()
+                           .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.POApprovalII == true)
+                           .Select(x => new PurchaseOrderIdNameListDto()
+                           {
+                               Id = x.Id,
+                               PONumber = x.PONumber
+                           }).ToListAsync();
+
+
+            return pONameListbyVendorId;
+        }
+
+        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPoNumberListByVendorIdForAvision(string vendorId)
+        {
+            PoStatus[] status = { PoStatus.Open, PoStatus.PartiallyClosed };
+
+            IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
+                           .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.POApprovalIV == true)
+                           .Select(x => new PurchaseOrderIdNameListDto()
                            {
                                Id = x.Id,
                                PONumber = x.PONumber
@@ -1353,16 +1398,16 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<PurchaseOrder_ReportDto> GetPurchaseOrderReportswithDate(DateTime? FromDate, DateTime? ToDate)
         {
-            var poconfirmmation= _tipsPurchaseDbContext.Set<poconfirmation_report_Dto>()
+            var poconfirmmation = _tipsPurchaseDbContext.Set<poconfirmation_report_Dto>()
                     .FromSqlInterpolated($"CALL poconfirmation_report_withdate({FromDate},{ToDate})")
                     .ToList();
-            var podeliveryschedule= _tipsPurchaseDbContext.Set<podeliveryschedule_report_Dto>()
+            var podeliveryschedule = _tipsPurchaseDbContext.Set<podeliveryschedule_report_Dto>()
                     .FromSqlInterpolated($"CALL podeliveryschedule_report_withdate({FromDate},{ToDate})")
                     .ToList();
-            var poproject= _tipsPurchaseDbContext.Set<poproject_report_Dto>()
+            var poproject = _tipsPurchaseDbContext.Set<poproject_report_Dto>()
                     .FromSqlInterpolated($"CALL poproject_report_withdate({FromDate},{ToDate})")
                     .ToList();
-            PurchaseOrder_ReportDto purchaseOrderReportDto =new PurchaseOrder_ReportDto();
+            PurchaseOrder_ReportDto purchaseOrderReportDto = new PurchaseOrder_ReportDto();
             purchaseOrderReportDto.poconfirmation_Report_Dtos = poconfirmmation;
             purchaseOrderReportDto.podeliveryschedule_Report_Dtos = podeliveryschedule;
             purchaseOrderReportDto.poproject_Report_Dtos = poproject;
@@ -1578,6 +1623,8 @@ namespace Tips.Purchase.Api.Repository
                  po.IsShortClosed == false &&
                  po.POApprovalI == true &&
                  po.POApprovalII == true &&
+                  po.POApprovalIII == true &&
+                   po.POApprovalIV == true &&
                  po.IsModified == false &&
                  po.POItems.Any(pi =>
                      pi.ItemNumber == itemNumber &&
@@ -1659,15 +1706,21 @@ namespace Tips.Purchase.Api.Repository
             return openPoQtyList;
 
         }
-        public async Task<List<OpenPoQuantityDto>> GetListOfOpenPOQtyByItemNoListByProjectNo(string projectNo ,List<string> itemNumberList)
+        public async Task<List<OpenPoQuantityDto>> GetListOfOpenPOQtyByItemNoListByProjectNo(string projectNo, List<string> itemNumberList)
         {
             var poStatus = new List<PoStatus> { PoStatus.Open, PoStatus.PartiallyClosed };
 
             List<OpenPoQuantityDto> openPoQtyList = await _tipsPurchaseDbContext.PoItems
                 .Include(x => x.PurchaseOrder)
-                .Where(x => poStatus.Contains(x.PurchaseOrder.PoStatus) && poStatus.Contains(x.PoStatus)
-                    && itemNumberList.Contains(x.ItemNumber) && x.PurchaseOrder.IsDeleted == false
-                    && x.PurchaseOrder.IsModified == false && x.POAddprojects.Any(pr =>pr.ProjectNumber == projectNo))
+                .Where(x => poStatus.Contains(x.PurchaseOrder.PoStatus)
+                && poStatus.Contains(x.PoStatus) && itemNumberList.Contains(x.ItemNumber)
+                && x.PurchaseOrder.POApprovalI == true
+                && x.PurchaseOrder.POApprovalII == true
+                && x.PurchaseOrder.POApprovalIII == true
+                && x.PurchaseOrder.POApprovalIV == true
+                && x.PurchaseOrder.IsDeleted == false
+                && x.PurchaseOrder.IsModified == false
+                && x.POAddprojects.Any(pr => pr.ProjectNumber == projectNo))
                 .GroupBy(i => new { i.ItemNumber })
                 .Select(gr => new OpenPoQuantityDto
                 {
@@ -1725,11 +1778,11 @@ namespace Tips.Purchase.Api.Repository
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
-        public async Task<IEnumerable<PoAddProject>> GetPOProjectNoDetailsByProjectNo(string itemNumber,string projectNo)
+        public async Task<IEnumerable<PoAddProject>> GetPOProjectNoDetailsByProjectNo(string itemNumber, string projectNo)
         {
             var poItemsDetailsByitemNo = await _tipsPurchaseDbContexts.PoItems
                  .Where(x => x.ItemNumber == itemNumber)
-                 .Select(x =>x.Id)
+                 .Select(x => x.Id)
                           .ToListAsync();
 
             var poProjectNoDetailsByProjectNo = await _tipsPurchaseDbContexts.PoAddProjects
@@ -1770,4 +1823,4 @@ namespace Tips.Purchase.Api.Repository
             throw new NotImplementedException();
         }
     }
- }
+}

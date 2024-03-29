@@ -193,104 +193,175 @@ namespace Tips.Warehouse.Api.Repository
         //                        .Select(projectGroup => projectGroup.First()))));
         //    }
         //}
+        //public async Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfBalQty(InventoryDetailsBalQty inventoryDetailsBalQty)
+        //{
+        //    using (var context = _tipsWarehouseDbContext)
+        //    {
+        //        var query = _tipsWarehouseDbContext.Inventories.AsQueryable();
+
+        //        // Check if inventoryBalQty object is not null
+        //        //if (inventoryDetailsBalQty == null || (inventoryDetailsBalQty.PartNumber.Count == 0 && inventoryDetailsBalQty.Warehouse.Count == 0 && inventoryDetailsBalQty.Location.Count == 0 && inventoryDetailsBalQty.ProjectNumber.Count == 0))
+        //        //{
+        //        //    query = FindAll().OrderByDescending(x => x.Id);
+        //        //}
+        //        if (inventoryDetailsBalQty == null ||
+        //            (inventoryDetailsBalQty.PartNumber.All(string.IsNullOrEmpty)) &&
+        //            (inventoryDetailsBalQty.Warehouse.All(string.IsNullOrEmpty)) &&
+        //            (inventoryDetailsBalQty.Location.All(string.IsNullOrEmpty)) &&
+        //            (inventoryDetailsBalQty.ProjectNumber.All(string.IsNullOrEmpty)))
+        //        {
+        //            query = FindAll().OrderByDescending(x => x.Id);
+        //        }
+        //        else
+        //        {
+        //            // Apply filtering based on the inventoryBalQty properties if they are not null
+        //            //if (inventoryDetailsBalQty.PartNumber != null && inventoryDetailsBalQty.PartNumber.Any())
+        //            //{
+        //                query = query.Where(inv => inventoryDetailsBalQty.PartNumber.Contains(inv.PartNumber));
+        //            //}
+
+        //            //if (inventoryDetailsBalQty.Warehouse != null && inventoryDetailsBalQty.Warehouse.Any())
+        //            //{
+        //                query = query.Where(inv => inventoryDetailsBalQty.Warehouse.Contains(inv.Warehouse) && inv.Warehouse != "WIP");
+        //            //}
+
+        //            //if (inventoryDetailsBalQty.Location != null && inventoryDetailsBalQty.Location.Any())
+        //            //{
+        //                query = query.Where(inv => inventoryDetailsBalQty.Location.Contains(inv.Location) && inv.Location != "WIP");
+        //            //}
+
+        //            //if (inventoryDetailsBalQty.ProjectNumber != null && inventoryDetailsBalQty.ProjectNumber.Any())
+        //            //{
+        //                query = query.Where(inv => inventoryDetailsBalQty.ProjectNumber.Contains(inv.ProjectNumber));
+        //            //}
+        //        }
+
+        //        var inventoryItems = await query.ToListAsync();
+
+        //        var groupedItems = new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<string, List<Inventory>>>>>();
+
+        //        foreach (var item in inventoryItems)
+        //        {
+        //            var partNumber = item.PartNumber;
+        //            var warehouse = item.Warehouse;
+        //            var location = item.Location;
+        //            var projectNumber = item.ProjectNumber;
+
+        //            // Skip items with 'WIP' Location or Warehouse
+        //            if (warehouse == "WIP" || location == "WIP")
+        //            {
+        //                continue;
+        //            }
+
+        //            if (!groupedItems.ContainsKey(partNumber))
+        //            {
+        //                groupedItems[partNumber] = new Dictionary<string, Dictionary<string, Dictionary<string, List<Inventory>>>>();
+        //            }
+
+        //            if (!groupedItems[partNumber].ContainsKey(warehouse))
+        //            {
+        //                groupedItems[partNumber][warehouse] = new Dictionary<string, Dictionary<string, List<Inventory>>>();
+        //            }
+
+        //            if (!groupedItems[partNumber][warehouse].ContainsKey(location))
+        //            {
+        //                groupedItems[partNumber][warehouse][location] = new Dictionary<string, List<Inventory>>();
+        //            }
+
+        //            if (!groupedItems[partNumber][warehouse][location].ContainsKey(projectNumber))
+        //            {
+        //                groupedItems[partNumber][warehouse][location][projectNumber] = new List<Inventory>();
+        //            }
+
+        //            groupedItems[partNumber][warehouse][location][projectNumber].Add(item);
+        //        }
+
+        //        foreach (var partNumberGroup in groupedItems.Values)
+        //        {
+        //            foreach (var warehouseGroup in partNumberGroup.Values)
+        //            {
+        //                foreach (var locationGroup in warehouseGroup.Values)
+        //                {
+        //                    foreach (var projectGroup in locationGroup.Values)
+        //                    {
+        //                        var sum = projectGroup.Sum(inv => inv.Balance_Quantity);
+        //                        var firstItem = projectGroup.First();
+        //                        firstItem.Balance_Quantity = sum;
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //        return groupedItems.Values
+        //            .SelectMany(partNumberGroup => partNumberGroup.Values
+        //                .SelectMany(warehouseGroup => warehouseGroup.Values
+        //                    .SelectMany(locationGroup => locationGroup.Values
+        //                        .Select(projectGroup => projectGroup.First()))));
+        //    }
+        //}
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfBalQty(InventoryDetailsBalQty inventoryDetailsBalQty)
         {
             using (var context = _tipsWarehouseDbContext)
             {
-                var query = _tipsWarehouseDbContext.Inventories.AsQueryable();
+                IQueryable<Inventory> query = _tipsWarehouseDbContext.Inventories;
 
-                // Check if inventoryBalQty object is not null
-                if (inventoryDetailsBalQty == null || (inventoryDetailsBalQty.PartNumber.Count == 0 && inventoryDetailsBalQty.Warehouse.Count == 0 && inventoryDetailsBalQty.Location.Count == 0 && inventoryDetailsBalQty.ProjectNumber.Count == 0))
+                // If inventoryDetailsBalQty is null or all properties are empty lists, return all items ordered by Id descending
+                if (inventoryDetailsBalQty == null ||
+                    (!inventoryDetailsBalQty.PartNumber.Any() &&
+                    !inventoryDetailsBalQty.Warehouse.Any() &&
+                    !inventoryDetailsBalQty.Location.Any() &&
+                    !inventoryDetailsBalQty.ProjectNumber.Any()))
                 {
-                    query = FindAll().OrderByDescending(x => x.Id);
+                    query = query.OrderByDescending(x => x.Id);
                 }
                 else
                 {
-                    // Apply filtering based on the inventoryBalQty properties if they are not null
-                    if (inventoryDetailsBalQty.PartNumber != null && inventoryDetailsBalQty.PartNumber.Any())
+                    // Apply filtering based on the provided inventoryDetailsBalQty properties
+                    if (inventoryDetailsBalQty.PartNumber.Any())
                     {
                         query = query.Where(inv => inventoryDetailsBalQty.PartNumber.Contains(inv.PartNumber));
                     }
 
-                    if (inventoryDetailsBalQty.Warehouse != null && inventoryDetailsBalQty.Warehouse.Any())
+                    if (inventoryDetailsBalQty.Warehouse.Any())
                     {
                         query = query.Where(inv => inventoryDetailsBalQty.Warehouse.Contains(inv.Warehouse) && inv.Warehouse != "WIP");
                     }
 
-                    if (inventoryDetailsBalQty.Location != null && inventoryDetailsBalQty.Location.Any())
+                    if (inventoryDetailsBalQty.Location.Any())
                     {
                         query = query.Where(inv => inventoryDetailsBalQty.Location.Contains(inv.Location) && inv.Location != "WIP");
                     }
 
-                    if (inventoryDetailsBalQty.ProjectNumber != null && inventoryDetailsBalQty.ProjectNumber.Any())
+                    if (inventoryDetailsBalQty.ProjectNumber.Any())
                     {
                         query = query.Where(inv => inventoryDetailsBalQty.ProjectNumber.Contains(inv.ProjectNumber));
                     }
                 }
 
+                // Execute the query to retrieve inventory items
                 var inventoryItems = await query.ToListAsync();
 
-                var groupedItems = new Dictionary<string, Dictionary<string, Dictionary<string, Dictionary<string, List<Inventory>>>>>();
+                // Group the inventory items by PartNumber, Warehouse, Location, and ProjectNumber
+                var groupedItems = inventoryItems
+                    .Where(item => item.Warehouse != "WIP" && item.Location != "WIP") // Filter out items with 'WIP' Location or Warehouse
+                    .GroupBy(item => new { item.PartNumber, item.Warehouse, item.Location, item.ProjectNumber })
+                    .ToDictionary(
+                        group => $"{group.Key.PartNumber}|{group.Key.Warehouse}|{group.Key.Location}|{group.Key.ProjectNumber}",
+                        group => group.ToList());
 
-                foreach (var item in inventoryItems)
+                // Calculate the sum of Balance_Quantity for each group and update the first item's Balance_Quantity
+                foreach (var group in groupedItems.Values)
                 {
-                    var partNumber = item.PartNumber;
-                    var warehouse = item.Warehouse;
-                    var location = item.Location;
-                    var projectNumber = item.ProjectNumber;
-
-                    // Skip items with 'WIP' Location or Warehouse
-                    if (warehouse == "WIP" || location == "WIP")
-                    {
-                        continue;
-                    }
-
-                    if (!groupedItems.ContainsKey(partNumber))
-                    {
-                        groupedItems[partNumber] = new Dictionary<string, Dictionary<string, Dictionary<string, List<Inventory>>>>();
-                    }
-
-                    if (!groupedItems[partNumber].ContainsKey(warehouse))
-                    {
-                        groupedItems[partNumber][warehouse] = new Dictionary<string, Dictionary<string, List<Inventory>>>();
-                    }
-
-                    if (!groupedItems[partNumber][warehouse].ContainsKey(location))
-                    {
-                        groupedItems[partNumber][warehouse][location] = new Dictionary<string, List<Inventory>>();
-                    }
-
-                    if (!groupedItems[partNumber][warehouse][location].ContainsKey(projectNumber))
-                    {
-                        groupedItems[partNumber][warehouse][location][projectNumber] = new List<Inventory>();
-                    }
-
-                    groupedItems[partNumber][warehouse][location][projectNumber].Add(item);
+                    var sum = group.Sum(inv => inv.Balance_Quantity);
+                    group.First().Balance_Quantity = sum;
                 }
 
-                foreach (var partNumberGroup in groupedItems.Values)
-                {
-                    foreach (var warehouseGroup in partNumberGroup.Values)
-                    {
-                        foreach (var locationGroup in warehouseGroup.Values)
-                        {
-                            foreach (var projectGroup in locationGroup.Values)
-                            {
-                                var sum = projectGroup.Sum(inv => inv.Balance_Quantity);
-                                var firstItem = projectGroup.First();
-                                firstItem.Balance_Quantity = sum;
-                            }
-                        }
-                    }
-                }
-
-                return groupedItems.Values
-                    .SelectMany(partNumberGroup => partNumberGroup.Values
-                        .SelectMany(warehouseGroup => warehouseGroup.Values
-                            .SelectMany(locationGroup => locationGroup.Values
-                                .Select(projectGroup => projectGroup.First()))));
+                // Flatten the dictionary and return the inventory items
+                return groupedItems.Values.SelectMany(group => group);
             }
         }
+
+
 
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfStock(InventoryBalQty inventoryBalQty)
         {
@@ -377,10 +448,10 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryDetail;
         }
-        public async Task<decimal> GetStockDetailsForAllLocationWarehouseByItemNoAndProjectNo(string ItemNumber,string projectNo)
+        public async Task<decimal> GetStockDetailsForAllLocationWarehouseByItemNoAndProjectNo(string ItemNumber, string projectNo)
         {
-            var inventoryDetail = _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber && 
-            x.ProjectNumber == projectNo  && x.IsStockAvailable == true)
+            var inventoryDetail = _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber &&
+            x.ProjectNumber == projectNo && x.IsStockAvailable == true)
                           .Sum(x => x.Balance_Quantity);
 
             return inventoryDetail;
@@ -540,7 +611,7 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<List<InventoryQtyforDO>> GetInventorybyItem(string itemNumber)
         {
-            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };            
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
             var invdetails = await FindAll().Where(x => x.PartNumber == itemNumber && !skipWareHouse.Contains(x.Warehouse)).Select(x => new GetInventoryQtyforDO()
             {
                 Warehouse = x.Warehouse,
@@ -632,7 +703,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task UpdateInventoryforBTO_Keus(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis)
         {
             var itemNumber = bToitemDis.Select(x => x.PartNumber).FirstOrDefault();
-           // var projectNumber = bToitemDis.Select(x => x.ProjectNumber).FirstOrDefault();
+            // var projectNumber = bToitemDis.Select(x => x.ProjectNumber).FirstOrDefault();
             var invdetails = await FindAll().Where(x => x.PartNumber == itemNumber).ToListAsync();
             foreach (var eachDis in bToitemDis)
             {
@@ -684,7 +755,7 @@ namespace Tips.Warehouse.Api.Repository
                                 inventoryItemDetail.IsStockAvailable = false;
                             }
                             Update(inventoryItemDetail);
-                           // SaveAsync();
+                            // SaveAsync();
                             break;
                             //invdetails.Remove(eachinv);
                         }
@@ -785,8 +856,8 @@ namespace Tips.Warehouse.Api.Repository
             string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework" };
 
             var inventoryQtyByItemNo = await _tipsWarehouseDbContext.Inventories
-                .Where(x => x.PartNumber == itemNo && !skipWareHouse.Contains(x.Warehouse) && !skipWareHouse.Contains(x.Location) 
-                                                                                        && x.Balance_Quantity>0 && x.IsStockAvailable == true)
+                .Where(x => x.PartNumber == itemNo && !skipWareHouse.Contains(x.Warehouse) && !skipWareHouse.Contains(x.Location)
+                                                                                        && x.Balance_Quantity > 0 && x.IsStockAvailable == true)
                  .GroupBy(x => new { x.PartNumber })
                     .Select(group => new InventoryQtyForWeightedAvgCostDto
                     {
@@ -873,14 +944,14 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryDetails;
         }
-        public async Task<List<ConsumptionInventoryByProjectNoDto>> GetConsumptionInventoryByItemNoAndProjectNotest1(string ItemNumber,string projectNo)
+        public async Task<List<ConsumptionInventoryByProjectNoDto>> GetConsumptionInventoryByItemNoAndProjectNotest1(string ItemNumber, string projectNo)
         {
             List<PartType>? partTypes = new List<PartType> { PartType.FG, PartType.TG };
 
             var inventoryDetails = await _tipsWarehouseDbContext.Inventories
             .Where(x => x.PartNumber == ItemNumber && x.ProjectNumber == projectNo && x.IsStockAvailable == true && x.Balance_Quantity > 0
             && partTypes.Contains(x.PartType) /*&& x.Warehouse =="FG"*/)
-            .GroupBy(x =>new { x.PartNumber,x.ProjectNumber })
+            .GroupBy(x => new { x.PartNumber, x.ProjectNumber })
             .Select(group => new ConsumptionInventoryByProjectNoDto
             {
                 PartNumber = group.Key.PartNumber,
@@ -955,7 +1026,7 @@ namespace Tips.Warehouse.Api.Repository
 
             return itemStock;
         }
-        public async Task<List<ConsumptionChildItemInventoryDto>> GetConsumptionChildItemStockWithWipQtyByProjectNo(string projectNo,List<string> itemNumberList)
+        public async Task<List<ConsumptionChildItemInventoryDto>> GetConsumptionChildItemStockWithWipQtyByProjectNo(string projectNo, List<string> itemNumberList)
         {
             var partTypes = new PartType[] { PartType.PurchasePart };
             string[] skipWareHouse = { "Reject", "Scrap", "Rework", "FG" };
@@ -963,7 +1034,7 @@ namespace Tips.Warehouse.Api.Repository
             string wipWarehouse = "WIP";
 
             var itemStock = await _tipsWarehouseDbContext.Inventories
-                .Where(x => itemNumberList.Contains(x.PartNumber)&& x.ProjectNumber == projectNo && x.IsStockAvailable == true && x.Balance_Quantity > 0 &&
+                .Where(x => itemNumberList.Contains(x.PartNumber) && x.ProjectNumber == projectNo && x.IsStockAvailable == true && x.Balance_Quantity > 0 &&
                             partTypes.Contains(x.PartType) && !skipWareHouse.Contains(x.Warehouse))
                 .GroupBy(x => x.PartNumber)
                 .Select(group => new ConsumptionChildItemInventoryDto
@@ -1099,15 +1170,16 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<Inventory> GetInventoryStockByItemAndShopOrderNo(string itemNumber, string shopordernumber)
         {
-            var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.shopOrderNo == shopordernumber)
-                          .FirstOrDefaultAsync();
+            var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.shopOrderNo == shopordernumber
+                                            && x.IsStockAvailable == true && x.Warehouse == "FG" && x.Location == "FG")
+                                            .FirstOrDefaultAsync();
 
             return getInventoryById;
         }
 
         public async Task<List<Inventory>> GetFGInventoryStockByItem(string itemNumber)
         {
-            var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.Warehouse == "FG" && x.Location == "FG" && x.Balance_Quantity>0)
+            var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.Warehouse == "FG" && x.Location == "FG" && x.Balance_Quantity > 0)
                           .ToListAsync();
 
             return getInventoryById;
@@ -1229,7 +1301,7 @@ namespace Tips.Warehouse.Api.Repository
         .SumAsync(i => i.Balance_Quantity);
         }
 
-        public async Task<decimal> GetTotalStockOfSAItemNumberAndProjectNo(string itemNumber , string projectNo)
+        public async Task<decimal> GetTotalStockOfSAItemNumberAndProjectNo(string itemNumber, string projectNo)
         {
             var locationNames = new string[] { "Rework", "Scrap" };
             return await _tipsWarehouseDbContext.Inventories

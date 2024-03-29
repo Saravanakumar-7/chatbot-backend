@@ -185,11 +185,11 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<IEnumerable<DeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderSPReport>>();
             try
             {
-                var products = await _repository.GetDeliveryOrderSPReportsWithParam(deliveryOrderSPReport.DoNumber, deliveryOrderSPReport.CustomerName, 
-                                                                                    deliveryOrderSPReport.CustomerAliasName, deliveryOrderSPReport.CustomerId, 
-                                                                                    deliveryOrderSPReport.SalesOrderNumber, deliveryOrderSPReport.ProductType, 
-                                                                                    deliveryOrderSPReport.Warehouse, deliveryOrderSPReport.Location, 
-                                                                                    deliveryOrderSPReport.KPN, deliveryOrderSPReport.MPN);
+                var products = await _repository.GetDeliveryOrderSPReportsWithParam(deliveryOrderSPReport.DoNumber, deliveryOrderSPReport.CustomerName,
+                                                                                    deliveryOrderSPReport.CustomerAliasName, deliveryOrderSPReport.CustomerId,
+                                                                                    deliveryOrderSPReport.SalesOrderNumber, deliveryOrderSPReport.ProductType,
+                                                                                    deliveryOrderSPReport.Warehouse, deliveryOrderSPReport.Location,
+                                                                                    deliveryOrderSPReport.KPN, deliveryOrderSPReport.MPN, deliveryOrderSPReport.ProjectNumber);
 
                 if (products == null)
                 {

@@ -56,22 +56,32 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllInvoice([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            ServiceResponse<IEnumerable<InvoiceDto>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceDto>>();
+            ServiceResponse<IEnumerable<DoNoInvoiceDto>> serviceResponse = new ServiceResponse<IEnumerable<DoNoInvoiceDto>>();
 
             try
             {
-                var getAllInvoicesList = await _invoiceRepository.GetAllInvoices(pagingParameter, searchParams);
+                var invoicesList = await _invoiceRepository.GetAllInvoices(pagingParameter, searchParams);
                 var metadata = new
                 {
-                    getAllInvoicesList.TotalCount,
-                    getAllInvoicesList.PageSize,
-                    getAllInvoicesList.CurrentPage,
-                    getAllInvoicesList.HasNext,
-                    getAllInvoicesList.HasPreviuos
+                    invoicesList.TotalCount,
+                    invoicesList.PageSize,
+                    invoicesList.CurrentPage,
+                    invoicesList.HasNext,
+                    invoicesList.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-                var result = _mapper.Map<IEnumerable<InvoiceDto>>(getAllInvoicesList);
+                var result = _mapper.Map<IEnumerable<DoNoInvoiceDto>>(invoicesList);
+
+                foreach (var invoice in result)
+                {
+                    if (invoice.invoiceChildItems != null)
+                    {
+                        var doNumbers = invoice.invoiceChildItems.Select(item => item.DONumber).Distinct();
+                        invoice.DONumber = string.Join(", ", doNumbers);
+                    }
+                }
+
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Invoices";
                 serviceResponse.Success = true;
