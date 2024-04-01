@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.IdentityModel.Tokens;
 using NLog;
+using System.Text;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Extensions;
 using Tips.Production.Api.Repository;
@@ -21,7 +24,20 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 var key = builder.Configuration["Jwt:key"];
 builder.Services.ConfigureJwtToken(builder.Configuration);
-
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            // ValidIssuer = "Wyzmindz", // Use the same issuer as the one in https://localhost:7016
+            ValidateAudience = false,
+            // ValidAudience = "Tips", // Use the same audience as the one in https://localhost:7016
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
+        };
+    });
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

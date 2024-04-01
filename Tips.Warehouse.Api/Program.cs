@@ -12,6 +12,9 @@ using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
 using Tips.Warehouse.Api.Extensions;
 using Tips.Warehouse.Api.Repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +36,20 @@ builder.Services.AddControllers().AddJsonOptions(opt =>
 {
     opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            // ValidIssuer = "Wyzmindz", // Use the same issuer as the one in https://localhost:7016
+            ValidateAudience = false,
+            // ValidAudience = "Tips", // Use the same audience as the one in https://localhost:7016
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
+        };
+    });
 //builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 //builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();
 
@@ -94,7 +111,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 app.UseCors("CorsPolicy");
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

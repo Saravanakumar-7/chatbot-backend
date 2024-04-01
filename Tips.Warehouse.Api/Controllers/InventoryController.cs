@@ -1580,6 +1580,7 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> MaterialInventoryBalanceQty([FromBody] List<UpdateInventoryBalanceQty> updateInventoryBalanceQty)
         {
+            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
             try
             {
                 foreach (var materialIssueQty in updateInventoryBalanceQty)

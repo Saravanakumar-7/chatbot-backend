@@ -11,6 +11,9 @@ using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
 using Tips.Grin.Api.Extensions;
 using Tips.Grin.Api.Repository;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +32,20 @@ builder.Services.AddAutoMapper(typeof(Program));
 var key = builder.Configuration["Jwt:key"];
 builder.Services.ConfigureJwtToken(builder.Configuration);
 //builder.Services.AddTransient<IJwtAuth, Auth>();
-
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            // ValidIssuer = "Wyzmindz", // Use the same issuer as the one in https://localhost:7016
+            ValidateAudience = false,
+            // ValidAudience = "Tips", // Use the same audience as the one in https://localhost:7016
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
+        };
+    });
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -45,8 +61,7 @@ builder.Services.AddScoped<IGrinPartsRepository, GrinPartsRepository>();
 builder.Services.AddScoped<IOpenGrinRepository, OpenGrinRepository>();
 builder.Services.AddScoped<IBinningLocationRepository, BinningLocationRepository>();
 builder.Services.AddScoped<IWeightedAvgRateRepository, WeightedAvgRateRepository>();
-
-
+builder.Services.AddScoped<IWeightedAvgCostRepository, WeightedAvgCostRepository>();
 
 builder.Services.AddScoped<IIQCConfirmationItemsRepository, IQCConfirmationItemsRepository>();
 //builder.Services.AddScoped<IReturnGrinDocumentUploadRepository, ReturnGrinDocumentUpload>();
