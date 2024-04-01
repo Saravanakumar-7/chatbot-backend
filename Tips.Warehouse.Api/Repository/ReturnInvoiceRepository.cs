@@ -27,7 +27,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var result = _tipsWarehouseDbContext
             .Set<ReturnInvoiceSPResport>()
-            .FromSqlInterpolated($"CALL Return_Invoice_Report_withParameter({InvoiceNumber},{DoNumber},{CustomerName},{SalesOrderNumber},{CustomerAliasName},{Location},{Warehouse},{KPN},{MPN},{IssuedTo})")
+            .FromSqlInterpolated($"CALL Return_Invoice_Report_withParameter({InvoiceNumber},{DoNumber},{CustomerName},{CustomerAliasName},{SalesOrderNumber},{Location},{Warehouse},{KPN},{MPN},{IssuedTo})")
             .ToList();
 
             return result;

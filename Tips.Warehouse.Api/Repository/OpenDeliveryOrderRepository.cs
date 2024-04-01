@@ -280,7 +280,8 @@ namespace Tips.Warehouse.Api.Repository
                                {
                                    Id = x.Id,
 
-                                   ODONumber = x.OpenDONumber
+                                   ODONumber = x.OpenDONumber,
+                                   ODOType = x.DOType
 
                                })
                                .OrderByDescending(x => x.Id)

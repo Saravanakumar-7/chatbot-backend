@@ -663,6 +663,7 @@ namespace Tips.Production.Api.Controllers
                 var shopOrderNumber = materialRequestUpdateDto.ShopOrderNumber;
                 var projectNo = materialRequestUpdateDto.ProjectNumber;
                 var mRNumber = materialRequestUpdateDto.MRNumber;
+                HttpStatusCode updateMaterialRequestResp = HttpStatusCode.OK;
 
                 List<InventoryDtoForMaterialRequest> inventoryDtos = new List<InventoryDtoForMaterialRequest>();
 
@@ -734,16 +735,11 @@ namespace Tips.Production.Api.Controllers
                 var json = JsonConvert.SerializeObject(materialRequestDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialInventoryBalanceQty"), data);
-
-                if (response.StatusCode == HttpStatusCode.InternalServerError)
+                if (response.StatusCode != HttpStatusCode.OK)
                 {
-                    _logger.LogError($"Something went wrong inside UpdateMaterialRequest action. Inventory update action MaterialInventoryBalanceQty failed! ");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Internal server error";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500, serviceResponse);
-                } 
+                    updateMaterialRequestResp = response.StatusCode;
+                }
+                
 
                 updateMaterialReqquest.MaterialRequestItems = materialReqItemList;
                 var updateMaterialReq = _mapper.Map(materialRequestUpdateDto, getMaterialRequest);
@@ -757,7 +753,22 @@ namespace Tips.Production.Api.Controllers
 
                 }
                 string result = await _materialRequestRepository.UpdateMaterialRequest(updateMaterialReq);
-                _materialRequestRepository.SaveAsync(); 
+
+                if (updateMaterialRequestResp == HttpStatusCode.OK)
+                {
+                    _materialRequestRepository.SaveAsync();
+
+                }
+                else
+                {
+                    _logger.LogError($"Something went wrong inside UpdateMaterialRequest action. Inventory update action MaterialInventoryBalanceQty failed! ");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Internal server error";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+               
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "materialReq Updated Successfully";

@@ -109,6 +109,8 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal Balance_Quantity { get; set; }
         [Required]
         public string? UOM { get; set; }
+        public decimal? Max { get; set; }
+        public decimal? Min { get; set; }
 
         [Required]
         public string? Warehouse { get; set; }

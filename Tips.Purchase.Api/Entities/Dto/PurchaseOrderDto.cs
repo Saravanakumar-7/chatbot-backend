@@ -53,10 +53,10 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public bool POApprovalII { get; set; }
         public DateTime POApprovedIIDate { get; set; }
         public string? POApprovedIIBy { get; set; }
-        public bool? POApprovalIII { get; set; }
+        public bool POApprovalIII { get; set; }
         public string? POApprovedIIIBy { get; set; }
         public DateTime? POApprovedIIIDate { get; set; }
-        public bool? POApprovalIV { get; set; }
+        public bool POApprovalIV { get; set; }
         public string? POApprovedIVBy { get; set; }
         public DateTime? POApprovedIVDate { get; set; }
         public string? Unit { get; set; }
@@ -201,10 +201,10 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public bool POApprovalII { get; set; }
         public DateTime POApprovedIIDate { get; set; }
         public string? POApprovedIIBy { get; set; }
-        public bool? POApprovalIII { get; set; }
+        public bool POApprovalIII { get; set; }
         public string? POApprovedIIIBy { get; set; }
         public DateTime? POApprovedIIIDate { get; set; }
-        public bool? POApprovalIV { get; set; }
+        public bool POApprovalIV { get; set; }
         public string? POApprovedIVBy { get; set; }
         public DateTime? POApprovedIVDate { get; set; }
         public string? Unit { get; set; }

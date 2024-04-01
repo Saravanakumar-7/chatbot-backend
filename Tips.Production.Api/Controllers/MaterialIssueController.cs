@@ -470,6 +470,7 @@ namespace Tips.Production.Api.Controllers
 
                 ShopOrder shopOrderDetail = await _shopOrderRepository.GetShopOrderByShopOrderNo(materialIssueDetailsById.ShopOrderNumber);
                 decimal bomRevNo = shopOrderDetail.BomRevisionNo;
+                HttpStatusCode updateMaterialIssueResp= HttpStatusCode.OK;
                 List<MaterialIssueItemUpdateDto> materialIssueItemDtos = materialIssueUpdateDto.MaterialIssueItems;
                 foreach (var updatedItem in materialIssueItemDtos)
                 {
@@ -499,14 +500,28 @@ namespace Tips.Production.Api.Controllers
                             var json = JsonConvert.SerializeObject(inventoryDtoForIssue);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
                             var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnMaterialIssue"), data);
-
+                            if (response.StatusCode != HttpStatusCode.OK)
+                            {
+                                updateMaterialIssueResp = response.StatusCode;
+                            }
                             await _materialIssueItemRepository.UpdateMaterialIssueItem(existingItem);
                             
                         }
                     }
                 }
-                _materialIssueItemRepository.SaveAsync();
-
+                if (updateMaterialIssueResp == HttpStatusCode.OK)
+                {
+                    _materialIssueItemRepository.SaveAsync();
+                }
+                else
+                {
+                    _logger.LogError($"Something went wrong inside UpdateMaterialIssue action. Inventory update action UpdateInventoryOnMaterialIssue failed! ");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Internal server error";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
                 //string result = await _materialIssueRepository.UpdateMaterialIssue(materialIssueDetailsById);
 
                 //_logger.LogInfo(result);

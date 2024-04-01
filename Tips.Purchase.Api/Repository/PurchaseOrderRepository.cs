@@ -984,15 +984,18 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIIIListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
-            var lastestPendingPOApprovalIINameList = _tipsPurchaseDbContext.PurchaseOrders
+            var lastestPendingPOApprovalIIINameList = _tipsPurchaseDbContext.PurchaseOrders
                 .Where(x => (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
             x.VendorName.Contains(searchParams.SearchValue) || x.PONumber.Contains(searchParams.SearchValue) ||
             x.VendorId.Equals(searchParams.SearchValue) || x.VendorAddress.Equals(searchParams.SearchValue) || x.POApprovedIBy.Equals(searchParams.SearchValue)
-            || x.POApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue))
-            && ((x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))))
+            || x.POApprovedIIBy.Equals(searchParams.SearchValue) || x.POApprovedIIIBy.Equals(searchParams.SearchValue)
+            || x.ProcurementType.Equals(searchParams.SearchValue))
+            && ((x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == false && x.IsDeleted == false && x.IsModified == false 
+            && x.PoStatus != PoStatus.ShortClosed) 
+            && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))))
                 .OrderByDescending(x => x.Id);
 
-            return PagedList<PurchaseOrder>.ToPagedList(lastestPendingPOApprovalIINameList, pagingParameter.PageNumber, pagingParameter.PageSize);
+            return PagedList<PurchaseOrder>.ToPagedList(lastestPendingPOApprovalIIINameList, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
         public async Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIVListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)

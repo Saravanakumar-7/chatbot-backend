@@ -15,6 +15,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         public PartType PartType { get; set; }
         public decimal Min { get; set; }
+        public string UOM { get; set; }
 
     }
 }

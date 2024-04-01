@@ -510,7 +510,8 @@ namespace Repository
                 {
                     ItemNumber = s.ItemNumber,
                     PartType = s.ItemType,
-                    Min = s.Min
+                    Min = s.Min,
+                    UOM = s.Uom
                 }
                 ).ToListAsync();
             return itemWithPartTypes;

@@ -14,6 +14,8 @@ namespace Tips.Warehouse.Api.Entities
         public string ProjectNumber { get; set; }
         public decimal Balance_Quantity { get; set; }
         public string? UOM { get; set; }
+        public decimal? Max { get; set; }
+        public decimal? Min { get; set; }
         public bool IsStockAvailable { get; set; }
         public string Warehouse { get; set; }
         public string? Location { get; set; }

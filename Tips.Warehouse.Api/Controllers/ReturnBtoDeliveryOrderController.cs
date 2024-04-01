@@ -132,7 +132,7 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<IEnumerable<ReturnDOSPReport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnDOSPReport>>();
             try
             {
-                var products = await _repository.ReturnDOSPReportWithParam(returnDOSPReportDTO.DoNumber, returnDOSPReportDTO.CustomerName, returnDOSPReportDTO.CustomerAliasName, returnDOSPReportDTO.LeadId, returnDOSPReportDTO.SalesOrderNumber, returnDOSPReportDTO.ProductType, returnDOSPReportDTO.TypeOfSolution, returnDOSPReportDTO.Warehouse, returnDOSPReportDTO.Location, returnDOSPReportDTO.KPN, returnDOSPReportDTO.MPN);
+                var products = await _repository.ReturnDOSPReportWithParam(returnDOSPReportDTO.CustomerName, returnDOSPReportDTO.CustomerAliasName, returnDOSPReportDTO.CustomerLeadId, returnDOSPReportDTO.SalesOrderNumber, returnDOSPReportDTO.ProductType, returnDOSPReportDTO.TypeOfSolution, returnDOSPReportDTO.Warehouse, returnDOSPReportDTO.Location, returnDOSPReportDTO.KPN, returnDOSPReportDTO.MPN);
 
                 if (products == null)
                 {

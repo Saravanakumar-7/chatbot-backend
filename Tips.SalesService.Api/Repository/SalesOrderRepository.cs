@@ -103,12 +103,12 @@ namespace Tips.SalesService.Api.Repository
 
 
         }
-        public async Task<IEnumerable<SalesOrderSPResport>> GetSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string PartNumber)
+        public async Task<IEnumerable<SalesOrderSPResport>> GetSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN)
         {
 
             var result = _tipsSalesServiceDbContext
             .Set<SalesOrderSPResport>()
-            .FromSqlInterpolated($"CALL SalesOrder_withparameter_Report({CustomerName},{SalesOrderNumber},{PartNumber})")
+            .FromSqlInterpolated($"CALL SalesOrder_withparameter_Report({CustomerName},{SalesOrderNumber},{KPN})")
             .ToList();
 
             return result;

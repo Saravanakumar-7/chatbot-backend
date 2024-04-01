@@ -1561,7 +1561,7 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<SalesOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPResport>>();
             try
             {
-                var products = await _repository.GetSalesOrderSPReportWithParam(salesOrderSPResport.CustomerName, salesOrderSPResport.SalesOrderNumber, salesOrderSPResport.PartNumber);
+                var products = await _repository.GetSalesOrderSPReportWithParam(salesOrderSPResport.CustomerName, salesOrderSPResport.SalesOrderNumber, salesOrderSPResport.KPN);
 
                 if (products == null)
                 {

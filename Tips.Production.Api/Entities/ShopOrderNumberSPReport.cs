@@ -20,5 +20,10 @@ namespace Tips.Production.Api.Entities
         public string? KPN { get; set; }
         public string? MPN { get; set; }
         public string? Description { get; set; }
+        public decimal UnitPrice { get; set; }
+        public string? UOC { get; set; }
+        public decimal ShopOrder_qty { get; set; }
+        public string? UOM { get; set; }
+        public string? Remarks { get; set; }
     }
 }

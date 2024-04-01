@@ -1037,7 +1037,7 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>>();
             try
             {
-                var products = await _repository.OpenDeliveryOrderSPReportWithParam(openDeliveryOrderSPReport.OpenDoNumber, openDeliveryOrderSPReport.CustomerName, openDeliveryOrderSPReport.CustomerAliasName, openDeliveryOrderSPReport.LeadId, openDeliveryOrderSPReport.IssuedTo, openDeliveryOrderSPReport.KPNno, openDeliveryOrderSPReport.MPN, openDeliveryOrderSPReport.Warehouse, openDeliveryOrderSPReport.Location, openDeliveryOrderSPReport.ODOtype);
+                var products = await _repository.OpenDeliveryOrderSPReportWithParam(openDeliveryOrderSPReport.OpenDoNumber, openDeliveryOrderSPReport.CustomerName, openDeliveryOrderSPReport.CustomerAliasName, openDeliveryOrderSPReport.LeadId, openDeliveryOrderSPReport.IssuedTo, openDeliveryOrderSPReport.KPN, openDeliveryOrderSPReport.MPN, openDeliveryOrderSPReport.Warehouse, openDeliveryOrderSPReport.Location, openDeliveryOrderSPReport.ODOtype);
 
                 if (products == null)
                 {

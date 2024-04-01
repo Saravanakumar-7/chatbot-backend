@@ -445,6 +445,7 @@ namespace Tips.Production.Api.Controllers
                  
                 var materialReturnNotesItemDto = materialReturnNoteUpdateDto.MaterialReturnNoteItems;
                 var materialReturnNoteItemList = new List<MaterialReturnNoteItem>();
+                HttpStatusCode updateMaterialReturnNoteResp = HttpStatusCode.OK;
                 if (materialReturnNotesItemDto != null)
                 {
                     for (int i = 0; i < materialReturnNotesItemDto.Count; i++)
@@ -480,14 +481,31 @@ namespace Tips.Production.Api.Controllers
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialReturnNoteInventoryBalanceQty"), data);
 
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    updateMaterialReturnNoteResp = response.StatusCode;
+                }
+
                 materialReturnNoteDetail.MaterialReturnNoteItems = materialReturnNoteItemList;
                 var updateMaterialReturnNoteItem = _mapper.Map(materialReturnNoteUpdateDto, materialReturnNoteDetail);
 
 
                 materialReturnNoteDetail.MrnStatus = MaterialStatus.Closed;
-                string result = await _materialReturnNoteRepository.UpdateMaterialReturnNote(updateMaterialReturnNoteItem);               
-                _materialReturnNoteRepository.SaveAsync();
-              
+                string result = await _materialReturnNoteRepository.UpdateMaterialReturnNote(updateMaterialReturnNoteItem);
+
+                if (updateMaterialReturnNoteResp == HttpStatusCode.OK)
+                {
+                    _materialReturnNoteRepository.SaveAsync();
+                }
+                else
+                {
+                    _logger.LogError($"Something went wrong inside ReturnMaterialReturnNote action. Inventory update action MaterialReturnNoteInventoryBalanceQty failed! ");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Internal server error";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "MaterialReturnNote Updated Successfully";
                 serviceResponse.Success = true;

@@ -1093,7 +1093,9 @@ namespace Tips.Grin.Api.Controllers
                                 grinInventoryDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
                                 grinInventoryDto.Description = grinPartsDetails.ItemDescription;
                                 grinInventoryDto.ProjectNumber = projectNos;
-                                // grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iqcConfirmationItemsDto.RejectedQty);
+                                grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iqcConfirmationItemsDto.RejectedQty);
+                                grinInventoryDto.Max = itemMasterObject.max;
+                                grinInventoryDto.Min = itemMasterObject.min;
                                 grinInventoryDto.UOM = grinPartsDetails.UOM;
                                 grinInventoryDto.Warehouse = "Reject";
                                 grinInventoryDto.Location = "Reject";
@@ -1351,6 +1353,8 @@ namespace Tips.Grin.Api.Controllers
                                 grinInventoryDto.Description = grinPartsDetails.ItemDescription;
                                 grinInventoryDto.ProjectNumber = projectNos;
                                 grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iqcConfirmationItemsDto.RejectedQty);
+                                grinInventoryDto.Max = itemMasterObject.max;
+                                grinInventoryDto.Min = itemMasterObject.min;
                                 grinInventoryDto.UOM = grinPartsDetails.UOM;
                                 grinInventoryDto.Warehouse = "Reject";
                                 grinInventoryDto.Location = "Reject";
@@ -1681,10 +1685,8 @@ namespace Tips.Grin.Api.Controllers
                 }
 
 
-                var grinparts = _mapper.Map<IEnumerable<GrinParts>>(grinDto.GrinParts);
-
                 var grinList = _mapper.Map<Grins>(grinDto);
-
+                var grinparts = _mapper.Map<IEnumerable<GrinParts>>(grinDto.GrinParts);
                 var grinPartsDto = grinDto.GrinParts;
                 var grinCal = _mapper.Map<List<GrinPartscalculationofAvgcost>>(grinPartsDto);
                 var GrinpartsList = new List<GrinParts>();
@@ -1717,11 +1719,10 @@ namespace Tips.Grin.Api.Controllers
                     GrinParts grinParts = _mapper.Map<GrinParts>(gPart);
                     GrinpartsList.Add(grinParts);
                 }
-
                 var data = _mapper.Map(grinDto, updategrin);
 
 
-                data.GrinParts = grinparts.ToList();
+                data.GrinParts = GrinpartsList;
 
                 string result = await _repository.UpdateGrin(data);
                 _logger.LogInfo(result);

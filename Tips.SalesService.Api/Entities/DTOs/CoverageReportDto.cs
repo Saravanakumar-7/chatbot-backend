@@ -61,6 +61,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class CoverageReportDtoForChildItem
     {
         public string? ItemNumber { get; set; }
+        public string? UOM { get; set; }
         public PartType PartType { get; set; }
         public decimal? RequiredQty { get; set; }
         public decimal? Stock { get; set; }

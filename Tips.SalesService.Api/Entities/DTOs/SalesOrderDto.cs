@@ -298,7 +298,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string ItemNumber { get; set; }
         public PartType PartType { get; set; }
         public decimal RequiredQty { get; set; }
-         
+        public string UOM { get; set; }
+
     }
     public class CoverageReportChildItemReqQtyDataByProjectNoDto
     {
@@ -314,7 +315,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public string? CustomerName { get; set; }
         public string? SalesOrderNumber { get; set; }
-        public string? PartNumber { get; set; }
+        public string? KPN { get; set; }
     }
 
 }

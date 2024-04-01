@@ -1692,7 +1692,12 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500);
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 
@@ -1884,6 +1889,8 @@ namespace Tips.Warehouse.Api.Controllers
                                     inventoryPost.Description = inventoryDetail.Description;
                                     inventoryPost.Balance_Quantity = wipQtyInIssueTracker;
                                     inventoryPost.UOM = inventoryDetail.UOM;
+                                    //inventoryPost.Max = itemMasterObject.max;
+                                    //inventoryPost.Min = itemMasterObject.min;
                                     inventoryPost.GrinMaterialType = inventoryDetail.GrinMaterialType;
                                     inventoryPost.shopOrderNo = materialReturnQty.ShopOrderNumber;
                                     inventoryPost.Unit = inventoryDetail.Unit;

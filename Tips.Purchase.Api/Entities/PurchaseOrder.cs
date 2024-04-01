@@ -50,10 +50,12 @@ namespace Tips.Purchase.Api.Entities
         public bool POApprovalII { get; set; } = false;
         public string? POApprovedIIBy { get; set; }
         public DateTime POApprovedIIDate { get; set; }
-        public bool? POApprovalIII { get; set; } = false;
+        [DefaultValue(false)]
+        public bool POApprovalIII { get; set; } 
         public string? POApprovedIIIBy { get; set; }
         public DateTime? POApprovedIIIDate { get; set; }
-        public bool? POApprovalIV { get; set; } = false;
+        [DefaultValue(false)]
+        public bool POApprovalIV { get; set; }
         public string? POApprovedIVBy { get; set; }
         public DateTime? POApprovedIVDate { get; set; }
         public bool IsDeleted { get; set; } = false;

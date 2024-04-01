@@ -284,6 +284,8 @@ namespace Tips.Production.Api.Controllers
                     inventory.ProjectNumber = projectNo;
                     inventory.Balance_Quantity = oQCCreate.AcceptedQty;
                     inventory.UOM = itemMasterTranctionObject.uom;
+                    inventory.Max = itemMasterTranctionObject.max;
+                    inventory.Min = itemMasterTranctionObject.min;
                     inventory.Warehouse = "SA";
                     inventory.Location = "SA";
                     inventory.GrinNo = "";
@@ -310,6 +312,8 @@ namespace Tips.Production.Api.Controllers
                     inventory1.ProjectNumber = projectNo;
                     inventory1.Balance_Quantity = oQCCreate.RejectedQty;
                     inventory1.UOM = itemMasterTranctionObject.uom;
+                    inventory.Max = itemMasterTranctionObject.max;
+                    inventory.Min = itemMasterTranctionObject.min;
                     inventory1.Warehouse = "Reject";
                     inventory1.Location = "Reject";
                     inventory1.GrinNo = "";
@@ -347,6 +351,8 @@ namespace Tips.Production.Api.Controllers
                     inventory.ProjectNumber = projectNo;
                     inventory.Balance_Quantity = oQCCreate.AcceptedQty;
                     inventory.UOM = uom;
+                    inventory.Max = itemMasterTranctionObject.max;
+                    inventory.Min = itemMasterTranctionObject.min;
                     inventory.Warehouse = "FG";
                     inventory.Location = "FG";
                     inventory.GrinNo = "";
@@ -376,6 +382,8 @@ namespace Tips.Production.Api.Controllers
                     inventory1.ProjectNumber = projectNo;
                     inventory1.Balance_Quantity = oQCCreate.RejectedQty;
                     inventory1.UOM = uom;
+                    inventory.Max = itemMasterTranctionObject.max;
+                    inventory.Min = itemMasterTranctionObject.min;
                     inventory1.Warehouse = "Scrap";
                     inventory1.Location = "Reject";
                     inventory1.GrinNo = "";

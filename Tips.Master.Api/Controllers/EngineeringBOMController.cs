@@ -2472,6 +2472,7 @@ namespace Tips.Master.Api.Controllers
                         {
                             ItemNumber = group.Key,
                             PartType = group.First().PartType,
+                            UOM = group.First().UOM,
                             RequiredQty = group.Sum(item => item.RequiredQty)
                         })
                         .ToList();
@@ -2584,7 +2585,8 @@ namespace Tips.Master.Api.Controllers
                             {
                                 ItemNumber = enggChildItem.ItemNumber,
                                 PartType = enggChildItem.PartType,
-                                RequiredQty = enggChildItem.Quantity * requiredQty
+                                RequiredQty = enggChildItem.Quantity * requiredQty,
+                                UOM = enggChildItem.UOM
 
                             };
                             bomCoverageList.Add(bomCoverageReportChildItemReqQty);

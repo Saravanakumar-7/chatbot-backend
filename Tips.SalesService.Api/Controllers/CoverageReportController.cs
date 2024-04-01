@@ -330,7 +330,8 @@ namespace Tips.SalesService.Api.Controllers
                                             ItemNumber = salesOrderDetails.FGItemNumber,
                                             TotalRequiredQty = salesOrderDetails.Balance_Qty,
                                             PartType = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
-                                            MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault()
+                                            MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault(),
+                                            UOM = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.UOM).FirstOrDefault()
                                         };
 
                                         decimal balanceQuantity = (decimal)Inventory.balance_Quantity; ; // Convert to decimal
@@ -403,7 +404,8 @@ namespace Tips.SalesService.Api.Controllers
                                 ItemNumber = salesOrderDetails.FGItemNumber,
                                 TotalRequiredQty = salesOrderDetails.Balance_Qty,
                                 PartType = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
-                                MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault()
+                                MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault(),
+                                UOM = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.UOM).FirstOrDefault()
                             };
 
                             decimal balanceQuantity = 0;
@@ -615,6 +617,7 @@ namespace Tips.SalesService.Api.Controllers
                                     ItemNumber = item.ItemNumber,
                                     PartType = item.PartType,
                                     RequiredQty = item.RequiredQty,
+                                    UOM = item.UOM,
                                     Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
                                     WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
                                     OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()

@@ -74,11 +74,11 @@ namespace Tips.Warehouse.Api.Repository
             return results;
         }
 
-        public async Task<IEnumerable<ReturnOpenDeliveryOrderSPResport>> ReturnOpenDeliveryOrderSPReportWithParam(string? ODONumber, string? CustomerName, string? CustomerAliasName, string? LeadId, string? IssuedTo, string? KPN, string? MPN, string? Warehouse, string? Location, string? ODOType)
+        public async Task<IEnumerable<ReturnOpenDeliveryOrderSPResport>> ReturnOpenDeliveryOrderSPReportWithParam(string? ODONumber, string? CustomerName, string? CustomerAliasName, string? LeadId, string? IssuedTo, string? Location, string? Warehouse, string? KPN, string? MPN, string? ODOType)
         {
             var result = _tipsWarehouseDbContext
             .Set<ReturnOpenDeliveryOrderSPResport>()
-            .FromSqlInterpolated($"CALL Return_Open_DeliveryOrder_Report_withparameters({ODONumber},{CustomerName},{CustomerAliasName},{LeadId},{IssuedTo},{KPN},{MPN},{Location},{Warehouse},{ODOType})")
+            .FromSqlInterpolated($"CALL Return_Open_DeliveryOrder_Report_withparameters({ODONumber},{CustomerName},{CustomerAliasName},{LeadId},{IssuedTo},{KPN},{MPN},{Warehouse},{Location},{ODOType})")
             .ToList();
 
             return result;
