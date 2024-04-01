@@ -1681,11 +1681,11 @@ namespace Tips.Grin.Api.Controllers
                 }
 
 
-                var grinparts = _mapper.Map<IEnumerable<GrinParts>>(grinDto.GrinParts);
+                var grinparts = _mapper.Map<IEnumerable<GrinParts>>(updategrin.GrinParts);
 
                 var grinList = _mapper.Map<Grins>(grinDto);
 
-                var grinPartsDto = grinDto.GrinParts;
+                var grinPartsDto = updategrin.GrinParts;
                 var grinCal = _mapper.Map<List<GrinPartscalculationofAvgcost>>(grinPartsDto);
                 var GrinpartsList = new List<GrinParts>();
                 //for (int i = 0; i < grinPartsDto.Count; i++)
@@ -1721,7 +1721,7 @@ namespace Tips.Grin.Api.Controllers
                 var data = _mapper.Map(grinDto, updategrin);
 
 
-                data.GrinParts = grinparts.ToList();
+                data.GrinParts = GrinpartsList;
 
                 string result = await _repository.UpdateGrin(data);
                 _logger.LogInfo(result);
