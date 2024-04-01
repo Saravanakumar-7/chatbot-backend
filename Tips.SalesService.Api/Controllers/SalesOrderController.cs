@@ -1623,7 +1623,7 @@ namespace Tips.SalesService.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetSASalesOrderDetailsByItemNo action";
+                serviceResponse.Message = $"Something went wrong inside GetReceivableReportsWithCustomerID action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

@@ -354,6 +354,11 @@ namespace Tips.Warehouse.Api.Repository
                 {
                     var sum = group.Sum(inv => inv.Balance_Quantity);
                     group.First().Balance_Quantity = sum;
+                    var remainingItems = group.Skip(1).ToList();
+                    foreach (var item in remainingItems)
+                    {
+                        group.Remove(item);
+                    }
                 }
 
                 // Flatten the dictionary and return the inventory items
