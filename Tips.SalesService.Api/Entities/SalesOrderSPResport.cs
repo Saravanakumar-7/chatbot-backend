@@ -3,6 +3,7 @@
     public class SalesOrderSPResport
     {
         public string? CustomerName { get; set; }
+        public string? CustomerId { get; set; }   
         public string? SalesOrderNumber { get; set; }
         public DateTime? sodate { get; set; }
         public string? KPN { get; set; }

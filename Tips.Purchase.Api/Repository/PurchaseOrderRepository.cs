@@ -990,7 +990,7 @@ namespace Tips.Purchase.Api.Repository
             x.VendorId.Equals(searchParams.SearchValue) || x.VendorAddress.Equals(searchParams.SearchValue) || x.POApprovedIBy.Equals(searchParams.SearchValue)
             || x.POApprovedIIBy.Equals(searchParams.SearchValue) || x.POApprovedIIIBy.Equals(searchParams.SearchValue)
             || x.ProcurementType.Equals(searchParams.SearchValue))
-            && ((x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == false && x.IsDeleted == false && x.IsModified == false 
+            && ((x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == false && x.ApprovalCount == 4 && x.IsDeleted == false && x.IsModified == false 
             && x.PoStatus != PoStatus.ShortClosed) 
             && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))))
                 .OrderByDescending(x => x.Id);
@@ -1005,7 +1005,9 @@ namespace Tips.Purchase.Api.Repository
             x.VendorName.Contains(searchParams.SearchValue) || x.PONumber.Contains(searchParams.SearchValue) ||
             x.VendorId.Equals(searchParams.SearchValue) || x.VendorAddress.Equals(searchParams.SearchValue) || x.POApprovedIBy.Equals(searchParams.SearchValue)
             || x.POApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue))
-            && ((x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == false && x.IsDeleted == false && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))))
+            && ((x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == false && x.ApprovalCount == 4 && x.IsDeleted == false 
+            && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed) 
+            && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))))
                 .OrderByDescending(x => x.Id);
 
             return PagedList<PurchaseOrder>.ToPagedList(lastestPendingPOApprovalIINameList, pagingParameter.PageNumber, pagingParameter.PageSize);
@@ -1339,15 +1341,44 @@ namespace Tips.Purchase.Api.Repository
             PoStatus[] status = { PoStatus.Open, PoStatus.PartiallyClosed };
 
             IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
-                           .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.POApprovalIV == true)
-                           .Select(x => new PurchaseOrderIdNameListDto()
-                           {
-                               Id = x.Id,
-                               PONumber = x.PONumber
-                           }).ToListAsync();
-
+                                   .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && 
+                                   ( x.ApprovalCount == 4 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == true )||
+                                   (x.ApprovalCount == 2 && x.POApprovalI == true && x.POApprovalII == true))
+                                   .Select(x => new PurchaseOrderIdNameListDto()
+                                   {
+                                       Id = x.Id,
+                                       PONumber = x.PONumber
+                                   }).ToListAsync();
 
             return pONameListbyVendorId;
+            //var poApprovalCount = await _tipsPurchaseDbContext.PurchaseOrders
+            //                                   .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus))
+            //                                   .Select(x => x.ApprovalCount).ToListAsync();
+            //IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = null;
+            //foreach (var approvalCount in poApprovalCount)
+            //{
+            //    if (approvalCount == 4)
+            //    {
+            //         pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
+            //                       .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.POApprovalIV == true)
+            //                       .Select(x => new PurchaseOrderIdNameListDto()
+            //                       {
+            //                           Id = x.Id,
+            //                           PONumber = x.PONumber
+            //                       }).ToListAsync();
+            //    }
+            //    else if(approvalCount == 2)
+            //    {
+            //        pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
+            //                       .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.POApprovalII == true)
+            //                       .Select(x => new PurchaseOrderIdNameListDto()
+            //                       {
+            //                           Id = x.Id,
+            //                           PONumber = x.PONumber
+            //                       }).ToListAsync();
+            //    }
+            //}
+
         }
 
         public async Task<decimal> GetOpenPoQuantityByItemNumber(string itemNumber)

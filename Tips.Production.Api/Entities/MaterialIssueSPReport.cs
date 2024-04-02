@@ -16,7 +16,7 @@ namespace Tips.Production.Api.Entities
         public string? SalesOrderNumber { get; set; }
         public decimal? SalesorderQnty { get; set; }
         public decimal? ReleaseQty { get; set; }
-
+        public string? FGitemnumber { get; set; }
         public string? KPN { get; set; }
         public string? MPN { get; set; }
         public string? Description { get; set; }

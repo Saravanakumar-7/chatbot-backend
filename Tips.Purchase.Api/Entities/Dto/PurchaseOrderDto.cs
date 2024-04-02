@@ -59,6 +59,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public bool POApprovalIV { get; set; }
         public string? POApprovedIVBy { get; set; }
         public DateTime? POApprovedIVDate { get; set; }
+        public int? ApprovalCount { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -105,7 +106,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         //public string? Transport { get; set; }
         public string? Others { get; set; }
         public decimal TotalAmount { get; set; }
-
+        public int? ApprovalCount { get; set; }
 
         public List<PoItemsPostDto>? POItems { get; set; }
         public List<PoIncoTermPostDto>? POIncoTerms { get; set; }
@@ -144,7 +145,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? RetentionPeriod { get; set; }
         public string? SpecialTermsAndConditions { get; set; }
         public decimal TotalAmount { get; set; }
-
+        public int? ApprovalCount { get; set; }
         public string? Unit { get; set; }
         //public string? LastModifiedBy { get; set; }
         //public DateTime? LastModifiedOn { get; set; }
