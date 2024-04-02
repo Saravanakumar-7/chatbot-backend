@@ -21,6 +21,9 @@
         public string? KPN { get; set; }
         public string? MPN { get; set; }
         public string? Description { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public string? UOC { get; set; }
+        public string? UOM { get; set; }
         public decimal? AvaliableQty { get; set; }
         public decimal? orderQTY { get; set; }
         public decimal? DispatchQty { get; set; }

@@ -4,15 +4,15 @@ namespace Tips.Warehouse.Api.Entities
 {
     public class ReturnDOSPReport
     {
-        public string? DoNumber { get; set; }
+        public string? ReturnBTONumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
-        public string? LeadId { get; set; }
+        public string? CustomerLeadId { get; set; }
         public string? SalesOrderNumber { get; set; }
         [Precision(13, 1)]
-        public int? RevisionNumber { get; set; }
+        public int? SalesOrderRevisionNumber { get; set; }
         public DateTime? DODate { get; set; }
-        public string? RDODate { get; set; }
+        public string? DONumber { get; set; }
         public string? ProductType { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? OrderType { get; set; }
@@ -26,10 +26,11 @@ namespace Tips.Warehouse.Api.Entities
         public decimal? UnitPrice { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
-        public decimal? BalanceDoQty { get; set; }
+        public decimal? AvailableQnty { get; set; }
         public decimal? OrderQnty { get; set; }
-        public decimal? ReturnedQty { get; set; }
+        public decimal? DispatchQty { get; set; }
+        public decimal? ReturnQty { get; set; }
         public string? SerialNo { get; set; }
-        public string? Remark { get; set; }
+        public string? Remarks { get; set; }
     }
 }

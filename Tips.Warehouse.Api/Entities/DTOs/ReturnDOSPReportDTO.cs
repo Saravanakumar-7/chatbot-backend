@@ -33,6 +33,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     }
     public class ReturnDOSPReportWithParamDTO
     {
+        public string? ReturnBTONumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerLeadId { get; set; }

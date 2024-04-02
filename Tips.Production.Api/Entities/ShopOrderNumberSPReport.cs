@@ -13,8 +13,10 @@ namespace Tips.Production.Api.Entities
         public decimal BOMversion { get; set; }
         public string? ProjectNumber { get; set; }
         public string? SalesOrderNumber { get; set; }
+        public decimal salesorederQty { get; set; }
         [Precision(13, 3)]
-        public decimal OpenSalesOrderQty { get; set; }  
+        public decimal OpenSalesOrderQty { get; set; }
+
         [Precision(13, 3)]
         public decimal ReleaseQty { get; set; }
         public string? KPN { get; set; }

@@ -29,8 +29,8 @@ builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 //builder.Services.AuthenticateByJwtToken(builder.Configuration);
 
-var key = builder.Configuration["Jwt:key"];
-builder.Services.ConfigureJwtToken(builder.Configuration);
+//var key = builder.Configuration["Jwt:key"];
+//builder.Services.ConfigureJwtToken(builder.Configuration);
 //builder.Services.AddTransient<IJwtAuth, Auth>();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

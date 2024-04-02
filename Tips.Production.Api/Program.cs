@@ -22,8 +22,8 @@ builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 
-var key = builder.Configuration["Jwt:key"];
-builder.Services.ConfigureJwtToken(builder.Configuration);
+//var key = builder.Configuration["Jwt:key"];
+//builder.Services.ConfigureJwtToken(builder.Configuration);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

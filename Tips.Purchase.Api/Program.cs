@@ -30,8 +30,8 @@ builder.Services.Configure<IISServerOptions>(option =>
     option.MaxRequestBodySize = 1073741824;
 });
 
-var key = builder.Configuration["Jwt:key"];
-builder.Services.ConfigureJwtToken(builder.Configuration);
+//var key = builder.Configuration["Jwt:key"];
+//builder.Services.ConfigureJwtToken(builder.Configuration);
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

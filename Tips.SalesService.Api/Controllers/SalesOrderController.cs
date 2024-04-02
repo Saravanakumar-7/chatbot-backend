@@ -1574,7 +1574,6 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 else
                 {
-                    var result = _mapper.Map<IEnumerable<SalesOrderSPResportDTO>>(products);
 
                     serviceResponse.Data = products;
                     serviceResponse.Message = "Returned SalesOrder Details";
