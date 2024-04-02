@@ -14,6 +14,7 @@ using System.IO;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Web;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
 using Tips.Grin.Api.Entities.DTOs;
@@ -716,7 +717,7 @@ namespace Tips.Grin.Api.Controllers
                         ////Inventory Update Code
 
                         var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
-                             "GetItemMasterByItemNumber?", "&ItemNumber=", iQcItemNo));
+                             "GetItemMasterByItemNumber?", "&ItemNumber=", HttpUtility.UrlEncode(iQcItemNo)));
                         if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
                             getItemmResp = itemMasterObjectResult.StatusCode;
 
@@ -728,10 +729,10 @@ namespace Tips.Grin.Api.Controllers
                         decimal rejectedQty = iQCDto[i].RejectedQty;
                         foreach (var projectNo in grinPartsDetails.ProjectNumbers)
                         {
-                            var grinNo = iQCCreate.GrinNumber;
+                            var grinNo = HttpUtility.UrlEncode(iQCCreate.GrinNumber);
                             var grinPartsId = projectNo.GrinPartsId;
-                            var itemNo = iQCDto[i].ItemNumber;
-                            var projectNos = projectNo.ProjectNumber;
+                            var itemNo = HttpUtility.UrlEncode(iQCDto[i].ItemNumber);
+                            var projectNos = HttpUtility.UrlEncode(projectNo.ProjectNumber);
                             var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
                                 "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", grinNo, "&GrinPartsId=",
                                 grinPartsId, "&ItemNumber=", itemNo, "&ProjectNumber=", projectNos));
@@ -1004,6 +1005,15 @@ namespace Tips.Grin.Api.Controllers
                         _iQCConfirmationRepository.SaveAsync();
                         _grinRepository.SaveAsync();
                     }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside Create IQCConfirmation action: Other Service Calling");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
 
 
                     serviceResponse.Data = null;
@@ -1062,7 +1072,7 @@ namespace Tips.Grin.Api.Controllers
                         iQCItemList.Add(iQCConfirmationItems);
 
                         var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
-                              "GetItemMasterByItemNumber?", "&ItemNumber=", iQcItemNo));
+                              "GetItemMasterByItemNumber?", "&ItemNumber=", HttpUtility.UrlEncode(iQcItemNo)));
                         if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
                             getItemmResp = itemMasterObjectResult.StatusCode;
 
@@ -1074,10 +1084,10 @@ namespace Tips.Grin.Api.Controllers
                         decimal rejectedQty = iQCDto[i].RejectedQty;
                         foreach (var projectNo in grinPartsDetails.ProjectNumbers)
                         {
-                            var grinNo = iQCCreate.GrinNumber;
+                            var grinNo = HttpUtility.UrlEncode(iQCCreate.GrinNumber);
                             var grinPartsId = projectNo.GrinPartsId;
-                            var itemNo = iQCDto[i].ItemNumber;
-                            var projectNos = projectNo.ProjectNumber;
+                            var itemNo = HttpUtility.UrlEncode(iQCDto[i].ItemNumber);
+                            var projectNos = HttpUtility.UrlEncode(projectNo.ProjectNumber);
                             var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
                                 "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", grinNo, "&GrinPartsId=",
                                 grinPartsId, "&ItemNumber=", itemNo, "&ProjectNumber=", projectNos));
@@ -1337,12 +1347,21 @@ namespace Tips.Grin.Api.Controllers
                         _iQCConfirmationRepository.SaveAsync();
                         _grinRepository.SaveAsync();
                     }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside Create IQCConfirmation action: Other Service Calling");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
 
                     serviceResponse.Data = null;
                     serviceResponse.Message = "IQCConfirmation Successfully Created";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Created("IQCConfirmationById", serviceResponse);
+                    return Ok(serviceResponse);
 
 
                 }
