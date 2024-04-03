@@ -70,6 +70,7 @@ namespace Tips.Purchase.Api.Entities
         public PoStatus PoStatus { get; set; }
         [DefaultValue(false)]
         public bool PoConfirmationStatus { get; set; }
+        public int ApprovalCount { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
