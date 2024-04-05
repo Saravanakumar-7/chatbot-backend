@@ -9,7 +9,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public int Id { get; set; }
         public string? FGPartNumber { get; set; }
         public string? BTONumber { get; set; }
-
+        public string? SalesOrderNumber { get; set; }
         public string? Description { get; set; }
 
         [Precision(13, 2)]
@@ -62,7 +62,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string UOC { get; set; }
         public string? UOM { get; set; }
         public PartType? PartType { get; set; }
-
+        public string? SalesOrderNumber { get; set; }
         public int SalesOrderId { get; set; }
         public int BtoDeliveryOrderPartsId { get; set; }
 
@@ -102,7 +102,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? UOM { get; set; }
         public string? PartType { get; set; }
 
-
+        public string? SalesOrderNumber { get; set; }
         [Precision(13, 2)]
         public decimal? FGOrderQty { get; set; }
 
