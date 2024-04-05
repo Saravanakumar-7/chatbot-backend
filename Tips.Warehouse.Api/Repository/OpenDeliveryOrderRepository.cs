@@ -109,7 +109,8 @@ namespace Tips.Warehouse.Api.Repository
             string result = $"OpenDeliveryOrder details of {openDeliveryOrder.Id} is deleted successfully!";
             return result;
         }
-        public async Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReportWithParam(string OpenDONumber, string CustomerName, string CustomerAliasName, string LeadId, string IssuedTo, string KPN, string MPN, string Warehouse, string Location, string ODOType)
+        public async Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReportWithParam(string OpenDONumber, string CustomerName, string CustomerAliasName, string LeadId, 
+            string IssuedTo,string KPN, string MPN, string Warehouse, string Location, string ODOType)
         {
 
             var result = _tipsWarehouseDbContext

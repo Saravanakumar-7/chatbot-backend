@@ -14,7 +14,6 @@ using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
 using Tips.SalesService.Api.Repository;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.SalesService.Api.Controllers
 {

@@ -93,21 +93,20 @@ namespace Tips.SalesService.Api.Repository
         }
 
 
-        public async Task<PagedList<SalesOrderSPResport>> GetSalesOrderSPReport(PagingParameter pagingParameter)
+        public async Task<PagedList<SalesOrderSPReport>> GetSalesOrderSPReport(PagingParameter pagingParameter)
         {
-            var results = _tipsSalesServiceDbContext.Set<SalesOrderSPResport>()
+            var results = _tipsSalesServiceDbContext.Set<SalesOrderSPReport>()
                       .FromSqlInterpolated($"CALL Sales_Order_without_parameter_Report")
                       .ToList();
 
-            return PagedList<SalesOrderSPResport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+            return PagedList<SalesOrderSPReport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
         }
-        public async Task<IEnumerable<SalesOrderSPResport>> GetSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN)
-        {
-
+        public async Task<IEnumerable<SalesOrderSPReport>> GetSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN)
+        {           
             var result = _tipsSalesServiceDbContext
-            .Set<SalesOrderSPResport>()
+            .Set<SalesOrderSPReport>()
             .FromSqlInterpolated($"CALL SalesOrder_withparameter_Report({CustomerName},{SalesOrderNumber},{KPN})")
             .ToList();
 
@@ -115,9 +114,9 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
-        public async Task<IEnumerable<SalesOrderSPResport>> GetSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        public async Task<IEnumerable<SalesOrderSPReport>> GetSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
-            var results = _tipsSalesServiceDbContext.Set<SalesOrderSPResport>()
+            var results = _tipsSalesServiceDbContext.Set<SalesOrderSPReport>()
                         .FromSqlInterpolated($"CALL SalesOrder_withparameter_withdate({FromDate},{ToDate})")
                         .ToList();
 

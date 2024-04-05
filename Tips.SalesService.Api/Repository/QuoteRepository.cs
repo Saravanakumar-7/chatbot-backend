@@ -12,7 +12,6 @@ using System.Text;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.DTOs;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.SalesService.Api.Repository
 {

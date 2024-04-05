@@ -82,7 +82,9 @@ namespace Tips.Warehouse.Api.Repository
 
             var getAllReturnBTODetails = FindAll().OrderByDescending(x => x.Id)
                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ReturnBTONumber.Contains(searchParams.SearchValue) ||
-                inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue))))
+                inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
+                || inv.CustomerId.Contains(searchParams.SearchValue) || inv.BTONumber.Contains(searchParams.SearchValue)
+                || inv.PONumber.Contains(searchParams.SearchValue))))
                 .Include(t => t.ReturnBtoDeliveryOrderItems);
             return PagedList<ReturnBtoDeliveryOrder>.ToPagedList(getAllReturnBTODetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 

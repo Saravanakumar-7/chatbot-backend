@@ -69,13 +69,20 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<PagedList<ReturnInvoice>> GetAllReturnInvoice([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var getAllReturnInvoiceList = FindAll().OrderByDescending(x => x.Id)
-               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
-                inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
-                || inv.CompanyName.Contains(searchParams.SearchValue))))
+            var getAllReturnInvoiceList = FindAll()
+                .OrderByDescending(x => x.Id)
+                .Where(inv =>
+                    (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
+                    inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
+                    inv.CustomerAliasName.Contains(searchParams.SearchValue) ||
+                    inv.CustomerName.Contains(searchParams.SearchValue) ||
+                    inv.CompanyName.Contains(searchParams.SearchValue) ||
+                    inv.ReturnInvoiceItems.Any(item => item.DONumber.Contains(searchParams.SearchValue)))) // Include searching by DoNumber in ReturnInvoiceItems
                 .Include(k => k.ReturnInvoiceItems);
+
             return PagedList<ReturnInvoice>.ToPagedList(getAllReturnInvoiceList, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
 
         public async Task<string> GetReturnInvoiceByInvoiceNo(string InvoiceNumber)
         {
@@ -115,6 +122,7 @@ namespace Tips.Warehouse.Api.Repository
             IEnumerable<ReturnInvoiceNumberListDto> returnInvoiceNumberList = await _tipsWarehouseDbContext.ReturnInvoices
                                 .Select(x => new ReturnInvoiceNumberListDto()
                                 {
+                                    Id = x.Id,
                                     ReturnInvoiceNumber = x.InvoiceNumber
 
                                 })

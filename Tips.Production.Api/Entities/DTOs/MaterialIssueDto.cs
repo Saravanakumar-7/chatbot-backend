@@ -115,7 +115,7 @@ namespace Tips.Production.Api.Entities.DTOs
     public class MaterialIssueReportWithParamDto
     {
         public string? ShopOrderNumber { get; set; }
-        public string? ItemNumber { get; set; }
+        public string? FGitemnumber { get; set; }
         public string? ProjectNumber { get; set; }
         public string? SalesOrderNumber { get; set; }
     }

@@ -57,6 +57,23 @@ namespace Tips.Production.Api.Repository
             }).ToListAsync();
             return ShopOrderQty;
         }
+        public async Task<IEnumerable<OQCBinningSPReport>> GetOQCBinningSPReportWithParam(string? ItemNumber, string? ShopOrderNumber)
+        {
+            var result = _tipsProductionDbContext
+            .Set<OQCBinningSPReport>()
+            .FromSqlInterpolated($"OQC_Binning_with_parameter({ItemNumber},{ShopOrderNumber})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<OQCBinningSPReport>> GetOQCBinningSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsProductionDbContext.Set<OQCBinningSPReport>()
+                      .FromSqlInterpolated($"OQC_binning_with_date({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
     }
     
 }

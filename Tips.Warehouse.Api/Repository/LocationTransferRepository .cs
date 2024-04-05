@@ -164,7 +164,10 @@ namespace Tips.Warehouse.Api.Repository
         //    // Assuming you only want to return the first item from the list, if there are multiple matching entries
         //    return inventoryDetails;
         //}
-        public async Task<IEnumerable<LocationTransferSPReport>> LocationTransferSPReportWithParam(string FromPartNumber, string FromPartType, string FromWarehouse, string FromLocation, string FromProjectNumber, string ToPartnumber, string ToPartType, string ToWarehouse, string ToLocation, string ToProjectNumber)
+        public async Task<IEnumerable<LocationTransferSPReport>> LocationTransferSPReportWithParam(string FromPartNumber, string FromPartType, string FromWarehouse, 
+                                                                                                 string FromLocation, string FromProjectNumber, 
+                                                                                                 string ToPartnumber, string ToPartType, 
+                                                                                                 string ToWarehouse, string ToLocation, string ToProjectNumber)
         {
            
                 var result = _tipsWarehouseDbContext

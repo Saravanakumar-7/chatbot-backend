@@ -1,6 +1,6 @@
 ﻿namespace Tips.SalesService.Api.Entities
 {
-    public class SalesOrderSPResport
+    public class SalesOrderSPReport
     {
         public string? CustomerName { get; set; }
         public string? CustomerId { get; set; }   

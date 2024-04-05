@@ -100,7 +100,7 @@ namespace Tips.Production.Api.Controllers
             try
             {
                 var products = await _materialIssueRepository.GetMaterialIssueSPReportWithParam(materialIssueReportWithParamDto.ShopOrderNumber,
-                                                                            materialIssueReportWithParamDto.ItemNumber, materialIssueReportWithParamDto.ProjectNumber,
+                                                                            materialIssueReportWithParamDto.FGitemnumber, materialIssueReportWithParamDto.ProjectNumber,
                                                                             materialIssueReportWithParamDto.SalesOrderNumber);
 
                 if (products == null)

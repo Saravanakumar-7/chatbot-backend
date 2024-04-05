@@ -104,7 +104,66 @@ namespace Tips.SalesService.Api.Repository
                 .FirstOrDefaultAsync();
             return collectionTrackerDetailsById;
         }
+        public async Task<IEnumerable<CollectionTrackerSPReport>> GetCollectionTrackerSPReportWithParam(string CustomerId)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<CollectionTrackerSPReport>()
+            .FromSqlInterpolated($"CALL collectiontrackers_report_withparameters({CustomerId})")
+            .ToList();
 
+            return result;
+
+        }
+
+        public async Task<IEnumerable<CollectionTrackerSPReport>> GetCollectionTrackerSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<CollectionTrackerSPReport>()
+                        .FromSqlInterpolated($"CALL collectiontrackers_report_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<CollectionTrackerByCustomerIdSPReport>> GetCollectionTrackerByCustomerIdSPReportWithParam(string CustomerId)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<CollectionTrackerByCustomerIdSPReport>()
+            .FromSqlInterpolated($"CALL customerdataby_customerid({CustomerId})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<CollectionTrackerByCustomerIdSPReport>> GetCollectionTrackerByCustomerIdSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<CollectionTrackerByCustomerIdSPReport>()
+                        .FromSqlInterpolated($"CALL cutomerdataby_cutomerid_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<CollectionTrackerBySalesOrderNoSPReport>> GetCollectionTrackerBySalesOrderNoSPReportWithParam(string CustomerId)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<CollectionTrackerBySalesOrderNoSPReport>()
+            .FromSqlInterpolated($"CALL cutomerdataby_salesorderno_withparameter({CustomerId})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<CollectionTrackerBySalesOrderNoSPReport>> GetCollectionTrackerBySalesOrderNoSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<CollectionTrackerBySalesOrderNoSPReport>()
+                        .FromSqlInterpolated($"CALL cutomerdataby_salesorderno_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
         public async Task<List<OpenSalesOrderDetailsDto>> GetOpenSODetailsByCustomerId(string customerId)
         {
             var salesOrderTotalValue = _tipsSalesServiceDbContext.SalesOrders.Where(x => x.CustomerId == customerId).Sum(s => s.Total);

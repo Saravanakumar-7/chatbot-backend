@@ -387,6 +387,231 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetCollectionTrackerSPReportWithParam([FromBody] CollectionTrackerSPResportSPResportDTO collectionTrackerSPResportSPResportDTO)
+
+        {
+            ServiceResponse<IEnumerable<CollectionTrackerSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerSPReport>>();
+            try
+            {
+                var collectionTrackerSPReports = await _repository.GetCollectionTrackerSPReportWithParam(collectionTrackerSPResportSPResportDTO.CustomerId);
+
+                if (collectionTrackerSPReports == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CollectionTracker SPResport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CollectionTracker SPResport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = collectionTrackerSPReports;
+                    serviceResponse.Message = "Returned CollectionTracker SPResport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside CollectionTrackerSPResport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetCollectionTrackerSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<CollectionTrackerSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerSPReport>>();
+            try
+            {
+                var collectionTrackerSPReportWithDate = await _repository.GetCollectionTrackerSPReportWithDate(FromDate, ToDate);
+                if (collectionTrackerSPReportWithDate == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CollectionTrackerSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CollectionTrackerSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = collectionTrackerSPReportWithDate;
+                    serviceResponse.Message = "Returned CollectionTrackerSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetCollectionTrackerSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetCollectionTrackerByCustomerIdSPReportWithParam([FromBody] CollectionTrackerByCustomerIdSPReportDTO collectionTrackerByCustomerIdSPReportDTO)
+
+        {
+            ServiceResponse<IEnumerable<CollectionTrackerByCustomerIdSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerByCustomerIdSPReport>>();
+            try
+            {
+                var collectionTrackerByCustomerIdSPReports = await _repository.GetCollectionTrackerByCustomerIdSPReportWithParam(collectionTrackerByCustomerIdSPReportDTO.CustomerId);
+
+                if (collectionTrackerByCustomerIdSPReports == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CollectionTrackerByCustomerId SPResport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CollectionTrackerByCustomerId SPResport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = collectionTrackerByCustomerIdSPReports;
+                    serviceResponse.Message = "Returned CollectionTrackerByCustomerId SPResport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetCollectionTrackerByCustomerIdSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetCollectionTrackerByCustomerIdSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<CollectionTrackerByCustomerIdSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerByCustomerIdSPReport>>();
+            try
+            {
+                var CollectionTrackerByCustomerIdSPReportWithDate = await _repository.GetCollectionTrackerByCustomerIdSPReportWithDate(FromDate, ToDate);
+                if (CollectionTrackerByCustomerIdSPReportWithDate == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CollectionTrackerByCustomerId hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CollectionTrackerByCustomerId hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = CollectionTrackerByCustomerIdSPReportWithDate;
+                    serviceResponse.Message = "Returned CollectionTrackerByCustomerId SPResport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetCollectionTrackerByCustomerIdSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetCollectionTrackerBySalesOrderNoSPReportWithParam([FromBody] CollectionTrackerByCustomerIdSPReportDTO collectionTrackerByCustomerIdSPReportDTO)
+
+        {
+            ServiceResponse<IEnumerable<CollectionTrackerBySalesOrderNoSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerBySalesOrderNoSPReport>>();
+            try
+            {
+                var collectionTrackerBySalesOrderNoSPReports = await _repository.GetCollectionTrackerBySalesOrderNoSPReportWithParam(collectionTrackerByCustomerIdSPReportDTO.CustomerId);
+
+                if (collectionTrackerBySalesOrderNoSPReports == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CollectionTrackerBySalesOrderNo SPResport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CollectionTrackerBySalesOrderNo SPResport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = collectionTrackerBySalesOrderNoSPReports;
+                    serviceResponse.Message = "Returned CollectionTrackerBySalesOrderNo SPResport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetCollectionTrackerBySalesOrderNoSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetCollectionTrackerBySalesOrderNoSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<CollectionTrackerBySalesOrderNoSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerBySalesOrderNoSPReport>>();
+            try
+            {
+                var CollectionTrackerBySalesOrderNoSPReportWithDate = await _repository.GetCollectionTrackerBySalesOrderNoSPReportWithDate(FromDate, ToDate);
+                if (CollectionTrackerBySalesOrderNoSPReportWithDate == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CollectionTrackerBySalesOrderNo hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CollectionTrackerBySalesOrderNo hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = CollectionTrackerBySalesOrderNoSPReportWithDate;
+                    serviceResponse.Message = "Returned CollectionTrackerBySalesOrderNo SPResport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetCollectionTrackerBySalesOrderNoSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
 
     }
 }

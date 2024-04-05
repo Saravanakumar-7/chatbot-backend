@@ -452,6 +452,7 @@ namespace Tips.Warehouse.Api.Repository
                     || (string.IsNullOrEmpty(searchParams.SearchValue)
                     || inv.BTONumber.Contains(searchParams.SearchValue)
                     || inv.PONumber.Contains(searchParams.SearchValue)
+                    || inv.CustomerId.Contains(searchParams.SearchValue)
                     || inv.CustomerName.Contains(searchParams.SearchValue))) && (inv.UniqeId != null));
 
 
