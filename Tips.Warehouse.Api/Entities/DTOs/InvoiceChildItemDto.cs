@@ -11,7 +11,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? DONumber { get; set; }
         public string? FGItemNumber { get; set; }
         public string? Description { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
 
         [Precision(13, 3)]
         public decimal InvoicedQty { get; set; }
@@ -56,7 +56,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public string? DONumber { get; set; }
         public string? FGItemNumber { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
         [Precision(13, 3)]
         public decimal InvoicedQty { get; set; }
         public string? UOM { get; set; }
@@ -103,7 +103,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? FGItemNumber { get; set; }
         public string? Description { get; set; }
         public string? SerialNumber { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
 
         [Precision(13, 3)]
         public decimal InvoicedQty { get; set; }

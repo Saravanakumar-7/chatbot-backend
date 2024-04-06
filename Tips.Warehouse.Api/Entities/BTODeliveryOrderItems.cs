@@ -18,7 +18,7 @@ namespace Tips.Warehouse.Api.Entities
         public decimal? UnitPrice { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
         public PartType? PartType { get; set; }
 
         public decimal? FGOrderQty { get; set; }

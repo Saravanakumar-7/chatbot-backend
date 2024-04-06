@@ -16,7 +16,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? SalesOrderNumber { get; set; }
         public string? PriceList { get; set; }
         public decimal? AvailableStock { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public OrderStatus StatusEnum { get; set; }
 
@@ -72,7 +72,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? Description { get; set; }
         //public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
 
         //[Precision(13, 3)]
         //[DefaultValue(0)]
@@ -121,7 +121,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? Description { get; set; }
         //  public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
         [Precision(13, 3)]
         public decimal BalanceQty { get; set; }
 

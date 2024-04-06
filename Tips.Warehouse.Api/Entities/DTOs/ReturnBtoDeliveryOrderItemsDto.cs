@@ -17,7 +17,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string UOC { get; set; }
         public string? UOM { get; set; }
         public PartType? PartType { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
 
         [Precision(13, 2)]
         public decimal? FGOrderQty { get; set; }
@@ -65,7 +65,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? SalesOrderNumber { get; set; }
         public int SalesOrderId { get; set; }
         public int BtoDeliveryOrderPartsId { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
         [Precision(13, 2)]
         public decimal? FGOrderQty { get; set; }
 
@@ -101,7 +101,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string UOC { get; set; }
         public string? UOM { get; set; }
         public string? PartType { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
         public string? SalesOrderNumber { get; set; }
         [Precision(13, 2)]
         public decimal? FGOrderQty { get; set; }

@@ -8,7 +8,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
          public string? PriceList { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
 
@@ -61,7 +61,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
          public string? PriceList { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
 
@@ -110,7 +110,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
          public string? PriceList { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
 

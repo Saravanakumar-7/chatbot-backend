@@ -20,7 +20,7 @@ namespace Tips.Warehouse.Api.Entities
         public PartType PartType { get; set; }
         public string? SerialNumber { get; set; }
         public int BtoDeliveryOrderPartsId { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
 
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
