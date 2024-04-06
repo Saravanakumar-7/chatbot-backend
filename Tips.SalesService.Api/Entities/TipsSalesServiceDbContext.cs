@@ -98,12 +98,18 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<CoverageReport> CoverageReports { get; set; }
         public DbSet<SoConfirmationDate> SoConfirmationDates { get; set; }
         public DbSet<SoConfirmationDateHistory> SoConfirmationDateHistories { get; set; }
-        public DbSet<SalesOrderSPResport> SalesOrderSPResports { get; set; }
+        public DbSet<SalesOrderSPReport> SalesOrderSPResports { get; set; }
+        public DbSet<CollectionTrackerSPReport> CollectionTrackerSPReports { get; set; }
+        public DbSet<CollectionTrackerByCustomerIdSPReport> CollectionTrackerByCustomerIdSPReports { get; set; }
+        public DbSet<CollectionTrackerBySalesOrderNoSPReport> CollectionTrackerBySalesOrderNoSPReports { get; set; }
         public DbSet<DocumentUpload> DocumentUploads { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RecievableCustomer>().HasNoKey();
-            modelBuilder.Entity<SalesOrderSPResport>().HasNoKey();
+            modelBuilder.Entity<SalesOrderSPReport>().HasNoKey();
+            modelBuilder.Entity<CollectionTrackerSPReport>().HasNoKey();
+            modelBuilder.Entity<CollectionTrackerByCustomerIdSPReport>().HasNoKey();
+            modelBuilder.Entity<CollectionTrackerBySalesOrderNoSPReport>().HasNoKey();
         }
 
     }

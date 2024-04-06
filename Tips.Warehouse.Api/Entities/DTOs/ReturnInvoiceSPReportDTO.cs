@@ -43,7 +43,7 @@
 
         public string? KPN { get; set; }
         public string? MPN { get; set; }
-        public string? IssuedTo { get; set; }
+        public string? IssuedBy { get; set; }
     }
 
 }

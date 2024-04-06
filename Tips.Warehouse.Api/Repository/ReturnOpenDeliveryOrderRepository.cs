@@ -44,6 +44,7 @@ namespace Tips.Warehouse.Api.Repository
             var returODODetails = FindAll().OrderByDescending(x => x.Id)
                .Where(odo => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || odo.CustomerId.Contains(searchParams.SearchValue) ||
                 odo.CustomerAliasName.Contains(searchParams.SearchValue) || odo.CustomerName.Contains(searchParams.SearchValue)
+                || odo.ODONumber.Contains(searchParams.SearchValue)
                 || odo.Description.Contains(searchParams.SearchValue))));
 
             return PagedList<ReturnOpenDeliveryOrder>.ToPagedList(returODODetails, pagingParameter.PageNumber, pagingParameter.PageSize);

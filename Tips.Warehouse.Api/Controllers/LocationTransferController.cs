@@ -772,7 +772,11 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<IEnumerable<LocationTransferSPReport>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSPReport>>();
             try
             {
-                var products = await _locationTransferRepository.LocationTransferSPReportWithParam(locationTransferSPReport.FromPartNumber, locationTransferSPReport.FromPartType, locationTransferSPReport.FromWarehouse, locationTransferSPReport.FromLocation, locationTransferSPReport.FromProjectNumber, locationTransferSPReport.ToPartNumber, locationTransferSPReport.ToPartType, locationTransferSPReport.ToWarehouse, locationTransferSPReport.ToLocation, locationTransferSPReport.ToProjectNumber);
+                var products = await _locationTransferRepository.LocationTransferSPReportWithParam(locationTransferSPReport.FromPartNumber, locationTransferSPReport.FromPartType, 
+                                                                     locationTransferSPReport.FromWarehouse, locationTransferSPReport.FromLocation, 
+                                                                     locationTransferSPReport.FromProjectNumber,  locationTransferSPReport.ToPartNumber, 
+                                                                     locationTransferSPReport.ToPartType, locationTransferSPReport.ToWarehouse, 
+                                                                     locationTransferSPReport.ToLocation, locationTransferSPReport.ToProjectNumber);
 
                 if (products == null)
                 {

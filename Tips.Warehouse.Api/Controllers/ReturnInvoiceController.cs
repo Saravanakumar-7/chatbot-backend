@@ -63,7 +63,7 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllReturnInvoice([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            ServiceResponse<IEnumerable<ReturnInvoiceDto>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceDto>>();
+            ServiceResponse<IEnumerable<ReturnInvoiceDoNoDto>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceDoNoDto>>();
 
             try
             {
@@ -82,7 +82,15 @@ namespace Tips.Warehouse.Api.Controllers
 
 
                 _logger.LogInfo("Returned all ReturnInvoice");
-                var result = _mapper.Map<IEnumerable<ReturnInvoiceDto>>(getAllReturnInvoiceDetails);
+                var result = _mapper.Map<IEnumerable<ReturnInvoiceDoNoDto>>(getAllReturnInvoiceDetails);
+                foreach (var returnInvoice in result)
+                {
+                    if (returnInvoice.ReturnInvoiceItems != null)
+                    {
+                        var doNumbers = (returnInvoice.ReturnInvoiceItems.Select(item => item.DONumber).Distinct());
+                        returnInvoice.DONumber = string.Join(", ", doNumbers);
+                    }
+                }
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ReturnInvoice Successfully";
                 serviceResponse.Success = true;
@@ -827,7 +835,7 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<IEnumerable<ReturnInvoiceSPResport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceSPResport>>();
             try
             {
-                var products = await _returnInvoiceRepository.ReturnInvoiceSPReportWithParameter(returnInvoiceSPReportDTO.InvoiceNumber, returnInvoiceSPReportDTO.DoNumber, returnInvoiceSPReportDTO.CustomerName, returnInvoiceSPReportDTO.CustomerAliasName, returnInvoiceSPReportDTO.SalesOrderNumber, returnInvoiceSPReportDTO.Location, returnInvoiceSPReportDTO.Warehouse, returnInvoiceSPReportDTO.KPN, returnInvoiceSPReportDTO.MPN, returnInvoiceSPReportDTO.IssuedTo);
+                var products = await _returnInvoiceRepository.ReturnInvoiceSPReportWithParameter(returnInvoiceSPReportDTO.InvoiceNumber, returnInvoiceSPReportDTO.DoNumber, returnInvoiceSPReportDTO.CustomerName, returnInvoiceSPReportDTO.CustomerAliasName, returnInvoiceSPReportDTO.SalesOrderNumber, returnInvoiceSPReportDTO.Location, returnInvoiceSPReportDTO.Warehouse, returnInvoiceSPReportDTO.KPN, returnInvoiceSPReportDTO.MPN, returnInvoiceSPReportDTO.IssuedBy);
                 if (products == null)
                 {
                     serviceResponse.Data = null;

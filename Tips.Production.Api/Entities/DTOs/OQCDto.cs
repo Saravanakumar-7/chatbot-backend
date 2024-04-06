@@ -133,4 +133,9 @@ namespace Tips.Production.Api.Entities.DTOs
         public string ShopOrderNumber { get; set; }
         public decimal TotalAcceptedQty { get; set; }
     }
+    public class OQCSPReportDto
+    {
+        public string? ItemNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
+    }
 }

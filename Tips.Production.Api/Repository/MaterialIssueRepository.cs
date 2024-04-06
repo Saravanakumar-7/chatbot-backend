@@ -44,12 +44,12 @@ namespace Tips.Production.Api.Repository
 
             return results;
         }
-        public async Task<IEnumerable<MaterialIssueSPReport>> GetMaterialIssueSPReportWithParam(string? shopOrderNo, string? ItemNo, string? projectNo,
+        public async Task<IEnumerable<MaterialIssueSPReport>> GetMaterialIssueSPReportWithParam(string? shopOrderNo, string? FGitemnumber, string? projectNo,
                                                                                                    string? salesOrderNo)
         {
             var result = _tipsProductionDbContext
             .Set<MaterialIssueSPReport>()
-            .FromSqlInterpolated($"Material_Issue_Report_withparameter({shopOrderNo},{ItemNo},{projectNo},{salesOrderNo})")
+            .FromSqlInterpolated($"Material_Issue_Report_withparameter({shopOrderNo},{FGitemnumber},{projectNo},{salesOrderNo})")
             .ToList();
 
             return result;

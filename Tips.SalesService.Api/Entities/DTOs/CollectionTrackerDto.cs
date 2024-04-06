@@ -72,5 +72,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public List<string> CustomerName { get; set; }
         public List<string>? Remarks { get; set; }
     }
+    public class CollectionTrackerSPResportSPResportDTO
+    {
+        public string? CustomerId { get; set; }
+    }
+    public class CollectionTrackerByCustomerIdSPReportDTO
+    {
+        public string? CustomerId { get; set; }
+    }
 
 }

@@ -19,6 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using System.Net.Http.Headers;
 using System.Diagnostics.Eventing.Reader;
+using System.Web;
 
 namespace Tips.Grin.Api.Controllers
 {
@@ -518,9 +519,12 @@ namespace Tips.Grin.Api.Controllers
                 var binningsItemsDto = binningPostDto.BinningItems;
                 var grinNumber = binningDetail.GrinNumber;
                 var binningItemList = new List<BinningItems>();
+
                 HttpStatusCode getInvGrinId = HttpStatusCode.OK;
                 HttpStatusCode updateInv = HttpStatusCode.OK;
                 HttpStatusCode createInv = HttpStatusCode.OK;
+                HttpStatusCode getItemMas = HttpStatusCode.OK;
+
                 var existingBinningDetails = await _binningRepository.GetExistingBinningDetailsByGrinNo(grinNumber);
                 if (existingBinningDetails != null)
                 {
@@ -594,6 +598,7 @@ namespace Tips.Grin.Api.Controllers
                         {
                             var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
                             "GetItemMasterByItemNumber?", "&ItemNumber=", binningsItem.ItemNumber));
+                            if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK) getItemMas = itemMasterObjectResult.StatusCode;
                             var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
                             dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                             dynamic itemMasterObject = itemMasterObjectData.data;
@@ -606,9 +611,13 @@ namespace Tips.Grin.Api.Controllers
                             {
                                 if (j == 0)
                                 {
-                                    var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                                  "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", binningDetail.GrinNumber, "&GrinPartsId=", binningsItem.GrinPartId,
-                                  "&ItemNumber=", binningsItem.ItemNumber, "&ProjectNumber=", location.ProjectNumber));
+                                    var projectNumber = HttpUtility.UrlEncode(location.ProjectNumber);
+                                    var grinNumbers = HttpUtility.UrlEncode(binningDetail.GrinNumber);
+                                    var itemNumber = HttpUtility.UrlEncode(binningsItem.ItemNumber);
+                                    var GrinPartId = binningsItem.GrinPartId;
+                                   var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                                  "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", grinNumbers, "&GrinPartsId=", GrinPartId,
+                                  "&ItemNumber=", itemNumber, "&ProjectNumber=", projectNumber));
                                     if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
 
                                     var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
@@ -712,16 +721,26 @@ namespace Tips.Grin.Api.Controllers
                             }
                         }
                     }
-                    if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK)
+                    if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK && getItemMas == HttpStatusCode.OK)
                     {
                         _iQCConfirmationRepository.SaveAsync();
                         _binningRepository.SaveAsync();
                     }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside Create Binning action: Other Service Calling");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
+
                     serviceResponse.Data = binningDetails;
                     serviceResponse.Message = "BinningWithItems Successfully Created";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Created("BinningById", serviceResponse);
+                    return Ok(serviceResponse);
                 }
                 else
                 {
@@ -761,6 +780,7 @@ namespace Tips.Grin.Api.Controllers
                         {
                             var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
                             "GetItemMasterByItemNumber?", "&ItemNumber=", binningsItem.ItemNumber));
+                            if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK) getItemMas = itemMasterObjectResult.StatusCode;
                             var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
                             dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                             dynamic itemMasterObject = itemMasterObjectData.data;
@@ -773,9 +793,13 @@ namespace Tips.Grin.Api.Controllers
                             {
                                 if (j == 0)
                                 {
+                                    var projectNumber = HttpUtility.UrlEncode(location.ProjectNumber);
+                                    var grinNumbers = HttpUtility.UrlEncode(binningDetail.GrinNumber);
+                                    var itemNumber = HttpUtility.UrlEncode(binningsItem.ItemNumber);
+                                    var GrinPartId = binningsItem.GrinPartId;
                                     var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                                  "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", binningDetail.GrinNumber, "&GrinPartsId=", binningsItem.GrinPartId,
-                                  "&ItemNumber=", binningsItem.ItemNumber, "&ProjectNumber=", location.ProjectNumber));
+                                  "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", grinNumbers, "&GrinPartsId=", GrinPartId,
+                                  "&ItemNumber=", itemNumber, "&ProjectNumber=", projectNumber));
                                     if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
 
                                     var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
@@ -898,17 +922,27 @@ namespace Tips.Grin.Api.Controllers
                     iqcDetails.IsBinningCompleted = true;
                     await _iQCConfirmationRepository.UpdateIqc(iqcDetails);
 
-                    if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK)
+                    if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK && getItemMas == HttpStatusCode.OK)
                     {
                         _grinRepository.SaveAsync();
                         _iQCConfirmationRepository.SaveAsync();
                         _binningRepository.SaveAsync();
                     }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside Create Binning action: Other Service Calling");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
+
                     serviceResponse.Data = binningDetails;
                     serviceResponse.Message = "Binning Successfully Created";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Created("BinningById", serviceResponse);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
@@ -1157,6 +1191,11 @@ namespace Tips.Grin.Api.Controllers
                 binningItemsEntityList.Add(binningItemsEntity);
                 binningDetail.BinningItems = binningItemsEntityList;
 
+                HttpStatusCode getInvGrinId = HttpStatusCode.OK;
+                HttpStatusCode updateInv = HttpStatusCode.OK;
+                HttpStatusCode createInv = HttpStatusCode.OK;
+                HttpStatusCode getItemMas = HttpStatusCode.OK;
+
                 var binningsItemsDto = binningSaveDto.BinningItems;
                 var binningItems = binningDetail.BinningItems[0];
                 var grinNumber = binningDetail.GrinNumber;
@@ -1207,12 +1246,10 @@ namespace Tips.Grin.Api.Controllers
                         var iqcDetails = await _iQCConfirmationRepository.GetIqcDetailsbyGrinNo(grinNumber);
                         iqcDetails.IsBinningCompleted = true;
                         await _iQCConfirmationRepository.UpdateIqc(iqcDetails);
-                        _iQCConfirmationRepository.SaveAsync();
 
                         var binningDetails = await _binningRepository.GetBinningDetailsByGrinNumber(grinNumber);
                         binningDetails.IsBinningCompleted = true;
                         await _binningRepository.UpdateBinning(binningDetails);
-                        _binningRepository.SaveAsync();
                     }
 
 
@@ -1223,6 +1260,7 @@ namespace Tips.Grin.Api.Controllers
                     {
                         var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
                             "GetItemMasterByItemNumber?", "&ItemNumber=", binningsItemsDto.ItemNumber));
+                        if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK) getItemMas = itemMasterObjectResult.StatusCode;
                         var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
                         dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                         dynamic itemMasterObject = itemMasterObjectData.data;
@@ -1235,10 +1273,14 @@ namespace Tips.Grin.Api.Controllers
 
                             if (j == 0)
                             {
+                                var projectNumber = HttpUtility.UrlEncode(location.ProjectNumber);
+                                var grinNumbers = HttpUtility.UrlEncode(binningDetail.GrinNumber);
+                                var itemNumber = HttpUtility.UrlEncode(binningsItemsDto.ItemNumber);
+                                var GrinPartId = binningsItemsDto.GrinPartId;
                                 var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                              "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", grinNumber, "&GrinPartsId=", binningsItemsDto.GrinPartId,
-                              "&ItemNumber=", binningsItemsDto.ItemNumber, "&ProjectNumber=", location.ProjectNumber));
-
+                              "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", grinNumber, "&GrinPartsId=", GrinPartId,
+                              "&ItemNumber=", itemNumber, "&ProjectNumber=", projectNumber));
+                                if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
                                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                 dynamic inventoryObject = inventoryObjectData.data;
@@ -1250,6 +1292,7 @@ namespace Tips.Grin.Api.Controllers
                                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                                 var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
                                     "UpdateInventory?id=", inventoryObject.id), data);
+                                if (response.StatusCode != HttpStatusCode.OK) updateInv = response.StatusCode;
                                 j++;
                             }
                             else
@@ -1284,7 +1327,7 @@ namespace Tips.Grin.Api.Controllers
                                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                                 }
                                 var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
-
+                                if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
                             }
 
                             //InventoryTranction Update Code
@@ -1346,6 +1389,21 @@ namespace Tips.Grin.Api.Controllers
                         }
 
                     }
+                    if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK && getItemMas == HttpStatusCode.OK)
+                    {
+                        _iQCConfirmationRepository.SaveAsync();
+                        _binningRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside Create BinningWithItems action: Other Service Calling");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
+
                     serviceResponse.Data = null;
                     serviceResponse.Message = "BinningItems Created Successfully";
                     serviceResponse.Success = true;
@@ -1413,6 +1471,7 @@ namespace Tips.Grin.Api.Controllers
                     {
                         var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
                             "GetItemMasterByItemNumber?", "&ItemNumber=", binningsItemsDto.ItemNumber));
+                        if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK) getItemMas = itemMasterObjectResult.StatusCode;
                         var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
                         dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                         dynamic itemMasterObject = itemMasterObjectData.data;
@@ -1425,10 +1484,14 @@ namespace Tips.Grin.Api.Controllers
 
                             if (j == 0)
                             {
+                                var projectNumber = HttpUtility.UrlEncode(location.ProjectNumber);
+                                var grinNumbers = HttpUtility.UrlEncode(binningDetail.GrinNumber);
+                                var itemNumber = HttpUtility.UrlEncode(binningsItemsDto.ItemNumber);
+                                var GrinPartId = binningsItemsDto.GrinPartId;
                                 var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                              "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", grinNumber, "&GrinPartsId=", binningsItemsDto.GrinPartId,
-                              "&ItemNumber=", binningsItemsDto.ItemNumber, "&ProjectNumber=", location.ProjectNumber));
-
+                              "GetInventoryDetailsByGrinNoandGrinId?", "GrinNo=", grinNumber, "&GrinPartsId=", GrinPartId,
+                              "&ItemNumber=", itemNumber, "&ProjectNumber=", projectNumber));
+                                if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
                                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                 dynamic inventoryObject = inventoryObjectData.data;
@@ -1440,6 +1503,7 @@ namespace Tips.Grin.Api.Controllers
                                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                                 var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
                                     "UpdateInventory?id=", inventoryObject.id), data);
+                                if (response.StatusCode != HttpStatusCode.OK) updateInv = response.StatusCode;
                                 j++;
                             }
                             else
@@ -1474,7 +1538,7 @@ namespace Tips.Grin.Api.Controllers
                                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                                 }
                                 var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
-
+                                if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
                             }
 
                             //InventoryTranction Update Code
@@ -1536,6 +1600,21 @@ namespace Tips.Grin.Api.Controllers
                         }
 
                     }
+                    if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK && getItemMas == HttpStatusCode.OK)
+                    {
+                        _iQCConfirmationRepository.SaveAsync();
+                        _binningRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside Create BinningWithItems action: Other Service Calling");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
+
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Binning and BinningItems Created Successfully";
                     serviceResponse.Success = true;

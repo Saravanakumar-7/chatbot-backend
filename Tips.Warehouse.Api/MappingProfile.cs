@@ -22,6 +22,10 @@ namespace Tips.Warehouse.Api
             CreateMap<Invoice, InvoicePostDto>().ReverseMap();
             CreateMap<Invoice, InvoiceUpdateDto>().ReverseMap();
 
+            CreateMap<ReturnInvoice, ReturnInvoiceDoNoDto>().ReverseMap();
+            CreateMap<ReturnInvoiceItem, ReturnInvoiceItemDoNoDto>().ReverseMap();
+            CreateMap<ReturnInvoiceItemQtyDistribution, ReturnInvoiceItemQtyDistributionDoNoDto>().ReverseMap();
+
             CreateMap<Invoice, DoNoInvoiceDto>().ReverseMap();
             CreateMap<InvoiceChildItem, DoNoInvoiceChildItemDto>().ReverseMap();
             CreateMap<InvoiceAdditionalCharges, DoNoInvoiceAdditionalChargesDto>().ReverseMap();

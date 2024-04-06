@@ -120,6 +120,23 @@ namespace Tips.Production.Api.Repository
 
             return btoIddNameList;
         }
+        public async Task<IEnumerable<OQCSPReport>> GetOQCSPReportWithParam(string? ItemNumber, string? ShopOrderNumber)
+        {
+            var result = _tipsProductionDbContext
+            .Set<OQCSPReport>()
+            .FromSqlInterpolated($"OQC_with_parameter({ItemNumber},{ShopOrderNumber})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<OQCSPReport>> GetOQCSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsProductionDbContext.Set<OQCSPReport>()
+                      .FromSqlInterpolated($"OQC_with_date({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
         public async Task<List<OQCStock>?> GetOQCAcceptedQty(string Itemnumber)
         {
             var AcceptedQty = await _tipsProductionDbContext.oQCs.Where(x => x.ItemNumber == Itemnumber).GroupBy(x => new { x.ItemNumber, x.ShopOrderNumber })

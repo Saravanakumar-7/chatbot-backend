@@ -23,5 +23,7 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<OQC>> GetAllOQCWithItems(OQCSearchDto oQCSearch);
         Task<IEnumerable<OQCIdNameList>> GetAllOQCIdNameList();
         Task<List<OQCStock>?> GetOQCAcceptedQty(string Itemnumber);
+        Task<IEnumerable<OQCSPReport>> GetOQCSPReportWithParam(string? ItemNumber, string? ShopOrderNumber);
+        Task<IEnumerable<OQCSPReport>> GetOQCSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
     }
 }

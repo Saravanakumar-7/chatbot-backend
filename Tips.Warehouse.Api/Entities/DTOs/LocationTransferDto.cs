@@ -189,16 +189,14 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public string? FromPartNumber { get; set; }
         public string? FromPartType { get; set; }
-
-        public string? FromLocation { get; set; }
         public string? FromWarehouse { get; set; }
+        public string? FromLocation { get; set; }
         public string? FromProjectNumber { get; set; }
-
-        public string? ToLocation { get; set; }
-        public string? ToWarehouse { get; set; }
-        public string? ToProjectNumber { get; set; }
-
         public string? ToPartNumber { get; set; }
         public string? ToPartType { get; set; }
+        public string? ToWarehouse { get; set; }
+        public string? ToLocation { get; set; }
+        public string? ToProjectNumber { get; set; }
+
     }
 }

@@ -18,5 +18,12 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<CollectionTracker>> SearchCollectionTracker([FromQuery] SearchParammes searchParammes);
         Task<IEnumerable<CollectionTracker>> SearchCollectionTrackerDate([FromQuery] SearchDateParam searchDateParam);
         Task<IEnumerable<CollectionTracker>> GetAllCollectionTrackerWithItems(CollectionTrackerSearchDto collectionTrackerSearch);
+        Task<IEnumerable<CollectionTrackerSPReport>> GetCollectionTrackerSPReportWithParam(string CustomerId);
+        Task<IEnumerable<CollectionTrackerSPReport>> GetCollectionTrackerSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<CollectionTrackerByCustomerIdSPReport>> GetCollectionTrackerByCustomerIdSPReportWithParam(string CustomerId);
+        Task<IEnumerable<CollectionTrackerByCustomerIdSPReport>> GetCollectionTrackerByCustomerIdSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<CollectionTrackerBySalesOrderNoSPReport>> GetCollectionTrackerBySalesOrderNoSPReportWithParam(string CustomerId);
+        Task<IEnumerable<CollectionTrackerBySalesOrderNoSPReport>> GetCollectionTrackerBySalesOrderNoSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+
     }
 }

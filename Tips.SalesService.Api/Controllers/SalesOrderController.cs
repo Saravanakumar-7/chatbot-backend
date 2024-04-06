@@ -16,13 +16,14 @@ using Microsoft.VisualBasic;
 using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
 using Tips.SalesService.Api.Entities.Enum;
 using Tips.SalesService.Api.Repository;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -188,7 +189,7 @@ namespace Tips.SalesService.Api.Controllers
         {
             //var products = await _repository.GetSalesOrderSPResport(pagingParameter);
 
-            ServiceResponse<IEnumerable<SalesOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPResport>>();
+            ServiceResponse<IEnumerable<SalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPReport>>();
 
             try
             {
@@ -207,7 +208,7 @@ namespace Tips.SalesService.Api.Controllers
 
 
                 _logger.LogInfo("Returned all SalesOrderSPResport");
-                var result = _mapper.Map<IEnumerable<SalesOrderSPResport>>(products);
+                var result = _mapper.Map<IEnumerable<SalesOrderSPReport>>(products);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all SalesOrderSPResport Successfully";
                 serviceResponse.Success = true;
@@ -1480,7 +1481,7 @@ namespace Tips.SalesService.Api.Controllers
         [HttpGet()] // Adjust your route as needed
         public async Task<IActionResult> GetSalesOrderSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            ServiceResponse<IEnumerable<SalesOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPResport>>();
+            ServiceResponse<IEnumerable<SalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPReport>>();
             try
             {
                 var products = await _repository.GetSalesOrderSPReportWithDate(FromDate, ToDate);
@@ -1558,7 +1559,7 @@ namespace Tips.SalesService.Api.Controllers
         public async Task<IActionResult> GetSalesOrderSPReportWithParam([FromBody] SalesOrderSPResportDTO salesOrderSPResport)
 
         {
-            ServiceResponse<IEnumerable<SalesOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPResport>>();
+            ServiceResponse<IEnumerable<SalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPReport>>();
             try
             {
                 var products = await _repository.GetSalesOrderSPReportWithParam(salesOrderSPResport.CustomerName, salesOrderSPResport.SalesOrderNumber, salesOrderSPResport.KPN);
@@ -1592,6 +1593,87 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportSalesOrderSPReportToExcel([FromBody] SalesOrderSPResportDTO salesOrderSPResport)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var salesOrderSPResportDetails = await _repository.GetSalesOrderSPReportWithParam(salesOrderSPResport.CustomerName, salesOrderSPResport.SalesOrderNumber, 
+                                                                                                                                                        salesOrderSPResport.KPN);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Customer Name");
+                headerRow.CreateCell(1).SetCellValue("Customer ID");
+                headerRow.CreateCell(2).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(3).SetCellValue("SO Date");
+                headerRow.CreateCell(4).SetCellValue("KPN");
+                headerRow.CreateCell(5).SetCellValue("Order Qty");
+                headerRow.CreateCell(6).SetCellValue("Total Amount");
+                headerRow.CreateCell(7).SetCellValue("UOC");
+                headerRow.CreateCell(8).SetCellValue("UOM");
+                headerRow.CreateCell(9).SetCellValue("Balance Qty");
+                headerRow.CreateCell(10).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(11).SetCellValue("Product Type");
+                headerRow.CreateCell(12).SetCellValue("Order Type");
+                headerRow.CreateCell(13).SetCellValue("Unit Price");
+                headerRow.CreateCell(14).SetCellValue("Lead ID");
+                headerRow.CreateCell(15).SetCellValue("Sales Person");
+                headerRow.CreateCell(16).SetCellValue("Discount Type");
+                headerRow.CreateCell(17).SetCellValue("Discount");
+                headerRow.CreateCell(18).SetCellValue("Price List");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderSPResportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.CustomerName);
+                    row.CreateCell(1).SetCellValue(item.CustomerId);
+                    row.CreateCell(2).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(3).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(4).SetCellValue(item.KPN);
+                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(6).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(7).SetCellValue(item.UOC);
+                    row.CreateCell(8).SetCellValue(item.UOM);
+                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(10).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(11).SetCellValue(item.ProductType);
+                    row.CreateCell(12).SetCellValue(item.OrderType);
+                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(14).SetCellValue(item.LeadId);
+                    row.CreateCell(15).SetCellValue(item.SalesPerson);
+                    row.CreateCell(16).SetCellValue(item.DiscountType);
+                    row.CreateCell(17).SetCellValue(item.Discount);
+                    row.CreateCell(18).SetCellValue(item.PriceList);
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                // Return appropriate error response to the client
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
         [HttpGet]
         public async Task<IActionResult> GetReceivableReportsWithCustomerID(string CustomerId)
         {
