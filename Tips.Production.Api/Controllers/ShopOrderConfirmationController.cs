@@ -494,7 +494,45 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetShopOrderConformationDetailsByItemNo(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<ShopOrderDetailsDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderDetailsDto>>();
 
+            try
+            {
+                var shopOrderDetails = await _shopOrderConfirmationRepository.GetShopOrderConformationDetailsByItemNo(itemNumber);
+                if (shopOrderDetails == null)
+                {
+                    _logger.LogError($"ShopOrderItemNo hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ShopOrderItemNo hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    _logger.LogInfo($"Returned ShopOrderDetails By ItemNo");
+                    var result = _mapper.Map<IEnumerable<ShopOrderDetailsDto>>(shopOrderDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "ShopOrderDetails ByItemNo Successfully Returned";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetShopOrderConformationDetailsByItemNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 
 }
