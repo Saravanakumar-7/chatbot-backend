@@ -7,7 +7,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? DoNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
-        public string? CustomerLeadId { get; set; }
+        public string? CustomerLeadid { get; set; }
         public string? SalesOrderNumber { get; set; }
         public int? SalesOrderRevisionNumber { get; set; }
         public DateTime? DODate { get; set; }
@@ -22,10 +22,11 @@ namespace Tips.Warehouse.Api.Entities
         public string? KPN { get; set; }
         public string? MPN { get; set; }
         public string? Description { get; set; }
-        public decimal? UnitPrice { get; set; }
+        public decimal? Discount { get; set; }
+        public decimal? TotalAmount { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
-        public decimal? avaliableQty { get; set; }
+        public decimal? FGOrderQty { get; set; }
         public decimal? OrderBalanceQty { get; set; }
         public decimal? DispatchQty { get; set; }
         public string? SerialNo { get; set; }

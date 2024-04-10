@@ -11,7 +11,8 @@ namespace Tips.Warehouse.Api.Entities
         public string? SalesOrderNumber { get; set; }
         [Precision(13, 1)]
         public int? SalesOrderRevisionNumber { get; set; }
-        public DateTime? DODate { get; set; }
+        public DateTime? DOdate { get; set; }
+        public DateTime? ReturnDodate { get; set; }
         public string? DONumber { get; set; }
         public string? ProductType { get; set; }
         public string? TypeOfSolution { get; set; }
@@ -26,7 +27,6 @@ namespace Tips.Warehouse.Api.Entities
         public decimal? UnitPrice { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
-        public decimal? AvailableQnty { get; set; }
         public decimal? OrderQnty { get; set; }
         public decimal? DispatchQty { get; set; }
         public decimal? ReturnQty { get; set; }

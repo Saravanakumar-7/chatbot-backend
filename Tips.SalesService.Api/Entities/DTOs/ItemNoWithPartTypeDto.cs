@@ -7,7 +7,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
             public string ItemNumber { get; set; }
 
             public PartType PartType { get; set; }
-       
+            public string MftrItemNumber { get; set; }
+
     }
     public class ItemNoWithPartTypeAndMinDto
     {

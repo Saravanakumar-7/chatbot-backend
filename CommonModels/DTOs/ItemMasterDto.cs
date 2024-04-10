@@ -495,6 +495,7 @@ namespace Entities.DTOs
         public string ItemNumber { get; set; }
 
         public PartType PartType { get; set; }
+        public string MftrItemNumber {  get; set; }
     }
     public class ItemWithPartTypeAndMinDto
     {

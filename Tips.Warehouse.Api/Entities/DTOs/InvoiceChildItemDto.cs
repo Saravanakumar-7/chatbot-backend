@@ -46,6 +46,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal TotalValueWithTax { get; set; }
         public decimal Discount { get; set; }
         public string? DiscountType { get; set; }
+        public decimal? InitialDispatchQty { get; set; }
         public int BtoDeliveryOrderPartsId { get; set; }
 
 

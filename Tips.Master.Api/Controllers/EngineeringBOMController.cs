@@ -1301,6 +1301,44 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> GetFGCostingDetails([FromBody] List<FGItemNumberListDto> fgItemNumber)
+        {
+            ServiceResponse<List<EnggBomFGCostItemNumberWithQtyDto>> serviceResponse = new ServiceResponse<List<EnggBomFGCostItemNumberWithQtyDto>>();
+            
+            try
+            {
+                var fgEnggBomItemsDetails = await _enggBomRepository.GetFGBomItemsChildCostingDetails(fgItemNumber);
+                
+                List<EnggBomFGCostItemNumberWithQtyDto> fgBomDetails = new List<EnggBomFGCostItemNumberWithQtyDto>();
+                if (fgEnggBomItemsDetails.Count() > 0)
+                {
+                    foreach (var item in fgEnggBomItemsDetails)
+                    {
+                        if (item.ItemNumber != null)
+                        {
+                            var weightedAvgRateDetails = await _repository.WeightedAvgRateRepository.GetWeightedAvgRateDetailsByItemNumber(item.ItemNumber);
+                            item.WeightedAvg = item.QtyReq * weightedAvgRateDetails.Avg_cost;
+                            fgBomDetails.Add(item);
+                        }
+                    }
+                }
+                serviceResponse.Data = fgBomDetails;
+                serviceResponse.Message = "Returned GetFGCostingDetails Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong GetFGCostingDetails action: {ex.Message} {ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAllProductionBOM([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
@@ -2543,6 +2581,7 @@ namespace Tips.Master.Api.Controllers
                         .Select(group => new BomCoverageReportChildItemReqQtyByProjectNoDto
                         {
                             ItemNumber = group.Key,
+                            MftrItemNumber = group.Key,
                             Description = group.First().Description,
                             UOM = group.First().UOM,
                             PartType = group.First().PartType,
@@ -2683,6 +2722,7 @@ namespace Tips.Master.Api.Controllers
                                 BomCoverageReportChildItemReqQtyByProjectNoDto bomCoverageReportChildItemReqQty = new BomCoverageReportChildItemReqQtyByProjectNoDto
                                 {
                                     ItemNumber = enggChildItem.ItemNumber,
+                                    MftrItemNumber = enggChildItem.MftrItemNumbers,
                                     Description = enggChildItem.Description,
                                     UOM = enggChildItem.UOM,
                                     PartType = enggChildItem.PartType,
@@ -3064,6 +3104,36 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
 
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetWeighted_AvgRateDetails([FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<WeightedAvgRateDto>> serviceResponse = new ServiceResponse<IEnumerable<WeightedAvgRateDto>>();
+
+            try
+            {
+                var avgDetails = await _repository.WeightedAvgRateRepository.GetWeighted_AvgRateDetails(searchParams);
+
+
+
+                _logger.LogInfo("Returned all avgDetails");
+
+                var result = _mapper.Map<IEnumerable<WeightedAvgRateDto>>(avgDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all GrinsParts Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
         }
         //]
     }

@@ -504,6 +504,23 @@ namespace Tips.Production.Api.Controllers
                             {
                                 updateMaterialIssueResp = response.StatusCode;
                             }
+
+                            //InventoryTranctionForMaterialIssue inventoryTranction = new InventoryTranctionForMaterialIssue();
+                            //inventoryTranction.PartNumber = partnumber;
+                            //inventoryTranction.MftrPartNumber = partnumber;
+                            //inventoryTranction.ProjectNumber = projectNo;
+                            //inventoryTranction.Issued_Quantity = newIssuedQty;
+                            //inventoryTranction.shopOrderNo = materialIssueUpdateDto.ShopOrderNumber;
+                            //inventoryTranction.Issued_DateTime = DateTime.Now;
+                            //inventoryTranction.ReferenceIDFrom = "MaterialIssue";
+                            //inventoryTranction.Issued_By = materialIssueUpdateDto.CreatedBy;
+                            //inventoryTranction.Remarks = "Update MaterialIssue";
+                            //var jsons = JsonConvert.SerializeObject(inventoryTranction);
+                            //var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                            //var results = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datas);
+
+
+
                             await _materialIssueItemRepository.UpdateMaterialIssueItem(existingItem);
                             
                         }

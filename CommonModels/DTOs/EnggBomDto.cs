@@ -129,6 +129,15 @@ namespace Entities.DTOs
         public decimal QtyReq { set; get; }
 
     }
+    public class EnggBomFGCostItemNumberWithQtyDto
+    {
+        public string? FGItemNumber { set; get; }
+        public string? ItemNumber { set; get; }
+        public string? ItemDescription { set; get; }
+        public decimal QtyReq { set; get; }
+        public decimal WeightedAvg { set; get; }
+
+    }
     public class EnggBomItemDto
     {
         public string ItemNumber { get; set; }
@@ -173,7 +182,7 @@ namespace Entities.DTOs
         public decimal? SAFinalMoqcost { get; set; }
     }
     public class RfqEnggitemSourcingDto
-    {
+    { 
         public string? ItemNumber { get; set; }
         [Precision(13, 3)]
         public decimal Qty { get; set; }
@@ -181,6 +190,10 @@ namespace Entities.DTOs
         [Precision(13, 3)]
         public decimal? CostingBomVersionNo { get; set; }
 
+    }
+    public class FGItemNumberListDto
+    {
+        public string? FGItemNumber { get; set; }
     }
     public class EnggBomSPReportDto
     {

@@ -2569,37 +2569,5 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetWeighted_AvgRateDetails([FromQuery] SearchParams searchParams)
-        {
-            ServiceResponse<IEnumerable<WeightedAvgRateDto>> serviceResponse = new ServiceResponse<IEnumerable<WeightedAvgRateDto>>();
-
-            try
-            {
-                var avgDetails = await _weightedAvgRateRepository.GetWeighted_AvgRateDetails(searchParams);
-
-
-
-                _logger.LogInfo("Returned all avgDetails");
-
-                var result = _mapper.Map<IEnumerable<WeightedAvgRateDto>>(avgDetails);
-                serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all GrinsParts Successfully";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
-
-
     }
 }

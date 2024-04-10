@@ -124,11 +124,25 @@ namespace Repository
         private ITypeOfRoomRepository? _typeOfRoomRepo;
         private IConvertionrateRepository? _convertionrateRepository;
         private IEnggChildItemsRepository? _enggChildItemsRepository;
+        private IWeightedAvgRateRepository? _weightedAvgRateRepository;
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
             _httpContextAccessor = httpContextAccessor;
         }
+
+        public IWeightedAvgRateRepository WeightedAvgRateRepository
+        {
+            get
+            {
+                if (_weightedAvgRateRepository == null)
+                {
+                    _weightedAvgRateRepository = new WeightedAvgRateRepository(_tipsMasterDbContext);
+                }
+                return _weightedAvgRateRepository;
+            }
+        }
+
         public IConvertionrateRepository ConvertionrateRepository
         {
             get

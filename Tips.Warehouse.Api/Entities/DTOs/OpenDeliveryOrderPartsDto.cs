@@ -32,6 +32,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal DispatchQty { get; set; }
         public string? Remarks { get; set; }
         public string? SerialNo { get; set; }
+        public decimal? InitialDispatchQty { get; set; }
         public bool IsActive { get; set; } = true;
 
         public string? CreatedBy { get; set; }

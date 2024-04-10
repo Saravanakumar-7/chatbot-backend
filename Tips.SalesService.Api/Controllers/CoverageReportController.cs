@@ -152,6 +152,7 @@ namespace Tips.SalesService.Api.Controllers
                                         var coverageReport = new OpenSalesCoverageReportByProjectNumber
                                         {
                                             ItemNumber = salesOrderDetails.FGItemNumber,
+                                            MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
                                             Description = salesOrderDetails.Description,
                                             ProjectNumber = salesOrderDetails.ProjectNumber,
                                             UOM = salesOrderDetails.UOM,
@@ -216,6 +217,7 @@ namespace Tips.SalesService.Api.Controllers
                             var coverageReport = new OpenSalesCoverageReportByProjectNumber
                             {
                                 ItemNumber = salesOrderDetails.FGItemNumber,
+                                MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
                                 Description = salesOrderDetails.Description,
                                 ProjectNumber = salesOrderDetails.ProjectNumber,
                                 UOM = salesOrderDetails.UOM,
@@ -508,6 +510,7 @@ namespace Tips.SalesService.Api.Controllers
                                 CoverageReportByProjectNumberDtoForChildItem coverageDetailOfChildItem = new CoverageReportByProjectNumberDtoForChildItem
                                 {
                                     ItemNumber = item.ItemNumber,
+                                    MftrItemNumber = item.MftrItemNumber,
                                     Description = item.Description,
                                     ProjectNumber = projectNumber,
                                     UOM = item.UOM,

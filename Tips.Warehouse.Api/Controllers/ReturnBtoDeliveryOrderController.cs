@@ -505,18 +505,59 @@ namespace Tips.Warehouse.Api.Controllers
                         BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
                         if (btohistoryNo != null)
                         {
-                            int suffixNumber = int.Parse(btohistoryNo.Substring(btohistoryNo.LastIndexOf("-R") + 2)) + 1;
-                            string suffix = "-R" + suffixNumber;
-                            returnBtoDeliveryOrderItems.BTONumber += suffix;
-                            bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                            returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                            int index = btohistoryNo.LastIndexOf("-R");
+                            if (index != -1 && index + 2 < btohistoryNo.Length)
+                            {
+                                string suffixString = btohistoryNo.Substring(index + 2);
+                                if (int.TryParse(suffixString, out int suffixNumber))
+                                {
+                                    suffixNumber++;
+                                    string suffix = "-R" + suffixNumber;
+                                    returnBtoDeliveryOrderItems.BTONumber += suffix;
+                                    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                                    returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                                }
+                                else
+                                {
+                                    // If the substring after '-R' is not a valid integer, handle it here
+                                    // For example, you could add a default suffix like "-R1"
+                                    returnBtoDeliveryOrderItems.BTONumber += "-R1";
+                                    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                                    returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                                }
+                            }
+                            else
+                            {
+                                // If '-R' is not found in the string, handle it here
+                                // For example, you could add a default suffix like "-R1"
+                                returnBtoDeliveryOrderItems.BTONumber += "-R1";
+                                bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                                returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                            }
                         }
                         else
                         {
+                            // Handle the case where btohistoryNo is null
+                            // For example, you could add a default suffix like "-R1"
                             returnBtoDeliveryOrderItems.BTONumber += "-R1";
                             bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
                             returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
                         }
+
+                        //if (btohistoryNo != null)
+                        //{
+                        //    int suffixNumber = int.Parse(btohistoryNo.Substring(btohistoryNo.LastIndexOf("-R") + 2)) + 1;
+                        //    string suffix = "-R" + suffixNumber;
+                        //    returnBtoDeliveryOrderItems.BTONumber += suffix;
+                        //    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                        //    returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                        //}
+                        //else
+                        //{
+                        //    returnBtoDeliveryOrderItems.BTONumber += "-R1";
+                        //    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                        //    returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                        //}
                         //Update Inventory balanced Quantity
 
                         //var PartNumber = returnBtoDeliveryOrderitemsDto[i].FGPartNumber;

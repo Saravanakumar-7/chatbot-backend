@@ -429,6 +429,7 @@ namespace Tips.Warehouse.Api.Controllers
                     {
                         OpenDeliveryOrderParts OpenDeliveryOrderItemsDetails = _mapper.Map<OpenDeliveryOrderParts>(openDeliveryOrderitemsList[i]);
                         OpenDeliveryOrderItemsDetails.QtyDistribution = _mapper.Map<List<OpenDeliveryOrderPartsQtyDistribution>>(openDeliveryOrderitemsList[i].QtyDistribution);
+                        OpenDeliveryOrderItemsDetails.InitialDispatchQty = OpenDeliveryOrderItemsDetails.DispatchQty;
                         OpenDeliveryOrderItemsDetails.ODONumber = odoNumber;
                         openDeliveryOrderItemsDtoList.Add(OpenDeliveryOrderItemsDetails);
 

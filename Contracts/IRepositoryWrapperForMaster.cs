@@ -150,6 +150,7 @@ namespace Contracts
         ITypeOfRoomRepository TypeOfRoomRepository { get; }
         IConvertionrateRepository ConvertionrateRepository { get; }
         IEnggChildItemsRepository EnggChildItemsRepository { get; }
+        IWeightedAvgRateRepository WeightedAvgRateRepository {  get; }
         void SaveAsync();
     }
 }

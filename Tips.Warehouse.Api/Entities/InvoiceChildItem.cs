@@ -21,7 +21,6 @@ namespace Tips.Warehouse.Api.Entities
         public string? SerialNumber { get; set; }
         public int BtoDeliveryOrderPartsId { get; set; }
 
-
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
         public string UOC { get; set; }
@@ -47,6 +46,7 @@ namespace Tips.Warehouse.Api.Entities
         [Precision(13, 3)]
         public decimal Discount { get; set; }
         public string? DiscountType { get; set; }
+        public decimal? InitialDispatchQty { get; set; }
 
         public int InvoiceId { get; set; }
         public Invoice? Invoice { get; set; }
