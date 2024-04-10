@@ -149,6 +149,23 @@ namespace Tips.Production.Api.Repository
 
             return shopOrderDetails;
         }
+        public async Task<IEnumerable<ShopOrderDetailsDto>> GetShopOrderConformationDetailsByItemNo(string itemNumber)
+        {
+            var shopOrderDetails = await _tipsProductionDbContext.ShopOrderConfirmations
+                .Where(x => x.ItemNumber == itemNumber).GroupBy(x => x.ShopOrderNumber)
+                .Select(group => new ShopOrderDetailsDto()
+                {
+                    ShopOrderNumber = group.Key,
+                    ShopOrderReleaseQty = group.FirstOrDefault().ShopOrderReleaseQty,
+                    WipQty = group.Sum(s => s.WipConfirmedQty),
+                    OqcQty = _tipsProductionDbContext.oQCs.Where(x => x.ItemNumber == itemNumber).Count() > 0 ? _tipsProductionDbContext.oQCs.Where(o => o.ItemNumber == itemNumber && o.ShopOrderNumber == group.Key)
+                    .Sum(o => o.AcceptedQty + o.RejectedQty) : 0,
+                    BOMVersion =0
+                })
+                .ToListAsync();
+
+            return shopOrderDetails;
+        }
     }
     
 }

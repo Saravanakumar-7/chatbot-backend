@@ -9,7 +9,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? DONumber { get; set; }
         public string? FGPartNumber { get; set; }
         public string? Description { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
         [Precision(13, 3)]
         public decimal InvoicedQty { get; set; }
 

@@ -18,6 +18,6 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<ShopOrderItemNoListDto>> GetShopOrderItemNoByFGItemType();
         Task<IEnumerable<ShopOrderItemNoListDto>> GetShopOrderItemNoBySAItemType();
         Task<IEnumerable<ShopOrderDetailsDto>> GetShopOrderDetailsByItemNo(string itemNumber);
-
+        Task<IEnumerable<ShopOrderDetailsDto>> GetShopOrderConformationDetailsByItemNo(string itemNumber);
     }
 }

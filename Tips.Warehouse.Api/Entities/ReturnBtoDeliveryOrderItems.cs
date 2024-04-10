@@ -15,7 +15,7 @@ namespace Tips.Warehouse.Api.Entities
         public string UOC { get; set; }
         public string? UOM { get; set; }
         public PartType PartType { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
         [Precision(13, 2)]
         public decimal? FGOrderQty { get; set; }
 

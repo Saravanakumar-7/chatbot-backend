@@ -9,7 +9,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? DONumber { get; set; }
         public string? FGPartNumber { get; set; }
         public string? Description { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
         [Precision(13, 3)]
         public decimal? ActualQty { get; set; }
 
@@ -53,7 +53,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? DONumber { get; set; }
         public string? FGPartNumber { get; set; }
         public string? Description { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
         public int BtoDeliveryOrderPartsId { get; set; }
 
         [Precision(13, 3)]
@@ -102,7 +102,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? FGPartNumber { get; set; }
         public string? Description { get; set; } 
         public int InvoicePartsId { get; set; }
-
+        public string? CustomerItemNumber { get; set; }
         [Precision(13, 3)]
         public decimal InvoicedQty { get; set; }
         public string? UOM { get; set; }
