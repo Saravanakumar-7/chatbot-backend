@@ -12,7 +12,6 @@ namespace Tips.Grin.Api.Entities
 
         }
         public DbSet<Grins> Grins { get; set; }
-        public DbSet<WeightedAvgRate> weighted_avg_rate { get; set; }
         public DbSet<WeightedAvgCost> WeightedAvgCosts { get; set; }
         public DbSet<GrinParts> GrinParts { get; set; }
         public DbSet<GrinNumber> GrinNumbers { get; set; }

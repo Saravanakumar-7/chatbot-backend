@@ -17,6 +17,7 @@ namespace Entities.DTOs
     public class BomCoverageReportChildItemReqQtyByProjectNoDto
     {
         public string ItemNumber { get; set; }
+        public string MftrItemNumber { get; set; }
         public string Description { get; set; }
         public string UOM { get; set; }
         public PartType PartType { get; set; }

@@ -23,13 +23,13 @@ namespace Tips.Warehouse.Api.Entities
 
         public decimal? FGOrderQty { get; set; }
         public decimal? OrderBalanceQty { get; set; }
-         
         public decimal? FGStock { get; set; }
         public decimal? Discount { get; set; }
         public decimal? NetValue { get; set; }
         public decimal? DispatchQty { get; set; }
         public decimal InvoicedQty { get; set; }       
         public string? SerialNo { get; set; }
+        public decimal? InitialDispatchQty { get; set; }
         //public int MyProperty { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

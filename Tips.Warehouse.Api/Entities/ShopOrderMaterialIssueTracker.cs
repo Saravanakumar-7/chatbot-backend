@@ -23,6 +23,7 @@ namespace Tips.Warehouse.Api.Entities
         public decimal IssuedQty { get; set; }
         [Precision(13, 3)]
         public decimal ConvertedToFgQty { get; set; }
+        public decimal? WeightedAvg { get; set; }
         public string? UOM { get; set; }
         public string Warehouse { get; set; }
         public string? Location { get; set; }

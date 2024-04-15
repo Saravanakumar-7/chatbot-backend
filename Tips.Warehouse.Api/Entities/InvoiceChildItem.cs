@@ -13,6 +13,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? DONumber { get; set; }
         public string? FGItemNumber { get; set; }
         public string? Description { get; set; }
+        public string? CustomerItemNumber { get; set; }
 
         [Precision(13,3)]
         public decimal InvoicedQty { get; set; }
@@ -20,7 +21,6 @@ namespace Tips.Warehouse.Api.Entities
         public PartType PartType { get; set; }
         public string? SerialNumber { get; set; }
         public int BtoDeliveryOrderPartsId { get; set; }
-        public string? CustomerItemNumber { get; set; }
 
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
@@ -47,6 +47,7 @@ namespace Tips.Warehouse.Api.Entities
         [Precision(13, 3)]
         public decimal Discount { get; set; }
         public string? DiscountType { get; set; }
+        public decimal? InitialDispatchQty { get; set; }
 
         public int InvoiceId { get; set; }
         public Invoice? Invoice { get; set; }

@@ -160,6 +160,7 @@ namespace Entities
         public DbSet<CSNOs>? CSNOs { get; set; }
         public DbSet<Convertionrate> Convertionrates { get; set; }
         public DbSet<EnggBomSPReport> EnggBomSPReports { get; set; }
+        public DbSet<WeightedAvgRate> weighted_avg_rate { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

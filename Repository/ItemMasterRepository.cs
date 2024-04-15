@@ -495,14 +495,17 @@ namespace Repository
         public async Task<List<ItemWithPartTypeDto>> GetItemPartTypeByItemNo(List<string> ItemNumberList)
         {
             var itemWithPartTypes = await FindByCondition(x => ItemNumberList.Contains(x.ItemNumber))
-                .Select(s => new ItemWithPartTypeDto
+                .SelectMany(s => s.ItemmasterAlternate.Select(a => new ItemWithPartTypeDto
                 {
                     ItemNumber = s.ItemNumber,
-                    PartType = s.ItemType
-                }
-                ).ToListAsync();
+                    PartType = s.ItemType,
+                    MftrItemNumber = a.ManufacturerPartNo
+                }))
+                .ToListAsync();
+
             return itemWithPartTypes;
         }
+
         public async Task<List<ItemWithPartTypeAndMinDto>> GetItemMasterPartTypeAndMinByItemNumber(List<string> ItemNumberList)
         {
             var itemWithPartTypes = await FindByCondition(x => ItemNumberList.Contains(x.ItemNumber))

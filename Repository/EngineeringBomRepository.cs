@@ -285,6 +285,27 @@ namespace Repository
 
         }
 
+        //public async Task<IEnumerable<FGItemNumberListDto>> GetAllEnggBOMDetailsByItemNumber(string fgItemNumber)
+        //{
+        //    var enggBomItemDetails = await _tipsMasterDbContext.EnggChildItems
+        //                            .Where(x => _tipsMasterDbContext.EnggBoms
+        //                                .Where(bom => bom.ItemNumber == fgItemNumber && bom.ItemType == PartType.FG)
+        //                                .Select(bom => bom.BOMId)
+        //                                .Contains(x.EnggBomId))
+        //                                .GroupBy(x => new { x.ItemNumber })
+        //                                .Select(group => new FGItemNumberListDto
+        //                                 {
+        //                                     BomVersionNo = _tipsMasterDbContext.EnggBoms
+        //                                        .Where(bom => group.Select(g => g.EnggBomId).Contains(bom.BOMId))
+        //                                        .Max(bom => bom.RevisionNumber),
+        //                                         Qty = group.Sum(x => x.Quantity)
+        //                                })
+        //                                .ToListAsync();
+
+        //    return enggBomItemDetails;
+
+        //}
+
         //public async Task<List<EnggBomFGItemNumberWithQtyDto>> GetFGBomItemsChildDetails(List<string> itemNumberList)
         //{
         //    var itemIdNoList = await TipsMasterDbContext.EnggBoms
@@ -362,6 +383,77 @@ namespace Repository
                                     addPP.ItemNumber = existingpp.ItemNumber;
                                     addPP.ItemDescription = existingpp.ItemDescription;
                                     addPP.QtyReq = existingpp.QtyReq * rfqfgitem.Qty;
+                                    enggBomFGItemNumberWithQtyDtos.Add(addPP);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return enggBomFGItemNumberWithQtyDtos;
+        }
+        public async Task<List<EnggBomFGCostItemNumberWithQtyDto>> GetFGBomItemsChildCostingDetails(List<FGItemNumberListDto> fgItemNumberList)
+        {
+            List<EnggBomFGCostItemNumberWithQtyDto> enggBomFGItemNumberWithQtyDtos = new List<EnggBomFGCostItemNumberWithQtyDto>();
+            foreach (var rfqfgitem in fgItemNumberList)
+            {
+                //int fgdetails = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == rfqfgitem.FGItemNumber)
+                //    .Select(x => x.BOMId)
+                //    .FirstOrDefaultAsync();
+                int fgdetails = await _tipsMasterDbContext.EnggBoms
+                                .Where(x => x.ItemNumber == rfqfgitem.FGItemNumber)
+                                .GroupBy(x => x.ItemNumber)
+                                .Select(group => group.OrderByDescending(x => x.RevisionNumber).FirstOrDefault())
+                                .Select(x => x.BOMId)
+                                .FirstOrDefaultAsync();
+
+                var fgbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == fgdetails).OrderByDescending(x => x.PartType).ToListAsync();
+                if (fgbomdetails != null)
+                {
+                    foreach (var childofFG in fgbomdetails)
+                    {
+                        if (childofFG.PartType == PartType.PurchasePart)
+                        {
+                            int flag = 0;
+                            foreach (var existingPP in enggBomFGItemNumberWithQtyDtos)
+                            {
+                                if (existingPP.ItemNumber == childofFG.ItemNumber)
+                                {
+                                    existingPP.QtyReq = existingPP.QtyReq + (childofFG.Quantity /** rfqfgitem.Qty*/);
+                                    flag = 1;
+                                    break;
+                                }
+                            }
+                            if (flag == 0)
+                            {
+                                EnggBomFGCostItemNumberWithQtyDto addPP = new EnggBomFGCostItemNumberWithQtyDto();
+                                addPP.ItemNumber = childofFG.ItemNumber;
+                                addPP.ItemDescription = childofFG.Description;
+                                addPP.QtyReq = childofFG.Quantity /** rfqfgitem.Qty*/;
+                                enggBomFGItemNumberWithQtyDtos.Add(addPP);
+                            }
+                        }
+                        if (childofFG.PartType == PartType.SA)
+                        {
+                            var subSA = await GetSABomItemsChildDetails(childofFG.ItemNumber, childofFG.Quantity);//, childofFG.Version);
+                            foreach (var existingpp in subSA)
+                            {
+                                int flag = 0;
+                                foreach (var existingPP in enggBomFGItemNumberWithQtyDtos)
+                                {
+                                    if (existingpp.ItemNumber == existingPP.ItemNumber)
+                                    {
+                                        existingPP.QtyReq = existingPP.QtyReq + (existingpp.QtyReq /** rfqfgitem.Qty*/);
+                                        flag = 1;
+                                        break;
+                                    }
+                                }
+                                if (flag == 0)
+                                {
+                                    EnggBomFGCostItemNumberWithQtyDto addPP = new EnggBomFGCostItemNumberWithQtyDto();
+                                    addPP.ItemNumber = existingpp.ItemNumber;
+                                    addPP.ItemDescription = existingpp.ItemDescription;
+                                    addPP.QtyReq = existingpp.QtyReq/* * rfqfgitem.Qty*/;
                                     enggBomFGItemNumberWithQtyDtos.Add(addPP);
                                 }
                             }

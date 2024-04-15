@@ -625,6 +625,7 @@ namespace Tips.Warehouse.Api.Controllers
                     for (int i = 0; i < invoiceitemsDto.Count; i++)
                     {
                         InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
+                        invoiceChildItem.InitialDispatchQty = invoiceChildItem.InvoicedQty;
                         invoiceChildItemsEntityList.Add(invoiceChildItem);
 
                         var invoiceQty = invoiceChildItem.InvoicedQty;

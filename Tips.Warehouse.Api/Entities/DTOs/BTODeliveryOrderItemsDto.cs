@@ -18,6 +18,7 @@
         public decimal? NetValue { get; set; }
         public decimal DispatchQty { get; set; }
         public string? SerialNo { get; set; }
+        public decimal? InitialDispatchQty { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

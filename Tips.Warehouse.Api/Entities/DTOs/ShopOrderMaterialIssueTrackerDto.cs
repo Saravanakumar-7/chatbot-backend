@@ -18,6 +18,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal Bomversion { get; set; }
         [Precision(13, 3)]
         public decimal BalanceQty { get; set; }
+        public decimal? WeightedAvg { get; set; }
         public string DataFrom { get; set; }
     }
     public class ShopOrderDtoForMaterialRequest
