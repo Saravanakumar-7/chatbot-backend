@@ -278,7 +278,45 @@ namespace Tips.Production.Api.Controllers
             }
 
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllMROpenwithPartialStatus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParammes)
+        {
+            ServiceResponse<IEnumerable<MaterialRequestsDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestsDto>>();
 
+            try
+            {
+                var materialRequestDetails = await _materialRequestRepository.GetAllMROpenwithPartialStatus(pagingParameter, searchParammes);
+
+                var metadata = new
+                {
+                    materialRequestDetails.TotalCount,
+                    materialRequestDetails.PageSize,
+                    materialRequestDetails.CurrentPage,
+                    materialRequestDetails.HasNext,
+                    materialRequestDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogError("Returned all getAllMaterialRequestStatusOpen");
+                var result = _mapper.Map<IEnumerable<MaterialRequestsDto>>(materialRequestDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all MaterialRequestStatusOpen Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
         [HttpGet]
         public async Task<IActionResult> GetAllMRCloseStatus()
         {
