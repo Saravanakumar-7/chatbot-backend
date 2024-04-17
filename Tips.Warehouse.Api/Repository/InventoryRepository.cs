@@ -799,6 +799,27 @@ namespace Tips.Warehouse.Api.Repository
 
             return PagedList<Inventory>.ToPagedList(sortedQuery, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
+        public async Task<IEnumerable<InventorySPReport>> GetInventorySPReportsWithParam(string PartNumber, string Description, string Warehouse,
+                                                                                                   string Location, string ProjectNumber)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<InventorySPReport>()
+            .FromSqlInterpolated($"CALL inventory_with_locationtranfer_parameter({PartNumber},{Description},{Warehouse},{Location},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<InventorySPReport>> InventorySPReportdate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<InventorySPReport>()
+                         .FromSqlInterpolated($"CALL inventory_with_locationtransfer_date({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
+
         public async Task<Inventory> GetInventoryDetailsByItemNoandProjectNoandShopOrderNo(string ItemNumber, string ProjectNumber, string shopOrderNo)
         {
             var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber && x.ProjectNumber == ProjectNumber && x.shopOrderNo == shopOrderNo)

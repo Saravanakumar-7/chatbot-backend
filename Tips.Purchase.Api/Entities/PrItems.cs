@@ -20,6 +20,7 @@ namespace Tips.Purchase.Api.Entities
         public PrStatus PrStatus { get; set; }
         public string? SpecialInstruction { get; set; }
         public string? ReasonforShortClose { get; set; }
+        public string? DrawingRevisionNumber { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

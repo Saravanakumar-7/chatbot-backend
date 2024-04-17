@@ -16,7 +16,6 @@ namespace Tips.Grin.Api
             CreateMap<IQCConfirmationItems, GrinIQCConfirmationItemsSaveDto>().ReverseMap();
 
             CreateMap<ProjectNumbersDtoPost, GrinUpdateProjectBalQtyDetailsDto>().ReverseMap();
-            CreateMap<WeightedAvgRate, WeightedAvgRateDto>().ReverseMap();
 
             CreateMap<Grins, GrinDto>().ReverseMap();
             CreateMap<Grins, GrinPostDto>().ReverseMap();
@@ -31,11 +30,14 @@ namespace Tips.Grin.Api
             CreateMap<GrinParts, GrinPartscalculationofAvgcost>().ReverseMap();
             CreateMap<GrinPartsPostDto, GrinPartscalculationofAvgcost>().ReverseMap();
             CreateMap<GrinPartsUpdateDto, GrinPartscalculationofAvgcost>().ReverseMap();
-
+            
             CreateMap<ProjectNumbers, ProjectNumbersDto>().ReverseMap();
             CreateMap<ProjectNumbers, ProjectNumbersDtoPost>().ReverseMap();
             CreateMap<ProjectNumbers, ProjectNumbersDtoUpdate>().ReverseMap();
-
+            CreateMap<ProjectNumbers, ProjectNumberscalculationofAvgcostDto>().ReverseMap();
+            CreateMap<ProjectNumbersDtoPost, ProjectNumberscalculationofAvgcostDto>().ReverseMap();
+            CreateMap<ProjectNumbersDtoUpdate, ProjectNumberscalculationofAvgcostDto>().ReverseMap();
+            
             CreateMap<IQCConfirmation, IQCConfirmationDto>().ReverseMap();
             CreateMap<IQCConfirmation, IQCConfirmationPostDto>().ReverseMap();
             CreateMap<IQCConfirmation, IQCConfirmationUpdateDto>().ReverseMap();

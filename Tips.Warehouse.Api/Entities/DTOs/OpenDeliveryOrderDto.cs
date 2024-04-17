@@ -136,5 +136,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? Location { get; set; }
         public string? ODOtype { get; set; }
     }
+    public class ODOMonthlyConsumptionDto
+    {
+        public string? CustomerId { get; set; }
+    }
 
 }

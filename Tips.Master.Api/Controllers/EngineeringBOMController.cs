@@ -1302,27 +1302,13 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> GetFGCostingDetails([FromBody] List<FGItemNumberListDto> fgItemNumber)
+        public async Task<IActionResult> GetFGCostingDetailsByItemNumber(List<string> fgItemNumberList)
         {
             ServiceResponse<List<EnggBomFGCostItemNumberWithQtyDto>> serviceResponse = new ServiceResponse<List<EnggBomFGCostItemNumberWithQtyDto>>();
             
             try
             {
-                var fgEnggBomItemsDetails = await _enggBomRepository.GetFGBomItemsChildCostingDetails(fgItemNumber);
-                
-                List<EnggBomFGCostItemNumberWithQtyDto> fgBomDetails = new List<EnggBomFGCostItemNumberWithQtyDto>();
-                if (fgEnggBomItemsDetails.Count() > 0)
-                {
-                    foreach (var item in fgEnggBomItemsDetails)
-                    {
-                        if (item.ItemNumber != null)
-                        {
-                            var weightedAvgRateDetails = await _repository.WeightedAvgRateRepository.GetWeightedAvgRateDetailsByItemNumber(item.ItemNumber);
-                            item.WeightedAvg = item.QtyReq * weightedAvgRateDetails.Avg_cost;
-                            fgBomDetails.Add(item);
-                        }
-                    }
-                }
+                List<EnggBomFGCostItemNumberWithQtyDto> fgBomDetails = await GetFgChildsWightedAvgCost(fgItemNumberList);
                 serviceResponse.Data = fgBomDetails;
                 serviceResponse.Message = "Returned GetFGCostingDetails Successfully";
                 serviceResponse.Success = true;
@@ -1338,6 +1324,60 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetFGCostingDetails()
+        {
+            ServiceResponse<List<EnggBomFGCostItemNumberWithQtyDto>> serviceResponse = new ServiceResponse<List<EnggBomFGCostItemNumberWithQtyDto>>();
+
+            try
+            {
+                var fgItemNumber = await _repository.ItemMasterRepository.GetAllFGItemNumberList();
+                List<EnggBomFGCostItemNumberWithQtyDto> fgBomDetails = await GetFgChildsWightedAvgCost(fgItemNumber);
+
+                serviceResponse.Data = fgBomDetails;
+                serviceResponse.Message = "Returned GetFGCostingDetails Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong GetFGCostingDetails action: {ex.Message} {ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        private async Task<List<EnggBomFGCostItemNumberWithQtyDto>> GetFgChildsWightedAvgCost(IEnumerable<string> fgItemNumber)
+        {
+            List<EnggBomFGCostItemNumberWithQtyDto> fgBomDetails = new List<EnggBomFGCostItemNumberWithQtyDto>();
+            foreach (var fgItem in fgItemNumber)
+            {
+                var fgEnggBomItemsDetails = await _enggBomRepository.GetFGBomItemsChildCostingDetails(fgItem);
+
+                if (fgEnggBomItemsDetails.Count() > 0)
+                {
+                    foreach (var item in fgEnggBomItemsDetails)
+                    {
+                        if (item.ItemNumber != null)
+                        {
+                            var weightedAvgRateDetails = await _repository.WeightedAvgRateRepository.GetWeightedAvgRateDetailsByItemNumber(item.ItemNumber);
+                            if (weightedAvgRateDetails != null)
+                            {
+                                item.WeightedAvg = item.QtyReq * weightedAvgRateDetails.Avg_cost;
+                                fgBomDetails.Add(item);
+                            }
+
+                        }
+                    }
+                }
+            }
+
+            return fgBomDetails;
         }
 
         [HttpGet]

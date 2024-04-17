@@ -36,6 +36,8 @@ namespace Tips.SalesService.Api.Controllers
         private ISalesAdditionalChargesRepository _salesAdditionalChargesRepository;
         private ISoConfirmationDateRepository _soConfirmationDateRepository;
         private ISoConfirmationDateHistoryRepository _soConfirmationDateHistoryRepository;
+        private IScheduleDateHistoryRepository _scheduleDateHistoryRepository;
+        private ISalesOrderAdditionalChargesHistoryRepository _salesOrderAdditionalChargesHistoryRepository;
         private IQuoteRepository _quoteRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
@@ -45,7 +47,7 @@ namespace Tips.SalesService.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public SalesOrderController(ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
+        public SalesOrderController(ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
             ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, IQuoteRepository quoteRepository , IHttpContextAccessor httpContextAccessor,
             ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
@@ -57,6 +59,8 @@ namespace Tips.SalesService.Api.Controllers
             _salesAdditionalChargesRepository = salesAdditionalChargesRepository;
             _soConfirmationDateRepository = soConfirmationDateRepository;
             _soConfirmationDateHistoryRepository = soConfirmationDateHistoryRepository;
+            _scheduleDateHistoryRepository = scheduleDateHistoryRepository;
+            _salesOrderAdditionalChargesHistoryRepository = salesOrderAdditionalChargesHistoryRepository;
             _quoteRepository = quoteRepository;
             _httpClient = httpClient;
             _config = config;
@@ -248,6 +252,12 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
                     SalesOrderDto salesOrderDto = _mapper.Map<SalesOrderDto>(salesOrderById);
+
+                    var quoteDetails = await _quoteRepository.GetQuoteByQuoteNumber(salesOrderDto.QuoteNumber);
+                    if (quoteDetails != null)
+                    {
+                        salesOrderDto.QuoteRef = quoteDetails.QuoteRef;
+                    }
 
                     List<SalesOrderItemsDto> salesOrderItemsDtoList = new List<SalesOrderItemsDto>();
                     var salesAdditionalChargesDto = salesOrderDto.SalesOrderAdditionalCharges;
@@ -719,10 +729,10 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var salesOrderDetail = await _repository.GetSalesOrderById(id);
-                var salesOrderNumber = salesOrderDetail.SalesOrderNumber;
+                var salesOrderDetailBeforeUpdate = await _repository.GetSalesOrderById(id);
+                var salesOrderNumber = salesOrderDetailBeforeUpdate.SalesOrderNumber;
 
-                if (salesOrderDetail is null)
+                if (salesOrderDetailBeforeUpdate is null)
                 {
                     _logger.LogError($"Update SalesOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -753,63 +763,96 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty - salesOrderItemsDetail.DispatchQty;
                         salesOrderItemsDetail.SalesOrderNumber = salesOrderNumber;
                         salesOrderItemsList.Add(salesOrderItemsDetail);
+                    }
 
+                    foreach (var salesOrderItemDetail in salesOrderDetailBeforeUpdate.SalesOrdersItems)
+                    {
                         SalesOrderHistory salesOrderHistory = new SalesOrderHistory();
-                        salesOrderHistory.SalesOrderNumber = salesOrderDetail.SalesOrderNumber;
-                        salesOrderHistory.ProjectNumber = salesOrderDetail.ProjectNumber;
-                        salesOrderHistory.QuoteNumber = salesOrderDetail.QuoteNumber;
-                        salesOrderHistory.OrderDate = salesOrderDetail.OrderDate;
-                        salesOrderHistory.OrderType = salesOrderDetail.OrderType;
-                        salesOrderHistory.CustomerName = salesOrderDetail.CustomerName;
-                        salesOrderHistory.CustomerId = salesOrderDetail.CustomerId;
-                        salesOrderHistory.RevisionNumber = salesOrderDetail.RevisionNumber;
-                        //salesOrderHistory.SOStatus = salesOrderDetail.SOStatus;
-                        salesOrderHistory.PONumber = salesOrderDetail.PONumber;
-                        salesOrderHistory.PODate = salesOrderDetail.PODate;
-                        salesOrderHistory.ReceivedDate = salesOrderDetail.ReceivedDate;
-                        salesOrderHistory.BillTo = salesOrderDetail.BillTo;
-                        salesOrderHistory.BillToId = salesOrderDetail.BillToId;
-                        salesOrderHistory.ShipTo = salesOrderDetail.ShipTo;
-                        salesOrderHistory.ShipToId = salesOrderDetail.ShipToId;
-                        salesOrderHistory.PaymentTerms = salesOrderDetail.PaymentTerms;
-                        salesOrderHistory.Total = salesOrderDetail.Total;
-                        salesOrderHistory.Unit = salesOrderDetail.Unit;
-                        salesOrderHistory.IsShortClosed = salesOrderDetail.IsShortClosed;
-                        salesOrderHistory.ShortClosedBy = salesOrderDetail.ShortClosedBy;
-                        salesOrderHistory.ShortClosedOn = salesOrderDetail.ShortClosedOn;
-                        salesOrderHistory.CreatedBy = salesOrderDetail.CreatedBy;
-                        salesOrderHistory.CreatedOn = salesOrderDetail.CreatedOn;
-                        salesOrderHistory.LastModifiedBy = salesOrderDetail.LastModifiedBy;
-                        salesOrderHistory.LastModifiedOn = salesOrderDetail.LastModifiedOn;
-                        salesOrderHistory.ItemNumber = salesOrderItemsDto[i].ItemNumber;
-                        salesOrderHistory.Description = salesOrderItemsDto[i].Description;
-                        salesOrderHistory.BalanceQty = salesOrderItemsDto[i].BalanceQty;
-                        salesOrderHistory.DispatchQty = salesOrderItemsDto[i].DispatchQty;
-                        salesOrderHistory.ShopOrderQty = salesOrderItemsDto[i].ShopOrderQty;
-                        salesOrderHistory.UOM = salesOrderItemsDto[i].UOM;
-                        salesOrderHistory.Currency = salesOrderItemsDto[i].Currency;
-                        salesOrderHistory.TotalAmount = salesOrderItemsDto[i].TotalAmount;
-                        salesOrderHistory.BasicAmount = salesOrderItemsDto[i].BasicAmount;
-                        salesOrderHistory.Discount = salesOrderItemsDto[i].Discount;
-                        salesOrderHistory.UnitPrice = salesOrderItemsDto[i].UnitPrice;
-                        salesOrderHistory.OrderQty = salesOrderItemsDto[i].OrderQty;
-                        salesOrderHistory.SGST = salesOrderItemsDto[i].SGST;
-                        salesOrderHistory.UTGST = salesOrderItemsDto[i].UTGST;
-                        salesOrderHistory.CGST = salesOrderItemsDto[i].CGST;
-                        salesOrderHistory.IGST = salesOrderItemsDto[i].IGST;
-                        salesOrderHistory.ReceivedDate = salesOrderItemsDto[i].RequestedDate;
-                        salesOrderHistory.Remarks = salesOrderItemsDto[i].Remarks;
-
+                        salesOrderHistory.SalesOrderNumber = salesOrderDetailBeforeUpdate.SalesOrderNumber;
+                        salesOrderHistory.ProjectNumber = salesOrderDetailBeforeUpdate.ProjectNumber;
+                        salesOrderHistory.QuoteNumber = salesOrderDetailBeforeUpdate.QuoteNumber;
+                        salesOrderHistory.OrderDate = salesOrderDetailBeforeUpdate.OrderDate;
+                        salesOrderHistory.OrderType = salesOrderDetailBeforeUpdate.OrderType;
+                        salesOrderHistory.CustomerName = salesOrderDetailBeforeUpdate.CustomerName;
+                        salesOrderHistory.CustomerId = salesOrderDetailBeforeUpdate.CustomerId;
+                        salesOrderHistory.RevisionNumber = salesOrderDetailBeforeUpdate.RevisionNumber;
+                        //salesOrderHistory.SOStatus = salesOrderDetailBeforeUpdate.SOStatus;
+                        salesOrderHistory.PONumber = salesOrderDetailBeforeUpdate.PONumber;
+                        salesOrderHistory.PODate = salesOrderDetailBeforeUpdate.PODate;
+                        salesOrderHistory.ReceivedDate = salesOrderDetailBeforeUpdate.ReceivedDate;
+                        salesOrderHistory.BillTo = salesOrderDetailBeforeUpdate.BillTo;
+                        salesOrderHistory.BillToId = salesOrderDetailBeforeUpdate.BillToId;
+                        salesOrderHistory.ShipTo = salesOrderDetailBeforeUpdate.ShipTo;
+                        salesOrderHistory.ShipToId = salesOrderDetailBeforeUpdate.ShipToId;
+                        salesOrderHistory.PaymentTerms = salesOrderDetailBeforeUpdate.PaymentTerms;
+                        salesOrderHistory.Total = salesOrderDetailBeforeUpdate.Total;
+                        salesOrderHistory.Unit = salesOrderDetailBeforeUpdate.Unit;
+                        salesOrderHistory.IsShortClosed = salesOrderDetailBeforeUpdate.IsShortClosed;
+                        salesOrderHistory.ShortClosedBy = salesOrderDetailBeforeUpdate.ShortClosedBy;
+                        salesOrderHistory.ShortClosedOn = salesOrderDetailBeforeUpdate.ShortClosedOn;
+                        salesOrderHistory.CreatedBy = salesOrderDetailBeforeUpdate.CreatedBy;
+                        salesOrderHistory.CreatedOn = salesOrderDetailBeforeUpdate.CreatedOn;
+                        salesOrderHistory.LastModifiedBy = salesOrderDetailBeforeUpdate.LastModifiedBy;
+                        salesOrderHistory.LastModifiedOn = salesOrderDetailBeforeUpdate.LastModifiedOn;
+                        salesOrderHistory.ItemNumber = salesOrderItemDetail.ItemNumber;
+                        salesOrderHistory.Description = salesOrderItemDetail.Description;
+                        salesOrderHistory.BalanceQty = salesOrderItemDetail.BalanceQty;
+                        salesOrderHistory.DispatchQty = salesOrderItemDetail.DispatchQty;
+                        salesOrderHistory.ShopOrderQty = salesOrderItemDetail.ShopOrderQty;
+                        salesOrderHistory.UOM = salesOrderItemDetail.UOM;
+                        salesOrderHistory.Currency = salesOrderItemDetail.Currency;
+                        salesOrderHistory.TotalAmount = salesOrderItemDetail.TotalAmount;
+                        salesOrderHistory.BasicAmount = salesOrderItemDetail.BasicAmount;
+                        salesOrderHistory.Discount = salesOrderItemDetail.Discount;
+                        salesOrderHistory.UnitPrice = salesOrderItemDetail.UnitPrice;
+                        salesOrderHistory.OrderQty = salesOrderItemDetail.OrderQty;
+                        salesOrderHistory.SGST = salesOrderItemDetail.SGST;
+                        salesOrderHistory.UTGST = salesOrderItemDetail.UTGST;
+                        salesOrderHistory.CGST = salesOrderItemDetail.CGST;
+                        salesOrderHistory.IGST = salesOrderItemDetail.IGST;
+                        salesOrderHistory.ReceivedDate = salesOrderItemDetail.RequestedDate;
+                        salesOrderHistory.Remarks = salesOrderItemDetail.Remarks;
 
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
-
-
                         await _salesOrderHistory.CreateSalesOrderHistory(salesOrderHistories);
-                        _salesOrderHistory.SaveAsync();
+
+                        foreach (var scheduleDateDetial in salesOrderItemDetail.ScheduleDates)
+                        {
+                            ScheduleDateHistory scheduleDateHistory = new ScheduleDateHistory();
+                            scheduleDateHistory.Date = scheduleDateDetial.Date;
+                            scheduleDateHistory.Quantity = scheduleDateDetial.Quantity;
+                            scheduleDateHistory.SalesOrderHistoriesId = salesOrderHistory.Id;
+
+                            var ScheduleDateHistories = _mapper.Map<ScheduleDateHistory>(salesOrderHistory);
+                            await _scheduleDateHistoryRepository.CreateScheduleDateHistory(ScheduleDateHistories);
+                        }
+
                     }
+
+                    foreach (var soAdditionalCharges in salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges)
+                    {
+                        SalesOrderAdditionalChargesHistory SalesOrderAdditionalChargesHistory = new SalesOrderAdditionalChargesHistory();
+                        SalesOrderAdditionalChargesHistory.AdditionalChargesLabelName = soAdditionalCharges.AdditionalChargesLabelName;
+                        SalesOrderAdditionalChargesHistory.AddtionalChargesValueType = soAdditionalCharges.AddtionalChargesValueType;
+                        SalesOrderAdditionalChargesHistory.AddtionalChargesValueAmount = soAdditionalCharges.AddtionalChargesValueAmount;
+                        SalesOrderAdditionalChargesHistory.IGST = soAdditionalCharges.IGST;
+                        SalesOrderAdditionalChargesHistory.CGST = soAdditionalCharges.CGST;
+                        SalesOrderAdditionalChargesHistory.UTGST = soAdditionalCharges.UTGST;
+                        SalesOrderAdditionalChargesHistory.UTGST = soAdditionalCharges.UTGST;
+                        SalesOrderAdditionalChargesHistory.TotalValue = soAdditionalCharges.TotalValue;
+                        SalesOrderAdditionalChargesHistory.InvoicedValue = soAdditionalCharges.InvoicedValue;
+                        SalesOrderAdditionalChargesHistory.SalesOrderNumber = salesOrderDetailBeforeUpdate.SalesOrderNumber;
+                        SalesOrderAdditionalChargesHistory.RevisionNumber = salesOrderDetailBeforeUpdate.RevisionNumber;
+
+                        var SalesOrderAdditionalChargesHistories = _mapper.Map<SalesOrderAdditionalChargesHistory>(SalesOrderAdditionalChargesHistory);
+                        await _salesOrderAdditionalChargesHistoryRepository.CreateSalesOrderAdditionalChargesHistory(SalesOrderAdditionalChargesHistories);
+                    }
+                    _salesOrderHistory.SaveAsync();
+                    _scheduleDateHistoryRepository.SaveAsync();
+                    _salesOrderAdditionalChargesHistoryRepository.SaveAsync();
                 }
 
-                var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetail);
+                var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetailBeforeUpdate);
                 updateData.SalesOrdersItems = salesOrderItemsList;
                 updateData.SalesOrderAdditionalCharges = salesAdditionalChargesList;
                 string result = await _repository.UpdateSalesOrder(updateData);
@@ -1478,7 +1521,7 @@ namespace Tips.SalesService.Api.Controllers
         //        return StatusCode(500, serviceResponse);
         //    }
         //}
-        [HttpGet()] // Adjust your route as needed
+        [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetSalesOrderSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
             ServiceResponse<IEnumerable<SalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPReport>>();
@@ -1594,14 +1637,166 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetSOSummarySPReportWithParam([FromBody] SOSummarySPResportDTO soSummarySPResportDTO)
+
+        {
+            ServiceResponse<IEnumerable<SOSummarySPReport>> serviceResponse = new ServiceResponse<IEnumerable<SOSummarySPReport>>();
+            try
+            {
+                var products = await _repository.GetSOSummarySPReportWithParam(soSummarySPResportDTO.CustomerId, soSummarySPResportDTO.SalesOrderNumber, soSummarySPResportDTO.KPN);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderSummarySPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesOrderSummarySPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned SalesOrderSummarySPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetSOSummarySPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetSOSummarySPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<SOSummarySPReport>> serviceResponse = new ServiceResponse<IEnumerable<SOSummarySPReport>>();
+            try
+            {
+                var products = await _repository.GetSOSummarySPReportWithDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderSummarySPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesOrderSummarySPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned SalesOrderSummarySPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetSOSummarySPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetSOMonthlyConsumptionSPReportWithParam([FromBody] SOMonthlyConsumptionDto soMonthlyConsumptionDto)
+
+        {
+            ServiceResponse<IEnumerable<SOMonthlyConsumptionSPReport>> serviceResponse = new ServiceResponse<IEnumerable<SOMonthlyConsumptionSPReport>>();
+            try
+            {
+                var products = await _repository.GetSOMonthlyConsumptionSPReportWithParam(soMonthlyConsumptionDto.CustomerId);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderMonthlyConsumptionSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesOrderMonthlyConsumptionSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned SalesOrderMonthlyConsumptionSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetSOMonthlyConsumptionSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetSOMonthlyConsumptionSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<SOMonthlyConsumptionSPReport>> serviceResponse = new ServiceResponse<IEnumerable<SOMonthlyConsumptionSPReport>>();
+            try
+            {
+                var products = await _repository.GetSOMonthlyConsumptionSPReportWithDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderMonthlyConsumptionSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesOrderMonthlyConsumptionSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned SalesOrderMonthlyConsumptionSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetSOMonthlyConsumptionSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
         [HttpPost]
-        public async Task<IActionResult> ExportSalesOrderSPReportToExcel([FromBody] SalesOrderSPResportDTO salesOrderSPResport)
+        public async Task<IActionResult> ExportSalesOrderSPReportToExcel([FromBody] SalesOrderSPResportDTO salesOrderSPReport)
         {
             try
             {
                 // Get data from repository using stored procedure
-                var salesOrderSPResportDetails = await _repository.GetSalesOrderSPReportWithParam(salesOrderSPResport.CustomerName, salesOrderSPResport.SalesOrderNumber, 
-                                                                                                                                                        salesOrderSPResport.KPN);
+                var salesOrderSPReportDetails = await _repository.GetSalesOrderSPReportWithParam(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN);
 
                 // Create a new Excel workbook
                 IWorkbook workbook = new XSSFWorkbook();
@@ -1609,50 +1804,70 @@ namespace Tips.SalesService.Api.Controllers
 
                 // Set header row
                 var headerRow = sheet.CreateRow(0);
-                headerRow.CreateCell(0).SetCellValue("Customer Name");
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
                 headerRow.CreateCell(1).SetCellValue("Customer ID");
-                headerRow.CreateCell(2).SetCellValue("Sales Order Number");
-                headerRow.CreateCell(3).SetCellValue("SO Date");
-                headerRow.CreateCell(4).SetCellValue("KPN");
-                headerRow.CreateCell(5).SetCellValue("Order Qty");
-                headerRow.CreateCell(6).SetCellValue("Total Amount");
-                headerRow.CreateCell(7).SetCellValue("UOC");
-                headerRow.CreateCell(8).SetCellValue("UOM");
-                headerRow.CreateCell(9).SetCellValue("Balance Qty");
-                headerRow.CreateCell(10).SetCellValue("Type Of Solution");
-                headerRow.CreateCell(11).SetCellValue("Product Type");
-                headerRow.CreateCell(12).SetCellValue("Order Type");
-                headerRow.CreateCell(13).SetCellValue("Unit Price");
-                headerRow.CreateCell(14).SetCellValue("Lead ID");
-                headerRow.CreateCell(15).SetCellValue("Sales Person");
-                headerRow.CreateCell(16).SetCellValue("Discount Type");
-                headerRow.CreateCell(17).SetCellValue("Discount");
-                headerRow.CreateCell(18).SetCellValue("Price List");
+                headerRow.CreateCell(2).SetCellValue("Customer Name");
+                headerRow.CreateCell(3).SetCellValue("Lead ID");
+                headerRow.CreateCell(4).SetCellValue("Order Type");
+                headerRow.CreateCell(5).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(6).SetCellValue("Product Type");
+                headerRow.CreateCell(7).SetCellValue("Material Group");
+                headerRow.CreateCell(8).SetCellValue("Item Type");
+                headerRow.CreateCell(9).SetCellValue("Sales Person");
+                headerRow.CreateCell(10).SetCellValue("SO Date");
+                headerRow.CreateCell(11).SetCellValue("KPN");
+                headerRow.CreateCell(12).SetCellValue("KPN Description");
+                headerRow.CreateCell(13).SetCellValue("UOC");
+                headerRow.CreateCell(14).SetCellValue("UOM");
+                headerRow.CreateCell(15).SetCellValue("Price List");
+                headerRow.CreateCell(16).SetCellValue("Unit Price");
+                headerRow.CreateCell(17).SetCellValue("Basic Amount");
+                headerRow.CreateCell(18).SetCellValue("DiscountType");
+                headerRow.CreateCell(19).SetCellValue("Discount");
+                headerRow.CreateCell(20).SetCellValue("SGST");
+                headerRow.CreateCell(21).SetCellValue("CGST");
+                headerRow.CreateCell(22).SetCellValue("IGST");
+                headerRow.CreateCell(23).SetCellValue("UTGST");
+                headerRow.CreateCell(24).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(25).SetCellValue("Total Amount");
+                headerRow.CreateCell(26).SetCellValue("Order Qty");
+                headerRow.CreateCell(27).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(28).SetCellValue("Balance Qty");
 
                 // Populate data rows
                 int rowIndex = 1;
-                foreach (var item in salesOrderSPResportDetails)
+                foreach (var item in salesOrderSPReportDetails)
                 {
                     var row = sheet.CreateRow(rowIndex++);
-                    row.CreateCell(0).SetCellValue(item.CustomerName);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
                     row.CreateCell(1).SetCellValue(item.CustomerId);
-                    row.CreateCell(2).SetCellValue(item.SalesOrderNumber);
-                    row.CreateCell(3).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
-                    row.CreateCell(4).SetCellValue(item.KPN);
-                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
-                    row.CreateCell(6).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
-                    row.CreateCell(7).SetCellValue(item.UOC);
-                    row.CreateCell(8).SetCellValue(item.UOM);
-                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
-                    row.CreateCell(10).SetCellValue(item.TypeOfSolution);
-                    row.CreateCell(11).SetCellValue(item.ProductType);
-                    row.CreateCell(12).SetCellValue(item.OrderType);
-                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
-                    row.CreateCell(14).SetCellValue(item.LeadId);
-                    row.CreateCell(15).SetCellValue(item.SalesPerson);
-                    row.CreateCell(16).SetCellValue(item.DiscountType);
-                    row.CreateCell(17).SetCellValue(item.Discount);
-                    row.CreateCell(18).SetCellValue(item.PriceList);
+                    row.CreateCell(2).SetCellValue(item.CustomerName);
+                    row.CreateCell(3).SetCellValue(item.LeadId);
+                    row.CreateCell(4).SetCellValue(item.OrderType);
+                    row.CreateCell(5).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(6).SetCellValue(item.ProductType);
+                    row.CreateCell(7).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(8).SetCellValue(item.ItemType.HasValue ? item.ItemType.Value.ToString() : ""); // Assuming ItemType is nullable int
+                    row.CreateCell(9).SetCellValue(item.SalesPerson);
+                    row.CreateCell(10).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(11).SetCellValue(item.KPN);
+                    row.CreateCell(12).SetCellValue(item.KPNDescription);
+                    row.CreateCell(13).SetCellValue(item.UOC);
+                    row.CreateCell(14).SetCellValue(item.UOM);
+                    row.CreateCell(15).SetCellValue(item.PriceList);
+                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(17).SetCellValue(Convert.ToDouble(item.BasicAmount)); // Assuming BasicAmount is decimal
+                    row.CreateCell(18).SetCellValue(item.DiscountType);
+                    row.CreateCell(19).SetCellValue(item.Discount);
+                    row.CreateCell(20).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
+                    row.CreateCell(21).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
                 }
 
                 // Save Excel workbook to a memory stream

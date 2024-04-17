@@ -398,6 +398,7 @@ namespace Tips.Grin.Api.Repository
             var grinDetailsbyGrin = await _tipsGrinDbContext.Grins.Where(x => x.GrinNumber == grinNumber)
 
         .Include(t => t.GrinParts)
+        .ThenInclude(p => p.ProjectNumbers)
 
         .FirstOrDefaultAsync();
 

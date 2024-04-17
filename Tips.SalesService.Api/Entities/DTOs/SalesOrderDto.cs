@@ -15,6 +15,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SalesPerson { get; set; }
         public string? ProjectNumber { get; set; }
         public string? QuoteNumber { get; set; }
+        public string? QuoteRef { get; set; }
 
         [Precision(13, 1)]
         public int? QuoteRevisionNumber { get; set; }
@@ -318,5 +319,14 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SalesOrderNumber { get; set; }
         public string? KPN { get; set; }
     }
-
+    public class SOSummarySPResportDTO
+    {
+        public string? CustomerId { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? KPN { get; set; }
+    }
+    public class SOMonthlyConsumptionDto
+    {
+        public string? CustomerId { get; set; }
+    }
 }

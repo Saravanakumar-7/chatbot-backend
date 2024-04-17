@@ -30,6 +30,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<PagedList<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReport(PagingParameter pagingParameter);
         Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReportWithParam(string OpenDONumber, string CustomerName, string CustomerAliasName, string LeadId, string IssuedTo, string KPN, string MPN, string Warehouse, string Location, string ODOType);
         Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReportDates(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<ODOMonthlyConsumptionSPReport>> GetODOMonthlyConsumptionSPReportWithParam(string CustomerId);
+        Task<IEnumerable<ODOMonthlyConsumptionSPReport>> GetODOMonthlyConsumptionSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
 
     }
 

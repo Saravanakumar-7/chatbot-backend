@@ -131,6 +131,26 @@ namespace Tips.Warehouse.Api.Repository
 
             return results;
         }
+        public async Task<IEnumerable<ODOMonthlyConsumptionSPReport>> GetODOMonthlyConsumptionSPReportWithParam(string CustomerId)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<ODOMonthlyConsumptionSPReport>()
+            .FromSqlInterpolated($"CALL monthly_consumption_withodonumber_withparameter({CustomerId})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<ODOMonthlyConsumptionSPReport>> GetODOMonthlyConsumptionSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<ODOMonthlyConsumptionSPReport>()
+                        .FromSqlInterpolated($"CALL monthly_consumption_withodonumber_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
 
         public async Task<IEnumerable<OpenDeliveryOrder>> SearchOpenDeliveryOrderDate([FromQuery] SearchsDateParms searchsDateParms)
         {

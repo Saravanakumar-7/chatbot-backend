@@ -496,7 +496,19 @@ namespace Tips.SalesService.Api.Controllers
 
                             var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
                             var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
+                            var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"), itemNoListString);
 
+                            var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
+                            dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
+
+                            List<ItemNoWithPartTypeDto> itemNoWithPartType = new List<ItemNoWithPartTypeDto>();
+
+                            //for this loop we need to check
+                            foreach (var item in itemNoPartTypeData.data)
+                            {
+                                ItemNoWithPartTypeDto dto = JsonConvert.DeserializeObject<ItemNoWithPartTypeDto>(item.ToString());
+                                itemNoWithPartType.Add(dto);
+                            }
 
                             //Open Stock with WIP Quantity
                             List<ChildItemStockWithWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItemsByProjectNo(itemNoListString, projectNumber);
@@ -510,7 +522,7 @@ namespace Tips.SalesService.Api.Controllers
                                 CoverageReportByProjectNumberDtoForChildItem coverageDetailOfChildItem = new CoverageReportByProjectNumberDtoForChildItem
                                 {
                                     ItemNumber = item.ItemNumber,
-                                    MftrItemNumber = item.MftrItemNumber,
+                                    MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
                                     Description = item.Description,
                                     ProjectNumber = projectNumber,
                                     UOM = item.UOM,

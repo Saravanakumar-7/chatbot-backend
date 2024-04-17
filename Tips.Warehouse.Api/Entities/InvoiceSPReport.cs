@@ -21,12 +21,19 @@
         public string? KPN { get; set; }
         public string? MPN { get; set; }
         public string? Description { get; set; }
-        public decimal? UnitPrice { get; set; }
+        public string? DiscountType { get; set; }
+        public string? Discount { get; set; }
+        public decimal? TotalValueWithTax { get; set; }
+        public decimal? SGST { get; set; }
+        public decimal? IGST { get; set; }
+        public decimal? CGST { get; set; }
+        public decimal? UTGST { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
-        public decimal? AvaliableQty { get; set; }
         public decimal? orderQTY { get; set; }
-        public decimal? DispatchQty { get; set; }
+        public decimal? IssuedQty { get; set; }
+        public decimal? InvoicedQty { get; set; }
+        public decimal? ReturnQty { get; set; }
         public string? SerialNumber { get; set; }
         public string? Remarks { get; set; }
     }

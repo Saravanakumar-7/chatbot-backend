@@ -286,7 +286,7 @@ namespace Tips.Grin.Api.Controllers
                         ItemDescription = grinPartDetailsLookup[item.GrinPartId].ItemDescription,
                         ManufactureBatchNumber = grinPartDetailsLookup[item.GrinPartId].ManufactureBatchNumber,
                         UOM = grinPartDetailsLookup[item.GrinPartId].UOM,
-                        ExpireDate = grinPartDetailsLookup[item.GrinPartId].ExpiryDate,
+                        ExpiryDate = grinPartDetailsLookup[item.GrinPartId].ExpiryDate,
                         ManufactureDate = grinPartDetailsLookup[item.GrinPartId].ManufactureDate,
 
                     }).ToList(),
@@ -376,7 +376,7 @@ namespace Tips.Grin.Api.Controllers
                         ItemDescription = grinPartDetailsLookup[item.GrinPartId].ItemDescription,
                         ManufactureBatchNumber = grinPartDetailsLookup[item.GrinPartId].ManufactureBatchNumber,
                         UOM = grinPartDetailsLookup[item.GrinPartId].UOM,
-                        ExpireDate = grinPartDetailsLookup[item.GrinPartId].ExpiryDate,
+                        ExpiryDate = grinPartDetailsLookup[item.GrinPartId].ExpiryDate,
                         ManufactureDate = grinPartDetailsLookup[item.GrinPartId].ManufactureDate,
 
                     }).ToList(),
@@ -467,7 +467,7 @@ namespace Tips.Grin.Api.Controllers
                         ItemDescription = grinPartDetailsLookup[item.GrinPartId].ItemDescription,
                         ManufactureBatchNumber = grinPartDetailsLookup[item.GrinPartId].ManufactureBatchNumber,
                         UOM = grinPartDetailsLookup[item.GrinPartId].UOM,
-                        ExpireDate = grinPartDetailsLookup[item.GrinPartId].ExpiryDate,
+                        ExpiryDate = grinPartDetailsLookup[item.GrinPartId].ExpiryDate,
                         ManufactureDate = grinPartDetailsLookup[item.GrinPartId].ManufactureDate,
 
                     }).ToList(),
@@ -1678,9 +1678,11 @@ namespace Tips.Grin.Api.Controllers
                         foreach (var grinDetails in grinParts)
                         {
                             IQCConfirmationItemsDto iQCConfirmationItemsDtos = _mapper.Map<IQCConfirmationItemsDto>(grinDetails);
+                            iQCConfirmationItemsDtos.ProjectNumbers = _mapper.Map<List<ProjectNumbersDto>>(grinDetails.ProjectNumbers);
                             iQCConfirmationItemsDtos.Id = iQCConfirmationItemsDtos.Id;
                             iQCConfirmationItemsDtos.ReceivedQty = grinDetails.Qty;
                             iQCConfirmationItemsDtos.GrinPartId = grinDetails.Id;
+                            iQCConfirmationItemsDtos.ExpiryDate = grinDetails.ExpiryDate;
                             iQCConfirmationItemsList.Add(iQCConfirmationItemsDtos);
                         }
                     }

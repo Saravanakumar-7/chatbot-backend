@@ -1075,5 +1075,81 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetODOMonthlyConsumptionSPReportWithParam([FromBody] ODOMonthlyConsumptionDto odoMonthlyConsumptionDto)
+
+        {
+            ServiceResponse<IEnumerable<ODOMonthlyConsumptionSPReport>> serviceResponse = new ServiceResponse<IEnumerable<ODOMonthlyConsumptionSPReport>>();
+            try
+            {
+                var products = await _repository.GetODOMonthlyConsumptionSPReportWithParam(odoMonthlyConsumptionDto.CustomerId);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ODOMonthlyConsumptionSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ODOMonthlyConsumptionSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ODOMonthlyConsumptionSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetODOMonthlyConsumptionSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetODOMonthlyConsumptionSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<ODOMonthlyConsumptionSPReport>> serviceResponse = new ServiceResponse<IEnumerable<ODOMonthlyConsumptionSPReport>>();
+            try
+            {
+                var products = await _repository.GetODOMonthlyConsumptionSPReportWithDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ODOMonthlyConsumptionSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ODOMonthlyConsumptionSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ODOMonthlyConsumptionSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetODOMonthlyConsumptionSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
     }
 }

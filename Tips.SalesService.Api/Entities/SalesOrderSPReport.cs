@@ -20,6 +20,7 @@
         public string? ProductType { get; set; }
         public string? OrderType { get; set; }
         public decimal? UnitPrice { get; set; }
+        public decimal? itempricelist { get; set; }
         public decimal? BasicAmount { get; set; }
         public string? LeadId { get; set; }
         public string? SalesPerson { get; set; }

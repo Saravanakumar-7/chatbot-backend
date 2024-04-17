@@ -11,7 +11,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public string ItemDescription { get; set; }
         public string MftrItemNumber { get; set; }
-        public List<ProjectNumbers>? ProjectNumbers { get; set; }
+        public List<ProjectNumbersDto>? ProjectNumbers { get; set; }
         public string ManufactureBatchNumber { get; set; }
 
         [Precision(18, 3)]
@@ -26,7 +26,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
         public string UOM { get; set; }
-        public DateTime? ExpireDate { get; set; }
+        public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
         public decimal? ReceivedQty { get; set; }
         public decimal AcceptedQty { get; set; }
@@ -78,7 +78,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal POUnitPrice { get; set; }
         public string UOM { get; set; }
-        public DateTime? ExpireDate { get; set; }
+        public DateTime? ExpiryDate { get; set; }
         public DateTime? ManufactureDate { get; set; }
         public decimal? ReceivedQty { get; set; }
         public decimal AcceptedQty { get; set; }

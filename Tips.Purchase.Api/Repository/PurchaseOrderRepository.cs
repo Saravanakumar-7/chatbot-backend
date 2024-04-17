@@ -1655,10 +1655,8 @@ namespace Tips.Purchase.Api.Repository
                  (po.Status == Status.Open || po.Status == Status.PartiallyClosed) &&
                  po.IsDeleted == false &&
                  po.IsShortClosed == false &&
-                 po.POApprovalI == true &&
-                 po.POApprovalII == true &&
-                  po.POApprovalIII == true &&
-                   po.POApprovalIV == true &&
+                 (po.ApprovalCount == 4 && po.POApprovalI == true && po.POApprovalII == true && po.POApprovalIII == true && po.POApprovalIV == true) ||
+                (po.ApprovalCount == 2 && po.POApprovalI == true && po.POApprovalII == true) &&
                  po.IsModified == false &&
                  po.POItems.Any(pi =>
                      pi.ItemNumber == itemNumber &&
@@ -1747,11 +1745,10 @@ namespace Tips.Purchase.Api.Repository
             List<OpenPoQuantityDto> openPoQtyList = await _tipsPurchaseDbContext.PoItems
                 .Include(x => x.PurchaseOrder)
                 .Where(x => poStatus.Contains(x.PurchaseOrder.PoStatus)
-                && poStatus.Contains(x.PoStatus) && itemNumberList.Contains(x.ItemNumber)
-                && x.PurchaseOrder.POApprovalI == true
-                && x.PurchaseOrder.POApprovalII == true
-                && x.PurchaseOrder.POApprovalIII == true
-                && x.PurchaseOrder.POApprovalIV == true
+                && poStatus.Contains(x.PoStatus) && itemNumberList.Contains(x.ItemNumber) 
+                && (x.PurchaseOrder.ApprovalCount == 4 && x.PurchaseOrder.POApprovalI == true && x.PurchaseOrder.POApprovalII == true && x.PurchaseOrder.POApprovalIII == true 
+                && x.PurchaseOrder.POApprovalIV == true) ||
+                (x.PurchaseOrder.ApprovalCount == 2 && x.PurchaseOrder.POApprovalI == true && x.PurchaseOrder.POApprovalII == true)
                 && x.PurchaseOrder.IsDeleted == false
                 && x.PurchaseOrder.IsModified == false
                 && x.POAddprojects.Any(pr => pr.ProjectNumber == projectNo))

@@ -9,6 +9,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? customerLeadId { get; set; }
+        public DateTime? ReturnODOdate { get; set; }
         public string? IssuedTo { get; set; }
         public string? issuedby { get; set; }
         public string? KPN { get; set; }
@@ -19,7 +20,6 @@ namespace Tips.Warehouse.Api.Entities
         public string? ODOType { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
-        public decimal? StockAvailable { get; set; }
         public decimal? DispatchedStk { get; set; }
         public string? SerialNo { get; set; }
         public decimal? ReturnQty { get; set; }

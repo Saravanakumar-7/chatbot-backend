@@ -2509,6 +2509,81 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, inventoryServiceResponse);
             }
         }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetInventorySPReportsWithParam([FromBody] InventorySPReportDto inventorySPReportDto)
+        {
+            ServiceResponse<IEnumerable<InventorySPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventorySPReport>>();
+            try
+            {
+                var products = await _inventoryRepository.GetInventorySPReportsWithParam(inventorySPReportDto.PartNumber, inventorySPReportDto.Description,
+                                                                                    inventorySPReportDto.Warehouse, inventorySPReportDto.Location,
+                                                                                    inventorySPReportDto.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventorySPReportsWithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"InventorySPReportsWithParam hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InventorySPReportsWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetInventorySPReportsWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> InventorySPReportdate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<InventorySPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventorySPReport>>();
+            try
+            {
+                var products = await _inventoryRepository.InventorySPReportdate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventorySPReportdate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"InventorySPReportdate hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InventorySPReportdate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside InventorySPReportdate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
     }
 }

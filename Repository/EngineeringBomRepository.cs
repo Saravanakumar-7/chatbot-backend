@@ -392,22 +392,22 @@ namespace Repository
             }
             return enggBomFGItemNumberWithQtyDtos;
         }
-        public async Task<List<EnggBomFGCostItemNumberWithQtyDto>> GetFGBomItemsChildCostingDetails(List<FGItemNumberListDto> fgItemNumberList)
+        public async Task<List<EnggBomFGCostItemNumberWithQtyDto>> GetFGBomItemsChildCostingDetails(string fgItemMaster)
         {
             List<EnggBomFGCostItemNumberWithQtyDto> enggBomFGItemNumberWithQtyDtos = new List<EnggBomFGCostItemNumberWithQtyDto>();
-            foreach (var rfqfgitem in fgItemNumberList)
-            {
-                //int fgdetails = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == rfqfgitem.FGItemNumber)
-                //    .Select(x => x.BOMId)
-                //    .FirstOrDefaultAsync();
-                int fgdetails = await _tipsMasterDbContext.EnggBoms
-                                .Where(x => x.ItemNumber == rfqfgitem.FGItemNumber)
-                                .GroupBy(x => x.ItemNumber)
-                                .Select(group => group.OrderByDescending(x => x.RevisionNumber).FirstOrDefault())
-                                .Select(x => x.BOMId)
-                                .FirstOrDefaultAsync();
 
-                var fgbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == fgdetails).OrderByDescending(x => x.PartType).ToListAsync();
+            int bomId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgItemMaster && x.IsEnggBomRelease == true)
+                .OrderByDescending(x => x.RevisionNumber)
+                .Select(x => x.BOMId)
+                .FirstOrDefaultAsync();
+            //int bomId = await _tipsMasterDbContext.EnggBoms
+            //                .Where(x => x.ItemNumber == fgItemMaster && x.IsEnggBomRelease == true)
+            //                .GroupBy(x => x.ItemNumber)
+            //                .Select(group => group.OrderByDescending(x => x.RevisionNumber).FirstOrDefault())
+            //                .Select(m => m.BOMId)
+            //                .FirstOrDefaultAsync();
+
+            var fgbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == bomId).OrderByDescending(x => x.PartType).ToListAsync();
                 if (fgbomdetails != null)
                 {
                     foreach (var childofFG in fgbomdetails)
@@ -419,7 +419,7 @@ namespace Repository
                             {
                                 if (existingPP.ItemNumber == childofFG.ItemNumber)
                                 {
-                                    existingPP.QtyReq = existingPP.QtyReq + (childofFG.Quantity /** rfqfgitem.Qty*/);
+                                    existingPP.QtyReq = existingPP.QtyReq + (childofFG.Quantity);
                                     flag = 1;
                                     break;
                                 }
@@ -427,15 +427,16 @@ namespace Repository
                             if (flag == 0)
                             {
                                 EnggBomFGCostItemNumberWithQtyDto addPP = new EnggBomFGCostItemNumberWithQtyDto();
+                                addPP.FGItemNumber = fgItemMaster;
                                 addPP.ItemNumber = childofFG.ItemNumber;
                                 addPP.ItemDescription = childofFG.Description;
-                                addPP.QtyReq = childofFG.Quantity /** rfqfgitem.Qty*/;
+                                addPP.QtyReq = childofFG.Quantity;
                                 enggBomFGItemNumberWithQtyDtos.Add(addPP);
                             }
                         }
                         if (childofFG.PartType == PartType.SA)
                         {
-                            var subSA = await GetSABomItemsChildDetails(childofFG.ItemNumber, childofFG.Quantity);//, childofFG.Version);
+                            var subSA = await GetSABomItemsChildDetails(childofFG.ItemNumber, childofFG.Quantity);
                             foreach (var existingpp in subSA)
                             {
                                 int flag = 0;
@@ -443,7 +444,7 @@ namespace Repository
                                 {
                                     if (existingpp.ItemNumber == existingPP.ItemNumber)
                                     {
-                                        existingPP.QtyReq = existingPP.QtyReq + (existingpp.QtyReq /** rfqfgitem.Qty*/);
+                                        existingPP.QtyReq = existingPP.QtyReq + (existingpp.QtyReq );
                                         flag = 1;
                                         break;
                                     }
@@ -451,16 +452,17 @@ namespace Repository
                                 if (flag == 0)
                                 {
                                     EnggBomFGCostItemNumberWithQtyDto addPP = new EnggBomFGCostItemNumberWithQtyDto();
+                                    addPP.FGItemNumber = fgItemMaster;
                                     addPP.ItemNumber = existingpp.ItemNumber;
                                     addPP.ItemDescription = existingpp.ItemDescription;
-                                    addPP.QtyReq = existingpp.QtyReq/* * rfqfgitem.Qty*/;
+                                    addPP.QtyReq = existingpp.QtyReq;
                                     enggBomFGItemNumberWithQtyDtos.Add(addPP);
                                 }
                             }
                         }
                     }
                 }
-            }
+            
             return enggBomFGItemNumberWithQtyDtos;
         }
         public async Task<List<EnggBomFGItemNumberWithQtyDto>> GetSABomItemsChildDetails(string SAitemnumber, decimal SAQty)//, string SAversion)

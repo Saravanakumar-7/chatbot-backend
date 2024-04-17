@@ -1,4 +1,5 @@
 ﻿  using Microsoft.EntityFrameworkCore;
+using Tips.SalesService.Api.Entities.Dto;
 
 namespace Tips.SalesService.Api.Entities
 {
@@ -89,6 +90,8 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<ForeCastReleaseLp> ForeCastReleaseLps { get; set; }
 
         public DbSet<SalesOrderHistory> salesOrderHistories { get; set; }
+        public DbSet<ScheduleDateHistory> ScheduleDateHistories { get; set; }
+        public DbSet<SalesOrderAdditionalChargesHistory> SalesOrderAdditionalChargesHistories { get; set; }
         public DbSet<SONumber> SONumbers { get; set; }
         public DbSet<RecievableCustomer> RecievableCustomers { get; set; }
 
@@ -103,6 +106,8 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<CollectionTrackerByCustomerIdSPReport> CollectionTrackerByCustomerIdSPReports { get; set; }
         public DbSet<CollectionTrackerBySalesOrderNoSPReport> CollectionTrackerBySalesOrderNoSPReports { get; set; }
         public DbSet<DocumentUpload> DocumentUploads { get; set; }
+        public DbSet<SOSummarySPReport> SOSummarySPReports { get; set; }
+        public DbSet<SOMonthlyConsumptionSPReport> SOMonthlyConsumptionSPReports { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RecievableCustomer>().HasNoKey();
@@ -110,6 +115,8 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<CollectionTrackerSPReport>().HasNoKey();
             modelBuilder.Entity<CollectionTrackerByCustomerIdSPReport>().HasNoKey();
             modelBuilder.Entity<CollectionTrackerBySalesOrderNoSPReport>().HasNoKey();
+            modelBuilder.Entity<SOSummarySPReport>().HasNoKey();
+            modelBuilder.Entity<SOMonthlyConsumptionSPReport>().HasNoKey();
         }
 
     }

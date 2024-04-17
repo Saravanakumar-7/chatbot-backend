@@ -62,4 +62,17 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string ProjectNumber { get; set; }
         public decimal ProjectQty { get; set; }
     }
+    public class ProjectNumberscalculationofAvgcostDto
+    {
+        public string? ProjectNumber { get; set; }
+
+
+        [Precision(18, 3)]
+        public decimal? ProjectQty { get; set; }
+
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+    }
 }

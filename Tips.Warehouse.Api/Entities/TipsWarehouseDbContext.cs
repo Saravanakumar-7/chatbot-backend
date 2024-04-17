@@ -54,6 +54,8 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<ReturnInvoiceSPResport> ReturnInvoiceSPResports { get; set; }
         public DbSet<ReturnOpenDeliveryOrderSPResport> ReturnOpenDeliveryOrderSPResports { get; set; }
         public DbSet<ReturnDOSPReport> ReturnDOSPReports { get; set; }
+        public DbSet<InventorySPReport> InventorySPReports { get; set; }
+        public DbSet<ODOMonthlyConsumptionSPReport> ODOMonthlyConsumptionSPReports { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ConsumptionReport>().HasNoKey();
@@ -65,7 +67,8 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<ReturnOpenDeliveryOrderSPResport>().HasNoKey();
             modelBuilder.Entity<ReturnDOSPReport>().HasNoKey();
             modelBuilder.Entity<MRNSPReportDto>().HasNoKey();
-
+            modelBuilder.Entity<InventorySPReport>().HasNoKey();
+            modelBuilder.Entity<ODOMonthlyConsumptionSPReport>().HasNoKey();
             // Other entity configurations can be added here
             modelBuilder.Entity<DailyDOReport>().HasNoKey();
             base.OnModelCreating(modelBuilder);

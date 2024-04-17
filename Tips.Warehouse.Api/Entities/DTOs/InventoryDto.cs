@@ -396,5 +396,13 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string PartNumber { get; set; }
         public decimal BalanceQty { get; set; }
     }
+    public class InventorySPReportDto
+    {
+        public string? PartNumber { get; set; }
+        public string? Description { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
 
 }

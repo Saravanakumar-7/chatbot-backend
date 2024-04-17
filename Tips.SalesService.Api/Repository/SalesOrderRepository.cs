@@ -123,6 +123,48 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
+        public async Task<IEnumerable<SOSummarySPReport>> GetSOSummarySPReportWithParam(string CustomerId, string SalesOrderNumber, string KPN)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SOSummarySPReport>()
+            .FromSqlInterpolated($"CALL SO_Summary_Report_with_Parameter({CustomerId},{SalesOrderNumber},{KPN})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<SOSummarySPReport>> GetSOSummarySPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<SOSummarySPReport>()
+                        .FromSqlInterpolated($"CALL SO_Summary_Report_with_date({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+
+        public async Task<IEnumerable<SOMonthlyConsumptionSPReport>> GetSOMonthlyConsumptionSPReportWithParam(string CustomerId)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SOMonthlyConsumptionSPReport>()
+            .FromSqlInterpolated($"CALL monthly_consumption_withsalesorderno_withparameter({CustomerId})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<SOMonthlyConsumptionSPReport>> GetSOMonthlyConsumptionSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<SOMonthlyConsumptionSPReport>()
+                        .FromSqlInterpolated($"CALL monthly_consumption_withsalesorderno_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+
         public async Task<string> DeleteSalesOrder(SalesOrder salesOrder)
         {
             Delete(salesOrder);
@@ -840,6 +882,34 @@ namespace Tips.SalesService.Api.Repository
         {
             salesOrderHistory.Unit = "Banglore";
             var result = await Create(salesOrderHistory);
+            return result;
+        }
+    }
+    public class ScheduleDateHistoryRepository : RepositoryBase<ScheduleDateHistory>, IScheduleDateHistoryRepository
+    {
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContexts;
+        public ScheduleDateHistoryRepository(TipsSalesServiceDbContext repositoryContext) : base(repositoryContext)
+        {
+            _tipsSalesServiceDbContexts = repositoryContext;
+        }
+
+        public async Task<ScheduleDateHistory> CreateScheduleDateHistory(ScheduleDateHistory scheduleDateHistory)
+        {
+            var result = await Create(scheduleDateHistory);
+            return result;
+        }
+    }
+    public class SalesOrderAdditionalChargesHistoryRepository : RepositoryBase<SalesOrderAdditionalChargesHistory>, ISalesOrderAdditionalChargesHistoryRepository
+    {
+        private TipsSalesServiceDbContext _tipsSalesServiceDbContexts;
+        public SalesOrderAdditionalChargesHistoryRepository(TipsSalesServiceDbContext repositoryContext) : base(repositoryContext)
+        {
+            _tipsSalesServiceDbContexts = repositoryContext;
+        }
+
+        public async Task<SalesOrderAdditionalChargesHistory> CreateSalesOrderAdditionalChargesHistory(SalesOrderAdditionalChargesHistory salesOrderAdditionalChargesHistory)
+        {
+            var result = await Create(salesOrderAdditionalChargesHistory);
             return result;
         }
     }

@@ -49,7 +49,6 @@ namespace Tips.Grin.Api.Controllers
         private IGrinPartsRepository _grinPartsRepository;
         private IIQCConfirmationRepository _iQCConfirmationRepository;
         private IIQCConfirmationItemsRepository _iQCConfirmationItemsRepository;
-        private IWeightedAvgRateRepository _weightedAvgRateRepository;
         private IWeightedAvgCostRepository _weightedAvgCostRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
@@ -62,14 +61,13 @@ namespace Tips.Grin.Api.Controllers
 
         public GrinController(IIQCConfirmationRepository iQCConfirmationRepository,
          IIQCConfirmationItemsRepository iQCConfirmationItemsRepository, IGrinRepository repository, IHttpContextAccessor httpContextAccessor, IDocumentUploadRepository documentUploadRepository, IGrinPartsRepository grinPartsRepository,
-            IWeightedAvgRateRepository weightedAvgRateRepository, IWeightedAvgCostRepository weightedAvgCostRepository, IWebHostEnvironment webHostEnvironment, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+           IWeightedAvgCostRepository weightedAvgCostRepository, IWebHostEnvironment webHostEnvironment, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _repository = repository;
             _httpContextAccessor = httpContextAccessor;
             _grinPartsRepository = grinPartsRepository;
             _iQCConfirmationRepository = iQCConfirmationRepository;
             _iQCConfirmationItemsRepository = iQCConfirmationItemsRepository;
-            _weightedAvgRateRepository = weightedAvgRateRepository;
             _weightedAvgCostRepository = weightedAvgCostRepository;
             _logger = logger;
             _mapper = mapper;
@@ -1719,11 +1717,10 @@ namespace Tips.Grin.Api.Controllers
                     decimal? distriduteOthercostforitemsSingleQty = distriduteOthercostforitem / gPart.Qty;
                     gPart.AverageCost = distriduteOthercostforitemsSingleQty + gPart.EPforSingleQty;
                     GrinParts grinParts = _mapper.Map<GrinParts>(gPart);
+                    grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(gPart.ProjectNumbers);
                     GrinpartsList.Add(grinParts);
                 }
                 var data = _mapper.Map(grinDto, updategrin);
-
-
                 data.GrinParts = GrinpartsList;
 
                 string result = await _repository.UpdateGrin(data);

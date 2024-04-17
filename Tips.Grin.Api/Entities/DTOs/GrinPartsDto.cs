@@ -157,7 +157,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
         public Grins? Grins { get; set; }
         public string? SerialNo { get; set; }
-        public List<ProjectNumbers>? ProjectNumbers { get; set; }
+        public List<ProjectNumberscalculationofAvgcostDto>? ProjectNumbers { get; set; }
     }
     public class GrinPartsPostDto
     {

@@ -317,7 +317,15 @@ namespace Repository
             .Include(d => d.ItemMasterWarehouse);
             return itemmasterFgDetails;
         }
-
+        public async Task<IEnumerable<string>> GetAllFGItemNumberList()
+        {
+            var itemmasterFgItemNumbers = FindAll().OrderByDescending(a => a.Id)
+                .Where(inv => (inv.ItemType == PartType.FG) && inv.IsActive == true)
+                .Select(x => x.ItemNumber)
+                .ToList();
+                
+            return itemmasterFgItemNumbers;
+        }
         public async Task<IEnumerable<ItemMaster>> GetAllSAPurchasePartItems()
         {
             var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id).Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart) && inv.IsActive == true)
@@ -495,7 +503,7 @@ namespace Repository
         public async Task<List<ItemWithPartTypeDto>> GetItemPartTypeByItemNo(List<string> ItemNumberList)
         {
             var itemWithPartTypes = await FindByCondition(x => ItemNumberList.Contains(x.ItemNumber))
-                .SelectMany(s => s.ItemmasterAlternate.Select(a => new ItemWithPartTypeDto
+                .SelectMany(s => s.ItemmasterAlternate.Where(x =>x.IsDefault == true).Select(a => new ItemWithPartTypeDto
                 {
                     ItemNumber = s.ItemNumber,
                     PartType = s.ItemType,

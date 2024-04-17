@@ -40,5 +40,6 @@ namespace Contracts
         Task<Dictionary<string, int?>> GetItemsImageIds(List<string> ItemNumbers);
         Task<List<GetDownloadUrlswithitemnumber>> GetImageDetails(Dictionary<string, int?> itemImageids);
         Task<List<ItemWithPartTypeAndMinDto>> GetItemMasterPartTypeAndMinByItemNumber(List<string> ItemNumberList);
+        Task<IEnumerable<string>> GetAllFGItemNumberList();
     }
 }
