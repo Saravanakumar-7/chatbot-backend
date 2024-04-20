@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
+using Azure;
 using Contracts;
 using Entities;
 using Entities.Enums;
@@ -191,6 +192,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var returnInvoiceItemDto = ReturnInvoiceDtoPost.ReturnInvoiceItems;
                 var returnInvoiceItemsList = new List<ReturnInvoiceItem>();
                 var invoiceNumber = returnInvoiceDetails.InvoiceNumber;
+                HttpStatusCode salesOrderUpdateStatusCode = HttpStatusCode.OK;
                 var returnInvoiceNumberCount = await _returnInvoiceRepository.GetReturnInvoiceByInvoiceNo(invoiceNumber);
                 if (returnInvoiceNumberCount != null)
                 {
@@ -230,9 +232,10 @@ namespace Tips.Warehouse.Api.Controllers
                         int getBtoDeliveryOrderPartsId = returnInvoiceItemDto[i].BtoDeliveryOrderPartsId;
 
                         var btoDeliveryOrderItemDetails = await _bTODeliveryOrderItemsRepository.GetBtoDelieveryOrderItemDetails(getBtoDeliveryOrderPartsId);
-                        btoDeliveryOrderItemDetails.BalanceDoQty -= returnInvoiceItemDto[i].ReturnQty;
+ 
                         btoDeliveryOrderItemDetails.OrderBalanceQty += returnInvoiceItemDto[i].ReturnQty;
                         btoDeliveryOrderItemDetails.DispatchQty -= returnInvoiceItemDto[i].ReturnQty;
+                        btoDeliveryOrderItemDetails.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
                         //Update Inventory balanced Quantity 
 
                         //var PartNumber = returnInvoiceItemDto[i].FGPartNumber;
@@ -295,7 +298,7 @@ namespace Tips.Warehouse.Api.Controllers
                                 //inventory.PartType = returnBtoDeliveryOrderItems.PartType;
 
                                 await _inventoryRepository.CreateInventory(inventory);
-                                _inventoryRepository.SaveAsync();
+                                
                             }
                             else
                             {
@@ -304,10 +307,11 @@ namespace Tips.Warehouse.Api.Controllers
                                 exInv.IsStockAvailable = true;
                                 exInv.Balance_Quantity += eachbin.DistributingQty;
                                 await _inventoryRepository.UpdateInventory(exInv);
-                                _inventoryRepository.SaveAsync();
+                               
 
                             }
 
+                            _inventoryRepository.SaveAsync();
                             //add return details in to inventory table
 
                             InventoryTranction inventoryTranction = new InventoryTranction();
@@ -402,7 +406,6 @@ namespace Tips.Warehouse.Api.Controllers
                         int getInvoiceChildItemId = returnInvoiceItemDto[i].InvoicePartsId;
                         var invoiceChildItemDetails = await _invoiceChildRepository.GetInvoiceChildItemDetails(getInvoiceChildItemId);
                         invoiceChildItemDetails.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
-
                         _invoiceChildRepository.Update(invoiceChildItemDetails);
                         _invoiceChildRepository.SaveAsync();
                     }
@@ -411,7 +414,7 @@ namespace Tips.Warehouse.Api.Controllers
                 returnInvoiceDetails.ReturnInvoiceItems = returnInvoiceItemsList;
 
                 await _returnInvoiceRepository.CreateReturnInvoice(returnInvoiceDetails);
-                _returnInvoiceRepository.SaveAsync();
+               
 
                 //update balance qty and dispatch qty in sales order table for return Invoice concept
 
@@ -427,7 +430,24 @@ namespace Tips.Warehouse.Api.Controllers
                     _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 }
                 var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnInvoiceUpdateDispatchDetails"), data);
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    salesOrderUpdateStatusCode = response.StatusCode;
+                }
 
+                if (salesOrderUpdateStatusCode == HttpStatusCode.OK)
+                {
+                    _returnInvoiceRepository.SaveAsync();
+                }
+                else
+                {
+                    _logger.LogError($"Something went wrong inside Create CreateReturnInvoice action: SalesOrder Service Calling");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Saving Failed";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Invoice Successfully Created";
                 serviceResponse.Success = true;

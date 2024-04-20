@@ -164,6 +164,46 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
+        public async Task<IEnumerable<CollectionTrackerWithCustomerWiseSPReport>> GetCollectionTrackerWithCustomerWiseSPReportWithParam(string CustomerId)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<CollectionTrackerWithCustomerWiseSPReport>()
+            .FromSqlInterpolated($"CALL collectiontrackers_withcustomerwise_withparameters({CustomerId})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<CollectionTrackerWithCustomerWiseSPReport>> GetCollectionTrackerWithCustomerWiseSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<CollectionTrackerWithCustomerWiseSPReport>()
+                        .FromSqlInterpolated($"CALL collectiontrackers_withcustomerwise_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<CollectionTrackerWithSalesOrderNoWiseSPReport>> GetCollectionTrackerWithSalesOrderNoWiseSPReportWithParam(string salesOrderNumber)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<CollectionTrackerWithSalesOrderNoWiseSPReport>()
+            .FromSqlInterpolated($"CALL collectiontrackers_withsalesorderno_withparameters({salesOrderNumber})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<CollectionTrackerWithSalesOrderNoWiseSPReport>> GetCollectionTrackerWithSalesOrderNoWiseSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<CollectionTrackerWithSalesOrderNoWiseSPReport>()
+                        .FromSqlInterpolated($"CALL collectiontrackers_withsalesorderno_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
         public async Task<List<OpenSalesOrderDetailsDto>> GetOpenSODetailsByCustomerId(string customerId)
         {
             var salesOrderTotalValue = _tipsSalesServiceDbContext.SalesOrders.Where(x => x.CustomerId == customerId).Sum(s => s.Total);

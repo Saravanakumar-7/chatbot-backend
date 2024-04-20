@@ -1264,20 +1264,44 @@ namespace Tips.SalesService.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> ReturnDOUpdateDispatchDetails([FromBody] List<ReturnDOSalesOrderDispatchQtyDto> salesOrderDispatchQtyDto)
         {
-            //dynamic dispatchDetials
-            //we have to write code for same itemnumber in multiple rows
-            // Deserialise and store it in dynamic varibale
-            //lopp thori=ug the dynamic variable an pass hte item number and so id to salesorderitemdetials, get 
-            //the item object change the balanceqty and disoatchqty and pass the data to update method of service.
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            if (salesOrderDispatchQtyDto == null)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "SalesOrder object sent from the client is null.";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError("SalesOrder object sent from the client is null.");
+                return BadRequest(serviceResponse);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Invalid SalesOrder object sent from the client.";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError("Invalid SalesOrder object sent from the client.");
+                return BadRequest(serviceResponse);
+            }
             foreach (var item in salesOrderDispatchQtyDto)
             {
-                IEnumerable<SalesOrderItems>? salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
+                IEnumerable<SalesOrderItems>? salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
                 var orderItem = salesOrderItems.FirstOrDefault();
                 if (orderItem != null)
                 {
                     orderItem.BalanceQty = orderItem.BalanceQty + item.ReturnQty;
                     orderItem.DispatchQty -= item.ReturnQty;
                     _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+                }
+                else
+                {
+                    _logger.LogError($"Something went wrong inside ReturnInvoiceUpdateDispatchDetails action in SalesOrder Controller");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
                 }
             }
 
@@ -1288,9 +1312,29 @@ namespace Tips.SalesService.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> ReturnInvoiceUpdateDispatchDetails([FromBody] List<ReturnDOSalesOrderDispatchQtyDto> salesOrderDispatchQtyDto)
         {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            if (salesOrderDispatchQtyDto == null)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "SalesOrder object sent from the client is null.";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError("SalesOrder object sent from the client is null.");
+                return BadRequest(serviceResponse);
+            }
+
+            if (!ModelState.IsValid)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Invalid SalesOrder object sent from the client.";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError("Invalid SalesOrder object sent from the client.");
+                return BadRequest(serviceResponse);
+            }
             foreach (var item in salesOrderDispatchQtyDto)
             {
-                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
+                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
                 var orderItem = salesOrderItems.FirstOrDefault();
                 if (orderItem != null)
                 {
@@ -1301,6 +1345,15 @@ namespace Tips.SalesService.Api.Controllers
                         orderItem.StatusEnum = OrderStatus.Open;
                     }
                     _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+                }
+                else
+                {
+                    _logger.LogError($"Something went wrong inside ReturnInvoiceUpdateDispatchDetails action in SalesOrder Controller");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
                 }
             }
 
@@ -2165,6 +2218,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
                 soItemDetailBySOItemId.StatusEnum = OrderStatus.ShortClosed;
+                soItemDetailBySOItemId.BalanceQty = 0;
                 string result = await _salesOrderItemsRepository.UpdateSalesOrderItem(soItemDetailBySOItemId);
                 _salesOrderItemsRepository.SaveAsync();
 
@@ -2196,6 +2250,82 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside CloseSOItemSatusBySOItemId action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ShortCloseAllSalesOrderItemBySoId(int salesOrderId)
+        {
+            ServiceResponse<SalesOrderItemsDto> serviceResponse = new ServiceResponse<SalesOrderItemsDto>();
+
+            try
+            {
+                var salesOrderDetailBySOId = await _repository.GetSalesOrderById(salesOrderId);
+                if (salesOrderDetailBySOId == null)
+                {
+                    _logger.LogError($"SalesOrderItems with salesOrderId: {salesOrderId}, hasn't been found.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderItems with salesOrderId hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+                if (salesOrderDetailBySOId.SalesOrdersItems != null)
+                {
+                    foreach (var item in salesOrderDetailBySOId.SalesOrdersItems)
+                    {
+                        item.StatusEnum = OrderStatus.ShortClosed;
+                        item.BalanceQty = 0;
+                        string result = await _salesOrderItemsRepository.UpdateSalesOrderItem(item);
+                    }
+
+                    _salesOrderItemsRepository.SaveAsync();
+                }
+                else
+                {
+                    _logger.LogError($"SalesOrderItems is Null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderItems with salesOrderId hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+                //Update SalesOrder Table Status
+
+                var soItemOpenStatuscount = await _salesOrderItemsRepository.GetSOItemShortCloseCount(salesOrderId);
+
+                if (soItemOpenStatuscount != 0)
+                {
+                    var salesOrderDetails = await _repository.GetSalesOrderById(salesOrderId);
+                    salesOrderDetails.SOStatus = OrderStatus.ShortClosed;
+                    await _repository.UpdateSalesOrder(salesOrderDetails);
+                    _repository.SaveAsync();
+                }
+                else
+                {
+                    _logger.LogError($"SalesOrderItems not ShortClosed.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Not All SalesOrderItems  has been ShortClosed.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500,serviceResponse);
+                }
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "SalesOrderItems have been Shortclosed";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ShortCloseAllSalesOrderItemById action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;

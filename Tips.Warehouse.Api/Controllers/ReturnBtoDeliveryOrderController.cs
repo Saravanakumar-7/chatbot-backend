@@ -484,7 +484,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var returnBtoDeliveryOrderitemsDto = returnBtoDeliveryOrderPostDto.ReturnBtoDeliveryOrderItemsPostDtos;
                 //var getBtoNumber = returnBtoDeliveryOrderPostDto.BTONumber;
                 //var returnBtoNumberCount = await _repository.GetReturnBtoDeliveryOrderByBtoNo(getBtoNumber);
-
+                HttpStatusCode salesOrderUpdateStatusCode = HttpStatusCode.OK;
 
                 var returnBtoDeliveryOrderItemsDtoList = new List<ReturnBtoDeliveryOrderItems>();
 
@@ -744,7 +744,7 @@ namespace Tips.Warehouse.Api.Controllers
                 returnBtoDeliveryOrder.ReturnBtoDeliveryOrderItems = returnBtoDeliveryOrderItemsDtoList;
 
                 await _repository.CreateReturnBtoDeliveryOrder(returnBtoDeliveryOrder);
-                _repository.SaveAsync();
+                
 
 
                 //update balance qty and dispatch qty in sales order table for return bto concept
@@ -762,6 +762,24 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnDOUpdateDispatchDetails"), data);
 
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    salesOrderUpdateStatusCode = response.StatusCode;
+                }
+
+                if (salesOrderUpdateStatusCode == HttpStatusCode.OK)
+                {
+                    _repository.SaveAsync();
+                }
+                else
+                {
+                    _logger.LogError($"Something went wrong inside Create CreateReturnInvoice action: SalesOrder Service Calling");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Saving Failed";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
                 serviceResponse.Data = null;
                 serviceResponse.Message = " ReturnBTODeliveryOrder created Successfully";
                 serviceResponse.Success = true;

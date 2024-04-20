@@ -246,7 +246,7 @@ namespace Tips.Production.Api.Controllers
                         PartType = group.First().PartType,
                         UOM = group.First().UOM,
                         RequiredQty = group.Sum(item => item.RequiredQty),
-                        AvailableQty = group.First().AvailableQty,
+                        AvailableQty = 0,     //group.First().AvailableQty,
                         IssuedQty = group.Sum(item => item.IssuedQty),
                         Unit = group.First().Unit,
                         CreatedBy = group.First().CreatedBy,

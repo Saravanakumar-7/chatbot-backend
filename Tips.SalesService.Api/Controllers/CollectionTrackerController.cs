@@ -507,8 +507,8 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<CollectionTrackerByCustomerIdSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerByCustomerIdSPReport>>();
             try
             {
-                var CollectionTrackerByCustomerIdSPReportWithDate = await _repository.GetCollectionTrackerByCustomerIdSPReportWithDate(FromDate, ToDate);
-                if (CollectionTrackerByCustomerIdSPReportWithDate == null)
+                var collectionTrackerByCustomerIdSPReportWithDate = await _repository.GetCollectionTrackerByCustomerIdSPReportWithDate(FromDate, ToDate);
+                if (collectionTrackerByCustomerIdSPReportWithDate == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"CollectionTrackerByCustomerId hasn't been found.";
@@ -519,7 +519,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 else
                 {
-                    serviceResponse.Data = CollectionTrackerByCustomerIdSPReportWithDate;
+                    serviceResponse.Data = collectionTrackerByCustomerIdSPReportWithDate;
                     serviceResponse.Message = "Returned CollectionTrackerByCustomerId SPResport Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -582,8 +582,8 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<CollectionTrackerBySalesOrderNoSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerBySalesOrderNoSPReport>>();
             try
             {
-                var CollectionTrackerBySalesOrderNoSPReportWithDate = await _repository.GetCollectionTrackerBySalesOrderNoSPReportWithDate(FromDate, ToDate);
-                if (CollectionTrackerBySalesOrderNoSPReportWithDate == null)
+                var collectionTrackerBySalesOrderNoSPReportWithDate = await _repository.GetCollectionTrackerBySalesOrderNoSPReportWithDate(FromDate, ToDate);
+                if (collectionTrackerBySalesOrderNoSPReportWithDate == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"CollectionTrackerBySalesOrderNo hasn't been found.";
@@ -594,7 +594,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 else
                 {
-                    serviceResponse.Data = CollectionTrackerBySalesOrderNoSPReportWithDate;
+                    serviceResponse.Data = collectionTrackerBySalesOrderNoSPReportWithDate;
                     serviceResponse.Message = "Returned CollectionTrackerBySalesOrderNo SPResport Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -612,6 +612,155 @@ namespace Tips.SalesService.Api.Controllers
             }
 
         }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetCollectionTrackerWithCustomerWiseSPReportWithParam([FromBody] CollectionTrackerWithCustomerWiseSPReportDTO collectionTrackerWithCustomerWiseSPReportDTO)
 
+        {
+            ServiceResponse<IEnumerable<CollectionTrackerWithCustomerWiseSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerWithCustomerWiseSPReport>>();
+            try
+            {
+                var collectionTrackerWithCustomerWiseSPReportWithParam = await _repository.GetCollectionTrackerWithCustomerWiseSPReportWithParam(collectionTrackerWithCustomerWiseSPReportDTO.CustomerId);
+
+                if (collectionTrackerWithCustomerWiseSPReportWithParam == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CollectionTrackerWithCustomerWise SPResport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CollectionTrackerWithCustomerWise SPResport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = collectionTrackerWithCustomerWiseSPReportWithParam;
+                    serviceResponse.Message = "Returned CollectionTrackerWithCustomerWise SPResport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetCollectionTrackerWithCustomerWiseSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetCollectionTrackerWithCustomerWiseSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<CollectionTrackerWithCustomerWiseSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerWithCustomerWiseSPReport>>();
+            try
+            {
+                var collectionTrackerWithCustomerWiseSPReportWithDate = await _repository.GetCollectionTrackerWithCustomerWiseSPReportWithDate(FromDate, ToDate);
+                if (collectionTrackerWithCustomerWiseSPReportWithDate == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CollectionTrackerWithCustomerWise hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CollectionTrackerWithCustomerWise hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = collectionTrackerWithCustomerWiseSPReportWithDate;
+                    serviceResponse.Message = "Returned CollectionTrackerWithCustomerWise SPResportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetCollectionTrackerWithCustomerWiseSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetCollectionTrackerWithSalesOrderNoWiseSPReportWithParam([FromBody] CollectionTrackerWithSalesOrderNoWiseSPReportDTO collectionTrackerWithSalesOrderNoWiseSPReportDTO)
+
+        {
+            ServiceResponse<IEnumerable<CollectionTrackerWithSalesOrderNoWiseSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerWithSalesOrderNoWiseSPReport>>();
+            try
+            {
+                var collectionTrackerWithCustomerWiseSPReportWithParam = await _repository.GetCollectionTrackerWithSalesOrderNoWiseSPReportWithParam(collectionTrackerWithSalesOrderNoWiseSPReportDTO.SalesOrderNumber);
+
+                if (collectionTrackerWithCustomerWiseSPReportWithParam == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CollectionTrackerWithSalesOrderNoWise SPResport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CollectionTrackerWithSalesOrderNoWise SPResport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = collectionTrackerWithCustomerWiseSPReportWithParam;
+                    serviceResponse.Message = "Returned CollectionTrackerWithSalesOrderNoWise SPResport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetCollectionTrackerWithSalesOrderNoWiseSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetCollectionTrackerWithSalesOrderNoWiseSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<CollectionTrackerWithSalesOrderNoWiseSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerWithSalesOrderNoWiseSPReport>>();
+            try
+            {
+                var collectionTrackerWithCustomerWiseSPReportWithDate = await _repository.GetCollectionTrackerWithSalesOrderNoWiseSPReportWithDate(FromDate, ToDate);
+                if (collectionTrackerWithCustomerWiseSPReportWithDate == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CollectionTrackerWithSalesOrderNoWise hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CollectionTrackerWithSalesOrderNoWise hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = collectionTrackerWithCustomerWiseSPReportWithDate;
+                    serviceResponse.Message = "Returned CollectionTrackerWithSalesOrderNoWise SPResportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetCollectionTrackerWithSalesOrderNoWiseSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
     }
 }

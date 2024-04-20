@@ -136,7 +136,8 @@ namespace Tips.Production.Api.Repository
                                 .Select(x => new MaterialRequestIdNoDto()
                                 {
                                     Id = x.Id,
-                                    MRNumber = x.MRNumber
+                                    MRNumber = x.MRNumber,
+                                    ProjectNumber = x.ProjectNumber
                                 })
                               .ToListAsync();
 

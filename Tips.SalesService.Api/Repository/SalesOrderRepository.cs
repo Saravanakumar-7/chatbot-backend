@@ -815,6 +815,15 @@ namespace Tips.SalesService.Api.Repository
 
             return getSalesOrderDetailsBySOandItemNo;
         }
+        public async Task<IEnumerable<SalesOrderItems>> GetSalesOrderItemDetailsForReturnByIdandItemNo(string ItemNumber, int SalesOrderId)
+        {
+
+            var getSalesOrderDetailsBySOandItemNo = await _tipsSalesServiceDbContexts.SalesOrdersItems
+                 .Where(x => x.ItemNumber == ItemNumber && x.SalesOrderId == SalesOrderId)
+                          .ToListAsync();
+
+            return getSalesOrderDetailsBySOandItemNo;
+        }
 
         public async Task<IEnumerable<GetSalesOrderDetailsDto>> getSalesOrderDetailByProjectNoandItemNo(string ItemNo, string ProjectNo)
         {
@@ -859,6 +868,13 @@ namespace Tips.SalesService.Api.Repository
                                 .FirstOrDefaultAsync();
 
             return soItemDetailBySOItemId;
+        }
+        public async Task<int?> GetSOItemShortCloseCount(int soId)
+        {
+            var soItemStatusCount = _tipsSalesServiceDbContexts.SalesOrdersItems
+                                        .Where(x => x.SalesOrderId == soId && x.StatusEnum == OrderStatus.ShortClosed).Count();
+
+            return soItemStatusCount;
         }
         public async Task<int?> GetSOItemOpenStatusCount(int soId)
         {

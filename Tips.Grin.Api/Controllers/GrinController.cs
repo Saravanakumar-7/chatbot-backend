@@ -873,7 +873,15 @@ namespace Tips.Grin.Api.Controllers
                     }
 
                 }
-
+                else
+                {
+                    _logger.LogError($"Something went wrong inside Create CreateGrin action: Other Service Calling");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Saving Failed";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Grin Successfully Created";
                 serviceResponse.Success = true;

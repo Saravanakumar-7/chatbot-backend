@@ -1208,7 +1208,7 @@ namespace Tips.Warehouse.Api.Controllers
                         string result = await _inventoryRepository.UpdateInventory(inventoryDetails[i]);
 
                         /*********************************** Update data to Material Issue Tracker *************************/
-                        await UpdateDataToMaterialIssueTracker(item, inventoryDetails[i]);
+                        await UpdateDataToMaterialIssueTracker(item, inventoryDetails[i], lotNoWiseProducedQty);
                         /*********************************** End of Add data to Material Issue Tracker *************************/
 
                         if (producedQty <= 0)
@@ -1239,7 +1239,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        private async Task UpdateDataToMaterialIssueTracker(InventoryDtoForShopOrderConfirmation item, Inventory inventoryDetail)
+        private async Task UpdateDataToMaterialIssueTracker(InventoryDtoForShopOrderConfirmation item, Inventory inventoryDetail,decimal lotNoWiseProducedQty)
         {
             // Retrieve the existing entry from the repository based on the ShopOrderNumber, PartNumber, and LotNumber
 
@@ -1248,7 +1248,7 @@ namespace Tips.Warehouse.Api.Controllers
 
             if (materialIssueTrackerList != null || materialIssueTrackerList.Count > 0)
             {
-                decimal newConvertedToFgQty = item.NewConvertedToFgQty;
+                decimal newConvertedToFgQty = lotNoWiseProducedQty;
 
                 foreach (var materialIssueTrack in materialIssueTrackerList)
                 {
@@ -1307,15 +1307,8 @@ namespace Tips.Warehouse.Api.Controllers
                     if (inventoryDetails[i].Balance_Quantity <= issuedQty)
                     {
 
-                        inventoryDetails[i].Warehouse = "WIP";
-                        inventoryDetails[i].Location = "WIP";
-                        inventoryDetails[i].shopOrderNo = shopOrderNumber;
-                        inventoryDetails[i].IsStockAvailable = true;
+
                         lotNoWiseIssuedQty = balanceqty;
-                        /** Dont Change the Position of IssuedQty and BalanceQty Code in this Method .it should be always last ***********************/
-                        issuedQty -= balanceqty;
-                        balanceqty = 0;
-                         
 
                         InventoryTranction inventoryTransaction = new InventoryTranction();
                         inventoryTransaction.PartNumber = inventoryDetails[i].PartNumber;
@@ -1324,7 +1317,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTransaction.Description = inventoryDetails[i].Description;
                         inventoryTransaction.PartType = inventoryDetails[i].PartType;
                         inventoryTransaction.ProjectNumber = inventoryDetails[i].ProjectNumber;
-                        inventoryTransaction.Issued_Quantity = issuedQty;
+                        inventoryTransaction.Issued_Quantity = lotNoWiseIssuedQty;
                         inventoryTransaction.UOM = inventoryDetails[i].UOM;
                         inventoryTransaction.Issued_DateTime = DateTime.Now;
                         inventoryTransaction.ReferenceID = inventoryDetails[i].ReferenceID;
@@ -1342,8 +1335,21 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTransaction.shopOrderNo = shopOrderNumber;
 
                         await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransaction);
-                        
 
+                        ///*********************************** Add data to Material Issue Tracker *************************/
+                        ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = InsertDataToMaterialIssueTracker(dtoForMaterialIssue, inventoryDetails[i], lotNoWiseIssuedQty);
+                        int transactionId = await _materialIssueTrackerRepository.AddDataToMaterialIssueTracker(shopOrderMaterialIssueTracker);
+
+                        /*********************************** End of Add data to Material Issue Tracker *************************/
+
+                        inventoryDetails[i].Warehouse = "WIP";
+                        inventoryDetails[i].Location = "WIP";
+                        inventoryDetails[i].shopOrderNo = shopOrderNumber;
+                        inventoryDetails[i].IsStockAvailable = true;
+                        
+                        /** Dont Change the Position of IssuedQty and BalanceQty Code in this Method .it should be always last ***********************/
+                        issuedQty -= balanceqty;
+                        balanceqty = 0;
                     }
                     else
                     {
@@ -1383,8 +1389,12 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTransaction.shopOrderNo = shopOrderNumber;
 
                         await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransaction);
-                        
 
+                        ///*********************************** Add data to Material Issue Tracker *************************/
+                        ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = InsertDataToMaterialIssueTracker(dtoForMaterialIssue, inventoryDetails[i], lotNoWiseIssuedQty);
+                        int transactionId = await _materialIssueTrackerRepository.AddDataToMaterialIssueTracker(shopOrderMaterialIssueTracker);
+
+                        /*********************************** End of Add data to Material Issue Tracker *************************/
 
                         /******* Dont Change the Position of IssuedQty and BalanceQty 
                          * Code in this Method. it should be always last ***********************/
@@ -1394,11 +1404,11 @@ namespace Tips.Warehouse.Api.Controllers
 
                     string result = await _inventoryRepository.UpdateInventory(inventoryDetails[i]);
 
-                    ///*********************************** Add data to Material Issue Tracker *************************/
-                    ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = InsertDataToMaterialIssueTracker(dtoForMaterialIssue, inventoryDetails[i], lotNoWiseIssuedQty);
-                    int transactionId = await _materialIssueTrackerRepository.AddDataToMaterialIssueTracker(shopOrderMaterialIssueTracker);
+                    /////*********************************** Add data to Material Issue Tracker *************************/
+                    //ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = InsertDataToMaterialIssueTracker(dtoForMaterialIssue, inventoryDetails[i], lotNoWiseIssuedQty);
+                    //int transactionId = await _materialIssueTrackerRepository.AddDataToMaterialIssueTracker(shopOrderMaterialIssueTracker);
 
-                    /*********************************** End of Add data to Material Issue Tracker *************************/
+                    ///*********************************** End of Add data to Material Issue Tracker *************************/
 
                     if (issuedQty <= 0)
                     {

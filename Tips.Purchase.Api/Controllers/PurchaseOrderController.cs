@@ -3091,6 +3091,7 @@ namespace Tips.Purchase.Api.Controllers
                 string? reasonforShortClose = ReasonforShortClose;
                 poItemDetailByPoItemId.ReasonforShortClose = reasonforShortClose;
                 poItemDetailByPoItemId.PoStatus = PoStatus.ShortClosed;
+                poItemDetailByPoItemId.BalanceQty = 0;
                 string result = await _poItemsRepository.UpdatePOOrderItem(poItemDetailByPoItemId);
                 _poItemsRepository.SaveAsync();
 

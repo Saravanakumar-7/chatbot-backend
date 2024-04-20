@@ -24,6 +24,11 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<CollectionTrackerByCustomerIdSPReport>> GetCollectionTrackerByCustomerIdSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<CollectionTrackerBySalesOrderNoSPReport>> GetCollectionTrackerBySalesOrderNoSPReportWithParam(string CustomerId);
         Task<IEnumerable<CollectionTrackerBySalesOrderNoSPReport>> GetCollectionTrackerBySalesOrderNoSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<CollectionTrackerWithCustomerWiseSPReport>> GetCollectionTrackerWithCustomerWiseSPReportWithParam(string CustomerId);
+        Task<IEnumerable<CollectionTrackerWithCustomerWiseSPReport>> GetCollectionTrackerWithCustomerWiseSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<CollectionTrackerWithSalesOrderNoWiseSPReport>> GetCollectionTrackerWithSalesOrderNoWiseSPReportWithParam(string salesOrderNumber);
+        Task<IEnumerable<CollectionTrackerWithSalesOrderNoWiseSPReport>> GetCollectionTrackerWithSalesOrderNoWiseSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
 
     }
 }
+
