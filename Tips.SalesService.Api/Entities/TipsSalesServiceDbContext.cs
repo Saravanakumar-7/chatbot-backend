@@ -110,6 +110,8 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<SOMonthlyConsumptionSPReport> SOMonthlyConsumptionSPReports { get; set; }
         public DbSet<CollectionTrackerWithCustomerWiseSPReport> CollectionTrackerWithCustomerWiseSPReports { get; set; }
         public DbSet<CollectionTrackerWithSalesOrderNoWiseSPReport> CollectionTrackerWithSalesOrderNoWiseSPReports { get; set; }
+        public DbSet<RfqSalesOrderSPReport> RfqSalesOrderSPReports { get; set; }
+        public DbSet<ForecastSalesOrderSPReport> ForecastSalesOrderSPReports { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RecievableCustomer>().HasNoKey();
@@ -121,6 +123,8 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<SOMonthlyConsumptionSPReport>().HasNoKey();
             modelBuilder.Entity<CollectionTrackerWithCustomerWiseSPReport>().HasNoKey();
             modelBuilder.Entity<CollectionTrackerWithSalesOrderNoWiseSPReport>().HasNoKey();
+            modelBuilder.Entity<RfqSalesOrderSPReport>().HasNoKey();
+            modelBuilder.Entity<ForecastSalesOrderSPReport>().HasNoKey();
         }
 
     }

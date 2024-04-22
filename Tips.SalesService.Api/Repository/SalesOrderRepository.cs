@@ -143,7 +143,46 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
+        public async Task<IEnumerable<RfqSalesOrderSPReport>> GetRfqSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<RfqSalesOrderSPReport>()
+            .FromSqlInterpolated($"CALL RFQ_salesorder_withparameter_Report({CustomerName},{SalesOrderNumber},{KPN})")
+            .ToList();
 
+            return result;
+
+        }
+
+        public async Task<IEnumerable<RfqSalesOrderSPReport>> GetRfqSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<RfqSalesOrderSPReport>()
+                        .FromSqlInterpolated($"CALL RFQ_salesorder_withdate_Report({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<ForecastSalesOrderSPReport>> GetForecastSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<ForecastSalesOrderSPReport>()
+            .FromSqlInterpolated($"CALL Forecast_salesorder_with_parameter({CustomerName},{SalesOrderNumber},{KPN})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<ForecastSalesOrderSPReport>> GetForecastSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<ForecastSalesOrderSPReport>()
+                        .FromSqlInterpolated($"CALL Forecast_salesorder_with_date({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
         public async Task<IEnumerable<SOMonthlyConsumptionSPReport>> GetSOMonthlyConsumptionSPReportWithParam(string CustomerId)
         {
             var result = _tipsSalesServiceDbContext

@@ -1843,6 +1843,162 @@ namespace Tips.SalesService.Api.Controllers
 
         }
 
+      
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetRfqSalesOrderSPReportWithParam([FromBody] RfqSalesOrderSPResportDTO rfqSalesOrderSPResportDTO)
+
+        {
+            ServiceResponse<IEnumerable<RfqSalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderSPReport>>();
+            try
+            {
+                var products = await _repository.GetRfqSalesOrderSPReportWithParam(rfqSalesOrderSPResportDTO.CustomerName, rfqSalesOrderSPResportDTO.SalesOrderNumber,
+                                                                                                                        rfqSalesOrderSPResportDTO.KPN);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RfqSalesOrderSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqSalesOrderSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetRfqSalesOrderSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<RfqSalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderSPReport>>();
+            try
+            {
+                var products = await _repository.GetRfqSalesOrderSPReportWithDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RfqSalesOrderSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqSalesOrderSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetForecastSalesOrderSPReportWithParam([FromBody] ForecastSalesOrderSPResportDTO forecastSalesOrderSPResportDTO)
+
+        {
+            ServiceResponse<IEnumerable<ForecastSalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<ForecastSalesOrderSPReport>>();
+            try
+            {
+                var products = await _repository.GetForecastSalesOrderSPReportWithParam(forecastSalesOrderSPResportDTO.CustomerName,
+                                                                             forecastSalesOrderSPResportDTO.SalesOrderNumber, forecastSalesOrderSPResportDTO.KPN);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ForecastSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ForecastSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ForecastSalesOrderSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetForecastSalesOrderSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetForecastSalesOrderSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<ForecastSalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<ForecastSalesOrderSPReport>>();
+            try
+            {
+                var products = await _repository.GetForecastSalesOrderSPReportWithDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ForecastSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ForecastSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ForecastSalesOrderSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetForecastSalesOrderSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
         [HttpPost]
         public async Task<IActionResult> ExportSalesOrderSPReportToExcel([FromBody] SalesOrderSPResportDTO salesOrderSPReport)
         {
@@ -2317,7 +2473,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
                 serviceResponse.Data = null;
-                serviceResponse.Message = "SalesOrderItems have been Shortclosed";
+                serviceResponse.Message = "SalesOrder have been Shortclosed";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
