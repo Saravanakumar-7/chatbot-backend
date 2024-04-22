@@ -451,7 +451,7 @@ namespace Tips.Grin.Api.Controllers
                             inventory.Location = openGrinDetail.Location;
                             inventory.GrinNo = openGrinDetails.OpenGrinNumber;
                             inventory.GrinPartId = 0;
-                            inventory.PartType = openGrinParts.ItemType; // we have to take parttype from grinparts model;
+                            inventory.PartType = openGrinParts.ItemType; 
                             inventory.GrinMaterialType = "";
                             inventory.ReferenceID = Convert.ToString(openGrinParts.Id);
                             inventory.ReferenceIDFrom = "OpenGrin";
@@ -463,45 +463,35 @@ namespace Tips.Grin.Api.Controllers
                             var json = JsonConvert.SerializeObject(inventory);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
                             var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), data);
+
+                            //Create OpenGrin To InventoryTranction
+                            OGInventoryTranctionDto inventoryTranction = new OGInventoryTranctionDto();
+
+                            inventoryTranction.PartNumber = openGrinParts.ItemNumber;
+                            inventoryTranction.MftrPartNumber = openGrinParts.ItemNumber;
+                            inventoryTranction.Description = openGrinParts.Description;
+                            inventoryTranction.ProjectNumber = openGrinParts.ReferenceSONumber;
+                            inventoryTranction.Issued_Quantity = openGrinParts.Qty;
+                            inventoryTranction.IsStockAvailable = true;
+                            inventoryTranction.UOM = openGrinParts.UOM;
+                            inventoryTranction.Warehouse = openGrinDetail.Warehouse;
+                            inventoryTranction.From_Location = openGrinDetail.Location;
+                            inventoryTranction.TO_Location = openGrinDetail.Location;
+                            inventoryTranction.GrinNo = openGrinDetails.OpenGrinNumber;
+                            inventoryTranction.GrinPartId = 0;
+                            inventoryTranction.PartType = openGrinParts.ItemType; 
+                            inventoryTranction.GrinMaterialType = "";
+                            inventoryTranction.ReferenceID = Convert.ToString(openGrinParts.Id);
+                            inventoryTranction.ReferenceIDFrom = "OpenGrin";
+                            inventoryTranction.ShopOrderNo = "";
+
+
+                            var json1 = JsonConvert.SerializeObject(inventoryTranction);
+                            var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
+                            var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data1);
                         }
                     }
-                }
-
-                //Create OpenGrin To InventoryTranction
-
-                //if (openGrinPartsDtoList != null)
-                //{
-                //    foreach (var openGrinParts in openGrinPartsDtoList)
-                //    {
-                //        foreach (var openGrinDetail in openGrinParts.OpenGrinDetails)
-                //        {
-                //            OGInventoryTranctionDto inventoryTranction = new OGInventoryTranctionDto();
-
-                //            inventoryTranction.PartNumber = openGrinParts.ItemNumber;
-                //            inventoryTranction.MftrPartNumber = openGrinParts.ItemNumber;
-                //            inventoryTranction.Description = openGrinParts.Description;
-                //            inventoryTranction.ProjectNumber = openGrinParts.ReferenceSONumber;
-                //            inventoryTranction.Issued_Quantity = openGrinParts.Qty;
-                //            inventoryTranction.IsStockAvailable = true;
-                //            inventoryTranction.UOM = openGrinParts.UOM;
-                //            inventoryTranction.Warehouse = openGrinDetail.Warehouse;
-                //            inventoryTranction.From_Location = openGrinDetail.Location;
-                //            inventoryTranction.TO_Location = openGrinDetail.Location;
-                //            inventoryTranction.GrinNo = openGrinDetails.OpenGrinNumber;
-                //            inventoryTranction.GrinPartId = 0;
-                //            inventoryTranction.PartType = openGrinParts.ItemType; // we have to take parttype from grinparts model;
-                //            inventoryTranction.GrinMaterialType = "";
-                //            inventoryTranction.ReferenceID = Convert.ToString(openGrinParts.Id);
-                //            inventoryTranction.ReferenceIDFrom = "OpenGrin";
-                //            inventoryTranction.ShopOrderNo = "";
-
-
-                //            var json = JsonConvert.SerializeObject(inventoryTranction);
-                //            var data = new StringContent(json, Encoding.UTF8, "application/json");
-                //            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data);
-                //        }
-                //    }
-                //}
+                }     
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "OpenGrin Successfully Created";
