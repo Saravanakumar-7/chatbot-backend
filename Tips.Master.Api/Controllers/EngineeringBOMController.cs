@@ -12,7 +12,6 @@ using Repository;
 using NuGet.Packaging;
 using System.Net.Http;
 using Entities.Enums;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 using System;
 using MySqlX.XDevAPI.Common;
 using Microsoft.IdentityModel.Tokens;

@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Entities.Migrations;
 using System.Net;
 using Newtonsoft.Json;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 using Microsoft.AspNetCore.StaticFiles;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
