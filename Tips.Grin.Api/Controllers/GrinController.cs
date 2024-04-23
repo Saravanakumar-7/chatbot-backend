@@ -42,7 +42,7 @@ namespace Tips.Grin.Api.Controllers
 
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class GrinController : ControllerBase
     {
         private IGrinRepository _repository;
@@ -449,16 +449,16 @@ namespace Tips.Grin.Api.Controllers
                         grinPartsItemMasterEnggDto.ProjectNumbers = _mapper.Map<List<ProjectNumbersDto>>(GrinpartsDetails.ProjectNumbers);
 
 
-                        //var httpClient = new HttpClient();
+                        var httpClient = new HttpClient();
 
                         //// Include the token in the Authorization header
-                        //var tokenValue = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+                        var tokenValue = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
                         //if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
                         //{
                         //    var token = tokenValue.Substring(7);
                         //    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                         //}
-
+                        httpClient.DefaultRequestHeaders.Add("Authorization", tokenValue.ToString());
                         //Add ItemMasterEnggDetails in GrinParts
                         var ItemNumber = grinPartsItemMasterEnggDto.ItemNumber;
                         var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
