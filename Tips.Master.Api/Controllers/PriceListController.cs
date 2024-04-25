@@ -5,7 +5,7 @@ using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using System.Net;
-using static Org.BouncyCastle.Math.EC.ECCurve;
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

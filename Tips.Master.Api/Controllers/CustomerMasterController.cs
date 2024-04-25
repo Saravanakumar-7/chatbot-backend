@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using Entities.Migrations;
 using System.Net;
 using Newtonsoft.Json;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 using Microsoft.AspNetCore.StaticFiles;
 
 namespace Tips.Master.Api.Controllers

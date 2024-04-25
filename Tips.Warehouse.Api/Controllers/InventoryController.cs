@@ -1594,7 +1594,7 @@ namespace Tips.Warehouse.Api.Controllers
             wipInventory.PartType = inventoryDetail.PartType;
             wipInventory.GrinMaterialType = inventoryDetail.GrinMaterialType;
             wipInventory.ReferenceIDFrom = "Material Request";
-            wipInventory.ReferenceID = inventoryDetail.ReferenceID;
+           // wipInventory.ReferenceID = inventoryDetail.ReferenceID;
             wipInventory.CreatedOn = DateTime.Now;
             wipInventory.Balance_Quantity = issueQty;
             wipInventory.Warehouse = "WIP";
@@ -1676,7 +1676,7 @@ namespace Tips.Warehouse.Api.Controllers
                                 //create inventory transaction
 
                                 Inventory wipInventory = MRInsertWipDetailsInInventoryWhenIssuedQtyIsMore(invItem, issuedQty, shopOrderNumber);
-
+                                wipInventory.ReferenceID = mrNumber;
                                 await _inventoryRepository.CreateInventory(wipInventory);
 
                                 InventoryTranction inventoryTransaction = new InventoryTranction();
@@ -1689,8 +1689,8 @@ namespace Tips.Warehouse.Api.Controllers
                                 inventoryTransaction.Issued_Quantity = issuedQty;
                                 inventoryTransaction.UOM = invItem.UOM;
                                 inventoryTransaction.Issued_DateTime = DateTime.Now;
-                                inventoryTransaction.ReferenceID = invItem.ReferenceID;
-                                inventoryTransaction.ReferenceIDFrom = invItem.ReferenceIDFrom;
+                                inventoryTransaction.ReferenceID = mrNumber;
+                                inventoryTransaction.ReferenceIDFrom = "Material Request";
                                 inventoryTransaction.BOM_Version_No = 0;
                                 inventoryTransaction.From_Location = invItem.Location;
                                 inventoryTransaction.TO_Location = "WIP";
@@ -1713,7 +1713,7 @@ namespace Tips.Warehouse.Api.Controllers
                                 lotNoWiseIssuedQty = issuedQty;
                                  
                                 Inventory wipInventory = MRInsertWipDetailsInInventoryWhenIssuedQtyIsMore(invItem, issuedQty, shopOrderNumber);
-
+                                wipInventory.ReferenceID = mrNumber;
                                 await _inventoryRepository.CreateInventory(wipInventory);
 
                                 InventoryTranction inventoryTransaction = new InventoryTranction();
@@ -1726,8 +1726,8 @@ namespace Tips.Warehouse.Api.Controllers
                                 inventoryTransaction.Issued_Quantity = lotNoWiseIssuedQty;
                                 inventoryTransaction.UOM = invItem.UOM;
                                 inventoryTransaction.Issued_DateTime = DateTime.Now;
-                                inventoryTransaction.ReferenceID = invItem.ReferenceID;
-                                inventoryTransaction.ReferenceIDFrom = invItem.ReferenceIDFrom;
+                                inventoryTransaction.ReferenceID = mrNumber;
+                                inventoryTransaction.ReferenceIDFrom = "Material Request";
                                 inventoryTransaction.BOM_Version_No = 0;
                                 inventoryTransaction.From_Location = invItem.Location;
                                 inventoryTransaction.TO_Location = "WIP";
