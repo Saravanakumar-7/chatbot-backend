@@ -1,13 +1,16 @@
 ﻿using AutoMapper;
+using Azure;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
+using Mysqlx.Crud;
 using Newtonsoft.Json;
 using System.Net;
 using System.Text;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Repository;
 
 namespace Tips.Production.Api.Controllers
 {
@@ -53,6 +56,11 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogError("Invalid OQCBinning object sent from client.");
                     return BadRequest(serviceResponse);
                 }
+                HttpStatusCode GetInv = HttpStatusCode.OK;
+                HttpStatusCode GetItemMas = HttpStatusCode.OK;
+                HttpStatusCode UpdateInv = HttpStatusCode.OK;
+                HttpStatusCode CreateInv = HttpStatusCode.OK;
+                HttpStatusCode CreateInvTrans = HttpStatusCode.OK;
                 var postoqcbinning = _mapper.Map<OQCBinning>(oQCBinningPostDto);
                 List<OQCBinningLocation> oqcBinningLocationList = new List<OQCBinningLocation>();
                 foreach (var loc in postoqcbinning.oQCBinningLocations)
@@ -74,11 +82,16 @@ namespace Tips.Production.Api.Controllers
                 postoqcbinning.oQCBinningLocations = oqcBinningLocationList;
                 int cretedoqcbin = await _oQCBinningRepository.CreateOQCBinning(postoqcbinning);
                 _oQCBinningRepository.SaveAsync();
+
                 var httpClientHandler = new HttpClientHandler();
                 httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
                 var httpClient = new HttpClient(httpClientHandler);
                 var rfqApiUrl = _config["InventoryAPI"];
                 var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetInventoryStockByItemAndShopOrderNo?itemNumber={oQCBinningPostDto.ItemNumber}&shopordernumber={oQCBinningPostDto.ShopOrderNumber}");
+                if (rfqCustomerIdResponse.StatusCode != HttpStatusCode.OK)
+                {
+                    GetInv = rfqCustomerIdResponse.StatusCode;
+                }
                 var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
                 var vendorUOC = JsonConvert.DeserializeObject<OQCBinningInventoryDto>(rfqCustomerIdString);
                 var oqcbinninglocations = _mapper.Map<List<OQCBinningLocation>>(postoqcbinning.oQCBinningLocations);
@@ -106,6 +119,68 @@ namespace Tips.Production.Api.Controllers
                     var json = JsonConvert.SerializeObject(newinv);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
                     var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        CreateInv = response.StatusCode;
+                    }
+
+                    var ItemNumber = postoqcbinning.ItemNumber;
+                    var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
+                            "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
+                    if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                    {
+                        GetItemMas = itemMasterObjectResult.StatusCode;
+                    }
+                    _logger.LogInfo("getitemmasterdata" + Convert.ToString(itemMasterObjectResult));
+                    var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                    dynamic itemMatserObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                    dynamic itemMasterTranctionObject = itemMatserObjectData.data;
+
+                    //Adding SA in Inventory Table
+                    InventoryPostDto inventory = new InventoryPostDto();
+                    var ItemNo = itemMasterTranctionObject.itemNumber;
+                    var Desc = itemMasterTranctionObject.description;
+                    var uom = itemMasterTranctionObject.uom;
+                    var ProjectNo = itemMasterTranctionObject.projectNumber;
+                    var ItemType = itemMasterTranctionObject.itemType;
+
+                    InventoryTranctionDto inventoryTranction = new InventoryTranctionDto();
+                    inventoryTranction.PartNumber = ItemNo;
+                    inventoryTranction.MftrPartNumber = ItemNo;
+                    inventoryTranction.Description = Desc;
+                    inventoryTranction.ProjectNumber = ProjectNo;
+                    inventoryTranction.PartType = ItemType;
+                    inventoryTranction.Issued_Quantity = loc.Quantity;
+                    inventoryTranction.UOM = uom;
+                    inventoryTranction.BOM_Version_No = 0;
+                    inventoryTranction.Issued_DateTime = DateTime.Now;
+                    inventoryTranction.shopOrderNo = "";
+                    inventoryTranction.ReferenceID = postoqcbinning.Id.ToString();
+                    inventoryTranction.ReferenceIDFrom = "OQCBinning"; ;
+                    inventoryTranction.From_Location = loc.Location;
+                    inventoryTranction.TO_Location = loc.Location;
+                    inventoryTranction.Warehouse = loc.Warehouse; ;
+
+                    var json2 = JsonConvert.SerializeObject(inventoryTranction);
+                    var data2 = new StringContent(json2, Encoding.UTF8, "application/json");
+                    var response2 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data2);
+                    if (response2.StatusCode != HttpStatusCode.OK)
+                    {
+                        CreateInvTrans = response2.StatusCode;
+                    }
+                    if (GetInv == HttpStatusCode.OK && CreateInv == HttpStatusCode.OK && CreateInvTrans == HttpStatusCode.OK)
+                    {
+                        _oQCBinningRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside CreateOQCBinning action. Inventory update action Calling Other Service failed! ");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Internal server error";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
                 }
                 _logger.LogInfo("aftergettingdata");
                 serviceResponse.Data = null;

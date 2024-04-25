@@ -241,20 +241,32 @@ namespace Tips.Production.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var oQCCreate = _mapper.Map<OQC>(oQCPostDto);
+
+                await _oQCRepository.CreateOQC(oQCCreate);
+
+                _oQCRepository.SaveAsync();
                 //var shopOrderNumber = oQCCreate.ShopOrderNumber;
                 //var shopOrderDetails = await _shopOrderRepo.GetShopOrderDetailsByShopOrderNo(shopOrderNumber);
                 //shopOrderDetails.OqcQty = shopOrderDetails.OqcQty + oQCCreate.AcceptedQty;
                 //_shopOrderRepo.SaveAsync();  
+                HttpStatusCode CreateSAInv = HttpStatusCode.OK;
+                HttpStatusCode CreateSAInvTrans = HttpStatusCode.OK;
+                HttpStatusCode CreateSARejectInv = HttpStatusCode.OK;
+                HttpStatusCode CreateSARejectInvTrans = HttpStatusCode.OK;
+                HttpStatusCode CreateFGInv = HttpStatusCode.OK;
+                HttpStatusCode CreateFGInvTrans = HttpStatusCode.OK;
+                HttpStatusCode CreateFGRejectInv = HttpStatusCode.OK;
+                HttpStatusCode CreateFGRejectInvTrans = HttpStatusCode.OK;
+                HttpStatusCode GetSAItemMas = HttpStatusCode.OK;
+                HttpStatusCode GetFGItemMas = HttpStatusCode.OK;
 
-                await _oQCRepository.CreateOQC(oQCCreate);
-                _oQCRepository.SaveAsync();
 
                 var shopOrderDetails = await _shopOrderRepo.GetShopOrderByShopOrderNo(oQCPostDto.ShopOrderNumber);
                 shopOrderDetails.OqcQty = shopOrderDetails.OqcQty + oQCPostDto.AcceptedQty;
                 if (shopOrderDetails.TotalSOReleaseQty == shopOrderDetails.OqcQty) shopOrderDetails.OQCStatus = ShopOrderConformationStatus.FullyDone;
                 if (shopOrderDetails.TotalSOReleaseQty > shopOrderDetails.OqcQty) shopOrderDetails.OQCStatus = ShopOrderConformationStatus.PartiallyDone;
                 await _shopOrderRepo.UpdateShopOrder(shopOrderDetails);
-                _shopOrderRepo.SaveAsync();
+                
                 var SOConfirmations = await _shopOrderConfirmationRepository.GetAllShopOrderConfirmationByShopOrderNo(shopOrderDetails.ShopOrderNumber);
                 var OQCQty = shopOrderDetails.OqcQty;
                 foreach (var soCon in SOConfirmations)
@@ -264,7 +276,7 @@ namespace Tips.Production.Api.Controllers
                     if (soCon.WipConfirmedQty < OQCQty) { soCon.IsOQCDone = ShopOrderConformationStatus.FullyDone; OQCQty -= soCon.WipConfirmedQty; }
                     _shopOrderConfirmationRepository.UpdateShopOrderConfirmation(soCon);
                 }
-                _shopOrderConfirmationRepository.SaveAsync();
+              
                 var shopOrderItemDetail = shopOrderDetails?.ShopOrderItems?.FirstOrDefault();
                 var projectNo = shopOrderItemDetail?.ProjectNumber;
                 if (oQCCreate.ItemType == PartType.SA) //sa
@@ -272,11 +284,20 @@ namespace Tips.Production.Api.Controllers
                     var ItemNumber = oQCCreate.ItemNumber;
                     var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
                             "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
+                    if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                    {
+                        GetSAItemMas = itemMasterObjectResult.StatusCode;
+                    }
                     _logger.LogInfo("getitemmasterdata" + Convert.ToString(itemMasterObjectResult));
                     var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
                     dynamic itemMatserObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                     dynamic itemMasterTranctionObject = itemMatserObjectData.data;
+
+                    //Adding SA in Inventory Table
                     InventoryPostDto inventory = new InventoryPostDto();
+                    var ItemNo = itemMasterTranctionObject.itemNumber;
+                    var Desc = itemMasterTranctionObject.description;
+                    var uom = itemMasterTranctionObject.uom;
 
                     inventory.PartNumber = itemMasterTranctionObject.itemNumber;
                     inventory.MftrPartNumber = itemMasterTranctionObject.itemNumber;
@@ -296,14 +317,15 @@ namespace Tips.Production.Api.Controllers
                     inventory.ReferenceIDFrom = "Final OQC";
                     inventory.ShopOrderNo = oQCCreate.ShopOrderNumber;
 
-
-
                     _logger.LogInfo("getitemmasterdata" + Convert.ToString(inventory));
                     var json = JsonConvert.SerializeObject(inventory);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
                     var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
-
-
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        CreateSAInv = response.StatusCode;
+                    }
+                    //Adding Rejected in Inventory Table
                     InventoryPostDto inventory1 = new InventoryPostDto();
 
                     inventory1.PartNumber = itemMasterTranctionObject.itemNumber;
@@ -328,7 +350,63 @@ namespace Tips.Production.Api.Controllers
                     var json1 = JsonConvert.SerializeObject(inventory1);
                     var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
                     var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
+                    if (response1.StatusCode != HttpStatusCode.OK)
+                    {
+                        CreateSARejectInv = response1.StatusCode;
+                    }
+                    //Adding SA in InventoryTranction Table
+                    InventoryTranctionDto inventoryTranction = new InventoryTranctionDto();
 
+                    inventoryTranction.PartNumber = ItemNo;
+                    inventoryTranction.MftrPartNumber = ItemNo;
+                    inventoryTranction.Description = Desc;
+                    inventoryTranction.ProjectNumber = projectNo;
+                    inventoryTranction.PartType = oQCCreate.ItemType;
+                    inventoryTranction.Issued_Quantity = oQCCreate.AcceptedQty;
+                    inventoryTranction.UOM = uom;
+                    inventoryTranction.BOM_Version_No = 0;
+                    inventoryTranction.Issued_DateTime = DateTime.Now;
+                    inventoryTranction.shopOrderNo = oQCCreate.ShopOrderNumber;
+                    inventoryTranction.ReferenceID = oQCCreate.Id.ToString();
+                    inventoryTranction.ReferenceIDFrom = "Final OQC"; ;
+                    inventoryTranction.From_Location = "SA";
+                    inventoryTranction.TO_Location = "SA";
+                    inventoryTranction.Warehouse = "SA";
+
+                    var json2 = JsonConvert.SerializeObject(inventoryTranction);
+                    var data2 = new StringContent(json2, Encoding.UTF8, "application/json");
+                    var response2 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data2);
+                    if (response2.StatusCode != HttpStatusCode.OK)
+                    {
+                        CreateSAInvTrans = response2.StatusCode;
+                    }
+
+                    //Adding Rejected Item in InventoryTranction Table
+                    InventoryTranctionDto inventoryTranction1 = new InventoryTranctionDto();
+
+                    inventoryTranction1.PartNumber = ItemNo;
+                    inventoryTranction1.MftrPartNumber = ItemNo;
+                    inventoryTranction1.Description = Desc;
+                    inventoryTranction1.ProjectNumber = projectNo;
+                    inventoryTranction1.PartType = oQCCreate.ItemType;
+                    inventoryTranction1.Issued_Quantity = oQCCreate.RejectedQty;
+                    inventoryTranction1.UOM = uom;
+                    inventoryTranction1.BOM_Version_No = 0;
+                    inventoryTranction1.Issued_DateTime = DateTime.Now;
+                    inventoryTranction1.shopOrderNo = oQCCreate.ShopOrderNumber;
+                    inventoryTranction1.ReferenceID = oQCCreate.Id.ToString() + "-R";
+                    inventoryTranction1.ReferenceIDFrom = "Final OQC"; ;
+                    inventoryTranction1.From_Location = "Reject";
+                    inventoryTranction1.TO_Location = "Reject";
+                    inventoryTranction1.Warehouse = "Reject";
+
+                    var json4 = JsonConvert.SerializeObject(inventoryTranction1);
+                    var data4 = new StringContent(json4, Encoding.UTF8, "application/json");
+                    var response4 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data4);
+                    if (response4.StatusCode != HttpStatusCode.OK)
+                    {
+                        CreateSARejectInvTrans = response4.StatusCode;
+                    }
 
                 }
                 else
@@ -336,7 +414,10 @@ namespace Tips.Production.Api.Controllers
                     var ItemNumber = oQCCreate.ItemNumber;
                     var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
                             "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
-
+                    if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                    {
+                        GetFGItemMas = itemMasterObjectResult.StatusCode;
+                    }
                     var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
                     dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                     dynamic itemMasterTranctionObject = itemMasterObjectData.data;
@@ -366,12 +447,10 @@ namespace Tips.Production.Api.Controllers
                     var json = JsonConvert.SerializeObject(inventory);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
                     var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
-
-
-                    //var json = JsonConvert.SerializeObject(inventory);
-                    //var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
-
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        CreateFGInv = response.StatusCode;
+                    }
 
                     // For Rejected Item Store
                     InventoryPostDto inventory1 = new InventoryPostDto();
@@ -395,18 +474,87 @@ namespace Tips.Production.Api.Controllers
                     inventory1.ShopOrderNo = oQCCreate.ShopOrderNumber;
 
                     _logger.LogInfo("getitemmasterdata" + Convert.ToString(inventory1));
-                    //var json1 = JsonConvert.SerializeObject(inventory1);
-                    //var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
-                    //var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
-
                     var json1 = JsonConvert.SerializeObject(inventory1);
                     var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
                     var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
+                    if (response1.StatusCode != HttpStatusCode.OK)
+                    {
+                        CreateFGRejectInv = response1.StatusCode;
+                    }
+                    //Adding FG in InventoryTranction Table
+                    InventoryTranctionDto inventoryTranction = new InventoryTranctionDto();
 
+                    inventoryTranction.PartNumber = ItemNo;
+                    inventoryTranction.MftrPartNumber = ItemNo;
+                    inventoryTranction.Description = Desc;
+                    inventoryTranction.ProjectNumber = projectNo;
+                    inventoryTranction.PartType = oQCCreate.ItemType;
+                    inventoryTranction.Issued_Quantity = oQCCreate.AcceptedQty;
+                    inventoryTranction.UOM = uom;
+                    inventoryTranction.BOM_Version_No = 0;
+                    inventoryTranction.Issued_DateTime = DateTime.Now;
+                    inventoryTranction.shopOrderNo = oQCCreate.ShopOrderNumber;
+                    inventoryTranction.ReferenceID = oQCCreate.Id.ToString();
+                    inventoryTranction.GrinPartId = oQCCreate.Id;
+                    inventoryTranction.GrinMaterialType = "Issue";
+                    inventoryTranction.ReferenceIDFrom = "Final OQC"; 
+                    inventoryTranction.From_Location = "FG";
+                    inventoryTranction.TO_Location = "FG";
+                    inventoryTranction.Warehouse = "FG";
 
+                    var json2 = JsonConvert.SerializeObject(inventoryTranction);
+                    var data2 = new StringContent(json2, Encoding.UTF8, "application/json");
+                    var response2 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data2);
+                    if (response2.StatusCode != HttpStatusCode.OK)
+                    {
+                        CreateFGInvTrans = response2.StatusCode;
+                    }
+
+                    //Adding Rejected Item in InventoryTranction Table
+                    InventoryTranctionDto inventoryTranction1 = new InventoryTranctionDto();
+
+                    inventoryTranction1.PartNumber = ItemNo;
+                    inventoryTranction1.MftrPartNumber = ItemNo;
+                    inventoryTranction1.Description = Desc;
+                    inventoryTranction1.ProjectNumber = projectNo;
+                    inventoryTranction1.PartType = oQCCreate.ItemType;
+                    inventoryTranction1.Issued_Quantity = oQCCreate.RejectedQty;
+                    inventoryTranction1.UOM = uom;
+                    inventoryTranction1.BOM_Version_No = 0;
+                    inventoryTranction1.Issued_DateTime = DateTime.Now;
+                    inventoryTranction1.shopOrderNo = oQCCreate.ShopOrderNumber;
+                    inventoryTranction1.GrinPartId = oQCCreate.Id;
+                    inventoryTranction1.ReferenceID = oQCCreate.Id.ToString() + "-R";
+                    inventoryTranction1.ReferenceIDFrom = "Final OQC"; ;
+                    inventoryTranction1.From_Location = "Reject";
+                    inventoryTranction1.TO_Location = "Reject";
+                    inventoryTranction1.Warehouse = "Scrap";
+
+                    var json4 = JsonConvert.SerializeObject(inventoryTranction1);
+                    var data4 = new StringContent(json4, Encoding.UTF8, "application/json");
+                    var response4 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data4);
+                    if (response4.StatusCode != HttpStatusCode.OK)
+                    {
+                        CreateFGRejectInvTrans = response4.StatusCode;
+                    }
                 }
                 _logger.LogInfo("aftergettingdata");
-
+                if (CreateSAInv == HttpStatusCode.OK && CreateSARejectInv == HttpStatusCode.OK && CreateSAInvTrans == HttpStatusCode.OK && CreateSARejectInvTrans == HttpStatusCode.OK
+                    && CreateFGInv == HttpStatusCode.OK && CreateFGRejectInv == HttpStatusCode.OK && CreateFGInvTrans == HttpStatusCode.OK
+                    && CreateFGRejectInvTrans == HttpStatusCode.OK && GetSAItemMas == HttpStatusCode.OK && GetFGItemMas == HttpStatusCode.OK)
+                {
+                    _shopOrderRepo.SaveAsync();
+                    _shopOrderConfirmationRepository.SaveAsync();
+                }
+                else
+                {
+                    _logger.LogError($"Something went wrong inside CreateOQC action. Inventory update action Other Service Calling  failed! ");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Internal server error";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "OQC Created Successfully";

@@ -163,9 +163,9 @@ namespace Tips.Production.Api.Controllers
 
                 //Update InventoryTranction Code 
 
-                var jsons = JsonConvert.SerializeObject(shopOrderConfirmationPostDto.shopOrderItemConfirmations);
-                var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                var result = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "UpdateInventoryTranctionOnShopOrderConfirmation"), datas);
+                //var jsons = JsonConvert.SerializeObject(shopOrderConfirmationPostDto.shopOrderItemConfirmations);
+                //var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                //var result = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "UpdateInventoryTranctionOnShopOrderConfirmation"), datas);
 
                 //var inventoryResponceString = await response.Content.ReadAsStringAsync();
                 //dynamic inventoryResponceData = JsonConvert.DeserializeObject(inventoryResponceString);

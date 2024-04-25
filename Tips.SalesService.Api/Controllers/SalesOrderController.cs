@@ -823,7 +823,7 @@ namespace Tips.SalesService.Api.Controllers
                             scheduleDateHistory.Quantity = scheduleDateDetial.Quantity;
                             scheduleDateHistory.SalesOrderHistoriesId = salesOrderHistory.Id;
 
-                            var ScheduleDateHistories = _mapper.Map<ScheduleDateHistory>(salesOrderHistory);
+                            var ScheduleDateHistories = _mapper.Map<ScheduleDateHistory>(scheduleDateHistory);
                             await _scheduleDateHistoryRepository.CreateScheduleDateHistory(ScheduleDateHistories);
                         }
 

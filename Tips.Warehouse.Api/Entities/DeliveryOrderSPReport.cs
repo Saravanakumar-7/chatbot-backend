@@ -14,8 +14,8 @@ namespace Tips.Warehouse.Api.Entities
         public string? ProductType { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? OrderType { get; set; }
-        public string? Location { get; set; }
         public string? Warehouse { get; set; }
+        public string? Location { get; set; }
         public string? ProjectNumber {  get; set; }
         public string? IssuedTo { get; set; }
         public string? IssuedBy { get; set; }

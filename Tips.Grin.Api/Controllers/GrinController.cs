@@ -820,6 +820,7 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 var result = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdatePoStatus"), datass);
+
                 if (responses.StatusCode == HttpStatusCode.OK && result.StatusCode == HttpStatusCode.OK && createinvTrancResp == HttpStatusCode.OK && createinvResp == HttpStatusCode.OK)
                 {
                     _repository.SaveAsync();

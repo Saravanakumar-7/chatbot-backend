@@ -152,7 +152,7 @@ namespace Tips.Warehouse.Api.Controllers
 
         // POST api/<InventoryTranctionController>
         [HttpPost]
-            public IActionResult CreateInventoryTranction([FromBody] InventoryTranctionDtoPost inventoryTranctionDtoPost)
+            public async Task<IActionResult> CreateInventoryTranction([FromBody] InventoryTranctionDtoPost inventoryTranctionDtoPost)
             {
                 ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
 
