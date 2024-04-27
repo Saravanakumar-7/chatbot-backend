@@ -9,13 +9,13 @@ namespace Contracts
 {
     public interface IRepositoryWrapperForMaster
     {
- 
-        ILeadTimeRepository leadTimeRepository { get; }
- 
-        IFileUploadRepository FileUploadRepository { get; } 
 
- IUnitRepository unitRepository { get; }
-    IImageUploadRepository ImageUploadRepository { get; }
+        ILeadTimeRepository leadTimeRepository { get; }
+
+        IFileUploadRepository FileUploadRepository { get; }
+        IEmailTemplateRepository EmailTemplateRepository { get; }
+        IUnitRepository unitRepository { get; }
+        IImageUploadRepository ImageUploadRepository { get; }
         IUserRepository userRepository { get; }
         ILeadWebsiteRepository leadWebsiteRepository { get; }
         IStageOfConstructionRepository StageOfConstructionRepository { get; }
@@ -36,7 +36,7 @@ namespace Contracts
 
         IUOMRepository UOMRepository { get; }
         IUOCRepository UOCRepository { get; }
-        ICommodityRepository CommodityRepository{ get; }
+        ICommodityRepository CommodityRepository { get; }
         ILocationsRepository LocationsRepository { get; }
 
         ICompanyMasterRepository CompanyMasterRepository { get; }
@@ -74,7 +74,7 @@ namespace Contracts
 
         IVendorContactRepository VendorContactRepository { get; }
 
-        IVendorAddressRepository VendorAddressRepository { get; }   
+        IVendorAddressRepository VendorAddressRepository { get; }
 
         IVendorBankingRepository VendorBankingRepository { get; }
 
@@ -95,9 +95,9 @@ namespace Contracts
 
         IEnggBomChildItemRepository EnggBomChildItemRepository { get; }
 
-        IEnggBomNREConsumableRepository EnggBomNREConsumableRepository { get; } 
+        IEnggBomNREConsumableRepository EnggBomNREConsumableRepository { get; }
 
-        IEnggBomRepository EnggBomRepository { get; } 
+        IEnggBomRepository EnggBomRepository { get; }
         IPartTypesRepository partTypesRepository { get; }
         ILeadRepository LeadRepository { get; }
         IDemoStatusRepository DemoStatusRepository { get; }
@@ -108,7 +108,7 @@ namespace Contracts
         ISecondarySourceRepository secondarySourceRepository { get; }
 
         ISourceRepository sourceRepository { get; }
-        
+
         IReleaseEnggBomRepository ReleaseEnggBomRepository { get; }
         IReleaseCostBomRepository ReleaseCostBomRepository { get; }
         IReleaseProductBomRepository ReleaseProductBomRepository { get; }
@@ -116,13 +116,13 @@ namespace Contracts
         IEnggBomGroupRepository EnggBomGroupRepository { get; }
         IEnggCustomFieldRepository EnggCustomFieldRepository { get; }
 
-         IProductTypeRepository ProductTypeRepository { get; }
+        IProductTypeRepository ProductTypeRepository { get; }
         ITypeSolutionRepository TypeSolutionRepository { get; }
 
         IRoomNameRepository RoomNameRepository { get; }
 
         ICityRepository CityRepository { get; }
-        IBHKRepository BHKRepository { get; } 
+        IBHKRepository BHKRepository { get; }
         ILightningDesignerRepository LightningDesignerRepository { get; }
         IPmcContractorRepository PmcContractorRepository { get; }
         IStateRepository StateRepository { get; }
@@ -130,7 +130,7 @@ namespace Contracts
         IProjectNameRepository ProjectNameRepository { get; }
         ISourceDetailsRepository SourceDetailsRepository { get; }
         ISFTRepository SFTRepository { get; }
-         ITypeOfHomeRepository TypeOfHomeRepository { get; }
+        ITypeOfHomeRepository TypeOfHomeRepository { get; }
         IRoleRepository RoleRepository { get; }
         IRoleAccessRepository RoleAccessRepository { get; }
         IRegistrationFormRepository RegistrationFormRepository { get; }
@@ -150,7 +150,7 @@ namespace Contracts
         ITypeOfRoomRepository TypeOfRoomRepository { get; }
         IConvertionrateRepository ConvertionrateRepository { get; }
         IEnggChildItemsRepository EnggChildItemsRepository { get; }
-        IWeightedAvgRateRepository WeightedAvgRateRepository {  get; }
+        IWeightedAvgRateRepository WeightedAvgRateRepository { get; }
         void SaveAsync();
     }
 }

@@ -508,6 +508,7 @@ namespace Tips.Master.Api
             CreateMap<GetBomQuantityDto, GetBomQuantityDto>().ReverseMap();
 
             CreateMap<WeightedAvgRate, WeightedAvgRateDto>().ReverseMap();
+            CreateMap<EmailTemplate, EmailTemplateDto>().ReverseMap();
 
         }
     }
