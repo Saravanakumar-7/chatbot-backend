@@ -2096,7 +2096,201 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> ExportSalesOrderRFQSPReportToExcel([FromBody] RfqSalesOrderSPResportDTO salesOrderSPReport)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var salesOrderSPReportDetails = await _repository.GetRfqSalesOrderSPReportWithParam(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN);
 
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(1).SetCellValue("Customer ID");
+                headerRow.CreateCell(2).SetCellValue("Customer Name");
+                headerRow.CreateCell(3).SetCellValue("Lead ID");
+                headerRow.CreateCell(4).SetCellValue("Order Type");
+                headerRow.CreateCell(5).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(6).SetCellValue("Product Type");
+                headerRow.CreateCell(7).SetCellValue("Material Group");
+                headerRow.CreateCell(8).SetCellValue("Item Type");
+                headerRow.CreateCell(9).SetCellValue("Sales Person");
+                headerRow.CreateCell(10).SetCellValue("SO Date");
+                headerRow.CreateCell(11).SetCellValue("KPN");
+                headerRow.CreateCell(12).SetCellValue("KPN Description");
+                headerRow.CreateCell(13).SetCellValue("UOC");
+                headerRow.CreateCell(14).SetCellValue("UOM");
+                headerRow.CreateCell(15).SetCellValue("Price List");
+                headerRow.CreateCell(16).SetCellValue("Unit Price");
+                headerRow.CreateCell(17).SetCellValue("Basic Amount");
+                headerRow.CreateCell(18).SetCellValue("DiscountType");
+                headerRow.CreateCell(19).SetCellValue("Discount");
+                headerRow.CreateCell(20).SetCellValue("SGST");
+                headerRow.CreateCell(21).SetCellValue("CGST");
+                headerRow.CreateCell(22).SetCellValue("IGST");
+                headerRow.CreateCell(23).SetCellValue("UTGST");
+                headerRow.CreateCell(24).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(25).SetCellValue("Total Amount");
+                headerRow.CreateCell(26).SetCellValue("Order Qty");
+                headerRow.CreateCell(27).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(28).SetCellValue("Balance Qty");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(1).SetCellValue(item.CustomerId);
+                    row.CreateCell(2).SetCellValue(item.CustomerName);
+                    row.CreateCell(3).SetCellValue(item.LeadId);
+                    row.CreateCell(4).SetCellValue(item.OrderType);
+                    row.CreateCell(5).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(6).SetCellValue(item.ProductType);
+                    row.CreateCell(7).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(8).SetCellValue(item.ItemType); // Assuming ItemType is nullable int
+                    row.CreateCell(9).SetCellValue(item.SalesPerson);
+                    row.CreateCell(10).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(11).SetCellValue(item.KPN);
+                    row.CreateCell(12).SetCellValue(item.KPNDescription);
+                    row.CreateCell(13).SetCellValue(item.UOC);
+                    row.CreateCell(14).SetCellValue(item.UOM);
+                    row.CreateCell(15).SetCellValue(item.PriceList);
+                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(17).SetCellValue(Convert.ToDouble(item.BasicAmount)); // Assuming BasicAmount is decimal
+                    row.CreateCell(18).SetCellValue(item.DiscountType);
+                    row.CreateCell(19).SetCellValue(item.Discount);
+                    row.CreateCell(20).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
+                    row.CreateCell(21).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                // Return appropriate error response to the client
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportSalesOrderForecastSPReportToExcel([FromBody] ForecastSalesOrderSPResportDTO salesOrderSPReport)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var salesOrderSPReportDetails = await _repository.GetForecastSalesOrderSPReportWithParam(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(1).SetCellValue("Customer ID");
+                headerRow.CreateCell(2).SetCellValue("Customer Name");
+                headerRow.CreateCell(3).SetCellValue("Lead ID");
+                headerRow.CreateCell(4).SetCellValue("Order Type");
+                headerRow.CreateCell(5).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(6).SetCellValue("Product Type");
+                headerRow.CreateCell(7).SetCellValue("Material Group");
+                headerRow.CreateCell(8).SetCellValue("Item Type");
+                headerRow.CreateCell(9).SetCellValue("Sales Person");
+                headerRow.CreateCell(10).SetCellValue("SO Date");
+                headerRow.CreateCell(11).SetCellValue("KPN");
+                headerRow.CreateCell(12).SetCellValue("KPN Description");
+                headerRow.CreateCell(13).SetCellValue("UOC");
+                headerRow.CreateCell(14).SetCellValue("UOM");
+                headerRow.CreateCell(15).SetCellValue("Price List");
+                headerRow.CreateCell(16).SetCellValue("Unit Price");
+                headerRow.CreateCell(17).SetCellValue("Basic Amount");
+                headerRow.CreateCell(18).SetCellValue("DiscountType");
+                headerRow.CreateCell(19).SetCellValue("Discount");
+                headerRow.CreateCell(20).SetCellValue("SGST");
+                headerRow.CreateCell(21).SetCellValue("CGST");
+                headerRow.CreateCell(22).SetCellValue("IGST");
+                headerRow.CreateCell(23).SetCellValue("UTGST");
+                headerRow.CreateCell(24).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(25).SetCellValue("Total Amount");
+                headerRow.CreateCell(26).SetCellValue("Order Qty");
+                headerRow.CreateCell(27).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(28).SetCellValue("Balance Qty");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(1).SetCellValue(item.CustomerId);
+                    row.CreateCell(2).SetCellValue(item.CustomerName);
+                    row.CreateCell(3).SetCellValue(item.LeadId);
+                    row.CreateCell(4).SetCellValue(item.OrderType);
+                    row.CreateCell(5).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(6).SetCellValue(item.ProductType);
+                    row.CreateCell(7).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(8).SetCellValue(item.ItemType); // Assuming ItemType is nullable int
+                    row.CreateCell(9).SetCellValue(item.SalesPerson);
+                    row.CreateCell(10).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(11).SetCellValue(item.KPN);
+                    row.CreateCell(12).SetCellValue(item.KPNDescription);
+                    row.CreateCell(13).SetCellValue(item.UOC);
+                    row.CreateCell(14).SetCellValue(item.UOM);
+                    row.CreateCell(15).SetCellValue(item.PriceList);
+                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(17).SetCellValue(Convert.ToDouble(item.BasicAmount)); // Assuming BasicAmount is decimal
+                    row.CreateCell(18).SetCellValue(item.DiscountType);
+                    row.CreateCell(19).SetCellValue(item.Discount);
+                    row.CreateCell(20).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
+                    row.CreateCell(21).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                // Return appropriate error response to the client
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetReceivableReportsWithCustomerID(string CustomerId)

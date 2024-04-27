@@ -1048,12 +1048,12 @@ namespace Tips.Purchase.Api.Repository
             return pendingPOApprovalIINameList;
         }
 
-        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParam(string VendorName, string PONumber, string PartNumber)
+        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParam(string VendorName, string PONumber, string itemNumber)
         {
 
             var result = _tipsPurchaseDbContext
             .Set<PurchaseOrderSPReport>()
-            .FromSqlInterpolated($"CALL Purchase_Order_withparameter({VendorName},{PONumber},{PartNumber})")
+            .FromSqlInterpolated($"CALL Purchase_Order_withparameter({VendorName},{PONumber},{itemNumber})")
             .ToList();
 
             return result;
@@ -1341,33 +1341,38 @@ namespace Tips.Purchase.Api.Repository
             PoStatus[] status = { PoStatus.Open, PoStatus.PartiallyClosed };
 
             IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
-                                   .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && 
-                                   ( x.ApprovalCount == 4 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == true )||
-                                   (x.ApprovalCount == 2 && x.POApprovalI == true && x.POApprovalII == true))
-                                   .Select(x => new PurchaseOrderIdNameListDto()
-                                   {
-                                       Id = x.Id,
-                                       PONumber = x.PONumber
-                                   }).ToListAsync();
+                                     .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) &&
+                                     (
+                                        (x.ApprovalCount == 4 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == true) ||
+                                        (x.ApprovalCount == 2 && x.POApprovalI == true && x.POApprovalII == true)
+                                     )
+                                )
+                                    .Select(x => new PurchaseOrderIdNameListDto()
+                                    {
+                                             Id = x.Id,
+                                             PONumber = x.PONumber
+                                    }).ToListAsync();
 
             return pONameListbyVendorId;
-            //var poApprovalCount = await _tipsPurchaseDbContext.PurchaseOrders
+
+            //var poDetails = await _tipsPurchaseDbContext.PurchaseOrders
             //                                   .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus))
-            //                                   .Select(x => x.ApprovalCount).ToListAsync();
-            //IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = null;
-            //foreach (var approvalCount in poApprovalCount)
+            //                                   .ToListAsync();
+
+            //IEnumerable < PurchaseOrderIdNameListDto> pONameListbyVendorId = null;
+            //foreach (var poCount in poDetails)
             //{
-            //    if (approvalCount == 4)
+            //    if (poCount.ApprovalCount == 4)
             //    {
-            //         pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
-            //                       .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.POApprovalIV == true)
-            //                       .Select(x => new PurchaseOrderIdNameListDto()
-            //                       {
-            //                           Id = x.Id,
-            //                           PONumber = x.PONumber
-            //                       }).ToListAsync();
+            //        pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
+            //                      .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.POApprovalIV == true)
+            //                      .Select(x => new PurchaseOrderIdNameListDto()
+            //                      {
+            //                          Id = x.Id,
+            //                          PONumber = x.PONumber
+            //                      }).ToListAsync();
             //    }
-            //    else if(approvalCount == 2)
+            //    else if (poCount.ApprovalCount == 2)
             //    {
             //        pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
             //                       .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.POApprovalII == true)
@@ -1378,6 +1383,7 @@ namespace Tips.Purchase.Api.Repository
             //                       }).ToListAsync();
             //    }
             //}
+            //return pONameListbyVendorId;
 
         }
 

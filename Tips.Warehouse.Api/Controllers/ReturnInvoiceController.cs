@@ -226,7 +226,7 @@ namespace Tips.Warehouse.Api.Controllers
                         ReturnInvoiceItem returnInvoiceItems = _mapper.Map<ReturnInvoiceItem>(returnInvoiceItemDto[i]);
                         returnInvoiceItems.QtyDistribution = _mapper.Map<List<ReturnInvoiceItemQtyDistribution>>(returnInvoiceItemDto[i].QtyDistribution);
                         returnInvoiceItems.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
-                        returnInvoiceItems.InvoicedQty *= -1;
+                        returnInvoiceItems.ReturnQty *= -1;
                         returnInvoiceItemsList.Add(returnInvoiceItems);
 
                         //update Dispatch Qty in Bto Delivery Order Table

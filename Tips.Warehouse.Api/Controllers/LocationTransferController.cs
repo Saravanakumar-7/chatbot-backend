@@ -13,6 +13,7 @@ using Tips.Warehouse.Api.Repository;
 using Microsoft.EntityFrameworkCore;
 using static Org.BouncyCastle.Math.EC.ECCurve;
 using System.Net.Http;
+using System.Web;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -289,12 +290,12 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
+                HttpStatusCode GetItemMas = HttpStatusCode.OK;
                 var createLocationTransfer = _mapper.Map<List<LocationTransfer>>(locationTransferPostDto);
                 foreach (var loca in createLocationTransfer)
                 {
                     await _locationTransferRepository.CreateLocationTransfer(loca);
-                    _locationTransferRepository.SaveAsync();
-                    
+
                         var fromPartNumber = loca.FromPartNumber;
                         var toPartNumber = loca.ToPartNumber;
                         var fromProjectNumber = loca.FromProjectNumber;
@@ -305,13 +306,18 @@ namespace Tips.Warehouse.Api.Controllers
                         var toWarehouse = loca.ToWarehouse;
                         var availstock = loca.AvailableStockInLocation;
                         var transferQty = loca.TransferQty;
-                        var itemDetailFromItemmaster = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"], "GetItemMasterByItemNumber?", "&ItemNumber=", toPartNumber));
-                        _logger.LogInfo("getitemmasterdata" + Convert.ToString(itemDetailFromItemmaster));
+                        var itemDetailFromItemmaster = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"], "GetItemMasterByItemNumber?", "&ItemNumber=", HttpUtility.UrlEncode(toPartNumber)));
+                        if (itemDetailFromItemmaster.StatusCode != HttpStatusCode.OK)
+                        {
+                              GetItemMas = itemDetailFromItemmaster.StatusCode;
+                        }
+                    _logger.LogInfo("getitemmasterdata" + Convert.ToString(itemDetailFromItemmaster));
                         var itemDetail = await itemDetailFromItemmaster.Content.ReadAsStringAsync();
                         dynamic itemData = JsonConvert.DeserializeObject(itemDetail);
                         dynamic itemObject = itemData.data;
-                        //Add Inventory table
-                        var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber);
+                    
+                    //Add Inventory table
+                    var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber);
                         if (inventoryDetails != null)
                         {
                             foreach (var inventoryItem in inventoryDetails)
@@ -433,6 +439,21 @@ namespace Tips.Warehouse.Api.Controllers
                         //}
                          
                     
+                }
+                if (GetItemMas == HttpStatusCode.OK )
+                {
+
+                    _locationTransferRepository.SaveAsync();
+
+                }
+                else
+                {
+                    _logger.LogError($"Something went wrong inside CreateLocationTransfer action. GetItemMaster  action Other Service Calling  failed! ");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Internal server error";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
                 }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "locationTransfer Successfully Created";

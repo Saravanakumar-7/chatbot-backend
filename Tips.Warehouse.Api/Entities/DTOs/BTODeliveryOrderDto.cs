@@ -154,4 +154,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ProjectNumber { get; set; }
 
     }
+    public class SalesOrderNoandIdDto
+    {
+        public int? SalesOrderId { get; set; }
+        public string? SalesOrderNumber { get; set; }
+    }
 }

@@ -34,5 +34,6 @@ namespace Tips.Warehouse.Api.Contracts
                                                                                                     string CustomerID, string SalesOrderNumber, string ProductType,
                                                                                                     string Warehouse, string Location, string KPN, string MPN, string ProjectNumber);
         Task<IEnumerable<DailyDOReport>> GetDailyDeliveryOrderReports();
+        Task<SalesOrderNoandIdDto> GetAllSalesOrderNoAndIdByBTONo(string btoNumber);
     }
 }

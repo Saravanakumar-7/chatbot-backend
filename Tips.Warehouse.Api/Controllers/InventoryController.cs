@@ -1211,7 +1211,7 @@ namespace Tips.Warehouse.Api.Controllers
                             inventoryDetails[i].Balance_Quantity = 0;
                             inventoryDetails[i].IsStockAvailable = false;
                             lotNoWiseProducedQty = balanceqty;
-                             producedQty -= balanceqty;
+                            producedQty -= balanceqty;
                             balanceqty = 0;
 
                             //Add InventoryTransaction
@@ -1222,7 +1222,7 @@ namespace Tips.Warehouse.Api.Controllers
                             inventoryTranction.Description = Desc;
                             inventoryTranction.ProjectNumber = ProjectNo;
                             inventoryTranction.PartType = ItemType;
-                            inventoryTranction.Issued_Quantity = lotNoWiseProducedQty;
+                            inventoryTranction.Issued_Quantity = 0;
                             inventoryTranction.UOM = uom;
                             inventoryTranction.BOM_Version_No = 0;
                             inventoryTranction.Issued_DateTime = DateTime.Now;
@@ -1250,7 +1250,7 @@ namespace Tips.Warehouse.Api.Controllers
                             inventoryTranction.Description = Desc;
                             inventoryTranction.ProjectNumber = ProjectNo;
                             inventoryTranction.PartType = ItemType;
-                            inventoryTranction.Issued_Quantity = lotNoWiseProducedQty;
+                            inventoryTranction.Issued_Quantity = balanceqty - producedQty;
                             inventoryTranction.UOM = uom;
                             inventoryTranction.BOM_Version_No = 0;
                             inventoryTranction.Issued_DateTime = DateTime.Now;
@@ -1377,12 +1377,13 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTransaction.Description = inventoryDetails[i].Description;
                         inventoryTransaction.PartType = inventoryDetails[i].PartType;
                         inventoryTransaction.ProjectNumber = inventoryDetails[i].ProjectNumber;
-                        inventoryTransaction.Issued_Quantity = lotNoWiseIssuedQty;
+                        inventoryTransaction.Issued_Quantity = inventoryDetails[i].Balance_Quantity;
                         inventoryTransaction.UOM = inventoryDetails[i].UOM;
                         inventoryTransaction.Issued_DateTime = DateTime.Now;
                         inventoryTransaction.ReferenceID = inventoryDetails[i].ReferenceID;
                         inventoryTransaction.ReferenceIDFrom = inventoryDetails[i].ReferenceIDFrom;
                         inventoryTransaction.BOM_Version_No = 0;
+                        inventoryTransaction.IsStockAvailable = true;
                         inventoryTransaction.From_Location = inventoryDetails[i].Location;
                         inventoryTransaction.TO_Location = "WIP";
                         inventoryTransaction.Unit = inventoryDetails[i].Unit;
@@ -1431,7 +1432,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTransaction.Description = inventoryDetails[i].Description;
                         inventoryTransaction.PartType = inventoryDetails[i].PartType;
                         inventoryTransaction.ProjectNumber = inventoryDetails[i].ProjectNumber;
-                        inventoryTransaction.Issued_Quantity = lotNoWiseIssuedQty;
+                        inventoryTransaction.Issued_Quantity = inventoryDetails[i].Balance_Quantity;
                         inventoryTransaction.UOM = inventoryDetails[i].UOM;
                         inventoryTransaction.Issued_DateTime = DateTime.Now; 
                         inventoryTransaction.ReferenceID = inventoryDetails[i].ReferenceID;
@@ -1686,8 +1687,9 @@ namespace Tips.Warehouse.Api.Controllers
                                 inventoryTransaction.Description = invItem.Description;
                                 inventoryTransaction.PartType = invItem.PartType;
                                 inventoryTransaction.ProjectNumber = invItem.ProjectNumber;
-                                inventoryTransaction.Issued_Quantity = issuedQty;
+                                inventoryTransaction.Issued_Quantity = 0;
                                 inventoryTransaction.UOM = invItem.UOM;
+                                inventoryTransaction.IsStockAvailable = false;
                                 inventoryTransaction.Issued_DateTime = DateTime.Now;
                                 inventoryTransaction.ReferenceID = mrNumber;
                                 inventoryTransaction.ReferenceIDFrom = "Material Request";
@@ -1723,7 +1725,7 @@ namespace Tips.Warehouse.Api.Controllers
                                 inventoryTransaction.Description = invItem.Description;
                                 inventoryTransaction.PartType = invItem.PartType;
                                 inventoryTransaction.ProjectNumber = invItem.ProjectNumber;
-                                inventoryTransaction.Issued_Quantity = lotNoWiseIssuedQty;
+                                inventoryTransaction.Issued_Quantity = invItem.Balance_Quantity;
                                 inventoryTransaction.UOM = invItem.UOM;
                                 inventoryTransaction.Issued_DateTime = DateTime.Now;
                                 inventoryTransaction.ReferenceID = mrNumber;
@@ -1922,136 +1924,151 @@ namespace Tips.Warehouse.Api.Controllers
 
         [HttpPost]
         public async Task<IActionResult> MaterialReturnNoteInventoryBalanceQty([FromBody] List<MRNUpdateInventoryBalanceQty> updateInventoryBalanceQty)
-        {           
-
-            foreach (var materialReturnQty in updateInventoryBalanceQty) 
+        {
+            ServiceResponse<MRNUpdateInventoryBalanceQty> serviceResponse = new ServiceResponse<MRNUpdateInventoryBalanceQty>();
+            try
             {
-                var itemNumber = materialReturnQty.PartNumber;
-                var projectNumber = materialReturnQty.ProjectNumber;
-                var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],"GetItemMasterDetailsForMNRByItemNo?", "&ItemNumber=", itemNumber));
-                var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                dynamic itemMasterObject = itemMasterObjectData.data;
-
-                foreach (var Location in materialReturnQty.MRNDetails)
+                foreach (var materialReturnQty in updateInventoryBalanceQty)
                 {
-                     
-                    var materialWithLotNoFromIssueTracker = await _materialIssueTrackerRepository.GetWipQtyFromMaterialIssueTracker(materialReturnQty.ShopOrderNumber, itemNumber, Location.Qty);
-
-                    foreach (var itemWithLotNo in materialWithLotNoFromIssueTracker)
+                    var itemNumber = materialReturnQty.PartNumber;
+                    var projectNumber = materialReturnQty.ProjectNumber;
+                    var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
+                            "GetItemMasterByItemNumber?", "&ItemNumber=", itemNumber));
+                    
+                    var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                    dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                    dynamic itemMasterTranctionObject = itemMasterObjectData.data;
+                    foreach (var Location in materialReturnQty.MRNDetails)
                     {
-                        var lotNumber = itemWithLotNo.LotNumber; 
-                        var wipQtyInIssueTracker = itemWithLotNo.WipQty;
-                        var inventories = await _inventoryRepository.GetWipInventoryDetailsByLotNumber(itemNumber, lotNumber);
 
-                        if (inventories != null || inventories.Count()>0)
+                        var materialWithLotNoFromIssueTracker = await _materialIssueTrackerRepository.GetWipQtyFromMaterialIssueTracker(materialReturnQty.ShopOrderNumber, itemNumber, Location.Qty);
+
+                        foreach (var itemWithLotNo in materialWithLotNoFromIssueTracker)
                         {
-                            foreach (var inventoryDetail in inventories)
+                            var lotNumber = itemWithLotNo.LotNumber;
+                            var wipQtyInIssueTracker = itemWithLotNo.WipQty;
+                            var inventories = await _inventoryRepository.GetWipInventoryDetailsByLotNumber(itemNumber, lotNumber);
+
+                            if (inventories != null || inventories.Count() > 0)
                             {
-                                var wipQtyInventoryQty = inventoryDetail.Balance_Quantity; 
-                                if (wipQtyInventoryQty > wipQtyInIssueTracker)
+                                foreach (var inventoryDetail in inventories)
                                 {
-                                    inventoryDetail.Balance_Quantity -= wipQtyInIssueTracker;
+                                    var wipQtyInventoryQty = inventoryDetail.Balance_Quantity;
+                                    if (wipQtyInventoryQty > wipQtyInIssueTracker)
+                                    {
+                                        inventoryDetail.Balance_Quantity -= wipQtyInIssueTracker;
 
-                                    Inventory inventoryPost = new Inventory();
-                                    inventoryPost.PartNumber = itemNumber;
-                                    inventoryPost.MftrPartNumber = inventoryDetail.MftrPartNumber;
-                                    inventoryPost.ProjectNumber = projectNumber;
-                                    inventoryPost.Description = inventoryDetail.Description;
-                                    inventoryPost.Balance_Quantity = wipQtyInIssueTracker;
-                                    inventoryPost.UOM = inventoryDetail.UOM;
-                                    inventoryPost.Max = itemMasterObject.max;
-                                    inventoryPost.Min = itemMasterObject.min;
-                                    inventoryPost.GrinMaterialType = inventoryDetail.GrinMaterialType;
-                                    inventoryPost.shopOrderNo = materialReturnQty.ShopOrderNumber;
-                                    inventoryPost.Unit = inventoryDetail.Unit;
-                                    inventoryPost.GrinNo = inventoryDetail.GrinNo;
-                                    inventoryPost.GrinPartId = inventoryDetail.GrinPartId;
-                                    inventoryPost.IsStockAvailable = true;
-                                    inventoryPost.Warehouse = Location.Warehouse;
-                                    inventoryPost.Location = Location.Location;
-                                    inventoryPost.PartType = inventoryDetail.PartType;
-                                    inventoryPost.ReferenceID = inventoryDetail.ReferenceID;
-                                    inventoryPost.LotNumber = itemWithLotNo.LotNumber;
-                                    inventoryPost.ReferenceIDFrom = "Material Return Note";
-                                    await _inventoryRepository.CreateInventory(inventoryPost);
-                                    wipQtyInIssueTracker = 0;
+                                        Inventory inventoryPost = new Inventory();
+                                        inventoryPost.PartNumber = itemNumber;
+                                        inventoryPost.MftrPartNumber = inventoryDetail.MftrPartNumber;
+                                        inventoryPost.ProjectNumber = projectNumber;
+                                        inventoryPost.Description = inventoryDetail.Description;
+                                        inventoryPost.Balance_Quantity = wipQtyInIssueTracker;
+                                        inventoryPost.UOM = inventoryDetail.UOM;
+                                        inventoryPost.Max = itemMasterTranctionObject.max;
+                                        inventoryPost.Min = itemMasterTranctionObject.min;
+                                        inventoryPost.GrinMaterialType = inventoryDetail.GrinMaterialType;
+                                        inventoryPost.shopOrderNo = materialReturnQty.ShopOrderNumber;
+                                        inventoryPost.Unit = inventoryDetail.Unit;
+                                        inventoryPost.GrinNo = inventoryDetail.GrinNo;
+                                        inventoryPost.GrinPartId = inventoryDetail.GrinPartId;
+                                        inventoryPost.IsStockAvailable = true;
+                                        inventoryPost.Warehouse = Location.Warehouse;
+                                        inventoryPost.Location = Location.Location;
+                                        inventoryPost.PartType = inventoryDetail.PartType;
+                                        inventoryPost.ReferenceID = inventoryDetail.ReferenceID;
+                                        inventoryPost.LotNumber = itemWithLotNo.LotNumber;
+                                        inventoryPost.ReferenceIDFrom = "Material Return Note";
+                                        await _inventoryRepository.CreateInventory(inventoryPost);
+                                        wipQtyInIssueTracker = 0;
 
-                                    // Write code for Inventory Transaction
+                                        // Write code for Inventory Transaction
 
-                                    InventoryTranction inventoryTranction = new InventoryTranction();
-                                    inventoryTranction.PartNumber = itemNumber;
-                                    inventoryTranction.MftrPartNumber = inventoryDetail.MftrPartNumber;
-                                    inventoryTranction.LotNumber = inventoryDetail.LotNumber;
-                                    inventoryTranction.Description = inventoryDetail.Description;
-                                    inventoryTranction.PartType = inventoryDetail.PartType;
-                                    inventoryTranction.ProjectNumber = projectNumber;
-                                    inventoryTranction.Issued_Quantity = wipQtyInIssueTracker;
-                                    inventoryTranction.UOM = inventoryDetail.UOM;
-                                    inventoryTranction.Issued_DateTime = DateTime.Now;
-                                    inventoryTranction.Issued_By = "";
-                                    inventoryTranction.ShopOrderId = "";
-                                    inventoryTranction.shopOrderNo = materialReturnQty.ShopOrderNumber;
-                                    inventoryTranction.ReferenceID = "";
-                                    inventoryTranction.ReferenceIDFrom = "Material Return Note";
-                                    inventoryTranction.BOM_Version_No = 0;
-                                    inventoryTranction.From_Location = Location.Location;
-                                    inventoryTranction.TO_Location = Location.Location;
-                                    inventoryTranction.Warehouse = Location.Warehouse;
-                                    await _inventoryTranctionRepository.Create(inventoryTranction);
-                                    _inventoryTranctionRepository.SaveAsync();
+                                        InventoryTranction inventoryTranction = new InventoryTranction();
+                                        inventoryTranction.PartNumber = itemNumber;
+                                        inventoryTranction.MftrPartNumber = inventoryDetail.MftrPartNumber;
+                                        inventoryTranction.LotNumber = inventoryDetail.LotNumber;
+                                        inventoryTranction.Description = inventoryDetail.Description;
+                                        inventoryTranction.PartType = inventoryDetail.PartType;
+                                        inventoryTranction.ProjectNumber = projectNumber;
+                                        inventoryTranction.Issued_Quantity = wipQtyInIssueTracker;
+                                        inventoryTranction.UOM = inventoryDetail.UOM;
+                                        inventoryTranction.Issued_DateTime = DateTime.Now;
+                                        inventoryTranction.Issued_By = "";
+                                        inventoryTranction.ShopOrderId = "";
+                                        inventoryTranction.IsStockAvailable = true;
+                                        inventoryTranction.shopOrderNo = materialReturnQty.ShopOrderNumber;
+                                        inventoryTranction.ReferenceID = "";
+                                        inventoryTranction.ReferenceIDFrom = "Material Return Note";
+                                        inventoryTranction.BOM_Version_No = 0;
+                                        inventoryTranction.From_Location = Location.Location;
+                                        inventoryTranction.TO_Location = Location.Location;
+                                        inventoryTranction.Warehouse = Location.Warehouse;
+                                        await _inventoryTranctionRepository.Create(inventoryTranction);
+                                        _inventoryTranctionRepository.SaveAsync();
 
-                                    // End of Inventory Transaction
+                                        // End of Inventory Transaction
 
-                                    break;
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        inventoryDetail.Location = Location.Location;
+                                        inventoryDetail.Warehouse = Location.Warehouse;
+                                        inventoryDetail.ReferenceIDFrom = "Material Return Note";
+                                        _inventoryRepository.Update(inventoryDetail);
+                                        wipQtyInIssueTracker -= wipQtyInventoryQty;
+
+                                        InventoryTranction inventoryTranction = new InventoryTranction();
+                                        inventoryTranction.PartNumber = itemNumber;
+                                        inventoryTranction.MftrPartNumber = inventoryDetail.MftrPartNumber;
+                                        inventoryTranction.LotNumber = inventoryDetail.LotNumber;
+                                        inventoryTranction.Description = inventoryDetail.Description;
+                                        inventoryTranction.PartType = inventoryDetail.PartType;
+                                        inventoryTranction.ProjectNumber = projectNumber;
+                                        inventoryTranction.Issued_Quantity = inventoryDetail.Balance_Quantity;
+                                        inventoryTranction.UOM = inventoryDetail.UOM;
+                                        inventoryTranction.Issued_DateTime = DateTime.Now;
+                                        inventoryTranction.Issued_By = "";
+                                        inventoryTranction.ShopOrderId = "";
+                                        inventoryTranction.shopOrderNo = materialReturnQty.ShopOrderNumber;
+                                        inventoryTranction.ReferenceID = "";
+                                        inventoryTranction.ReferenceIDFrom = "Material Return Note";
+                                        inventoryTranction.BOM_Version_No = 0;
+                                        inventoryTranction.From_Location = Location.Location;
+                                        inventoryTranction.TO_Location = Location.Location;
+                                        inventoryTranction.Warehouse = Location.Warehouse;
+                                        await _inventoryTranctionRepository.Create(inventoryTranction);
+                                        _inventoryTranctionRepository.SaveAsync();
+
+                                    }
+                                    if (wipQtyInIssueTracker <= 0)
+                                    {
+                                        break;
+                                    }
                                 }
-                                else
-                                {
-                                    inventoryDetail.Location = Location.Location;
-                                    inventoryDetail.Warehouse = Location.Warehouse;
-                                    inventoryDetail.ReferenceIDFrom = "Material Return Note";
-                                    _inventoryRepository.Update(inventoryDetail);
-                                    wipQtyInIssueTracker -= wipQtyInventoryQty;
 
-                                    InventoryTranction inventoryTranction = new InventoryTranction();
-                                    inventoryTranction.PartNumber = itemNumber;
-                                    inventoryTranction.MftrPartNumber = inventoryDetail.MftrPartNumber;
-                                    inventoryTranction.LotNumber = inventoryDetail.LotNumber;
-                                    inventoryTranction.Description = inventoryDetail.Description;
-                                    inventoryTranction.PartType = inventoryDetail.PartType;
-                                    inventoryTranction.ProjectNumber = projectNumber;
-                                    inventoryTranction.Issued_Quantity = wipQtyInIssueTracker;
-                                    inventoryTranction.UOM = inventoryDetail.UOM;
-                                    inventoryTranction.Issued_DateTime = DateTime.Now;
-                                    inventoryTranction.Issued_By = "";
-                                    inventoryTranction.ShopOrderId = "";
-                                    inventoryTranction.shopOrderNo = materialReturnQty.ShopOrderNumber;
-                                    inventoryTranction.ReferenceID = "";
-                                    inventoryTranction.ReferenceIDFrom = "Material Return Note";
-                                    inventoryTranction.BOM_Version_No = 0;
-                                    inventoryTranction.From_Location = Location.Location;
-                                    inventoryTranction.TO_Location = Location.Location;
-                                    inventoryTranction.Warehouse = Location.Warehouse;
-                                    await _inventoryTranctionRepository.Create(inventoryTranction);
-                                    _inventoryTranctionRepository.SaveAsync();
-
-                                }
-                                if(wipQtyInIssueTracker <= 0)
-                                {
-                                    break;
-                                }
-                            }                          
-
+                            }
                         }
-                    } 
+                    }
                 }
+                _inventoryRepository.SaveAsync();
+                return Ok();
             }
-            _inventoryRepository.SaveAsync();
-            return Ok();
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
         }
 
 
-        [HttpGet("{id}")]
+            [HttpGet("{id}")]
         public async Task<IActionResult> GetInventoryById(int id)
         {
             ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();

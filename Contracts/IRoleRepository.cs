@@ -13,7 +13,7 @@ namespace Contracts
         //Task<PagedList<Role>> GetAllRoles(SearchParames searchParams);
         Task<IEnumerable<Role>> GetAllRoles(SearchParames searchParams);
         Task<Role> GetRoleById(int id);
-        Task<PagedList<Role>> GetAllActiveRoles(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<IEnumerable<Role>> GetAllActiveRoles();
         Task<int?> CreateRole(Role role);
         Task<string> UpdateRole(Role role);
         Task<string> DeleteRole(Role role);

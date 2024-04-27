@@ -63,13 +63,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveRoles([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveRoles()
         {
             ServiceResponse<IEnumerable<RoleDto>> serviceResponse = new ServiceResponse<IEnumerable<RoleDto>>();
 
             try
             {
-                var activeRolesDetails = await _repository.RoleRepository.GetAllActiveRoles(pagingParameter, searchParams);
+                var activeRolesDetails = await _repository.RoleRepository.GetAllActiveRoles();
                 _logger.LogInfo("Returned all Roles");
                 var result = _mapper.Map<IEnumerable<RoleDto>>(activeRolesDetails);
                 serviceResponse.Data = result;

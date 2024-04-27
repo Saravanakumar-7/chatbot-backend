@@ -208,6 +208,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public bool POApprovalIV { get; set; }
         public string? POApprovedIVBy { get; set; }
         public DateTime? POApprovedIVDate { get; set; }
+        public int? ApprovalCount { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -326,7 +327,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
     {
         public string? VendorName { get; set; }
         public string? PONumber { get; set; }
-        public string? PartNumber { get; set; }
+        public string? ItemNumber { get; set; }
     }
 
     public class Tras_POSPReportDTO

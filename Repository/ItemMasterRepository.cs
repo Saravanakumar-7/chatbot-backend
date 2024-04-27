@@ -256,7 +256,7 @@ namespace Repository
         public async Task<IEnumerable<ItemNoListDtos>> GetAllIsPRRequiredStatusTruePPItemNoList()
         {
             IEnumerable<ItemNoListDtos> itemNumberListDto = await TipsMasterDbContext.ItemMasters
-                               .Where(x => x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG && x.IsPRRequired == true)
+                               .Where(x => (x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG) && x.IsPRRequired == true && x.IsActive == true)
                                .Select(c => new ItemNoListDtos()
                                {
                                    ItemNumber = c.ItemNumber,
@@ -350,7 +350,7 @@ namespace Repository
         }
         public async Task<IEnumerable<ItemMaster>> GetAllFgSaItems()
         {
-            var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id).Where(inv => inv.ItemType == PartType.SA || inv.ItemType == PartType.FG)
+            var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id).Where(inv =>(inv.ItemType == PartType.SA || inv.ItemType == PartType.FG) && inv.IsActive == true)
             .Include(c => c.FileUpload)
             .Include(x => x.ImageUpload)
             .Include(t => t.ItemmasterAlternate)
@@ -436,7 +436,7 @@ namespace Repository
         public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllOpenGrinStatusTrueItemMasterIdNoList()
         {
             IEnumerable<ItemMasterIdNoListDto> itemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters
-                                .Where(x => x.OpenGrin == true)
+                                .Where(x => x.OpenGrin == true && x.IsActive == true)
                                 .Select(c => new ItemMasterIdNoListDto()
                                 {
                                     id = c.Id,
@@ -493,7 +493,7 @@ namespace Repository
         }
         public async Task<string> GetClosedIqcItemMasterItemNo(string ItemNumber)
         {
-            var iqcCloseditemMasterItemNoList = await FindByCondition(x => x.ItemNumber == ItemNumber && x.IsIQCRequired == false)
+            var iqcCloseditemMasterItemNoList = await FindByCondition(x => x.ItemNumber == ItemNumber && x.IsIQCRequired == false && x.IsActive == true)
                              .Select(x => x.ItemNumber)
                              .FirstOrDefaultAsync();
 
@@ -502,7 +502,7 @@ namespace Repository
 
         public async Task<List<ItemWithPartTypeDto>> GetItemPartTypeByItemNo(List<string> ItemNumberList)
         {
-            var itemWithPartTypes = await FindByCondition(x => ItemNumberList.Contains(x.ItemNumber))
+            var itemWithPartTypes = await FindByCondition(x => ItemNumberList.Contains(x.ItemNumber) && x.IsActive == true)
                 .SelectMany(s => s.ItemmasterAlternate.Where(x =>x.IsDefault == true).Select(a => new ItemWithPartTypeDto
                 {
                     ItemNumber = s.ItemNumber,
@@ -516,7 +516,7 @@ namespace Repository
 
         public async Task<List<ItemWithPartTypeAndMinDto>> GetItemMasterPartTypeAndMinByItemNumber(List<string> ItemNumberList)
         {
-            var itemWithPartTypes = await FindByCondition(x => ItemNumberList.Contains(x.ItemNumber))
+            var itemWithPartTypes = await FindByCondition(x => ItemNumberList.Contains(x.ItemNumber) && x.IsActive == true)
                 .Select(s => new ItemWithPartTypeAndMinDto
                 {
                     ItemNumber = s.ItemNumber,
@@ -530,15 +530,15 @@ namespace Repository
         public async Task<List<ItemMasterMtrPartNoDto>> GetItemMasterByPartNo(string partNumber)
         {
             var itemMasterDescription = await TipsMasterDbContext.ItemMasters
-                                .Where(x => x.ItemNumber == partNumber)
+                                .Where(x => x.ItemNumber == partNumber && x.IsActive == true)
                                 .Select(m => m.Description).FirstOrDefaultAsync();
 
             var itemMasterUom = await TipsMasterDbContext.ItemMasters
-                               .Where(x => x.ItemNumber == partNumber)
+                               .Where(x => x.ItemNumber == partNumber && x.IsActive == true)
                                .Select(m => m.Uom).FirstOrDefaultAsync();
 
             var itemMasterId = await TipsMasterDbContext.ItemMasters
-                                .Where(x => x.ItemNumber == partNumber)
+                                .Where(x => x.ItemNumber == partNumber && x.IsActive == true)
                                 .Select(m => m.Id).FirstOrDefaultAsync();
 
             var itemMasterDetails = await TipsMasterDbContext.ItemmasterAlternates

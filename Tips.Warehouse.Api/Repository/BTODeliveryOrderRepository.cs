@@ -363,6 +363,21 @@ namespace Tips.Warehouse.Api.Repository
 
             return btoIddNameList;
         }
+        public async Task<SalesOrderNoandIdDto> GetAllSalesOrderNoAndIdByBTONo(string btoNumber)
+        {
+             var  btoIddNameList = await _tipsWarehouseDbContext.bTODeliveryOrder
+                                .Where(x=>x.BTONumber == btoNumber)
+                               .Select(x => new SalesOrderNoandIdDto()
+                               {
+
+                                   SalesOrderId = x.SalesOrderId,
+                                   SalesOrderNumber = x.SalesOrderNumber
+
+                               })
+                             .FirstOrDefaultAsync();
+
+            return btoIddNameList;
+        }
     }
     public class BTODeliveryOrderItemRepository : RepositoryBase<BTODeliveryOrderItems>, IBTODeliveryOrderItemsRepository
     {

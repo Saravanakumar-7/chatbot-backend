@@ -1373,6 +1373,30 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetSalesOrderNoAndIdByBTONo(string btoNumber)
+        {
+            ServiceResponse<SalesOrderNoandIdDto> serviceResponse = new ServiceResponse<SalesOrderNoandIdDto>();
+            try
+            {
+                var listOfAllBtoIdNames = await _repository.GetAllSalesOrderNoAndIdByBTONo(btoNumber);
+                var result = _mapper.Map<SalesOrderNoandIdDto>(listOfAllBtoIdNames);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All SalesOrderNoAndIdList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllSalesOrderNoAndIdByBTONo action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 
 }
