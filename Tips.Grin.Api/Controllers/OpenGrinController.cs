@@ -392,8 +392,9 @@ namespace Tips.Grin.Api.Controllers
                 var openGrinDetails = _mapper.Map<OpenGrin>(openGrinPostDto);
                 var openGrinPartsDto = openGrinPostDto.OpenGrinParts;
                 var openGrinPartsDtoList = new List<OpenGrinParts>();
+                HttpStatusCode createInv = HttpStatusCode.OK;
+                HttpStatusCode createInvTrans = HttpStatusCode.OK;
 
-             
                 string openGrinPartsId = "";
                 if (openGrinPartsDto != null)
                 {
@@ -427,8 +428,7 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 await _openGrinRepository.CreateOpenGrin(openGrinDetails);
-                    _openGrinRepository.SaveAsync();
-                
+                   
 
                 //Create OpenGrin To Inventory
 
@@ -451,7 +451,7 @@ namespace Tips.Grin.Api.Controllers
                             inventory.Location = openGrinDetail.Location;
                             inventory.GrinNo = openGrinDetails.OpenGrinNumber;
                             inventory.GrinPartId = 0;
-                            inventory.PartType = openGrinParts.ItemType; 
+                            inventory.PartType = openGrinParts.ItemType; // we have to take parttype from grinparts model;
                             inventory.GrinMaterialType = "";
                             inventory.ReferenceID = Convert.ToString(openGrinParts.Id);
                             inventory.ReferenceIDFrom = "OpenGrin";
@@ -463,8 +463,10 @@ namespace Tips.Grin.Api.Controllers
                             var json = JsonConvert.SerializeObject(inventory);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
                             var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), data);
+                            if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
 
                             //Create OpenGrin To InventoryTranction
+
                             OGInventoryTranctionDto inventoryTranction = new OGInventoryTranctionDto();
 
                             inventoryTranction.PartNumber = openGrinParts.ItemNumber;
@@ -479,19 +481,35 @@ namespace Tips.Grin.Api.Controllers
                             inventoryTranction.TO_Location = openGrinDetail.Location;
                             inventoryTranction.GrinNo = openGrinDetails.OpenGrinNumber;
                             inventoryTranction.GrinPartId = 0;
-                            inventoryTranction.PartType = openGrinParts.ItemType; 
+                            inventoryTranction.PartType = openGrinParts.ItemType; // we have to take parttype from grinparts model;
                             inventoryTranction.GrinMaterialType = "";
                             inventoryTranction.ReferenceID = Convert.ToString(openGrinParts.Id);
                             inventoryTranction.ReferenceIDFrom = "OpenGrin";
                             inventoryTranction.ShopOrderNo = "";
 
 
-                            var json1 = JsonConvert.SerializeObject(inventoryTranction);
-                            var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
-                            var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data1);
+                            var jsons = JsonConvert.SerializeObject(inventoryTranction);
+                            var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                            var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datas);
+                            if (responses.StatusCode != HttpStatusCode.OK) createInvTrans = response.StatusCode;
                         }
                     }
-                }     
+                }
+
+                if ( createInv == HttpStatusCode.OK && createInvTrans == HttpStatusCode.OK)
+                {
+                    _openGrinRepository.SaveAsync();
+                }
+                else
+                {
+                    _logger.LogError($"Something went wrong inside Create OpenGrin action: Create Inventory Other Service Calling");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Saving Failed";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+                
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "OpenGrin Successfully Created";

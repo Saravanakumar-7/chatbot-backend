@@ -226,6 +226,7 @@ namespace Tips.Warehouse.Api.Controllers
                         ReturnInvoiceItem returnInvoiceItems = _mapper.Map<ReturnInvoiceItem>(returnInvoiceItemDto[i]);
                         returnInvoiceItems.QtyDistribution = _mapper.Map<List<ReturnInvoiceItemQtyDistribution>>(returnInvoiceItemDto[i].QtyDistribution);
                         returnInvoiceItems.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
+                        returnInvoiceItems.InvoicedQty *= -1;
                         returnInvoiceItemsList.Add(returnInvoiceItems);
 
                         //update Dispatch Qty in Bto Delivery Order Table
@@ -403,11 +404,11 @@ namespace Tips.Warehouse.Api.Controllers
                         _bTODeliveryOrderItemsRepository.SaveAsync();
 
                         //update Dispatch Qty in InvoiceChildItem Table
-                        int getInvoiceChildItemId = returnInvoiceItemDto[i].InvoicePartsId;
-                        var invoiceChildItemDetails = await _invoiceChildRepository.GetInvoiceChildItemDetails(getInvoiceChildItemId);
-                        invoiceChildItemDetails.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
-                        _invoiceChildRepository.Update(invoiceChildItemDetails);
-                        _invoiceChildRepository.SaveAsync();
+                        //int getInvoiceChildItemId = returnInvoiceItemDto[i].InvoicePartsId;
+                        //var invoiceChildItemDetails = await _invoiceChildRepository.GetInvoiceChildItemDetails(getInvoiceChildItemId);
+                        //invoiceChildItemDetails.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
+                        //_invoiceChildRepository.Update(invoiceChildItemDetails);
+                        //_invoiceChildRepository.SaveAsync();
                     }
                 }
 

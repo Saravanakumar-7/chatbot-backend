@@ -14,10 +14,10 @@
         public string? ProductType { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? OrderType { get; set; }
-        public string? Location { get; set; }
         public string? Warehouse { get; set; }
-        public string? IssuedTo { get; set; }
+        public string? Location { get; set; }
         public string? issuedby { get; set; }
+        public string? IssuedTo { get; set; }
         public string? KPN { get; set; }
         public string? MPN { get; set; }
         public string? Description { get; set; }
