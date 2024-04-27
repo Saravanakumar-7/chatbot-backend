@@ -41,6 +41,11 @@ namespace Entities.DTOs
 
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
+        [DefaultValue(false)]
+        public bool ApprovalIII { get; set; }
+
+        [DefaultValue(false)]
+        public bool ApprovalIV { get; set; }
 
         [DefaultValue(false)]
         public bool Print { get; set; }
@@ -81,6 +86,11 @@ namespace Entities.DTOs
 
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
+        [DefaultValue(false)]
+        public bool ApprovalIII { get; set; }
+
+        [DefaultValue(false)]
+        public bool ApprovalIV { get; set; }
         [DefaultValue(false)]
         public bool Print { get; set; }
         [DefaultValue(false)]
@@ -124,6 +134,11 @@ namespace Entities.DTOs
 
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
+        [DefaultValue(false)]
+        public bool ApprovalIII { get; set; }
+
+        [DefaultValue(false)]
+        public bool ApprovalIV { get; set; }
         [DefaultValue(false)]
         public bool Print { get; set; }
         public int UserId { get; set; }
