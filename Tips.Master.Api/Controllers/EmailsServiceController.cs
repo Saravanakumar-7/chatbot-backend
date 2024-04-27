@@ -9,6 +9,8 @@ using MailKit.Net.Smtp;
 using MimeKit.Text;
 using System.Net.Mail;
 using System.Net;
+using Entities.DTOs;
+using AutoMapper;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -17,10 +19,58 @@ namespace Tips.Master.Api.Controllers
     public class EmailsServiceController : ControllerBase
     {
         private ILoggerManager _logger;
-        public EmailsServiceController(ILoggerManager logger)
+        private IRepositoryWrapperForMaster _repository;
+        private IMapper _mapper;
+        public EmailsServiceController(ILoggerManager logger, IRepositoryWrapperForMaster repository, IMapper mapper)
         {
             _logger = logger;
+            _mapper = mapper;
+            _repository=repository;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetEmailTemplatebyProcessType(string ProcessType)
+        {
+            ServiceResponse<EmailTemplateDto> serviceResponse = new ServiceResponse<EmailTemplateDto>();
+            try
+            {
+                if (ProcessType is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ProcessType object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("ProcessType object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid ProcessType object.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid ProcessType object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var emailTemplate = await _repository.EmailTemplateRepository.GetEmailTemplatebyProcessType(ProcessType);
+                var result=_mapper.Map<EmailTemplateDto>(emailTemplate);
+                serviceResponse.Data = result;
+                serviceResponse.Message = $"Template Return for {ProcessType}";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetEmailTemplatebyProcessType  action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> SendMailToCustomer()
         {

@@ -4,6 +4,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
@@ -13,10 +14,13 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Entities.Helper;
+using MailKit.Security;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using MimeKit;
+using MimeKit.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tips.Purchase.Api.Contracts;
@@ -25,7 +29,8 @@ using Tips.Purchase.Api.Entities.Dto;
 using Tips.Purchase.Api.Entities.DTOs;
 using Tips.Purchase.Api.Entities.Enums;
 using Tips.Purchase.Api.Repository;
-using static Org.BouncyCastle.Math.EC.ECCurve;
+using EmailTemplateDto = Tips.Purchase.Api.Entities.DTOs.EmailTemplateDto;
+//using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.Purchase.Api.Controllers
 {
@@ -50,9 +55,11 @@ namespace Tips.Purchase.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public PurchaseOrderController(IPrItemsRepository purchaseRequisitionItemRepository, IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository, IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository, IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IPoAddprojectRepository poAddprojectRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
+        private readonly HttpClient _httpClient;
+        public PurchaseOrderController(IPrItemsRepository purchaseRequisitionItemRepository, HttpClient httpClient, IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository, IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository, IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IPoAddprojectRepository poAddprojectRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
+            _httpClient = httpClient;
             _poItemsRepository = poItemsRepository;
             _purchaseRequisitionRepository = purchaseRequisitionRepository;
             _logger = logger;
@@ -1255,6 +1262,7 @@ namespace Tips.Purchase.Api.Controllers
 
 
                 //}
+
                 foreach (var poItems in poItemDtoList)
                 {
                     foreach (var prDetails in poItems.PrDetails)
@@ -1277,6 +1285,68 @@ namespace Tips.Purchase.Api.Controllers
                 _repository.SaveAsync();
                 _pRItemsDocumentUploadRepository.SaveAsync();
                 _purchaseRequisitionRepository.SaveAsync();
+                if (serverKey == "avision")
+                {
+                    var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    var mails = "chethan.v@wyzmindz.com";
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse("mohammed.ghouse@wyzmindz.com"));
+                    var podate = purchaseOrderDetails.PODate.ToString().Split(" ");
+                   // podate = podate.Substring(9);
+                    email.To.Add(MailboxAddress.Parse(mails));
+                    email.Subject = emaildetails.data.subject;
+                    string body = emaildetails.data.template;
+                    body=body.Replace("{{PO Number}}", purchaseOrderDetails.PONumber);
+                    body = body.Replace("{{PO Date}}", podate[0]);
+                    body = body.Replace("{{PO Value}}", purchaseOrderDetails.TotalAmount.ToString());
+                    body = body.Replace("{{Vendor Name}}", purchaseOrderDetails.VendorName.ToString());
+                    body = body.Replace("{{Approval1}}", "Awaiting");
+                    body = body.Replace("{{Approval2}}", "Awaiting");
+                    body = body.Replace("{{Approval3}}", "Awaiting");
+                    body = body.Replace("{{Approval4}}", "Awaiting");
+                    body = body.Replace("{{PO Conf}}", "Awaiting");
+                    string? ProjectNos = null;
+                    List<string>? tempProj=new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRNo = null;
+                    foreach (var item in purchaseOrderDetails.POItems)
+                    {
+
+                        if (item.POAddprojects.Count > 0)
+                            foreach (var project in item.POAddprojects)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if(!tempProj.Contains(project.ProjectNumber)) ProjectNos = ProjectNos + ", " + project.ProjectNumber;                                 
+                            }
+                        if (item.PrDetails.Count > 0)
+                            foreach (var pr in item.PrDetails)
+                            {
+                                //var uniquePRNumbers = new HashSet<string>();
+                                //if (!uniquePRNumbers.Contains(pr.PRNumber))
+                                //{
+                                if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                else if(!tempPRno.Contains(pr.PRNumber))PRNo = PRNo + ", " + pr.PRNumber;
+                                //}
+                            }
+
+                    }
+                    body = body.Replace("{{Project No}}", ProjectNos);
+                    body = body.Replace("{{PR Numbers}}", PRNo);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
+                    smtp.Authenticate("mohammed.ghouse@wyzmindz.com", "Hisham@9880");
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+
+                }
                 serviceResponse.Data = null;
                 serviceResponse.Message = " PurchaseOrder Successfully Created";
                 serviceResponse.Success = true;
@@ -2688,6 +2758,7 @@ namespace Tips.Purchase.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
                 var purchaseOrderDetailByPONumber = await _repository.GetPurchaseOrderByPONumber(PONumber);
                 if (purchaseOrderDetailByPONumber is null)
                 {
@@ -2704,7 +2775,67 @@ namespace Tips.Purchase.Api.Controllers
                 string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailByPONumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                serviceResponse.Message = "PurchaseOrderApprovalI Activated Successfully";
+                if (serverKey == "avision")
+                {
+                    var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    var mails = "chethan.v@wyzmindz.com";
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse("mohammed.ghouse@wyzmindz.com"));
+                    var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
+                    email.To.Add(MailboxAddress.Parse(mails));
+                    email.Subject = emaildetails.data.subject;
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
+                    body = body.Replace("{{PO Date}}", podate[0]);
+                    body = body.Replace("{{PO Value}}", purchaseOrderDetailByPONumber.TotalAmount.ToString());
+                    body = body.Replace("{{Vendor Name}}", purchaseOrderDetailByPONumber.VendorName.ToString());
+                    body = body.Replace("{{Approval1}}", purchaseOrderDetailByPONumber.POApprovedIBy);
+                    body = body.Replace("{{Approval2}}", "Awaiting");
+                    body = body.Replace("{{Approval3}}", "Awaiting");
+                    body = body.Replace("{{Approval4}}", "Awaiting");
+                    body = body.Replace("{{PO Conf}}", "Awaiting");
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRNo = null;
+                    foreach (var item in purchaseOrderDetailByPONumber.POItems)
+                    {
+
+                        if (item.POAddprojects.Count > 0)
+                            foreach (var project in item.POAddprojects)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) ProjectNos = ProjectNos + ", " + project.ProjectNumber;
+                            }
+                        if (item.PrDetails.Count > 0)
+                            foreach (var pr in item.PrDetails)
+                            {
+                                //var uniquePRNumbers = new HashSet<string>();
+                                //if (!uniquePRNumbers.Contains(pr.PRNumber))
+                                //{
+                                if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                else if (!tempPRno.Contains(pr.PRNumber)) PRNo = PRNo + ", " + pr.PRNumber;
+                                //}
+                            }
+
+                    }
+                    body = body.Replace("{{Project No}}", ProjectNos);
+                    body = body.Replace("{{PR Numbers}}", PRNo);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
+                    smtp.Authenticate("mohammed.ghouse@wyzmindz.com", "Hisham@9880");
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+                }
+                    serviceResponse.Message = "PurchaseOrderApprovalI Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -2728,6 +2859,7 @@ namespace Tips.Purchase.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
                 var purchaseOrderDetailByPONumber = await _repository.GetPurchaseOrderByPONumber(PONumber);
                 if (purchaseOrderDetailByPONumber is null)
                 {
@@ -2744,6 +2876,66 @@ namespace Tips.Purchase.Api.Controllers
                 string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailByPONumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
+                if (serverKey == "avision")
+                {
+                    var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    var mails = "chethan.v@wyzmindz.com";
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse("mohammed.ghouse@wyzmindz.com"));
+                    var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
+                    email.To.Add(MailboxAddress.Parse(mails));
+                    email.Subject = emaildetails.data.subject;
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
+                    body = body.Replace("{{PO Date}}", podate[0]);
+                    body = body.Replace("{{PO Value}}", purchaseOrderDetailByPONumber.TotalAmount.ToString());
+                    body = body.Replace("{{Vendor Name}}", purchaseOrderDetailByPONumber.VendorName.ToString());
+                    body = body.Replace("{{Approval1}}", purchaseOrderDetailByPONumber.POApprovedIBy);
+                    body = body.Replace("{{Approval2}}", purchaseOrderDetailByPONumber.POApprovedIIBy);
+                    body = body.Replace("{{Approval3}}", "Awaiting");
+                    body = body.Replace("{{Approval4}}", "Awaiting");
+                    body = body.Replace("{{PO Conf}}", "Awaiting");
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRNo = null;
+                    foreach (var item in purchaseOrderDetailByPONumber.POItems)
+                    {
+
+                        if (item.POAddprojects.Count > 0)
+                            foreach (var project in item.POAddprojects)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) ProjectNos = ProjectNos + ", " + project.ProjectNumber;
+                            }
+                        if (item.PrDetails.Count > 0)
+                            foreach (var pr in item.PrDetails)
+                            {
+                                //var uniquePRNumbers = new HashSet<string>();
+                                //if (!uniquePRNumbers.Contains(pr.PRNumber))
+                                //{
+                                if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                else if (!tempPRno.Contains(pr.PRNumber)) PRNo = PRNo + ", " + pr.PRNumber;
+                                //}
+                            }
+
+                    }
+                    body = body.Replace("{{Project No}}", ProjectNos);
+                    body = body.Replace("{{PR Numbers}}", PRNo);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
+                    smtp.Authenticate("mohammed.ghouse@wyzmindz.com", "Hisham@9880");
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+                }
                 serviceResponse.Message = "PurchaseOrderApprovalII Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -2767,6 +2959,7 @@ namespace Tips.Purchase.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
                 var purchaseOrderDetailByPONumber = await _repository.GetPurchaseOrderByPONumber(PONumber);
                 if (purchaseOrderDetailByPONumber is null)
                 {
@@ -2783,6 +2976,66 @@ namespace Tips.Purchase.Api.Controllers
                 string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailByPONumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
+                if (serverKey == "avision")
+                {
+                    var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    var mails = "chethan.v@wyzmindz.com";
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse("mohammed.ghouse@wyzmindz.com"));
+                    var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
+                    email.To.Add(MailboxAddress.Parse(mails));
+                    email.Subject = emaildetails.data.subject;
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
+                    body = body.Replace("{{PO Date}}", podate[0]);
+                    body = body.Replace("{{PO Value}}", purchaseOrderDetailByPONumber.TotalAmount.ToString());
+                    body = body.Replace("{{Vendor Name}}", purchaseOrderDetailByPONumber.VendorName.ToString());
+                    body = body.Replace("{{Approval1}}", purchaseOrderDetailByPONumber.POApprovedIBy);
+                    body = body.Replace("{{Approval2}}", purchaseOrderDetailByPONumber.POApprovedIIBy);
+                    body = body.Replace("{{Approval3}}", purchaseOrderDetailByPONumber.POApprovedIIIBy);
+                    body = body.Replace("{{Approval4}}", "Awaiting");
+                    body = body.Replace("{{PO Conf}}", "Awaiting");
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRNo = null;
+                    foreach (var item in purchaseOrderDetailByPONumber.POItems)
+                    {
+
+                        if (item.POAddprojects.Count > 0)
+                            foreach (var project in item.POAddprojects)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) ProjectNos = ProjectNos + ", " + project.ProjectNumber;
+                            }
+                        if (item.PrDetails.Count > 0)
+                            foreach (var pr in item.PrDetails)
+                            {
+                                //var uniquePRNumbers = new HashSet<string>();
+                                //if (!uniquePRNumbers.Contains(pr.PRNumber))
+                                //{
+                                if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                else if (!tempPRno.Contains(pr.PRNumber)) PRNo = PRNo + ", " + pr.PRNumber;
+                                //}
+                            }
+
+                    }
+                    body = body.Replace("{{Project No}}", ProjectNos);
+                    body = body.Replace("{{PR Numbers}}", PRNo);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
+                    smtp.Authenticate("mohammed.ghouse@wyzmindz.com", "Hisham@9880");
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+                }
                 serviceResponse.Message = "PurchaseOrderApprovalIII Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -2806,6 +3059,7 @@ namespace Tips.Purchase.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
                 var purchaseOrderDetailByPONumber = await _repository.GetPurchaseOrderByPONumber(PONumber);
                 if (purchaseOrderDetailByPONumber is null)
                 {
@@ -2822,6 +3076,66 @@ namespace Tips.Purchase.Api.Controllers
                 string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailByPONumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
+                if (serverKey == "avision")
+                {
+                    var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    var mails = "chethan.v@wyzmindz.com";
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse("mohammed.ghouse@wyzmindz.com"));
+                    var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
+                    email.To.Add(MailboxAddress.Parse(mails));
+                    email.Subject = emaildetails.data.subject;
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
+                    body = body.Replace("{{PO Date}}", podate[0]);
+                    body = body.Replace("{{PO Value}}", purchaseOrderDetailByPONumber.TotalAmount.ToString());
+                    body = body.Replace("{{Vendor Name}}", purchaseOrderDetailByPONumber.VendorName.ToString());
+                    body = body.Replace("{{Approval1}}", purchaseOrderDetailByPONumber.POApprovedIBy);
+                    body = body.Replace("{{Approval2}}", purchaseOrderDetailByPONumber.POApprovedIIBy);
+                    body = body.Replace("{{Approval3}}", purchaseOrderDetailByPONumber.POApprovedIIIBy);
+                    body = body.Replace("{{Approval4}}", purchaseOrderDetailByPONumber.POApprovedIVBy);
+                    body = body.Replace("{{PO Conf}}", "Awaiting");
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRNo = null;
+                    foreach (var item in purchaseOrderDetailByPONumber.POItems)
+                    {
+
+                        if (item.POAddprojects.Count > 0)
+                            foreach (var project in item.POAddprojects)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) ProjectNos = ProjectNos + ", " + project.ProjectNumber;
+                            }
+                        if (item.PrDetails.Count > 0)
+                            foreach (var pr in item.PrDetails)
+                            {
+                                //var uniquePRNumbers = new HashSet<string>();
+                                //if (!uniquePRNumbers.Contains(pr.PRNumber))
+                                //{
+                                if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                else if (!tempPRno.Contains(pr.PRNumber)) PRNo = PRNo + ", " + pr.PRNumber;
+                                //}
+                            }
+
+                    }
+                    body = body.Replace("{{Project No}}", ProjectNos);
+                    body = body.Replace("{{PR Numbers}}", PRNo);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
+                    smtp.Authenticate("mohammed.ghouse@wyzmindz.com", "Hisham@9880");
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+                }
                 serviceResponse.Message = "PurchaseOrderApprovalIV Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -2935,6 +3249,10 @@ namespace Tips.Purchase.Api.Controllers
 
             try
             {
+                string serverKey = GetServerKey();
+                var poid_1 = poItemConfirmationDateDto.First();
+                var PoId = poid_1.First();
+                var PODetails = await _repository.GetPurchaseOrderById(PoId.PoId);
                 foreach (var poItemConfirmationDateSet in poItemConfirmationDateDto)
                 {
                     if (!poItemConfirmationDateSet.Any())
@@ -3048,10 +3366,67 @@ namespace Tips.Purchase.Api.Controllers
                     purchaseOrderDetailById.PoConfirmationStatus = true;
                     string result = await _repository.UpdatePurchaseOrder(purchaseOrderDetailById);
                     _repository.SaveAsync();
+                } // If the loop completes without returning a response, it means all sets were processed successfully
+                if (serverKey == "avision")
+                {
+                    var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    var mails = "chethan.v@wyzmindz.com";
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse("mohammed.ghouse@wyzmindz.com"));
+                    var podate = PODetails.PODate.ToString().Split(" ");
+                    email.To.Add(MailboxAddress.Parse(mails));
+                    email.Subject = emaildetails.data.subject;
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{PO Number}}", PODetails.PONumber);
+                    body = body.Replace("{{PO Date}}", podate[0]);
+                    body = body.Replace("{{PO Value}}", PODetails.TotalAmount.ToString());
+                    body = body.Replace("{{Vendor Name}}", PODetails.VendorName.ToString());
+                    body = body.Replace("{{Approval1}}", PODetails.POApprovedIBy);
+                    body = body.Replace("{{Approval2}}", PODetails.POApprovedIIBy);
+                    body = body.Replace("{{Approval3}}", PODetails.POApprovedIIIBy);
+                    body = body.Replace("{{Approval4}}", PODetails.POApprovedIVBy);
+                    body = body.Replace("{{PO Conf}}", "P Madhusudhan Rao");
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRNo = null;
+                    foreach (var item in PODetails.POItems)
+                    {
+
+                        if (item.POAddprojects.Count > 0)
+                            foreach (var project in item.POAddprojects)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) ProjectNos = ProjectNos + ", " + project.ProjectNumber;
+                            }
+                        if (item.PrDetails.Count > 0)
+                            foreach (var pr in item.PrDetails)
+                            {
+                                //var uniquePRNumbers = new HashSet<string>();
+                                //if (!uniquePRNumbers.Contains(pr.PRNumber))
+                                //{
+                                if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                else if (!tempPRno.Contains(pr.PRNumber)) PRNo = PRNo + ", " + pr.PRNumber;
+                                //}
+                            }
+
+                    }
+                    body = body.Replace("{{Project No}}", ProjectNos);
+                    body = body.Replace("{{PR Numbers}}", PRNo);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
+                    smtp.Authenticate("mohammed.ghouse@wyzmindz.com", "Hisham@9880");
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
                 }
-
-                // If the loop completes without returning a response, it means all sets were processed successfully
-
                 serviceResponse.Data = null;
                 serviceResponse.Message = "PoConfirmationStatus have been Updated";
                 serviceResponse.Success = true;

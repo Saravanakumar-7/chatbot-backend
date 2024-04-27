@@ -77,7 +77,7 @@ namespace Repository
         private IGST_PercentageRepository? _gstpercentageRepo;
         private IPriceListRepository? _pricelistRepo;
         private IShipmentModeRepository? _shipmentmodeRepo;
-
+        private IEmailTemplateRepository? _emailTemplateRepo;
         private IShipmentInstructionsRepository? _shipmentInstructionsRepo;
         private ICategoryRepository? _categoryRepo;
         private IRiskCategoryRepository? _riskCategoryRepo;
@@ -142,7 +142,17 @@ namespace Repository
                 return _weightedAvgRateRepository;
             }
         }
-
+        public IEmailTemplateRepository EmailTemplateRepository
+        {
+            get
+            {
+                if (_emailTemplateRepo == null)
+                {
+                    _emailTemplateRepo = new EmailTemplateRepository(_tipsMasterDbContext);
+                }
+                return _emailTemplateRepo;
+            }
+        }
         public IConvertionrateRepository ConvertionrateRepository
         {
             get

@@ -335,5 +335,19 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? PONumber { get; set; }
         public string? PartNumber { get; set; }
     }
+    public class Data
+    {
+        public int id { get; set; }
+        public string processType { get; set; }
+        public string template { get; set; }
+        public string subject { get; set; }
+    }
 
+    public class EmailTemplateDto
+    {
+        public Data data { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
+        public int statusCode { get; set; }
+    }
 }
