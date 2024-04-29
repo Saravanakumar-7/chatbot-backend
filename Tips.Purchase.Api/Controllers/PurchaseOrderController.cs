@@ -1296,11 +1296,11 @@ namespace Tips.Purchase.Api.Controllers
                     var email = new MimeMessage();
                     email.From.Add(MailboxAddress.Parse("mohammed.ghouse@wyzmindz.com"));
                     var podate = purchaseOrderDetails.PODate.ToString().Split(" ");
-                   // podate = podate.Substring(9);
+                    // podate = podate.Substring(9);
                     email.To.Add(MailboxAddress.Parse(mails));
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
-                    body=body.Replace("{{PO Number}}", purchaseOrderDetails.PONumber);
+                    body = body.Replace("{{PO Number}}", purchaseOrderDetails.PONumber);
                     body = body.Replace("{{PO Date}}", podate[0]);
                     body = body.Replace("{{PO Value}}", purchaseOrderDetails.TotalAmount.ToString());
                     body = body.Replace("{{Vendor Name}}", purchaseOrderDetails.VendorName.ToString());
@@ -1310,7 +1310,7 @@ namespace Tips.Purchase.Api.Controllers
                     body = body.Replace("{{Approval4}}", "Awaiting");
                     body = body.Replace("{{PO Conf}}", "Awaiting");
                     string? ProjectNos = null;
-                    List<string>? tempProj=new List<string>();
+                    List<string>? tempProj = new List<string>();
                     List<string>? tempPRno = new List<string>();
                     string? PRNo = null;
                     foreach (var item in purchaseOrderDetails.POItems)
@@ -1320,7 +1320,7 @@ namespace Tips.Purchase.Api.Controllers
                             foreach (var project in item.POAddprojects)
                             {
                                 if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
-                                else if(!tempProj.Contains(project.ProjectNumber)) ProjectNos = ProjectNos + ", " + project.ProjectNumber;                                 
+                                else if (!tempProj.Contains(project.ProjectNumber)) ProjectNos = ProjectNos + ", " + project.ProjectNumber;
                             }
                         if (item.PrDetails.Count > 0)
                             foreach (var pr in item.PrDetails)
@@ -1329,7 +1329,7 @@ namespace Tips.Purchase.Api.Controllers
                                 //if (!uniquePRNumbers.Contains(pr.PRNumber))
                                 //{
                                 if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
-                                else if(!tempPRno.Contains(pr.PRNumber))PRNo = PRNo + ", " + pr.PRNumber;
+                                else if (!tempPRno.Contains(pr.PRNumber)) PRNo = PRNo + ", " + pr.PRNumber;
                                 //}
                             }
 
@@ -2835,7 +2835,7 @@ namespace Tips.Purchase.Api.Controllers
                     smtp.Send(email);
                     smtp.Disconnect(true);
                 }
-                    serviceResponse.Message = "PurchaseOrderApprovalI Activated Successfully";
+                serviceResponse.Message = "PurchaseOrderApprovalI Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

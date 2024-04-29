@@ -82,24 +82,39 @@ namespace Tips.Master.Api.Controllers
                 var httpclientHandler = new HttpClientHandler();
                 var httpClient = new HttpClient(httpclientHandler);
 
-
-
-                var mails = "it@avisionsystems.com";
+                var mails = "chethan.v@wyzmindz.com";
 
 
                 var email = new MimeMessage();
-                email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                email.From.Add(MailboxAddress.Parse("mohammed.ghouse@wyzmindz.com"));
                 // email.To.Add(MailboxAddress.Parse(sendMailDto.EmailID));
                 email.To.Add(MailboxAddress.Parse(mails));
                 email.Subject = "Testing Mail";
                 email.Body = new TextPart(TextFormat.Html) { Text = "<h1>Testing mail</h1>" };
 
                 using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
-                smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+                smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
+                smtp.Authenticate("mohammed.ghouse@wyzmindz.com", "Hisham@9880");
 
                 smtp.Send(email);
                 smtp.Disconnect(true);
+
+                //var mails = "it@avisionsystems.com";
+
+
+                //var email = new MimeMessage();
+                //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                //// email.To.Add(MailboxAddress.Parse(sendMailDto.EmailID));
+                //email.To.Add(MailboxAddress.Parse(mails));
+                //email.Subject = "Testing Mail";
+                //email.Body = new TextPart(TextFormat.Html) { Text = "<h1>Testing mail</h1>" };
+
+                //using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                //smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                //smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+
+                //smtp.Send(email);
+                //smtp.Disconnect(true);
                 // var dataFound = true;
                 // Exit the loop since valid data is found
 
