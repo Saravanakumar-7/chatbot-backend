@@ -78,9 +78,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = false,
-            // ValidIssuer = "Wyzmindz", // Use the same issuer as the one in https://localhost:7016
             ValidateAudience = false,
-            // ValidAudience = "Tips", // Use the same audience as the one in https://localhost:7016
+            ValidateLifetime = false,
+            //ValidIssuer = "Wyzmindz",
+            //ValidAudience = "Tips",
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
