@@ -704,12 +704,12 @@ namespace Tips.Warehouse.Api.Controllers
             InventoryTranction inventoryTranction = new InventoryTranction();
             inventoryTranction.PartNumber = invoiceChildItemsEntityList[i].FGItemNumber;
             inventoryTranction.MftrPartNumber = invoiceChildItemsEntityList[i].FGItemNumber;
-            inventoryTranction.Description = "";
+            inventoryTranction.Description = invoiceChildItemsEntityList[i].Description;
             inventoryTranction.Issued_Quantity = invoiceChildItem.InvoicedQty;
             inventoryTranction.UOM = invoiceChildItemsEntityList[i].UOM;
             inventoryTranction.Issued_DateTime = DateTime.Now;
             inventoryTranction.ReferenceID = invoice.InvoiceNumber;
-            inventoryTranction.ReferenceIDFrom = "Invoice Delivery Order";
+            inventoryTranction.ReferenceIDFrom = "Invoice";
             inventoryTranction.Issued_By = _createdBy;
             inventoryTranction.CreatedBy = _createdBy;
             inventoryTranction.CreatedOn = DateTime.Now;

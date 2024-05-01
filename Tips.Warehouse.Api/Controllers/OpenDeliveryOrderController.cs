@@ -429,7 +429,7 @@ namespace Tips.Warehouse.Api.Controllers
                         OpenDeliveryOrderParts OpenDeliveryOrderItemsDetails = _mapper.Map<OpenDeliveryOrderParts>(openDeliveryOrderitemsList[i]);
                         OpenDeliveryOrderItemsDetails.QtyDistribution = _mapper.Map<List<OpenDeliveryOrderPartsQtyDistribution>>(openDeliveryOrderitemsList[i].QtyDistribution);
                         OpenDeliveryOrderItemsDetails.InitialDispatchQty = OpenDeliveryOrderItemsDetails.DispatchQty;
-                        OpenDeliveryOrderItemsDetails.ODONumber = odoNumber;
+                        OpenDeliveryOrderItemsDetails.ODONumber = openDeliveryorder.OpenDONumber;
                         openDeliveryOrderItemsDtoList.Add(OpenDeliveryOrderItemsDetails);
 
                         //Update Inventory balanced Quantity 
@@ -540,7 +540,7 @@ namespace Tips.Warehouse.Api.Controllers
                             inventoryTranction.TO_Location = "ODO";
                             inventoryTranction.Warehouse = eachbin.Warehouse;
                             inventoryTranction.Remarks = "Create ODO";
-
+                            inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
                             var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
 

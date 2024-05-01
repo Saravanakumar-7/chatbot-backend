@@ -745,12 +745,12 @@ namespace Tips.Warehouse.Api.Repository
         {
             var itemNumber = ODOItemsLocationWiseList.Select(x => x.PartNumber).FirstOrDefault();
             var projectNumber = ODOItemsLocationWiseList.Select(x => x.ProjectNumber).FirstOrDefault();
-            var dataFromInventory = await FindAll().Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber).ToListAsync();
+            var dataFromInventory = await FindAll().Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber && x.Balance_Quantity>0).ToListAsync();
             foreach (var odoItemDetail in ODOItemsLocationWiseList)
             {
                 foreach (var inventoryItemDetail in dataFromInventory)
                 {
-                    if (inventoryItemDetail.Warehouse == odoItemDetail.Warehouse && inventoryItemDetail.Location == odoItemDetail.Location)
+                    if (inventoryItemDetail.Warehouse.Trim() == odoItemDetail.Warehouse.Trim() && inventoryItemDetail.Location.Trim() == odoItemDetail.Location.Trim())
                     {
                         if (odoItemDetail.DistributingQty <= inventoryItemDetail.Balance_Quantity)
                         {
