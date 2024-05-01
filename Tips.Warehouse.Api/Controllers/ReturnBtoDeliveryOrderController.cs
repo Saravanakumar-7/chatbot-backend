@@ -491,7 +491,7 @@ namespace Tips.Warehouse.Api.Controllers
                 if (returnBtoDeliveryOrderitemsDto != null)
                 {
                     Guid guid = Guid.NewGuid();
-                    var btohistoryNo = await _bTODeliveryOrderHistoryRepository.GetBTONumberCount(returnBtoDeliveryOrder.BTONumber);
+                    var returnBtoDeliveryOrderNo = await _repository.GetReturnBtoDeliveryOrderNoByReturnBtoNo(returnBtoDeliveryOrder.ReturnBTONumber);
 
                     for (int i = 0; i < returnBtoDeliveryOrderitemsDto.Count; i++)
                     {
@@ -503,72 +503,21 @@ namespace Tips.Warehouse.Api.Controllers
                         returnBtoDeliveryOrderItems.DispatchQty = returnBtoDeliveryOrderItems.DispatchQty - returnBtoDeliveryOrderItems.ReturnQty;
                         returnBtoDeliveryOrderItemsDtoList.Add(returnBtoDeliveryOrderItems);
                         BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
-                        // Define a dictionary to store the suffix number for each BTOnumber
-                        Dictionary<string, int> suffixDictionary = new Dictionary<string, int>();
 
-                        if (btohistoryNo != null)
+                        if (returnBtoDeliveryOrderNo != null)
                         {
-                            int index = btohistoryNo.LastIndexOf("-R");
-                            if (index != -1 && index + 2 < btohistoryNo.Length)
-                            {
-                                string prefix = btohistoryNo.Substring(0, index + 2);
-                                string suffixString = btohistoryNo.Substring(index + 2);
-
-                                // Check if the BTOnumber is already present in the dictionary
-                                if (suffixDictionary.ContainsKey(prefix))
-                                {
-                                    int suffixNumber = suffixDictionary[prefix];
-                                    suffixNumber++;
-                                    string suffix = "-R" + suffixNumber;
-                                    returnBtoDeliveryOrderItems.BTONumber = prefix + suffix;
-                                    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                                    returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
-
-                                    // Update the suffix number in the dictionary
-                                    suffixDictionary[prefix] = suffixNumber;
-                                }
-                                else
-                                {
-                                    // If the BTOnumber is not present in the dictionary, add it with suffix number 1
-                                    suffixDictionary.Add(prefix, 1);
-                                    returnBtoDeliveryOrderItems.BTONumber = prefix + "-R1";
-                                    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                                    returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                                }
-                            }
-                            else
-                            {
-                                // If '-R' is not found in the string, handle it here
-                                // For example, you could add a default suffix like "-R1"
-                                returnBtoDeliveryOrderItems.BTONumber = btohistoryNo + "-R1";
-                                bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                                returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                            }
-                        }
-                        else
-                        {
-                            // Handle the case where btohistoryNo is null
-                            // For example, you could add a default suffix like "-R1"
-                            returnBtoDeliveryOrderItems.BTONumber = "-R1";
+                            int suffixNumber = int.Parse(returnBtoDeliveryOrderNo.Substring(returnBtoDeliveryOrderNo.LastIndexOf("-R") + 2)) + 1;
+                            string suffix = "-R" + suffixNumber;
+                            returnBtoDeliveryOrderItems.BTONumber += suffix;
                             bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
                             returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
                         }
-
-
-                        //if (btohistoryNo != null)
-                        //{
-                        //    int suffixNumber = int.Parse(btohistoryNo.Substring(btohistoryNo.LastIndexOf("-R") + 2)) + 1;
-                        //    string suffix = "-R" + suffixNumber;
-                        //    returnBtoDeliveryOrderItems.BTONumber += suffix;
-                        //    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                        //    returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                        //}
-                        //else
-                        //{
-                        //    returnBtoDeliveryOrderItems.BTONumber += "-R1";
-                        //    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                        //    returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                        //}
+                        else
+                        {
+                            returnBtoDeliveryOrderItems.BTONumber += "-R1";
+                            bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                            returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                        }
                         //Update Inventory balanced Quantity
 
                         //var PartNumber = returnBtoDeliveryOrderitemsDto[i].FGPartNumber;

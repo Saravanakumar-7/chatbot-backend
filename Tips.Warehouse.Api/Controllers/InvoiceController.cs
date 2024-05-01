@@ -27,6 +27,7 @@ namespace Tips.Warehouse.Api.Controllers
     public class InvoiceController : ControllerBase
     {
         private IInvoiceRepository _invoiceRepository;
+        private IBTODeliveryOrderRepository _bTODeliveryOrderRepository;
         private IBTODeliveryOrderItemsRepository _bTODeliveryOrderItemsRepository;
         private IInventoryTranctionRepository _inventoryTranctionRepository;
         private ILoggerManager _logger;
@@ -36,7 +37,7 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public InvoiceController(IInvoiceRepository invoiceRepository, IInventoryTranctionRepository inventoryTranctionRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public InvoiceController(IInvoiceRepository invoiceRepository, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IInventoryTranctionRepository inventoryTranctionRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _invoiceRepository = invoiceRepository;
             _logger = logger;
@@ -46,6 +47,7 @@ namespace Tips.Warehouse.Api.Controllers
             _config = config;
             _bTODeliveryOrderItemsRepository = bTODeliveryOrderItemsRepository;
             _httpContextAccessor = httpContextAccessor;
+            _bTODeliveryOrderRepository = bTODeliveryOrderRepository;
 
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
@@ -750,6 +752,10 @@ namespace Tips.Warehouse.Api.Controllers
                         doItem.BalanceDoQty = 0;
                         doItem.DoStatus = Status.Closed;
                     }
+                    else
+                    {
+                        doItem.DoStatus = Status.PartiallyClosed;
+                    }
 
                     await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderItem(doItem);
 
@@ -759,9 +765,26 @@ namespace Tips.Warehouse.Api.Controllers
                     }
                 }
             }
-
-            //var getAllInvoicesList = await _bTODeliveryOrderItemsRepository.UpdateBtoDelieveryOrderBalanceQty(invoiceChildItem.FGItemNumber, doNumber, invoiceChildItem.InvoicedQty);
+           
             _bTODeliveryOrderItemsRepository.SaveAsync();
+
+            var bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount = await _bTODeliveryOrderItemsRepository.GetBTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount(doNumber);
+
+            if (bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount != 0)
+            {
+                var bTODeliveryOrderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(doNumber);
+                bTODeliveryOrderDetails.DoStatus = Status.PartiallyClosed;
+                await _bTODeliveryOrderRepository.UpdateBTODeliveryOrder(bTODeliveryOrderDetails);
+
+            }
+            else
+            {
+                var bTODeliveryOrderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(doNumber);
+                bTODeliveryOrderDetails.DoStatus = Status.Closed;
+                await _bTODeliveryOrderRepository.UpdateBTODeliveryOrder(bTODeliveryOrderDetails);
+            }
+            _bTODeliveryOrderRepository.SaveAsync();
+
             return invoiceQty;
         }
 

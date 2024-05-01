@@ -39,6 +39,15 @@ namespace Tips.Warehouse.Api.Repository
             string result = $"NaterialIssue details of {inventoryTranction.Id} is deleted successfully!";
             return result;
         }
+        public async Task<IEnumerable<InventoryTranctionSPReport>> GetInventoryTranctionSPReports()
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<InventoryTranctionSPReport>()
+            .FromSqlInterpolated($"CALL inventory_transaction()")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<InventoryTranction>> GetInventoryTranctionDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse, string projectNumber)
 
         {

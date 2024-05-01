@@ -2,6 +2,7 @@
 using System.Net;
 using System.Text;
 using AutoMapper;
+using Azure;
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Http;
@@ -465,8 +466,18 @@ namespace Tips.Grin.Api.Controllers
                             var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), data);
                             if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
 
-                            //Create OpenGrin To InventoryTranction
+                           
+                        }
+                    }
+                }
+                //Create OpenGrin To InventoryTranction
 
+                if (openGrinPartsDtoList != null)
+                {
+                    foreach (var openGrinParts in openGrinPartsDtoList)
+                    {
+                        foreach (var openGrinDetail in openGrinParts.OpenGrinDetails)
+                        {
                             OGInventoryTranctionDto inventoryTranction = new OGInventoryTranctionDto();
 
                             inventoryTranction.PartNumber = openGrinParts.ItemNumber;
@@ -491,7 +502,7 @@ namespace Tips.Grin.Api.Controllers
                             var jsons = JsonConvert.SerializeObject(inventoryTranction);
                             var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
                             var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datas);
-                            if (responses.StatusCode != HttpStatusCode.OK) createInvTrans = response.StatusCode;
+                            if (responses.StatusCode != HttpStatusCode.OK) createInvTrans = responses.StatusCode;
                         }
                     }
                 }

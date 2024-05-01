@@ -16,6 +16,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<PagedList<ReturnDOSPReport>> ReturnDeliveryOrderSPReport(PagingParameter pagingParameter);
         Task<IEnumerable<ReturnDOSPReport>> ReturnDeliveryOrderSPReportDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<ReturnBTONumberListDto>> GetReturnBtoDeliveryOrderNumberList();
+        Task<string> GetReturnBtoDeliveryOrderNoByReturnBtoNo(string returnBTONumber);
         Task<IEnumerable<ReturnDOSPReport>> ReturnDOSPReportWithParam(string? ReturnBTONumber, string? CustomerName, string? CustomerAliasName, string? Customerleadid, string? SalesOrderNumber, string? ProductType, string? TypeOfSolution, string? Warehouse, string? Location, string? KPN, string? MPN);
     }
 }

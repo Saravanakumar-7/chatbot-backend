@@ -137,7 +137,6 @@ namespace Tips.Production.Api.Controllers
                     dynamic itemMasterTranctionObject = itemMatserObjectData.data;
 
                     //Adding SA in Inventory Table
-                    InventoryPostDto inventory = new InventoryPostDto();
                     var ItemNo = itemMasterTranctionObject.itemNumber;
                     var Desc = itemMasterTranctionObject.description;
                     var uom = itemMasterTranctionObject.uom;

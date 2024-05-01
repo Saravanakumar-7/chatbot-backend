@@ -379,6 +379,8 @@ namespace Tips.Warehouse.Api.Repository
             return btoIddNameList;
         }
     }
+
+
     public class BTODeliveryOrderItemRepository : RepositoryBase<BTODeliveryOrderItems>, IBTODeliveryOrderItemsRepository
     {
         private TipsWarehouseDbContext _tipsWarehouseDbContexts;
@@ -402,7 +404,13 @@ namespace Tips.Warehouse.Api.Repository
 
             return btoDeliveryOrderDetails;
         }
+        public async Task<int?> GetBTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount(string btoNumber)
+        {
+            var bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount = _tipsWarehouseDbContext.bTODeliveryOrderItems.Where(x => x.BTONumber == btoNumber
+                                                            && x.DoStatus == Status.PartiallyClosed || x.DoStatus == Status.Open).Count();
 
+            return bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount;
+        }
         public async Task UpdateBtoDelieveryOrderItem(BTODeliveryOrderItems btoDeliveryOrderItem)
         {
             btoDeliveryOrderItem.LastModifiedBy = _createdBy;
