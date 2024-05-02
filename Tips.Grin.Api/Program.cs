@@ -60,9 +60,7 @@ builder.Services.AddScoped<IBinningItemsRepository, BinningItemsRepository>();
 builder.Services.AddScoped<IGrinPartsRepository, GrinPartsRepository>();
 builder.Services.AddScoped<IOpenGrinRepository, OpenGrinRepository>();
 builder.Services.AddScoped<IBinningLocationRepository, BinningLocationRepository>();
-builder.Services.AddScoped<IWeightedAvgRateRepository, WeightedAvgRateRepository>();
 builder.Services.AddScoped<IWeightedAvgCostRepository, WeightedAvgCostRepository>();
-
 builder.Services.AddScoped<IIQCConfirmationItemsRepository, IQCConfirmationItemsRepository>();
 //builder.Services.AddScoped<IReturnGrinDocumentUploadRepository, ReturnGrinDocumentUpload>();
 builder.Services.AddControllersWithViews()
