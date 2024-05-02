@@ -8,7 +8,6 @@ using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Contracts;
 using Newtonsoft.Json;
 using Tips.Warehouse.Api.Repository;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 using System.Security.Claims;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 using System.Data;

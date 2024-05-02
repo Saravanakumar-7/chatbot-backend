@@ -17,5 +17,6 @@ namespace Tips.Grin.Api.Entities
         public string? SerialNo { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
+        public string? ProjectNumber { get; set; }
     }
 }

@@ -14,7 +14,7 @@ namespace Tips.Warehouse.Api.Contracts
         public Task<List<BTODeliveryOrderItems>> GetOpenDoItemDetailsByItemNoAndDoNo(string itemNumber, string BtoDeliveryNumber);
 
         Task<BTODeliveryOrderItems> GetBtoDelieveryOrderItemDetails(int btoDeliveryOrderPartsId);
-
+        Task<int?> GetBTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount(string btoNumber);
 
         //Task<IEnumerable<bTODeliveryOrderItems>> GetAllActiveBTODeliveryOrderItems();
         //Task<long> CreateBTODeliveryOrderItem(bTODeliveryOrderItems bTODeliveryOrderItems);

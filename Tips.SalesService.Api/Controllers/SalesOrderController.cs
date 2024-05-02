@@ -759,10 +759,14 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
                     {
-                        SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
-                        salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty - salesOrderItemsDetail.DispatchQty;
-                        salesOrderItemsDetail.SalesOrderNumber = salesOrderNumber;
-                        salesOrderItemsList.Add(salesOrderItemsDetail);
+                           SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
+                        if (salesOrderItemsDetail.StatusEnum != OrderStatus.ShortClosed)
+                        {
+                            salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty - salesOrderItemsDetail.DispatchQty;
+                            salesOrderItemsDetail.SalesOrderNumber = salesOrderNumber;
+                        }
+                            salesOrderItemsList.Add(salesOrderItemsDetail);
+                                           
                     }
 
                     foreach (var salesOrderItemDetail in salesOrderDetailBeforeUpdate.SalesOrdersItems)
@@ -2091,8 +2095,6 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception
-                // Return appropriate error response to the client
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
@@ -2188,8 +2190,6 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception
-                // Return appropriate error response to the client
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }

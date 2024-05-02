@@ -11,7 +11,6 @@ using Tips.Warehouse.Api.Entities.DTOs;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Repository;
 using Microsoft.EntityFrameworkCore;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 using System.Net.Http;
 using System.Data;
 using System.Data.SqlClient;

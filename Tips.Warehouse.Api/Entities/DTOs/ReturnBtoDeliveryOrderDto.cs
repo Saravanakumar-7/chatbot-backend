@@ -4,6 +4,8 @@
     {
 
         public int Id { get; set; }
+        public string? ReturnBTONumber { get; set; }
+        public DateTime? ReturnBTODate { get; set; }
         public string? BTONumber { get; set; }        
         public string? CustomerName { get; set; }
         public string? ReturnBy { get; set; }
@@ -25,8 +27,8 @@
 
     public class ReturnBtoDeliveryOrderPostDto
     {
-        //public string? ReturnDeliveryOrderNumber { get; set; }
-        //public DateTime? ReturnDeliveryOrderDate { get; set; }
+        public string? ReturnBTONumber { get; set; }
+        public DateTime? ReturnBTODate { get; set; }
         public string? CustomerName { get; set; }       
 
         public string? BTONumber { get; set; }

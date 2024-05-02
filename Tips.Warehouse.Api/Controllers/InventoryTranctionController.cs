@@ -3,6 +3,8 @@ using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System.Net;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
@@ -504,53 +506,182 @@ namespace Tips.Warehouse.Api.Controllers
 
             }
         }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetInventoryTranctionSPReports()
+        {
+            ServiceResponse<IEnumerable<InventoryTranctionSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventoryTranctionSPReport>>();
+            try
+            {
+                var products = await _inventoryTranctionRepository.GetInventoryTranctionSPReports();
 
-        //MaterialRequest
-        //[HttpPost]
-        //public async Task<IActionResult> MaterialInventoryTranctionBalanceQty([FromBody] List<UpdateInventoryTranctionBalanceQty> updateInventoryTranctionBalanceQty)
-        //{
-        //    try
-        //    {
-        //        foreach (var materialIssueQty in updateInventoryTranctionBalanceQty)
-        //        {
-        //            foreach (var Location in materialIssueQty.MRNWarehouseList)
-        //            {
-        //                decimal issuedQty = Location.Qty;
-        //                IEnumerable<InventoryTranction> inventories = await _inventoryTranctionRepository.GetInventoryTranctionDetailsByItemNoandLocationandwarehouse(materialIssueQty.PartNumber, Location.Location, Location.Warehouse, materialIssueQty.ProjectNumber);
-        //                foreach (var invItem in inventories)
-        //                {
-        //                    decimal stock = invItem.Issued_Quantity;
-        //                    if (stock <= issuedQty)
-        //                    {
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventoryTranctionSPReports hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"InventoryTranctionSPReports hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InventoryTranctionSPReports Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetInventoryTranctionSPReports action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
-        //                        invItem.Issued_Quantity = 0;
-        //                        invItem.IsStockAvailable = false;
-        //                        issuedQty -= stock;
+        [HttpGet]
+        public async Task<IActionResult> ExportInventoryTranctionSPReportToExcel()
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var inventoryTransactionSPReportDetails = await _inventoryTranctionRepository.GetInventoryTranctionSPReports();
 
-        //                    }
-        //                    else
-        //                    {
-        //                        invItem.Issued_Quantity -= issuedQty;
-        //                        issuedQty = 0;
-        //                    }
-        //                    await _inventoryTranctionRepository.UpdateInventoryTraction(invItem);
-        //                    if (issuedQty <= 0)
-        //                    {
-        //                        break;
-        //                    }
-        //                }
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("InventoryTranctionSPReport");
 
-        //            }
-        //        }
-        //        _inventoryTranctionRepository.SaveAsync();
-        //        return Ok();
-        //    }
-        //    catch (Exception ex)
-        //    {
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Part Number");
+                headerRow.CreateCell(1).SetCellValue("Manufacturer Part Number");
+                headerRow.CreateCell(2).SetCellValue("Description");
+                headerRow.CreateCell(3).SetCellValue("Project Number");
+                headerRow.CreateCell(4).SetCellValue("Issued Quantity");
+                headerRow.CreateCell(5).SetCellValue("UOM");
+                headerRow.CreateCell(6).SetCellValue("Issued DateTime");
+                headerRow.CreateCell(7).SetCellValue("Issued By");
+                headerRow.CreateCell(8).SetCellValue("Shop Order Id");
+                headerRow.CreateCell(9).SetCellValue("Reference ID");
+                headerRow.CreateCell(10).SetCellValue("Reference ID From");
+                headerRow.CreateCell(11).SetCellValue("BOM Version No");
+                headerRow.CreateCell(12).SetCellValue("From Location");
+                headerRow.CreateCell(13).SetCellValue("To Location");
+                headerRow.CreateCell(14).SetCellValue("Modified Status");
+                headerRow.CreateCell(15).SetCellValue("Unit");
+                headerRow.CreateCell(16).SetCellValue("Grin Material Type");
+                headerRow.CreateCell(17).SetCellValue("Remarks");
+                headerRow.CreateCell(18).SetCellValue("Created By");
+                headerRow.CreateCell(19).SetCellValue("Created On");
+                headerRow.CreateCell(20).SetCellValue("Last Modified On");
+                headerRow.CreateCell(21).SetCellValue("Part Type");
+                headerRow.CreateCell(22).SetCellValue("Lot Number");
+                headerRow.CreateCell(23).SetCellValue("Is Stock Available");
+                headerRow.CreateCell(24).SetCellValue("Warehouse");
+                headerRow.CreateCell(25).SetCellValue("Grin No");
+                headerRow.CreateCell(26).SetCellValue("Grin Part Id");
+                headerRow.CreateCell(27).SetCellValue("Shop Order No");
 
-        //        return StatusCode(500);
-        //    }
-        //}
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in inventoryTransactionSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.PartNumber);
+                    row.CreateCell(1).SetCellValue(item.MftrPartNumber);
+                    row.CreateCell(2).SetCellValue(item.Description);
+                    row.CreateCell(3).SetCellValue(item.ProjectNumber);
+                    row.CreateCell(4).SetCellValue(Convert.ToDouble(item.Issued_Quantity ?? 0)); // Assuming Issued_Quantity is nullable decimal
+                    row.CreateCell(5).SetCellValue(item.UOM);
+                    row.CreateCell(6).SetCellValue(item.Issued_DateTime.HasValue ? item.Issued_DateTime.Value.ToString("MM/dd/yyyy HH:mm:ss") : ""); // Assuming Issued_DateTime is nullable DateTime
+                    row.CreateCell(7).SetCellValue(item.Issued_By);
+                    row.CreateCell(8).SetCellValue(item.ShopOrderId);
+                    row.CreateCell(9).SetCellValue(item.ReferenceID);
+                    row.CreateCell(10).SetCellValue(item.ReferenceIDFrom);
+                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.BOM_Version_No ?? 0)); // Assuming BOM_Version_No is nullable decimal
+                    row.CreateCell(12).SetCellValue(item.From_Location);
+                    row.CreateCell(13).SetCellValue(item.TO_Location);
+                    row.CreateCell(14).SetCellValue(item.ModifiedStatus != null ? item.ModifiedStatus.ToString() : ""); // Assuming ModifiedStatus is nullable bool
+                    row.CreateCell(15).SetCellValue(item.Unit);
+                    row.CreateCell(16).SetCellValue(item.GrinMaterialType);
+                    row.CreateCell(17).SetCellValue(item.Remarks);
+                    row.CreateCell(18).SetCellValue(item.CreatedBy);
+                    row.CreateCell(19).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy HH:mm:ss") : ""); // Assuming CreatedOn is nullable DateTime
+                    row.CreateCell(20).SetCellValue(item.LastModifiedOn.HasValue ? item.LastModifiedOn.Value.ToString("MM/dd/yyyy HH:mm:ss") : ""); // Assuming LastModifiedOn is nullable DateTime
+                    row.CreateCell(21).SetCellValue(item.PartType != null ? item.PartType.ToString() : ""); // Assuming PartType is nullable enum
+                    row.CreateCell(22).SetCellValue(item.LotNumber);
+                    row.CreateCell(23).SetCellValue(item.IsStockAvailable);
+                    row.CreateCell(24).SetCellValue(item.Warehouse);
+                    row.CreateCell(25).SetCellValue(item.GrinNo);
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.GrinPartId ?? 0)); // Assuming GrinPartId is nullable int
+                    row.CreateCell(27).SetCellValue(item.shopOrderNo);
+                }
 
-    }
-}
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "InventoryTranctionSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+                //MaterialRequest
+                //[HttpPost]
+                //public async Task<IActionResult> MaterialInventoryTranctionBalanceQty([FromBody] List<UpdateInventoryTranctionBalanceQty> updateInventoryTranctionBalanceQty)
+                //{
+                //    try
+                //    {
+                //        foreach (var materialIssueQty in updateInventoryTranctionBalanceQty)
+                //        {
+                //            foreach (var Location in materialIssueQty.MRNWarehouseList)
+                //            {
+                //                decimal issuedQty = Location.Qty;
+                //                IEnumerable<InventoryTranction> inventories = await _inventoryTranctionRepository.GetInventoryTranctionDetailsByItemNoandLocationandwarehouse(materialIssueQty.PartNumber, Location.Location, Location.Warehouse, materialIssueQty.ProjectNumber);
+                //                foreach (var invItem in inventories)
+                //                {
+                //                    decimal stock = invItem.Issued_Quantity;
+                //                    if (stock <= issuedQty)
+                //                    {
+
+                //                        invItem.Issued_Quantity = 0;
+                //                        invItem.IsStockAvailable = false;
+                //                        issuedQty -= stock;
+
+                //                    }
+                //                    else
+                //                    {
+                //                        invItem.Issued_Quantity -= issuedQty;
+                //                        issuedQty = 0;
+                //                    }
+                //                    await _inventoryTranctionRepository.UpdateInventoryTraction(invItem);
+                //                    if (issuedQty <= 0)
+                //                    {
+                //                        break;
+                //                    }
+                //                }
+
+                //            }
+                //        }
+                //        _inventoryTranctionRepository.SaveAsync();
+                //        return Ok();
+                //    }
+                //    catch (Exception ex)
+                //    {
+
+                //        return StatusCode(500);
+                //    }
+                //}
+
+            }
+        }
