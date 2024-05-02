@@ -1294,9 +1294,8 @@ namespace Tips.Purchase.Api.Controllers
                     var httpClient = new HttpClient(httpclientHandler);
                     var mails = "chethan.v@wyzmindz.com";
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("mohammed.ghouse@wyzmindz.com"));
+                    email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetails.PODate.ToString().Split(" ");
-                    // podate = podate.Substring(9);
                     email.To.Add(MailboxAddress.Parse(mails));
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
@@ -1320,17 +1319,13 @@ namespace Tips.Purchase.Api.Controllers
                             foreach (var project in item.POAddprojects)
                             {
                                 if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
-                                else if (!tempProj.Contains(project.ProjectNumber)) ProjectNos = ProjectNos + ", " + project.ProjectNumber;
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
                             }
                         if (item.PrDetails.Count > 0)
                             foreach (var pr in item.PrDetails)
-                            {
-                                //var uniquePRNumbers = new HashSet<string>();
-                                //if (!uniquePRNumbers.Contains(pr.PRNumber))
-                                //{
+                            {                                
                                 if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
-                                else if (!tempPRno.Contains(pr.PRNumber)) PRNo = PRNo + ", " + pr.PRNumber;
-                                //}
+                                else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
                             }
 
                     }
@@ -1340,8 +1335,8 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
-                    smtp.Authenticate("mohammed.ghouse@wyzmindz.com", "Hisham@9880");
+                    smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                    smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
@@ -2784,7 +2779,7 @@ namespace Tips.Purchase.Api.Controllers
                     var httpClient = new HttpClient(httpclientHandler);
                     var mails = "chethan.v@wyzmindz.com";
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("mohammed.ghouse@wyzmindz.com"));
+                    email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
                     email.To.Add(MailboxAddress.Parse(mails));
                     email.Subject = emaildetails.data.subject;
@@ -2809,17 +2804,13 @@ namespace Tips.Purchase.Api.Controllers
                             foreach (var project in item.POAddprojects)
                             {
                                 if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
-                                else if (!tempProj.Contains(project.ProjectNumber)) ProjectNos = ProjectNos + ", " + project.ProjectNumber;
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
                             }
                         if (item.PrDetails.Count > 0)
                             foreach (var pr in item.PrDetails)
                             {
-                                //var uniquePRNumbers = new HashSet<string>();
-                                //if (!uniquePRNumbers.Contains(pr.PRNumber))
-                                //{
                                 if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
-                                else if (!tempPRno.Contains(pr.PRNumber)) PRNo = PRNo + ", " + pr.PRNumber;
-                                //}
+                                else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
                             }
 
                     }
@@ -2829,11 +2820,12 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
-                    smtp.Authenticate("mohammed.ghouse@wyzmindz.com", "Hisham@9880");
+                    smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                    smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
+
                 }
                 serviceResponse.Message = "PurchaseOrderApprovalI Activated Successfully";
                 serviceResponse.Success = true;
@@ -2885,7 +2877,7 @@ namespace Tips.Purchase.Api.Controllers
                     var httpClient = new HttpClient(httpclientHandler);
                     var mails = "chethan.v@wyzmindz.com";
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("mohammed.ghouse@wyzmindz.com"));
+                    email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
                     email.To.Add(MailboxAddress.Parse(mails));
                     email.Subject = emaildetails.data.subject;
@@ -2903,24 +2895,20 @@ namespace Tips.Purchase.Api.Controllers
                     List<string>? tempProj = new List<string>();
                     List<string>? tempPRno = new List<string>();
                     string? PRNo = null;
-                    foreach (var item in purchaseOrderDetailByPONumber.POItems)
+                    foreach (var item in purchaseOrderDetails.POItems)
                     {
 
                         if (item.POAddprojects.Count > 0)
                             foreach (var project in item.POAddprojects)
                             {
                                 if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
-                                else if (!tempProj.Contains(project.ProjectNumber)) ProjectNos = ProjectNos + ", " + project.ProjectNumber;
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
                             }
                         if (item.PrDetails.Count > 0)
                             foreach (var pr in item.PrDetails)
                             {
-                                //var uniquePRNumbers = new HashSet<string>();
-                                //if (!uniquePRNumbers.Contains(pr.PRNumber))
-                                //{
                                 if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
-                                else if (!tempPRno.Contains(pr.PRNumber)) PRNo = PRNo + ", " + pr.PRNumber;
-                                //}
+                                else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
                             }
 
                     }
@@ -2930,11 +2918,12 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
-                    smtp.Authenticate("mohammed.ghouse@wyzmindz.com", "Hisham@9880");
+                    smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                    smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
+
                 }
                 serviceResponse.Message = "PurchaseOrderApprovalII Activated Successfully";
                 serviceResponse.Success = true;
@@ -2985,7 +2974,7 @@ namespace Tips.Purchase.Api.Controllers
                     var httpClient = new HttpClient(httpclientHandler);
                     var mails = "chethan.v@wyzmindz.com";
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("mohammed.ghouse@wyzmindz.com"));
+                    email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
                     email.To.Add(MailboxAddress.Parse(mails));
                     email.Subject = emaildetails.data.subject;
@@ -3003,24 +2992,20 @@ namespace Tips.Purchase.Api.Controllers
                     List<string>? tempProj = new List<string>();
                     List<string>? tempPRno = new List<string>();
                     string? PRNo = null;
-                    foreach (var item in purchaseOrderDetailByPONumber.POItems)
+                    foreach (var item in purchaseOrderDetails.POItems)
                     {
 
                         if (item.POAddprojects.Count > 0)
                             foreach (var project in item.POAddprojects)
                             {
                                 if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
-                                else if (!tempProj.Contains(project.ProjectNumber)) ProjectNos = ProjectNos + ", " + project.ProjectNumber;
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
                             }
                         if (item.PrDetails.Count > 0)
                             foreach (var pr in item.PrDetails)
                             {
-                                //var uniquePRNumbers = new HashSet<string>();
-                                //if (!uniquePRNumbers.Contains(pr.PRNumber))
-                                //{
                                 if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
-                                else if (!tempPRno.Contains(pr.PRNumber)) PRNo = PRNo + ", " + pr.PRNumber;
-                                //}
+                                else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
                             }
 
                     }
@@ -3030,11 +3015,12 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
-                    smtp.Authenticate("mohammed.ghouse@wyzmindz.com", "Hisham@9880");
+                    smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                    smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
+
                 }
                 serviceResponse.Message = "PurchaseOrderApprovalIII Activated Successfully";
                 serviceResponse.Success = true;
@@ -3085,7 +3071,7 @@ namespace Tips.Purchase.Api.Controllers
                     var httpClient = new HttpClient(httpclientHandler);
                     var mails = "chethan.v@wyzmindz.com";
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("mohammed.ghouse@wyzmindz.com"));
+                    email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
                     email.To.Add(MailboxAddress.Parse(mails));
                     email.Subject = emaildetails.data.subject;
@@ -3103,24 +3089,20 @@ namespace Tips.Purchase.Api.Controllers
                     List<string>? tempProj = new List<string>();
                     List<string>? tempPRno = new List<string>();
                     string? PRNo = null;
-                    foreach (var item in purchaseOrderDetailByPONumber.POItems)
+                    foreach (var item in purchaseOrderDetails.POItems)
                     {
 
                         if (item.POAddprojects.Count > 0)
                             foreach (var project in item.POAddprojects)
                             {
                                 if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
-                                else if (!tempProj.Contains(project.ProjectNumber)) ProjectNos = ProjectNos + ", " + project.ProjectNumber;
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
                             }
                         if (item.PrDetails.Count > 0)
                             foreach (var pr in item.PrDetails)
                             {
-                                //var uniquePRNumbers = new HashSet<string>();
-                                //if (!uniquePRNumbers.Contains(pr.PRNumber))
-                                //{
                                 if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
-                                else if (!tempPRno.Contains(pr.PRNumber)) PRNo = PRNo + ", " + pr.PRNumber;
-                                //}
+                                else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
                             }
 
                     }
@@ -3130,11 +3112,12 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
-                    smtp.Authenticate("mohammed.ghouse@wyzmindz.com", "Hisham@9880");
+                    smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                    smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
+
                 }
                 serviceResponse.Message = "PurchaseOrderApprovalIV Activated Successfully";
                 serviceResponse.Success = true;
@@ -3376,7 +3359,7 @@ namespace Tips.Purchase.Api.Controllers
                     var httpClient = new HttpClient(httpclientHandler);
                     var mails = "chethan.v@wyzmindz.com";
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("mohammed.ghouse@wyzmindz.com"));
+                    email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = PODetails.PODate.ToString().Split(" ");
                     email.To.Add(MailboxAddress.Parse(mails));
                     email.Subject = emaildetails.data.subject;
@@ -3401,17 +3384,13 @@ namespace Tips.Purchase.Api.Controllers
                             foreach (var project in item.POAddprojects)
                             {
                                 if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
-                                else if (!tempProj.Contains(project.ProjectNumber)) ProjectNos = ProjectNos + ", " + project.ProjectNumber;
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
                             }
                         if (item.PrDetails.Count > 0)
                             foreach (var pr in item.PrDetails)
                             {
-                                //var uniquePRNumbers = new HashSet<string>();
-                                //if (!uniquePRNumbers.Contains(pr.PRNumber))
-                                //{
                                 if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
-                                else if (!tempPRno.Contains(pr.PRNumber)) PRNo = PRNo + ", " + pr.PRNumber;
-                                //}
+                                else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
                             }
 
                     }
@@ -3421,11 +3400,12 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
-                    smtp.Authenticate("mohammed.ghouse@wyzmindz.com", "Hisham@9880");
+                    smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                    smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
+
                 }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "PoConfirmationStatus have been Updated";
