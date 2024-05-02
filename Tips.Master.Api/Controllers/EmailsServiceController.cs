@@ -94,7 +94,7 @@ namespace Tips.Master.Api.Controllers
 
                 using var smtp = new MailKit.Net.Smtp.SmtpClient();
                 smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
-                smtp.Authenticate("mohammed.ghouse@wyzmindz.com", "Hisham@9880");
+                smtp.Authenticate("Enter Email", "Enter PW");
 
                 smtp.Send(email);
                 smtp.Disconnect(true);
