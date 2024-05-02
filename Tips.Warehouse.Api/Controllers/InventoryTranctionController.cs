@@ -543,7 +543,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<IActionResult> ExportInventoryTranctionSPReportToExcel()
         {
             try
