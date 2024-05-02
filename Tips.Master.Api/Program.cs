@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using NLog;
 using Repository;
 using System.Text;
@@ -24,6 +25,10 @@ builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.ConfigureRepositoryWrapper();
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
+builder.Services.AddControllers();
+
 builder.Services.Configure<KestrelServerOptions>(option =>
 {
     option.Limits.MaxRequestBodySize = 1073741824;
@@ -32,9 +37,39 @@ builder.Services.Configure<IISServerOptions>(option =>
 {
     option.MaxRequestBodySize = 1073741824;
 });
-//var key = builder.Configuration["Jwt:key"];
-//builder.Services.ConfigureJwtToken(builder.Configuration);
+
 builder.Services.AddTransient<IJwtAuth, Auth>();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Tips.Master.Api",
+        Version = "v1"
+    });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "Jwt",
+        In = ParameterLocation.Header,
+        Description = "Enter the User Token with Bearer Format"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+         new OpenApiSecurityScheme
+         {
+             Reference = new OpenApiReference
+             {
+                 Type=ReferenceType.SecurityScheme,
+                 Id="Bearer"
+             }
+         },
+         new string[]{}
+        }
+    });
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -42,19 +77,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = false,
-            // ValidIssuer = "Wyzmindz", // Use the same issuer as the one in https://localhost:7016
             ValidateAudience = false,
-            // ValidAudience = "Tips", // Use the same audience as the one in https://localhost:7016
+            ValidateLifetime = true,            
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
+                Encoding.ASCII.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
         };
     });
-//builder.Services.AuthenticateByJwtToken(builder.Configuration);
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IReleaseProductBomRepository, ReleaseProductBomRepository>();
 builder.Services.AddScoped<IAdditionalChargesRepository, AdditionalChargesRepository>();
 builder.Services.AddScoped<IReleaseCostBomRepository, ReleaseCostBomRepository>();
@@ -86,20 +118,14 @@ builder.Services.AddScoped<IRoomNameRepository, RoomNameRepository>();
 builder.Services.AddScoped<IProductTypeRepository, ProductTypeRepository>();
 builder.Services.AddScoped<ITypeSolutionRepository, TypeSolutionRepository>();
 builder.Services.AddScoped<ITypeOfRoomRepository, TypeOfRoomRepository>();
-builder.Services.AddHttpContextAccessor();
-builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+
 app.UseSwagger();
-app.UseSwaggerUI();
-//}
+
 
 app.UseHttpsRedirection();
-
-//app.UseStaticFiles();
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
@@ -108,11 +134,16 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 
 
 app.UseCors("CorsPolicy");
+app.UseRouting();
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-app.UseRouting();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tips.Master.Api");
+    c.RoutePrefix = "swagger";
+    c.DisplayRequestDuration();
+});
 
 app.MapControllers();
 

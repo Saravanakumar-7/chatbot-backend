@@ -14,6 +14,8 @@ using Tips.Grin.Api.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,29 +30,64 @@ builder.Services.ConfigureLoggerService();
 builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
 //builder.Services.AuthenticateByJwtToken(builder.Configuration);
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
 
-//var key = builder.Configuration["Jwt:key"];
-//builder.Services.ConfigureJwtToken(builder.Configuration);
-//builder.Services.AddTransient<IJwtAuth, Auth>();
+builder.Services.AddControllers();
+builder.Services.Configure<KestrelServerOptions>(option =>
+{
+    option.Limits.MaxRequestBodySize = 1073741824;
+});
+builder.Services.Configure<IISServerOptions>(option =>
+{
+    option.MaxRequestBodySize = 1073741824;
+});
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Tips.GRIN.Api",
+        Version = "v1"
+    });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "Jwt",
+        In = ParameterLocation.Header,
+        Description = "Enter the User Token with Bearer Format"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+         new OpenApiSecurityScheme
+         {
+             Reference = new OpenApiReference
+             {
+                 Type=ReferenceType.SecurityScheme,
+                 Id="Bearer"
+             }
+         },
+         new string[]{}
+        }
+    });
+});
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = false,
-            // ValidIssuer = "Wyzmindz", // Use the same issuer as the one in https://localhost:7016
             ValidateAudience = false,
-            // ValidAudience = "Tips", // Use the same audience as the one in https://localhost:7016
-            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
+                Encoding.ASCII.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
         };
     });
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+//builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IGrinRepository, GrinRepository>();
 builder.Services.AddScoped<IIQCConfirmationRepository, IQCConfirmationRepository>();
@@ -62,27 +99,11 @@ builder.Services.AddScoped<IOpenGrinRepository, OpenGrinRepository>();
 builder.Services.AddScoped<IBinningLocationRepository, BinningLocationRepository>();
 builder.Services.AddScoped<IWeightedAvgCostRepository, WeightedAvgCostRepository>();
 builder.Services.AddScoped<IIQCConfirmationItemsRepository, IQCConfirmationItemsRepository>();
-//builder.Services.AddScoped<IReturnGrinDocumentUploadRepository, ReturnGrinDocumentUpload>();
-builder.Services.AddControllersWithViews()
-    .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-
-
 builder.Services.AddScoped<IDocumentUploadRepository, UploadDocumentRepository>();
-builder.Services.AddHttpClient();
-builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
 app.UseSwagger();
-app.UseSwaggerUI();
-//}
-
 app.UseHttpsRedirection();
-
-//app.UseStaticFiles();
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
@@ -90,12 +111,16 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 });
 
 app.UseCors("CorsPolicy");
+app.UseRouting();
 
 app.UseAuthentication();
-
 app.UseAuthorization();
-
-app.UseRouting();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tips.GRIN.Api");
+    c.RoutePrefix = "swagger";
+    c.DisplayRequestDuration();
+});
 
 app.MapControllers();
 

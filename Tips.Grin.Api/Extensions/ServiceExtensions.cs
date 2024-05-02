@@ -78,7 +78,7 @@ namespace Tips.Grin.Api.Extensions
                  {
                      ValidateIssuer = false,
                      ValidateAudience = false,
-                     ValidateLifetime = false,
+                     ValidateLifetime = true,
                      ValidateIssuerSigningKey = true,
                      //ValidIssuer = "[Issuer name]", // replace with the actual issuer name used by the Master API Microservice
                      //ValidAudience = "[Audience name]", // replace with the actual audience name used by the Grin Service
@@ -103,6 +103,7 @@ namespace Tips.Grin.Api.Extensions
                     ValidateIssuerSigningKey = true,
                     ValidateIssuer = false,
                     ValidateAudience = false,
+                    ValidateLifetime=true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key))
                 };
             });

@@ -53,6 +53,7 @@ namespace Accounts
             var key = _configuration["Jwt:key"];
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenKey = Encoding.ASCII.GetBytes(key);
+            var now = DateTime.UtcNow;
             var tokenDescriptor = new SecurityTokenDescriptor()
             {
                 Subject = new ClaimsIdentity(
@@ -63,7 +64,8 @@ namespace Accounts
                 new Claim("UnitName", userDetail.Unit), 
                 new Claim("UserId", userDetail.Id.ToString()),
                     }),
-                Expires = DateTime.UtcNow.AddHours(8),
+                //Expires = DateTime.UtcNow.AddHours(8),
+                Expires = DateTime.UtcNow.AddMinutes(2),
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256Signature)
             };

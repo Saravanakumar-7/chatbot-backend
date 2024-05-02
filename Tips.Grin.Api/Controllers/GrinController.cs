@@ -57,9 +57,9 @@ namespace Tips.Grin.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpClientFactory _clientFactory;
 
-
-        public GrinController(IIQCConfirmationRepository iQCConfirmationRepository,
+        public GrinController(IIQCConfirmationRepository iQCConfirmationRepository, IHttpClientFactory clientFactory,
          IIQCConfirmationItemsRepository iQCConfirmationItemsRepository, IGrinRepository repository, IHttpContextAccessor httpContextAccessor, IDocumentUploadRepository documentUploadRepository, IGrinPartsRepository grinPartsRepository,
            IWeightedAvgCostRepository weightedAvgCostRepository, IWebHostEnvironment webHostEnvironment, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
@@ -75,7 +75,7 @@ namespace Tips.Grin.Api.Controllers
             _documentUploadRepository = documentUploadRepository;
             _httpClient = httpClient;
             _config = config;
-
+            _clientFactory = clientFactory;
             //var tokenValue = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
             //if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
             //{
@@ -415,7 +415,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
         // GET api/<GrinController>/5
-        [HttpGet("{id}")]
+        [HttpGet("{id}"),Authorize]
         public async Task<IActionResult> GetGrinById(int id)
         {
             ServiceResponse<GrinItemMasterEnggDto> serviceResponse = new ServiceResponse<GrinItemMasterEnggDto>();
@@ -447,32 +447,20 @@ namespace Tips.Grin.Api.Controllers
                     {
                         GrinPartsItemMasterEnggDto grinPartsItemMasterEnggDto = _mapper.Map<GrinPartsItemMasterEnggDto>(GrinpartsDetails);
                         grinPartsItemMasterEnggDto.ProjectNumbers = _mapper.Map<List<ProjectNumbersDto>>(GrinpartsDetails.ProjectNumbers);
+                        var client = _clientFactory.CreateClient();
+                        var token = HttpContext.Request.Headers["Authorization"].ToString();
 
-
-                        //var httpClient = new HttpClient();
-
-                        //// Include the token in the Authorization header
-                        //var tokenValue = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-                        //if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
-                        //{
-                        //    var token = tokenValue.Substring(7);
-                        //    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                        //}
-
-                        //Add ItemMasterEnggDetails in GrinParts
                         var ItemNumber = grinPartsItemMasterEnggDto.ItemNumber;
                         var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
 
-                        var itemMasterDetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
-                            "GetItemMasterByItemNumber?", "&ItemNumber=", encodedItemNumber));
+                        var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterEnggAPI"],
+                            $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+                        request.Headers.Add("Authorization", token);
 
+                        var itemMasterDetails = await client.SendAsync(request);
                         var inventoryObjectString = await itemMasterDetails.Content.ReadAsStringAsync();
                         dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        //dynamic inventoryObject = new List<dynamic>();
                         dynamic inventoryObject = inventoryObjectData.data;
-                        //inventoryObject = inventoryObjectData;
-                        //foreach (var item in inventoryObject)
-                        //{
                         grinPartsItemMasterEnggDto.DrawingNo = inventoryObject.drawingNo;
                         grinPartsItemMasterEnggDto.DocRet = inventoryObject.docRet;
                         grinPartsItemMasterEnggDto.RevNo = inventoryObject.revNo;
@@ -480,10 +468,8 @@ namespace Tips.Grin.Api.Controllers
                         grinPartsItemMasterEnggDto.IsRohsItem = inventoryObject.isRohsItem;
                         grinPartsItemMasterEnggDto.IsShelfLife = inventoryObject.isShelfLife;
                         grinPartsItemMasterEnggDto.IsReachItem = inventoryObject.isReachItem;
-                        //grinPartsItemMasterEnggDto.FileUpload = inventoryObject.fileUpload.ToObject<List<DocumentUpload>>();
 
                         grinPartsItemMasterEnggList.Add(grinPartsItemMasterEnggDto);
-                        //}
 
                     }
 
