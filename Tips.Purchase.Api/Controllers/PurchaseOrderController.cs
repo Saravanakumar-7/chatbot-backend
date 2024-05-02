@@ -2895,7 +2895,7 @@ namespace Tips.Purchase.Api.Controllers
                     List<string>? tempProj = new List<string>();
                     List<string>? tempPRno = new List<string>();
                     string? PRNo = null;
-                    foreach (var item in purchaseOrderDetails.POItems)
+                    foreach (var item in purchaseOrderDetailByPONumber.POItems)
                     {
 
                         if (item.POAddprojects.Count > 0)
@@ -2992,7 +2992,7 @@ namespace Tips.Purchase.Api.Controllers
                     List<string>? tempProj = new List<string>();
                     List<string>? tempPRno = new List<string>();
                     string? PRNo = null;
-                    foreach (var item in purchaseOrderDetails.POItems)
+                    foreach (var item in purchaseOrderDetailByPONumber.POItems)
                     {
 
                         if (item.POAddprojects.Count > 0)
@@ -3089,7 +3089,7 @@ namespace Tips.Purchase.Api.Controllers
                     List<string>? tempProj = new List<string>();
                     List<string>? tempPRno = new List<string>();
                     string? PRNo = null;
-                    foreach (var item in purchaseOrderDetails.POItems)
+                    foreach (var item in purchaseOrderDetailByPONumber.POItems)
                     {
 
                         if (item.POAddprojects.Count > 0)
