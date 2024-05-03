@@ -15,12 +15,13 @@ using System.Net.Http;
 using System.Data;
 using System.Data.SqlClient;
 using Google.Protobuf.WellKnownTypes;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class ConsumptionReportController : ControllerBase
     {
         private IInventoryRepository _inventoryRepository;

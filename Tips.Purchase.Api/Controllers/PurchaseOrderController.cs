@@ -442,48 +442,6 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-
-
-        //        [HttpGet()] // Adjust your route as needed
-        //        public async Task<IActionResult> GetPurchaseOrderSPReportWithParam(
-        //                [FromQuery] string? VendorName,
-        //                [FromQuery] string? PONumber,
-        //                [FromQuery] string? PartNumber
-        //)
-        //        {
-        //            ServiceResponse<IEnumerable<PurchaseOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReport>>();
-        //            try
-        //            {
-        //                var products = await _repository.GetPurchaseOrderSPReportWithParam(VendorName, PONumber, PartNumber);
-
-        //                if (products == null)
-        //                {
-        //                    serviceResponse.Data = null;
-        //                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
-        //                    serviceResponse.Success = false;
-        //                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-        //                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
-        //                    return NotFound(serviceResponse);
-        //                }
-        //                else
-        //                {
-        //                    serviceResponse.Data = products;
-        //                    serviceResponse.Message = "Returned PurchaseOrder Details";
-        //                    serviceResponse.Success = true;
-        //                    serviceResponse.StatusCode = HttpStatusCode.OK;
-        //                    return Ok(serviceResponse);
-        //                }
-        //            }
-        //            catch (Exception ex)
-        //            {
-        //                _logger.LogError(ex.Message);
-        //                serviceResponse.Data = null;
-        //                serviceResponse.Message = $"Something went wrong inside PurchaseOrder action";
-        //                serviceResponse.Success = false;
-        //                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //                return StatusCode(500, serviceResponse);
-        //            }
-        //        }
         [HttpGet]
         public async Task<IActionResult> GetPurchaseOrderSPResport([FromQuery] PagingParameter pagingParameter)
         {
@@ -1293,7 +1251,6 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    //var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
                            "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
@@ -1985,49 +1942,7 @@ namespace Tips.Purchase.Api.Controllers
                 var poItemDtoList = new List<PoItem>();
                 var poIncoTermDto = purchaseOrderUpdateDto.POIncoTerms;
                 var poIncoTermsList = new List<PoIncoTerm>();
-                //var poUploadDetails = purchaseOrderUpdateDto.POFiles;
-                //var poDocumentUploadDtoList = new List<DocumentUpload>();
-
-                //foreach (var poUploadDetail in poUploadDetails)
-                //{
-                //    if (poUploadDetail.Id!=null) {
-                //        Guid guid = Guid.NewGuid();
-                //        var fileContent = poUploadDetail.FileByte;
-                //        byte[] imageContent = Convert.FromBase64String(poUploadDetail.FileByte);
-                //        var poNumbers = purchaseOrderDetails.PONumber;
-                //        string fileName = guid.ToString() + "_" + poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
-                //        string FileExt = Path.GetExtension(fileName).ToUpper();
-
-
-                //        //string filename_1 = guid.ToString() + "_" + fileName;
-                //        string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", fileName);
-                //        using (MemoryStream ms = new MemoryStream(imageContent))
-                //        {
-                //            ms.Position = 0;
-                //            using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                //            {
-                //                ms.WriteTo(fileStream);
-                //            }
-                //            var uploadedFile = new DocumentUpload
-                //            {
-                //                FileName = fileName,
-                //                FileExtension = FileExt,
-                //                FilePath = filePath,
-                //                ParentNumber = poNumbers,
-                //                DocumentFrom = "PODocument",
-                //            };
-                //            _documentUploadRepository.CreateUploadDocumentPO(uploadedFile);
-                //            _documentUploadRepository.SaveAsync();
-
-                //            if (uploadedFile != null)
-                //            {
-                //                DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
-                //                poDocumentUploadDtoList.Add(poFileDetails);
-                //            }
-
-                //        }
-                //    }
-                //}
+                
                 if (poIncoTermDto != null)
                 {
                     for (int i = 0; i < poIncoTermDto.Count; i++)
@@ -2054,7 +1969,6 @@ namespace Tips.Purchase.Api.Controllers
 
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
                         poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
-                        //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
                         poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
                         poItemDetails.PONumber = purchaseOrderUpdateDto.PONumber;
                         poItemDtoList.Add(poItemDetails);
@@ -2122,7 +2036,6 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    //var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
                            "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
@@ -2212,7 +2125,6 @@ namespace Tips.Purchase.Api.Controllers
             foreach (var item in purchaseOrderUpdateQtyDetails)
             {
                 IEnumerable<PoItem> poItems = await _poItemsRepository.GetPODetailsByPONumberandItemNo(item.ItemNumber, item.PONumber);
-                //var PoorderItem = poItems.FirstOrDefault();
                 decimal dispatchedQty = item.Qty;
 
                 foreach (var poItem in poItems)
@@ -2255,7 +2167,6 @@ namespace Tips.Purchase.Api.Controllers
             foreach (var item in poProjectNoUpdateBalQtyDetails)
             {
                 IEnumerable<PoAddProject> poProjectNoDetails = await _poAddprojectRepository.GetPOProjectNoDetailsByProjectNo(item.ItemNumber, item.ProjectNumber);
-                //var PoorderItem = poItems.FirstOrDefault();
                 decimal dispatchedQty = item.ProjectQty;
 
                 foreach (var poProjectNos in poProjectNoDetails)
@@ -2852,12 +2763,9 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
-                             "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],"GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
-
                     var response = await client.SendAsync(request);
-                    // var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
                     var httpclientHandler = new HttpClientHandler();
@@ -2958,9 +2866,7 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    //var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
-                           "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],"GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
@@ -3051,7 +2957,7 @@ namespace Tips.Purchase.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"PurchaseOrderApprovalII with string: {PONumber}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
-                }//
+                }
                 purchaseOrderDetailByPONumber.POApprovalIII = true;
                 purchaseOrderDetailByPONumber.POApprovedIIIBy = _createdBy;
                 purchaseOrderDetailByPONumber.POApprovedIIIDate = DateTime.Now;
@@ -3062,12 +2968,9 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
-                          "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],"GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
-
                     var response = await client.SendAsync(request);
-                    //var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
                     var httpclientHandler = new HttpClientHandler();
@@ -3167,11 +3070,8 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    //var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
-                           "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],"GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
-
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
@@ -3567,7 +3467,6 @@ namespace Tips.Purchase.Api.Controllers
                 string result = await _poItemsRepository.UpdatePOOrderItem(poItemDetailByPoItemId);
                 _poItemsRepository.SaveAsync();
 
-                //Update PurchaseOrder Table Status
                 var poItemOpenStatuscount = await _poItemsRepository.GetPoItemOpenStatusCount(poItemDetailByPoItemId.PurchaseOrderId);
 
                 if (poItemOpenStatuscount == 0)
@@ -3603,7 +3502,7 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-        [HttpGet()] // Adjust your route as needed
+        [HttpGet()] 
         public async Task<IActionResult> Get_Tras_PurchaseOrderSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
             ServiceResponse<IEnumerable<Tras_POSPReport>> serviceResponse = new ServiceResponse<IEnumerable<Tras_POSPReport>>();

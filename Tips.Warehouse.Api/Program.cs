@@ -15,6 +15,8 @@ using Tips.Warehouse.Api.Repository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,18 +38,55 @@ builder.Services.AddControllers().AddJsonOptions(opt =>
 {
     opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
 });
+builder.Services.Configure<KestrelServerOptions>(option =>
+{
+    option.Limits.MaxRequestBodySize = 1073741824;
+});
+builder.Services.Configure<IISServerOptions>(option =>
+{
+    option.MaxRequestBodySize = 1073741824;
+});
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Tips.Warehouse.Api",
+        Version = "v1"
+    });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "Jwt",
+        In = ParameterLocation.Header,
+        Description = "Enter the User Token with Bearer Format"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+         new OpenApiSecurityScheme
+         {
+             Reference = new OpenApiReference
+             {
+                 Type=ReferenceType.SecurityScheme,
+                 Id="Bearer"
+             }
+         },
+         new string[]{}
+        }
+    });
+});
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = false,
-            // ValidIssuer = "Wyzmindz", // Use the same issuer as the one in https://localhost:7016
             ValidateAudience = false,
-            // ValidAudience = "Tips", // Use the same audience as the one in https://localhost:7016
-            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
+                Encoding.ASCII.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
         };
     });
 //builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
@@ -113,6 +152,12 @@ app.UseCors("CorsPolicy");
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tips.Warehouse.Api");
+    c.RoutePrefix = "swagger";
+    c.DisplayRequestDuration();
+});
 
 app.MapControllers();
 

@@ -25,7 +25,7 @@ namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class ReturnInvoiceController : ControllerBase
     {
         private IReturnInvoiceRepository _returnInvoiceRepository;
@@ -42,13 +42,15 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public ReturnInvoiceController(IReturnInvoiceRepository returnInvoiceRepositor, IInvoiceChildRepository invoiceChildRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryTranctionRepository inventoryTranctionRepository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        private readonly IHttpClientFactory _clientFactory;
+        public ReturnInvoiceController(IReturnInvoiceRepository returnInvoiceRepositor, IHttpClientFactory clientFactory, IInvoiceChildRepository invoiceChildRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryTranctionRepository inventoryTranctionRepository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _returnInvoiceRepository = returnInvoiceRepositor;
             _logger = logger;
             _mapper = mapper;
             _httpClient = httpClient;
             _config = config;
+            _clientFactory = clientFactory;
             _inventoryRepository = inventoryRepository;
             _invoiceChildRepository = invoiceChildRepository;
             _inventoryTranctionRepository = inventoryTranctionRepository;
@@ -233,7 +235,7 @@ namespace Tips.Warehouse.Api.Controllers
                         int getBtoDeliveryOrderPartsId = returnInvoiceItemDto[i].BtoDeliveryOrderPartsId;
 
                         var btoDeliveryOrderItemDetails = await _bTODeliveryOrderItemsRepository.GetBtoDelieveryOrderItemDetails(getBtoDeliveryOrderPartsId);
- 
+
                         btoDeliveryOrderItemDetails.OrderBalanceQty += returnInvoiceItemDto[i].ReturnQty;
                         btoDeliveryOrderItemDetails.DispatchQty -= returnInvoiceItemDto[i].ReturnQty;
                         btoDeliveryOrderItemDetails.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
@@ -299,7 +301,7 @@ namespace Tips.Warehouse.Api.Controllers
                                 //inventory.PartType = returnBtoDeliveryOrderItems.PartType;
 
                                 await _inventoryRepository.CreateInventory(inventory);
-                                
+
                             }
                             else
                             {
@@ -308,7 +310,7 @@ namespace Tips.Warehouse.Api.Controllers
                                 exInv.IsStockAvailable = true;
                                 exInv.Balance_Quantity += eachbin.DistributingQty;
                                 await _inventoryRepository.UpdateInventory(exInv);
-                               
+
 
                             }
 
@@ -415,7 +417,7 @@ namespace Tips.Warehouse.Api.Controllers
                 returnInvoiceDetails.ReturnInvoiceItems = returnInvoiceItemsList;
 
                 await _returnInvoiceRepository.CreateReturnInvoice(returnInvoiceDetails);
-               
+
 
                 //update balance qty and dispatch qty in sales order table for return Invoice concept
 
@@ -423,14 +425,17 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var json = JsonConvert.SerializeObject(invoiceReturnDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-                // Include the token in the Authorization header
-                var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
-                if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
+                           "ReturnInvoiceUpdateDispatchDetails"))
                 {
-                    var token = tokenValues.Substring(7);
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                }
-                var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnInvoiceUpdateDispatchDetails"), data);
+                    Content = data
+                };
+                request.Headers.Add("Authorization", token);
+
+                var response = await client.SendAsync(request);
+                //var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnInvoiceUpdateDispatchDetails"), data);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     salesOrderUpdateStatusCode = response.StatusCode;

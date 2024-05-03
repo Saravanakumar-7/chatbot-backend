@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NPOI.SS.UserModel;
@@ -17,103 +18,104 @@ namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class InventoryTranctionController : ControllerBase
-    {       
-            private IInventoryTranctionRepository _inventoryTranctionRepository;
-            private IMaterialIssueTrackerRepository _materialIssueTrackerRepository;
-            private ILoggerManager _logger;
-            private IMapper _mapper;
+    {
+        private IInventoryTranctionRepository _inventoryTranctionRepository;
+        private IMaterialIssueTrackerRepository _materialIssueTrackerRepository;
+        private ILoggerManager _logger;
+        private IMapper _mapper;
+        private readonly IHttpClientFactory _clientFactory;
+        public InventoryTranctionController(IMaterialIssueTrackerRepository materialIssueTrackerRepository, IHttpClientFactory clientFactory, IInventoryTranctionRepository inventoryTranctionRepository, ILoggerManager logger, IMapper mapper)
+        {
+            _inventoryTranctionRepository = inventoryTranctionRepository;
+            _materialIssueTrackerRepository = materialIssueTrackerRepository;
+            _logger = logger;
+            _mapper = mapper;
+            _clientFactory = clientFactory;
+        }
 
-            public InventoryTranctionController(IMaterialIssueTrackerRepository materialIssueTrackerRepository,IInventoryTranctionRepository inventoryTranctionRepository, ILoggerManager logger, IMapper mapper)
+        // GET: api/<InventoryTranctionController>
+        [HttpGet]
+        public async Task<IActionResult> GetAllInventoryTranctions([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        {
+            ServiceResponse<IEnumerable<InventoryTranctionDto>> serviceResponse = new ServiceResponse<IEnumerable<InventoryTranctionDto>>();
+            try
             {
-                _inventoryTranctionRepository = inventoryTranctionRepository;
-                _materialIssueTrackerRepository = materialIssueTrackerRepository;
-                _logger = logger;
-                _mapper = mapper;
-            }
-
-            // GET: api/<InventoryTranctionController>
-            [HttpGet]
-            public async Task<IActionResult> GetAllInventoryTranctions([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
-            {
-                ServiceResponse<IEnumerable<InventoryTranctionDto>> serviceResponse = new ServiceResponse<IEnumerable<InventoryTranctionDto>>();
-                try
+                var getAllInventoryTranctions = await _inventoryTranctionRepository.GetAllInventoryTranction(pagingParameter, searchParams);
+                var metadata = new
                 {
-                    var getAllInventoryTranctions = await _inventoryTranctionRepository.GetAllInventoryTranction(pagingParameter, searchParams);
-                    var metadata = new
-                    {
-                        getAllInventoryTranctions.TotalCount,
-                        getAllInventoryTranctions.PageSize,
-                        getAllInventoryTranctions.CurrentPage,
-                        getAllInventoryTranctions.HasNext,
-                        getAllInventoryTranctions.HasPreviuos
-                    };
+                    getAllInventoryTranctions.TotalCount,
+                    getAllInventoryTranctions.PageSize,
+                    getAllInventoryTranctions.CurrentPage,
+                    getAllInventoryTranctions.HasNext,
+                    getAllInventoryTranctions.HasPreviuos
+                };
 
-                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                    _logger.LogInfo("Returned all InventoryTrancton");
-                    var result = _mapper.Map<IEnumerable<InventoryTranctionDto>>(getAllInventoryTranctions);
+                _logger.LogInfo("Returned all InventoryTrancton");
+                var result = _mapper.Map<IEnumerable<InventoryTranctionDto>>(getAllInventoryTranctions);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all InventoryTrancton";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // GET api/<InventoryTranctionController>/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetInventoryTranctionById(int id)
+        {
+            ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
+
+            try
+            {
+                var getInventoryTranctionById = await _inventoryTranctionRepository.GetInventoryTranctionById(id);
+                if (getInventoryTranctionById == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventoryTranction with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"InventoryTranction with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned InventoryTranction with id: {id}");
+                    var result = _mapper.Map<InventoryTranctionDto>(getInventoryTranctionById);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned all InventoryTrancton";
+                    serviceResponse.Message = "Returned InventoryTranction with id Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError(ex.Message);
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"Something went wrong,try again";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500, serviceResponse);
-                }
             }
-
-            // GET api/<InventoryTranctionController>/5
-            [HttpGet("{id}")]
-            public async Task<IActionResult> GetInventoryTranctionById(int id)
+            catch (Exception ex)
             {
-                ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
-
-                try
-                {
-                    var getInventoryTranctionById = await _inventoryTranctionRepository.GetInventoryTranctionById(id);
-                    if (getInventoryTranctionById == null)
-                    {
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = $"InventoryTranction with id: {id}, hasn't been found in db.";
-                        serviceResponse.Success = false;
-                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                        _logger.LogError($"InventoryTranction with id: {id}, hasn't been found in db.");
-                        return NotFound(serviceResponse);
-                    }
-                    else
-                    {
-                        _logger.LogInfo($"Returned InventoryTranction with id: {id}");
-                        var result = _mapper.Map<InventoryTranctionDto>(getInventoryTranctionById);
-                        serviceResponse.Data = result;
-                        serviceResponse.Message = "Returned InventoryTranction with id Successfully";
-                        serviceResponse.Success = true;
-                        serviceResponse.StatusCode = HttpStatusCode.OK;
-                        return Ok(serviceResponse);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Something went wrong inside GetInventoryTranctionById action: {ex.Message}");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Something went wrong. Please try again!";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500, serviceResponse);
-                }
+                _logger.LogError($"Something went wrong inside GetInventoryTranctionById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
+        }
 
 
         [HttpGet]
-        public async Task<IActionResult> GetInventoryTranctionDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId,
-                                                                                                string ItemNumber, string ProjectNumber)
+        public async Task<IActionResult> GetInventoryTranctionDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId,string ItemNumber, string ProjectNumber)
         {
             ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
             try
@@ -154,50 +156,50 @@ namespace Tips.Warehouse.Api.Controllers
 
         // POST api/<InventoryTranctionController>
         [HttpPost]
-            public async Task<IActionResult> CreateInventoryTranction([FromBody] InventoryTranctionDtoPost inventoryTranctionDtoPost)
+        public async Task<IActionResult> CreateInventoryTranction([FromBody] InventoryTranctionDtoPost inventoryTranctionDtoPost)
+        {
+            ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
+
+            try
             {
-                ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
-
-                try
-                {
-                    if (inventoryTranctionDtoPost is null)
-                    {
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = "InventoryTranction object sent from client is null";
-                        serviceResponse.Success = false;
-                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                        _logger.LogError("InventoryTranction object sent from client is null.");
-                        return BadRequest(serviceResponse);
-                    }
-                    if (!ModelState.IsValid)
-                    {
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = "Invalid InventoryTranction object sent from client";
-                        serviceResponse.Success = false;
-                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                        _logger.LogError("Invalid InventoryTranction object sent from client.");
-                        return BadRequest(serviceResponse);
-                    }
-                    var createInventoryTranction = _mapper.Map<InventoryTranction>(inventoryTranctionDtoPost);
-
-                    _inventoryTranctionRepository.CreateInventoryTransaction(createInventoryTranction);
-                    _inventoryTranctionRepository.SaveAsync();
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "InventoryTranction Successfully Created";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok( serviceResponse);
-                }
-                catch (Exception ex)
+                if (inventoryTranctionDtoPost is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Internal Server Error!";
+                    serviceResponse.Message = "InventoryTranction object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"Something went wrong inside CreateInventoryTranction action: {ex.Message}");
-                    return StatusCode(500, serviceResponse);
+                    _logger.LogError("InventoryTranction object sent from client is null.");
+                    return BadRequest(serviceResponse);
                 }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid InventoryTranction object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid InventoryTranction object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var createInventoryTranction = _mapper.Map<InventoryTranction>(inventoryTranctionDtoPost);
+
+                _inventoryTranctionRepository.CreateInventoryTransaction(createInventoryTranction);
+                _inventoryTranctionRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "InventoryTranction Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside CreateInventoryTranction action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetInventoryTranctionStockByItemAndProjectNo(string itemNumber, string projectNumber)
@@ -286,99 +288,99 @@ namespace Tips.Warehouse.Api.Controllers
 
         // PUT api/<InventoryTranctionController>/5
         [HttpPut]
-            public async Task<IActionResult> UpdateInventoryTranction(int id, [FromBody] InventoryTranctionDtoUpdate inventoryTranctionDtoUpdate)
-            {
-                ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
+        public async Task<IActionResult> UpdateInventoryTranction(int id, [FromBody] InventoryTranctionDtoUpdate inventoryTranctionDtoUpdate)
+        {
+            ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
 
-                try
-                {
-                    if (inventoryTranctionDtoUpdate is null)
-                    {
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = "InventoryTranction object sent from client is null";
-                        serviceResponse.Success = false;
-                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                        _logger.LogError("InventoryTranction object sent from client is null.");
-                        return BadRequest(serviceResponse);
-                    }
-                    if (!ModelState.IsValid)
-                    {
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = "Invalid InventoryTranction object sent from client";
-                        serviceResponse.Success = false;
-                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                        _logger.LogError("Invalid InventoryTranction object sent from client.");
-                        return BadRequest(serviceResponse);
-                    }
-                    var getInventoryTranctionById = await _inventoryTranctionRepository.GetInventoryTranctionById(id);
-                    if (getInventoryTranctionById is null)
-                    {
-                        _logger.LogError($"InventoryTranction with id: {id}, hasn't been found in db.");
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = " Update InventoryTranction with id: {id}, hasn't been found in db.";
-                        serviceResponse.Success = false;
-                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                        return NotFound(serviceResponse);
-                    }
-                    var updateInventoryTranction = _mapper.Map(inventoryTranctionDtoUpdate, getInventoryTranctionById);
-                    _mapper.Map(inventoryTranctionDtoUpdate, getInventoryTranctionById);
-                    string result = await _inventoryTranctionRepository.UpdateInventoryTraction(updateInventoryTranction);
-                    _logger.LogInfo(result);
-                    _inventoryTranctionRepository.SaveAsync();
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Updated Successfully";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-                catch (Exception ex)
+            try
+            {
+                if (inventoryTranctionDtoUpdate is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Internal Server Error!";
+                    serviceResponse.Message = "InventoryTranction object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"Something went wrong inside UpdateCommodity action: {ex.Message}");
-                    return StatusCode(500, serviceResponse);
+                    _logger.LogError("InventoryTranction object sent from client is null.");
+                    return BadRequest(serviceResponse);
                 }
-            }
-
-            // DELETE api/<InventoryTranctionController>/5
-            [HttpDelete("{id}")]
-            public async Task<IActionResult> DeleteInventoryTranction(int id)
-            {
-                ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
-
-                try
+                if (!ModelState.IsValid)
                 {
-                    var getMaterialIssueById = await _inventoryTranctionRepository.GetInventoryTranctionById(id);
-                    if (getMaterialIssueById == null)
-                    {
-                        _logger.LogError($"Delete InventoryTranction with id: {id}, hasn't been found in db.");
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = $"Delete InventoryTranction with id hasn't been found in db.";
-                        serviceResponse.Success = false;
-                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                        return NotFound(serviceResponse);
-                    }
-                    string result = await _inventoryTranctionRepository.DeleteInventoryTranction(getMaterialIssueById);
-                    _logger.LogInfo(result);
-                    _inventoryTranctionRepository.SaveAsync();
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "InventoryTranction Deleted Successfully";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Something went wrong inside DeleteInventoryTranction action: {ex.Message}");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Internal server error";
+                    serviceResponse.Message = "Invalid InventoryTranction object sent from client";
                     serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500, serviceResponse);
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid InventoryTranction object sent from client.");
+                    return BadRequest(serviceResponse);
                 }
+                var getInventoryTranctionById = await _inventoryTranctionRepository.GetInventoryTranctionById(id);
+                if (getInventoryTranctionById is null)
+                {
+                    _logger.LogError($"InventoryTranction with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update InventoryTranction with id: {id}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                var updateInventoryTranction = _mapper.Map(inventoryTranctionDtoUpdate, getInventoryTranctionById);
+                _mapper.Map(inventoryTranctionDtoUpdate, getInventoryTranctionById);
+                string result = await _inventoryTranctionRepository.UpdateInventoryTraction(updateInventoryTranction);
+                _logger.LogInfo(result);
+                _inventoryTranctionRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside UpdateCommodity action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        // DELETE api/<InventoryTranctionController>/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteInventoryTranction(int id)
+        {
+            ServiceResponse<InventoryTranctionDto> serviceResponse = new ServiceResponse<InventoryTranctionDto>();
+
+            try
+            {
+                var getMaterialIssueById = await _inventoryTranctionRepository.GetInventoryTranctionById(id);
+                if (getMaterialIssueById == null)
+                {
+                    _logger.LogError($"Delete InventoryTranction with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Delete InventoryTranction with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                string result = await _inventoryTranctionRepository.DeleteInventoryTranction(getMaterialIssueById);
+                _logger.LogInfo(result);
+                _inventoryTranctionRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "InventoryTranction Deleted Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeleteInventoryTranction action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         //update inventoryTranction on shoporder confirmation 
         [HttpPost]
@@ -636,52 +638,52 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
-                //MaterialRequest
-                //[HttpPost]
-                //public async Task<IActionResult> MaterialInventoryTranctionBalanceQty([FromBody] List<UpdateInventoryTranctionBalanceQty> updateInventoryTranctionBalanceQty)
-                //{
-                //    try
-                //    {
-                //        foreach (var materialIssueQty in updateInventoryTranctionBalanceQty)
-                //        {
-                //            foreach (var Location in materialIssueQty.MRNWarehouseList)
-                //            {
-                //                decimal issuedQty = Location.Qty;
-                //                IEnumerable<InventoryTranction> inventories = await _inventoryTranctionRepository.GetInventoryTranctionDetailsByItemNoandLocationandwarehouse(materialIssueQty.PartNumber, Location.Location, Location.Warehouse, materialIssueQty.ProjectNumber);
-                //                foreach (var invItem in inventories)
-                //                {
-                //                    decimal stock = invItem.Issued_Quantity;
-                //                    if (stock <= issuedQty)
-                //                    {
+        //MaterialRequest
+        //[HttpPost]
+        //public async Task<IActionResult> MaterialInventoryTranctionBalanceQty([FromBody] List<UpdateInventoryTranctionBalanceQty> updateInventoryTranctionBalanceQty)
+        //{
+        //    try
+        //    {
+        //        foreach (var materialIssueQty in updateInventoryTranctionBalanceQty)
+        //        {
+        //            foreach (var Location in materialIssueQty.MRNWarehouseList)
+        //            {
+        //                decimal issuedQty = Location.Qty;
+        //                IEnumerable<InventoryTranction> inventories = await _inventoryTranctionRepository.GetInventoryTranctionDetailsByItemNoandLocationandwarehouse(materialIssueQty.PartNumber, Location.Location, Location.Warehouse, materialIssueQty.ProjectNumber);
+        //                foreach (var invItem in inventories)
+        //                {
+        //                    decimal stock = invItem.Issued_Quantity;
+        //                    if (stock <= issuedQty)
+        //                    {
 
-                //                        invItem.Issued_Quantity = 0;
-                //                        invItem.IsStockAvailable = false;
-                //                        issuedQty -= stock;
+        //                        invItem.Issued_Quantity = 0;
+        //                        invItem.IsStockAvailable = false;
+        //                        issuedQty -= stock;
 
-                //                    }
-                //                    else
-                //                    {
-                //                        invItem.Issued_Quantity -= issuedQty;
-                //                        issuedQty = 0;
-                //                    }
-                //                    await _inventoryTranctionRepository.UpdateInventoryTraction(invItem);
-                //                    if (issuedQty <= 0)
-                //                    {
-                //                        break;
-                //                    }
-                //                }
+        //                    }
+        //                    else
+        //                    {
+        //                        invItem.Issued_Quantity -= issuedQty;
+        //                        issuedQty = 0;
+        //                    }
+        //                    await _inventoryTranctionRepository.UpdateInventoryTraction(invItem);
+        //                    if (issuedQty <= 0)
+        //                    {
+        //                        break;
+        //                    }
+        //                }
 
-                //            }
-                //        }
-                //        _inventoryTranctionRepository.SaveAsync();
-                //        return Ok();
-                //    }
-                //    catch (Exception ex)
-                //    {
+        //            }
+        //        }
+        //        _inventoryTranctionRepository.SaveAsync();
+        //        return Ok();
+        //    }
+        //    catch (Exception ex)
+        //    {
 
-                //        return StatusCode(500);
-                //    }
-                //}
+        //        return StatusCode(500);
+        //    }
+        //}
 
-            }
-        }
+    }
+}
