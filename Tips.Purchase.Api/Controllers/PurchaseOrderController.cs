@@ -15,6 +15,7 @@ using Entities;
 using Entities.DTOs;
 using Entities.Helper;
 using MailKit.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -36,6 +37,7 @@ namespace Tips.Purchase.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class PurchaseOrderController : ControllerBase
     {
         private IPurchaseOrderRepository _repository;
@@ -51,12 +53,13 @@ namespace Tips.Purchase.Api.Controllers
         private IConfiguration _config;
         private IPrItemsRepository _purchaseRequisitionItemRepository;
         private IPoAddprojectRepository _poAddprojectRepository;
+        private readonly IHttpClientFactory _clientFactory;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
         private readonly HttpClient _httpClient;
-        public PurchaseOrderController(IPrItemsRepository purchaseRequisitionItemRepository, HttpClient httpClient, IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository, IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository, IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IPoAddprojectRepository poAddprojectRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
+        public PurchaseOrderController(IPrItemsRepository purchaseRequisitionItemRepository, IHttpClientFactory clientFactory, HttpClient httpClient, IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository, IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository, IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IPoAddprojectRepository poAddprojectRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
             _httpClient = httpClient;
@@ -73,6 +76,7 @@ namespace Tips.Purchase.Api.Controllers
             _purchaseRequisitionItemRepository = purchaseRequisitionItemRepository;
             _poAddprojectRepository = poAddprojectRepository;
             _config = config;
+            _clientFactory = clientFactory;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
@@ -1287,7 +1291,14 @@ namespace Tips.Purchase.Api.Controllers
                 _purchaseRequisitionRepository.SaveAsync();
                 if (serverKey == "avision")
                 {
-                    var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    //var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
+                           "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    request.Headers.Add("Authorization", token);
+
+                    var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
                     var httpclientHandler = new HttpClientHandler();

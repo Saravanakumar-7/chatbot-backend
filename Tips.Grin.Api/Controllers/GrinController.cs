@@ -415,7 +415,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
         // GET api/<GrinController>/5
-        [HttpGet("{id}"),Authorize]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetGrinById(int id)
         {
             ServiceResponse<GrinItemMasterEnggDto> serviceResponse = new ServiceResponse<GrinItemMasterEnggDto>();
