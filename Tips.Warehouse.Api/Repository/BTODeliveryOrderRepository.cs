@@ -407,7 +407,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<int?> GetBTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount(string btoNumber)
         {
             var bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount = _tipsWarehouseDbContext.bTODeliveryOrderItems.Where(x => x.BTONumber == btoNumber
-                                                            && x.DoStatus == Status.PartiallyClosed || x.DoStatus == Status.Open).Count();
+                                                            &&(x.DoStatus == Status.PartiallyClosed || x.DoStatus == Status.Open)).Count();
 
             return bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount;
         }
