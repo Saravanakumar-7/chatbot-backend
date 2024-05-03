@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using Tips.Warehouse.Api.Contracts;
@@ -11,6 +12,7 @@ namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class SOMaterialIssueTrackerController : ControllerBase
     {
         private IMaterialIssueTrackerRepository _materialIssueTrackerRepository;
@@ -18,8 +20,8 @@ namespace Tips.Warehouse.Api.Controllers
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-
-        public SOMaterialIssueTrackerController(IConfiguration config, HttpClient httpClient,
+        private readonly IHttpClientFactory _clientFactory;
+        public SOMaterialIssueTrackerController(IConfiguration config, HttpClient httpClient, IHttpClientFactory clientFactory,
             ILoggerManager logger, IMapper mapper, IMaterialIssueTrackerRepository materialIssueTrackerRepository)
         {
             _logger = logger;
@@ -27,6 +29,7 @@ namespace Tips.Warehouse.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _materialIssueTrackerRepository = materialIssueTrackerRepository;
+            _clientFactory = clientFactory;
         }
 
 

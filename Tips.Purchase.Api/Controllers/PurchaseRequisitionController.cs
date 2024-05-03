@@ -10,6 +10,7 @@ using AutoMapper;
 using Azure;
 using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
@@ -26,6 +27,7 @@ namespace Tips.Purchase.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class PurchaseRequisitionController : ControllerBase
     {
         private IPurchaseRequisitionRepository _repository;
@@ -39,8 +41,9 @@ namespace Tips.Purchase.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
+        private readonly IHttpClientFactory _clientFactory;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
-        public PurchaseRequisitionController(HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IPRItemsDocumentUploadRepository prItemsDocumentUploadRepository, IPrItemsRepository prItemRepository, IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
+        public PurchaseRequisitionController(HttpClient httpClient, IHttpClientFactory clientFactory, IHttpContextAccessor httpContextAccessor, IPRItemsDocumentUploadRepository prItemsDocumentUploadRepository, IPrItemsRepository prItemRepository, IPurchaseRequisitionRepository repository, IWebHostEnvironment webHostEnvironment, IDocumentUploadRepository prdocumentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _prItemsDocumentUploadRepository = prItemsDocumentUploadRepository;
             _repository = repository;
@@ -55,6 +58,7 @@ namespace Tips.Purchase.Api.Controllers
             _prdocumentUploadRepository = prdocumentUploadRepository;
             _webHostEnvironment = webHostEnvironment;
             _httpClient = httpClient;
+            _clientFactory = clientFactory;
         }
 
         [HttpGet]
@@ -232,18 +236,7 @@ namespace Tips.Purchase.Api.Controllers
 
                     PurchaseRequisitionDto purchaseRequisitionDto = _mapper.Map<PurchaseRequisitionDto>(purchaseRequisitionDetail);
                     List<PrItemsDto> prItemDtoList = new List<PrItemsDto>();
-
-                    //List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
-
-                    //if (purchaseRequisitionDto.PrFiles.Count() != 0)
-                    //{
-                    //    foreach (var documentUploadDetails in purchaseRequisitionDto.PrFiles)
-                    //    {
-                    //        DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
-                    //        documentUplaodDtoList.Add(poItemDtos);
-                    //    }
-                    //}
-                    //purchaseRequisitionDto.PrFiles = documentUplaodDtoList;
+                   
                     if (purchaseRequisitionDetail.PrItemsDtoList != null)
                     {
                         foreach (var prItemDetails in purchaseRequisitionDetail.PrItemsDtoList)
@@ -432,13 +425,7 @@ namespace Tips.Purchase.Api.Controllers
                 var purchaseRequisitionList = await _repository.SearchPurchaseRequisition(searchParams);
 
                 _logger.LogInfo("Returned all purchaseRequisition");
-                //var config = new MapperConfiguration(cfg =>
-                //{
-                //    cfg.AddProfile<MappingProfile>();
-                //    cfg.CreateMap<PurchaseRequisitionDto, PurchaseRequisition>().ReverseMap()
-                //    .ForMember(dest => dest.PrItemsDtoList, opt => opt.MapFrom(src => src.PrItemsDtoList));
-                //});
-                //var mapper = config.CreateMapper();
+               
 
                 var config = new MapperConfiguration(cfg =>
                 {
@@ -512,14 +499,7 @@ namespace Tips.Purchase.Api.Controllers
                 var purchaseRequisitionList = await _repository.GetAllPurchaseRequisitionWithItems(purchaseRequisitionSearch);
 
                 _logger.LogInfo("Returned all PurchaseRequisition");
-                //var config = new MapperConfiguration(cfg =>
-                //{
-                //    cfg.AddProfile<MappingProfile>();
-                //    cfg.CreateMap<PurchaseRequisitionDto, PurchaseRequisition>().ReverseMap()
-                //    .ForMember(dest => dest.PrItemsDtoList, opt => opt.MapFrom(src => src.PrItemsDtoList));
-                //});
-                //var mapper = config.CreateMapper();
-
+                
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
@@ -611,33 +591,7 @@ namespace Tips.Purchase.Api.Controllers
                         foreach (var itemDetails in purchaseRequisitionDetailById.PrItemsDtoList)
                         {
                             PrItemsDto prItemDtos = _mapper.Map<PrItemsDto>(itemDetails);
-                            //List<PRItemsDocumentUploadDto> fileUploads = new List<PRItemsDocumentUploadDto>();
-                            //if (prItemDtos.Upload.Count() != 0)
-                            //{
-                            //    foreach (var fileUploadDetails in prItemDtos.Upload)
-                            //    {
-                            //        PRItemsDocumentUploadDto fileUploadDto = _mapper.Map<PRItemsDocumentUploadDto>(fileUploadDetails);
-                            //        fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PRDocument", fileUploadDto.FileName);
-                            //        fileUploads.Add(fileUploadDto);
-                            //    }
-                            //}
-                            //if (itemDetails.PRFileIds == null || itemDetails.PRFileIds == "")
-                            //{
-                            //    prItemDtos.PRItemFiles = null;
-                            //}
-                            //else
-                            //{
-                            //    List<PRItemsDocumentUploadDto> prd = new List<PRItemsDocumentUploadDto>();
-                            //    string[]? ids = itemDetails.PRFileIds.Split(',');
-                            //    for (int i = 0; i < ids.Count(); i++)
-                            //    {
-                            //        var file1 = await _prItemsDocumentUploadRepository.GetUploadDocById(Convert.ToInt32(ids[i]));
-                            //        PRItemsDocumentUploadDto doc = _mapper.Map<PRItemsDocumentUploadDto>(file1);
-                            //        prd.Add(doc);
-                            //    }
-                            //    prItemDtos.PRItemFiles = prd;
-                            //}
-                            // prItemDtos.Upload = _mapper.Map<List<PRItemsDocumentUploadDto>>(fileUploads);
+                           
                             prItemDtos.PrAddprojectsDtoList = _mapper.Map<List<PrAddProjectDto>>(itemDetails.prAddprojectsDtoList);
                             prItemDtos.PrAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliveryScheduleDto>>(itemDetails.prAddDeliverySchedulesDtoList);
                             prItemDtos.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstructionDto>>(itemDetails.prSpecialInstructionsDtoList);
@@ -1385,9 +1339,14 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<ItemMasterFileUploadDtoList>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterFileUploadDtoList>>();
             try
             {
-                var itemMasterDetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
-                    "GetItemMasterFileUploadListByItemNumber?", "&ItemNumber=", itemNumber));
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();                
+                var encodedItemNumber = Uri.EscapeDataString(itemNumber);
 
+                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterEnggAPI"],
+                    $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+                request.Headers.Add("Authorization", token);
+                var itemMasterDetails = await client.SendAsync(request);                
                 var itemMasterObjectString = await itemMasterDetails.Content.ReadAsStringAsync();
                 dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
 

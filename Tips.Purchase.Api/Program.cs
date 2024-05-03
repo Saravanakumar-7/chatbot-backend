@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using NLog;
 using System.Text;
 using Tips.Purchase.Api.Contracts;
@@ -29,23 +30,50 @@ builder.Services.Configure<IISServerOptions>(option =>
 {
     option.MaxRequestBodySize = 1073741824;
 });
-
-//var key = builder.Configuration["Jwt:key"];
-//builder.Services.ConfigureJwtToken(builder.Configuration);
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Tips.Purchase.Api",
+        Version = "v1"
+    });
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "Jwt",
+        In = ParameterLocation.Header,
+        Description = "Enter the User Token with Bearer Format"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+         new OpenApiSecurityScheme
+         {
+             Reference = new OpenApiReference
+             {
+                 Type=ReferenceType.SecurityScheme,
+                 Id="Bearer"
+             }
+         },
+         new string[]{}
+        }
+    });
+});
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = false,
-            // ValidIssuer = "Wyzmindz", // Use the same issuer as the one in https://localhost:7016
             ValidateAudience = false,
-            // ValidAudience = "Tips", // Use the same audience as the one in https://localhost:7016
-            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
+                Encoding.ASCII.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
         };
     });
+builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddScoped<IPurchaseRequisitionRepository, PurchaseRequisitionRepository>();
 builder.Services.AddScoped<IPurchaseOrderRepository, PurchaseOrderRepository>();
 builder.Services.AddScoped<IDocumentUploadRepository, UploadDocumentRepository>();
@@ -86,8 +114,13 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
-
 app.UseAuthorization();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tips.Purchase.Api");
+    c.RoutePrefix = "swagger";
+    c.DisplayRequestDuration();
+});
 
 app.UseRouting();
 

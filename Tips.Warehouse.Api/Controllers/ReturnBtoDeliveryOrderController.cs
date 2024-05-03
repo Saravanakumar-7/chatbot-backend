@@ -22,7 +22,7 @@ namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class ReturnBtoDeliveryOrderController : ControllerBase
     {
         private IReturnBtoDeliveryOrderRepository _repository;
@@ -30,7 +30,7 @@ namespace Tips.Warehouse.Api.Controllers
         private IBTODeliveryOrderHistoryRepository _bTODeliveryOrderHistoryRepository;
         private IBTODeliveryOrderItemsRepository _bTODeliveryOrderItemsRepository;
         private IInventoryTranctionRepository _inventoryTranctionRepository;
-
+        private readonly IHttpClientFactory _clientFactory;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
@@ -38,13 +38,14 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public ReturnBtoDeliveryOrderController(IReturnBtoDeliveryOrderRepository repository, IInventoryTranctionRepository inventoryTranctionRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryRepository inventoryRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public ReturnBtoDeliveryOrderController(IReturnBtoDeliveryOrderRepository repository, IHttpClientFactory clientFactory, IInventoryTranctionRepository inventoryTranctionRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryRepository inventoryRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _httpClient = httpClient;
             _config = config;
+            _clientFactory = clientFactory;
             _inventoryRepository = inventoryRepository;
             _bTODeliveryOrderItemsRepository = bTODeliveryOrderItemsRepository;
             _bTODeliveryOrderHistoryRepository = bTODeliveryOrderHistoryRepository;
@@ -132,9 +133,9 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<IEnumerable<ReturnDOSPReport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnDOSPReport>>();
             try
             {
-                var products = await _repository.ReturnDOSPReportWithParam(returnDOSPReportDTO.ReturnBTONumber, returnDOSPReportDTO.CustomerName, returnDOSPReportDTO.CustomerAliasName, 
-                                                        returnDOSPReportDTO.CustomerLeadId, returnDOSPReportDTO.SalesOrderNumber, returnDOSPReportDTO.ProductType, 
-                                                        returnDOSPReportDTO.TypeOfSolution,  returnDOSPReportDTO.Warehouse, returnDOSPReportDTO.Location, 
+                var products = await _repository.ReturnDOSPReportWithParam(returnDOSPReportDTO.ReturnBTONumber, returnDOSPReportDTO.CustomerName, returnDOSPReportDTO.CustomerAliasName,
+                                                        returnDOSPReportDTO.CustomerLeadId, returnDOSPReportDTO.SalesOrderNumber, returnDOSPReportDTO.ProductType,
+                                                        returnDOSPReportDTO.TypeOfSolution, returnDOSPReportDTO.Warehouse, returnDOSPReportDTO.Location,
                                                         returnDOSPReportDTO.KPN, returnDOSPReportDTO.MPN);
 
                 if (products == null)
@@ -704,7 +705,7 @@ namespace Tips.Warehouse.Api.Controllers
                 returnBtoDeliveryOrder.ReturnBtoDeliveryOrderItems = returnBtoDeliveryOrderItemsDtoList;
 
                 await _repository.CreateReturnBtoDeliveryOrder(returnBtoDeliveryOrder);
-                
+
 
 
                 //update balance qty and dispatch qty in sales order table for return bto concept
@@ -713,14 +714,17 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var json = JsonConvert.SerializeObject(btoDeliveryReturnDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-                // Include the token in the Authorization header
-                var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
-                if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
+                            "ReturnDOUpdateDispatchDetails"))
                 {
-                    var token = tokenValues.Substring(7);
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                }
-                var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnDOUpdateDispatchDetails"), data);
+                    Content = data
+                };
+                request.Headers.Add("Authorization", token);
+
+                var response = await client.SendAsync(request);
+                //var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnDOUpdateDispatchDetails"), data);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {

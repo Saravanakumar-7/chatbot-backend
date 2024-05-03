@@ -4,6 +4,7 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -16,6 +17,7 @@ namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class ReturnOpenDeliveryOrderController : ControllerBase
     {
         private IReturnOpenDeliveryOrderRepository _repository;
@@ -31,8 +33,8 @@ namespace Tips.Warehouse.Api.Controllers
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-
-        public ReturnOpenDeliveryOrderController(IReturnOpenDeliveryOrderRepository repository,
+        private readonly IHttpClientFactory _clientFactory;
+        public ReturnOpenDeliveryOrderController(IReturnOpenDeliveryOrderRepository repository, IHttpClientFactory clientFactory,
             IInventoryTranctionRepository inventoryTranctionRepository, IOpenDeliveryOrderHistoryRepository openDeliveryOrderHistoryRepository,
             IOpenDeliveryOrderPartsRepository openDeliveryOrderPartsRepository, IReturnOpenDeliveryOrderPartsRepository returnOpenDeliveryOrderPartsRepository
             , IInventoryRepository inventoryRepository, HttpClient httpClient, IHttpContextAccessor httpContextAccessor,
@@ -52,7 +54,7 @@ namespace Tips.Warehouse.Api.Controllers
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
-
+            _clientFactory = clientFactory;
         }
 
         [HttpGet]

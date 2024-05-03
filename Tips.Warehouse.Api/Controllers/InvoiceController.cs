@@ -23,7 +23,7 @@ namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class InvoiceController : ControllerBase
     {
         private IInvoiceRepository _invoiceRepository;
@@ -37,7 +37,8 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public InvoiceController(IInvoiceRepository invoiceRepository, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IInventoryTranctionRepository inventoryTranctionRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        private readonly IHttpClientFactory _clientFactory;
+        public InvoiceController(IInvoiceRepository invoiceRepository, IHttpClientFactory clientFactory, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IInventoryTranctionRepository inventoryTranctionRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _invoiceRepository = invoiceRepository;
             _logger = logger;
@@ -48,7 +49,7 @@ namespace Tips.Warehouse.Api.Controllers
             _bTODeliveryOrderItemsRepository = bTODeliveryOrderItemsRepository;
             _httpContextAccessor = httpContextAccessor;
             _bTODeliveryOrderRepository = bTODeliveryOrderRepository;
-
+            _clientFactory = clientFactory;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
@@ -689,14 +690,16 @@ namespace Tips.Warehouse.Api.Controllers
 
             var soAdditionalChargeJson = JsonConvert.SerializeObject(salesOrderAdditionalChargesUpdates);
             var data = new StringContent(soAdditionalChargeJson, Encoding.UTF8, "application/json");
-            // Include the token in the Authorization header
-            var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
-            if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            // var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "AdditionalChargeUpdateFromInvoice"), data);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],"AdditionalChargeUpdateFromInvoice"))
             {
-                var token = tokenValues.Substring(7);
-                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
-            var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "AdditionalChargeUpdateFromInvoice"), data);
+                Content = data
+            };
+            request.Headers.Add("Authorization", token);
+
+            var response = await client.SendAsync(request);
         }
 
         private async Task InventoryTransactionSaveOnInvoiceCreate(Invoice invoice, List<InvoiceChildItem> invoiceChildItemsEntityList, int i, InvoiceChildItem invoiceChildItem)
@@ -765,7 +768,7 @@ namespace Tips.Warehouse.Api.Controllers
                     }
                 }
             }
-           
+
             _bTODeliveryOrderItemsRepository.SaveAsync();
 
             var bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount = await _bTODeliveryOrderItemsRepository.GetBTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount(doNumber);
