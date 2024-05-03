@@ -153,8 +153,9 @@ namespace Tips.Master.Api.Controllers
 
                 if (serverKey == "avision")
                 {
-                    var vendorNo = vendorMasterPost.VendorId;
-                    vendorMaster.VendorId = vendorNo;
+                    //var vendorNo = vendorMasterPost.VendorId;
+                    var vendorNumber = await _repository.VendorRepository.GenerateVendorIdForAvision();
+                    vendorMaster.VendorId = vendorNumber;
                 }
                 else
                 {

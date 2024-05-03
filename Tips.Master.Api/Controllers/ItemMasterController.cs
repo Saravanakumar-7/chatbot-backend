@@ -1712,7 +1712,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        [HttpGet,Authorize]
+        [HttpGet]
         public async Task<IActionResult> GetItemMasterByItemNumber(string ItemNumber)
         {
             ServiceResponse<ItemMasterDto> serviceResponse = new ServiceResponse<ItemMasterDto>();
