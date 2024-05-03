@@ -1303,7 +1303,7 @@ namespace Tips.Purchase.Api.Controllers
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
-                    var mails = "chethan.v@wyzmindz.com";
+                    var mails = "accounts@avisionsystems.com";
                     var email = new MimeMessage();
                     email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetails.PODate.ToString().Split(" ");
@@ -1311,6 +1311,7 @@ namespace Tips.Purchase.Api.Controllers
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
                     body = body.Replace("{{PO Number}}", purchaseOrderDetails.PONumber);
+                    body = body.Replace("{{PO Revision No}}", purchaseOrderDetails.RevisionNumber.ToString());
                     body = body.Replace("{{PO Date}}", podate[0]);
                     body = body.Replace("{{PO Value}}", purchaseOrderDetails.TotalAmount.ToString());
                     body = body.Replace("{{Vendor Name}}", purchaseOrderDetails.VendorName.ToString());
@@ -1957,6 +1958,7 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<PurchaseOrderPostDto> serviceResponse = new ServiceResponse<PurchaseOrderPostDto>();
             try
             {
+                string serverKey = GetServerKey();
                 if (purchaseOrderUpdateDto is null)
                 {
                     serviceResponse.Data = null;
@@ -2115,6 +2117,71 @@ namespace Tips.Purchase.Api.Controllers
                             }
                         }
                     }
+                }
+                if (serverKey == "avision")
+                {
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    //var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
+                           "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    request.Headers.Add("Authorization", token);
+
+                    var response = await client.SendAsync(request);
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    var mails = "accounts@avisionsystems.com";
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    var podate = purchaseOrderDetails.PODate.ToString().Split(" ");
+                    email.To.Add(MailboxAddress.Parse(mails));
+                    email.Subject = "Purchase Order Modified Notification";
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{PO Number}}", purchaseOrderDetails.PONumber);
+                    body = body.Replace("{{PO Revision No}}", purchaseOrderDetails.RevisionNumber.ToString());
+                    body = body.Replace("{{PO Date}}", podate[0]);
+                    body = body.Replace("{{PO Value}}", purchaseOrderDetails.TotalAmount.ToString());
+                    body = body.Replace("{{Vendor Name}}", purchaseOrderDetails.VendorName.ToString());
+                    body = body.Replace("{{Approval1}}", "Awaiting");
+                    body = body.Replace("{{Approval2}}", "Awaiting");
+                    body = body.Replace("{{Approval3}}", "Awaiting");
+                    body = body.Replace("{{Approval4}}", "Awaiting");
+                    body = body.Replace("{{PO Conf}}", "Awaiting");
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRNo = null;
+                    foreach (var item in purchaseOrderDetails.POItems)
+                    {
+
+                        if (item.POAddprojects.Count > 0)
+                            foreach (var project in item.POAddprojects)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                            }
+                        if (item.PrDetails.Count > 0)
+                            foreach (var pr in item.PrDetails)
+                            {
+                                if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                            }
+
+                    }
+                    body = body.Replace("{{Project No}}", ProjectNos);
+                    body = body.Replace("{{PR Numbers}}", PRNo);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                    smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+
                 }
                 _repository.SaveAsync();
                 _pRItemsDocumentUploadRepository.SaveAsync();
@@ -2783,19 +2850,27 @@ namespace Tips.Purchase.Api.Controllers
                 _repository.SaveAsync();
                 if (serverKey == "avision")
                 {
-                    var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
+                             "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    request.Headers.Add("Authorization", token);
+
+                    var response = await client.SendAsync(request);
+                    // var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
                     var httpclientHandler = new HttpClientHandler();
-                    var httpClient = new HttpClient(httpclientHandler);
-                    var mails = "chethan.v@wyzmindz.com";
+                    var httpClient = new HttpClient(httpclientHandler);                   
+                    var mails = new List<string>() {"bala@avisionsystems.com","anilyadav@avisionsystems.com" };
                     var email = new MimeMessage();
                     email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
-                    email.To.Add(MailboxAddress.Parse(mails));
+                    email.To.AddRange(mails.Select(x=> MailboxAddress.Parse(x)));
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
                     body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
+                    body = body.Replace("{{PO Revision No}}", purchaseOrderDetailByPONumber.RevisionNumber.ToString());
                     body = body.Replace("{{PO Date}}", podate[0]);
                     body = body.Replace("{{PO Value}}", purchaseOrderDetailByPONumber.TotalAmount.ToString());
                     body = body.Replace("{{Vendor Name}}", purchaseOrderDetailByPONumber.VendorName.ToString());
@@ -2881,12 +2956,18 @@ namespace Tips.Purchase.Api.Controllers
                 _repository.SaveAsync();
                 if (serverKey == "avision")
                 {
-                    var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    //var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
+                           "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    request.Headers.Add("Authorization", token);
+                    var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
-                    var mails = "chethan.v@wyzmindz.com";
+                    var mails = "venkat.k@avisionsystems.com";
                     var email = new MimeMessage();
                     email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
@@ -2894,6 +2975,7 @@ namespace Tips.Purchase.Api.Controllers
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
                     body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
+                    body = body.Replace("{{PO Revision No}}", purchaseOrderDetailByPONumber.RevisionNumber.ToString());
                     body = body.Replace("{{PO Date}}", podate[0]);
                     body = body.Replace("{{PO Value}}", purchaseOrderDetailByPONumber.TotalAmount.ToString());
                     body = body.Replace("{{Vendor Name}}", purchaseOrderDetailByPONumber.VendorName.ToString());
@@ -2978,19 +3060,27 @@ namespace Tips.Purchase.Api.Controllers
                 _repository.SaveAsync();
                 if (serverKey == "avision")
                 {
-                    var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
+                          "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    request.Headers.Add("Authorization", token);
+
+                    var response = await client.SendAsync(request);
+                    //var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
-                    var mails = "chethan.v@wyzmindz.com";
+                    var mails =new List<string>() { "eyalbn@uvisionuav.com", "yonatan@uvisionuav.com"};
                     var email = new MimeMessage();
                     email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
-                    email.To.Add(MailboxAddress.Parse(mails));
+                    email.To.AddRange(mails.Select(x=> MailboxAddress.Parse(x)));
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
                     body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
+                    body = body.Replace("{{PO Revision No}}", purchaseOrderDetailByPONumber.RevisionNumber.ToString());
                     body = body.Replace("{{PO Date}}", podate[0]);
                     body = body.Replace("{{PO Value}}", purchaseOrderDetailByPONumber.TotalAmount.ToString());
                     body = body.Replace("{{Vendor Name}}", purchaseOrderDetailByPONumber.VendorName.ToString());
@@ -3075,19 +3165,27 @@ namespace Tips.Purchase.Api.Controllers
                 _repository.SaveAsync();
                 if (serverKey == "avision")
                 {
-                    var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    //var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
+                           "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    request.Headers.Add("Authorization", token);
+
+                    var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
-                    var mails = "chethan.v@wyzmindz.com";
+                    var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com"};
                     var email = new MimeMessage();
                     email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
-                    email.To.Add(MailboxAddress.Parse(mails));
+                    email.To.AddRange(mails.Select(x=> MailboxAddress.Parse(x)));
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
                     body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
+                    body = body.Replace("{{PO Revision No}}", purchaseOrderDetailByPONumber.RevisionNumber.ToString());
                     body = body.Replace("{{PO Date}}", podate[0]);
                     body = body.Replace("{{PO Value}}", purchaseOrderDetailByPONumber.TotalAmount.ToString());
                     body = body.Replace("{{Vendor Name}}", purchaseOrderDetailByPONumber.VendorName.ToString());
@@ -3363,19 +3461,27 @@ namespace Tips.Purchase.Api.Controllers
                 } // If the loop completes without returning a response, it means all sets were processed successfully
                 if (serverKey == "avision")
                 {
-                    var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    // var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
+                           "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    request.Headers.Add("Authorization", token);
+
+                    var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
-                    var mails = "chethan.v@wyzmindz.com";
+                    var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com", "accounts@avisionsystems.com", "bala@avisionsystems.com" };
                     var email = new MimeMessage();
                     email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = PODetails.PODate.ToString().Split(" ");
-                    email.To.Add(MailboxAddress.Parse(mails));
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
                     body = body.Replace("{{PO Number}}", PODetails.PONumber);
+                    body = body.Replace("{{PO Revision No}}", PODetails.RevisionNumber.ToString());
                     body = body.Replace("{{PO Date}}", podate[0]);
                     body = body.Replace("{{PO Value}}", PODetails.TotalAmount.ToString());
                     body = body.Replace("{{Vendor Name}}", PODetails.VendorName.ToString());
