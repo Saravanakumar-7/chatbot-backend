@@ -2,6 +2,7 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 //using MySqlX.XDevAPI.Common;
@@ -14,6 +15,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class CustomerTypeController : ControllerBase
     {
         private  IRepositoryWrapperForMaster _repository;

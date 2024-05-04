@@ -15,6 +15,7 @@ using Entities.Enums;
 using System;
 using MySqlX.XDevAPI.Common;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -22,6 +23,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class EngineeringBOMController : ControllerBase
     {
 
@@ -34,7 +36,8 @@ namespace Tips.Master.Api.Controllers
         private IMapper _mapper;
         private IReleaseCostBomRepository _releaseCostBomRepository;
         private IEnggBomRepository _enggBomRepository;
-        public EngineeringBOMController(HttpClient httpClient, IConfiguration config, IEnggBomRepository enggBomRepository, IRepositoryWrapperForMaster repository, IReleaseProductBomRepository releaseProductBomRepository, IReleaseCostBomRepository releaseCostBomRepository, IReleaseEnggBomRepository releaseEnggBomRepository, ILoggerManager logger, IMapper mapper)
+        private readonly IHttpClientFactory _clientFactory;
+        public EngineeringBOMController(IHttpClientFactory clientFactory, HttpClient httpClient, IConfiguration config, IEnggBomRepository enggBomRepository, IRepositoryWrapperForMaster repository, IReleaseProductBomRepository releaseProductBomRepository, IReleaseCostBomRepository releaseCostBomRepository, IReleaseEnggBomRepository releaseEnggBomRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
@@ -45,6 +48,7 @@ namespace Tips.Master.Api.Controllers
             _releaseEnggBomRepository = releaseEnggBomRepository;
             _releaseProductBomRepository = releaseProductBomRepository;
             _enggBomRepository = enggBomRepository;
+            _clientFactory = clientFactory;
         }
         // GET: api/<EngineeringBOMController>
         [HttpGet]
@@ -2679,8 +2683,19 @@ namespace Tips.Master.Api.Controllers
                             }
                             else
                             {
-                                var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                                  "GetTotalStockOfItemNumber?", "itemNumber=", saItemNumber));
+                                //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                                //  "GetTotalStockOfItemNumber?", "itemNumber=", saItemNumber));
+
+                                var client = _clientFactory.CreateClient();
+                                var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                                var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
+
+                                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                                    $"GetTotalStockOfItemNumber?itemNumber={encodedItemNumber}"));
+                                request.Headers.Add("Authorization", token);
+
+                                var inventoryObjectResult = await client.SendAsync(request);
 
                                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
@@ -2781,8 +2796,20 @@ namespace Tips.Master.Api.Controllers
                                 }
                                 else
                                 {
-                                    var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                                      "GetTotalStockOfSAItemNumberAndProjectNo?", "itemNumber=", saItemNumber, "&ProjectNumber=", projectNo));
+                                    //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                                    //  "GetTotalStockOfSAItemNumberAndProjectNo?", "itemNumber=", saItemNumber, "&ProjectNumber=", projectNo));
+
+                                    var client = _clientFactory.CreateClient();
+                                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                                    var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
+                                    var encodedProjectNumber = Uri.EscapeDataString(projectNo);
+
+                                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                                        $"GetTotalStockOfSAItemNumberAndProjectNo?itemNumber={encodedItemNumber},&ProjectNumber={encodedProjectNumber}"));
+                                    request.Headers.Add("Authorization", token);
+
+                                    var inventoryObjectResult = await client.SendAsync(request);
 
                                     var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                     dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
@@ -2889,8 +2916,21 @@ namespace Tips.Master.Api.Controllers
                         dto.Stock = SAStock;
 
                         // Calculate OpenPoQty
-                        var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
-                                      "GetAllOpenTGPoDetails?", "itemNumber=", maxRevisionBOM.ItemNumber));
+                        //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
+                        //              "GetAllOpenTGPoDetails?", "itemNumber=", maxRevisionBOM.ItemNumber));
+
+                        var client = _clientFactory.CreateClient();
+                        var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                        var saItemNumber = maxRevisionBOM.ItemNumber;
+                        var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
+
+                        var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"],
+                                      $"GetAllOpenTGPoDetails?itemNumber={encodedItemNumber}"));
+                        request.Headers.Add("Authorization", token);
+
+                        var purchaseObjectResult = await client.SendAsync(request);
+
 
                         if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
                         {
@@ -2926,9 +2966,20 @@ namespace Tips.Master.Api.Controllers
                             dto.Stock = SAStock;
 
                             // Calculate OpenPoQty
-                            var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
-                                          "GetAllOpenTGPoDetails?", "itemNumber=", maxRevisionBOM.ItemNumber));
+                            //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
+                            //              "GetAllOpenTGPoDetails?", "itemNumber=", maxRevisionBOM.ItemNumber));
 
+                            var client = _clientFactory.CreateClient();
+                            var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                            var saItemNumber = maxRevisionBOM.ItemNumber;
+                            var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
+
+                            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"],
+                                          $"GetAllOpenTGPoDetails?itemNumber={encodedItemNumber}"));
+                            request.Headers.Add("Authorization", token);
+
+                            var purchaseObjectResult = await client.SendAsync(request);
                             if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
                             {
                                 var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
@@ -3080,9 +3131,18 @@ namespace Tips.Master.Api.Controllers
 
         private async Task<decimal> GetSAStock(string itemNumber)
         {
-            var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                            "GetInventoryBySAItemNo?", "itemNumber=", itemNumber));
+            //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+            //                "GetInventoryBySAItemNo?", "itemNumber=", itemNumber));
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
 
+            var encodedItemNumber = Uri.EscapeDataString(itemNumber);
+
+            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                          $"GetInventoryBySAItemNo?itemNumber={encodedItemNumber}"));
+            request.Headers.Add("Authorization", token);
+
+            var inventoryObjectResult = await client.SendAsync(request);
             if (inventoryObjectResult.IsSuccessStatusCode)
             {
                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();

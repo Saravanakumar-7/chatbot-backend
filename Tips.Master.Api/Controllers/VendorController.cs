@@ -9,6 +9,7 @@ using Entities.Migrations;
 using System.Net;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,6 +17,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class VendorController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;

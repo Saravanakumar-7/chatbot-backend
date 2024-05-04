@@ -9,11 +9,13 @@ using Entities.Migrations;
 using System.Net;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class CustomerMasterController : ControllerBase
     {
             private IRepositoryWrapperForMaster _repository;
