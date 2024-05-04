@@ -25,14 +25,16 @@ namespace Tips.Grin.Api.Controllers
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public OpenGrinController(IOpenGrinRepository openGrinRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        public OpenGrinController(IHttpClientFactory clientFactory, IOpenGrinRepository openGrinRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _openGrinRepository = openGrinRepository;
             _logger = logger;
             _mapper = mapper;
             _httpClient = httpClient;
             _config = config;
+            _clientFactory = clientFactory;
         }
         [HttpGet]
         public async Task<IActionResult> GetAllOpenGrinDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
@@ -463,7 +465,19 @@ namespace Tips.Grin.Api.Controllers
 
                             var json = JsonConvert.SerializeObject(inventory);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
-                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), data);
+                            //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), data);
+
+                            var client1 = _clientFactory.CreateClient();
+                            var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                            var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                            "CreateInventoryFromGrin"))
+                            {
+                                Content = data
+                            };
+                            request1.Headers.Add("Authorization", token1);
+
+                            var response = await client1.SendAsync(request1);
                             if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
 
                            
@@ -501,7 +515,19 @@ namespace Tips.Grin.Api.Controllers
 
                             var jsons = JsonConvert.SerializeObject(inventoryTranction);
                             var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                            var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datas);
+                           // var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datas);
+
+                            var client1 = _clientFactory.CreateClient();
+                            var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                            var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                            "CreateInventoryTranction"))
+                            {
+                                Content = datas
+                            };
+                            request1.Headers.Add("Authorization", token1);
+
+                            var responses = await client1.SendAsync(request1);
                             if (responses.StatusCode != HttpStatusCode.OK) createInvTrans = responses.StatusCode;
                         }
                     }

@@ -72,7 +72,7 @@ namespace Tips.Production.Api.Extensions
                  {
                      ValidateIssuer = false,
                      ValidateAudience = false,
-                     ValidateLifetime = false,
+                     ValidateLifetime = true,
                      ValidateIssuerSigningKey = true,
                      //ValidIssuer = "[Issuer name]", // replace with the actual issuer name used by the Master API Microservice
                      //ValidAudience = "[Audience name]", // replace with the actual audience name used by the Grin Service
@@ -97,10 +97,51 @@ namespace Tips.Production.Api.Extensions
                     ValidateIssuerSigningKey = true,
                     ValidateIssuer = false,
                     ValidateAudience = false,
+                    ValidateLifetime = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key))
                 };
             });
         }
+        //public static void AuthenticateByJwtToken(this IServiceCollection services, IConfiguration config)
+        //{
+        //    var key = config["Jwt:key"];
+
+        //    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        //     .AddJwtBearer(options =>
+        //     {
+        //         options.TokenValidationParameters = new TokenValidationParameters
+        //         {
+        //             ValidateIssuer = false,
+        //             ValidateAudience = false,
+        //             ValidateLifetime = false,
+        //             ValidateIssuerSigningKey = true,
+        //             //ValidIssuer = "[Issuer name]", // replace with the actual issuer name used by the Master API Microservice
+        //             //ValidAudience = "[Audience name]", // replace with the actual audience name used by the Grin Service
+        //             IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)) // replace with the actual secret key used by the Master API Microservice
+        //         };
+        //     });
+        //}
+        //public static void ConfigureJwtToken(this IServiceCollection services, IConfiguration config)
+        //{
+        //    /// security key for token generation
+        //    var key = config["Jwt:key"];
+        //    services.AddAuthentication(x =>
+        //    {
+        //        x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        //        x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        //    }).AddJwtBearer(x =>
+        //    {
+        //        x.RequireHttpsMetadata = false;
+        //        x.SaveToken = true;
+        //        x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        //        {
+        //            ValidateIssuerSigningKey = true,
+        //            ValidateIssuer = false,
+        //            ValidateAudience = false,
+        //            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key))
+        //        };
+        //    });
+        //}
         //public static void ConfigureRepositoryWrapper(this IServiceCollection services)
         //{
         //    services.AddScoped<IRepositoryWrapperForMaster, RepositoryWrapperForMaster>();

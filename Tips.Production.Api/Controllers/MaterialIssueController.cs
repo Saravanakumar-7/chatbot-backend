@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Utilities;
+using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -33,8 +34,9 @@ namespace Tips.Production.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private IMapper _mapper;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public MaterialIssueController(IMaterialIssueItemRepository materialIssueItemRepository,
+        public MaterialIssueController(IMaterialIssueItemRepository materialIssueItemRepository, IHttpClientFactory clientFactory,
             IMaterialIssueHistoryRepository materialIssueHistoryRepository, IMaterialIssueRepository materialIssueRepository, 
             ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, IShopOrderRepository shopOrderRepository)
         {
@@ -46,6 +48,7 @@ namespace Tips.Production.Api.Controllers
             _config = config;
             _mapper = mapper;
             _shopOrderRepository = shopOrderRepository;
+            _clientFactory = clientFactory;
         }
 
         // GET: api/<MaterialIssueController>
@@ -264,10 +267,24 @@ namespace Tips.Production.Api.Controllers
                             decimal balanceQuantity = 0;
                         //var partnumber = materialIssueDetailById.materialIssueItems[i].PartNumber;
                         //var projectnumber = materialIssueDetailById.materialIssueItems[i].ProjectNumber;
-                        var partnumber = Uri.EscapeDataString(groupedMaterialIssueItemDtoList[i].PartNumber);
-                        var projectnumber = Uri.EscapeDataString(groupedMaterialIssueItemDtoList[i].ProjectNumber);
-                         var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                              "GetInventoryStockByItemAndProjectNo?", "itemNumber=", partnumber, "&projectNumber=", projectnumber));
+                        //var partnumber = Uri.EscapeDataString(groupedMaterialIssueItemDtoList[i].PartNumber);
+                        //var projectnumber = Uri.EscapeDataString(groupedMaterialIssueItemDtoList[i].ProjectNumber);
+                         //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                         //     "GetInventoryStockByItemAndProjectNo?", "itemNumber=", partnumber, "&projectNumber=", projectnumber));
+
+                        var client = _clientFactory.CreateClient();
+                        var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                        var ItemNumber = groupedMaterialIssueItemDtoList[i].PartNumber;
+                        var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+                        var projectNumber = groupedMaterialIssueItemDtoList[i].ProjectNumber;
+                        var encodedProjectNumber = Uri.EscapeDataString(projectNumber);
+
+                        var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                            $"GetInventoryStockByItemAndProjectNo?itemNumber={encodedItemNumber},&projectNumber={encodedProjectNumber}"));
+                        request.Headers.Add("Authorization", token);
+
+                        var inventoryObjectResult = await client.SendAsync(request);
                         if (inventoryObjectResult != null && inventoryObjectResult.StatusCode == HttpStatusCode.OK)
                         {
                             var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
@@ -499,7 +516,19 @@ namespace Tips.Production.Api.Controllers
                             inventoryDtoForIssue.ShopOrderNumber = materialIssueUpdateDto.ShopOrderNumber;
                             var json = JsonConvert.SerializeObject(inventoryDtoForIssue);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
-                            var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnMaterialIssue"), data);
+                            //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnMaterialIssue"), data);
+
+                            var client1 = _clientFactory.CreateClient();
+                            var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                            var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                            "UpdateInventoryOnMaterialIssue"))
+                            {
+                                Content = data
+                            };
+                            request1.Headers.Add("Authorization", token1);
+
+                            var response = await client1.SendAsync(request1);
                             if (response.StatusCode != HttpStatusCode.OK)
                             {
                                 updateMaterialIssueResp = response.StatusCode;

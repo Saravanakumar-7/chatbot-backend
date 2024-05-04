@@ -5,6 +5,7 @@ using Entities;
 using Microsoft.AspNetCore.Mvc;
 using Mysqlx.Crud;
 using Newtonsoft.Json;
+using System.IO;
 using System.Net;
 using System.Text;
 using Tips.Production.Api.Contracts;
@@ -23,13 +24,15 @@ namespace Tips.Production.Api.Controllers
         private readonly IConfiguration _config;
         private IMapper _mapper;
         private IOQCBinningRepository _oQCBinningRepository;
-        public OQCBinningController(IOQCBinningRepository oQCBinningRepository, ILoggerManager logger, HttpClient httpClient, IConfiguration config, IMapper mapper)
+        private readonly IHttpClientFactory _clientFactory;
+        public OQCBinningController(IOQCBinningRepository oQCBinningRepository, IHttpClientFactory clientFactory, ILoggerManager logger, HttpClient httpClient, IConfiguration config, IMapper mapper)
         {
             _logger = logger;
             _httpClient = httpClient;
             _config = config;
             _mapper = mapper;
             _oQCBinningRepository = oQCBinningRepository;
+            _clientFactory = clientFactory;
         }
 
         [HttpPost]
@@ -83,11 +86,25 @@ namespace Tips.Production.Api.Controllers
                 int cretedoqcbin = await _oQCBinningRepository.CreateOQCBinning(postoqcbinning);
                 _oQCBinningRepository.SaveAsync();
 
-                var httpClientHandler = new HttpClientHandler();
-                httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-                var httpClient = new HttpClient(httpClientHandler);
-                var rfqApiUrl = _config["InventoryAPI"];
-                var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetInventoryStockByItemAndShopOrderNo?itemNumber={oQCBinningPostDto.ItemNumber}&shopordernumber={oQCBinningPostDto.ShopOrderNumber}");
+                //var httpClientHandler = new HttpClientHandler();
+                //httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                //var httpClient = new HttpClient(httpClientHandler);
+                //var rfqApiUrl = _config["InventoryAPI"];
+                //var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetInventoryStockByItemAndShopOrderNo?itemNumber={oQCBinningPostDto.ItemNumber}&shopordernumber={oQCBinningPostDto.ShopOrderNumber}");
+
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                var ItemNumbers = oQCBinningPostDto.ItemNumber;
+                var encodedItemNumber = Uri.EscapeDataString(ItemNumbers);
+                var ShopOrderNumber = oQCBinningPostDto.ShopOrderNumber;
+                var encodedShopOrderNumber = Uri.EscapeDataString(ShopOrderNumber);
+
+                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                    $"GetInventoryStockByItemAndShopOrderNo?itemNumber={encodedItemNumber},&shopordernumber={encodedShopOrderNumber}"));
+                request.Headers.Add("Authorization", token);
+
+                var rfqCustomerIdResponse = await client.SendAsync(request);
                 if (rfqCustomerIdResponse.StatusCode != HttpStatusCode.OK)
                 {
                     GetInv = rfqCustomerIdResponse.StatusCode;
@@ -102,13 +119,25 @@ namespace Tips.Production.Api.Controllers
                 }
                 vendorUOC.data.Balance_Quantity = vendorUOC.data.Balance_Quantity - binningqty;
                 var updateInventory = _mapper.Map<OQCBinningInventoryUpdateDto>(vendorUOC.data);
-                var httpClientHandler_1 = new HttpClientHandler();
-                httpClientHandler_1.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-                var httpClient_1 = new HttpClient(httpClientHandler_1);
+                //var httpClientHandler_1 = new HttpClientHandler();
+                //httpClientHandler_1.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                //var httpClient_1 = new HttpClient(httpClientHandler_1);
                 string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(updateInventory);
-                var rfqApiUrl_1 = _config["InventoryAPI"];
+                //var rfqApiUrl_1 = _config["InventoryAPI"];
                 var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
-                await _httpClient.PutAsync($"{rfqApiUrl_1}UpdateInventory?Id={vendorUOC.data.Id}", content);
+                //await _httpClient.PutAsync($"{rfqApiUrl_1}UpdateInventory?Id={vendorUOC.data.Id}", content);
+
+                var client5 = _clientFactory.CreateClient();
+                var token5 = HttpContext.Request.Headers["Authorization"].ToString();
+                var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryAPI"],
+                "UpdateInventory?Id=", vendorUOC.data.Id))
+                {
+                    Content = content
+                };
+                request5.Headers.Add("Authorization", token5);
+
+                var response5 = await client5.SendAsync(request5);
+
                 foreach (var loc in oqcBinningLocationList)
                 {
                     var newinv = _mapper.Map<OQCBinningInventoryUpdateDto>(updateInventory);
@@ -118,15 +147,39 @@ namespace Tips.Production.Api.Controllers
                     newinv.Balance_Quantity = loc.Quantity;
                     var json = JsonConvert.SerializeObject(newinv);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+                   // var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+
+                    var client1 = _clientFactory.CreateClient();
+                    var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                    var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                    "CreateInventory"))
+                    {
+                        Content = data
+                    };
+                    request1.Headers.Add("Authorization", token1);
+
+                    var response = await client1.SendAsync(request1);
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
                         CreateInv = response.StatusCode;
                     }
 
+                    //var ItemNumber = postoqcbinning.ItemNumber;
+                    //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
+                           // "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
+
+                    var client2 = _clientFactory.CreateClient();
+                    var token2 = HttpContext.Request.Headers["Authorization"].ToString();
+
                     var ItemNumber = postoqcbinning.ItemNumber;
-                    var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
-                            "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
+                    var encodedItemNo = Uri.EscapeDataString(ItemNumber);
+
+                    var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
+                        $"GetItemMasterByItemNumber?ItemNumber={encodedItemNo}"));
+                    request2.Headers.Add("Authorization", token2);
+
+                    var itemMasterObjectResult = await client2.SendAsync(request2);
                     if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
                     {
                         GetItemMas = itemMasterObjectResult.StatusCode;
@@ -162,7 +215,20 @@ namespace Tips.Production.Api.Controllers
 
                     var json2 = JsonConvert.SerializeObject(inventoryTranction);
                     var data2 = new StringContent(json2, Encoding.UTF8, "application/json");
-                    var response2 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data2);
+                    //var response2 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data2);
+
+                    var client3 = _clientFactory.CreateClient();
+                    var token3 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                    var request3 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                    "CreateInventoryTranction"))
+                    {
+                        Content = data2
+                    };
+                    request1.Headers.Add("Authorization", token3);
+
+                    var response2 = await client3.SendAsync(request3);
+
                     if (response2.StatusCode != HttpStatusCode.OK)
                     {
                         CreateInvTrans = response2.StatusCode;

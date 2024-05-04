@@ -27,8 +27,9 @@ namespace Tips.Production.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config; 
         private IMapper _mapper;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public ShopOrderConfirmationController(IShopOrderConfirmationRepository shopOrderConfirmationRepository,
+        public ShopOrderConfirmationController(IShopOrderConfirmationRepository shopOrderConfirmationRepository, IHttpClientFactory clientFactory,
             ILoggerManager logger, IMapper mapper, IShopOrderRepository shopOrderRepository, IConfiguration config, HttpClient httpClient)
         {
             _logger = logger;
@@ -37,7 +38,8 @@ namespace Tips.Production.Api.Controllers
             _mapper = mapper;
             _httpClient = httpClient;
             _config = config;
-        }
+            _clientFactory = clientFactory;
+    }
 
        [HttpGet]
         public async Task<IActionResult> GetAllShopOrderConfirmation([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
@@ -159,7 +161,18 @@ namespace Tips.Production.Api.Controllers
 
                 var json = JsonConvert.SerializeObject(shopOrderConfirmationPostDto.shopOrderItemConfirmations);
                var data = new StringContent(json, Encoding.UTF8, "application/json");
-               var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnShopOrderConfirmation"), data);
+               //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnShopOrderConfirmation"), data);
+
+                var client1 = _clientFactory.CreateClient();
+                var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+                var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                "UpdateInventoryOnShopOrderConfirmation"))
+                {
+                    Content = data
+                };
+                request1.Headers.Add("Authorization", token1);
+
+                var response = await client1.SendAsync(request1);
 
                 //Update InventoryTranction Code 
 

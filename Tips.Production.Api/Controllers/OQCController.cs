@@ -35,7 +35,8 @@ namespace Tips.Production.Api.Controllers
         private IMapper _mapper;
         private IShopOrderRepository _shopOrderRepo;
         private IOQCBinningRepository _oQCBinningRepository;
-        public OQCController(IShopOrderConfirmationRepository shopOrderConfirmationRepository, IOQCRepository oQCRepository, IOQCBinningRepository oQCBinningRepository, IShopOrderRepository shopOrderRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        private readonly IHttpClientFactory _clientFactory;
+        public OQCController(IHttpClientFactory clientFactory, IShopOrderConfirmationRepository shopOrderConfirmationRepository, IOQCRepository oQCRepository, IOQCBinningRepository oQCBinningRepository, IShopOrderRepository shopOrderRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _oQCRepository = oQCRepository;
             _logger = logger;
@@ -45,6 +46,7 @@ namespace Tips.Production.Api.Controllers
             _shopOrderRepo = shopOrderRepository;
             _oQCBinningRepository = oQCBinningRepository;
             _shopOrderConfirmationRepository = shopOrderConfirmationRepository;
+            _clientFactory = clientFactory;
         }
 
         [HttpGet]
@@ -281,9 +283,21 @@ namespace Tips.Production.Api.Controllers
                 var projectNo = shopOrderItemDetail?.ProjectNumber;
                 if (oQCCreate.ItemType == PartType.SA) //sa
                 {
+                    //var ItemNumber = oQCCreate.ItemNumber;
+                    //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
+                    //        "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
+
+                    var client2 = _clientFactory.CreateClient();
+                    var token2 = HttpContext.Request.Headers["Authorization"].ToString();
+
                     var ItemNumber = oQCCreate.ItemNumber;
-                    var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
-                            "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
+                    var encodedItemNo = Uri.EscapeDataString(ItemNumber);
+
+                    var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
+                        $"GetItemMasterByItemNumber?ItemNumber={encodedItemNo}"));
+                    request2.Headers.Add("Authorization", token2);
+
+                    var itemMasterObjectResult = await client2.SendAsync(request2);
                     if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
                     {
                         GetSAItemMas = itemMasterObjectResult.StatusCode;
@@ -320,7 +334,19 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogInfo("getitemmasterdata" + Convert.ToString(inventory));
                     var json = JsonConvert.SerializeObject(inventory);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+                    //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+
+                    var client1 = _clientFactory.CreateClient();
+                    var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                    var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                    "CreateInventory"))
+                    {
+                        Content = data
+                    };
+                    request1.Headers.Add("Authorization", token1);
+
+                    var response = await client1.SendAsync(request1);
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
                         CreateSAInv = response.StatusCode;
@@ -349,7 +375,19 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogInfo("getitemmasterdata" + Convert.ToString(inventory1));
                     var json1 = JsonConvert.SerializeObject(inventory1);
                     var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
-                    var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
+                   // var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
+
+                    var client3 = _clientFactory.CreateClient();
+                    var token3 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                    var request3 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                    "CreateInventory"))
+                    {
+                        Content = data1
+                    };
+                    request3.Headers.Add("Authorization", token3);
+
+                    var response1 = await client3.SendAsync(request3);
                     if (response1.StatusCode != HttpStatusCode.OK)
                     {
                         CreateSARejectInv = response1.StatusCode;
@@ -375,7 +413,19 @@ namespace Tips.Production.Api.Controllers
 
                     var json2 = JsonConvert.SerializeObject(inventoryTranction);
                     var data2 = new StringContent(json2, Encoding.UTF8, "application/json");
-                    var response2 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data2);
+                   // var response2 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data2);
+
+                    var client4 = _clientFactory.CreateClient();
+                    var token4 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                    var request4 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                    "CreateInventoryTranction"))
+                    {
+                        Content = data2
+                    };
+                    request4.Headers.Add("Authorization", token4);
+
+                    var response2 = await client4.SendAsync(request4);
                     if (response2.StatusCode != HttpStatusCode.OK)
                     {
                         CreateSAInvTrans = response2.StatusCode;
@@ -402,7 +452,19 @@ namespace Tips.Production.Api.Controllers
 
                     var json4 = JsonConvert.SerializeObject(inventoryTranction1);
                     var data4 = new StringContent(json4, Encoding.UTF8, "application/json");
-                    var response4 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data4);
+                    //var response4 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data4);
+
+                    var client5 = _clientFactory.CreateClient();
+                    var token5 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                    var request5 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                    "CreateInventoryTranction"))
+                    {
+                        Content = data4
+                    };
+                    request5.Headers.Add("Authorization", token5);
+
+                    var response4 = await client5.SendAsync(request5);
                     if (response4.StatusCode != HttpStatusCode.OK)
                     {
                         CreateSARejectInvTrans = response4.StatusCode;
@@ -411,9 +473,21 @@ namespace Tips.Production.Api.Controllers
                 }
                 else
                 {
+                    //var ItemNumber = oQCCreate.ItemNumber;
+                    //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
+                    //        "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
+
+                    var client2 = _clientFactory.CreateClient();
+                    var token2 = HttpContext.Request.Headers["Authorization"].ToString();
+
                     var ItemNumber = oQCCreate.ItemNumber;
-                    var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
-                            "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
+                    var encodedItemNo = Uri.EscapeDataString(ItemNumber);
+
+                    var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
+                        $"GetItemMasterByItemNumber?ItemNumber={encodedItemNo}"));
+                    request2.Headers.Add("Authorization", token2);
+
+                    var itemMasterObjectResult = await client2.SendAsync(request2);
                     if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
                     {
                         GetFGItemMas = itemMasterObjectResult.StatusCode;
@@ -446,7 +520,19 @@ namespace Tips.Production.Api.Controllers
 
                     var json = JsonConvert.SerializeObject(inventory);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
-                    var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+                   // var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+
+                    var client1 = _clientFactory.CreateClient();
+                    var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                    var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                    "CreateInventory"))
+                    {
+                        Content = data
+                    };
+                    request1.Headers.Add("Authorization", token1);
+
+                    var response = await client1.SendAsync(request1);
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
                         CreateFGInv = response.StatusCode;
@@ -476,7 +562,19 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogInfo("getitemmasterdata" + Convert.ToString(inventory1));
                     var json1 = JsonConvert.SerializeObject(inventory1);
                     var data1 = new StringContent(json1, Encoding.UTF8, "application/json");
-                    var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
+                    //var response1 = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data1);
+
+                    var client3 = _clientFactory.CreateClient();
+                    var token3 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                    var request3 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                    "CreateInventory"))
+                    {
+                        Content = data1
+                    };
+                    request3.Headers.Add("Authorization", token3);
+
+                    var response1 = await client3.SendAsync(request3);
                     if (response1.StatusCode != HttpStatusCode.OK)
                     {
                         CreateFGRejectInv = response1.StatusCode;
@@ -504,7 +602,19 @@ namespace Tips.Production.Api.Controllers
 
                     var json2 = JsonConvert.SerializeObject(inventoryTranction);
                     var data2 = new StringContent(json2, Encoding.UTF8, "application/json");
-                    var response2 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data2);
+                    //var response2 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data2);
+
+                    var client4 = _clientFactory.CreateClient();
+                    var token4 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                    var request4 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                    "CreateInventoryTranction"))
+                    {
+                        Content = data2
+                    };
+                    request4.Headers.Add("Authorization", token4);
+
+                    var response2 = await client4.SendAsync(request4);
                     if (response2.StatusCode != HttpStatusCode.OK)
                     {
                         CreateFGInvTrans = response2.StatusCode;
@@ -532,7 +642,19 @@ namespace Tips.Production.Api.Controllers
 
                     var json4 = JsonConvert.SerializeObject(inventoryTranction1);
                     var data4 = new StringContent(json4, Encoding.UTF8, "application/json");
-                    var response4 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data4);
+                    //var response4 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data4);
+
+                    var client5 = _clientFactory.CreateClient();
+                    var token5 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                    var request5 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                    "CreateInventoryTranction"))
+                    {
+                        Content = data4
+                    };
+                    request5.Headers.Add("Authorization", token5);
+
+                    var response4 = await client5.SendAsync(request5);
                     if (response4.StatusCode != HttpStatusCode.OK)
                     {
                         CreateFGRejectInvTrans = response4.StatusCode;
