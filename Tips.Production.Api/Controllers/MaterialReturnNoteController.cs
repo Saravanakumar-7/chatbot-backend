@@ -25,14 +25,16 @@ namespace Tips.Production.Api.Controllers
         private ILoggerManager _logger;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
+        private readonly IHttpClientFactory _clientFactory;
 
-        public MaterialReturnNoteController(IConfiguration config, HttpClient httpClient, IMaterialReturnNoteRepository materialReturnNoteRepository, IMapper mapper, ILoggerManager logger)
+        public MaterialReturnNoteController(IHttpClientFactory clientFactory,IConfiguration config, HttpClient httpClient, IMaterialReturnNoteRepository materialReturnNoteRepository, IMapper mapper, ILoggerManager logger)
         {
             _materialReturnNoteRepository = materialReturnNoteRepository;
             _mapper = mapper;
             _logger = logger;
             _httpClient = httpClient;
             _config = config;
+            _clientFactory = clientFactory;
         }
 
 
@@ -479,7 +481,19 @@ namespace Tips.Production.Api.Controllers
                 var materialReturnNoteDetails = materialReturnNoteItemList.Select(item => mapper.Map<MRNUpdateInventoryBalanceQty>(item)).ToList();
                  var json = JsonConvert.SerializeObject(materialReturnNoteDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialReturnNoteInventoryBalanceQty"), data);
+                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialReturnNoteInventoryBalanceQty"), data);
+
+                var client1 = _clientFactory.CreateClient();
+                var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                "MaterialReturnNoteInventoryBalanceQty"))
+                {
+                    Content = data
+                };
+                request1.Headers.Add("Authorization", token1);
+
+                var response = await client1.SendAsync(request1);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {

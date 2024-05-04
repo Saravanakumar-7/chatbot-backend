@@ -32,8 +32,9 @@ namespace Tips.Production.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
+        private readonly IHttpClientFactory _clientFactory;
         public ShopOrderController(IShopOrderItemRepository shopOrderItemRepository, IShopOrderRepository shopOrderRepository, IHttpContextAccessor httpContextAccessor,
-            IMaterialIssueRepository materialIssueRepository, ILoggerManager logger,
+            IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IHttpClientFactory clientFactory,
             IMapper mapper, IConfiguration config, HttpClient httpClient)
         {
             _logger = logger;
@@ -44,6 +45,7 @@ namespace Tips.Production.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _httpContextAccessor = httpContextAccessor;
+            _clientFactory = clientFactory;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
@@ -512,8 +514,20 @@ namespace Tips.Production.Api.Controllers
 
                             var jsons = JsonConvert.SerializeObject(shopOrderDetail);
                             var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                            var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateShopOrderQty?"), datas);
-                            if(responses.StatusCode!=HttpStatusCode.OK)
+                            //var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateShopOrderQty?"), datas);
+
+                            var client1 = _clientFactory.CreateClient();
+                            var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+                            var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
+                            "UpdateShopOrderQty?"))
+                            {
+                                Content = datas
+                            };
+                            request1.Headers.Add("Authorization", token1);
+
+                            var responses = await client1.SendAsync(request1);
+
+                            if (responses.StatusCode!=HttpStatusCode.OK)
                             {
                                 _logger.LogError($"Something went wrong inside CreateShopOrder action");
                                 serviceResponse.Data = null;
@@ -627,9 +641,22 @@ namespace Tips.Production.Api.Controllers
                 {
                     if (i == 0)
                     {
+                        //var fgNumber = shopOrder.ItemNumber;
+                        //decimal bomversion = shopOrder.BomRevisionNo;
+                        //var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetProductionBomByItemAndBomVersionNo?", "ItemNumber=", fgNumber, "&bomVersionNo=", bomversion));
+
+                        var client2 = _clientFactory.CreateClient();
+                        var token2 = HttpContext.Request.Headers["Authorization"].ToString();
+
                         var fgNumber = shopOrder.ItemNumber;
+                        var encodedItemNo = Uri.EscapeDataString(fgNumber);
                         decimal bomversion = shopOrder.BomRevisionNo;
-                        var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetProductionBomByItemAndBomVersionNo?", "ItemNumber=", fgNumber, "&bomVersionNo=", bomversion));
+
+                        var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"],
+                            $"GetProductionBomByItemAndBomVersionNo?ItemNumber={encodedItemNo},&bomVersionNo={bomversion}"));
+                        request2.Headers.Add("Authorization", token2);
+
+                        var bomDetails = await client2.SendAsync(request2);
                         var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
                         dynamic bomDetailsData = JsonConvert.DeserializeObject(bomDetailsString);
                         bomData = bomDetailsData.data;
@@ -1294,7 +1321,18 @@ namespace Tips.Production.Api.Controllers
 
                 var jsons = JsonConvert.SerializeObject(updateShopOrderQtyDto);
                 var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdatePendingShopOrderQty?"), datas);
+                //var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdatePendingShopOrderQty?"), datas);
+
+                var client1 = _clientFactory.CreateClient();
+                var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+                var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
+                "UpdatePendingShopOrderQty"))
+                {
+                    Content = datas
+                };
+                request1.Headers.Add("Authorization", token1);
+
+                var responses = await client1.SendAsync(request1);
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ShopOrderItems Status have been closed";
