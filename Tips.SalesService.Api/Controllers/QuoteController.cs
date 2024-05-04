@@ -4,6 +4,7 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc; 
 using Newtonsoft.Json; 
@@ -19,6 +20,7 @@ namespace Tips.SalesService.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class QuoteController : ControllerBase
     {
         private IQuoteRepository _repository;
@@ -28,10 +30,12 @@ namespace Tips.SalesService.Api.Controllers
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        public QuoteController(IQuoteRepository repository, HttpClient httpClient, IConfiguration config, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
+        private readonly IHttpClientFactory _clientFactory;
+        public QuoteController(IQuoteRepository repository, IHttpClientFactory clientFactory, HttpClient httpClient, IConfiguration config, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
+            _clientFactory = clientFactory;
             _mapper = mapper;
             _httpClient = httpClient;
             _config = config;
@@ -120,8 +124,16 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         if (serverKey == "keus")
                         {
-                            var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?",
-                                                                                                                                            "ItemNumber=", quoteItems.ItemNumber));
+                            var client = _clientFactory.CreateClient();
+                            var token = HttpContext.Request.Headers["Authorization"].ToString(); 
+                            var encodedItemNumber = Uri.EscapeDataString(quoteItems.ItemNumber);
+                            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                            $"GetStockDetailsForAllLocationWarehouseByItemNo?ItemNumber={encodedItemNumber}"));
+                            request.Headers.Add("Authorization", token);
+
+                            var inventoryObjectResult = await client.SendAsync(request);
+                            //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?",
+                            //                                                                                                                "ItemNumber=", quoteItems.ItemNumber));
                             var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                             dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                             dynamic inventoryObject = inventoryObjectData.data;
@@ -133,8 +145,17 @@ namespace Tips.SalesService.Api.Controllers
                         }
                         else
                         {
-                            var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNoAndProjectNo?",
-                                                                                                                                "ItemNumber=", quoteItems.ItemNumber, "&ProjectNo=",rfqnumber));
+                            var client = _clientFactory.CreateClient();
+                            var token = HttpContext.Request.Headers["Authorization"].ToString();
+                            var encodedItemNumber = Uri.EscapeDataString(quoteItems.ItemNumber);
+                            var encodedRFQNumber = Uri.EscapeDataString(rfqnumber); 
+                            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                            $"GetStockDetailsForAllLocationWarehouseByItemNoAndProjectNo?ItemNumber={encodedItemNumber}&ProjectNo={encodedRFQNumber}"));
+                            request.Headers.Add("Authorization", token);
+
+                            var inventoryObjectResult = await client.SendAsync(request);
+                            //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNoAndProjectNo?",
+                            //                                                                                                    "ItemNumber=", quoteItems.ItemNumber, "&ProjectNo=",rfqnumber));
                             var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                             dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                             dynamic inventoryObject = inventoryObjectData;
@@ -188,10 +209,14 @@ namespace Tips.SalesService.Api.Controllers
             {
 
                 //get latest price list name from master
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                //var priceListNamesResult = await _httpClient.GetAsync(string.Concat(_config["PriceListAPI"],
+                //             "GetLatestPriceListName?"));
+                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PriceListAPI"],"GetLatestPriceListName"));
+                request.Headers.Add("Authorization", token);
 
-                var priceListNamesResult = await _httpClient.GetAsync(string.Concat(_config["PriceListAPI"],
-                             "GetLatestPriceListName?"));
-
+                var priceListNamesResult = await client.SendAsync(request);
                 var priceListNamesString = await priceListNamesResult.Content.ReadAsStringAsync();
                 dynamic priceListNamesData = JsonConvert.DeserializeObject(priceListNamesString);
                 dynamic priceListNamesObject = priceListNamesData.data;

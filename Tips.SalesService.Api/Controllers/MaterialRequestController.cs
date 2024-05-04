@@ -10,6 +10,7 @@ using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Repository;
 using Entities.DTOs;
 using NuGet.Protocol.Core.Types;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,17 +18,18 @@ namespace Tips.SalesService.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-
+    [Authorize]
     // Materialrequest Controller
     public class MaterialRequestController : ControllerBase
     {
         private IMaterialRequestRepository _materialRequestRepository;
         private IMapper _mapper;
         private ILoggerManager _logger;
+        private readonly IHttpClientFactory _clientFactory;
 
-
-        public MaterialRequestController(IMaterialRequestRepository materialRequestRepository, IMapper mapper, ILoggerManager logger)
+        public MaterialRequestController(IMaterialRequestRepository materialRequestRepository, IMapper mapper, IHttpClientFactory clientFactory, ILoggerManager logger)
         {
+            _clientFactory = clientFactory;
             _materialRequestRepository = materialRequestRepository;
             _mapper = mapper;
             _logger = logger;

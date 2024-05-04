@@ -9,6 +9,7 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
@@ -29,6 +30,7 @@ namespace Tips.SalesService.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class SalesOrderController : ControllerBase
     {
         private ISalesOrderRepository _repository;
@@ -47,13 +49,15 @@ namespace Tips.SalesService.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public SalesOrderController(ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
+        private readonly IHttpClientFactory _clientFactory;
+        public SalesOrderController(ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, IHttpClientFactory clientFactory, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
             ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, IQuoteRepository quoteRepository , IHttpContextAccessor httpContextAccessor,
             ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _clientFactory = clientFactory;
             _salesOrderItemsRepository = salesOrderItemsRepository;
             _salesOrderHistory = salesOrderHistoryRepository;
             _salesAdditionalChargesRepository = salesAdditionalChargesRepository;
@@ -282,11 +286,19 @@ namespace Tips.SalesService.Api.Controllers
                         {
                             var json = JsonConvert.SerializeObject(itemNumberList);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
-                            var inventoryQtyResponse = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetAvailableStockQtyForSalesOrderItems?", "salesOrderNo=", salesOrderNo, "&salesOrderStatus=", salesOrderStatus), data);
+                            // var inventoryQtyResponse = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetAvailableStockQtyForSalesOrderItems?", "salesOrderNo=", salesOrderNo, "&salesOrderStatus=", salesOrderStatus), data);
+                            var client = _clientFactory.CreateClient();
+                            var token = HttpContext.Request.Headers["Authorization"].ToString();
+                            var encodedSONumber = Uri.EscapeDataString(salesOrderNo);
+                            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                            $"GetAvailableStockQtyForSalesOrderItems?salesOrderNo={encodedSONumber}&salesOrderStatus={salesOrderStatus}"))
+                            {
+                                Content=data
+                            };
+                            request.Headers.Add("Authorization", token);
 
+                            var inventoryQtyResponse = await client.SendAsync(request);
                             var inventoryItemQtyDetails = await inventoryQtyResponse.Content.ReadAsStringAsync();
-
-
                             Dictionary<string, decimal> inventoryItemWithStockDetails = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(inventoryItemQtyDetails);
 
 
@@ -1492,11 +1504,18 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<ItemDetailsForShopOrderDto> serviceResponse = new ServiceResponse<ItemDetailsForShopOrderDto>();
             try
             {
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
                 string item = JsonConvert.SerializeObject(itemdetailsDto.itemNumber);
                 var content = new StringContent(item, Encoding.UTF8, "application/json");
-                var bomDetails = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"],
-                    "GetAllProductionBomFGListByItemNumber?"), content);
+                //var bomDetails = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"],
+                //    "GetAllProductionBomFGListByItemNumber?"), content);
+                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"],
+                            $"GetAllProductionBomFGListByItemNumber"))
+                { Content=content};
+                request.Headers.Add("Authorization", token);
 
+                var bomDetails = await client.SendAsync(request);
                 var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
                 dynamic bomDetailsStringData = JsonConvert.DeserializeObject(bomDetailsString);
                 dynamic bomData = bomDetailsStringData.data;
@@ -2336,8 +2355,17 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<SARevisionNumber> serviceResponse = new ServiceResponse<SARevisionNumber>();
             try
             {
-                var saFgItemDetailsWithBomQty = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
-                    "GetAllProductionBomSAListByItemNumber?", "ItemNumber=", itemNumber));
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();              
+                var encodedItemNumber = Uri.EscapeDataString(itemNumber);
+
+                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"],
+                    $"GetAllProductionBomSAListByItemNumber?ItemNumber={encodedItemNumber}"));
+                request.Headers.Add("Authorization", token);
+
+                var saFgItemDetailsWithBomQty = await client.SendAsync(request);
+                //var saFgItemDetailsWithBomQty = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
+                //    "GetAllProductionBomSAListByItemNumber?", "ItemNumber=", itemNumber));
                 var saFgItemDetailsWithBomQtyString = await saFgItemDetailsWithBomQty.Content.ReadAsStringAsync();
                 dynamic saFgItemDetailsWithBomQtyData = JsonConvert.DeserializeObject(saFgItemDetailsWithBomQtyString);
                 dynamic saFgItemDetailWithBomQty = saFgItemDetailsWithBomQtyData.data;
@@ -2411,8 +2439,18 @@ namespace Tips.SalesService.Api.Controllers
         //get sa details
         private async Task<dynamic> GetSAQuantityFromBom(string item, string itemNumber)
         {
-            var enggBomQtyDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
-                        "GetSABomListByItemNumber?", "fgPartNumber=", item, "&saItemNumber=", itemNumber));
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();           
+            var encodedItemNumber = Uri.EscapeDataString(itemNumber);
+            var encodedItem = Uri.EscapeDataString(item);
+
+            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"],
+                $"GetSABomListByItemNumber?fgPartNumber={encodedItem}&saItemNumber={encodedItemNumber}"));
+            request.Headers.Add("Authorization", token);
+
+            var enggBomQtyDetails = await client.SendAsync(request);
+            //var enggBomQtyDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
+            //            "GetSABomListByItemNumber?", "fgPartNumber=", item, "&saItemNumber=", itemNumber));
 
             var enggBomQtyObjectString = await enggBomQtyDetails.Content.ReadAsStringAsync();
             dynamic enggBomQtyObjectData = JsonConvert.DeserializeObject(enggBomQtyObjectString);
