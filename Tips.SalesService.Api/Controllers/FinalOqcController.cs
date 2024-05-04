@@ -8,6 +8,7 @@ using System.Net;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities.DTOs;
 using Tips.SalesService.Api.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,18 +16,19 @@ namespace Tips.SalesService.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class FinalOqcController : ControllerBase
     {
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IFinalOqcRepository _finalOqcRepository;
-
-        public FinalOqcController(IFinalOqcRepository finalOqcRepository, ILoggerManager logger, IMapper mapper)
+        private readonly IHttpClientFactory _clientFactory;
+        public FinalOqcController(IFinalOqcRepository finalOqcRepository, ILoggerManager logger, IHttpClientFactory clientFactory, IMapper mapper)
         {
             _logger = logger;
             _mapper = mapper;
             _finalOqcRepository = finalOqcRepository;
-
+            _clientFactory = clientFactory;
         }
 
 

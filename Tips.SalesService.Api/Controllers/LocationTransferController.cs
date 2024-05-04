@@ -12,6 +12,7 @@ using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Repository;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Http;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,6 +20,7 @@ namespace Tips.SalesService.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class LocationTransferController : ControllerBase
     {
 
@@ -27,8 +29,10 @@ namespace Tips.SalesService.Api.Controllers
         private ILoggerManager _logger;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        public LocationTransferController(ILocationTransferRepository locationTransferRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        private readonly IHttpClientFactory _clientFactory;
+        public LocationTransferController(ILocationTransferRepository locationTransferRepository, IHttpClientFactory clientFactory, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
+            _clientFactory = clientFactory;
             _locationTransferRepository = locationTransferRepository;
             _mapper = mapper;
             _logger = logger;

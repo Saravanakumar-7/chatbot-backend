@@ -2,6 +2,7 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NuGet.Protocol.Core.Types;
@@ -16,17 +17,19 @@ namespace Tips.SalesService.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class MaterialTransactionNoteController : ControllerBase
     {
         private IMaterialTransactionNoteRepository _materialTransactionNoteRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-
-        public MaterialTransactionNoteController(IMaterialTransactionNoteRepository materialTransactionNoteRepository, ILoggerManager logger, IMapper mapper)
+        private readonly IHttpClientFactory _clientFactory;
+        public MaterialTransactionNoteController(IMaterialTransactionNoteRepository materialTransactionNoteRepository, IHttpClientFactory clientFactory, ILoggerManager logger, IMapper mapper)
         {
             _materialTransactionNoteRepository = materialTransactionNoteRepository;
             _logger = logger;
             _mapper = mapper;
+            _clientFactory = clientFactory;
         }
         [HttpGet]
         public async Task<IActionResult> GetAllMaterialTransactionNote([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
