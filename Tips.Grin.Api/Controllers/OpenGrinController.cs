@@ -5,6 +5,7 @@ using AutoMapper;
 using Azure;
 using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -18,6 +19,7 @@ namespace Tips.Grin.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class OpenGrinController : ControllerBase
     {
         private readonly IOpenGrinRepository _openGrinRepository;

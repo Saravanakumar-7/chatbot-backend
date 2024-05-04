@@ -24,7 +24,7 @@ namespace Tips.Grin.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class IQCConfirmationController : ControllerBase
     {
         private IIQCConfirmationRepository _iQCConfirmationRepository;

@@ -8,6 +8,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Entities.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -24,6 +25,7 @@ namespace Tips.Production.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class OQCController : ControllerBase
     {
         private IShopOrderConfirmationRepository _shopOrderConfirmationRepository;

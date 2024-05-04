@@ -6,6 +6,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Entities.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Mysqlx.Crud;
 using Newtonsoft.Json;
@@ -19,6 +20,7 @@ namespace Tips.Production.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class ShopOrderConfirmationController : ControllerBase
     {
         private IShopOrderConfirmationRepository _shopOrderConfirmationRepository;
