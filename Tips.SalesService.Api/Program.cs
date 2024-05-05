@@ -98,7 +98,9 @@ builder.Services.AddScoped<IQuoteRepository, QuoteRepository>();
 builder.Services.AddScoped<ISalesAdditionalChargesRepository, SalesAdditionalChargesRepository>();
 builder.Services.AddScoped<ISoConfirmationDateHistoryRepository, SoConfirmationDateHistoryRepository>();
 builder.Services.AddScoped<ISoConfirmationDateRepository, SoConfirmationDateRepository>();
+builder.Services.AddScoped<ISalesOrderAdditionalChargesHistoryRepository, SalesOrderAdditionalChargesHistoryRepository>();
 
+builder.Services.AddScoped<IScheduleDateHistoryRepository, ScheduleDateHistoryRepository>();
 
 builder.Services.AddScoped<IForeCastRepository, ForeCastRepository>();
 builder.Services.AddScoped<IForeCastCustomerSupportRepository, ForeCastCustomerSupportRepository>();
