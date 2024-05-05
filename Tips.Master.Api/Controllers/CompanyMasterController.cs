@@ -11,11 +11,13 @@ using Newtonsoft.Json;
 using Microsoft.AspNetCore.StaticFiles;
 using System.ComponentModel.Design;
 using MySqlX.XDevAPI.Common;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class CompanyMasterController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;

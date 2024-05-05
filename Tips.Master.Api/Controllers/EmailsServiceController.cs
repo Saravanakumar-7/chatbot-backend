@@ -11,11 +11,13 @@ using System.Net.Mail;
 using System.Net;
 using Entities.DTOs;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class EmailsServiceController : ControllerBase
     {
         private ILoggerManager _logger;

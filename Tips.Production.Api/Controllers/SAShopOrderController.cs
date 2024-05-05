@@ -13,11 +13,13 @@ using Entities.Enums;
 using Newtonsoft.Json;
 using System.Net.Http;
 using Tips.Production.Api.Repository;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tips.Production.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class SAShopOrderController : ControllerBase
     {
         private ISAShopOrderRepository _sashopOrderRepository;

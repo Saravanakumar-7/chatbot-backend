@@ -28,7 +28,7 @@ namespace Tips.Grin.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class BinningController : ControllerBase
     {
         private IBinningRepository _binningRepository;

@@ -16,6 +16,7 @@ using static Org.BouncyCastle.Math.EC.ECCurve;
 using Entities.Migrations;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 using Mysqlx.Crud;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,6 +24,7 @@ namespace Tips.Production.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class MaterialRequestsController : ControllerBase
     {
 
