@@ -22,6 +22,11 @@ builder.Services.ConfigureLoggerService();
 //builder.Services.ConfigureMSSqlContext(builder.Configuration);
 builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
+
+builder.Services.AddControllers();
+
 builder.Services.Configure<KestrelServerOptions>(option =>
 {
     option.Limits.MaxRequestBodySize = 1073741824;
@@ -89,7 +94,7 @@ builder.Services.AddScoped<IPoAddprojectRepository, PoAddprojectRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 builder.Services.AddHttpContextAccessor();
@@ -99,7 +104,6 @@ var app = builder.Build();
 //if (app.Environment.IsDevelopment())
 //{
 app.UseSwagger();
-app.UseSwaggerUI();
 //}
 
 app.UseHttpsRedirection();
@@ -110,6 +114,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
+app.UseRouting();
 
 app.UseCors("CorsPolicy");
 
@@ -122,7 +127,6 @@ app.UseSwaggerUI(c =>
     c.DisplayRequestDuration();
 });
 
-app.UseRouting();
 
 app.MapControllers();
 

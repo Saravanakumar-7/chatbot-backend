@@ -63,17 +63,18 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = false,
-            ValidateLifetime=true,
             ValidateAudience = false,
+            ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
+                Encoding.ASCII.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
         };
     });
 
@@ -123,6 +124,9 @@ builder.Services.AddScoped<IItemPriceListRepository, ItemPriceListRepository>();
 builder.Services.AddScoped<ISalesOrderHistoryRepository, SalesOrderHistoryRepository>();
 builder.Services.AddScoped<ICoverageReportRepository, CoverageReportRepository>();
 builder.Services.AddScoped<IDocumentUploadRepository, UploadDocumentRepository>();
+builder.Services.AddScoped<ISalesOrderAdditionalChargesHistoryRepository, SalesOrderAdditionalChargesHistoryRepository>();
+builder.Services.AddScoped<IScheduleDateHistoryRepository, ScheduleDateHistoryRepository>();
+
 //builder.Services.AddScoped<IRfqCustomerSupportNotesRepository, RfqCustomerSupportNotes>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

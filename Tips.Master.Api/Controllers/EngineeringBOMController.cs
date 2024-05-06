@@ -2806,7 +2806,7 @@ namespace Tips.Master.Api.Controllers
                                     var encodedProjectNumber = Uri.EscapeDataString(projectNo);
 
                                     var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                        $"GetTotalStockOfSAItemNumberAndProjectNo?itemNumber={encodedItemNumber},&ProjectNumber={encodedProjectNumber}"));
+                                        $"GetTotalStockOfSAItemNumberAndProjectNo?itemNumber={encodedItemNumber}&ProjectNumber={encodedProjectNumber}"));
                                     request.Headers.Add("Authorization", token);
 
                                     var inventoryObjectResult = await client.SendAsync(request);

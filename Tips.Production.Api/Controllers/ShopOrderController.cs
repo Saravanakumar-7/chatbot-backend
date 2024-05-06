@@ -655,7 +655,7 @@ namespace Tips.Production.Api.Controllers
                         decimal bomversion = shopOrder.BomRevisionNo;
 
                         var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"],
-                            $"GetProductionBomByItemAndBomVersionNo?ItemNumber={encodedItemNo},&bomVersionNo={bomversion}"));
+                            $"GetProductionBomByItemAndBomVersionNo?ItemNumber={encodedItemNo}&bomVersionNo={bomversion}"));
                         request2.Headers.Add("Authorization", token2);
 
                         var bomDetails = await client2.SendAsync(request2);

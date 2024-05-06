@@ -652,7 +652,7 @@ namespace Tips.Grin.Api.Controllers
                                     var encodedprojectNos = Uri.EscapeDataString(projectNos);
 
                                     var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                        $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo},&GrinPartsId={grinPartsIds},&ItemNumber={encodedItemNumber},&ProjectNumber={encodedprojectNos}"));
+                                        $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
                                     request1.Headers.Add("Authorization", token1);
 
                                     var inventoryObjectResult = await client1.SendAsync(request1);
@@ -672,7 +672,7 @@ namespace Tips.Grin.Api.Controllers
 
                                     var client5 = _clientFactory.CreateClient();
                                     var token5 = HttpContext.Request.Headers["Authorization"].ToString();
-                                    var request5 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                                    var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryAPI"],
                                     "UpdateInventory?id=", inventoryObject.id))
                                     {
                                         Content = data
@@ -703,7 +703,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObjectNew.GrinNo = binningDetail.GrinNumber;
                                     inventoryObjectNew.GrinPartId = grinId;
                                     inventoryObjectNew.PartType = grinPartsDetails.ItemType; // we have to take parttype from grinparts model;
-                                    inventoryObjectNew.ReferenceID = Convert.ToString(grinId);
+                                    inventoryObjectNew.ReferenceID = binningDetail.GrinNumber;
                                     inventoryObjectNew.ReferenceIDFrom = "GRIN";
 
                                     var json = JsonConvert.SerializeObject(inventoryObjectNew);
@@ -740,7 +740,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryTranctionObjectNew.GrinNo = binningDetail.GrinNumber;
                                 inventoryTranctionObjectNew.GrinPartId = grinId;
                                 inventoryTranctionObjectNew.PartType = grinPartDetails.ItemType; // we have to take parttype from grinparts model;
-                                inventoryTranctionObjectNew.ReferenceID = Convert.ToString(grinId);
+                                inventoryTranctionObjectNew.ReferenceID = binningDetail.GrinNumber;
                                 inventoryTranctionObjectNew.ReferenceIDFrom = "GRIN";
 
                                 var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
@@ -871,7 +871,7 @@ namespace Tips.Grin.Api.Controllers
                                     var encodedprojectNos = Uri.EscapeDataString(projectNos);
 
                                     var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                        $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo},&GrinPartsId={grinPartsIds},&ItemNumber={encodedItemNumber},&ProjectNumber={encodedprojectNos}"));
+                                        $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
                                     request1.Headers.Add("Authorization", token1);
 
                                     var inventoryObjectResult = await client1.SendAsync(request1);
@@ -892,7 +892,7 @@ namespace Tips.Grin.Api.Controllers
 
                                     var client5 = _clientFactory.CreateClient();
                                     var token5 = HttpContext.Request.Headers["Authorization"].ToString();
-                                    var request5 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                                    var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryAPI"],
                                     "UpdateInventory?id=", inventoryObject.id))
                                     {
                                         Content = data
@@ -920,7 +920,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObjectNew.GrinNo = binningDetail.GrinNumber;
                                     inventoryObjectNew.GrinPartId = grinId;
                                     inventoryObjectNew.PartType = grinPartsDetails.ItemType; // we have to take parttype from grinparts model;
-                                    inventoryObjectNew.ReferenceID = Convert.ToString(grinId);
+                                    inventoryObjectNew.ReferenceID = binningDetail.GrinNumber;
                                     inventoryObjectNew.ReferenceIDFrom = "GRIN";
 
                                     var json = JsonConvert.SerializeObject(inventoryObjectNew);
@@ -957,7 +957,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryTranctionObjectNew.GrinNo = binningDetail.GrinNumber;
                                 inventoryTranctionObjectNew.GrinPartId = grinId;
                                 inventoryTranctionObjectNew.PartType = grinPartDetails.ItemType; // we have to take parttype from grinparts model;
-                                inventoryTranctionObjectNew.ReferenceID = Convert.ToString(grinId);
+                                inventoryTranctionObjectNew.ReferenceID = binningDetail.GrinNumber;
                                 inventoryTranctionObjectNew.ReferenceIDFrom = "GRIN";
 
                                 var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
@@ -1384,7 +1384,7 @@ namespace Tips.Grin.Api.Controllers
                                 var encodedprojectNos = Uri.EscapeDataString(projectNos);
 
                                 var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                    $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo},&GrinPartsId={grinPartsIds},&ItemNumber={encodedItemNumber},&ProjectNumber={encodedprojectNos}"));
+                                    $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
                                 request1.Headers.Add("Authorization", token1);
 
                                 var inventoryObjectResult = await client1.SendAsync(request1);
@@ -1403,7 +1403,7 @@ namespace Tips.Grin.Api.Controllers
 
                                 var client5 = _clientFactory.CreateClient();
                                 var token5 = HttpContext.Request.Headers["Authorization"].ToString();
-                                var request5 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                                var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryAPI"],
                                 "UpdateInventory?id=", inventoryObject.id))
                                 {
                                     Content = data
@@ -1431,7 +1431,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryObjectNew.GrinNo = binningDetail.GrinNumber;
                                 inventoryObjectNew.GrinPartId = grinId;
                                 inventoryObjectNew.PartType = grinPartDetails.ItemType; // we have to take parttype from grinparts model;
-                                inventoryObjectNew.ReferenceID = Convert.ToString(grinId);
+                                inventoryObjectNew.ReferenceID = binningDetail.GrinNumber;
                                 inventoryObjectNew.ReferenceIDFrom = "GRIN";
 
                                 var json = JsonConvert.SerializeObject(inventoryObjectNew);
@@ -1465,7 +1465,7 @@ namespace Tips.Grin.Api.Controllers
                             inventoryTranctionObjectNew.GrinNo = binningDetail.GrinNumber;
                             inventoryTranctionObjectNew.GrinPartId = grinId;
                             inventoryTranctionObjectNew.PartType = grinPartDetails.ItemType; // we have to take parttype from grinparts model;
-                            inventoryTranctionObjectNew.ReferenceID = Convert.ToString(grinId);
+                            inventoryTranctionObjectNew.ReferenceID = binningDetail.GrinNumber;
                             inventoryTranctionObjectNew.ReferenceIDFrom = "GRIN";
 
                             var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
@@ -1617,7 +1617,7 @@ namespace Tips.Grin.Api.Controllers
                                 var encodedprojectNos = Uri.EscapeDataString(projectNos);
 
                                 var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                    $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo},&GrinPartsId={grinPartsIds},&ItemNumber={encodedItemNumber},&ProjectNumber={encodedprojectNos}"));
+                                    $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
                                 request1.Headers.Add("Authorization", token1);
 
                                 var inventoryObjectResult = await client1.SendAsync(request1);
@@ -1636,7 +1636,7 @@ namespace Tips.Grin.Api.Controllers
 
                                 var client5 = _clientFactory.CreateClient();
                                 var token5 = HttpContext.Request.Headers["Authorization"].ToString();
-                                var request5 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                                var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryAPI"],
                                 "UpdateInventory?id=", inventoryObject.id))
                                 {
                                     Content = data
@@ -1663,7 +1663,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryObjectNew.GrinNo = binningDetail.GrinNumber;
                                 inventoryObjectNew.GrinPartId = grinId;
                                 inventoryObjectNew.PartType = grinPartDetails.ItemType; // we have to take parttype from grinparts model;
-                                inventoryObjectNew.ReferenceID = Convert.ToString(grinId);
+                                inventoryObjectNew.ReferenceID = binningDetail.GrinNumber;
                                 inventoryObjectNew.ReferenceIDFrom = "GRIN";
 
                                 var json = JsonConvert.SerializeObject(inventoryObjectNew);

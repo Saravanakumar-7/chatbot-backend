@@ -14,7 +14,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class UserAccessController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
