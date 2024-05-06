@@ -521,7 +521,7 @@ namespace Tips.Production.Api.Controllers
                             var client1 = _clientFactory.CreateClient();
                             var token1 = HttpContext.Request.Headers["Authorization"].ToString();
                             var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
-                            "UpdateShopOrderQty"))
+                            "UpdateShopOrderQty?"))
                             {
                                 Content = datas
                             };
@@ -655,7 +655,7 @@ namespace Tips.Production.Api.Controllers
                         decimal bomversion = shopOrder.BomRevisionNo;
 
                         var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"],
-                            $"GetProductionBomByItemAndBomVersionNo?itemNumber={encodedItemNo}&bomVersionNo={bomversion}"));
+                            $"GetProductionBomByItemAndBomVersionNo?ItemNumber={encodedItemNo}&bomVersionNo={bomversion}"));
                         request2.Headers.Add("Authorization", token2);
 
                         var bomDetails = await client2.SendAsync(request2);

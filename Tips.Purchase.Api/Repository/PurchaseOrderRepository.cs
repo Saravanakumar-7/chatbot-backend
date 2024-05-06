@@ -1048,12 +1048,13 @@ namespace Tips.Purchase.Api.Repository
             return pendingPOApprovalIINameList;
         }
 
-        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParam(string VendorName, string PONumber, string itemNumber)
+        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParam(string VendorName, string PONumber, string itemNumber,
+                                                                                                             string RecordType, string Postatus)
         {
 
             var result = _tipsPurchaseDbContext
             .Set<PurchaseOrderSPReport>()
-            .FromSqlInterpolated($"CALL Purchase_Order_withparameter({VendorName},{PONumber},{itemNumber})")
+            .FromSqlInterpolated($"CALL Purchase_Order_withparameter({VendorName},{PONumber},{itemNumber},{RecordType},{Postatus})")
             .ToList();
 
             return result;

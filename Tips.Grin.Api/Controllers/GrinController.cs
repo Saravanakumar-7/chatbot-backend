@@ -33,6 +33,7 @@ using Org.BouncyCastle.Asn1.Ocsp;
 using Azure;
 using Mysqlx.Crud;
 using Org.BouncyCastle.Asn1.Anssi;
+using MySqlX.XDevAPI.Common;
 
 //Test
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -650,6 +651,12 @@ namespace Tips.Grin.Api.Controllers
                 }
                 HttpStatusCode createinvResp = HttpStatusCode.OK;
                 HttpStatusCode createinvTrancResp = HttpStatusCode.OK;
+                HttpStatusCode getItemmResp = HttpStatusCode.OK;
+                HttpStatusCode getItemForIqcResp = HttpStatusCode.OK;
+                HttpStatusCode UpdatePoStatus = HttpStatusCode.OK;
+                HttpStatusCode UpdatePoQty = HttpStatusCode.OK;
+                HttpStatusCode UpdatePoProjQty = HttpStatusCode.OK;
+
                 foreach (var parts in grinPartsList)
                 {
                     var client = _clientFactory.CreateClient();
@@ -663,6 +670,8 @@ namespace Tips.Grin.Api.Controllers
                     request.Headers.Add("Authorization", token);
 
                     var itemMasterObjectResult = await client.SendAsync(request);
+                    if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                        getItemmResp = itemMasterObjectResult.StatusCode;
                     //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
                     //         "GetItemMasterByItemNumber?", "&ItemNumber=", parts.ItemNumber));
                     var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
@@ -788,7 +797,10 @@ namespace Tips.Grin.Api.Controllers
                 request2.Headers.Add("Authorization", token2);
 
                 var responses = await client2.SendAsync(request2);
-
+                if (responses.StatusCode != HttpStatusCode.OK)
+                {
+                    UpdatePoQty = responses.StatusCode;
+                }
                 ////update balance qty  in PoAddProject table for grin concept
                 if (grinPartsDto.Count() > 0)
                 {
@@ -816,6 +828,10 @@ namespace Tips.Grin.Api.Controllers
                         request3.Headers.Add("Authorization", token3);
 
                         var results = await client3.SendAsync(request3);
+                        if (results.StatusCode != HttpStatusCode.OK)
+                        {
+                            UpdatePoProjQty = results.StatusCode;
+                        }
                     }
                 }
                 //Update PoStatus in Purchase order And PoItem table
@@ -835,8 +851,13 @@ namespace Tips.Grin.Api.Controllers
                 request4.Headers.Add("Authorization", token4);
 
                 var result = await client4.SendAsync(request4);
+                if (result.StatusCode != HttpStatusCode.OK)
+                {
+                    UpdatePoStatus = result.StatusCode;
+                }
 
-                if (responses.StatusCode == HttpStatusCode.OK && result.StatusCode == HttpStatusCode.OK && createinvTrancResp == HttpStatusCode.OK && createinvResp == HttpStatusCode.OK)
+                if (getItemmResp == HttpStatusCode.OK && UpdatePoStatus == HttpStatusCode.OK && UpdatePoQty == HttpStatusCode.OK
+                    && UpdatePoProjQty == HttpStatusCode.OK && createinvTrancResp == HttpStatusCode.OK && createinvResp == HttpStatusCode.OK)
                 {
                     _repository.SaveAsync();
                     _grinPartsRepository.SaveAsync();
@@ -853,8 +874,8 @@ namespace Tips.Grin.Api.Controllers
                         var jsonss = JsonConvert.SerializeObject(grinPartsItemNoListDtos);
                         var data4 = new StringContent(jsonss, Encoding.UTF8, "application/json");
 
-                       // var itemMasterObjectResult = await _httpClient.PostAsync(string.Concat(_config["ItemMasterEnggAPI"],
-                           //"GetAllClosedIqcItemMasterItemNoList"), datasss);
+                        // var itemMasterObjectResult = await _httpClient.PostAsync(string.Concat(_config["ItemMasterEnggAPI"],
+                        //"GetAllClosedIqcItemMasterItemNoList"), datasss);
 
                         var client5 = _clientFactory.CreateClient();
                         var token5 = HttpContext.Request.Headers["Authorization"].ToString();
@@ -866,36 +887,43 @@ namespace Tips.Grin.Api.Controllers
                         request5.Headers.Add("Authorization", token5);
 
                         var itemMasterObjectResult = await client5.SendAsync(request5);
-
-                        var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                        dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                        dynamic itemMasterObject = itemMasterObjectData;
-                        if (itemMasterObject.data != null)
+                        if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
                         {
-                            for (int i = 0; i < grins.GrinParts.Count; i++)
+                            getItemForIqcResp = itemMasterObjectResult.StatusCode;
+                        }
+                        if (itemMasterObjectResult.StatusCode == HttpStatusCode.OK)
+                        {
+                            var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                            dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                            dynamic itemMasterObject = itemMasterObjectData;
+                            if (itemMasterObject.data != null)
                             {
-                                var grinPartItemNo = grins.GrinParts[i].ItemNumber;
-                                for (int j = 0; j < itemMasterObject.Count; j++)
+                                for (int i = 0; i < grins.GrinParts.Count; i++)
                                 {
-                                    if (itemMasterObject[j] == grinPartItemNo)
+                                    var grinPartItemNo = grins.GrinParts[i].ItemNumber;
+                                    for (int j = 0; j < itemMasterObject.Count; j++)
                                     {
-                                        var iqcGrinDetails = _mapper.Map<GrinIQCConfirmationSaveDto>(grins);
-                                        iqcGrinDetails.GrinId = grins.Id;
-                                        iqcGrinDetails.GrinNumber = grins.GrinNumber;
+                                        if (itemMasterObject[j] == grinPartItemNo)
+                                        {
+                                            var iqcGrinDetails = _mapper.Map<GrinIQCConfirmationSaveDto>(grins);
+                                            iqcGrinDetails.GrinId = grins.Id;
+                                            iqcGrinDetails.GrinNumber = grins.GrinNumber;
 
-                                        GrinIQCConfirmationItemsSaveDto grinIQCConfirmationItemsSaveDto = _mapper.Map<GrinIQCConfirmationItemsSaveDto>(grins.GrinParts[i]);
-                                        grinIQCConfirmationItemsSaveDto.ItemNumber = grins.GrinParts[i].ItemNumber;
-                                        grinIQCConfirmationItemsSaveDto.GrinPartId = grins.GrinParts[i].Id;
-                                        grinIQCConfirmationItemsSaveDto.ReceivedQty = grins.GrinParts[i].Qty;
-                                        grinIQCConfirmationItemsSaveDto.AcceptedQty = grins.GrinParts[i].Qty;
-                                        grinIQCConfirmationItemsSaveDto.RejectedQty = grins.GrinParts[i].RejectedQty;
-                                        iqcGrinDetails.GrinIQCConfirmationItemsPostDtos = grinIQCConfirmationItemsSaveDto;
+                                            GrinIQCConfirmationItemsSaveDto grinIQCConfirmationItemsSaveDto = _mapper.Map<GrinIQCConfirmationItemsSaveDto>(grins.GrinParts[i]);
+                                            grinIQCConfirmationItemsSaveDto.ItemNumber = grins.GrinParts[i].ItemNumber;
+                                            grinIQCConfirmationItemsSaveDto.GrinPartId = grins.GrinParts[i].Id;
+                                            grinIQCConfirmationItemsSaveDto.ReceivedQty = grins.GrinParts[i].Qty;
+                                            grinIQCConfirmationItemsSaveDto.AcceptedQty = grins.GrinParts[i].Qty;
+                                            grinIQCConfirmationItemsSaveDto.RejectedQty = grins.GrinParts[i].RejectedQty;
+                                            iqcGrinDetails.GrinIQCConfirmationItemsPostDtos = grinIQCConfirmationItemsSaveDto;
 
-                                        await CreateIQCConfirmationItems(iqcGrinDetails);
+                                            await CreateIQCConfirmationItems(iqcGrinDetails);
 
+                                        }
                                     }
                                 }
                             }
+
                         }
 
                     }
@@ -1092,7 +1120,7 @@ namespace Tips.Grin.Api.Controllers
                         var encodedprojectNos = Uri.EscapeDataString(projectNos);
 
                         var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                            $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo},&GrinPartsId={grinPartsIds},&ItemNumber={encodedItemNumber},&ProjectNumber={encodedprojectNos}"));
+                            $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
                         request1.Headers.Add("Authorization", token1);
 
                         var inventoryObjectResult = await client1.SendAsync(request1);
@@ -1143,7 +1171,7 @@ namespace Tips.Grin.Api.Controllers
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
                             var client5 = _clientFactory.CreateClient();
                             var token5 = HttpContext.Request.Headers["Authorization"].ToString();
-                            var request5 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                            var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryAPI"],
                             "UpdateInventory?id=", inventoryObject.id))
                             {
                                 Content = data
@@ -1407,7 +1435,7 @@ namespace Tips.Grin.Api.Controllers
                         var encodedprojectNos = Uri.EscapeDataString(projectNos);
 
                         var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                            $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo},&GrinPartsId={grinPartsIds},&ItemNumber={encodedItemNumber},&ProjectNumber={encodedprojectNos}"));
+                            $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
                         request1.Headers.Add("Authorization", token1);
 
                         var inventoryObjectResult = await client1.SendAsync(request1);
@@ -1452,7 +1480,7 @@ namespace Tips.Grin.Api.Controllers
                             //    "UpdateInventory?id=", inventoryObject.id), data);
                             var client5 = _clientFactory.CreateClient();
                             var token5 = HttpContext.Request.Headers["Authorization"].ToString();
-                            var request5 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                            var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryAPI"],
                             "UpdateInventory?id=", inventoryObject.id))
                             {
                                 Content = data

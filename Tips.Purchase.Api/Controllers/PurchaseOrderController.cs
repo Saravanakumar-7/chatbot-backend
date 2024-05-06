@@ -535,7 +535,8 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<PurchaseOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReport>>();
             try
             {
-                var products = await _repository.GetPurchaseOrderSPReportWithParam(purchaseOrderSPReport.VendorName, purchaseOrderSPReport.PONumber, purchaseOrderSPReport.ItemNumber);
+                var products = await _repository.GetPurchaseOrderSPReportWithParam(purchaseOrderSPReport.VendorName, purchaseOrderSPReport.PONumber, purchaseOrderSPReport.ItemNumber,
+                                                                                                                        purchaseOrderSPReport.RecordType, purchaseOrderSPReport.Postatus);
 
                 if (products == null)
                 {
