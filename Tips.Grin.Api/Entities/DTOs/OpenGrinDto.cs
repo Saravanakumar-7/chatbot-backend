@@ -68,6 +68,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal Balance_Quantity { get; set; }
         [Required]
         public string? UOM { get; set; }
+        public decimal? Max { get; set; }
+        public decimal? Min { get; set; }
         public bool IsStockAvailable { get; set; }
         public string Unit { get; set; }
 
