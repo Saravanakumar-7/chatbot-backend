@@ -15,5 +15,6 @@ namespace Tips.Production.Api.Entities
         public decimal RejectedQty { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
+        public string? ProjectNumber { get; set; }
     }
 }

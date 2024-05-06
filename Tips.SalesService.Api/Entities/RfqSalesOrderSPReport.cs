@@ -3,6 +3,7 @@
     public class RfqSalesOrderSPReport
     {
         public string? SalesOrderNumber { get; set; }
+        public int? SOStatus {  get; set; }
         public string? ProjectNumber { get; set; }
         public string? CustomerId { get; set; }
         public string? CustomerName { get; set; }
