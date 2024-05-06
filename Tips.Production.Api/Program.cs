@@ -35,7 +35,7 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo
     {
-        Title = "Tips.MASTER.Api",
+        Title = "Tips.Production.Api",
         Version = "v1"
     });
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
@@ -139,7 +139,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseSwaggerUI(c =>
 {
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tips.GRIN.Api");
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tips.Production.Api");
     c.RoutePrefix = "swagger";
     c.DisplayRequestDuration();
 });
