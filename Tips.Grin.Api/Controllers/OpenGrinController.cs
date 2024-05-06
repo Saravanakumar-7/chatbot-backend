@@ -399,6 +399,7 @@ namespace Tips.Grin.Api.Controllers
                 var openGrinPartsDtoList = new List<OpenGrinParts>();
                 HttpStatusCode createInv = HttpStatusCode.OK;
                 HttpStatusCode createInvTrans = HttpStatusCode.OK;
+                HttpStatusCode getItemmResp = HttpStatusCode.OK;
 
                 string openGrinPartsId = "";
                 if (openGrinPartsDto != null)
@@ -433,7 +434,8 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 await _openGrinRepository.CreateOpenGrin(openGrinDetails);
-                   
+
+               
 
                 //Create OpenGrin To Inventory
 
@@ -441,16 +443,36 @@ namespace Tips.Grin.Api.Controllers
                 {
                     foreach (var openGrinParts in openGrinPartsDtoList)
                     {
+                        var client = _clientFactory.CreateClient();
+                        var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                        var ItemNumber = openGrinParts.ItemNumber;
+                        var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+
+                        var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterEnggAPI"],
+                            $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+                        request.Headers.Add("Authorization", token);
+
+                        var itemMasterObjectResult = await client.SendAsync(request);
+                        if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                            getItemmResp = itemMasterObjectResult.StatusCode;
+
+                        var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                        dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                        dynamic itemMasterObject = itemMasterObjectData.data;
+
                         foreach (var openGrinDetail in openGrinParts.OpenGrinDetails)
                         {
                             OGInventoryDtoPost inventory = new OGInventoryDtoPost();
 
                             inventory.PartNumber = openGrinParts.ItemNumber;
-                            inventory.MftrPartNumber = openGrinParts.ItemNumber;
+                            inventory.MftrPartNumber = itemMasterObject.mftrPartNumber;
                             inventory.Description = openGrinParts.Description;
                             inventory.ProjectNumber = openGrinParts.ReferenceSONumber;
                             inventory.Balance_Quantity = openGrinDetail.Qty;
                             inventory.IsStockAvailable = true;
+                            inventory.Max = itemMasterObject.max;
+                            inventory.Min = itemMasterObject.min;
                             inventory.UOM = openGrinParts.UOM;
                             inventory.Warehouse = openGrinDetail.Warehouse;
                             inventory.Location = openGrinDetail.Location;
@@ -535,7 +557,7 @@ namespace Tips.Grin.Api.Controllers
                     }
                 }
 
-                if ( createInv == HttpStatusCode.OK && createInvTrans == HttpStatusCode.OK)
+                if ( createInv == HttpStatusCode.OK && createInvTrans == HttpStatusCode.OK && getItemmResp == HttpStatusCode.OK)
                 {
                     _openGrinRepository.SaveAsync();
                 }
