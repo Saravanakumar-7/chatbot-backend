@@ -13,6 +13,7 @@ using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MySqlX.XDevAPI;
 using Newtonsoft.Json;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
@@ -665,15 +666,22 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var json = JsonConvert.SerializeObject(invoiceReturnDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
                 // Include the token in the Authorization header
-                var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
-                if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
-                {
-                    var token = tokenValues.Substring(7);
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                }
-                var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnInvoiceUpdateDispatchDetails"), data);
+                //var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
+                //if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+                //{
+                //    var token = tokenValues.Substring(7);
+                //    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                //}
+                //var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnInvoiceUpdateDispatchDetails"), data);
+                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
+                            "ReturnInvoiceUpdateDispatchDetails"))
+                { Content= data };
+                request.Headers.Add("Authorization", token);
 
+                var response = await client.SendAsync(request);
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Invoice Successfully Created";
                 serviceResponse.Success = true;

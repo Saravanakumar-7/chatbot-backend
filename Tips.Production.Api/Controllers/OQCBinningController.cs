@@ -103,7 +103,7 @@ namespace Tips.Production.Api.Controllers
                 var encodedShopOrderNumber = Uri.EscapeDataString(ShopOrderNumber);
 
                 var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                    $"GetInventoryStockByItemAndShopOrderNo?itemNumber={encodedItemNumber},&shopordernumber={encodedShopOrderNumber}"));
+                    $"GetInventoryStockByItemAndShopOrderNo?itemNumber={encodedItemNumber}&shopordernumber={encodedShopOrderNumber}"));
                 request.Headers.Add("Authorization", token);
 
                 var rfqCustomerIdResponse = await client.SendAsync(request);
