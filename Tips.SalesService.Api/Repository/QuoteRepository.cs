@@ -315,7 +315,13 @@ namespace Tips.SalesService.Api.Repository
             var data_1 = JsonConvert.SerializeObject(itemNumbers);
             var content = new StringContent(data_1, Encoding.UTF8, "application/json");
             var baseurl = _config["ItemMasterMainAPI"];
-            var itemdetails = await _httpClient.PostAsync($"{baseurl}GetItemsImageUrls", content);
+            var client = _clientFactory.CreateClient();
+            var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();            
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseurl}GetItemsImageUrls") { Content = content };
+            request.Headers.Add("Authorization", token);
+
+            var itemdetails = await client.SendAsync(request);
+            //var itemdetails = await _httpClient.PostAsync($"{baseurl}GetItemsImageUrls", content);
             var ItemObjectString = await itemdetails.Content.ReadAsStringAsync();
             var itemObjectData = JsonConvert.DeserializeObject<Itemnumberimages>(ItemObjectString);
             var itemobject = itemObjectData.data;
