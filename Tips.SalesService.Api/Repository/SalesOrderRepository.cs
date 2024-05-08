@@ -858,7 +858,7 @@ namespace Tips.SalesService.Api.Repository
         {
 
             var getSalesOrderDetailsBySOandItemNo = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                 .Where(x => x.ItemNumber == ItemNumber && x.SalesOrderId == SalesOrderId)
+                 .Where(x => x.ItemNumber == ItemNumber && x.SalesOrderId == SalesOrderId && x.DispatchQty>0 && x.StatusEnum != OrderStatus.Open)
                           .ToListAsync();
 
             return getSalesOrderDetailsBySOandItemNo;

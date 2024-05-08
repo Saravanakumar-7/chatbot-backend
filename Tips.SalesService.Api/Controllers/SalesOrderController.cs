@@ -342,7 +342,7 @@ namespace Tips.SalesService.Api.Controllers
                             $"GetInventoryDetailsByItemNo?itemNumber={encodedItemNumber}&projectNo={encodedProjectNo}"));
                             request.Headers.Add("Authorization", token);
 
-                            var inventoryQtyResponse = await client.SendAsync(request);
+                            var itemMasterDetails = await client.SendAsync(request);
                             //var inventoryQtyResponse = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByItemNo?", "itemNumber=", itemNumber, "&projectNo=", itemNumberList.Where(x=>x.Item1==itemNumber).Select(x=>x.Item2)));
                             var inventoryItemQtyDetails = await itemMasterDetails.Content.ReadAsStringAsync();
                             var inventoryItemWithStockDetails = JsonConvert.DeserializeObject<InventoryItemdetailsDto>(inventoryItemQtyDetails);
@@ -1290,101 +1290,186 @@ namespace Tips.SalesService.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> ReturnDOUpdateDispatchDetails([FromBody] List<ReturnDOSalesOrderDispatchQtyDto> salesOrderDispatchQtyDto)
         {
-            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
-            if (salesOrderDispatchQtyDto == null)
+            try
             {
-                serviceResponse.Data = null;
-                serviceResponse.Message = "SalesOrder object sent from the client is null.";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError("SalesOrder object sent from the client is null.");
-                return BadRequest(serviceResponse);
-            }
-
-            if (!ModelState.IsValid)
-            {
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Invalid SalesOrder object sent from the client.";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError("Invalid SalesOrder object sent from the client.");
-                return BadRequest(serviceResponse);
-            }
-            foreach (var item in salesOrderDispatchQtyDto)
-            {
-                IEnumerable<SalesOrderItems>? salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
-                var orderItem = salesOrderItems.FirstOrDefault();
-                if (orderItem != null)
+                ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+                if (salesOrderDispatchQtyDto == null)
                 {
-                    orderItem.BalanceQty = orderItem.BalanceQty + item.ReturnQty;
-                    orderItem.DispatchQty -= item.ReturnQty;
-                    _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
-                }
-                else
-                {
-                    _logger.LogError($"Something went wrong inside ReturnInvoiceUpdateDispatchDetails action in SalesOrder Controller");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                    serviceResponse.Message = "SalesOrder object sent from the client is null.";
                     serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500, serviceResponse);
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("SalesOrder object sent from the client is null.");
+                    return BadRequest(serviceResponse);
                 }
-            }
 
-            _salesOrderItemsRepository.SaveAsync();
-            return Ok();
-        }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid SalesOrder object sent from the client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid SalesOrder object sent from the client.");
+                    return BadRequest(serviceResponse);
+                }
+                foreach (var item in salesOrderDispatchQtyDto)
+                {
+                    var invoiceReturnQty = item.ReturnQty;
+                    IEnumerable<SalesOrderItems>? salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
+
+                    if (salesOrderItems != null)
+                    {
+                        foreach (var salesOrderDetails in salesOrderItems)
+                        {
+                            var salesOrderDisQty = salesOrderDetails.DispatchQty;
+
+                            if (salesOrderDetails.DispatchQty <= invoiceReturnQty)
+                            {
+                                salesOrderDetails.BalanceQty += salesOrderDisQty;
+                                salesOrderDetails.DispatchQty = 0;
+                                invoiceReturnQty -= salesOrderDisQty;
+                            }
+                            else
+                            {
+                                salesOrderDetails.BalanceQty += invoiceReturnQty;
+                                salesOrderDetails.DispatchQty -= invoiceReturnQty;
+                                invoiceReturnQty -= salesOrderDisQty;
+
+                            }
+                            if (salesOrderDetails.BalanceQty == salesOrderDetails.OrderQty)
+                            {
+                                salesOrderDetails.StatusEnum = OrderStatus.Open;
+                            }
+                            else if (salesOrderDetails.BalanceQty < salesOrderDetails.OrderQty)
+                            {
+                                salesOrderDetails.StatusEnum = OrderStatus.PartiallyClosed;
+                            }
+                            else
+                            {
+                                salesOrderDetails.StatusEnum = OrderStatus.Closed;
+                            }
+                            await _salesOrderItemsRepository.UpdateSalesOrderItem(salesOrderDetails);
+                            if (invoiceReturnQty <= 0)
+                            {
+                                break;
+                            }
+                        }
+
+                        _salesOrderItemsRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError($"salesOrderItems Details is null");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        return NotFound(serviceResponse);
+                    }
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ReturnDOUpdateDispatchDetails action in SalesOrder Controller {ex.Message}");
+                return StatusCode(500, ex.Message);
+            }
+}
         //Update Balancre Qty and DispatchQty Using ReturnInvoice 
         [HttpPost]
         public async Task<IActionResult> ReturnInvoiceUpdateDispatchDetails([FromBody] List<ReturnDOSalesOrderDispatchQtyDto> salesOrderDispatchQtyDto)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
-            if (salesOrderDispatchQtyDto == null)
-            {
-                serviceResponse.Data = null;
-                serviceResponse.Message = "SalesOrder object sent from the client is null.";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError("SalesOrder object sent from the client is null.");
-                return BadRequest(serviceResponse);
-            }
 
-            if (!ModelState.IsValid)
+            try
             {
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Invalid SalesOrder object sent from the client.";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError("Invalid SalesOrder object sent from the client.");
-                return BadRequest(serviceResponse);
-            }
-            foreach (var item in salesOrderDispatchQtyDto)
-            {
-                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
-                var orderItem = salesOrderItems.FirstOrDefault();
-                if (orderItem != null)
+                if (salesOrderDispatchQtyDto == null)
                 {
-                    orderItem.BalanceQty += item.ReturnQty;
-                    orderItem.DispatchQty -= item.ReturnQty;
-                    if (orderItem.BalanceQty == orderItem.OrderQty)
-                    {
-                        orderItem.StatusEnum = OrderStatus.Open;
-                    }
-                    _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
-                }
-                else
-                {
-                    _logger.LogError($"Something went wrong inside ReturnInvoiceUpdateDispatchDetails action in SalesOrder Controller");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                    serviceResponse.Message = "SalesOrder object sent from the client is null.";
                     serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500, serviceResponse);
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("SalesOrder object sent from the client is null.");
+                    return BadRequest(serviceResponse);
                 }
-            }
 
-            _salesOrderItemsRepository.SaveAsync();
-            return Ok();
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid SalesOrder object sent from the client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid SalesOrder object sent from the client.");
+                    return BadRequest(serviceResponse);
+                }
+                
+                foreach (var item in salesOrderDispatchQtyDto)
+                {
+                    var invoiceReturnQty = item.ReturnQty;
+
+                    IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo
+                                                                                                                            (item.FGPartNumber, item.SalesOrderId);
+                    if (salesOrderItems != null)
+                    {
+                        foreach (var salesOrderDetails in salesOrderItems)
+                        {
+                            var salesOrderDisQty = salesOrderDetails.DispatchQty;
+                            
+                                if (salesOrderDetails.DispatchQty <= invoiceReturnQty)
+                                {
+                                    salesOrderDetails.BalanceQty += salesOrderDisQty;
+                                    salesOrderDetails.DispatchQty = 0;
+                                    invoiceReturnQty -= salesOrderDisQty;
+                                }
+                                else
+                                {
+                                    salesOrderDetails.BalanceQty += invoiceReturnQty;
+                                    salesOrderDetails.DispatchQty -= invoiceReturnQty;
+                                    invoiceReturnQty -= salesOrderDisQty; 
+
+                                }
+
+                                if (salesOrderDetails.BalanceQty == salesOrderDetails.OrderQty)
+                                {
+                                    salesOrderDetails.StatusEnum = OrderStatus.Open;
+                                }
+                                else if (salesOrderDetails.BalanceQty < salesOrderDetails.OrderQty)
+                                {
+                                    salesOrderDetails.StatusEnum = OrderStatus.PartiallyClosed;
+                                }
+                                else
+                                {
+                                    salesOrderDetails.StatusEnum = OrderStatus.Closed;
+                                }
+                                await _salesOrderItemsRepository.UpdateSalesOrderItem(salesOrderDetails);
+
+                                if (invoiceReturnQty <= 0)
+                                {
+                                    break;
+                                }
+                            
+                        }
+                        _salesOrderItemsRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError($"salesOrderItems Details is null");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        return NotFound(serviceResponse);
+                    }
+                }
+
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ReturnInvoiceUpdateDispatchDetails action in SalesOrder Controller {ex.Message}");
+                return StatusCode(500,ex.Message);
+            }
         }
         //Update shoporder Qty in salesorder while create shoporderUpdateShopOrderQty
         //[HttpPost]
