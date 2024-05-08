@@ -1357,10 +1357,11 @@ namespace Tips.Grin.Api.Controllers
                         dynamic itemMasterObject = itemMasterObjectData.data;
 
                         var binningLocations = binningsItemsDto.binningLocations;
+                        int j = 0;
+                        int k = 0;
                         foreach (var location in binningLocations)
                         {
-                            int j = 0;
-                            int k = 0;
+                            
 
                             if (j == 0)
                             {
@@ -1590,10 +1591,11 @@ namespace Tips.Grin.Api.Controllers
                         dynamic itemMasterObject = itemMasterObjectData.data;
 
                         var binningLocations = binningsItemsDto.binningLocations;
+                        int j = 0;
+                        int k = 0;
                         foreach (var location in binningLocations)
                         {
-                            int j = 0;
-                            int k = 0;
+                           
 
                             if (j == 0)
                             {

@@ -32,5 +32,6 @@ namespace Tips.Warehouse.Api.Entities
         public decimal? ReturnQty { get; set; }
         public string? SerialNo { get; set; }
         public string? Remarks { get; set; }
+        public string? ProjectNumber { get; set; }
     }
 }

@@ -4,7 +4,7 @@ namespace Tips.Warehouse.Api.Entities
 {
     public class OpenDeliveryOrderSPReport
     {
-        public string OpenDONumber { get; set; }
+        public string? OpenDONumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerLeadId { get; set; }
@@ -24,7 +24,8 @@ namespace Tips.Warehouse.Api.Entities
         public decimal? ReturnQty { get; set; }
         public string? SerialNo { get; set; }
         public string? Remarks { get; set; }
-        public DateTime ODODate {  get; set; }
+        public DateTime? ODODate {  get; set; }
+        public string? ProjectNumber { get; set; }
 
     }
 }

@@ -139,7 +139,10 @@ namespace Tips.Production.Api.Controllers
                 request5.Headers.Add("Authorization", token5);
 
                 var response5 = await client5.SendAsync(request5);
-
+                if (response5.StatusCode != HttpStatusCode.OK)
+                {
+                    UpdateInv = response5.StatusCode;
+                }
                 foreach (var loc in oqcBinningLocationList)
                 {
                     var newinv = _mapper.Map<OQCBinningInventoryUpdateDto>(updateInventory);
@@ -227,7 +230,7 @@ namespace Tips.Production.Api.Controllers
                     {
                         Content = data2
                     };
-                    request1.Headers.Add("Authorization", token3);
+                    request3.Headers.Add("Authorization", token3);
 
                     var response2 = await client3.SendAsync(request3);
 
@@ -235,7 +238,7 @@ namespace Tips.Production.Api.Controllers
                     {
                         CreateInvTrans = response2.StatusCode;
                     }
-                    if (GetInv == HttpStatusCode.OK && CreateInv == HttpStatusCode.OK && CreateInvTrans == HttpStatusCode.OK)
+                    if (GetInv == HttpStatusCode.OK && CreateInv == HttpStatusCode.OK && CreateInvTrans == HttpStatusCode.OK && GetItemMas == HttpStatusCode.OK)
                     {
                         _oQCBinningRepository.SaveAsync();
                     }

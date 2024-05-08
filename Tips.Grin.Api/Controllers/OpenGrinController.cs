@@ -466,7 +466,7 @@ namespace Tips.Grin.Api.Controllers
                             OGInventoryDtoPost inventory = new OGInventoryDtoPost();
 
                             inventory.PartNumber = openGrinParts.ItemNumber;
-                            inventory.MftrPartNumber = itemMasterObject.mftrPartNumber;
+                            inventory.MftrPartNumber = openGrinParts.ItemNumber;
                             inventory.Description = openGrinParts.Description;
                             inventory.ProjectNumber = openGrinParts.ReferenceSONumber;
                             inventory.Balance_Quantity = openGrinDetail.Qty;

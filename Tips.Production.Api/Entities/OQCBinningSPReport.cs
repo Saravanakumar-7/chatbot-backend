@@ -16,5 +16,6 @@ namespace Tips.Production.Api.Entities
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         public decimal? Quantity { get; set; }
+        public string? ProjectNumber { get; set; }
     }
 }

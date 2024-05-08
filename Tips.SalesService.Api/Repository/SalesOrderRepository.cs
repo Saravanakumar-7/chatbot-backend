@@ -143,11 +143,11 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
-        public async Task<IEnumerable<RfqSalesOrderSPReport>> GetRfqSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN)
+        public async Task<IEnumerable<RfqSalesOrderSPReport>> GetRfqSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus)
         {
             var result = _tipsSalesServiceDbContext
             .Set<RfqSalesOrderSPReport>()
-            .FromSqlInterpolated($"CALL RFQ_salesorder_withparameter_Report({CustomerName},{SalesOrderNumber},{KPN})")
+            .FromSqlInterpolated($"CALL RFQ_salesorder_withparameter_Report({CustomerName},{SalesOrderNumber},{KPN},{SOStatus})")
             .ToList();
 
             return result;
@@ -163,11 +163,11 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
-        public async Task<IEnumerable<ForecastSalesOrderSPReport>> GetForecastSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN)
+        public async Task<IEnumerable<ForecastSalesOrderSPReport>> GetForecastSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus)
         {
             var result = _tipsSalesServiceDbContext
             .Set<ForecastSalesOrderSPReport>()
-            .FromSqlInterpolated($"CALL Forecast_salesorder_with_parameter({CustomerName},{SalesOrderNumber},{KPN})")
+            .FromSqlInterpolated($"CALL Forecast_salesorder_with_parameter({CustomerName},{SalesOrderNumber},{KPN},{SOStatus})")
             .ToList();
 
             return result;
