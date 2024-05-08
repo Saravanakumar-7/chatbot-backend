@@ -810,7 +810,52 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<Inventory>> GetInventoryWarehouseReport(string PartNumber, string Description, string Warehouse,string Location, string ProjectNumber)
+        {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
+            var query = FindAll();
 
+            // Apply filters if any parameters are provided
+            if (!string.IsNullOrEmpty(PartNumber))
+            {
+                query = query.Where(x => x.PartNumber.Contains(PartNumber));
+            }
+            if (!string.IsNullOrEmpty(Description))
+            {
+                query = query.Where(x => x.Description.Contains(Description));
+            }
+            if (!string.IsNullOrEmpty(Warehouse))
+            {
+                query = query.Where(x => x.Warehouse.Contains(Warehouse));
+            }
+            if (!string.IsNullOrEmpty(Location))
+            {
+                query = query.Where(x => x.Location.Contains(Location));
+            }
+
+            // Apply warehouse exclusion filter
+            query = query.Where(x => !skipWareHouse.Contains(x.Warehouse));
+
+            // Execute the query
+            var result = await query.OrderByDescending(x => x.Id).ToListAsync();
+
+            return result;
+        }
+        public async Task<IEnumerable<Inventory>> GetInventoryWIPReport(string PartNumber, string Description, string ProjectNumber)
+        {            
+            var query = FindAll().Where(x=>x.Warehouse.Contains("WIP"));
+            if (!string.IsNullOrEmpty(PartNumber))
+            {
+                query = query.Where(x => x.PartNumber.Contains(PartNumber));
+            }
+            if (!string.IsNullOrEmpty(Description))
+            {
+                query = query.Where(x => x.Description.Contains(Description));
+            }
+            var result = await query.OrderByDescending(x => x.Id).ToListAsync();
+
+            return result;
+        }
         public async Task<IEnumerable<InventorySPReport>> InventorySPReportdate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsWarehouseDbContext.Set<InventorySPReport>()

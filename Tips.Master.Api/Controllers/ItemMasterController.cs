@@ -1149,7 +1149,7 @@ namespace Tips.Master.Api.Controllers
         }
         // POST api/<ItemMasterController>
         [HttpPost]
-        public IActionResult CreateItemMaster([FromBody] ItemMasterDtoPost itemMasterDtoPost)
+        public async Task<IActionResult> CreateItemMaster([FromBody] ItemMasterDtoPost itemMasterDtoPost)
         {
             ServiceResponse<ItemMasterDto> serviceResponse = new ServiceResponse<ItemMasterDto>();
 
