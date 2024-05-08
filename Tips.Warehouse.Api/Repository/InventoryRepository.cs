@@ -832,6 +832,10 @@ namespace Tips.Warehouse.Api.Repository
             {
                 query = query.Where(x => x.Location.Contains(Location));
             }
+            if (!string.IsNullOrEmpty(ProjectNumber))
+            {
+                query = query.Where(x => x.ProjectNumber.Contains(ProjectNumber));
+            }
 
             // Apply warehouse exclusion filter
             query = query.Where(x => !skipWareHouse.Contains(x.Warehouse));
@@ -842,8 +846,8 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
         public async Task<IEnumerable<Inventory>> GetInventoryWIPReport(string PartNumber, string Description, string ProjectNumber)
-        {            
-            var query = FindAll().Where(x=>x.Warehouse.Contains("WIP"));
+        {
+            var query = FindAll().Where(x=> x.Warehouse.Contains("WIP"));
             if (!string.IsNullOrEmpty(PartNumber))
             {
                 query = query.Where(x => x.PartNumber.Contains(PartNumber));
@@ -851,6 +855,71 @@ namespace Tips.Warehouse.Api.Repository
             if (!string.IsNullOrEmpty(Description))
             {
                 query = query.Where(x => x.Description.Contains(Description));
+            }
+            if (!string.IsNullOrEmpty(ProjectNumber))
+            {
+                query = query.Where(x => x.ProjectNumber.Contains(ProjectNumber));
+            }
+          
+            var result = await query.OrderByDescending(x => x.Id).ToListAsync();
+
+            return result;
+        }
+        public async Task<IEnumerable<Inventory>> GetInventoryGrinAndIqcReport(string PartNumber, string Description, string ProjectNumber, string Warehouse, string Location)
+        {
+
+            string[] wareHouses = { "IQC", "GRIN" };
+
+            var query = FindAll().Where(x => wareHouses.Contains(x.Warehouse));
+            if (!string.IsNullOrEmpty(PartNumber))
+            {
+                query = query.Where(x => x.PartNumber.Contains(PartNumber));
+            }
+            if (!string.IsNullOrEmpty(Description))
+            {
+                query = query.Where(x => x.Description.Contains(Description));
+            }
+            if (!string.IsNullOrEmpty(ProjectNumber))
+            {
+                query = query.Where(x => x.ProjectNumber.Contains(ProjectNumber));
+            }
+            if (!string.IsNullOrEmpty(Warehouse))
+            {
+                query = query.Where(x => x.Warehouse.Contains(Warehouse));
+            }
+            if (!string.IsNullOrEmpty(Location))
+            {
+                query = query.Where(x => x.Location.Contains(Location));
+            }
+            var result = await query.OrderByDescending(x => x.Id).ToListAsync();
+
+            return result;
+        }
+        public async Task<IEnumerable<Inventory>> GetInventoryNotUseableReport(string PartNumber, string Description, string ProjectNumber, string Warehouse, string Location)
+        {
+
+            string[] wareHouses = { "Reject", "Scrap", "Rework"};
+
+            var query = FindAll().Where(x => wareHouses.Contains(x.Warehouse));
+            if (!string.IsNullOrEmpty(PartNumber))
+            {
+                query = query.Where(x => x.PartNumber.Contains(PartNumber));
+            }
+            if (!string.IsNullOrEmpty(Description))
+            {
+                query = query.Where(x => x.Description.Contains(Description));
+            }
+            if (!string.IsNullOrEmpty(ProjectNumber))
+            {
+                query = query.Where(x => x.ProjectNumber.Contains(ProjectNumber));
+            }
+            if (!string.IsNullOrEmpty(Warehouse))
+            {
+                query = query.Where(x => x.Warehouse.Contains(Warehouse));
+            }
+            if (!string.IsNullOrEmpty(Location))
+            {
+                query = query.Where(x => x.Location.Contains(Location));
             }
             var result = await query.OrderByDescending(x => x.Id).ToListAsync();
 
