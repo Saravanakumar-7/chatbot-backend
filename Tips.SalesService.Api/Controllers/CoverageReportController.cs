@@ -141,13 +141,15 @@ namespace Tips.SalesService.Api.Controllers
                 var salesOrderItemandProjList = _mapper.Map<IEnumerable<SalesOrderItemNoAndProjectNoDto>>(salesOrders);
                 var salesOrderItemandProjListjson = JsonConvert.SerializeObject(salesOrderItemandProjList);
                 var salesOrderItemandProjDetailsString = new StringContent(salesOrderItemandProjListjson, Encoding.UTF8, "application/json");
+                var client1 = _clientFactory.CreateClient();
+                var token1 = HttpContext.Request.Headers["Authorization"].ToString();
                 var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"], "GetConsumptionInventoryByItemAndProjectNotest2"))
                 {
                     Content = salesOrderItemandProjDetailsString
                 };
-                request1.Headers.Add("Authorization", token);
+                request1.Headers.Add("Authorization", token1);
 
-                var response = await client.SendAsync(request1);
+                var response = await client1.SendAsync(request1);
                 //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"],
                 //                                                                "GetConsumptionInventoryByItemAndProjectNotest2"), salesOrderItemandProjDetailsString);
                 var inventoryObjectString = await response.Content.ReadAsStringAsync();
@@ -767,7 +769,7 @@ namespace Tips.SalesService.Api.Controllers
             var client = _clientFactory.CreateClient();
             var token = HttpContext.Request.Headers["Authorization"].ToString();
             var encodedProjectNo = Uri.EscapeDataString(projectno);
-            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"], $"GetConsumptionChildItemStockWithWipQtyByProjectNo?ProjectNo={encodedProjectNo}"))
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"], $"GetConsumptionChildItemStockWithWipQtyByProjectNo?ProjectNo={encodedProjectNo}"))
             {
                 Content = itemNoListString
             };
