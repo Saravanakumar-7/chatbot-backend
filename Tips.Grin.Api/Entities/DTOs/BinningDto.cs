@@ -99,6 +99,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         [Required]
         public string MftrPartNumber { get; set; }
+        public string? LotNumber { get; set; }
 
         [Required]
         public string Description { get; set; }
