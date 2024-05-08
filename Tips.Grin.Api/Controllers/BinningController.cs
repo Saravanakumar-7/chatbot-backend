@@ -705,7 +705,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObjectNew.PartType = grinPartsDetails.ItemType; // we have to take parttype from grinparts model;
                                     inventoryObjectNew.ReferenceID = binningDetail.GrinNumber;
                                     inventoryObjectNew.ReferenceIDFrom = "GRIN";
-
+                                    inventoryObjectNew.LotNumber = grinPartsDetails.LotNumber;
                                     var json = JsonConvert.SerializeObject(inventoryObjectNew);
                                     var data = new StringContent(json, Encoding.UTF8, "application/json");
                                     
@@ -922,7 +922,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObjectNew.PartType = grinPartsDetails.ItemType; // we have to take parttype from grinparts model;
                                     inventoryObjectNew.ReferenceID = binningDetail.GrinNumber;
                                     inventoryObjectNew.ReferenceIDFrom = "GRIN";
-
+                                    inventoryObjectNew.LotNumber = grinPartsDetails.LotNumber;
                                     var json = JsonConvert.SerializeObject(inventoryObjectNew);
                                     var data = new StringContent(json, Encoding.UTF8, "application/json");
 
