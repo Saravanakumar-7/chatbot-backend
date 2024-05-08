@@ -215,4 +215,5 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public BinningItemsSaveDto? BinningItems { get; set; }
     }
+
 }

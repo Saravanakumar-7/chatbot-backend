@@ -1636,7 +1636,7 @@ namespace Tips.SalesService.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetSASalesOrderDetailsByItemNo action";
+                serviceResponse.Message = $"Something went wrong inside GetSalesOrderSPReportWithDate action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2369,7 +2369,7 @@ namespace Tips.SalesService.Api.Controllers
                 var token = HttpContext.Request.Headers["Authorization"].ToString();              
                 var encodedItemNumber = Uri.EscapeDataString(itemNumber);
 
-                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"],
+                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"],
                     $"GetAllProductionBomSAListByItemNumber?ItemNumber={encodedItemNumber}"));
                 request.Headers.Add("Authorization", token);
 
