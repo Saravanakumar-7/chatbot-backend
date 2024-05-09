@@ -119,40 +119,57 @@ namespace Tips.Production.Api.Controllers
                 {
                     binningqty = loc.Quantity + binningqty;
                 }
-                vendorUOC.data.Balance_Quantity = vendorUOC.data.Balance_Quantity - binningqty;
-                var updateInventory = _mapper.Map<OQCBinningInventoryUpdateDto>(vendorUOC.data);
-                //var httpClientHandler_1 = new HttpClientHandler();
-                //httpClientHandler_1.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-                //var httpClient_1 = new HttpClient(httpClientHandler_1);
-                string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(updateInventory);
-                //var rfqApiUrl_1 = _config["InventoryAPI"];
-                var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
-                //await _httpClient.PutAsync($"{rfqApiUrl_1}UpdateInventory?Id={vendorUOC.data.Id}", content);
-
-                var client5 = _clientFactory.CreateClient();
-                var token5 = HttpContext.Request.Headers["Authorization"].ToString();
-                var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryAPI"],
-                "UpdateInventory?Id=", vendorUOC.data.Id))
+                // vendorUOC.data.Balance_Quantity = vendorUOC.data.Balance_Quantity - binningqty;
+                foreach (var inv in vendorUOC.data)
                 {
-                    Content = content
-                };
-                request5.Headers.Add("Authorization", token5);
+                    if (inv.Balance_Quantity >= binningqty)
+                    {
+                        inv.Balance_Quantity = inv.Balance_Quantity - binningqty;
+                        binningqty = 0;
+                        if (inv.Balance_Quantity == 0) inv.IsStockAvailable = false;                        
+                    }
+                    else
+                    {
+                        binningqty = binningqty - inv.Balance_Quantity;
+                        inv.Balance_Quantity = 0;
+                        inv.IsStockAvailable = false;
+                    }
 
-                var response5 = await client5.SendAsync(request5);
-                if (response5.StatusCode != HttpStatusCode.OK)
-                {
-                    UpdateInv = response5.StatusCode;
+                    var updateInventory = _mapper.Map<OQCBinningInventoryUpdateDto>(inv);
+                    //var httpClientHandler_1 = new HttpClientHandler();
+                    //httpClientHandler_1.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                    //var httpClient_1 = new HttpClient(httpClientHandler_1);
+                    string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(updateInventory);
+                    //var rfqApiUrl_1 = _config["InventoryAPI"];
+                    var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
+                    //await _httpClient.PutAsync($"{rfqApiUrl_1}UpdateInventory?Id={vendorUOC.data.Id}", content);
+
+                    var client5 = _clientFactory.CreateClient();
+                    var token5 = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryAPI"],
+                    "UpdateInventory?Id=", inv.Id))
+                    {
+                        Content = content
+                    };
+                    request5.Headers.Add("Authorization", token5);
+
+                    var response5 = await client5.SendAsync(request5);
+                    if (response5.StatusCode != HttpStatusCode.OK)
+                    {
+                        UpdateInv = response5.StatusCode;
+                        break;
+                    }
                 }
                 foreach (var loc in oqcBinningLocationList)
                 {
-                    var newinv = _mapper.Map<OQCBinningInventoryUpdateDto>(updateInventory);
+                    var newinv = _mapper.Map<OQCBinningInventoryUpdateDto>(vendorUOC.data[0]);
                     newinv.GrinPartId = null;
                     newinv.Warehouse = loc.Warehouse;
                     newinv.Location = loc.Location;
                     newinv.Balance_Quantity = loc.Quantity;
                     var json = JsonConvert.SerializeObject(newinv);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
-                   // var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
+                    // var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
 
                     var client1 = _clientFactory.CreateClient();
                     var token1 = HttpContext.Request.Headers["Authorization"].ToString();
@@ -172,7 +189,7 @@ namespace Tips.Production.Api.Controllers
 
                     //var ItemNumber = postoqcbinning.ItemNumber;
                     //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
-                           // "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
+                    // "GetItemMasterByItemNumber?", "&ItemNumber=", ItemNumber));
 
                     var client2 = _clientFactory.CreateClient();
                     var token2 = HttpContext.Request.Headers["Authorization"].ToString();

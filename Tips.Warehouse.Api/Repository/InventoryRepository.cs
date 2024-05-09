@@ -1239,11 +1239,11 @@ namespace Tips.Warehouse.Api.Repository
             return getInventoryById;
         }
 
-        public async Task<Inventory> GetInventoryStockByItemAndShopOrderNo(string itemNumber, string shopordernumber)
+        public async Task<List<Inventory>> GetInventoryStockByItemAndShopOrderNo(string itemNumber, string shopordernumber)
         {
             var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.shopOrderNo == shopordernumber
                                             && x.IsStockAvailable == true && x.Warehouse == "FG" && x.Location == "FG")
-                                            .FirstOrDefaultAsync();
+                                            .ToListAsync();
 
             return getInventoryById;
         }

@@ -342,7 +342,7 @@ namespace Tips.SalesService.Api.Controllers
                             $"GetInventoryDetailsByItemNo?itemNumber={encodedItemNumber}&projectNo={encodedProjectNo}"));
                             request.Headers.Add("Authorization", token);
 
-                            var itemMasterDetails = await client.SendAsync(request);
+                            var inventoryQtyResponse = await client.SendAsync(request);
                             //var inventoryQtyResponse = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByItemNo?", "itemNumber=", itemNumber, "&projectNo=", itemNumberList.Where(x=>x.Item1==itemNumber).Select(x=>x.Item2)));
                             var inventoryItemQtyDetails = await inventoryQtyResponse.Content.ReadAsStringAsync();
                             var inventoryItemWithStockDetails = JsonConvert.DeserializeObject<InventoryItemdetailsDto>(inventoryItemQtyDetails);
