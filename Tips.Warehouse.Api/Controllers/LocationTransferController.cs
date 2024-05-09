@@ -338,9 +338,11 @@ namespace Tips.Warehouse.Api.Controllers
                             {
                                 inventoryItem.PartNumber = toPartNumber;
                                 inventoryItem.ProjectNumber = toProjectNumber;
-                                inventoryItem.MftrPartNumber = toPartNumber;
+                                inventoryItem.MftrPartNumber = inventoryItem.MftrPartNumber;
                                 inventoryItem.Description = itemObject.description;
                                 inventoryItem.UOM = itemObject.uom;
+                                inventoryItem.Min = itemObject.min;
+                                inventoryItem.Max = itemObject.max;
                                 inventoryItem.Warehouse = toWarehouse;
                                 inventoryItem.Location = toLocation;
                                 inventoryItem.PartType = itemObject.itemType;
@@ -357,11 +359,13 @@ namespace Tips.Warehouse.Api.Controllers
                                 await _inventoryRepository.UpdateInventory(inventoryItem);
                                 Inventory inventoryPost = new Inventory();
                                 inventoryPost.PartNumber = toPartNumber;
-                                inventoryPost.MftrPartNumber = toPartNumber;
+                                inventoryPost.MftrPartNumber = inventoryItem.MftrPartNumber; 
                                 inventoryPost.ProjectNumber = toProjectNumber;
                                 inventoryPost.Description = itemObject.description;
                                 inventoryPost.Balance_Quantity = Convert.ToDecimal(transferQty);
                                 inventoryPost.UOM = itemObject?.uom;
+                                inventoryItem.Min = itemObject.min;
+                                inventoryItem.Max = itemObject.max;
                                 inventoryPost.GrinMaterialType = "";
                                 inventoryPost.shopOrderNo = "";
                                 inventoryPost.Unit = itemObject?.unit;
