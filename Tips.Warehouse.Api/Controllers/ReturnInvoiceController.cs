@@ -314,7 +314,7 @@ namespace Tips.Warehouse.Api.Controllers
                                 inventory.Location = eachbin.Location;
                                 inventory.GrinNo = returnInvoiceDetails.InvoiceNumber;
                                 inventory.GrinPartId = 0;
-                                inventory.PartType = PartType.FG;
+                                inventory.PartType = returnInvoiceItemsList[i].PartType;  /// Check this are you getting Part Type from Front End
                                 inventory.GrinMaterialType = "";
                                 inventory.ReferenceID = returnInvoiceDetails.InvoiceNumber;
                                 inventory.ReferenceIDFrom = "Return Invoice";
@@ -352,7 +352,7 @@ namespace Tips.Warehouse.Api.Controllers
                             inventoryTranction.TO_Location = eachbin.Location;
                             inventoryTranction.Remarks = "Return Invoice";
                             inventoryTranction.Warehouse = eachbin.Warehouse;
-                            inventoryTranction.PartType = PartType.FG;
+                            inventoryTranction.PartType = returnInvoiceItemsList[i].PartType;  /// Check this are you getting Part Type from Front End
 
                             await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
                             _inventoryTranctionRepository.SaveAsync();

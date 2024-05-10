@@ -610,9 +610,9 @@ namespace Tips.Warehouse.Api.Controllers
                             inventoryTranction.Warehouse = eachbin.Warehouse;
                             inventoryTranction.PartType = PartType.FG;
 
-                            var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+                            //var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
-                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
                             _inventoryTranctionRepository.SaveAsync();
 
 
@@ -897,6 +897,11 @@ namespace Tips.Warehouse.Api.Controllers
                         getBtoDeliveryOrderDetails.BalanceDoQty -= ReturnQty;
                         getBtoDeliveryOrderDetails.OrderBalanceQty += ReturnQty;
                         getBtoDeliveryOrderDetails.DispatchQty -= ReturnQty;
+
+                        if (getBtoDeliveryOrderDetails.DispatchQty == getBtoDeliveryOrderDetails.InvoicedQty)
+                        {
+                            getBtoDeliveryOrderDetails.DoStatus = Status.Closed;
+                        }
 
                         string[] strs1 = getBtoDeliveryOrderDetails.SerialNo.Split(",");
                         string[] strs2 = returnBtoDeliveryOrderitemsDto[i].SerialNo.Split(",");

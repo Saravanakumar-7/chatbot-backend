@@ -1314,7 +1314,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 foreach (var item in salesOrderDispatchQtyDto)
                 {
-                    var invoiceReturnQty = item.ReturnQty;
+                    var doReturnQty = item.ReturnQty;
                     IEnumerable<SalesOrderItems>? salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
 
                     if (salesOrderItems != null)
@@ -1323,24 +1323,24 @@ namespace Tips.SalesService.Api.Controllers
                         {
                             var salesOrderDisQty = salesOrderDetails.DispatchQty;
 
-                            if (salesOrderDetails.DispatchQty <= invoiceReturnQty)
+                            if (salesOrderDetails.DispatchQty <= doReturnQty)
                             {
                                 salesOrderDetails.BalanceQty += salesOrderDisQty;
                                 salesOrderDetails.DispatchQty = 0;
-                                invoiceReturnQty -= salesOrderDisQty;
+                                doReturnQty -= salesOrderDisQty;
                             }
                             else
                             {
-                                salesOrderDetails.BalanceQty += invoiceReturnQty;
-                                salesOrderDetails.DispatchQty -= invoiceReturnQty;
-                                invoiceReturnQty -= salesOrderDisQty;
+                                salesOrderDetails.BalanceQty += doReturnQty;
+                                salesOrderDetails.DispatchQty -= doReturnQty;
+                                doReturnQty = 0;
 
                             }
                             if (salesOrderDetails.BalanceQty == salesOrderDetails.OrderQty)
                             {
                                 salesOrderDetails.StatusEnum = OrderStatus.Open;
                             }
-                            else if (salesOrderDetails.BalanceQty < salesOrderDetails.OrderQty)
+                            else if (salesOrderDetails.BalanceQty < salesOrderDetails.OrderQty && salesOrderDetails.BalanceQty > 0)
                             {
                                 salesOrderDetails.StatusEnum = OrderStatus.PartiallyClosed;
                             }
@@ -1349,7 +1349,7 @@ namespace Tips.SalesService.Api.Controllers
                                 salesOrderDetails.StatusEnum = OrderStatus.Closed;
                             }
                             await _salesOrderItemsRepository.UpdateSalesOrderItem(salesOrderDetails);
-                            if (invoiceReturnQty <= 0)
+                            if (doReturnQty <= 0)
                             {
                                 break;
                             }
@@ -1425,7 +1425,7 @@ namespace Tips.SalesService.Api.Controllers
                                 {
                                     salesOrderDetails.BalanceQty += invoiceReturnQty;
                                     salesOrderDetails.DispatchQty -= invoiceReturnQty;
-                                    invoiceReturnQty -= salesOrderDisQty; 
+                                    invoiceReturnQty = 0; 
 
                                 }
 
@@ -1433,7 +1433,7 @@ namespace Tips.SalesService.Api.Controllers
                                 {
                                     salesOrderDetails.StatusEnum = OrderStatus.Open;
                                 }
-                                else if (salesOrderDetails.BalanceQty < salesOrderDetails.OrderQty)
+                                else if (salesOrderDetails.BalanceQty < salesOrderDetails.OrderQty && salesOrderDetails.BalanceQty > 0)
                                 {
                                     salesOrderDetails.StatusEnum = OrderStatus.PartiallyClosed;
                                 }

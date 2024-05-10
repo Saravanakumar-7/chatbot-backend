@@ -737,16 +737,18 @@ namespace Tips.Warehouse.Api.Controllers
                 foreach (var doItem in btoItemDetails)
                 {
                     decimal doBalanceQty = Convert.ToDecimal(doItem.BalanceDoQty);
-                    doItem.InvoicedQty += invoiceQty;
+                    
 
                     if (doBalanceQty >= invoiceQty)
                     {
                         doItem.BalanceDoQty -= invoiceQty;
+                        doItem.InvoicedQty += invoiceQty;
                         invoiceQty = 0;
                     }
                     else
                     {
                         doItem.BalanceDoQty = 0;
+                        doItem.InvoicedQty += doBalanceQty;
                         invoiceQty -= doBalanceQty;
                     }
 
