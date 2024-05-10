@@ -529,15 +529,17 @@ namespace Tips.Warehouse.Api.Controllers
                             {
                                 Inventory inventory = new Inventory();
                                 inventory.PartNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
-                                inventory.MftrPartNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
+                                inventory.MftrPartNumber = exInv.MftrPartNumber;
                                 inventory.Description = returnOpenDeliveryOrderPartsDtoList[i].Description;
                                 inventory.ProjectNumber = eachbin.ProjectNumber;
                                 inventory.Balance_Quantity = eachbin.DistributingQty;
                                 inventory.UOM = returnOpenDeliveryOrderPartsDtoList[i].UOM;
+                                inventory.Max = exInv.Max;
+                                inventory.Min = exInv.Min;
                                 inventory.IsStockAvailable = true;
                                 inventory.Warehouse = eachbin.Warehouse;
                                 inventory.Location = eachbin.Location;
-                                inventory.GrinNo = returnOpenDeliveryOrderParts.ODONumber;
+                                inventory.GrinNo = exInv.GrinNo;
                                 inventory.GrinPartId = 0;
                                 inventory.PartType = returnOpenDeliveryOrderPartsDtoList[i].ItemType;
                                 inventory.GrinMaterialType = "";
@@ -560,7 +562,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                             InventoryTranction inventoryTranction = new InventoryTranction();
                             inventoryTranction.PartNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
-                            inventoryTranction.MftrPartNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
+                            inventoryTranction.MftrPartNumber = exInv.MftrPartNumber;
                             inventoryTranction.Description = returnOpenDeliveryOrderPartsDtoList[i].Description;
                             inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
                             inventoryTranction.UOM = returnOpenDeliveryOrderPartsDtoList[i].UOM;

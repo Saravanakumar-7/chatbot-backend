@@ -220,7 +220,7 @@ namespace Tips.Production.Api.Controllers
 
                     InventoryTranctionDto inventoryTranction = new InventoryTranctionDto();
                     inventoryTranction.PartNumber = ItemNo;
-                    inventoryTranction.MftrPartNumber = ItemNo;
+                    inventoryTranction.MftrPartNumber = newinv.MftrPartNumber;
                     inventoryTranction.Description = Desc;
                     inventoryTranction.ProjectNumber = ProjectNo;
                     inventoryTranction.PartType = ItemType;

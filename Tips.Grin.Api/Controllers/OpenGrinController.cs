@@ -458,15 +458,15 @@ namespace Tips.Grin.Api.Controllers
                             getItemmResp = itemMasterObjectResult.StatusCode;
 
                         var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                        dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                        dynamic itemMasterObject = itemMasterObjectData.data;
+                        var itemMasterObjectData = JsonConvert.DeserializeObject<OpenGrinInvDetails>(itemMasterObjectString);
+                        var itemMasterObject = itemMasterObjectData.data;
 
                         foreach (var openGrinDetail in openGrinParts.OpenGrinDetails)
                         {
                             OGInventoryDtoPost inventory = new OGInventoryDtoPost();
 
                             inventory.PartNumber = openGrinParts.ItemNumber;
-                            inventory.MftrPartNumber = openGrinParts.ItemNumber;
+                            inventory.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); 
                             inventory.Description = openGrinParts.Description;
                             inventory.ProjectNumber = openGrinParts.ReferenceSONumber;
                             inventory.Balance_Quantity = openGrinDetail.Qty;

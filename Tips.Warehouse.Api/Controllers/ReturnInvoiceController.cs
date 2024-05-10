@@ -279,16 +279,36 @@ namespace Tips.Warehouse.Api.Controllers
                         //}
                         foreach (var eachbin in returnInvoiceItems.QtyDistribution)
                         {
+                            var client1 = _clientFactory.CreateClient();
+                            var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                            var ItemNumber = returnInvoiceItems.FGPartNumber;
+                            var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+
+                            var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
+                                $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+                            request1.Headers.Add("Authorization", token1);
+
+                            var itemMasterObjectResult = await client1.SendAsync(request1);
+                            //if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                            //    getItemmResp = itemMasterObjectResult.StatusCode;
+
+                            var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                            var itemMasterObjectData = JsonConvert.DeserializeObject<ReturnBTONumberInvDetails>(itemMasterObjectString);
+                            var itemMasterObject = itemMasterObjectData.data;
+
                             var exInv = await _inventoryRepository.GetInventorybyItemProjectWarehouseLocation(returnInvoiceItems.FGPartNumber, eachbin.ProjectNumber, eachbin.Warehouse, eachbin.Location);
                             if (exInv == null)
                             {
                                 Inventory inventory = new Inventory();
                                 inventory.PartNumber = returnInvoiceItemsList[i].FGPartNumber;
-                                inventory.MftrPartNumber = returnInvoiceItemsList[i].FGPartNumber;
+                                inventory.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); 
                                 inventory.Description = returnInvoiceItemsList[i].Description;
                                 inventory.ProjectNumber = eachbin.ProjectNumber;
                                 inventory.Balance_Quantity = eachbin.DistributingQty;
                                 inventory.UOM = returnInvoiceItemsList[i].UOM;
+                                inventory.Max = itemMasterObject.max;
+                                inventory.Min = itemMasterObject.min;
                                 inventory.IsStockAvailable = true;
                                 inventory.Warehouse = eachbin.Warehouse;
                                 inventory.Location = eachbin.Location;
@@ -320,7 +340,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                             InventoryTranction inventoryTranction = new InventoryTranction();
                             inventoryTranction.PartNumber = returnInvoiceItemsList[i].FGPartNumber;
-                            inventoryTranction.MftrPartNumber = returnInvoiceItemsList[i].FGPartNumber;
+                            inventoryTranction.MftrPartNumber = exInv.MftrPartNumber; 
                             inventoryTranction.Description = returnInvoiceItemsList[i].Description;
                             inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
                             inventoryTranction.UOM = returnInvoiceItemsList[i].UOM;
