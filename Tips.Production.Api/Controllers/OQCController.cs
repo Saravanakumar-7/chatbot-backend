@@ -306,8 +306,8 @@ namespace Tips.Production.Api.Controllers
                     }
                     _logger.LogInfo("getitemmasterdata" + Convert.ToString(itemMasterObjectResult));
                     var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                    dynamic itemMatserObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                    dynamic itemMasterTranctionObject = itemMatserObjectData.data;
+                    var itemMatserObjectData = JsonConvert.DeserializeObject<OqcItemMasterDetails>(itemMasterObjectString);
+                    var itemMasterTranctionObject = itemMatserObjectData.data;
 
                     //Adding SA in Inventory Table
                     InventoryPostDto inventory = new InventoryPostDto();
@@ -316,7 +316,7 @@ namespace Tips.Production.Api.Controllers
                     var uom = itemMasterTranctionObject.uom;
 
                     inventory.PartNumber = itemMasterTranctionObject.itemNumber;
-                    inventory.MftrPartNumber = itemMasterTranctionObject.itemNumber;
+                    inventory.MftrPartNumber = itemMasterTranctionObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                     inventory.Description = itemMasterTranctionObject.description;
                     inventory.ProjectNumber = projectNo;
                     inventory.Balance_Quantity = oQCCreate.AcceptedQty;
@@ -357,13 +357,13 @@ namespace Tips.Production.Api.Controllers
                     InventoryPostDto inventory1 = new InventoryPostDto();
 
                     inventory1.PartNumber = itemMasterTranctionObject.itemNumber;
-                    inventory1.MftrPartNumber = itemMasterTranctionObject.itemNumber;
+                    inventory1.MftrPartNumber = itemMasterTranctionObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); ;
                     inventory1.Description = itemMasterTranctionObject.description;
                     inventory1.ProjectNumber = projectNo;
                     inventory1.Balance_Quantity = oQCCreate.RejectedQty;
                     inventory1.UOM = itemMasterTranctionObject.uom;
-                    inventory.Max = itemMasterTranctionObject.max;
-                    inventory.Min = itemMasterTranctionObject.min;
+                    inventory1.Max = itemMasterTranctionObject.max;
+                    inventory1.Min = itemMasterTranctionObject.min;
                     inventory1.Warehouse = "Reject";
                     inventory1.Location = "Reject";
                     inventory1.GrinNo = "";
@@ -398,7 +398,7 @@ namespace Tips.Production.Api.Controllers
                     InventoryTranctionDto inventoryTranction = new InventoryTranctionDto();
 
                     inventoryTranction.PartNumber = ItemNo;
-                    inventoryTranction.MftrPartNumber = ItemNo;
+                    inventoryTranction.MftrPartNumber = itemMasterTranctionObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); ;
                     inventoryTranction.Description = Desc;
                     inventoryTranction.ProjectNumber = projectNo;
                     inventoryTranction.PartType = oQCCreate.ItemType;
@@ -437,7 +437,7 @@ namespace Tips.Production.Api.Controllers
                     InventoryTranctionDto inventoryTranction1 = new InventoryTranctionDto();
 
                     inventoryTranction1.PartNumber = ItemNo;
-                    inventoryTranction1.MftrPartNumber = ItemNo;
+                    inventoryTranction1.MftrPartNumber = itemMasterTranctionObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); ;
                     inventoryTranction1.Description = Desc;
                     inventoryTranction1.ProjectNumber = projectNo;
                     inventoryTranction1.PartType = oQCCreate.ItemType;
@@ -495,15 +495,15 @@ namespace Tips.Production.Api.Controllers
                         GetFGItemMas = itemMasterObjectResult.StatusCode;
                     }
                     var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                    dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                    dynamic itemMasterTranctionObject = itemMasterObjectData.data;
+                    var itemMasterObjectData = JsonConvert.DeserializeObject<OqcItemMasterDetails>(itemMasterObjectString);
+                    var itemMasterTranctionObject = itemMasterObjectData.data;
 
                     InventoryPostDto inventory = new InventoryPostDto();
                     var ItemNo = itemMasterTranctionObject.itemNumber;
                     var Desc = itemMasterTranctionObject.description;
                     var uom = itemMasterTranctionObject.uom;
                     inventory.PartNumber = ItemNo;
-                    inventory.MftrPartNumber = ItemNo;
+                    inventory.MftrPartNumber = itemMasterTranctionObject.itemmasterAlternate.Where(x=>x.isDefault == true).Select(x=>x.manufacturerPartNo).FirstOrDefault();
                     inventory.Description = Desc;
                     inventory.ProjectNumber = projectNo;
                     inventory.Balance_Quantity = oQCCreate.AcceptedQty;
@@ -544,13 +544,13 @@ namespace Tips.Production.Api.Controllers
                     InventoryPostDto inventory1 = new InventoryPostDto();
 
                     inventory1.PartNumber = ItemNo;
-                    inventory1.MftrPartNumber = ItemNo;
+                    inventory1.MftrPartNumber = itemMasterTranctionObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); ;
                     inventory1.Description = Desc;
                     inventory1.ProjectNumber = projectNo;
                     inventory1.Balance_Quantity = oQCCreate.RejectedQty;
                     inventory1.UOM = uom;
-                    inventory.Max = itemMasterTranctionObject.max;
-                    inventory.Min = itemMasterTranctionObject.min;
+                    inventory1.Max = itemMasterTranctionObject.max;
+                    inventory1.Min = itemMasterTranctionObject.min;
                     inventory1.Warehouse = "Scrap";
                     inventory1.Location = "Reject";
                     inventory1.GrinNo = "";
@@ -585,7 +585,7 @@ namespace Tips.Production.Api.Controllers
                     InventoryTranctionDto inventoryTranction = new InventoryTranctionDto();
 
                     inventoryTranction.PartNumber = ItemNo;
-                    inventoryTranction.MftrPartNumber = ItemNo;
+                    inventoryTranction.MftrPartNumber = itemMasterTranctionObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); ;
                     inventoryTranction.Description = Desc;
                     inventoryTranction.ProjectNumber = projectNo;
                     inventoryTranction.PartType = oQCCreate.ItemType;
@@ -626,7 +626,7 @@ namespace Tips.Production.Api.Controllers
                     InventoryTranctionDto inventoryTranction1 = new InventoryTranctionDto();
 
                     inventoryTranction1.PartNumber = ItemNo;
-                    inventoryTranction1.MftrPartNumber = ItemNo;
+                    inventoryTranction1.MftrPartNumber = itemMasterTranctionObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); ;
                     inventoryTranction1.Description = Desc;
                     inventoryTranction1.ProjectNumber = projectNo;
                     inventoryTranction1.PartType = oQCCreate.ItemType;

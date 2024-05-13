@@ -435,8 +435,9 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<BTODeliveryOrderItems> GetBtoDelieveryOrderItemDetails(int btoDeliveryOrderPartsId)
         {
             var getBTODeliveryOrderItemDetails = await _tipsWarehouseDbContexts.bTODeliveryOrderItems
-                    .Where(x => x.Id == btoDeliveryOrderPartsId).Include(x => x.QtyDistribution)
-                          .FirstOrDefaultAsync();
+                    .Where(x => x.Id == btoDeliveryOrderPartsId)
+                    .Include(x => x.QtyDistribution)
+                    .FirstOrDefaultAsync();
             return getBTODeliveryOrderItemDetails;
         }
 

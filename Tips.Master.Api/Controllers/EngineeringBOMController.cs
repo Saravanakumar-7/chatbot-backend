@@ -911,7 +911,6 @@ namespace Tips.Master.Api.Controllers
                 var release = _mapper.Map<EngineeringBom>(releaseEnggBomDtoPost);
                 release.IsReleaseCompleted = true;
                 await _releaseEnggBomRepository.CreateReleaseEnggBom(release);
-                _repository.SaveAsync();
                 await _enggBomRepository.ReleasedEnggBomByItemAndRevisionNumber(releaseEnggBomDtoPost.ItemNumber, releaseEnggBomDtoPost.ReleaseVersion);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -2806,7 +2805,7 @@ namespace Tips.Master.Api.Controllers
                                     var encodedProjectNumber = Uri.EscapeDataString(projectNo);
 
                                     var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                        $"GetTotalStockOfSAItemNumberAndProjectNo?itemNumber={encodedItemNumber}&ProjectNumber={encodedProjectNumber}"));
+                                        $"GetTotalStockOfSAItemNumberAndProjectNo?saItemNumber={encodedItemNumber}&ProjectNumber={encodedProjectNumber}"));
                                     request.Headers.Add("Authorization", token);
 
                                     var inventoryObjectResult = await client.SendAsync(request);
