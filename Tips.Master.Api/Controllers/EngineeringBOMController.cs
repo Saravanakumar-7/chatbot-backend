@@ -2746,7 +2746,7 @@ namespace Tips.Master.Api.Controllers
                             if (enggChildItem.PartType != PartType.SA)
                             {
                                 decimal requiredQuantity;
-                                if (string.IsNullOrEmpty(enggChildItem.ScrapAllowance) || Convert.ToDecimal(enggChildItem.ScrapAllowance) == 0)
+                                if (string.IsNullOrEmpty(enggChildItem.ScrapAllowance) || enggChildItem.ScrapAllowance == "0" || enggChildItem.ScrapAllowance == "-")
                                 {
                                     requiredQuantity = enggChildItem.Quantity * requiredQty;
 
