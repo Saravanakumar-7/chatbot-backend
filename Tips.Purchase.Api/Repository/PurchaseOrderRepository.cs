@@ -641,6 +641,18 @@ namespace Tips.Purchase.Api.Repository
 
             return purchaseOrderNameList;
         }
+        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllLatestRevNoPurchaseOrderNameList()
+        {
+            IEnumerable<PurchaseOrderIdNameListDto> purchaseOrderNameList = await _tipsPurchaseDbContext.PurchaseOrders.Where(x=>x.RevisionNumber== _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))
+                                .Select(x => new PurchaseOrderIdNameListDto()
+                                {
+                                    Id = x.Id,
+                                    PONumber = x.PONumber,
+                                }).OrderByDescending(x=>x.Id)
+                              .ToListAsync();
+
+            return purchaseOrderNameList;
+        }
         public async Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
 
