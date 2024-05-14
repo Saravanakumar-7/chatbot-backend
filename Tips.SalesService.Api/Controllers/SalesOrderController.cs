@@ -9,15 +9,18 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualBasic;
+using MySqlX.XDevAPI;
 using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using NuGet.Common;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
@@ -29,6 +32,7 @@ namespace Tips.SalesService.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class SalesOrderController : ControllerBase
     {
         private ISalesOrderRepository _repository;
@@ -47,13 +51,15 @@ namespace Tips.SalesService.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public SalesOrderController(ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
+        private readonly IHttpClientFactory _clientFactory;
+        public SalesOrderController(ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, IHttpClientFactory clientFactory, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
             ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, IQuoteRepository quoteRepository , IHttpContextAccessor httpContextAccessor,
             ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _clientFactory = clientFactory;
             _salesOrderItemsRepository = salesOrderItemsRepository;
             _salesOrderHistory = salesOrderHistoryRepository;
             _salesAdditionalChargesRepository = salesAdditionalChargesRepository;
@@ -282,11 +288,19 @@ namespace Tips.SalesService.Api.Controllers
                         {
                             var json = JsonConvert.SerializeObject(itemNumberList);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
-                            var inventoryQtyResponse = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetAvailableStockQtyForSalesOrderItems?", "salesOrderNo=", salesOrderNo, "&salesOrderStatus=", salesOrderStatus), data);
+                            // var inventoryQtyResponse = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetAvailableStockQtyForSalesOrderItems?", "salesOrderNo=", salesOrderNo, "&salesOrderStatus=", salesOrderStatus), data);
+                            var client = _clientFactory.CreateClient();
+                            var token = HttpContext.Request.Headers["Authorization"].ToString();
+                            var encodedSONumber = Uri.EscapeDataString(salesOrderNo);
+                            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                            $"GetAvailableStockQtyForSalesOrderItems?salesOrderNo={encodedSONumber}&salesOrderStatus={salesOrderStatus}"))
+                            {
+                                Content=data
+                            };
+                            request.Headers.Add("Authorization", token);
 
+                            var inventoryQtyResponse = await client.SendAsync(request);
                             var inventoryItemQtyDetails = await inventoryQtyResponse.Content.ReadAsStringAsync();
-
-
                             Dictionary<string, decimal> inventoryItemWithStockDetails = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(inventoryItemQtyDetails);
 
 
@@ -319,9 +333,17 @@ namespace Tips.SalesService.Api.Controllers
                             SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
                             salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
                             salesOrderItemsDtos.SoConfirmationDates = _mapper.Map<List<SoConfirmationDateDto>>(salesOrderItemDetails.SoConfirmationDates);
-                            string itemNumber = salesOrderItemsDtos.ItemNumber;                            
-                            
-                            var inventoryQtyResponse = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByItemNo?", "itemNumber=", itemNumber, "&projectNo=", itemNumberList.Where(x=>x.Item1==itemNumber).Select(x=>x.Item2)));
+                            var client = _clientFactory.CreateClient();
+                            var token = HttpContext.Request.Headers["Authorization"].ToString();
+                            string itemNumber = salesOrderItemsDtos.ItemNumber;
+                            var encodedItemNumber = Uri.EscapeDataString(itemNumber);
+                            var encodedProjectNo=Uri.EscapeDataString(itemNumberList.Where(x => x.Item1 == itemNumber).Select(x => x.Item2).ToString());
+                            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                            $"GetInventoryDetailsByItemNo?itemNumber={encodedItemNumber}&projectNo={encodedProjectNo}"));
+                            request.Headers.Add("Authorization", token);
+
+                            var inventoryQtyResponse = await client.SendAsync(request);
+                            //var inventoryQtyResponse = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByItemNo?", "itemNumber=", itemNumber, "&projectNo=", itemNumberList.Where(x=>x.Item1==itemNumber).Select(x=>x.Item2)));
                             var inventoryItemQtyDetails = await inventoryQtyResponse.Content.ReadAsStringAsync();
                             var inventoryItemWithStockDetails = JsonConvert.DeserializeObject<InventoryItemdetailsDto>(inventoryItemQtyDetails);
                             if (inventoryItemWithStockDetails!=null)
@@ -759,10 +781,14 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
                     {
-                        SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
-                        salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty - salesOrderItemsDetail.DispatchQty;
-                        salesOrderItemsDetail.SalesOrderNumber = salesOrderNumber;
-                        salesOrderItemsList.Add(salesOrderItemsDetail);
+                           SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
+                        if (salesOrderItemsDetail.StatusEnum != OrderStatus.ShortClosed)
+                        {
+                            salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty - salesOrderItemsDetail.DispatchQty;
+                            salesOrderItemsDetail.SalesOrderNumber = salesOrderNumber;
+                        }
+                            salesOrderItemsList.Add(salesOrderItemsDetail);
+                                           
                     }
 
                     foreach (var salesOrderItemDetail in salesOrderDetailBeforeUpdate.SalesOrdersItems)
@@ -823,7 +849,7 @@ namespace Tips.SalesService.Api.Controllers
                             scheduleDateHistory.Quantity = scheduleDateDetial.Quantity;
                             scheduleDateHistory.SalesOrderHistoriesId = salesOrderHistory.Id;
 
-                            var ScheduleDateHistories = _mapper.Map<ScheduleDateHistory>(salesOrderHistory);
+                            var ScheduleDateHistories = _mapper.Map<ScheduleDateHistory>(scheduleDateHistory);
                             await _scheduleDateHistoryRepository.CreateScheduleDateHistory(ScheduleDateHistories);
                         }
 
@@ -1264,101 +1290,186 @@ namespace Tips.SalesService.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> ReturnDOUpdateDispatchDetails([FromBody] List<ReturnDOSalesOrderDispatchQtyDto> salesOrderDispatchQtyDto)
         {
-            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
-            if (salesOrderDispatchQtyDto == null)
+            try
             {
-                serviceResponse.Data = null;
-                serviceResponse.Message = "SalesOrder object sent from the client is null.";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError("SalesOrder object sent from the client is null.");
-                return BadRequest(serviceResponse);
-            }
-
-            if (!ModelState.IsValid)
-            {
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Invalid SalesOrder object sent from the client.";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError("Invalid SalesOrder object sent from the client.");
-                return BadRequest(serviceResponse);
-            }
-            foreach (var item in salesOrderDispatchQtyDto)
-            {
-                IEnumerable<SalesOrderItems>? salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
-                var orderItem = salesOrderItems.FirstOrDefault();
-                if (orderItem != null)
+                ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+                if (salesOrderDispatchQtyDto == null)
                 {
-                    orderItem.BalanceQty = orderItem.BalanceQty + item.ReturnQty;
-                    orderItem.DispatchQty -= item.ReturnQty;
-                    _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
-                }
-                else
-                {
-                    _logger.LogError($"Something went wrong inside ReturnInvoiceUpdateDispatchDetails action in SalesOrder Controller");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                    serviceResponse.Message = "SalesOrder object sent from the client is null.";
                     serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500, serviceResponse);
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("SalesOrder object sent from the client is null.");
+                    return BadRequest(serviceResponse);
                 }
-            }
 
-            _salesOrderItemsRepository.SaveAsync();
-            return Ok();
-        }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid SalesOrder object sent from the client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid SalesOrder object sent from the client.");
+                    return BadRequest(serviceResponse);
+                }
+                foreach (var item in salesOrderDispatchQtyDto)
+                {
+                    var doReturnQty = item.ReturnQty;
+                    IEnumerable<SalesOrderItems>? salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
+
+                    if (salesOrderItems != null && salesOrderItems.Count() > 0)
+                    {
+                        foreach (var salesOrderDetails in salesOrderItems)
+                        {
+                            var salesOrderDisQty = salesOrderDetails.DispatchQty;
+
+                            if (salesOrderDetails.DispatchQty <= doReturnQty)
+                            {
+                                salesOrderDetails.BalanceQty += salesOrderDisQty;
+                                salesOrderDetails.DispatchQty = 0;
+                                doReturnQty -= salesOrderDisQty;
+                            }
+                            else
+                            {
+                                salesOrderDetails.BalanceQty += doReturnQty;
+                                salesOrderDetails.DispatchQty -= doReturnQty;
+                                doReturnQty = 0;
+
+                            }
+                            if (salesOrderDetails.BalanceQty == salesOrderDetails.OrderQty)
+                            {
+                                salesOrderDetails.StatusEnum = OrderStatus.Open;
+                            }
+                            else if (salesOrderDetails.BalanceQty < salesOrderDetails.OrderQty && salesOrderDetails.BalanceQty > 0)
+                            {
+                                salesOrderDetails.StatusEnum = OrderStatus.PartiallyClosed;
+                            }
+                            else
+                            {
+                                salesOrderDetails.StatusEnum = OrderStatus.Closed;
+                            }
+                            await _salesOrderItemsRepository.UpdateSalesOrderItem(salesOrderDetails);
+                            if (doReturnQty <= 0)
+                            {
+                                break;
+                            }
+                        }
+
+                        _salesOrderItemsRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError($"salesOrderItems Details is null");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        return NotFound(serviceResponse);
+                    }
+                }
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ReturnDOUpdateDispatchDetails action in SalesOrder Controller {ex.Message}");
+                return StatusCode(500, ex.Message);
+            }
+}
         //Update Balancre Qty and DispatchQty Using ReturnInvoice 
         [HttpPost]
         public async Task<IActionResult> ReturnInvoiceUpdateDispatchDetails([FromBody] List<ReturnDOSalesOrderDispatchQtyDto> salesOrderDispatchQtyDto)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
-            if (salesOrderDispatchQtyDto == null)
-            {
-                serviceResponse.Data = null;
-                serviceResponse.Message = "SalesOrder object sent from the client is null.";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError("SalesOrder object sent from the client is null.");
-                return BadRequest(serviceResponse);
-            }
 
-            if (!ModelState.IsValid)
+            try
             {
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Invalid SalesOrder object sent from the client.";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError("Invalid SalesOrder object sent from the client.");
-                return BadRequest(serviceResponse);
-            }
-            foreach (var item in salesOrderDispatchQtyDto)
-            {
-                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
-                var orderItem = salesOrderItems.FirstOrDefault();
-                if (orderItem != null)
+                if (salesOrderDispatchQtyDto == null)
                 {
-                    orderItem.BalanceQty += item.ReturnQty;
-                    orderItem.DispatchQty -= item.ReturnQty;
-                    if (orderItem.BalanceQty == orderItem.OrderQty)
-                    {
-                        orderItem.StatusEnum = OrderStatus.Open;
-                    }
-                    _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
-                }
-                else
-                {
-                    _logger.LogError($"Something went wrong inside ReturnInvoiceUpdateDispatchDetails action in SalesOrder Controller");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                    serviceResponse.Message = "SalesOrder object sent from the client is null.";
                     serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500, serviceResponse);
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("SalesOrder object sent from the client is null.");
+                    return BadRequest(serviceResponse);
                 }
-            }
 
-            _salesOrderItemsRepository.SaveAsync();
-            return Ok();
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid SalesOrder object sent from the client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid SalesOrder object sent from the client.");
+                    return BadRequest(serviceResponse);
+                }
+                
+                foreach (var item in salesOrderDispatchQtyDto)
+                {
+                    var invoiceReturnQty = item.ReturnQty;
+
+                    IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo
+                                                                                                                            (item.FGPartNumber, item.SalesOrderId);
+                    if (salesOrderItems != null && salesOrderItems.Count() > 0)
+                    {
+                        foreach (var salesOrderDetails in salesOrderItems)
+                        {
+                            var salesOrderDisQty = salesOrderDetails.DispatchQty;
+                            
+                                if (salesOrderDetails.DispatchQty <= invoiceReturnQty)
+                                {
+                                    salesOrderDetails.BalanceQty += salesOrderDisQty;
+                                    salesOrderDetails.DispatchQty = 0;
+                                    invoiceReturnQty -= salesOrderDisQty;
+                                }
+                                else
+                                {
+                                    salesOrderDetails.BalanceQty += invoiceReturnQty;
+                                    salesOrderDetails.DispatchQty -= invoiceReturnQty;
+                                    invoiceReturnQty = 0; 
+
+                                }
+
+                                if (salesOrderDetails.BalanceQty == salesOrderDetails.OrderQty)
+                                {
+                                    salesOrderDetails.StatusEnum = OrderStatus.Open;
+                                }
+                                else if (salesOrderDetails.BalanceQty < salesOrderDetails.OrderQty && salesOrderDetails.BalanceQty > 0)
+                                {
+                                    salesOrderDetails.StatusEnum = OrderStatus.PartiallyClosed;
+                                }
+                                else
+                                {
+                                    salesOrderDetails.StatusEnum = OrderStatus.Closed;
+                                }
+                                await _salesOrderItemsRepository.UpdateSalesOrderItem(salesOrderDetails);
+
+                                if (invoiceReturnQty <= 0)
+                                {
+                                    break;
+                                }
+                            
+                        }
+                        _salesOrderItemsRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError($"salesOrderItems Details is null");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        return NotFound(serviceResponse);
+                    }
+                }
+
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ReturnInvoiceUpdateDispatchDetails action in SalesOrder Controller {ex.Message}");
+                return StatusCode(500,ex.Message);
+            }
         }
         //Update shoporder Qty in salesorder while create shoporderUpdateShopOrderQty
         //[HttpPost]
@@ -1488,11 +1599,18 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<ItemDetailsForShopOrderDto> serviceResponse = new ServiceResponse<ItemDetailsForShopOrderDto>();
             try
             {
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
                 string item = JsonConvert.SerializeObject(itemdetailsDto.itemNumber);
                 var content = new StringContent(item, Encoding.UTF8, "application/json");
-                var bomDetails = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"],
-                    "GetAllProductionBomFGListByItemNumber?"), content);
+                //var bomDetails = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"],
+                //    "GetAllProductionBomFGListByItemNumber?"), content);
+                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"],
+                            $"GetAllProductionBomFGListByItemNumber"))
+                { Content=content};
+                request.Headers.Add("Authorization", token);
 
+                var bomDetails = await client.SendAsync(request);
                 var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
                 dynamic bomDetailsStringData = JsonConvert.DeserializeObject(bomDetailsString);
                 dynamic bomData = bomDetailsStringData.data;
@@ -1603,7 +1721,7 @@ namespace Tips.SalesService.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetSASalesOrderDetailsByItemNo action";
+                serviceResponse.Message = $"Something went wrong inside GetSalesOrderSPReportWithDate action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1853,7 +1971,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var products = await _repository.GetRfqSalesOrderSPReportWithParam(rfqSalesOrderSPResportDTO.CustomerName, rfqSalesOrderSPResportDTO.SalesOrderNumber,
-                                                                                                                        rfqSalesOrderSPResportDTO.KPN);
+                                                                                                                        rfqSalesOrderSPResportDTO.KPN, rfqSalesOrderSPResportDTO.SOStatus);
 
                 if (products == null)
                 {
@@ -1930,7 +2048,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var products = await _repository.GetForecastSalesOrderSPReportWithParam(forecastSalesOrderSPResportDTO.CustomerName,
-                                                                             forecastSalesOrderSPResportDTO.SalesOrderNumber, forecastSalesOrderSPResportDTO.KPN);
+                                                                             forecastSalesOrderSPResportDTO.SalesOrderNumber, forecastSalesOrderSPResportDTO.KPN, forecastSalesOrderSPResportDTO.SOStatus);
 
                 if (products == null)
                 {
@@ -2091,12 +2209,213 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ExportSalesOrderRFQSPReportToExcel([FromBody] RfqSalesOrderSPResportDTO salesOrderSPReport)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var salesOrderSPReportDetails = await _repository.GetRfqSalesOrderSPReportWithParam(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(1).SetCellValue("SOStatus");
+                headerRow.CreateCell(2).SetCellValue("Project Number");
+                headerRow.CreateCell(3).SetCellValue("Customer ID");
+                headerRow.CreateCell(4).SetCellValue("Customer Name");
+                headerRow.CreateCell(5).SetCellValue("Lead ID");
+                headerRow.CreateCell(6).SetCellValue("Order Type");
+                headerRow.CreateCell(7).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(8).SetCellValue("Product Type");
+                headerRow.CreateCell(9).SetCellValue("Material Group");
+                headerRow.CreateCell(10).SetCellValue("Item Type");
+                headerRow.CreateCell(11).SetCellValue("Sales Person");
+                headerRow.CreateCell(12).SetCellValue("SO Date");
+                headerRow.CreateCell(13).SetCellValue("KPN");
+                headerRow.CreateCell(14).SetCellValue("KPN Description");
+                headerRow.CreateCell(15).SetCellValue("UOC");
+                headerRow.CreateCell(16).SetCellValue("UOM");
+                headerRow.CreateCell(17).SetCellValue("Price List");
+                headerRow.CreateCell(18).SetCellValue("Unit Price");
+                headerRow.CreateCell(19).SetCellValue("Basic Amount");
+                headerRow.CreateCell(20).SetCellValue("DiscountType");
+                headerRow.CreateCell(21).SetCellValue("Discount");
+                headerRow.CreateCell(22).SetCellValue("SGST");
+                headerRow.CreateCell(23).SetCellValue("CGST");
+                headerRow.CreateCell(24).SetCellValue("IGST");
+                headerRow.CreateCell(25).SetCellValue("UTGST");
+                headerRow.CreateCell(26).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(27).SetCellValue("Total Amount");
+                headerRow.CreateCell(28).SetCellValue("Order Qty");
+                headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(30).SetCellValue("Balance Qty");
+
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? item.SOStatus.Value.ToString() : ""); // Assuming SOStatus is nullable int
+                    row.CreateCell(2).SetCellValue(item.ProjectNumber ?? ""); // Assuming ProjectNumber is nullable string
+                    row.CreateCell(3).SetCellValue(item.CustomerId);
+                    row.CreateCell(4).SetCellValue(item.CustomerName);
+                    row.CreateCell(5).SetCellValue(item.LeadId);
+                    row.CreateCell(6).SetCellValue(item.OrderType);
+                    row.CreateCell(7).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(8).SetCellValue(item.ProductType);
+                    row.CreateCell(9).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(10).SetCellValue(item.ItemType); // Assuming ItemType is nullable int
+                    row.CreateCell(11).SetCellValue(item.SalesPerson);
+                    row.CreateCell(12).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(13).SetCellValue(item.KPN);
+                    row.CreateCell(14).SetCellValue(item.KPNDescription);
+                    row.CreateCell(15).SetCellValue(item.UOC);
+                    row.CreateCell(16).SetCellValue(item.UOM);
+                    row.CreateCell(17).SetCellValue(item.PriceList);
+                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(19).SetCellValue(Convert.ToDouble(item.BasicAmount)); // Assuming BasicAmount is decimal
+                    row.CreateCell(20).SetCellValue(item.DiscountType);
+                    row.CreateCell(21).SetCellValue(item.Discount);
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
+                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                }
+
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportSalesOrderForecastSPReportToExcel([FromBody] ForecastSalesOrderSPResportDTO salesOrderSPReport)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var salesOrderSPReportDetails = await _repository.GetForecastSalesOrderSPReportWithParam(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(1).SetCellValue("SOStatus");
+                headerRow.CreateCell(2).SetCellValue("Project Number");
+                headerRow.CreateCell(3).SetCellValue("Customer ID");
+                headerRow.CreateCell(4).SetCellValue("Customer Name");
+                headerRow.CreateCell(5).SetCellValue("Lead ID");
+                headerRow.CreateCell(6).SetCellValue("Order Type");
+                headerRow.CreateCell(7).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(8).SetCellValue("Product Type");
+                headerRow.CreateCell(9).SetCellValue("Material Group");
+                headerRow.CreateCell(10).SetCellValue("Item Type");
+                headerRow.CreateCell(11).SetCellValue("Sales Person");
+                headerRow.CreateCell(12).SetCellValue("SO Date");
+                headerRow.CreateCell(13).SetCellValue("KPN");
+                headerRow.CreateCell(14).SetCellValue("KPN Description");
+                headerRow.CreateCell(15).SetCellValue("UOC");
+                headerRow.CreateCell(16).SetCellValue("UOM");
+                headerRow.CreateCell(17).SetCellValue("Price List");
+                headerRow.CreateCell(18).SetCellValue("Unit Price");
+                headerRow.CreateCell(19).SetCellValue("Basic Amount");
+                headerRow.CreateCell(20).SetCellValue("DiscountType");
+                headerRow.CreateCell(21).SetCellValue("Discount");
+                headerRow.CreateCell(22).SetCellValue("SGST");
+                headerRow.CreateCell(23).SetCellValue("CGST");
+                headerRow.CreateCell(24).SetCellValue("IGST");
+                headerRow.CreateCell(25).SetCellValue("UTGST");
+                headerRow.CreateCell(26).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(27).SetCellValue("Total Amount");
+                headerRow.CreateCell(28).SetCellValue("Order Qty");
+                headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(30).SetCellValue("Balance Qty");
+
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? item.SOStatus.Value.ToString() : ""); // Adding SOStatus
+                    row.CreateCell(2).SetCellValue(item.ProjectNumber ?? ""); // Adding ProjectNumber
+                    row.CreateCell(3).SetCellValue(item.CustomerId);
+                    row.CreateCell(4).SetCellValue(item.CustomerName);
+                    row.CreateCell(5).SetCellValue(item.LeadId);
+                    row.CreateCell(6).SetCellValue(item.OrderType);
+                    row.CreateCell(7).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(8).SetCellValue(item.ProductType);
+                    row.CreateCell(9).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(10).SetCellValue(item.ItemType); // Assuming ItemType is nullable int
+                    row.CreateCell(11).SetCellValue(item.SalesPerson);
+                    row.CreateCell(12).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(13).SetCellValue(item.KPN);
+                    row.CreateCell(14).SetCellValue(item.KPNDescription);
+                    row.CreateCell(15).SetCellValue(item.UOC);
+                    row.CreateCell(16).SetCellValue(item.UOM);
+                    row.CreateCell(17).SetCellValue(item.PriceList);
+                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(19).SetCellValue(Convert.ToDouble(item.BasicAmount)); // Assuming BasicAmount is decimal
+                    row.CreateCell(20).SetCellValue(item.DiscountType);
+                    row.CreateCell(21).SetCellValue(item.Discount);
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
+                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
                 // Log the exception
                 // Return appropriate error response to the client
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
-
 
         [HttpGet]
         public async Task<IActionResult> GetReceivableReportsWithCustomerID(string CustomerId)
@@ -2142,8 +2461,17 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<SARevisionNumber> serviceResponse = new ServiceResponse<SARevisionNumber>();
             try
             {
-                var saFgItemDetailsWithBomQty = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
-                    "GetAllProductionBomSAListByItemNumber?", "ItemNumber=", itemNumber));
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();              
+                var encodedItemNumber = Uri.EscapeDataString(itemNumber);
+
+                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"],
+                    $"GetAllProductionBomSAListByItemNumber?ItemNumber={encodedItemNumber}"));
+                request.Headers.Add("Authorization", token);
+
+                var saFgItemDetailsWithBomQty = await client.SendAsync(request);
+                //var saFgItemDetailsWithBomQty = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
+                //    "GetAllProductionBomSAListByItemNumber?", "ItemNumber=", itemNumber));
                 var saFgItemDetailsWithBomQtyString = await saFgItemDetailsWithBomQty.Content.ReadAsStringAsync();
                 dynamic saFgItemDetailsWithBomQtyData = JsonConvert.DeserializeObject(saFgItemDetailsWithBomQtyString);
                 dynamic saFgItemDetailWithBomQty = saFgItemDetailsWithBomQtyData.data;
@@ -2217,8 +2545,18 @@ namespace Tips.SalesService.Api.Controllers
         //get sa details
         private async Task<dynamic> GetSAQuantityFromBom(string item, string itemNumber)
         {
-            var enggBomQtyDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
-                        "GetSABomListByItemNumber?", "fgPartNumber=", item, "&saItemNumber=", itemNumber));
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();           
+            var encodedItemNumber = Uri.EscapeDataString(itemNumber);
+            var encodedItem = Uri.EscapeDataString(item);
+
+            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"],
+                $"GetSABomListByItemNumber?fgPartNumber={encodedItem}&saItemNumber={encodedItemNumber}"));
+            request.Headers.Add("Authorization", token);
+
+            var enggBomQtyDetails = await client.SendAsync(request);
+            //var enggBomQtyDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
+            //            "GetSABomListByItemNumber?", "fgPartNumber=", item, "&saItemNumber=", itemNumber));
 
             var enggBomQtyObjectString = await enggBomQtyDetails.Content.ReadAsStringAsync();
             dynamic enggBomQtyObjectData = JsonConvert.DeserializeObject(enggBomQtyObjectString);

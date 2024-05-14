@@ -11,17 +11,17 @@ using Tips.Warehouse.Api.Entities.DTOs;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Repository;
 using Microsoft.EntityFrameworkCore;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 using System.Net.Http;
 using System.Data;
 using System.Data.SqlClient;
 using Google.Protobuf.WellKnownTypes;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class ConsumptionReportController : ControllerBase
     {
         private IInventoryRepository _inventoryRepository;

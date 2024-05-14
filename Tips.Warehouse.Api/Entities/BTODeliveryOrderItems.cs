@@ -36,7 +36,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public int BTODeliveryOrderId { get; set; }
-        public Status DoStatus { get; set; } = Status.Open;
+        public Status DoStatus { get; set; } 
         public List<BtoDeliveryOrderItemQtyDistribution>? QtyDistribution { get; set; }
         public BTODeliveryOrder? BTODeliveryOrder { get; set; }
        // public List<BtoDeliveryOrderItemQtyDistribution>? QtyDistridution { get; set; }

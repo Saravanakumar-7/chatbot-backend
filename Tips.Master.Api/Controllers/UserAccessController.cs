@@ -8,11 +8,13 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.IO;
 using MySqlX.XDevAPI.Common;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    //[Authorize]
     public class UserAccessController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;

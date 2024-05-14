@@ -45,13 +45,11 @@ namespace Repository
             return result;
         }
 
-        public async Task<PagedList<Role>> GetAllActiveRoles([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IEnumerable<Role>> GetAllActiveRoles()
         {
-            var activeRolesDetails = FindAll().OrderByDescending(x => x.Id)
-             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.RoleName.Contains(searchParams.SearchValue) ||
-                inv.Description.Contains(searchParams.SearchValue))));
+            var activeRolesDetails = FindAll().OrderByDescending(x => x.Id);
 
-            return PagedList<Role>.ToPagedList(activeRolesDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            return activeRolesDetails;
         }
 
         //public async Task<PagedList<Role>> GetAllRoles([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)

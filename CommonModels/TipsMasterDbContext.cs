@@ -161,7 +161,7 @@ namespace Entities
         public DbSet<Convertionrate> Convertionrates { get; set; }
         public DbSet<EnggBomSPReport> EnggBomSPReports { get; set; }
         public DbSet<WeightedAvgRate> weighted_avg_rate { get; set; }
-
+        public DbSet<EmailTemplate> emailtemplate { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EnggBomSPReport>().HasNoKey();

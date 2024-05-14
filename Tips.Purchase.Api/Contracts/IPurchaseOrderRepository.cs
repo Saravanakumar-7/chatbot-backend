@@ -18,7 +18,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<PurchaseOrder> GetPurchaseOrderByPONumber(string poNumber);
         Task<List<GetDownloadUrlDto>> GetDownloadUrlPoDetails(string FileIds);
         Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string poNumber);
-
+        Task<PurchaseOrder> GetLastestPurchaseOrderByPONumber(string poNumber);
         Task<IEnumerable<PurchaseOrder>> GetAllActivePurchaseOrders();
         Task<IEnumerable<PRNoandQtyListDto>> GetPRNumberandQtyListByItemNumber(string itemNumber);
         Task<string> GeneratePONumber();
@@ -46,7 +46,8 @@ namespace Tips.Purchase.Api.Contracts
         Task<decimal> GetOpenPoQuantityByItemNumber(string itemNumber);
         Task<string> GeneratePONumberForAvision();
         Task<PagedList<PurchaseOrderSPReport>> GetPurchaseOrderSPResport(PagingParameter pagingParameter);
-        Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParam(string VendorName, string PONumber, string PartNumber);
+        Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParam(string VendorName, string PONumber, string itemNumber,
+                                                                                                              string RecordType, string Postatus);
         Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIList(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIList(PagingParameter pagingParameter, SearchParamess searchParams);
@@ -64,5 +65,6 @@ namespace Tips.Purchase.Api.Contracts
         Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIVListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams);
         Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIIIListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams);
         Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIVListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams);
+        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllLatestRevNoPurchaseOrderNameList();
     }
 }

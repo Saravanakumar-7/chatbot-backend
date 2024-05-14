@@ -2,6 +2,7 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Org.BouncyCastle.Utilities;
@@ -18,17 +19,19 @@ namespace Tips.SalesService.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class ItemPriceListController : ControllerBase
     {
         private IItemPriceListRepository _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        public ItemPriceListController(IItemPriceListRepository repository,  ILoggerManager logger, IMapper mapper)
+        private readonly IHttpClientFactory _clientFactory;
+        public ItemPriceListController(IItemPriceListRepository repository, IHttpClientFactory clientFactory, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
-          
+            _clientFactory = clientFactory;
         }
         // GET: api/<ItemPriceListController>
         [HttpGet]

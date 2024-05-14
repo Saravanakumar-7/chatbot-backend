@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
@@ -21,9 +22,10 @@ namespace Tips.SalesService.Api.Repository
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        private readonly HttpClient _httpClient;
+        private readonly HttpClient _httpClient;     
         private readonly IConfiguration _config;
-        public QuoteRepository(TipsSalesServiceDbContext repositoryContext, HttpClient httpClient, IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        private readonly IHttpClientFactory _clientFactory; 
+        public QuoteRepository(TipsSalesServiceDbContext repositoryContext, IHttpClientFactory clientFactory, HttpClient httpClient, IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsSalesServiceDbContext = repositoryContext;
             _httpContextAccessor = httpContextAccessor;
@@ -32,6 +34,7 @@ namespace Tips.SalesService.Api.Repository
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+            _clientFactory = clientFactory;
         }
 
         public async Task<long> CreateQuote(Quote quote)
@@ -198,8 +201,14 @@ namespace Tips.SalesService.Api.Repository
             var itemNumbers = rfqItems.Select(e => e.ItemNumber).Distinct().ToList();
             var data_1 = JsonConvert.SerializeObject(itemNumbers);
             var content = new StringContent(data_1, Encoding.UTF8, "application/json");
+            var client = _clientFactory.CreateClient();
+            var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
             var baseurl = _config["ItemMasterMainAPI"];
-            var itemdetails = await _httpClient.PostAsync($"{baseurl}GetItemsImageUrls", content);
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseurl}GetItemsImageUrls"){ Content= content};
+            request.Headers.Add("Authorization", token);
+
+            var itemdetails = await client.SendAsync(request);
+            //var itemdetails = await _httpClient.PostAsync($"{baseurl}GetItemsImageUrls", content);
             var ItemObjectString = await itemdetails.Content.ReadAsStringAsync();
             var itemObjectData = JsonConvert.DeserializeObject<Itemnumberimages>(ItemObjectString);
             var itemobject = itemObjectData.data;
@@ -306,7 +315,13 @@ namespace Tips.SalesService.Api.Repository
             var data_1 = JsonConvert.SerializeObject(itemNumbers);
             var content = new StringContent(data_1, Encoding.UTF8, "application/json");
             var baseurl = _config["ItemMasterMainAPI"];
-            var itemdetails = await _httpClient.PostAsync($"{baseurl}GetItemsImageUrls", content);
+            var client = _clientFactory.CreateClient();
+            var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();            
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseurl}GetItemsImageUrls") { Content = content };
+            request.Headers.Add("Authorization", token);
+
+            var itemdetails = await client.SendAsync(request);
+            //var itemdetails = await _httpClient.PostAsync($"{baseurl}GetItemsImageUrls", content);
             var ItemObjectString = await itemdetails.Content.ReadAsStringAsync();
             var itemObjectData = JsonConvert.DeserializeObject<Itemnumberimages>(ItemObjectString);
             var itemobject = itemObjectData.data;

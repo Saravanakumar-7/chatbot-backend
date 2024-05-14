@@ -16,6 +16,7 @@ using static Org.BouncyCastle.Math.EC.ECCurve;
 using Entities.Migrations;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 using Mysqlx.Crud;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,6 +24,7 @@ namespace Tips.Production.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class MaterialRequestsController : ControllerBase
     {
 
@@ -31,15 +33,17 @@ namespace Tips.Production.Api.Controllers
         private ILoggerManager _logger;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
+        private readonly IHttpClientFactory _clientFactory;
 
 
-        public MaterialRequestsController(IConfiguration config, HttpClient httpClient,IMaterialRequestsRepository materialRequestRepository, IMapper mapper, ILoggerManager logger)
+        public MaterialRequestsController(IHttpClientFactory clientFactory, IConfiguration config, HttpClient httpClient,IMaterialRequestsRepository materialRequestRepository, IMapper mapper, ILoggerManager logger)
         {
             _materialRequestRepository = materialRequestRepository;
             _mapper = mapper;
             _logger = logger;
             _httpClient = httpClient;
             _config = config;
+            _clientFactory = clientFactory;
         }
 
 
@@ -772,7 +776,20 @@ namespace Tips.Production.Api.Controllers
 
                 var json = JsonConvert.SerializeObject(materialRequestDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialInventoryBalanceQty"), data);
+                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialInventoryBalanceQty"), data);
+
+                var client1 = _clientFactory.CreateClient();
+                var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                "MaterialInventoryBalanceQty"))
+                {
+                    Content = data
+                };
+                request1.Headers.Add("Authorization", token1);
+
+                var response = await client1.SendAsync(request1);
+                
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     updateMaterialRequestResp = response.StatusCode;
@@ -1130,8 +1147,19 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var inventoryItemNoAndDescriptionList = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                            "GetInventoryItemNoAndDescriptionListByProjectNo?", "&ProjectNumber=", projectNumber));
+                //var inventoryItemNoAndDescriptionList = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                           // "GetInventoryItemNoAndDescriptionListByProjectNo?", "&ProjectNumber=", projectNumber));
+
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                var encodedProjectNumber = Uri.EscapeDataString(projectNumber);
+
+                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                    $"GetInventoryItemNoAndDescriptionListByProjectNo?ProjectNumber={encodedProjectNumber}"));
+                request.Headers.Add("Authorization", token);
+
+                var inventoryItemNoAndDescriptionList = await client.SendAsync(request);
 
                 var inventoryObjectString = await inventoryItemNoAndDescriptionList.Content.ReadAsStringAsync();
                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
@@ -1191,8 +1219,18 @@ namespace Tips.Production.Api.Controllers
 
             try
             {
-                var inventoryItemNoAndDescriptionList = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                            "GetInventoryItemNoAndDescriptionList?"));
+                //var inventoryItemNoAndDescriptionList = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                //            "GetInventoryItemNoAndDescriptionList?"));
+
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                    $"GetInventoryItemNoAndDescriptionList?"));
+
+                request.Headers.Add("Authorization", token);
+
+                var inventoryItemNoAndDescriptionList = await client.SendAsync(request);
 
                 var inventoryObjectString = await inventoryItemNoAndDescriptionList.Content.ReadAsStringAsync();
                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);

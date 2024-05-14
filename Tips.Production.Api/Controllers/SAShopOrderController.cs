@@ -13,11 +13,13 @@ using Entities.Enums;
 using Newtonsoft.Json;
 using System.Net.Http;
 using Tips.Production.Api.Repository;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tips.Production.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class SAShopOrderController : ControllerBase
     {
         private ISAShopOrderRepository _sashopOrderRepository;
@@ -26,7 +28,8 @@ namespace Tips.Production.Api.Controllers
         private IMaterialIssueRepository _materialIssueRepository;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        public SAShopOrderController(ISAShopOrderRepository sashopOrderRepository, IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IConfiguration config, HttpClient httpClient, IMapper mapper)
+        private readonly IHttpClientFactory _clientFactory;
+        public SAShopOrderController(ISAShopOrderRepository sashopOrderRepository, IHttpClientFactory clientFactory, IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IConfiguration config, HttpClient httpClient, IMapper mapper)
         {
             _logger = logger;
             _sashopOrderRepository = sashopOrderRepository;
@@ -34,6 +37,7 @@ namespace Tips.Production.Api.Controllers
             _mapper = mapper;
             _httpClient = httpClient;
             _config = config;
+            _clientFactory = clientFactory;
         }
 
         [HttpGet]
@@ -162,9 +166,22 @@ namespace Tips.Production.Api.Controllers
                 {
                     if (i == 0)
                     {
+                        //var fgNumber = SaShopOrder.SAItemNumber;
+                        //decimal bomversion = SaShopOrder.BomRevisionNo;
+                        //var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetProductionBomByItemAndBomVersionNo?", "ItemNumber=", fgNumber, "&bomVersionNo=", bomversion));
+
+                        var client2 = _clientFactory.CreateClient();
+                        var token2 = HttpContext.Request.Headers["Authorization"].ToString();
+
                         var fgNumber = SaShopOrder.SAItemNumber;
+                        var encodedItemNo = Uri.EscapeDataString(fgNumber);
                         decimal bomversion = SaShopOrder.BomRevisionNo;
-                        var bomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], "GetProductionBomByItemAndBomVersionNo?", "ItemNumber=", fgNumber, "&bomVersionNo=", bomversion));
+
+                        var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"],
+                            $"GetProductionBomByItemAndBomVersionNo?ItemNumber={encodedItemNo}&bomVersionNo={bomversion}"));
+                        request2.Headers.Add("Authorization", token2);
+
+                        var bomDetails = await client2.SendAsync(request2);
                         var bomDetailsString = await bomDetails.Content.ReadAsStringAsync();
                         dynamic bomDetailsData = JsonConvert.DeserializeObject(bomDetailsString);
                         bomData = bomDetailsData.data;

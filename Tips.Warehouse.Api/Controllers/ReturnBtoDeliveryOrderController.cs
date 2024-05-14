@@ -22,7 +22,7 @@ namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class ReturnBtoDeliveryOrderController : ControllerBase
     {
         private IReturnBtoDeliveryOrderRepository _repository;
@@ -30,7 +30,7 @@ namespace Tips.Warehouse.Api.Controllers
         private IBTODeliveryOrderHistoryRepository _bTODeliveryOrderHistoryRepository;
         private IBTODeliveryOrderItemsRepository _bTODeliveryOrderItemsRepository;
         private IInventoryTranctionRepository _inventoryTranctionRepository;
-
+        private readonly IHttpClientFactory _clientFactory;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
@@ -38,13 +38,14 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public ReturnBtoDeliveryOrderController(IReturnBtoDeliveryOrderRepository repository, IInventoryTranctionRepository inventoryTranctionRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryRepository inventoryRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public ReturnBtoDeliveryOrderController(IReturnBtoDeliveryOrderRepository repository, IHttpClientFactory clientFactory, IInventoryTranctionRepository inventoryTranctionRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryRepository inventoryRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _httpClient = httpClient;
             _config = config;
+            _clientFactory = clientFactory;
             _inventoryRepository = inventoryRepository;
             _bTODeliveryOrderItemsRepository = bTODeliveryOrderItemsRepository;
             _bTODeliveryOrderHistoryRepository = bTODeliveryOrderHistoryRepository;
@@ -132,9 +133,9 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<IEnumerable<ReturnDOSPReport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnDOSPReport>>();
             try
             {
-                var products = await _repository.ReturnDOSPReportWithParam(returnDOSPReportDTO.ReturnBTONumber, returnDOSPReportDTO.CustomerName, returnDOSPReportDTO.CustomerAliasName, 
-                                                        returnDOSPReportDTO.CustomerLeadId, returnDOSPReportDTO.SalesOrderNumber, returnDOSPReportDTO.ProductType, 
-                                                        returnDOSPReportDTO.TypeOfSolution,  returnDOSPReportDTO.Warehouse, returnDOSPReportDTO.Location, 
+                var products = await _repository.ReturnDOSPReportWithParam(returnDOSPReportDTO.ReturnBTONumber, returnDOSPReportDTO.CustomerName, returnDOSPReportDTO.CustomerAliasName,
+                                                        returnDOSPReportDTO.CustomerLeadId, returnDOSPReportDTO.SalesOrderNumber, returnDOSPReportDTO.ProductType,
+                                                        returnDOSPReportDTO.TypeOfSolution, returnDOSPReportDTO.Warehouse, returnDOSPReportDTO.Location,
                                                         returnDOSPReportDTO.KPN, returnDOSPReportDTO.MPN);
 
                 if (products == null)
@@ -491,7 +492,7 @@ namespace Tips.Warehouse.Api.Controllers
                 if (returnBtoDeliveryOrderitemsDto != null)
                 {
                     Guid guid = Guid.NewGuid();
-                    var btohistoryNo = await _bTODeliveryOrderHistoryRepository.GetBTONumberCount(returnBtoDeliveryOrder.BTONumber);
+                    var returnBtoDeliveryOrderNo = await _repository.GetReturnBtoDeliveryOrderNoByReturnBtoNo(returnBtoDeliveryOrder.ReturnBTONumber);
 
                     for (int i = 0; i < returnBtoDeliveryOrderitemsDto.Count; i++)
                     {
@@ -503,61 +504,21 @@ namespace Tips.Warehouse.Api.Controllers
                         returnBtoDeliveryOrderItems.DispatchQty = returnBtoDeliveryOrderItems.DispatchQty - returnBtoDeliveryOrderItems.ReturnQty;
                         returnBtoDeliveryOrderItemsDtoList.Add(returnBtoDeliveryOrderItems);
                         BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
-                        if (btohistoryNo != null)
+
+                        if (returnBtoDeliveryOrderNo != null)
                         {
-                            int index = btohistoryNo.LastIndexOf("-R");
-                            if (index != -1 && index + 2 < btohistoryNo.Length)
-                            {
-                                string suffixString = btohistoryNo.Substring(index + 2);
-                                if (int.TryParse(suffixString, out int suffixNumber))
-                                {
-                                    suffixNumber++;
-                                    string suffix = "-R" + suffixNumber;
-                                    returnBtoDeliveryOrderItems.BTONumber += suffix;
-                                    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                                    returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                                }
-                                else
-                                {
-                                    // If the substring after '-R' is not a valid integer, handle it here
-                                    // For example, you could add a default suffix like "-R1"
-                                    returnBtoDeliveryOrderItems.BTONumber += "-R1";
-                                    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                                    returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                                }
-                            }
-                            else
-                            {
-                                // If '-R' is not found in the string, handle it here
-                                // For example, you could add a default suffix like "-R1"
-                                returnBtoDeliveryOrderItems.BTONumber += "-R1";
-                                bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                                returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                            }
+                            int suffixNumber = int.Parse(returnBtoDeliveryOrderNo.Substring(returnBtoDeliveryOrderNo.LastIndexOf("-R") + 2)) + 1;
+                            string suffix = "-R" + suffixNumber;
+                            returnBtoDeliveryOrderItems.BTONumber += suffix;
+                            bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
+                            returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
                         }
                         else
                         {
-                            // Handle the case where btohistoryNo is null
-                            // For example, you could add a default suffix like "-R1"
                             returnBtoDeliveryOrderItems.BTONumber += "-R1";
                             bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
                             returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
                         }
-
-                        //if (btohistoryNo != null)
-                        //{
-                        //    int suffixNumber = int.Parse(btohistoryNo.Substring(btohistoryNo.LastIndexOf("-R") + 2)) + 1;
-                        //    string suffix = "-R" + suffixNumber;
-                        //    returnBtoDeliveryOrderItems.BTONumber += suffix;
-                        //    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                        //    returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                        //}
-                        //else
-                        //{
-                        //    returnBtoDeliveryOrderItems.BTONumber += "-R1";
-                        //    bTODeliveryOrderHistory.BTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                        //    returnBtoDeliveryOrder.ReturnBTONumber = returnBtoDeliveryOrderItems.BTONumber;
-                        //}
                         //Update Inventory balanced Quantity
 
                         //var PartNumber = returnBtoDeliveryOrderitemsDto[i].FGPartNumber;
@@ -576,16 +537,36 @@ namespace Tips.Warehouse.Api.Controllers
                         //{
                         foreach (var eachbin in returnBtoDeliveryOrderItems.QtyDistribution)
                         {
+                            var client1 = _clientFactory.CreateClient();
+                            var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                            var ItemNumber = returnBtoDeliveryOrderItems.FGPartNumber;
+                            var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+
+                            var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
+                                $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+                            request1.Headers.Add("Authorization", token1);
+
+                            var itemMasterObjectResult = await client1.SendAsync(request1);
+                            //if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                            //    getItemmResp = itemMasterObjectResult.StatusCode;
+
+                            var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                            var itemMasterObjectData = JsonConvert.DeserializeObject<ReturnBTONumberInvDetails>(itemMasterObjectString);
+                            var itemMasterObject = itemMasterObjectData.data;
+
                             var exInv = await _inventoryRepository.GetInventorybyItemProjectWarehouseLocation(returnBtoDeliveryOrderItems.FGPartNumber, eachbin.ProjectNumber, eachbin.Warehouse, eachbin.Location);
                             if (exInv == null)
                             {
                                 Inventory inventory = new Inventory();
                                 inventory.PartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
-                                inventory.MftrPartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
+                                inventory.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                                 inventory.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
                                 inventory.ProjectNumber = eachbin.ProjectNumber;
                                 inventory.Balance_Quantity = eachbin.DistributingQty;
                                 inventory.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
+                                inventory.Max = itemMasterObject.max;
+                                inventory.Min = itemMasterObject.min;
                                 inventory.IsStockAvailable = true;
                                 inventory.Warehouse = eachbin.Warehouse;
                                 inventory.Location = eachbin.Location;
@@ -615,7 +596,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                             InventoryTranction inventoryTranction = new InventoryTranction();
                             inventoryTranction.PartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
-                            inventoryTranction.MftrPartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
+                            inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); 
                             inventoryTranction.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
                             inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
                             inventoryTranction.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
@@ -629,9 +610,9 @@ namespace Tips.Warehouse.Api.Controllers
                             inventoryTranction.Warehouse = eachbin.Warehouse;
                             inventoryTranction.PartType = PartType.FG;
 
-                            var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+                            //var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
-                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
                             _inventoryTranctionRepository.SaveAsync();
 
 
@@ -744,7 +725,7 @@ namespace Tips.Warehouse.Api.Controllers
                 returnBtoDeliveryOrder.ReturnBtoDeliveryOrderItems = returnBtoDeliveryOrderItemsDtoList;
 
                 await _repository.CreateReturnBtoDeliveryOrder(returnBtoDeliveryOrder);
-                
+
 
 
                 //update balance qty and dispatch qty in sales order table for return bto concept
@@ -753,14 +734,17 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var json = JsonConvert.SerializeObject(btoDeliveryReturnDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-                // Include the token in the Authorization header
-                var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
-                if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
+                            "ReturnDOUpdateDispatchDetails"))
                 {
-                    var token = tokenValues.Substring(7);
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                }
-                var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnDOUpdateDispatchDetails"), data);
+                    Content = data
+                };
+                request.Headers.Add("Authorization", token);
+
+                var response = await client.SendAsync(request);
+                //var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnDOUpdateDispatchDetails"), data);
 
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -913,6 +897,11 @@ namespace Tips.Warehouse.Api.Controllers
                         getBtoDeliveryOrderDetails.BalanceDoQty -= ReturnQty;
                         getBtoDeliveryOrderDetails.OrderBalanceQty += ReturnQty;
                         getBtoDeliveryOrderDetails.DispatchQty -= ReturnQty;
+
+                        if (getBtoDeliveryOrderDetails.DispatchQty == getBtoDeliveryOrderDetails.InvoicedQty)
+                        {
+                            getBtoDeliveryOrderDetails.DoStatus = Status.Closed;
+                        }
 
                         string[] strs1 = getBtoDeliveryOrderDetails.SerialNo.Split(",");
                         string[] strs2 = returnBtoDeliveryOrderitemsDto[i].SerialNo.Split(",");

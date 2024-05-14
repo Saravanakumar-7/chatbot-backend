@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
+using Entities.Enums;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {
@@ -26,6 +27,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ProductType { get; set; }
         public decimal? TotalValue { get; set; }
         public string? OrderType { get; set; }
+        public Status DoStatus { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -153,5 +155,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ProductType { get; set; }
         public string? ProjectNumber { get; set; }
 
+    }
+    public class SalesOrderNoandIdDto
+    {
+        public int? SalesOrderId { get; set; }
+        public string? SalesOrderNumber { get; set; }
     }
 }

@@ -20,6 +20,7 @@ using Tips.SalesService.Api.Entities.Enum;
 using System.Linq;
 using Microsoft.AspNetCore.StaticFiles;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -27,6 +28,7 @@ namespace Tips.SalesService.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class RfqController : ControllerBase
     {
         private IRfqCustomerSupportRepository _repository;
@@ -47,7 +49,8 @@ namespace Tips.SalesService.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public RfqController(IRfqCustomGroupRepository rfqCustomGroupRepository, IDocumentUploadRepository documentUploadRepository,IItemPriceListRepository itemPriceListRepository, IRfqCustomFieldRepository rfqCustomFieldRepository
+        private readonly IHttpClientFactory _clientFactory;
+        public RfqController(IRfqCustomGroupRepository rfqCustomGroupRepository, IHttpClientFactory clientFactory, IDocumentUploadRepository documentUploadRepository,IItemPriceListRepository itemPriceListRepository, IRfqCustomFieldRepository rfqCustomFieldRepository
             , IRfqEnggItemRepository rfqenggItemRepository, IReleaseLpRepository releaseLpRepository, IHttpContextAccessor httpContextAccessor, 
             IRfqCustomerSupportRepository repository, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository,
             IRfqRepository rfqRepository, IRfqLPCostingRepository rfqLPCostingRepository, IRfqEnggRepository rfqEnggRepository,
@@ -69,6 +72,7 @@ namespace Tips.SalesService.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _httpContextAccessor = httpContextAccessor;
+            _clientFactory = clientFactory;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
@@ -492,9 +496,18 @@ namespace Tips.SalesService.Api.Controllers
                 List<EnggBomFGItemNumberWithQtyDto>? itemsRoutingDetailsDynamic = new List<EnggBomFGItemNumberWithQtyDto>();
                 if (rfqEnggSourcingDtos != null)
                 {
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
                     var itemDetailsString = JsonConvert.SerializeObject(rfqEnggSourcingDtos);
                     var content = new StringContent(itemDetailsString, Encoding.UTF8, "application/json");
-                    var inventoryObjectResult = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetFGBomItemsChildDetails"), content);
+                    //var inventoryObjectResult = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetFGBomItemsChildDetails"), content);
+                    var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"],"GetFGBomItemsChildDetails"))
+                    {
+                        Content= content
+                    };
+                    request.Headers.Add("Authorization", token);
+
+                    var inventoryObjectResult = await client.SendAsync(request);
                     var itemsRoutingDetailsJsonString = await inventoryObjectResult.Content.ReadAsStringAsync();
                     dynamic itemsRoutingDetailsJson = JsonConvert.DeserializeObject(itemsRoutingDetailsJsonString);
                     var data = itemsRoutingDetailsJson.data;
@@ -766,7 +779,14 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     var itemDetailsString = JsonConvert.SerializeObject(itemDetails);
                     var content = new StringContent(itemDetailsString, Encoding.UTF8, "application/json");
-                    var inventoryObjectResult = await _httpClient.PostAsync(string.Concat(_config["ItemMasterAPI"], "GetItemsRoutingDetailsForLpCosting"), content);
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ItemMasterAPI"],"GetItemsRoutingDetailsForLpCosting"))
+                    { Content= content };
+                    request.Headers.Add("Authorization", token);
+
+                    var inventoryObjectResult = await client.SendAsync(request);
+                    // var inventoryObjectResult = await _httpClient.PostAsync(string.Concat(_config["ItemMasterAPI"], "GetItemsRoutingDetailsForLpCosting"), content);
                     var itemsRoutingDetailsJsonString = await inventoryObjectResult.Content.ReadAsStringAsync();
                     dynamic itemsRoutingDetailsJson = JsonConvert.DeserializeObject(itemsRoutingDetailsJsonString);
                     var data = itemsRoutingDetailsJson.data;

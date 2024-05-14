@@ -39,10 +39,11 @@ namespace Tips.Grin.Api.Entities
         [Precision(13, 3)]
         public decimal? UTGST { get; set; }
         public decimal? totalvalue { get; set; }
-        public string? Remarks { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
+        public string? Remarks { get; set; }
         public DateTime? GrinDate { get; set; }
         public string? ProjectNumber { get; set; }
+        public string? UOC { get; set; }
     }
 }

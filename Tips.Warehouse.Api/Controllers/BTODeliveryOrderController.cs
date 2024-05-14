@@ -22,7 +22,7 @@ namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class BTODeliveryOrderController : ControllerBase
     {
         private IBTODeliveryOrderRepository _repository;
@@ -37,9 +37,10 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-
-        public BTODeliveryOrderController(IBTODeliveryOrderInventoryHistoryRepository bTODeliveryOrderInventoryHistoryRepository, IBTODeliveryOrderRepository repository, IInventoryTranctionRepository inventoryTranctionRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, HttpClient httpClient, IConfiguration config, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        private readonly IHttpClientFactory _clientFactory;
+        public BTODeliveryOrderController(IHttpClientFactory clientFactory, IBTODeliveryOrderInventoryHistoryRepository bTODeliveryOrderInventoryHistoryRepository, IBTODeliveryOrderRepository repository, IInventoryTranctionRepository inventoryTranctionRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, HttpClient httpClient, IConfiguration config, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
+            _clientFactory = clientFactory;
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
@@ -255,8 +256,15 @@ namespace Tips.Warehouse.Api.Controllers
                             bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDtos);
                         }
                     }
-                    var salesOrderObjectResult = await _httpClient.GetAsync(string.Concat(_config["SalesOrderAPI"],
-                                             "GetSalesOrderTotalBySalesOrderId?", "&SalesOrderId=", bTODeliveryOrderDto.SalesOrderId));
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    //var salesOrderObjectResult = await _httpClient.GetAsync(string.Concat(_config["SalesOrderAPI"],
+                    //                         "GetSalesOrderTotalBySalesOrderId?", "&SalesOrderId=", bTODeliveryOrderDto.SalesOrderId));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["SalesOrderAPI"],
+                           $"GetSalesOrderTotalBySalesOrderId?SalesOrderId={bTODeliveryOrderDto.SalesOrderId}"));
+                    request.Headers.Add("Authorization", token);
+
+                    var salesOrderObjectResult = await client.SendAsync(request);
                     var salesOrderObjectString = await salesOrderObjectResult.Content.ReadAsStringAsync();
                     dynamic salesOrderObjectData = JsonConvert.DeserializeObject(salesOrderObjectString);
                     dynamic salesOrderObject = salesOrderObjectData;
@@ -465,12 +473,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
         [HttpGet()] // Adjust your route as needed
-        public async Task<IActionResult> GetDailyDeliveryOrderReports(
-         [FromQuery] string? LeadId,
-         [FromQuery] string? SONumber,
-         [FromQuery] string? DOnumber,
-         [FromQuery] string? DispatchKPN
-         )
+        public async Task<IActionResult> GetDailyDeliveryOrderReports([FromQuery] string? LeadId, [FromQuery] string? SONumber, [FromQuery] string? DOnumber, [FromQuery] string? DispatchKPN)
         {
             var products = await _repository.GetDailyDeliveryOrderReports(LeadId, SONumber, DOnumber, DispatchKPN);
 
@@ -696,14 +699,16 @@ namespace Tips.Warehouse.Api.Controllers
 
                 var json = JsonConvert.SerializeObject(btoDeliveryDispatchDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-                // Include the token in the Authorization header
-                var tokenValues = _httpContextAccessor?.HttpContext?.Request.Headers["Authorization"].FirstOrDefault();
-                if (!string.IsNullOrEmpty(tokenValues) && tokenValues.StartsWith("Bearer "))
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                //var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchDetails"), data);
+                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],"UpdateDispatchDetails"))
                 {
-                    var token = tokenValues.Substring(7);
-                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                }
-                var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdateDispatchDetails"), data);
+                    Content=data
+                };
+                request.Headers.Add("Authorization", token);
+
+                var response = await client.SendAsync(request);
                 if ((response.StatusCode == HttpStatusCode.OK))
                 {
                     _inventoryRepository.SaveAsync();
@@ -1368,6 +1373,30 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetAllBTOIdNameIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetSalesOrderNoAndIdByBTONo(string btoNumber)
+        {
+            ServiceResponse<SalesOrderNoandIdDto> serviceResponse = new ServiceResponse<SalesOrderNoandIdDto>();
+            try
+            {
+                var listOfAllBtoIdNames = await _repository.GetAllSalesOrderNoAndIdByBTONo(btoNumber);
+                var result = _mapper.Map<SalesOrderNoandIdDto>(listOfAllBtoIdNames);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All SalesOrderNoAndIdList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllSalesOrderNoAndIdByBTONo action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

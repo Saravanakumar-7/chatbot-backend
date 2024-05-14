@@ -41,6 +41,11 @@ namespace Entities
         [DefaultValue(false)]
         public bool ApprovalII { get; set; }
         [DefaultValue(false)]
+        public bool ApprovalIII { get; set; }
+
+        [DefaultValue(false)]
+        public bool ApprovalIV{ get; set; }
+        [DefaultValue(false)]
         public bool Print { get; set; }
         [DefaultValue(false)]
         public bool Table { get; set; }

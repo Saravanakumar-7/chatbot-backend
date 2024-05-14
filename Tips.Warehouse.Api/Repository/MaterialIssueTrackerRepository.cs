@@ -49,7 +49,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<List<ShopOrderMaterialIssueTrackerDto>> SOMaterialIssueTrackerDetailsByShopOrderNo(string ShopOrderNo)
         {
             var resultList = (from st in _tipsWarehouseDbContext.ShopOrderMaterialIssueTrackers
-                              where st.ShopOrderNumber == ShopOrderNo
+                              where st.ShopOrderNumber == ShopOrderNo && st.IssuedQty > 0
                               group st by new { st.PartNumber,st.MRNumber, st.Description,st.Bomversion, st.ShopOrderNumber, st.DataFrom } into g
                               select new ShopOrderMaterialIssueTrackerDto
                               {

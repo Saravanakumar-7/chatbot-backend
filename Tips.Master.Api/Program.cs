@@ -37,8 +37,7 @@ builder.Services.Configure<IISServerOptions>(option =>
 {
     option.MaxRequestBodySize = 1073741824;
 });
-//var key = builder.Configuration["Jwt:key"];
-//builder.Services.ConfigureJwtToken(builder.Configuration);
+
 builder.Services.AddTransient<IJwtAuth, Auth>();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -79,17 +78,13 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidateIssuer = false,
             ValidateAudience = false,
-            ValidateLifetime = false,
-            //ValidIssuer = "Wyzmindz",
-            //ValidAudience = "Tips",
+            ValidateLifetime = true,            
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
+                Encoding.ASCII.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
         };
     });
-//builder.Services.AuthenticateByJwtToken(builder.Configuration);
-//builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IReleaseProductBomRepository, ReleaseProductBomRepository>();
@@ -123,20 +118,14 @@ builder.Services.AddScoped<IRoomNameRepository, RoomNameRepository>();
 builder.Services.AddScoped<IProductTypeRepository, ProductTypeRepository>();
 builder.Services.AddScoped<ITypeSolutionRepository, TypeSolutionRepository>();
 builder.Services.AddScoped<ITypeOfRoomRepository, TypeOfRoomRepository>();
-//builder.Services.AddHttpContextAccessor();
-//builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
+
 app.UseSwagger();
-//app.UseSwaggerUI();
-//}
+
 
 app.UseHttpsRedirection();
-
-//app.UseStaticFiles();
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
@@ -155,7 +144,6 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
     c.DisplayRequestDuration();
 });
-//app.UseRouting();
 
 app.MapControllers();
 

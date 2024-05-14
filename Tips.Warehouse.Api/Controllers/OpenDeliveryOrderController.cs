@@ -8,10 +8,10 @@ using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Contracts;
 using Newtonsoft.Json;
 using Tips.Warehouse.Api.Repository;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 using System.Security.Claims;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 using System.Data;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,6 +19,7 @@ namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class OpenDeliveryOrderController : ControllerBase
     {
         private IOpenDeliveryOrderRepository _repository;
@@ -31,7 +32,8 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public OpenDeliveryOrderController(IConfiguration config, IOpenDeliveryOrderHistoryRepository openDeliveryOrderHistoryRepository, IInventoryTranctionRepository inventoryTranctionRepository, IOpenDeliveryOrderRepository repository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        private readonly IHttpClientFactory _clientFactory;
+        public OpenDeliveryOrderController(IConfiguration config, IHttpClientFactory clientFactory, IOpenDeliveryOrderHistoryRepository openDeliveryOrderHistoryRepository, IInventoryTranctionRepository inventoryTranctionRepository, IOpenDeliveryOrderRepository repository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
             _logger = logger;
@@ -41,6 +43,7 @@ namespace Tips.Warehouse.Api.Controllers
             _openDeliveryOrderHistoryRepository = openDeliveryOrderHistoryRepository;
             _config = config;
             _httpContextAccessor = httpContextAccessor;
+            _clientFactory = clientFactory;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
@@ -430,7 +433,7 @@ namespace Tips.Warehouse.Api.Controllers
                         OpenDeliveryOrderParts OpenDeliveryOrderItemsDetails = _mapper.Map<OpenDeliveryOrderParts>(openDeliveryOrderitemsList[i]);
                         OpenDeliveryOrderItemsDetails.QtyDistribution = _mapper.Map<List<OpenDeliveryOrderPartsQtyDistribution>>(openDeliveryOrderitemsList[i].QtyDistribution);
                         OpenDeliveryOrderItemsDetails.InitialDispatchQty = OpenDeliveryOrderItemsDetails.DispatchQty;
-                        OpenDeliveryOrderItemsDetails.ODONumber = odoNumber;
+                        OpenDeliveryOrderItemsDetails.ODONumber = openDeliveryorder.OpenDONumber;
                         openDeliveryOrderItemsDtoList.Add(OpenDeliveryOrderItemsDetails);
 
                         //Update Inventory balanced Quantity 
@@ -541,7 +544,7 @@ namespace Tips.Warehouse.Api.Controllers
                             inventoryTranction.TO_Location = "ODO";
                             inventoryTranction.Warehouse = eachbin.Warehouse;
                             inventoryTranction.Remarks = "Create ODO";
-
+                            inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
                             var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
 

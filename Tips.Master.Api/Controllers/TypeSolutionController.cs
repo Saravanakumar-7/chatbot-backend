@@ -5,6 +5,7 @@ using Entities;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol.Core.Types;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,6 +13,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class TypeSolutionController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;

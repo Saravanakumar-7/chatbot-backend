@@ -33,9 +33,6 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 
-//var key = builder.Configuration["Jwt:key"];
-//builder.Services.ConfigureJwtToken(builder.Configuration);
-//builder.Services.AddTransient<IJwtAuth, Auth>();
 builder.Services.AddControllers();
 builder.Services.Configure<KestrelServerOptions>(option =>
 {
@@ -83,11 +80,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidateIssuer = false,
             ValidateAudience = false,
-            ValidateLifetime = false,
-            //ValidIssuer = "Wyzmindz",
-            //ValidAudience = "Tips",
+            ValidateLifetime = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
+                Encoding.ASCII.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
         };
     });
 
@@ -104,27 +99,11 @@ builder.Services.AddScoped<IOpenGrinRepository, OpenGrinRepository>();
 builder.Services.AddScoped<IBinningLocationRepository, BinningLocationRepository>();
 builder.Services.AddScoped<IWeightedAvgCostRepository, WeightedAvgCostRepository>();
 builder.Services.AddScoped<IIQCConfirmationItemsRepository, IQCConfirmationItemsRepository>();
-//builder.Services.AddScoped<IReturnGrinDocumentUploadRepository, ReturnGrinDocumentUpload>();
-//builder.Services.AddControllersWithViews()
-//    .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
-
-
 builder.Services.AddScoped<IDocumentUploadRepository, UploadDocumentRepository>();
-//builder.Services.AddHttpClient();
-//builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
 app.UseSwagger();
-//app.UseSwaggerUI();
-//}
-
 app.UseHttpsRedirection();
-
-//app.UseStaticFiles();
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
@@ -142,9 +121,6 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger";
     c.DisplayRequestDuration();
 });
-
-
-
 
 app.MapControllers();
 

@@ -9,12 +9,13 @@ namespace Tips.Production.Api.Entities
         public string? Description { get; set; }
         public PartType ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
-        public decimal ShopOrderQty { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? SerialNo { get; set; }
+        public string? ProjectNumber { get; set; }
+        public decimal shoporderqnty { get; set; }
+        public decimal OQCAcceptedQnty { get; set; }
+        public decimal? BinningItemQnty { get; set; }
+        public decimal pendingBinning { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
-        public decimal? Quantity { get; set; }
+        public DateTime? CreatedOn { get; set; }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Tips.Warehouse.Api.Entities.DTOs
+﻿using Entities.Enums;
+
+namespace Tips.Warehouse.Api.Entities.DTOs
 {
     public class BTODeliveryOrderItemsDto
     {
@@ -19,6 +21,7 @@
         public decimal DispatchQty { get; set; }
         public string? SerialNo { get; set; }
         public decimal? InitialDispatchQty { get; set; }
+        public Status DoStatus { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

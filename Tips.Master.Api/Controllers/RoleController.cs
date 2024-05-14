@@ -6,11 +6,13 @@ using Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class RoleController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
@@ -63,13 +65,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveRoles([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllActiveRoles()
         {
             ServiceResponse<IEnumerable<RoleDto>> serviceResponse = new ServiceResponse<IEnumerable<RoleDto>>();
 
             try
             {
-                var activeRolesDetails = await _repository.RoleRepository.GetAllActiveRoles(pagingParameter, searchParams);
+                var activeRolesDetails = await _repository.RoleRepository.GetAllActiveRoles();
                 _logger.LogInfo("Returned all Roles");
                 var result = _mapper.Map<IEnumerable<RoleDto>>(activeRolesDetails);
                 serviceResponse.Data = result;

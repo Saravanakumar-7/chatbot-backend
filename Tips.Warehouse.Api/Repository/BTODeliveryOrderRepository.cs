@@ -363,7 +363,24 @@ namespace Tips.Warehouse.Api.Repository
 
             return btoIddNameList;
         }
+        public async Task<SalesOrderNoandIdDto> GetAllSalesOrderNoAndIdByBTONo(string btoNumber)
+        {
+             var  btoIddNameList = await _tipsWarehouseDbContext.bTODeliveryOrder
+                                .Where(x=>x.BTONumber == btoNumber)
+                               .Select(x => new SalesOrderNoandIdDto()
+                               {
+
+                                   SalesOrderId = x.SalesOrderId,
+                                   SalesOrderNumber = x.SalesOrderNumber
+
+                               })
+                             .FirstOrDefaultAsync();
+
+            return btoIddNameList;
+        }
     }
+
+
     public class BTODeliveryOrderItemRepository : RepositoryBase<BTODeliveryOrderItems>, IBTODeliveryOrderItemsRepository
     {
         private TipsWarehouseDbContext _tipsWarehouseDbContexts;
@@ -387,7 +404,13 @@ namespace Tips.Warehouse.Api.Repository
 
             return btoDeliveryOrderDetails;
         }
+        public async Task<int?> GetBTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount(string btoNumber)
+        {
+            var bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount = _tipsWarehouseDbContext.bTODeliveryOrderItems.Where(x => x.BTONumber == btoNumber
+                                                            &&(x.DoStatus == Status.PartiallyClosed || x.DoStatus == Status.Open)).Count();
 
+            return bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount;
+        }
         public async Task UpdateBtoDelieveryOrderItem(BTODeliveryOrderItems btoDeliveryOrderItem)
         {
             btoDeliveryOrderItem.LastModifiedBy = _createdBy;
@@ -412,8 +435,9 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<BTODeliveryOrderItems> GetBtoDelieveryOrderItemDetails(int btoDeliveryOrderPartsId)
         {
             var getBTODeliveryOrderItemDetails = await _tipsWarehouseDbContexts.bTODeliveryOrderItems
-                    .Where(x => x.Id == btoDeliveryOrderPartsId).Include(x => x.QtyDistribution)
-                          .FirstOrDefaultAsync();
+                    .Where(x => x.Id == btoDeliveryOrderPartsId)
+                    .Include(x => x.QtyDistribution)
+                    .FirstOrDefaultAsync();
             return getBTODeliveryOrderItemDetails;
         }
 

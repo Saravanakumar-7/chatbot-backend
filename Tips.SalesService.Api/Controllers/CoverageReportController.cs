@@ -19,11 +19,13 @@ using System.Collections.Generic;
 using System.Collections;
 using MySqlX.XDevAPI.Common;
 using Tips.SalesService.Api.Entities.Dto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tips.SalesService.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class CoverageReportController : ControllerBase
     {
         private ICollectionTrackerRepository _repository;
@@ -33,9 +35,9 @@ namespace Tips.SalesService.Api.Controllers
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
+        private readonly IHttpClientFactory _clientFactory;
 
-
-        public CoverageReportController(ICollectionTrackerRepository repository, ISalesOrderItemsRepository salesOrderItemsRepository, HttpClient httpClient, IConfiguration config, ICoverageReportRepository coverageReportRepository, ILoggerManager logger, IMapper mapper)
+        public CoverageReportController(ICollectionTrackerRepository repository, IHttpClientFactory clientFactory, ISalesOrderItemsRepository salesOrderItemsRepository, HttpClient httpClient, IConfiguration config, ICoverageReportRepository coverageReportRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
@@ -44,7 +46,7 @@ namespace Tips.SalesService.Api.Controllers
             _config = config;
             _coverageRepository = coverageReportRepository;
             _salesOrderItemsRepository = salesOrderItemsRepository;
-
+            _clientFactory = clientFactory;
         }
         [HttpGet]
         public async Task<IActionResult> GenerateCoverageFGLevelReport()
@@ -113,8 +115,16 @@ namespace Tips.SalesService.Api.Controllers
                 //change
                 var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
                 var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
-                var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"), itemNoListString);
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                //var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"), itemNoListString);
+                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"))
+                {
+                    Content = itemNoListString
+                };
+                request.Headers.Add("Authorization", token);
 
+                var responses = await client.SendAsync(request);
                 var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
                 dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
                 //List<ItemNoWithPartTypeDto> itemNoWithPartType = (List<ItemNoWithPartTypeDto>)itemNoPartTypeData.data;
@@ -131,8 +141,17 @@ namespace Tips.SalesService.Api.Controllers
                 var salesOrderItemandProjList = _mapper.Map<IEnumerable<SalesOrderItemNoAndProjectNoDto>>(salesOrders);
                 var salesOrderItemandProjListjson = JsonConvert.SerializeObject(salesOrderItemandProjList);
                 var salesOrderItemandProjDetailsString = new StringContent(salesOrderItemandProjListjson, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"],
-                                                                                "GetConsumptionInventoryByItemAndProjectNotest2"), salesOrderItemandProjDetailsString);
+                var client1 = _clientFactory.CreateClient();
+                var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+                var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"], "GetConsumptionInventoryByItemAndProjectNotest2"))
+                {
+                    Content = salesOrderItemandProjDetailsString
+                };
+                request1.Headers.Add("Authorization", token1);
+
+                var response = await client1.SendAsync(request1);
+                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"],
+                //                                                                "GetConsumptionInventoryByItemAndProjectNotest2"), salesOrderItemandProjDetailsString);
                 var inventoryObjectString = await response.Content.ReadAsStringAsync();
                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                 dynamic inventoryObject = inventoryObjectData.data;
@@ -171,10 +190,14 @@ namespace Tips.SalesService.Api.Controllers
                                         if (itemPartType == PartType.TG)
                                         {
                                             // Calculate OpenPoQty
-                                            var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
-                                                          "GetOpenPOTGDetailsByItemAndProjecNoForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber,
-                                                                                                                        "&ProjectNumber=", salesOrderDetails.ProjectNumber));
-
+                                            //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
+                                            //              "GetOpenPOTGDetailsByItemAndProjecNoForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber,
+                                            //                                                                            "&ProjectNumber=", salesOrderDetails.ProjectNumber));
+                                            var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
+                                            var encodedProjectNo = Uri.EscapeDataString(projectNumber);
+                                            var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemAndProjecNoForCoverage?itemNumber={encodedItemNumber}&ProjectNumber={encodedProjectNo}"));
+                                            request2.Headers.Add("Authorization", token);
+                                            var purchaseObjectResult = await client.SendAsync(request2);
                                             if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
                                             {
                                                 var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
@@ -236,10 +259,16 @@ namespace Tips.SalesService.Api.Controllers
 
                             if (itemPartType == PartType.TG)
                             {
+
+                                var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
+                                var encodedProjectNo = Uri.EscapeDataString(projectNumber);
+                                var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemAndProjecNoForCoverage?itemNumber={encodedItemNumber}&ProjectNumber={encodedProjectNo}"));
+                                request2.Headers.Add("Authorization", token);
+                                var purchaseObjectResult = await client.SendAsync(request2);
                                 // Calculate OpenPoQty
-                                var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
-                                              "GetOpenPOTGDetailsByItemAndProjecNoForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber,
-                                                                                                                    "&ProjectNumber=", projectNumber));
+                                //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
+                                //"GetOpenPOTGDetailsByItemAndProjecNoForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber,
+                                //                                                                      "&ProjectNumber=", projectNumber));
 
                                 if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
                                 {
@@ -293,8 +322,17 @@ namespace Tips.SalesService.Api.Controllers
                 //change
                 var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
                 var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
-                var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemMasterPartTypeAndMinByItemNumber"), itemNoListString);
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                // var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemMasterPartTypeAndMinByItemNumber"), itemNoListString);
+                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ItemMasterMainAPI"],
+                             "GetItemMasterPartTypeAndMinByItemNumber"))
+                {
+                    Content = itemNoListString
+                };
+                request.Headers.Add("Authorization", token);
 
+                var responses = await client.SendAsync(request);
                 var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
                 dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
                 //List<ItemNoWithPartTypeDto> itemNoWithPartType = (List<ItemNoWithPartTypeDto>)itemNoPartTypeData.data;
@@ -310,7 +348,15 @@ namespace Tips.SalesService.Api.Controllers
 
                 var salesOrderItemListjson = JsonConvert.SerializeObject(itemNumberList);
                 var salesOrderItemDetailsString = new StringContent(salesOrderItemListjson, Encoding.UTF8, "application/json");
-                var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionInventoryByItemNotest1"), salesOrderItemDetailsString);
+                var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                            "GetConsumptionInventoryByItemNotest1"))
+                {
+                    Content = salesOrderItemDetailsString
+                };
+                request1.Headers.Add("Authorization", token);
+
+                var response = await client.SendAsync(request1);
+                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionInventoryByItemNotest1"), salesOrderItemDetailsString);
                 var inventoryObjectString = await response.Content.ReadAsStringAsync();
                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                 dynamic inventoryObject = inventoryObjectData.data;
@@ -347,9 +393,14 @@ namespace Tips.SalesService.Api.Controllers
                                         if (itemPartType == PartType.TG)
                                         {
                                             // Calculate OpenPoQty
-                                            var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
-                                                          "GetOpenPOTGDetailsByItemForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber));
+                                            //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
+                                            //              "GetOpenPOTGDetailsByItemForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber));
 
+                                            var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
+                                            var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemForCoverage?itemNumber={encodedItemNumber}"));
+                                            request2.Headers.Add("Authorization", token);
+
+                                            var purchaseObjectResult = await client.SendAsync(request2);
                                             if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
                                             {
                                                 var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
@@ -428,9 +479,13 @@ namespace Tips.SalesService.Api.Controllers
                             if (itemPartType == PartType.TG)
                             {
                                 // Calculate OpenPoQty
-                                var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
-                                              "GetOpenPOTGDetailsByItemForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber));
+                                //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
+                                //              "GetOpenPOTGDetailsByItemForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber));
+                                var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
+                                var request3 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemForCoverage?itemNumber={encodedItemNumber}"));
+                                request3.Headers.Add("Authorization", token);
 
+                                var purchaseObjectResult = await client.SendAsync(request3);
                                 if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
                                 {
                                     var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
@@ -496,8 +551,16 @@ namespace Tips.SalesService.Api.Controllers
 
                             var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
                             var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
-                            var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"), itemNoListString);
+                            var client = _clientFactory.CreateClient();
+                            var token = HttpContext.Request.Headers["Authorization"].ToString();
+                            // var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"), itemNoListString);
+                            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"))
+                            {
+                                Content = itemNoListString
+                            };
+                            request.Headers.Add("Authorization", token);
 
+                            var responses = await client.SendAsync(request);
                             var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
                             dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
 
@@ -674,7 +737,17 @@ namespace Tips.SalesService.Api.Controllers
 
         private async Task<List<ChildItemStockWithWipDto>> GetStockWithWipQtyForChildItems(StringContent itemNoListString)
         {
-            var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQty"), itemNoListString);
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                           "GetConsumptionChildItemStockWithWipQty"))
+            {
+                Content = itemNoListString
+            };
+            request.Headers.Add("Authorization", token);
+
+            var responses = await client.SendAsync(request);
+            //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQty"), itemNoListString);
             var itemStockWithWipString = await responses.Content.ReadAsStringAsync();
             dynamic itemStockWithWipData = JsonConvert.DeserializeObject(itemStockWithWipString);
             //List<ChildItemStockWithWipDto> itemStockWithWipList = (List<ChildItemStockWithWipDto>)itemStockWithWipData.data;
@@ -693,8 +766,18 @@ namespace Tips.SalesService.Api.Controllers
 
         private async Task<List<ChildItemStockWithWipDto>> GetStockWithWipQtyForChildItemsByProjectNo(StringContent itemNoListString, string projectno)
         {
-            var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQtyByProjectNo?",
-                                                                                        "ProjectNo=", projectno), itemNoListString);
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var encodedProjectNo = Uri.EscapeDataString(projectno);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"], $"GetConsumptionChildItemStockWithWipQtyByProjectNo?ProjectNo={encodedProjectNo}"))
+            {
+                Content = itemNoListString
+            };
+            request.Headers.Add("Authorization", token);
+
+            var responses = await client.SendAsync(request);
+            //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQtyByProjectNo?",
+            //                                                                            "ProjectNo=", projectno), itemNoListString);
             var itemStockWithWipString = await responses.Content.ReadAsStringAsync();
             dynamic itemStockWithWipData = JsonConvert.DeserializeObject(itemStockWithWipString);
             //List<ChildItemStockWithWipDto> itemStockWithWipList = (List<ChildItemStockWithWipDto>)itemStockWithWipData.data;
@@ -713,8 +796,18 @@ namespace Tips.SalesService.Api.Controllers
 
         private async Task<List<OpenPoQuantityDto>> GetOpenPoQtyForChildItems(StringContent itemNoListString)
         {
-            var openPoQtyResponse = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"],
-                                            "GetListOfOpenPOQtyByItemNoList"), itemNoListString);
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
+                           "GetListOfOpenPOQtyByItemNoList"))
+            {
+                Content = itemNoListString
+            };
+            request.Headers.Add("Authorization", token);
+
+            var openPoQtyResponse = await client.SendAsync(request);
+            //var openPoQtyResponse = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"],
+            //                                "GetListOfOpenPOQtyByItemNoList"), itemNoListString);
             var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
             dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
             //List<OpenPoQuantityDto> openPoQtyList = (List<OpenPoQuantityDto>)openPoQtyData.data;
@@ -730,8 +823,18 @@ namespace Tips.SalesService.Api.Controllers
         }
         private async Task<List<OpenPoQuantityDto>> GetOpenPoQtyForChildItemsByProjectNo(StringContent itemNoListString, string projectNo)
         {
-            var openPoQtyResponse = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"],
-                                            "GetListOfOpenPOQtyByItemNoListByProjectNo?", "ProjectNo=", projectNo), itemNoListString);
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var encodedProjectNo = Uri.EscapeDataString(projectNo);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],$"GetListOfOpenPOQtyByItemNoListByProjectNo?ProjectNo={encodedProjectNo}"))
+            {
+                Content = itemNoListString
+            };
+            request.Headers.Add("Authorization", token);
+
+            var openPoQtyResponse = await client.SendAsync(request);
+            //var openPoQtyResponse = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"],
+            //                                "GetListOfOpenPOQtyByItemNoListByProjectNo?", "ProjectNo=", projectNo), itemNoListString);
             var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
             dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
             //List<OpenPoQuantityDto> openPoQtyList = (List<OpenPoQuantityDto>)openPoQtyData.data;
@@ -748,10 +851,19 @@ namespace Tips.SalesService.Api.Controllers
 
         private async Task<List<CoverageReportChildItemReqQtyDataDto>> GetChildItemRequiredQtyFromBom(List<OpenSalesCoverageReport> openFGCoverageDetails)
         {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
             var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
             var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsForCoverageReport"), openFGCoverageDetailsString);
+            //var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsForCoverageReport"), openFGCoverageDetailsString);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"],
+                           "GetBomDetailsForCoverageReport"))
+            {
+                Content = openFGCoverageDetailsString
+            };
+            request.Headers.Add("Authorization", token);
 
+            var response = await client.SendAsync(request);
             var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
             dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
 
@@ -769,11 +881,19 @@ namespace Tips.SalesService.Api.Controllers
         }
         private async Task<List<CoverageReportChildItemReqQtyDataByProjectNoDto>> GetChildItemRequiredQtyFromBomByProjectNo(List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails)
         {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
             var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
             var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsByProjectNoForCoverageReport"),
-                                                                                                                            openFGCoverageDetailsString);
+            //var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsByProjectNoForCoverageReport"),
+            //                                                                                                                openFGCoverageDetailsString);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsByProjectNoForCoverageReport"))
+            {
+                Content = openFGCoverageDetailsString
+            };
+            request.Headers.Add("Authorization", token);
 
+            var response = await client.SendAsync(request);
             var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
             dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
 
@@ -820,9 +940,15 @@ namespace Tips.SalesService.Api.Controllers
         [HttpGet]
         private async Task GetBomAndCalculateRequiredQuantitiesRecursivelyAsync(string itemNumber, decimal requiredQtyMultiplier, Dictionary<string, CoverageReport> coverageReports)
         {
-            var enggBomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
-                            "GetLatestEnggBomVersionDetailByIemNumber?", "&fgPartNumber=", itemNumber));
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            //var enggBomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
+            //                "GetLatestEnggBomVersionDetailByIemNumber?", "&fgPartNumber=", itemNumber));
+            var encodedItemNumber = Uri.EscapeDataString(itemNumber);
+            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"], $"GetLatestEnggBomVersionDetailByIemNumber?fgPartNumber={encodedItemNumber}"));
+            request.Headers.Add("Authorization", token);
 
+            var enggBomDetails = await client.SendAsync(request);
             var enggBomObjectString = await enggBomDetails.Content.ReadAsStringAsync();
             dynamic enggBomObjectData = JsonConvert.DeserializeObject(enggBomObjectString);
             dynamic enggBomObject = enggBomObjectData.data;
@@ -853,9 +979,13 @@ namespace Tips.SalesService.Api.Controllers
                     //var inventory = await _context.Inventory
                     //    .FirstOrDefaultAsync(i => i.ItemNumber == childItem.ItemNumber && i.IsStockAvailable);
 
-                    var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                              "GetInventoryByItemNo?", "itemNumber=", childItem.ItemNumber));
+                    //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                    //          "GetInventoryByItemNo?", "itemNumber=", childItem.ItemNumber));
+                    var encodedItemNumber1 = Uri.EscapeDataString(childItem.ItemNumber);
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"], $"GetInventoryByItemNo?itemNumber={encodedItemNumber1}"));
+                    request1.Headers.Add("Authorization", token);
 
+                    var inventoryObjectResult = await client.SendAsync(request1);
                     var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                     dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                     dynamic inventoryObject = inventoryObjectData.data;
@@ -870,8 +1000,13 @@ namespace Tips.SalesService.Api.Controllers
 
                     // Get the open purchase order items for the current child item
 
-                    var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
-                              "GetAllOpenPoDetails?", "itemNumber=", childItem.ItemNumber));
+                    //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
+                    //          "GetAllOpenPoDetails?", "itemNumber=", childItem.ItemNumber));
+                    var encodedItemNumber2 = Uri.EscapeDataString(childItem.ItemNumber);
+                    var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetAllOpenPoDetails?itemNumber={encodedItemNumber2}"));
+                    request2.Headers.Add("Authorization", token);
+
+                    var purchaseObjectResult = await client.SendAsync(request2);
                     if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
                     {
                         var balanceQty = 0;
@@ -905,10 +1040,15 @@ namespace Tips.SalesService.Api.Controllers
         private async Task<List<EnggChildItem>> GetEnggChildItemsRecursivelyAsync(int parentId)
         {
             var childItems = new List<EnggChildItem>();
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            //var enggBomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
+            //                "GetEnggChildItemNumberByEnggbom?", "&bomId=", parentId));
+            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"],
+                           $"GetEnggChildItemNumberByEnggbom?bomId={parentId}"));
+            request.Headers.Add("Authorization", token);
 
-            var enggBomDetails = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"],
-                            "GetEnggChildItemNumberByEnggbom?", "&bomId=", parentId));
-
+            var enggBomDetails = await client.SendAsync(request);
             var enggBomObjectString = await enggBomDetails.Content.ReadAsStringAsync();
             dynamic enggBomObjectData = JsonConvert.DeserializeObject(enggBomObjectString);
             dynamic enggBomObject = enggBomObjectData.data;

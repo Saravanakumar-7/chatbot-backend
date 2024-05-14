@@ -15,12 +15,14 @@ using NuGet.Protocol.Core.Types;
 using static Tips.SalesService.Api.Repository.RfqEnggItemRepository;
 using Org.BouncyCastle.Ocsp;
 using Tips.SalesService.Api.Entities.Enum;
+using Microsoft.AspNetCore.Authorization;
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Tips.SalesService.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class ForeCastController : ControllerBase
     {
         private IForecastSourcingRepository _sourcingrepository;
@@ -35,7 +37,8 @@ namespace Tips.SalesService.Api.Controllers
         private IForecastLpCostingRepository _lpcostingRepository;
         private IForeCastCustomGroupRepository _forecastcustomgroupRepository;
         private IForeCastCustomFieldRepository _forecastcustomfieldRepository;
-        public ForeCastController(IForeCastCustomFieldRepository foreCastCustomFieldRepository, IForeCastEnggItemsRepository foreCastEnggItemsRepository, IForeCastReleaseLpRepository foreCastReleaseLpRepository, IForeCastCustomGroupRepository foreCastCustomGroupRepository, IForeCastRepository foreCastRepository, IForecastSourcingRepository forecastSourcingRepository, IForecastLpCostingRepository forecastLpCostingRepository, IForeCastEnggRepository foreCastEnggRepository, IForeCastCustomerSupportRepository foreCastCustomerSupportRepository, IForeCastCustomerSupportItemRepository foreCastCustomerSupportItemRepository, ILoggerManager logger, IMapper mapper)
+        private readonly IHttpClientFactory _clientFactory;
+        public ForeCastController(IForeCastCustomFieldRepository foreCastCustomFieldRepository, IHttpClientFactory clientFactory, IForeCastEnggItemsRepository foreCastEnggItemsRepository, IForeCastReleaseLpRepository foreCastReleaseLpRepository, IForeCastCustomGroupRepository foreCastCustomGroupRepository, IForeCastRepository foreCastRepository, IForecastSourcingRepository forecastSourcingRepository, IForecastLpCostingRepository forecastLpCostingRepository, IForeCastEnggRepository foreCastEnggRepository, IForeCastCustomerSupportRepository foreCastCustomerSupportRepository, IForeCastCustomerSupportItemRepository foreCastCustomerSupportItemRepository, ILoggerManager logger, IMapper mapper)
         {
             _Forecastrepository = foreCastRepository;
             _releaseLpRepository = foreCastReleaseLpRepository;
@@ -49,6 +52,7 @@ namespace Tips.SalesService.Api.Controllers
             _lpcostingRepository = forecastLpCostingRepository;
             _forecastcustomgroupRepository = foreCastCustomGroupRepository;
             _forecastcustomfieldRepository = foreCastCustomFieldRepository;
+            _clientFactory = clientFactory;
         }
         // GET: api/<ForeCastController>
         [HttpGet]

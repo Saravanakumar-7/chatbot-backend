@@ -208,6 +208,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public bool POApprovalIV { get; set; }
         public string? POApprovedIVBy { get; set; }
         public DateTime? POApprovedIVDate { get; set; }
+        public int? ApprovalCount { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -326,7 +327,9 @@ namespace Tips.Purchase.Api.Entities.DTOs
     {
         public string? VendorName { get; set; }
         public string? PONumber { get; set; }
-        public string? PartNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? RecordType { get; set; }
+        public string? Postatus { get; set; }
     }
 
     public class Tras_POSPReportDTO
@@ -335,5 +338,19 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? PONumber { get; set; }
         public string? PartNumber { get; set; }
     }
+    public class Data
+    {
+        public int id { get; set; }
+        public string processType { get; set; }
+        public string template { get; set; }
+        public string subject { get; set; }
+    }
 
+    public class EmailTemplateDto
+    {
+        public Data data { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
+        public int statusCode { get; set; }
+    }
 }

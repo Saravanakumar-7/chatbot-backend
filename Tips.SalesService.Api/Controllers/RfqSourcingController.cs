@@ -11,6 +11,9 @@ using Entities.Helper;
 using System.Net;
 using Newtonsoft.Json;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
+using MySqlX.XDevAPI;
+using NuGet.Common;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,6 +21,7 @@ namespace Tips.SalesService.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class RfqSourcingController : ControllerBase
     {
         private IRfqSourcingRepository _repository;
@@ -27,8 +31,8 @@ namespace Tips.SalesService.Api.Controllers
         private IRfqRepository _rfqRepository;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-
-        public RfqSourcingController(IRfqSourcingRepository repository,IRfqRepository rfqRepository, IRfqEnggItemRepository rfqEnggItemRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        private readonly IHttpClientFactory _clientFactory;
+        public RfqSourcingController(IRfqSourcingRepository repository, IHttpClientFactory clientFactory, IRfqRepository rfqRepository, IRfqEnggItemRepository rfqEnggItemRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _repository = repository;
             _logger = logger;
@@ -37,6 +41,7 @@ namespace Tips.SalesService.Api.Controllers
             _rfqEnggItemRepository = rfqEnggItemRepository;
             _httpClient = httpClient;
             _config = config;
+            _clientFactory = clientFactory;
         }
         // GET: api/<RfqSourcingController>
         [HttpGet]
@@ -369,8 +374,15 @@ namespace Tips.SalesService.Api.Controllers
                                     var httpClientHandler = new HttpClientHandler();
                                     httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
                                     var httpClient = new HttpClient(httpClientHandler);
+                                    var client = _clientFactory.CreateClient();
+                                    var token = HttpContext.Request.Headers["Authorization"].ToString();
                                     var rfqApiUrl = _config["ConvertionrateAPI"];
-                                    var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={ppvendor.Currency}");
+                                    var encodedCurrency = Uri.EscapeDataString(ppvendor.Currency);
+                                    var request = new HttpRequestMessage(HttpMethod.Get, $"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={encodedCurrency}");
+                                    request.Headers.Add("Authorization", token);
+
+                                    var rfqCustomerIdResponse = await client.SendAsync(request);
+                                    //var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={ppvendor.Currency}");
                                     var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
                                     var vendorUOC = JsonConvert.DeserializeObject<RfqSourcingConvertionrateDto>(rfqCustomerIdString);
                                     ppvendor.LandingPrice = ppvendor.LandingPrice * vendorUOC.Data.ConvertionRate;
@@ -392,9 +404,19 @@ namespace Tips.SalesService.Api.Controllers
                     httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
                     var httpClient = new HttpClient(httpClientHandler);
                     string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(rfqSourcingPPdetailsList);
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
                     var rfqApiUrl = _config["EngineeringBomAPI"];
                     var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
-                    var rfqCustomerIdResponse = await _httpClient.PostAsync($"{rfqApiUrl}GetEngganditsPP?FGItemNumber={fgitemnumber.ItemNumber}&FGRevno={fgitemnumber.CostingBomVersionNo}", content);
+                    var encodedItemnumber = Uri.EscapeDataString(fgitemnumber.ItemNumber);
+                    var request1 = new HttpRequestMessage(HttpMethod.Post, $"{rfqApiUrl}GetEngganditsPP?FGItemNumber={encodedItemnumber}&FGRevno={fgitemnumber.CostingBomVersionNo}")
+                    {
+                        Content= content
+                    };
+                    request1.Headers.Add("Authorization", token);
+
+                    var rfqCustomerIdResponse = await client.SendAsync(request1);
+                    // var rfqCustomerIdResponse = await _httpClient.PostAsync($"{rfqApiUrl}GetEngganditsPP?FGItemNumber={fgitemnumber.ItemNumber}&FGRevno={fgitemnumber.CostingBomVersionNo}", content);
                     var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
                     var rfqCustomerIdObjectData = JsonConvert.DeserializeObject<EnggItemsLandedandMoq>(rfqCustomerIdString);
                     //var rfqEnggItemsDetails = await _rfqRepository.GetRfqEnggItemByItemNumber(rfqCustomerIdObjectData.data.fgItemNumber);
@@ -495,8 +517,15 @@ namespace Tips.SalesService.Api.Controllers
                                     var httpClientHandler = new HttpClientHandler();
                                     httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
                                     var httpClient = new HttpClient(httpClientHandler);
+                                    var client = _clientFactory.CreateClient();
+                                    var token = HttpContext.Request.Headers["Authorization"].ToString();
                                     var rfqApiUrl = _config["ConvertionrateAPI"];
-                                    var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={ppvendor.Currency}");
+                                    var encodedCurrency = Uri.EscapeDataString(ppvendor.Currency);
+                                    var request = new HttpRequestMessage(HttpMethod.Get, $"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={encodedCurrency}");
+                                    request.Headers.Add("Authorization", token);
+
+                                    var rfqCustomerIdResponse = await client.SendAsync(request);
+                                    //var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={ppvendor.Currency}");
                                     var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
                                     var vendorUOC = JsonConvert.DeserializeObject<RfqSourcingConvertionrateDto>(rfqCustomerIdString);
                                     ppvendor.LandingPrice = ppvendor.LandingPrice * vendorUOC.Data.ConvertionRate;
@@ -520,7 +549,17 @@ namespace Tips.SalesService.Api.Controllers
                     string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(rfqSourcingPPdetailsList);
                     var rfqApiUrl = _config["EngineeringBomAPI"];
                     var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
-                    var rfqCustomerIdResponse = await _httpClient.PostAsync($"{rfqApiUrl}GetEngganditsPP?FGItemNumber={fgitemnumber.ItemNumber}&FGRevno={fgitemnumber.CostingBomVersionNo}", content);
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var encodedItemnumber = Uri.EscapeDataString(fgitemnumber.ItemNumber);
+                    var request1 = new HttpRequestMessage(HttpMethod.Post, $"{rfqApiUrl}GetEngganditsPP?FGItemNumber={encodedItemnumber}&FGRevno={fgitemnumber.CostingBomVersionNo}")
+                    {
+                        Content = content
+                    };
+                    request1.Headers.Add("Authorization", token);
+
+                    var rfqCustomerIdResponse = await client.SendAsync(request1);
+                    // var rfqCustomerIdResponse = await _httpClient.PostAsync($"{rfqApiUrl}GetEngganditsPP?FGItemNumber={fgitemnumber.ItemNumber}&FGRevno={fgitemnumber.CostingBomVersionNo}", content);
                     var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
                     var rfqCustomerIdObjectData = JsonConvert.DeserializeObject<EnggItemsLandedandMoq>(rfqCustomerIdString);
                     //var rfqEnggItemsDetails = await _rfqRepository.GetRfqEnggItemByItemNumber(rfqCustomerIdObjectData.data.fgItemNumber);

@@ -75,7 +75,7 @@ namespace Tips.Production.Api.Entities.DTOs
     }
     public class OQCBinningInventoryDto
     {
-        public Data? data { get; set; }
+        public List<Data>? data { get; set; }
         public string message { get; set; }
         public bool success { get; set; }
         public int statusCode { get; set; }
@@ -89,6 +89,8 @@ namespace Tips.Production.Api.Entities.DTOs
         public string Description { get; set; }
         public string ProjectNumber { get; set; }
         public decimal Balance_Quantity { get; set; }
+        public decimal? Max { get; set; }
+        public decimal? Min { get; set; }
         public string? UOM { get; set; }
         public bool IsStockAvailable { get; set; }
         public string Warehouse { get; set; }
@@ -113,6 +115,8 @@ namespace Tips.Production.Api.Entities.DTOs
         public string Description { get; set; }
         public string ProjectNumber { get; set; }
         public decimal Balance_Quantity { get; set; }
+        public decimal? Max { get; set; }
+        public decimal? Min { get; set; }
         public string? UOM { get; set; }
         public string Warehouse { get; set; }
         public string? Location { get; set; }

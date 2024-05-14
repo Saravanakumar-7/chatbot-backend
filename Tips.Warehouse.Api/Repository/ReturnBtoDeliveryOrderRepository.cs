@@ -112,7 +112,15 @@ namespace Tips.Warehouse.Api.Repository
                     .Where(x => x.BTONumber == BTONumber).Count();
             return getReturnBtoDeliveryOrderByBtoNo;
         }
+        public async Task<string> GetReturnBtoDeliveryOrderNoByReturnBtoNo(string returnBTONumber)
+        {
 
+            var getReturnInvoiceDetails = await _tipsWarehouseDbContext.ReturnBtoDeliveryOrders
+                .Where(x => x.ReturnBTONumber.StartsWith(returnBTONumber)).OrderByDescending(x => x.Id)
+                .Select(x => x.ReturnBTONumber).FirstOrDefaultAsync();
+
+            return getReturnInvoiceDetails;
+        }
         public async Task<string> UpdateReturnBtoDeliveryOrder(ReturnBtoDeliveryOrder returnBtoDeliveryOrder)
         {
 

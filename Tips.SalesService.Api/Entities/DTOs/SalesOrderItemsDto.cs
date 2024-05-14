@@ -127,6 +127,7 @@ namespace Tips.SalesService.Api.Entities.Dto
 
         [Precision(13, 3)]
         public decimal DispatchQty { get; set; }
+        public OrderStatus StatusEnum { get; set; }
 
         [Precision(18, 3)]
         public decimal? BasicAmount { get; set; }

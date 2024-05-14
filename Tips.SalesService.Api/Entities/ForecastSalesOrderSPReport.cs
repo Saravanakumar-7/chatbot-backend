@@ -3,6 +3,8 @@
     public class ForecastSalesOrderSPReport
     {
         public string? SalesOrderNumber { get; set; }
+        public int? SOStatus { get; set; }
+        public string? ProjectNumber { get; set; }
         public string? CustomerId { get; set; }
         public string? CustomerName { get; set; }
         public string? LeadId { get; set; }
@@ -10,7 +12,7 @@
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
         public string? MaterialGroup { get; set; }
-        public int? ItemType { get; set; }
+        public string? ItemType { get; set; }
         public string? SalesPerson { get; set; }
         public DateTime? sodate { get; set; }
         public string? KPN { get; set; }

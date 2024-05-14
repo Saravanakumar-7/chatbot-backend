@@ -2,6 +2,7 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NuGet.Protocol;
@@ -13,6 +14,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class DeliveryTermController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
