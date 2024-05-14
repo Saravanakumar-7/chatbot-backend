@@ -340,7 +340,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                             InventoryTranction inventoryTranction = new InventoryTranction();
                             inventoryTranction.PartNumber = returnInvoiceItemsList[i].FGPartNumber;
-                            inventoryTranction.MftrPartNumber = exInv.MftrPartNumber; 
+                            inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); 
                             inventoryTranction.Description = returnInvoiceItemsList[i].Description;
                             inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
                             inventoryTranction.UOM = returnInvoiceItemsList[i].UOM;
