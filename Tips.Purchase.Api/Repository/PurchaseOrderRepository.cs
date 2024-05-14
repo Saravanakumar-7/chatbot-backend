@@ -370,7 +370,8 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<PurchaseRequisition> GetPrDetailsByPrNumber(string prNumber)
         {
-            var prDetails = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PrNumber == prNumber)
+            var prDetails = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PrNumber == prNumber && x.RevisionNumber == _tipsPurchaseDbContext.PurchaseRequisitions
+                                                                        .Where(x => x.PrNumber == prNumber).Max(x => x.RevisionNumber))
                 .FirstOrDefaultAsync();
 
             return prDetails;
@@ -1239,7 +1240,26 @@ namespace Tips.Purchase.Api.Repository
                                 .FirstOrDefaultAsync();
             return purchaseOrderDetailbyPONumber;
         }
-
+        public async Task<PurchaseOrder> GetLastestPurchaseOrderByPONumber(string poNumber)
+        {
+            var purchaseOrderDetailbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders
+                .Where(x => x.PONumber == poNumber && x.IsDeleted == false && x.IsModified == false && x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.
+                                          Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))
+                //.Include(o => o.POFiles)
+                .Include(t => t.POItems)
+                                .ThenInclude(x => x.POAddprojects)
+                                .Include(m => m.POItems)
+                                .ThenInclude(i => i.POAddDeliverySchedules)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.POSpecialInstructions)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.POConfirmationDates)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.PrDetails)
+                                .Include(itm => itm.POIncoTerms)
+                                .FirstOrDefaultAsync();
+            return purchaseOrderDetailbyPONumber;
+        }
         public async Task<PurchaseOrder> GetPurchaseOrderItemsByPONumber(string poNumber)
         {
             var purchaseOrderDetailbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders
@@ -1801,10 +1821,10 @@ namespace Tips.Purchase.Api.Repository
             string result = $"PoItem of Detail {poItem.Id} is updated successfully!";
             return result;
         }
-        public async Task<int?> GetPoItemsPartiallyClosedStatusCount(string poNumber)
+        public async Task<int?> GetPoItemsPartiallyClosedStatusCount(string poNumber,int poId)
         {
-            var poItemsPartiallyClosedStatusCount = _tipsPurchaseDbContext.PoItems.Where(x => x.PONumber == poNumber
-                                                            && (x.PoStatus == PoStatus.PartiallyClosed || x.PoStatus == PoStatus.Open)).Count();
+            var poItemsPartiallyClosedStatusCount = _tipsPurchaseDbContext.PoItems.Where(x => x.PONumber == poNumber && x.PurchaseOrderId == poId
+                                                             && (x.PoStatus == PoStatus.PartiallyClosed || x.PoStatus == PoStatus.Open)).Count();
 
             return poItemsPartiallyClosedStatusCount;
         }

@@ -1317,7 +1317,7 @@ namespace Tips.SalesService.Api.Controllers
                     var doReturnQty = item.ReturnQty;
                     IEnumerable<SalesOrderItems>? salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo(item.FGPartNumber, item.SalesOrderId);
 
-                    if (salesOrderItems != null)
+                    if (salesOrderItems != null && salesOrderItems.Count() > 0)
                     {
                         foreach (var salesOrderDetails in salesOrderItems)
                         {
@@ -1409,7 +1409,7 @@ namespace Tips.SalesService.Api.Controllers
 
                     IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo
                                                                                                                             (item.FGPartNumber, item.SalesOrderId);
-                    if (salesOrderItems != null)
+                    if (salesOrderItems != null && salesOrderItems.Count() > 0)
                     {
                         foreach (var salesOrderDetails in salesOrderItems)
                         {

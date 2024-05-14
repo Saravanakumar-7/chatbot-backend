@@ -10,10 +10,10 @@ namespace Tips.Production.Api.Entities
         public PartType ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
-        public decimal ShopOrderQty { get; set; }
-        public decimal AcceptedQty { get; set; }
-        public decimal PendingQty { get; set; }
-        public decimal? RejectedQty { get; set; } 
+        public decimal shoporderqnty { get; set; }
+        public decimal OQCAcceptedQnty { get; set; }
+        public decimal? BinningItemQnty { get; set; }
+        public decimal pendingBinning { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         public DateTime? CreatedOn { get; set; }

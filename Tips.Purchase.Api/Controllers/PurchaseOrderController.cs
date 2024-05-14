@@ -2229,19 +2229,19 @@ namespace Tips.Purchase.Api.Controllers
             }
             _poItemsRepository.SaveAsync();
 
-
-            var poItemsPartiallyClosedStatusCount = await _poItemsRepository.GetPoItemsPartiallyClosedStatusCount(purchaseOrderStatusUpdateDto[0].PONumber);
+            var poDetails = _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
+            var poItemsPartiallyClosedStatusCount = await _poItemsRepository.GetPoItemsPartiallyClosedStatusCount(poDetails.Result.PONumber,poDetails.Result.Id);
 
             if (poItemsPartiallyClosedStatusCount != 0)
             {
-                var purchaseOrderDetails = await _repository.GetPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
+                var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
                 purchaseOrderDetails.PoStatus = PoStatus.PartiallyClosed;
                 await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
 
             }
             else
             {
-                var purchaseOrderDetails = await _repository.GetPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
+                var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
                 purchaseOrderDetails.PoStatus = PoStatus.Closed;
                 await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
             }
