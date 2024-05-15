@@ -1215,7 +1215,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 _salesOrderItemsRepository.SaveAsync();
                 var salesdetails = await _repository.GetSalesOrderById(salesOrderDispatchQtyDto[0].SalesOrderId);
-                int? count = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.Closed).Count();               
+                int? count = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum !=OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();               
                 if (count == 0) salesdetails.SOStatus= OrderStatus.Closed;           
                 else if(count > 0) salesdetails.SOStatus = OrderStatus.PartiallyClosed;
                 await _repository.UpdateSalesOrder(salesdetails);
@@ -2953,6 +2953,77 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside SoConfirmationStatus action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPut]
+        public async Task<IActionResult> ShortCloseForSalesOrder([FromBody] SalesOrderUpdateDto salesOrderDtoUpdate)
+        {
+            ServiceResponse<SalesOrderItemsDto> serviceResponse = new ServiceResponse<SalesOrderItemsDto>();
+            try
+            {
+                if (salesOrderDtoUpdate is null)
+                {
+                    _logger.LogError("ShortClose SalesOrder object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ShortClose SalesOrder object sent from client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid ShortClose SalesOrder object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid ShortClose SalesOrder object sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                var salesOrderDetailBeforeUpdate = await _repository.GetSalesOrderById(salesOrderDtoUpdate.Id);
+                var salesOrderNumber = salesOrderDetailBeforeUpdate.SalesOrderNumber;
+
+                if (salesOrderDetailBeforeUpdate is null)
+                {
+                    _logger.LogError($"ShortClose SalesOrder with id: {salesOrderDtoUpdate.Id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Update SalesOrder hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                var salesOrderDetails = _mapper.Map<SalesOrder>(salesOrderDtoUpdate);
+                var salesOrderItemsDto = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos;
+                var salesAdditionalChargesDto = salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos;
+                var salesOrderItemsList = new List<SalesOrderItems>();
+                var salesAdditionalChargesList = new List<SalesOrderAdditionalCharges>();
+                if (salesAdditionalChargesDto != null)
+                {
+                    for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
+                    {
+                        SalesOrderAdditionalCharges additionalChargesDetails = _mapper.Map<SalesOrderAdditionalCharges>(salesAdditionalChargesDto[i]);
+                        salesAdditionalChargesList.Add(additionalChargesDetails);
+                    }
+                }
+                var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetailBeforeUpdate);
+                updateData.SalesOrdersItems = salesOrderItemsList;
+                updateData.SalesOrderAdditionalCharges = salesAdditionalChargesList;
+                string result = await _repository.UpdateSalesOrderShortClose(updateData);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = " SalesOrder Successfully Updated";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateSalesOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;

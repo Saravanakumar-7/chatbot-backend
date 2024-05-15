@@ -511,7 +511,12 @@ namespace Tips.SalesService.Api.Repository
 
             return salesOrderTotal;
         }
-
+        public async Task<string> UpdateSalesOrderShortClose(SalesOrder salesOrder)
+        {           
+            Update(salesOrder);
+            string result = $"SalesOrder of Detail {salesOrder.Id} is updated successfully!";
+            return result;
+        }
         public async Task<string> UpdateSalesOrder(SalesOrder salesOrder)
         {
             salesOrder.CreatedBy = salesOrder.CreatedBy;

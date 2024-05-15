@@ -28,8 +28,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<List<InventoryQtyforDO>> GetInventorybyItemandProject(string itemNumber, string projectNumber);
         Task<Inventory?> GetInventorybyItemProjectWarehouseLocation(string itemNumber, string projectNumber, string warehouse, string location);
         Task<List<InventoryQtyforDO>> GetInventorybyItem(string itemNumber);
-        Task UpdateInventoryforBTO(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis);
-        Task UpdateInventoryforBTO_Keus(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis);
+        Task UpdateInventoryforBTO(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis, string DoNumber);
+        Task UpdateInventoryforBTO_Keus(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis, string DoNumber);
         Task UpdateInventoryforODO(List<OpenDeliveryOrderPartsQtyDistribution> ODOitemDis);
         Task<Inventory> GetInventoryFGDetailsByItemNumber(string ItemNumber);
 

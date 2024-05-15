@@ -20,6 +20,7 @@ using System.Linq;
 using Entities.Enums;
 using System.Collections;
 using System.Security.Claims;
+using System.Reflection.PortableExecutable;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -669,7 +670,7 @@ namespace Tips.Warehouse.Api.Repository
 
             return exists;
         }
-        public async Task UpdateInventoryforBTO(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis)
+        public async Task UpdateInventoryforBTO(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis, string DoNumber)
         {
             var itemNumber = bToitemDis.Select(x => x.PartNumber).FirstOrDefault();
             var projectNumber = bToitemDis.Select(x => x.ProjectNumber).FirstOrDefault();
@@ -687,6 +688,8 @@ namespace Tips.Warehouse.Api.Repository
                             {
                                 eachinv.IsStockAvailable = false;
                             }
+                            eachinv.ReferenceID = DoNumber;
+                            eachinv.ReferenceIDFrom = "BTO Delivery Order";
                             Update(eachinv);
                             //SaveAsync();
                             break;
@@ -697,6 +700,8 @@ namespace Tips.Warehouse.Api.Repository
                             eachDis.DistributingQty = eachDis.DistributingQty - eachinv.Balance_Quantity;
                             eachinv.Balance_Quantity = 0;
                             eachinv.IsStockAvailable = false;
+                            eachinv.ReferenceID = DoNumber;
+                            eachinv.ReferenceIDFrom = "BTO Delivery Order";
                             Update(eachinv);
                             //SaveAsync();
                             //invdetails.Remove(eachinv);
@@ -705,7 +710,7 @@ namespace Tips.Warehouse.Api.Repository
                 }
             }
         }
-        public async Task UpdateInventoryforBTO_Keus(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis)
+        public async Task UpdateInventoryforBTO_Keus(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis,string DoNumber)
         {
             var itemNumber = bToitemDis.Select(x => x.PartNumber).FirstOrDefault();
             // var projectNumber = bToitemDis.Select(x => x.ProjectNumber).FirstOrDefault();
@@ -723,6 +728,8 @@ namespace Tips.Warehouse.Api.Repository
                             {
                                 eachinv.IsStockAvailable = false;
                             }
+                            eachinv.ReferenceID = DoNumber;
+                            eachinv.ReferenceIDFrom = "BTO Delivery Order";
                             Update(eachinv);
                             //SaveAsync();
                             break;
@@ -733,6 +740,8 @@ namespace Tips.Warehouse.Api.Repository
                             eachDis.DistributingQty = eachDis.DistributingQty - eachinv.Balance_Quantity;
                             eachinv.Balance_Quantity = 0;
                             eachinv.IsStockAvailable = false;
+                            eachinv.ReferenceID = DoNumber;
+                            eachinv.ReferenceIDFrom = "BTO Delivery Order";
                             Update(eachinv);
                             //SaveAsync();
                             //invdetails.Remove(eachinv);
@@ -758,7 +767,7 @@ namespace Tips.Warehouse.Api.Repository
                             if (inventoryItemDetail.Balance_Quantity == 0)
                             {
                                 inventoryItemDetail.IsStockAvailable = false;
-                            }
+                            }                            
                             Update(inventoryItemDetail);
                             // SaveAsync();
                             break;
@@ -769,6 +778,7 @@ namespace Tips.Warehouse.Api.Repository
                             odoItemDetail.DistributingQty = odoItemDetail.DistributingQty - inventoryItemDetail.Balance_Quantity;
                             inventoryItemDetail.Balance_Quantity = 0;
                             inventoryItemDetail.IsStockAvailable = false;
+                            
                             Update(inventoryItemDetail);
                             // SaveAsync();
                             //invdetails.Remove(eachinv);

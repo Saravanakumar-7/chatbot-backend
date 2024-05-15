@@ -574,7 +574,7 @@ namespace Tips.Warehouse.Api.Controllers
                                 inventory.GrinPartId = 0;
                                 inventory.PartType = PartType.FG;
                                 inventory.GrinMaterialType = "";
-                                inventory.ReferenceID = returnBtoDeliveryOrderItems.BTONumber;
+                                inventory.ReferenceID = returnBtoDeliveryOrder.ReturnBTONumber;
                                 inventory.ReferenceIDFrom = "Return BTO Delivery Order";
                                 inventory.shopOrderNo = "";
                                 //inventory.PartType = returnBtoDeliveryOrderItems.PartType;
@@ -584,7 +584,7 @@ namespace Tips.Warehouse.Api.Controllers
                             }
                             else
                             {
-                                exInv.ReferenceID = returnBtoDeliveryOrderItems.BTONumber;
+                                exInv.ReferenceID = returnBtoDeliveryOrder.ReturnBTONumber;
                                 exInv.ReferenceIDFrom = "Return BTO Delivery Order";
                                 exInv.IsStockAvailable = true;
                                 exInv.Balance_Quantity += eachbin.DistributingQty;
@@ -601,7 +601,7 @@ namespace Tips.Warehouse.Api.Controllers
                             inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
                             inventoryTranction.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
                             inventoryTranction.Issued_DateTime = DateTime.Now;
-                            inventoryTranction.ReferenceID = returnBtoDeliveryOrderItems.BTONumber;
+                            inventoryTranction.ReferenceID = returnBtoDeliveryOrder.ReturnBTONumber;
                             inventoryTranction.ReferenceIDFrom = "Return BTO Delivery Order";
                             inventoryTranction.Issued_By = _createdBy;
                             inventoryTranction.From_Location = "BTO";

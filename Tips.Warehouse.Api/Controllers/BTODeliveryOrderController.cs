@@ -612,11 +612,11 @@ namespace Tips.Warehouse.Api.Controllers
                         //Update Inventory balanced Quantity 
                         if (serverKey == "keus")
                         {
-                            await _inventoryRepository.UpdateInventoryforBTO_Keus(bTODeliveryOrderItemsDetails.QtyDistribution);
+                            await _inventoryRepository.UpdateInventoryforBTO_Keus(bTODeliveryOrderItemsDetails.QtyDistribution, bTODeliveryOrder.BTONumber);
                         }
                         else
                         {
-                            await _inventoryRepository.UpdateInventoryforBTO(bTODeliveryOrderItemsDetails.QtyDistribution);
+                            await _inventoryRepository.UpdateInventoryforBTO(bTODeliveryOrderItemsDetails.QtyDistribution, bTODeliveryOrder.BTONumber);
                         }
 
                         //}
