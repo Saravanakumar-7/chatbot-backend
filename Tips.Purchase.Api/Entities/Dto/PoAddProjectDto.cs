@@ -45,6 +45,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
     public class PoProjectNoUpdateQtyDetailsDto
     {
         public string ItemNumber { get; set; }
+        public string PONumber { get; set; }
         public string ProjectNumber { get; set; }
         public decimal ProjectQty { get; set; }
         public int PoItemId { get; set; }
