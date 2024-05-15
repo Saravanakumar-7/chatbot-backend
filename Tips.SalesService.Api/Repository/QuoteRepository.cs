@@ -48,7 +48,16 @@ namespace Tips.SalesService.Api.Repository
             var result = await Create(quote);
             return result.Id;
         }
+        public async Task<IEnumerable<QuoteSPReport>> GetQuoteSPReport()
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<QuoteSPReport>()
+            .FromSqlInterpolated($"CALL Quotes_Report")
+            .ToList();
 
+            return result;
+
+        }
         public async Task<string> GenerateQuoteNumber()
         {
             using var transaction = await _tipsSalesServiceDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);

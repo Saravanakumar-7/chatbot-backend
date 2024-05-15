@@ -569,6 +569,46 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderApprovalSPReportWithParam([FromBody] PurchaseOrderApprovalSPReportWithParamDTO purchaseOrderApprovalSPReport)
+
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReport>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderApprovalSPReportWithParam(purchaseOrderApprovalSPReport.VendorName, purchaseOrderApprovalSPReport.PONumber,
+                                                                                    purchaseOrderApprovalSPReport.ItemNumber, purchaseOrderApprovalSPReport.RecordType,
+                                                                                        purchaseOrderApprovalSPReport.Postatus, purchaseOrderApprovalSPReport.Approval);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrderApprovalSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderApprovalSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> GetListOfOpenPOQtyByItemNoList(List<string> itemNumberList)
@@ -2177,7 +2217,7 @@ namespace Tips.Purchase.Api.Controllers
         {
             foreach (var item in poProjectNoUpdateBalQtyDetails)
             {
-                IEnumerable<PoAddProject> poProjectNoDetails = await _poAddprojectRepository.GetPOProjectNoDetailsByProjectNo(item.ItemNumber, item.ProjectNumber,item.PONumber);
+                IEnumerable<PoAddProject> poProjectNoDetails = await _poAddprojectRepository.GetPOProjectNoDetailsByProjectNo(item.ItemNumber, item.ProjectNumber,item.PoItemId);
                 decimal dispatchedQty = item.ProjectQty;
 
                 foreach (var poProjectNos in poProjectNoDetails)
@@ -2219,7 +2259,7 @@ namespace Tips.Purchase.Api.Controllers
         {
             foreach (var item in purchaseOrderStatusUpdateDto)
             {
-                IEnumerable<PoItem> poItems = await _poItemsRepository.GetPoItemDetailsByPONumberandItemNo(item.ItemNumber, item.PONumber);
+                IEnumerable<PoItem> poItems = await _poItemsRepository.GetPoItemDetailsByPONumberandItemNo(item.ItemNumber, item.PONumber, item.PoItemId);
 
                 foreach (var poItem in poItems)
                 {

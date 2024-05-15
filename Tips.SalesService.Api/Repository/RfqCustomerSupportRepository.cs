@@ -573,6 +573,16 @@ namespace Tips.SalesService.Api.Repository
               .Where(x => x.Id == rfqId).FirstOrDefaultAsync();
             return rfqDetailsByRfqNumber;
         }
+        public async Task<IEnumerable<RfqSPReport>> GetRfqSPReport()
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<RfqSPReport>()
+            .FromSqlInterpolated($"CALL RFQ_Report")
+            .ToList();
+
+            return result;
+
+        }
         public async Task<Rfq> RfqSourcingByRfqNumbers(string RfqNumber)
         {
             var SourcingByRfqNumber = await _tipsSalesServiceDbContext.Rfqs

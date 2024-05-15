@@ -829,7 +829,7 @@ namespace Tips.Grin.Api.Controllers
                         {
                             var grinPartsProjectNoDtoDetail = _mapper.Map<GrinUpdateProjectBalQtyDetailsDto>(projectNo);
                             grinPartsProjectNoDtoDetail.ItemNumber = grinparts.ItemNumber;
-                            grinPartsProjectNoDtoDetail.PONumber = grinparts.PONumber;
+                            grinPartsProjectNoDtoDetail.PoItemId = grinparts.PoItemId;
                             projectNameDtos.Add(grinPartsProjectNoDtoDetail);
                         }
 
@@ -915,7 +915,8 @@ namespace Tips.Grin.Api.Controllers
                             var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
                             dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                             dynamic itemMasterObject = itemMasterObjectData;
-                            if (itemMasterObject.data != null)
+
+                            if (itemMasterObject != null && itemMasterObject.Count > 0)
                             {
                                 for (int i = 0; i < grins.GrinParts.Count; i++)
                                 {

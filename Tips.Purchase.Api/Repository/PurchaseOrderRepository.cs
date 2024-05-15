@@ -1072,6 +1072,18 @@ namespace Tips.Purchase.Api.Repository
 
             return result;
         }
+
+        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderApprovalSPReportWithParam(string VendorName, string PONumber, string itemNumber,
+                                                                                                     string RecordType, string Postatus, string Approval)
+        {
+
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseOrderSPReport>()
+            .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus({VendorName},{PONumber},{itemNumber},{RecordType},{Postatus},{Approval})")
+            .ToList();
+
+            return result;
+        }
         public async Task<PagedList<PurchaseOrderSPReport>> GetPurchaseOrderSPResport(PagingParameter pagingParameter)
         {
             var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReport>()
@@ -1571,35 +1583,20 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<IEnumerable<PoItem>> GetPODetailsByPONumberandItemNo(string ItemNumber, string PONumber)
         {
-            var poId = await _tipsPurchaseDbContexts.PurchaseOrders
-                .Where(x => x.PONumber == PONumber && x.RevisionNumber == _tipsPurchaseDbContexts.PurchaseOrders.Where(x => x.PONumber == PONumber)
-                .Max(x => x.RevisionNumber))
-                .Select(x => x.Id)
-                .FirstOrDefaultAsync();
-
-            if (poId != null)
-            {
-                var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContexts.PoItems
-                     .Where(x => x.ItemNumber == ItemNumber && x.PONumber == PONumber && x.PoPartsStatus != true && x.PurchaseOrderId == poId)
-                              .ToListAsync();
-
-                return getPODetailsByPONOandItemNo;
-            }
-            else
-            {
-                return null;
-            }
-        }
-        public async Task<IEnumerable<PoItem>> GetPoItemDetailsByPONumberandItemNo(string ItemNumber, string PONumber)
-        {
-            var poId = await _tipsPurchaseDbContexts.PurchaseOrders
-                .Where(x => x.PONumber == PONumber && x.RevisionNumber == _tipsPurchaseDbContexts.PurchaseOrders.Where(x => x.PONumber == PONumber)
-                .Max(x => x.RevisionNumber))
-                .Select(x => x.Id)
-                .FirstOrDefaultAsync();
+            var poId = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.PONumber == PONumber && x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders
+                                                                        .Where(x => x.PONumber == PONumber).Max(x => x.RevisionNumber))
+                                                                        .Select(x=>x.Id).FirstOrDefaultAsync();
 
             var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContexts.PoItems
-                 .Where(x => x.ItemNumber == ItemNumber && x.PONumber == PONumber && x.PurchaseOrderId == poId)
+                 .Where(x => x.ItemNumber == ItemNumber && x.PONumber == PONumber && x.PoPartsStatus != true && x.PurchaseOrderId == poId)
+                          .ToListAsync();
+
+            return getPODetailsByPONOandItemNo;
+        }
+        public async Task<IEnumerable<PoItem>> GetPoItemDetailsByPONumberandItemNo(string ItemNumber, string PONumber, int poItemId)
+        {
+            var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContexts.PoItems
+                 .Where(x => x.ItemNumber == ItemNumber && x.PONumber == PONumber && x.Id == poItemId)
                           .ToListAsync();
 
             return getPODetailsByPONOandItemNo;
@@ -1873,21 +1870,15 @@ namespace Tips.Purchase.Api.Repository
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
-        public async Task<IEnumerable<PoAddProject>> GetPOProjectNoDetailsByProjectNo(string itemNumber, string projectNo,string poNumber)
+        public async Task<IEnumerable<PoAddProject>> GetPOProjectNoDetailsByProjectNo(string itemNumber, string projectNo,int poItemId)
         {
-            var poId = await _tipsPurchaseDbContexts.PurchaseOrders
-                .Where(x => x.PONumber == poNumber && x.RevisionNumber == _tipsPurchaseDbContexts.PurchaseOrders.Where(x => x.PONumber == poNumber)
-                .Max(x => x.RevisionNumber))
-                .Select(x => x.Id)
-                .FirstOrDefaultAsync();
-
-            var poItemsDetailsByitemNo = await _tipsPurchaseDbContexts.PoItems
-                 .Where(x => x.ItemNumber == itemNumber && x.PurchaseOrderId == poId)
+            var poItemDetailId = await _tipsPurchaseDbContexts.PoItems
+                 .Where(x => x.ItemNumber == itemNumber && x.Id == poItemId)
                  .Select(x => x.Id)
                           .ToListAsync();
 
             var poProjectNoDetailsByProjectNo = await _tipsPurchaseDbContexts.PoAddProjects
-                 .Where(x => x.ProjectNumber == projectNo && x.PoAddProjectStatus != true && poItemsDetailsByitemNo.Contains(x.POItemDetailId))
+                 .Where(x => x.ProjectNumber == projectNo && x.PoAddProjectStatus != true && poItemDetailId.Contains(x.POItemDetailId))
                           .ToListAsync();
 
             return poProjectNoDetailsByProjectNo;
