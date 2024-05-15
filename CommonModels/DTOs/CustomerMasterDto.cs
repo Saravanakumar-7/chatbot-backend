@@ -381,8 +381,8 @@ namespace Entities.DTOs
         [Required(ErrorMessage = "Unit is required")]
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
         public string? Unit { get; set; }
-        public string? CreatedBy { get; set; }
-    public DateTime? CreatedOn { get; set; }
+    //    public string? CreatedBy { get; set; }
+    //public DateTime? CreatedOn { get; set; }
     public string? LastModifiedBy { get; set; }
     public DateTime? LastModifiedOn { get; set; }
 

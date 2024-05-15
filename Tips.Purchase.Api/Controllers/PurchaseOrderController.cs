@@ -2167,7 +2167,7 @@ namespace Tips.Purchase.Api.Controllers
         {
             foreach (var item in poProjectNoUpdateBalQtyDetails)
             {
-                IEnumerable<PoAddProject> poProjectNoDetails = await _poAddprojectRepository.GetPOProjectNoDetailsByProjectNo(item.ItemNumber, item.ProjectNumber);
+                IEnumerable<PoAddProject> poProjectNoDetails = await _poAddprojectRepository.GetPOProjectNoDetailsByProjectNo(item.ItemNumber, item.ProjectNumber,item.PONumber);
                 decimal dispatchedQty = item.ProjectQty;
 
                 foreach (var poProjectNos in poProjectNoDetails)
@@ -2209,7 +2209,7 @@ namespace Tips.Purchase.Api.Controllers
         {
             foreach (var item in purchaseOrderStatusUpdateDto)
             {
-                IEnumerable<PoItem> poItems = await _poItemsRepository.GetPoItemDetailsByPONumberandItemNo(item.ItemNumber, item.PONumber, item.PoItemId);
+                IEnumerable<PoItem> poItems = await _poItemsRepository.GetPoItemDetailsByPONumberandItemNo(item.ItemNumber, item.PONumber);
 
                 foreach (var poItem in poItems)
                 {
@@ -2229,8 +2229,7 @@ namespace Tips.Purchase.Api.Controllers
             }
             _poItemsRepository.SaveAsync();
 
-            var poDetails = _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
-            var poItemsPartiallyClosedStatusCount = await _poItemsRepository.GetPoItemsPartiallyClosedStatusCount(poDetails.Result.PONumber,poDetails.Result.Id);
+            var poItemsPartiallyClosedStatusCount = await _poItemsRepository.GetPoItemsPartiallyClosedStatusCount(purchaseOrderStatusUpdateDto[0].PONumber);
 
             if (poItemsPartiallyClosedStatusCount != 0)
             {
