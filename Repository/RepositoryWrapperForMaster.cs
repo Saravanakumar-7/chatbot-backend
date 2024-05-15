@@ -19,7 +19,7 @@ namespace Repository
         private IUnitRepository _unitRepository;
         private IHttpContextAccessor _httpContextAccessor;
         private IUserRepository _userRepository;
-
+        private IEmailIDsRepository _emailIDsRepository;
         private IMaterialTypeRepository _materialTypeRepo;
         private IProcurementTypeRepository _procurementTypeRepo;
         private IItemMasterRepository _itemMasterRepo;
@@ -151,6 +151,17 @@ namespace Repository
                     _emailTemplateRepo = new EmailTemplateRepository(_tipsMasterDbContext);
                 }
                 return _emailTemplateRepo;
+            }
+        }
+        public IEmailIDsRepository EmailIDsRepository
+        {
+            get
+            {
+                if (_emailIDsRepository == null)
+                {
+                    _emailIDsRepository = new EmailIDsRepository(_tipsMasterDbContext);
+                }
+                return _emailIDsRepository;
             }
         }
         public IConvertionrateRepository ConvertionrateRepository
