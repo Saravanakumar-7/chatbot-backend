@@ -10,6 +10,6 @@ namespace Tips.Purchase.Api.Contracts
         Task<int?> CreatePoAddproject(PoAddProject poAddproject);
         Task<string> UpdatePoAddproject(PoAddProject poAddproject);
         Task<string> DeletePoAddproject(PoAddProject poAddproject);
-        Task<IEnumerable<PoAddProject>> GetPOProjectNoDetailsByProjectNo(string itemNumber,string projectNo);
+        Task<IEnumerable<PoAddProject>> GetPOProjectNoDetailsByProjectNo(string itemNumber, string projectNo, int poItemId);
     }
 }

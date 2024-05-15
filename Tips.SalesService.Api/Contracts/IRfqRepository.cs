@@ -34,5 +34,6 @@ namespace Tips.SalesService.Api.Contracts
         Task<Rfq> UpdateRfqRevNo(Rfq rfq, string serverKey);
         Task<Rfq> RfqDetailsById(int rfqId);
         Task<string> GenerateRFQNumberForTransccon();
+        Task<IEnumerable<RfqSPReport>> GetRfqSPReport();
     }
 }

@@ -1072,6 +1072,18 @@ namespace Tips.Purchase.Api.Repository
 
             return result;
         }
+
+        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderApprovalSPReportWithParam(string VendorName, string PONumber, string itemNumber,
+                                                                                                     string RecordType, string Postatus, string Approval)
+        {
+
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseOrderSPReport>()
+            .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus({VendorName},{PONumber},{itemNumber},{RecordType},{Postatus},{Approval})")
+            .ToList();
+
+            return result;
+        }
         public async Task<PagedList<PurchaseOrderSPReport>> GetPurchaseOrderSPResport(PagingParameter pagingParameter)
         {
             var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReport>()
@@ -1571,8 +1583,12 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<IEnumerable<PoItem>> GetPODetailsByPONumberandItemNo(string ItemNumber, string PONumber)
         {
+            var poId = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.PONumber == PONumber && x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders
+                                                                        .Where(x => x.PONumber == PONumber).Max(x => x.RevisionNumber))
+                                                                        .Select(x=>x.Id).FirstOrDefaultAsync();
+
             var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContexts.PoItems
-                 .Where(x => x.ItemNumber == ItemNumber && x.PONumber == PONumber && x.PoPartsStatus != true)
+                 .Where(x => x.ItemNumber == ItemNumber && x.PONumber == PONumber && x.PoPartsStatus != true && x.PurchaseOrderId == poId)
                           .ToListAsync();
 
             return getPODetailsByPONOandItemNo;
@@ -1821,8 +1837,14 @@ namespace Tips.Purchase.Api.Repository
             string result = $"PoItem of Detail {poItem.Id} is updated successfully!";
             return result;
         }
-        public async Task<int?> GetPoItemsPartiallyClosedStatusCount(string poNumber,int poId)
+        public async Task<int?> GetPoItemsPartiallyClosedStatusCount(string poNumber)
         {
+            var poId = await _tipsPurchaseDbContexts.PurchaseOrders
+               .Where(x => x.PONumber == poNumber && x.RevisionNumber == _tipsPurchaseDbContexts.PurchaseOrders.Where(x => x.PONumber == poNumber)
+               .Max(x => x.RevisionNumber))
+               .Select(x => x.Id)
+               .FirstOrDefaultAsync();
+
             var poItemsPartiallyClosedStatusCount = _tipsPurchaseDbContext.PoItems.Where(x => x.PONumber == poNumber && x.PurchaseOrderId == poId
                                                              && (x.PoStatus == PoStatus.PartiallyClosed || x.PoStatus == PoStatus.Open)).Count();
 
@@ -1848,15 +1870,15 @@ namespace Tips.Purchase.Api.Repository
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
-        public async Task<IEnumerable<PoAddProject>> GetPOProjectNoDetailsByProjectNo(string itemNumber, string projectNo)
+        public async Task<IEnumerable<PoAddProject>> GetPOProjectNoDetailsByProjectNo(string itemNumber, string projectNo,int poItemId)
         {
-            var poItemsDetailsByitemNo = await _tipsPurchaseDbContexts.PoItems
-                 .Where(x => x.ItemNumber == itemNumber)
+            var poItemDetailId = await _tipsPurchaseDbContexts.PoItems
+                 .Where(x => x.ItemNumber == itemNumber && x.Id == poItemId)
                  .Select(x => x.Id)
                           .ToListAsync();
 
             var poProjectNoDetailsByProjectNo = await _tipsPurchaseDbContexts.PoAddProjects
-                 .Where(x => x.ProjectNumber == projectNo && x.PoAddProjectStatus != true && poItemsDetailsByitemNo.Contains(x.POItemDetailId))
+                 .Where(x => x.ProjectNumber == projectNo && x.PoAddProjectStatus != true && poItemDetailId.Contains(x.POItemDetailId))
                           .ToListAsync();
 
             return poProjectNoDetailsByProjectNo;

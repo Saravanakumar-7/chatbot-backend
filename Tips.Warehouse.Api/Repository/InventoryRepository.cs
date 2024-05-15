@@ -809,7 +809,15 @@ namespace Tips.Warehouse.Api.Repository
 
             return PagedList<Inventory>.ToPagedList(sortedQuery, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        public async Task<IEnumerable<CrossMarginSPReport>> GetCrossMarginSPReportsWithParam(string CustomerId,string CustomerName)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<CrossMarginSPReport>()
+            .FromSqlInterpolated($"CALL cross_margin_report({CustomerId},{CustomerName})")
+            .ToList();
 
+            return result;
+        }
         public async Task<IEnumerable<InventorySPReport>> GetInventorySPReportsWithParam(string PartNumber, string Description, string Warehouse,
                                                                                                    string Location, string ProjectNumber)
         {
@@ -823,28 +831,33 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<IEnumerable<Inventory>> GetInventoryWarehouseReport(string PartNumber, string Description, string Warehouse,string Location, string ProjectNumber)
         {
             string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
-            var query = FindAll();
-
+            var query = FindAll();            
             // Apply filters if any parameters are provided
             if (!string.IsNullOrEmpty(PartNumber))
             {
-                query = query.Where(x => x.PartNumber.Contains(PartNumber));
+                //query = query.Where(x => x.PartNumber.Contains(PartNumber));
+                var parts = PartNumber.Split(',');
+                query = query.Where(x => parts.Contains(x.PartNumber));
             }
             if (!string.IsNullOrEmpty(Description))
             {
-                query = query.Where(x => x.Description.Contains(Description));
+                var desp = Description.Split(',');
+                query = query.Where(x => desp.Contains(x.Description));
             }
             if (!string.IsNullOrEmpty(Warehouse))
             {
-                query = query.Where(x => x.Warehouse.Contains(Warehouse));
+                var ware = Warehouse.Split(',');
+                query = query.Where(x => ware.Contains(x.Warehouse));
             }
             if (!string.IsNullOrEmpty(Location))
             {
-                query = query.Where(x => x.Location.Contains(Location));
+                var loc = Location.Split(',');
+                query = query.Where(x => loc.Contains(x.Location));
             }
             if (!string.IsNullOrEmpty(ProjectNumber))
             {
-                query = query.Where(x => x.ProjectNumber.Contains(ProjectNumber));
+                var proj = ProjectNumber.Split(',');
+                query = query.Where(x => proj.Contains(x.ProjectNumber));
             }
 
             // Apply warehouse exclusion filter
@@ -860,17 +873,20 @@ namespace Tips.Warehouse.Api.Repository
             var query = FindAll().Where(x=> x.Warehouse.Contains("WIP"));
             if (!string.IsNullOrEmpty(PartNumber))
             {
-                query = query.Where(x => x.PartNumber.Contains(PartNumber));
+                var parts = PartNumber.Split(',');
+                query = query.Where(x => parts.Contains(x.PartNumber));
             }
             if (!string.IsNullOrEmpty(Description))
             {
-                query = query.Where(x => x.Description.Contains(Description));
+                var desp = Description.Split(',');
+                query = query.Where(x => desp.Contains(x.Description));
             }
             if (!string.IsNullOrEmpty(ProjectNumber))
             {
-                query = query.Where(x => x.ProjectNumber.Contains(ProjectNumber));
+                var proj = ProjectNumber.Split(',');
+                query = query.Where(x => proj.Contains(x.ProjectNumber));
             }
-          
+
             var result = await query.OrderByDescending(x => x.Id).ToListAsync();
 
             return result;
@@ -883,23 +899,28 @@ namespace Tips.Warehouse.Api.Repository
             var query = FindAll().Where(x => wareHouses.Contains(x.Warehouse));
             if (!string.IsNullOrEmpty(PartNumber))
             {
-                query = query.Where(x => x.PartNumber.Contains(PartNumber));
+                var parts = PartNumber.Split(',');
+                query = query.Where(x => parts.Contains(x.PartNumber));
             }
             if (!string.IsNullOrEmpty(Description))
             {
-                query = query.Where(x => x.Description.Contains(Description));
+                var desp = Description.Split(',');
+                query = query.Where(x => desp.Contains(x.Description));
             }
             if (!string.IsNullOrEmpty(ProjectNumber))
             {
-                query = query.Where(x => x.ProjectNumber.Contains(ProjectNumber));
+                var proj = ProjectNumber.Split(',');
+                query = query.Where(x => proj.Contains(x.ProjectNumber));
             }
             if (!string.IsNullOrEmpty(Warehouse))
             {
-                query = query.Where(x => x.Warehouse.Contains(Warehouse));
+                var ware = Warehouse.Split(',');
+                query = query.Where(x => ware.Contains(x.Warehouse));
             }
             if (!string.IsNullOrEmpty(Location))
             {
-                query = query.Where(x => x.Location.Contains(Location));
+                var loc = Location.Split(',');
+                query = query.Where(x => loc.Contains(x.Location));
             }
             var result = await query.OrderByDescending(x => x.Id).ToListAsync();
 
@@ -913,23 +934,28 @@ namespace Tips.Warehouse.Api.Repository
             var query = FindAll().Where(x => wareHouses.Contains(x.Warehouse));
             if (!string.IsNullOrEmpty(PartNumber))
             {
-                query = query.Where(x => x.PartNumber.Contains(PartNumber));
+                var parts = PartNumber.Split(',');
+                query = query.Where(x => parts.Contains(x.PartNumber));
             }
             if (!string.IsNullOrEmpty(Description))
             {
-                query = query.Where(x => x.Description.Contains(Description));
+                var desp = Description.Split(',');
+                query = query.Where(x => desp.Contains(x.Description));
             }
             if (!string.IsNullOrEmpty(ProjectNumber))
             {
-                query = query.Where(x => x.ProjectNumber.Contains(ProjectNumber));
+                var proj = ProjectNumber.Split(',');
+                query = query.Where(x => proj.Contains(x.ProjectNumber));
             }
             if (!string.IsNullOrEmpty(Warehouse))
             {
-                query = query.Where(x => x.Warehouse.Contains(Warehouse));
+                var ware = Warehouse.Split(',');
+                query = query.Where(x => ware.Contains(x.Warehouse));
             }
             if (!string.IsNullOrEmpty(Location))
             {
-                query = query.Where(x => x.Location.Contains(Location));
+                var loc = Location.Split(',');
+                query = query.Where(x => loc.Contains(x.Location));
             }
             var result = await query.OrderByDescending(x => x.Id).ToListAsync();
 

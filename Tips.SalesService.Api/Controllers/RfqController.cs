@@ -3650,6 +3650,45 @@ namespace Tips.SalesService.Api.Controllers
                     }
                 }
 
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetRfqSPReport()
+
+        {
+            ServiceResponse<IEnumerable<RfqSPReport>> serviceResponse = new ServiceResponse<IEnumerable<RfqSPReport>>();
+            try
+            {
+                var products = await _rfqRepository.GetRfqSPReport();
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned GetRfqSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqSPReport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 
 }
