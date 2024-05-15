@@ -902,7 +902,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PrItem> GetPrItemByPRNo(string prNo,string pritem)
         {
             var prId = await _tipsPurchaseDbContexts.PurchaseRequisitions
-                .Where(x => x.PrNumber == prNo)
+                .Where(x => x.PrNumber == prNo && x.RevisionNumber == _tipsPurchaseDbContexts.PurchaseRequisitions.Where(x=>x.PrNumber == prNo).Max(x=>x.RevisionNumber))
                 .Select(x => x.Id)
                 .FirstOrDefaultAsync();
 
@@ -923,7 +923,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PrStatus> GetPrItemClosedStatusCount(string prNo)
         {
             var prId = await _tipsPurchaseDbContexts.PurchaseRequisitions
-               .Where(x => x.PrNumber == prNo)
+               .Where(x => x.PrNumber == prNo && x.RevisionNumber == _tipsPurchaseDbContexts.PurchaseRequisitions.Where(x => x.PrNumber == prNo).Max(x => x.RevisionNumber))
                .Select(x => x.Id)
                .FirstOrDefaultAsync();
             

@@ -829,6 +829,7 @@ namespace Tips.Grin.Api.Controllers
                         {
                             var grinPartsProjectNoDtoDetail = _mapper.Map<GrinUpdateProjectBalQtyDetailsDto>(projectNo);
                             grinPartsProjectNoDtoDetail.ItemNumber = grinparts.ItemNumber;
+                            grinPartsProjectNoDtoDetail.PONumber = grinparts.PONumber;
                             projectNameDtos.Add(grinPartsProjectNoDtoDetail);
                         }
 

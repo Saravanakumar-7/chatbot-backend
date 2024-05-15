@@ -59,6 +59,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class GrinUpdateProjectBalQtyDetailsDto
     {
         public string ItemNumber { get; set; }
+        public string PONumber { get; set; }
         public string ProjectNumber { get; set; }
         public decimal ProjectQty { get; set; }
     }
