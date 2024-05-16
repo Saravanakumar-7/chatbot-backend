@@ -2,7 +2,7 @@
 {
     public class CrossMarginSPReport
     {
-        public int? CustomerId { get; set; }
+        public string? CustomerId { get; set; }
         public string? CustomerName { get; set; }
         public string? ItemNumber { get; set; }
         public string? OrderNumber { get; set; }

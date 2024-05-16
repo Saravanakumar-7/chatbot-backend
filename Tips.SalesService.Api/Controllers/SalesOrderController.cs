@@ -335,9 +335,16 @@ namespace Tips.SalesService.Api.Controllers
                             salesOrderItemsDtos.SoConfirmationDates = _mapper.Map<List<SoConfirmationDateDto>>(salesOrderItemDetails.SoConfirmationDates);
                             var client = _clientFactory.CreateClient();
                             var token = HttpContext.Request.Headers["Authorization"].ToString();
-                            string itemNumber = salesOrderItemsDtos.ItemNumber;
+                            var itemNumber = salesOrderItemsDtos.ItemNumber;
                             var encodedItemNumber = Uri.EscapeDataString(itemNumber);
-                            var encodedProjectNo=Uri.EscapeDataString(itemNumberList.Where(x => x.Item1 == itemNumber).Select(x => x.Item2).ToString());
+                            var projectNo = salesOrderItemsDtos.ProjectNumber;
+                            var encodedProjectNo = Uri.EscapeDataString(projectNo);
+                            //var encodedProjectNo=Uri.EscapeDataString(itemNumberList.Where(x => x.Item1 == itemNumber).Select(x => x.Item2).ToString());
+                            //var encodedProjectNo = Uri.EscapeDataString(
+                            //                         string.Join(",", itemNumberList
+                            //                        .Where(x => x.Item1 == itemNumber)
+                            //                        .Select(x => x.Item2)));
+
                             var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
                             $"GetInventoryDetailsByItemNo?itemNumber={encodedItemNumber}&projectNo={encodedProjectNo}"));
                             request.Headers.Add("Authorization", token);

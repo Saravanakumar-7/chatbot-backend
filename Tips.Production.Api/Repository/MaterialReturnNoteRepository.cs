@@ -144,7 +144,17 @@ namespace Tips.Production.Api.Repository
 
             return PagedList<MaterialReturnNote>.ToPagedList(materialReturnNoteDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        public async Task<PagedList<MaterialReturnNote>> GetAllMRNOpenwithPartialStatus(PagingParameter pagingParameter, SearchParamess searchParammes)
+        {
+            var materialReturnNoteDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.MRNNumber.Contains(searchParammes.SearchValue)
+              || inv.ProjectNumber.Contains(searchParammes.SearchValue))) && (inv.MrnStatus == MaterialStatus.Open || inv.MrnStatus == MaterialStatus.PartiallyClosed))
+                .Include(s => s.MaterialReturnNoteItems)
+                .ThenInclude(m => m.MRNWarehouseList);
 
+
+            return PagedList<MaterialReturnNote>.ToPagedList(materialReturnNoteDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
         public async Task<IEnumerable<MaterialReturnNote>> GetAllMRNStatusClose()
         {
             var materialReturnNoteDetails = FindAll().OrderByDescending(x => x.Id)
