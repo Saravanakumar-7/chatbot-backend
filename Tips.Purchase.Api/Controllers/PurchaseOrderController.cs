@@ -2847,7 +2847,7 @@ namespace Tips.Purchase.Api.Controllers
                     var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
                     request1.Headers.Add("Authorization", token);
                     var response1 = await client.SendAsync(request1);
-                    var EmailTempString1 = await response.Content.ReadAsStringAsync();
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
                     var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
@@ -2962,7 +2962,7 @@ namespace Tips.Purchase.Api.Controllers
                     var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
                     request1.Headers.Add("Authorization", token);
                     var response1 = await client.SendAsync(request1);
-                    var EmailTempString1 = await response.Content.ReadAsStringAsync();
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
                     var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
 
                     var httpclientHandler = new HttpClientHandler();
@@ -3136,7 +3136,7 @@ namespace Tips.Purchase.Api.Controllers
                     var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
                     request1.Headers.Add("Authorization", token);
                     var response1 = await client.SendAsync(request1);
-                    var EmailTempString1 = await response.Content.ReadAsStringAsync();
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
                     var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
 
                     var httpclientHandler = new HttpClientHandler();
@@ -3250,7 +3250,7 @@ namespace Tips.Purchase.Api.Controllers
                     var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
                     request1.Headers.Add("Authorization", token);
                     var response1 = await client.SendAsync(request1);
-                    var EmailTempString1 = await response.Content.ReadAsStringAsync();
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
                     var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
 
                     var httpclientHandler = new HttpClientHandler();
@@ -3558,7 +3558,7 @@ namespace Tips.Purchase.Api.Controllers
                     var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
                     request1.Headers.Add("Authorization", token);
                     var response1 = await client.SendAsync(request1);
-                    var EmailTempString1 = await response.Content.ReadAsStringAsync();
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
                     var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
 
                     var httpclientHandler = new HttpClientHandler();
