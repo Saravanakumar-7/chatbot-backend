@@ -177,7 +177,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? TotalAdditionalCharges { get; set; }
         public string? SpecialDiscountType { get; set; }
         public SalesOrderStatus SalesOrderStatus { get; set; }
-
+        public OrderStatus SOStatus { get; set; }
         [Precision(18, 3)]
         public decimal? SpecialDiscountAmount { get; set; }
         [Precision(18, 3)]

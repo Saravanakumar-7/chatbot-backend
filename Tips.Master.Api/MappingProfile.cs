@@ -509,7 +509,7 @@ namespace Tips.Master.Api
 
             CreateMap<WeightedAvgRate, WeightedAvgRateDto>().ReverseMap();
             CreateMap<EmailTemplate, EmailTemplateDto>().ReverseMap();
-
+            CreateMap<EmailIDs, EmailIDsDto>().ReverseMap();
         }
     }
 }
