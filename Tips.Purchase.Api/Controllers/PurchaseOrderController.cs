@@ -1304,13 +1304,13 @@ namespace Tips.Purchase.Api.Controllers
                     request1.Headers.Add("Authorization", token);
                     var response1 = await client.SendAsync(request1);
                     var EmailTempString1 = await response.Content.ReadAsStringAsync();
-                    var emaildetails1 = JsonConvert.DeserializeObject<List<EmailIDsDto>>(EmailTempString1);
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
-                    var mails = (emaildetails1.Where(x=>x.Operation== "CreatePurchaseOrder").Select(x=>x.EmailIds).FirstOrDefault()).Split(',');
+                    var mails = (emaildetails1.data.Where(x=>x.operation== "CreatePurchaseOrder").Select(x=>x.emailIds).FirstOrDefault()).Split(',');
                     //var mails = "accounts@avisionsystems.com";
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse(emaildetails1.Where(x => x.Operation == "From").Select(x => x.EmailIds).FirstOrDefault()));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
                     //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetails.PODate.ToString().Split(" ");
                     email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
@@ -1354,9 +1354,9 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    int port = (emaildetails1.Where(x => x.Operation == "From").Select(x => x.Port).FirstOrDefault() ?? default(int));
-                    smtp.Connect((emaildetails1.Where(x => x.Operation == "From").Select(x => x.Host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
-                    smtp.Authenticate((emaildetails1.Where(x => x.Operation == "From").Select(x => x.EmailIds).FirstOrDefault()), (emaildetails1.Where(x => x.Operation == "From").Select(x => x.Password).FirstOrDefault()));
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
@@ -2848,13 +2848,13 @@ namespace Tips.Purchase.Api.Controllers
                     request1.Headers.Add("Authorization", token);
                     var response1 = await client.SendAsync(request1);
                     var EmailTempString1 = await response.Content.ReadAsStringAsync();
-                    var emaildetails1 = JsonConvert.DeserializeObject<List<EmailIDsDto>>(EmailTempString1);
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
                     //var mails = new List<string>() {"bala@avisionsystems.com","anilyadav@avisionsystems.com" };
-                    var mails = (emaildetails1.Where(x => x.Operation == "Approval1").Select(x => x.EmailIds).FirstOrDefault()).Split(',');
+                    var mails = (emaildetails1.data.Where(x => x.operation == "Approval1").Select(x => x.emailIds).FirstOrDefault()).Split(',');
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse(emaildetails1.Where(x => x.Operation == "From").Select(x => x.EmailIds).FirstOrDefault()));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
                     //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
                     email.To.AddRange(mails.Select(x=> MailboxAddress.Parse(x)));
@@ -2898,9 +2898,9 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    int port = (emaildetails1.Where(x => x.Operation == "From").Select(x => x.Port).FirstOrDefault() ?? default(int));
-                    smtp.Connect((emaildetails1.Where(x => x.Operation == "From").Select(x => x.Host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
-                    smtp.Authenticate((emaildetails1.Where(x => x.Operation == "From").Select(x => x.EmailIds).FirstOrDefault()), (emaildetails1.Where(x => x.Operation == "From").Select(x => x.Password).FirstOrDefault()));
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
 
 
                     smtp.Send(email);
@@ -2963,19 +2963,19 @@ namespace Tips.Purchase.Api.Controllers
                     request1.Headers.Add("Authorization", token);
                     var response1 = await client.SendAsync(request1);
                     var EmailTempString1 = await response.Content.ReadAsStringAsync();
-                    var emaildetails1 = JsonConvert.DeserializeObject<List<EmailIDsDto>>(EmailTempString1);
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
 
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);                   
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse(emaildetails1.Where(x => x.Operation == "From").Select(x => x.EmailIds).FirstOrDefault()));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
 
                     // email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
                     if (purchaseOrderDetailByPONumber.ApprovalCount > 2)
                     {
                         //var mails = "venkat.k@avisionsystems.com";
-                        var mails = (emaildetails1.Where(x => x.Operation == "Approval2").Select(x => x.EmailIds).FirstOrDefault()).Split(',');
+                        var mails = (emaildetails1.data.Where(x => x.operation == "Approval2").Select(x => x.emailIds).FirstOrDefault()).Split(',');
                         email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
                         //email.To.Add(MailboxAddress.Parse(mails));
                         email.Subject = emaildetails.data.subject;
@@ -3019,9 +3019,9 @@ namespace Tips.Purchase.Api.Controllers
                         using var smtp = new MailKit.Net.Smtp.SmtpClient();
                         //smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
                         //smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
-                        int port = (emaildetails1.Where(x => x.Operation == "From").Select(x => x.Port).FirstOrDefault() ?? default(int));
-                        smtp.Connect((emaildetails1.Where(x => x.Operation == "From").Select(x => x.Host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
-                        smtp.Authenticate((emaildetails1.Where(x => x.Operation == "From").Select(x => x.EmailIds).FirstOrDefault()), (emaildetails1.Where(x => x.Operation == "From").Select(x => x.Password).FirstOrDefault()));
+                        int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                        smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                        smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
 
                         smtp.Send(email);
                         smtp.Disconnect(true);
@@ -3030,7 +3030,7 @@ namespace Tips.Purchase.Api.Controllers
                     {
                         //var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com" };
                         //email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
-                        var mails = (emaildetails1.Where(x => x.Operation == "Approval2").Select(x => x.EmailIds).FirstOrDefault()).Split(',');
+                        var mails = (emaildetails1.data.Where(x => x.operation == "Approval2").Select(x => x.emailIds).FirstOrDefault()).Split(',');
                         email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
                         email.Subject = emaildetails.data.subject;
                         string body = emaildetails.data.template;
@@ -3071,9 +3071,9 @@ namespace Tips.Purchase.Api.Controllers
                         email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                         using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                        int port = (emaildetails1.Where(x => x.Operation == "From").Select(x => x.Port).FirstOrDefault() ?? default(int));
-                        smtp.Connect((emaildetails1.Where(x => x.Operation == "From").Select(x => x.Host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
-                        smtp.Authenticate((emaildetails1.Where(x => x.Operation == "From").Select(x => x.EmailIds).FirstOrDefault()), (emaildetails1.Where(x => x.Operation == "From").Select(x => x.Password).FirstOrDefault()));
+                        int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                        smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                        smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
 
                         smtp.Send(email);
                         smtp.Disconnect(true);
@@ -3137,15 +3137,15 @@ namespace Tips.Purchase.Api.Controllers
                     request1.Headers.Add("Authorization", token);
                     var response1 = await client.SendAsync(request1);
                     var EmailTempString1 = await response.Content.ReadAsStringAsync();
-                    var emaildetails1 = JsonConvert.DeserializeObject<List<EmailIDsDto>>(EmailTempString1);
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
 
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
                     //var mails =new List<string>() { "eyalbn@uvisionuav.com", "yonatan@uvisionuav.com"};
-                    var mails = (emaildetails1.Where(x => x.Operation == "Approval3").Select(x => x.EmailIds).FirstOrDefault()).Split(',');
+                    var mails = (emaildetails1.data.Where(x => x.operation == "Approval3").Select(x => x.emailIds).FirstOrDefault()).Split(',');
                     var email = new MimeMessage();
                     //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
-                    email.From.Add(MailboxAddress.Parse(emaildetails1.Where(x => x.Operation == "From").Select(x => x.EmailIds).FirstOrDefault()));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
                     email.To.AddRange(mails.Select(x=> MailboxAddress.Parse(x)));
 
@@ -3188,9 +3188,9 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    int port = (emaildetails1.Where(x => x.Operation == "From").Select(x => x.Port).FirstOrDefault() ?? default(int));
-                    smtp.Connect((emaildetails1.Where(x => x.Operation == "From").Select(x => x.Host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
-                    smtp.Authenticate((emaildetails1.Where(x => x.Operation == "From").Select(x => x.EmailIds).FirstOrDefault()), (emaildetails1.Where(x => x.Operation == "From").Select(x => x.Password).FirstOrDefault()));
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
@@ -3251,15 +3251,15 @@ namespace Tips.Purchase.Api.Controllers
                     request1.Headers.Add("Authorization", token);
                     var response1 = await client.SendAsync(request1);
                     var EmailTempString1 = await response.Content.ReadAsStringAsync();
-                    var emaildetails1 = JsonConvert.DeserializeObject<List<EmailIDsDto>>(EmailTempString1);
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
 
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
                     // var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com"};
-                    var mails = (emaildetails1.Where(x => x.Operation == "Approval4").Select(x => x.EmailIds).FirstOrDefault()).Split(',');
+                    var mails = (emaildetails1.data.Where(x => x.operation == "Approval4").Select(x => x.emailIds).FirstOrDefault()).Split(',');
                     var email = new MimeMessage();
                     //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
-                    email.From.Add(MailboxAddress.Parse(emaildetails1.Where(x => x.Operation == "From").Select(x => x.EmailIds).FirstOrDefault()));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
                     email.To.AddRange(mails.Select(x=> MailboxAddress.Parse(x)));
 
@@ -3304,9 +3304,9 @@ namespace Tips.Purchase.Api.Controllers
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
                     //smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
                     //smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
-                    int port = (emaildetails1.Where(x => x.Operation == "From").Select(x => x.Port).FirstOrDefault() ?? default(int));
-                    smtp.Connect((emaildetails1.Where(x => x.Operation == "From").Select(x => x.Host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
-                    smtp.Authenticate((emaildetails1.Where(x => x.Operation == "From").Select(x => x.EmailIds).FirstOrDefault()), (emaildetails1.Where(x => x.Operation == "From").Select(x => x.Password).FirstOrDefault()));
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
@@ -3559,16 +3559,16 @@ namespace Tips.Purchase.Api.Controllers
                     request1.Headers.Add("Authorization", token);
                     var response1 = await client.SendAsync(request1);
                     var EmailTempString1 = await response.Content.ReadAsStringAsync();
-                    var emaildetails1 = JsonConvert.DeserializeObject<List<EmailIDsDto>>(EmailTempString1);
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
 
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
                     //var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com", "accounts@avisionsystems.com", "bala@avisionsystems.com" };
-                    var mails = (emaildetails1.Where(x => x.Operation == "POConformation").Select(x => x.EmailIds).FirstOrDefault()).Split(',');
+                    var mails = (emaildetails1.data.Where(x => x.operation == "POConformation").Select(x => x.emailIds).FirstOrDefault()).Split(',');
 
                     var email = new MimeMessage();
                     // email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
-                    email.From.Add(MailboxAddress.Parse(emaildetails1.Where(x => x.Operation == "From").Select(x => x.EmailIds).FirstOrDefault()));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
 
                     var podate = PODetails.PODate.ToString().Split(" ");
                     email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
@@ -3611,9 +3611,9 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    int port = (emaildetails1.Where(x => x.Operation == "From").Select(x => x.Port).FirstOrDefault() ?? default(int));
-                    smtp.Connect((emaildetails1.Where(x => x.Operation == "From").Select(x => x.Host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
-                    smtp.Authenticate((emaildetails1.Where(x => x.Operation == "From").Select(x => x.EmailIds).FirstOrDefault()), (emaildetails1.Where(x => x.Operation == "From").Select(x => x.Password).FirstOrDefault()));
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
 
                     smtp.Send(email);
                     smtp.Disconnect(true);

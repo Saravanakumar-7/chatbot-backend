@@ -18,9 +18,11 @@ namespace Repository
         }
         public async Task<List<EmailIDs>> GetEmailIdDetailsbyOperation(string Operations)
         {
-            var ListOps= Operations.Split(',');
-            var details = await _tipsMasterDbContext.EmailIDs.Where(x => ListOps.Contains(x.Operation)).ToListAsync();
-            return details;
+                var ListOps = Operations.Split(',');
+                var details = await FindAll().Where(x => ListOps.Contains(x.Operation)).ToListAsync();
+                //var details = await FindAll().Where(x => x.Operation == ListOps[0] || x.Operation == ListOps[1]).ToListAsync();
+                return details;
+           
         }
     }
 }

@@ -45,7 +45,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid Operations object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var EmailIds = _repository.EmailIDsRepository.GetEmailIdDetailsbyOperation(Operations);
+                var EmailIds =await _repository.EmailIDsRepository.GetEmailIdDetailsbyOperation(Operations);
                 var result =_mapper.Map<List<EmailIDsDto>>(EmailIds);
                 serviceResponse.Data = result;
                 serviceResponse.Message = $"EmailDetails Return for {Operations}";
