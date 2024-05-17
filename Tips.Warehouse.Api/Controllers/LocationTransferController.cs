@@ -486,7 +486,7 @@ namespace Tips.Warehouse.Api.Controllers
                     }
                    
                 }
-           
+                _locationTransferRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "locationTransfer Successfully Created";
                 serviceResponse.Success = true;

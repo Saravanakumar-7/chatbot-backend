@@ -44,6 +44,7 @@ namespace Tips.Production.Api.Entities
         public DbSet<MaterialRequestSPReport> MaterialRequestSPReports { get; set; }
         public DbSet<OQCSPReport> OQCSPReports { get; set; }
         public DbSet<OQCBinningSPReport> OQCBinningSPReports { get; set; }
+        public DbSet<OQCAndOQCBinningSPReport> OQCAndOQCBinningSPReports { get; set; }
         public DbSet<PickListDTO> PickListDTOs { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -54,6 +55,7 @@ namespace Tips.Production.Api.Entities
             modelBuilder.Entity<OQCBinningSPReport>().HasNoKey();
             modelBuilder.Entity<PickList>().HasNoKey();
             modelBuilder.Entity<PickListDTO>().HasNoKey();
+            modelBuilder.Entity<OQCAndOQCBinningSPReport>().HasNoKey();
             // Other entity configurations can be added here
 
             base.OnModelCreating(modelBuilder);

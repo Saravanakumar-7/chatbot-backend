@@ -2266,9 +2266,8 @@ namespace Tips.Purchase.Api.Controllers
                
                 _repository.SaveAsync();
                 _pRItemsDocumentUploadRepository.SaveAsync();
-                _purchaseRequisitionRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = " PurchaseOrder Successfully Updated";
+                serviceResponse.Message = " PurchaseOrder ShortClosed Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -2276,7 +2275,7 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateurchaseOrder action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside ShortCloseForPurchaseOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong ,try again";
                 serviceResponse.Success = false;

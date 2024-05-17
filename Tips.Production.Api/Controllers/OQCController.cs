@@ -1059,5 +1059,78 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetOQCAndOQCBinningSPReportWithParam([FromBody] OQCSPReportDto oqcSPReportDto)
+        {
+            ServiceResponse<IEnumerable<OQCAndOQCBinningSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OQCAndOQCBinningSPReport>>();
+            try
+            {
+                var products = await _oQCRepository.GetOQCAndOQCBinningSPReportWithParam(oqcSPReportDto.ItemNumber, oqcSPReportDto.ShopOrderNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OQC And OQCBinning hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OQC And OQCBinning hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OQC And OQCBinning Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetOQCAndOQCBinningSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetOQCAndOQCBinningSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<OQCAndOQCBinningSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OQCAndOQCBinningSPReport>>();
+            try
+            {
+                var products = await _oQCRepository.GetOQCAndOQCBinningSPReportWithDate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OQC And OQCBinning WithDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OQC And OQCBinning WithDate hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OQCAndOQCBinningWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetOQCAndOQCBinningSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 }
