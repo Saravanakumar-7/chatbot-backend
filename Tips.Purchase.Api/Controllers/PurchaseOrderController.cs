@@ -2168,6 +2168,122 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        [HttpPut]
+        public async Task<IActionResult> ShortCloseForPurchaseOrder([FromBody] PurchaseOrderUpdateDto purchaseOrderUpdateDto)
+        {
+            ServiceResponse<PurchaseOrderPostDto> serviceResponse = new ServiceResponse<PurchaseOrderPostDto>();
+            try
+            {
+                string serverKey = GetServerKey();
+                if (purchaseOrderUpdateDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "PurchaseOrder object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("PurchaseOrder object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseOrder object.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseOrder object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+
+                var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderUpdateDto);
+                var AmountInWords = GetTotalValueInWords(purchaseOrderDetails.TotalAmount);
+                purchaseOrderDetails.AmountInWords = AmountInWords;
+                var poItemDto = purchaseOrderUpdateDto.POItems;
+                var poItemDtoList = new List<PoItem>();
+                var poIncoTermDto = purchaseOrderUpdateDto.POIncoTerms;
+                var poIncoTermsList = new List<PoIncoTerm>();
+
+                if (poIncoTermDto != null)
+                {
+                    for (int i = 0; i < poIncoTermDto.Count; i++)
+                    {
+                        PoIncoTerm poIncoTermDetails = _mapper.Map<PoIncoTerm>(poIncoTermDto[i]);
+                        poIncoTermsList.Add(poIncoTermDetails);
+                    }
+                }
+                purchaseOrderDetails.POIncoTerms = poIncoTermsList;
+
+                if (poItemDto != null)
+                {
+                    for (int i = 0; i < poItemDto.Count; i++)
+                    {
+                        PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+                        poItemDetails.BalanceQty = poItemDto[i].Qty;
+                        poItemDetails.PoPartsStatus = false;
+                        poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                        for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                        {
+                            PoAddProject poaddproject = poItemDetails.POAddprojects[j];
+                            poaddproject.BalanceQty = poaddproject.ProjectQty;
+                        }
+
+                        poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
+                        poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                        poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
+                        poItemDetails.PONumber = purchaseOrderUpdateDto.PONumber;
+                        poItemDtoList.Add(poItemDetails);
+                    }
+                }
+
+                purchaseOrderDetails.POItems = poItemDtoList;
+                await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
+
+                if (purchaseOrderUpdateDto.POItems != null)
+                {
+                    foreach (var pritem in purchaseOrderUpdateDto.POItems)
+                    {
+                        if (pritem.PrDetails != null)
+                        {
+                            foreach (var pritemdetail in pritem.PrDetails)
+                            {
+                                if (pritemdetail.PrDetailDocumentUploadUpdateDtos != null)
+                                {
+                                    foreach (var prDetailsDto in pritemdetail.PrDetailDocumentUploadUpdateDtos)
+                                    {
+                                        var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
+                                        if (prUploadDocument != null)
+                                        {
+                                            prUploadDocument.Checked = true;
+                                            await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
+                                        }
+
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+               
+                _repository.SaveAsync();
+                _pRItemsDocumentUploadRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = " PurchaseOrder ShortClosed Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ShortCloseForPurchaseOrder action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //pass data from grin using _httpclient service to purchase
 
         [HttpPost]

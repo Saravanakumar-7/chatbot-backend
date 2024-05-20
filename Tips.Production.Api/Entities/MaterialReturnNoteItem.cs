@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using Entities.Enums;
 using System.ComponentModel.DataAnnotations.Schema;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities
 {
@@ -19,7 +20,8 @@ namespace Tips.Production.Api.Entities
 
         public PartType PartType { get; set; }
         [Precision(13, 3)]
-        public decimal ReturnQty { get; set; }        
+        public decimal ReturnQty { get; set; }
+        public MaterialStatus MrnStatus { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

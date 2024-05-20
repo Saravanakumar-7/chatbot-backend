@@ -1,5 +1,6 @@
 ﻿using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
@@ -11,6 +12,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? MftrPartNumber { get; set; }
         public PartType PartType { get; set; }
         public decimal? ReturnQty { get; set; }
+        public MaterialStatus MrnStatus { get; set; }
         public List<MRNWarehouseDetailsDto> MRNWarehouseList { get; set; }
 
     }
@@ -34,6 +36,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public PartType PartType { get; set; }
         [Precision(13, 3)]
         public decimal ReturnQty { get; set; }
+        public MaterialStatus MrnStatus { get; set; }
         public List<MRNWarehouseDetailsUpdateDto> MRNWarehouseList { get; set; }
 
     }

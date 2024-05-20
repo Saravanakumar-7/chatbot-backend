@@ -1073,7 +1073,7 @@ namespace Tips.Grin.Api.Controllers
                         var grinNum = iQCCreate.GrinNumber;
                         if (grinNum != null)
                         {
-                            var iqcNum = grinNum.Replace("GRIN", "IQC");
+                            var iqcNum = grinNum.Replace("GRN", "IQC");
                             iQCCreate.IQCNumber = iqcNum;
                         }
 
@@ -2308,7 +2308,7 @@ namespace Tips.Grin.Api.Controllers
                         var grinNum = iqcConfirmation.GrinNumber;
                         if (grinNum != null)
                         {
-                            var iqcNum = grinNum.Replace("GRIN", "IQC");
+                            var iqcNum = grinNum.Replace("GRN", "IQC");
                             iqcConfirmation.IQCNumber = iqcNum;
                         }
 

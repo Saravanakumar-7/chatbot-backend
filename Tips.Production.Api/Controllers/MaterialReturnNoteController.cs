@@ -118,7 +118,45 @@ namespace Tips.Production.Api.Controllers
             }
 
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllMRNOpenwithPartialStatus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParammes)
+        {
+            ServiceResponse<IEnumerable<MaterialReturnNoteDto>> serviceResponse = new ServiceResponse<IEnumerable<MaterialReturnNoteDto>>();
 
+            try
+            {
+                var materialReturnNoteDetails = await _materialReturnNoteRepository.GetAllMRNOpenwithPartialStatus(pagingParameter, searchParammes);
+
+                var metadata = new
+                {
+                    materialReturnNoteDetails.TotalCount,
+                    materialReturnNoteDetails.PageSize,
+                    materialReturnNoteDetails.CurrentPage,
+                    materialReturnNoteDetails.HasNext,
+                    materialReturnNoteDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogError("Returned all getAllmaterialReturnNoteStatusOpen");
+                var result = _mapper.Map<IEnumerable<MaterialReturnNoteDto>>(materialReturnNoteDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all MaterialReturnNoteOpenOrPartiallyClosedStatus Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
         [HttpGet]
         public async Task<IActionResult> GetAllMRNCloseStatus()
         {
@@ -504,9 +542,14 @@ namespace Tips.Production.Api.Controllers
 
                 materialReturnNoteDetail.MaterialReturnNoteItems = materialReturnNoteItemList;
                 var updateMaterialReturnNoteItem = _mapper.Map(materialReturnNoteUpdateDto, materialReturnNoteDetail);
+                int? totalitems = updateMaterialReturnNoteItem.MaterialReturnNoteItems.Count();
+                if (totalitems > 0)
+                {
+                    if ((updateMaterialReturnNoteItem.MaterialReturnNoteItems.Where(x => x.MrnStatus == MaterialStatus.Open).Count()) == totalitems) updateMaterialReturnNoteItem.MrnStatus = MaterialStatus.Open;
+                    else if ((updateMaterialReturnNoteItem.MaterialReturnNoteItems.Where(x => x.MrnStatus == MaterialStatus.Closed).Count()) == totalitems) updateMaterialReturnNoteItem.MrnStatus = MaterialStatus.Closed;
+                    else if (((updateMaterialReturnNoteItem.MaterialReturnNoteItems.Where(x => x.MrnStatus == MaterialStatus.PartiallyClosed).Count()) > 0) || (updateMaterialReturnNoteItem.MaterialReturnNoteItems.Where(x => x.MrnStatus == MaterialStatus.Open).Count() > 0)) updateMaterialReturnNoteItem.MrnStatus = MaterialStatus.PartiallyClosed;
 
-
-                materialReturnNoteDetail.MrnStatus = MaterialStatus.Closed;
+                }
                 string result = await _materialReturnNoteRepository.UpdateMaterialReturnNote(updateMaterialReturnNoteItem);
 
                 if (updateMaterialReturnNoteResp == HttpStatusCode.OK)
