@@ -1293,21 +1293,21 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],"GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
 
                     var Operations = "From,CreatePurchaseOrder";
-                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"],$"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
                     request1.Headers.Add("Authorization", token);
                     var response1 = await client.SendAsync(request1);
                     var EmailTempString1 = await response1.Content.ReadAsStringAsync();
                     var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
-                    var mails = (emaildetails1.data.Where(x=>x.operation== "CreatePurchaseOrder").Select(x=>x.emailIds).FirstOrDefault()).Split(',');
+                    var mails = (emaildetails1.data.Where(x => x.operation == "CreatePurchaseOrder").Select(x => x.emailIds).FirstOrDefault()).Split(',');
                     //var mails = "accounts@avisionsystems.com";
                     var email = new MimeMessage();
                     email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
@@ -1342,7 +1342,7 @@ namespace Tips.Purchase.Api.Controllers
                             }
                         if (item.PrDetails.Count > 0)
                             foreach (var pr in item.PrDetails)
-                            {                                
+                            {
                                 if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
                                 else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
                             }
@@ -1993,7 +1993,7 @@ namespace Tips.Purchase.Api.Controllers
                 var poItemDtoList = new List<PoItem>();
                 var poIncoTermDto = purchaseOrderUpdateDto.POIncoTerms;
                 var poIncoTermsList = new List<PoIncoTerm>();
-                
+
                 if (poIncoTermDto != null)
                 {
                     for (int i = 0; i < poIncoTermDto.Count; i++)
@@ -2217,7 +2217,7 @@ namespace Tips.Purchase.Api.Controllers
         {
             foreach (var item in poProjectNoUpdateBalQtyDetails)
             {
-                IEnumerable<PoAddProject> poProjectNoDetails = await _poAddprojectRepository.GetPOProjectNoDetailsByProjectNo(item.ItemNumber, item.ProjectNumber,item.PoItemId);
+                IEnumerable<PoAddProject> poProjectNoDetails = await _poAddprojectRepository.GetPOProjectNoDetailsByProjectNo(item.ItemNumber, item.ProjectNumber, item.PoItemId);
                 decimal dispatchedQty = item.ProjectQty;
 
                 foreach (var poProjectNos in poProjectNoDetails)
@@ -2837,7 +2837,7 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],"GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
@@ -2857,7 +2857,7 @@ namespace Tips.Purchase.Api.Controllers
                     email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
                     //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
-                    email.To.AddRange(mails.Select(x=> MailboxAddress.Parse(x)));
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
 
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
@@ -2952,7 +2952,7 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],"GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
@@ -2966,7 +2966,7 @@ namespace Tips.Purchase.Api.Controllers
                     var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
 
                     var httpclientHandler = new HttpClientHandler();
-                    var httpClient = new HttpClient(httpclientHandler);                   
+                    var httpClient = new HttpClient(httpclientHandler);
                     var email = new MimeMessage();
                     email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
 
@@ -3078,8 +3078,8 @@ namespace Tips.Purchase.Api.Controllers
                         smtp.Send(email);
                         smtp.Disconnect(true);
                     }
-                    
-                    
+
+
 
                 }
                 serviceResponse.Message = "PurchaseOrderApprovalII Activated Successfully";
@@ -3126,7 +3126,7 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],"GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
@@ -3147,7 +3147,7 @@ namespace Tips.Purchase.Api.Controllers
                     //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
-                    email.To.AddRange(mails.Select(x=> MailboxAddress.Parse(x)));
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
 
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
@@ -3240,7 +3240,7 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],"GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
@@ -3261,7 +3261,7 @@ namespace Tips.Purchase.Api.Controllers
                     //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
-                    email.To.AddRange(mails.Select(x=> MailboxAddress.Parse(x)));
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
 
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
@@ -3548,7 +3548,7 @@ namespace Tips.Purchase.Api.Controllers
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
                     // var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],"GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
@@ -3697,7 +3697,7 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-        [HttpGet()] 
+        [HttpGet()]
         public async Task<IActionResult> Get_Tras_PurchaseOrderSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
             ServiceResponse<IEnumerable<Tras_POSPReport>> serviceResponse = new ServiceResponse<IEnumerable<Tras_POSPReport>>();
