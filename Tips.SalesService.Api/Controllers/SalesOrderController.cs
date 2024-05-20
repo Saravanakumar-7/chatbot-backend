@@ -1225,7 +1225,7 @@ namespace Tips.SalesService.Api.Controllers
                 int? count = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum !=OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();               
                 if (count == 0) salesdetails.SOStatus= OrderStatus.Closed;           
                 else if(count > 0) salesdetails.SOStatus = OrderStatus.PartiallyClosed;
-                await _repository.UpdateSalesOrder(salesdetails);
+                await _repository.UpdateSalesOrderShortClose(salesdetails);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SalesOrder Successfully Updated";

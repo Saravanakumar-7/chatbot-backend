@@ -2094,13 +2094,27 @@ namespace Tips.Purchase.Api.Controllers
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,CreatePurchaseOrder";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
-                    var mails = "accounts@avisionsystems.com";
+                    //var mails = "accounts@avisionsystems.com";
+                    var mails = (emaildetails1.data.Where(x => x.operation == "CreatePurchaseOrder").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                    //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetails.PODate.ToString().Split(" ");
-                    email.To.Add(MailboxAddress.Parse(mails));
+                    //email.To.Add(MailboxAddress.Parse(mails));
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
                     email.Subject = "Purchase Order Modified Notification";
                     string body = emaildetails.data.template;
                     body = body.Replace("{{PO Number}}", purchaseOrderDetails.PONumber);
@@ -2140,8 +2154,12 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
-                    smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+                    //smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                    //smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
@@ -3146,7 +3164,7 @@ namespace Tips.Purchase.Api.Controllers
                     {
                         //var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com" };
                         //email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
-                        var mails = (emaildetails1.data.Where(x => x.operation == "Approval2").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                        var mails = (emaildetails1.data.Where(x => x.operation == "Approval2count2").Select(x => x.emailIds).FirstOrDefault()).Split(',');
                         email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
                         email.Subject = emaildetails.data.subject;
                         string body = emaildetails.data.template;
