@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Entities.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Warehouse.Api.Entities
 {
@@ -19,7 +20,7 @@ namespace Tips.Warehouse.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+        public Status InvoiceStatus { get; set; }
         public List<InvoiceChildItem>? invoiceChildItems { get; set; }
         public List<InvoiceAdditionalCharges>? InvoiceAdditionalCharges { get; set; }
 

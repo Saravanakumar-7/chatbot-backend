@@ -193,7 +193,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? DONumber { get; set; }
         public string? FGItemNumber { get; set; }
         public string? Description { get; set; }
-
+        public Status InvoiceItemStatus { get; set; }
+        public decimal? ReturnInvoiceQty { get; set; }
 
         [Precision(13, 3)]
         public decimal InvoicedQty { get; set; }

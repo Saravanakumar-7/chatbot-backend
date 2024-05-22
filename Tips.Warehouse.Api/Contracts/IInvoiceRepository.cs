@@ -14,6 +14,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<string> GenerateInvoiceNumber();
         Task<long?> CreateInvoice(Invoice invoice);
         Task<string> UpdateInvoice(Invoice invoice);
+        Task<string> UpdateInvoiceFromReturnInvoice(Invoice invoice);
         Task<string> DeleteInvoice(Invoice invoice);
         Task<string> GenerateInvoiceNumberAvision();
         Task<Invoice> GetInvoiceById(int id);
@@ -25,5 +26,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportWithParameter(string InvoiceNumber, string DONumber, string LeadId, string CustomerName,
      string CustomerAliasName, string SalesOrderNumber, string Location, string Warehouse, string KPN, string MPN, string IssuedTo);
+        Task<Invoice> GetInvoiceByInvoiceNumber(string InvoiceNumber);
+        Task<Invoice> GetInvoiceByIdExceptClosed(int id);
     }
 }

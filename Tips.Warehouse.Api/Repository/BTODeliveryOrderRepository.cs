@@ -319,7 +319,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<BTODeliveryOrder> GetBtoDetailsByBtoNo(string BTONumber)
         {
             var getBtoDetailsByBtoNo = await _tipsWarehouseDbContext.bTODeliveryOrder
-                    .Where(x => x.BTONumber == BTONumber)
+                    .Where(x => x.BTONumber == BTONumber).Include(x=>x.bTODeliveryOrderItems)
                           .FirstOrDefaultAsync();
             return getBtoDetailsByBtoNo;
         }
@@ -345,7 +345,12 @@ namespace Tips.Warehouse.Api.Repository
             string result = $"BTODeliveryOrder of Detail {bTODeliveryOrder.Id} is updated successfully!";
             return result;
         }
-
+        public async Task<string> UpdateBTODeliveryOrderFromReturnDO(BTODeliveryOrder bTODeliveryOrder)
+        {
+            Update(bTODeliveryOrder);
+            string result = $"BTODeliveryOrder of Detail {bTODeliveryOrder.Id} is updated successfully!";
+            return result;
+        }
         public async Task<IEnumerable<BtoIDNameList>> GetAllBTOIdNameIdNameList()
         {
             IEnumerable<BtoIDNameList> btoIddNameList = await _tipsWarehouseDbContext.bTODeliveryOrder
@@ -377,6 +382,34 @@ namespace Tips.Warehouse.Api.Repository
                              .FirstOrDefaultAsync();
 
             return btoIddNameList;
+        }
+        public async Task<BTODeliveryOrder> GetBTODeliveryOrderByIdExcludingClosed(int id)
+        {
+            var getBTODeliveryOrderDetailsbyId = await _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.Id == id)
+                                .Include(t => t.bTODeliveryOrderItems.Where(x => x.DoStatus != Status.Closed)).ThenInclude(x => x.QtyDistribution)
+                                //.ThenInclude(s => s.BTOSerialNumbers)
+                                .FirstOrDefaultAsync();
+
+
+            return getBTODeliveryOrderDetailsbyId;
+        }
+        public async Task<IEnumerable<ListOfBtoNumberDetails>> GetBtoNumberListByCustomerIdExcludingClosed(string customerLeadId)
+        {
+
+            IEnumerable<ListOfBtoNumberDetails> getBtoNumberList = await _tipsWarehouseDbContext.bTODeliveryOrder.Where(x=>x.DoStatus!=Status.Closed && x.CustomerId == customerLeadId)
+                                .Select(x => new ListOfBtoNumberDetails()
+                                {
+                                    CustomerLeadID = x.CustomerId,
+                                    BTONumber = x.BTONumber,
+                                    BtoDeliveryOrderId = x.Id,
+                                    OrderType = x.OrderType,
+                                    TotalValue = x.TotalValue
+
+                                })
+                                //.Where(x => x.CustomerLeadID == customerLeadId)
+                              .ToListAsync();
+
+            return getBtoNumberList;
         }
     }
 
