@@ -1182,7 +1182,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsByIdandItemNo(item.FGItemNumber, item.SalesOrderId);
                     var dispatchedQty = item.DispatchQty;
-                    if (salesOrderItems != null)
+                    if (salesOrderItems != null && salesOrderItems.Count() > 0)
                     {
                         foreach (var salesOrderItem in salesOrderItems)
                         {
