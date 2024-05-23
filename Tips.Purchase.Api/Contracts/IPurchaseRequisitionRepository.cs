@@ -42,5 +42,6 @@ namespace Tips.Purchase.Api.Contracts
         Task<PurchaseRequisition> GetPurchaseRequisitionByPRNo(string prNumber);
         Task<IEnumerable<PurchaseRequisitionSPReport>> GetPurchaseRequisitionsSPReportWithParam(string PrNumber, string ProcurementType, string ShippingMode, string PrStatus);
         Task<IEnumerable<PurchaseRequisitionSPReport>> GetPurchaseRequisitionsSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<PurchaseRequisition> GetPrDetailsByPrNumber(string prNumber);
     }
 }

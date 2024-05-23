@@ -368,14 +368,6 @@ namespace Tips.Purchase.Api.Repository
 
             return revNoListbyPONumber;
         }
-        public async Task<PurchaseRequisition> GetPrDetailsByPrNumber(string prNumber)
-        {
-            var prDetails = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PrNumber == prNumber && x.RevisionNumber == _tipsPurchaseDbContext.PurchaseRequisitions
-                                                                        .Where(x => x.PrNumber == prNumber).Max(x => x.RevisionNumber))
-                .FirstOrDefaultAsync();
-
-            return prDetails;
-        }
 
         public async Task<IEnumerable<PRNoandQtyListDto>> GetPRNumberandQtyListByItemNumber(string itemNumber)
         {
