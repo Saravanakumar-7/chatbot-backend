@@ -629,6 +629,8 @@ namespace Tips.Warehouse.Api.Controllers
                     {
                         InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
                         invoiceChildItem.InitialDispatchQty = invoiceChildItem.InvoicedQty;
+                        invoiceChildItem.ReturnInvoiceQty = 0;
+                        invoiceChildItem.InvoiceItemStatus = Status.Open;
                         invoiceChildItemsEntityList.Add(invoiceChildItem);
 
                         var invoiceQty = invoiceChildItem.InvoicedQty;
@@ -645,7 +647,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                 invoice.invoiceChildItems = invoiceChildItemsEntityList;
                 invoice.InvoiceAdditionalCharges = InvoiceAdditionalChargesList.ToList();
-
+                invoice.InvoiceStatus = Status.Open;
                 await _invoiceRepository.CreateInvoice(invoice);
                 _invoiceRepository.SaveAsync();
 
@@ -752,7 +754,7 @@ namespace Tips.Warehouse.Api.Controllers
                         invoiceQty -= doBalanceQty;
                     }
 
-                    if (doItem.BalanceDoQty <= 0)
+                    if (doItem.BalanceDoQty == 0)
                     {
                         doItem.BalanceDoQty = 0;
                         doItem.DoStatus = Status.Closed;
@@ -905,6 +907,44 @@ namespace Tips.Warehouse.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetInvoiceByIdExceptClosed(int id)
+        {
+            ServiceResponse<InvoiceDto> serviceResponse = new ServiceResponse<InvoiceDto>();
+
+            try
+            {
+                var getInvoiceDetailById = await _invoiceRepository.GetInvoiceByIdExceptClosed(id);
+                if (getInvoiceDetailById == null)
+                {
+                    _logger.LogError($"Invoice with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Invoice with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned GetInvoiceByIdExceptClosed with id: {id}");
+                    var result = _mapper.Map<InvoiceDto>(getInvoiceDetailById);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned InvoiceById Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetInvoiceByIdExceptClosed for the Id:{id} action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
             }
         }
     }

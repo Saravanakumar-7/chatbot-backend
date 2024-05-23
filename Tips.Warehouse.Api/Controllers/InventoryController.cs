@@ -455,15 +455,15 @@ namespace Tips.Warehouse.Api.Controllers
                 if (InventoryDetails == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Inventory with itemNumber and ProjectNumber: {itemNumber} {shopordernumber}, is invalid";
+                    serviceResponse.Message = $"Inventory with itemNumber and shopordernumber: {itemNumber} {shopordernumber}, is invalid";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"Inventory with itemNumber and ProjectNumber: {itemNumber} {shopordernumber}, is invalid");
+                    _logger.LogError($"Inventory with itemNumber and shopordernumber: {itemNumber} {shopordernumber}, is invalid");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned Inventory with Itemnumber and ProjectNumber: {itemNumber} {shopordernumber}");
+                    _logger.LogInfo($"Returned Inventory with Itemnumber and shopordernumber: {itemNumber} {shopordernumber}");
                     var result = _mapper.Map<List<InventoryDto>>(InventoryDetails);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned Inventory with id Successfully";
@@ -474,7 +474,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                _logger.LogError($"Invalid inventory action in GetInventoryStockByItemAndShopOrderNo with Itemnumber and shopordernumber: {itemNumber} {shopordernumber} : {ex.Message},{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Invalid inventory{ex.Message},{ex.InnerException}";
                 serviceResponse.Success = false;

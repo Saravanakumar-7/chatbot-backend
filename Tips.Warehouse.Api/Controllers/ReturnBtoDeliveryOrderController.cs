@@ -12,6 +12,7 @@ using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
@@ -25,6 +26,7 @@ namespace Tips.Warehouse.Api.Controllers
     [Authorize]
     public class ReturnBtoDeliveryOrderController : ControllerBase
     {
+        private IBTODeliveryOrderRepository _bTODeliveryOrderRepository;
         private IReturnBtoDeliveryOrderRepository _repository;
         private IInventoryRepository _inventoryRepository;
         private IBTODeliveryOrderHistoryRepository _bTODeliveryOrderHistoryRepository;
@@ -38,8 +40,9 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public ReturnBtoDeliveryOrderController(IReturnBtoDeliveryOrderRepository repository, IHttpClientFactory clientFactory, IInventoryTranctionRepository inventoryTranctionRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryRepository inventoryRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public ReturnBtoDeliveryOrderController(IBTODeliveryOrderRepository bTODeliveryOrderRepository,IReturnBtoDeliveryOrderRepository repository, IHttpClientFactory clientFactory, IInventoryTranctionRepository inventoryTranctionRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryRepository inventoryRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
+            _bTODeliveryOrderRepository=bTODeliveryOrderRepository;
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
@@ -493,7 +496,7 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     Guid guid = Guid.NewGuid();
                     var returnBtoDeliveryOrderNo = await _repository.GetReturnBtoDeliveryOrderNoByReturnBtoNo(returnBtoDeliveryOrder.ReturnBTONumber);
-
+                    var Dodetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(returnBtoDeliveryOrder.BTONumber);
                     for (int i = 0; i < returnBtoDeliveryOrderitemsDto.Count; i++)
                     {
 
@@ -719,7 +722,22 @@ namespace Tips.Warehouse.Api.Controllers
                             _bTODeliveryOrderItemsRepository.SaveAsync();
 
                         }
-                    }
+                        if (Dodetails != null)
+                        {
+                            foreach (var doitem in Dodetails.bTODeliveryOrderItems)
+                            {
+                                if (doitem.BalanceDoQty == doitem.InitialDispatchQty) doitem.DoStatus = Status.Open;
+                                else if (doitem.BalanceDoQty > 0 && doitem.BalanceDoQty < doitem.InitialDispatchQty) doitem.DoStatus = Status.PartiallyClosed;
+                                else if (doitem.BalanceDoQty == 0) doitem.DoStatus = Status.Closed;
+                            }
+                            var mainDostatus = Dodetails.bTODeliveryOrderItems.Where(x => x.DoStatus == Status.Closed).Count();
+                            if (Dodetails.bTODeliveryOrderItems.Count() == Dodetails.bTODeliveryOrderItems.Where(x => x.DoStatus == Status.Closed).Count()) Dodetails.DoStatus = Status.Closed;
+                            else if(Dodetails.bTODeliveryOrderItems.Count()==Dodetails.bTODeliveryOrderItems.Where(x=>x.DoStatus==Status.Open).Count()) Dodetails.DoStatus = Status.Open;
+                            else Dodetails.DoStatus = Status.PartiallyClosed;
+                            await _bTODeliveryOrderRepository.UpdateBTODeliveryOrderFromReturnDO(Dodetails);
+                            _bTODeliveryOrderRepository.SaveAsync();
+                        }
+                    }                    
                 }
 
                 returnBtoDeliveryOrder.ReturnBtoDeliveryOrderItems = returnBtoDeliveryOrderItemsDtoList;

@@ -48,7 +48,8 @@ namespace Tips.Warehouse.Api.Entities
         public decimal Discount { get; set; }
         public string? DiscountType { get; set; }
         public decimal? InitialDispatchQty { get; set; }
-
+        public Status InvoiceItemStatus { get; set; }
+        public decimal? ReturnInvoiceQty { get; set; }
         public int InvoiceId { get; set; }
         public Invoice? Invoice { get; set; }
     }

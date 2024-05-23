@@ -30,6 +30,7 @@ namespace Tips.Warehouse.Api.Controllers
     public class ReturnInvoiceController : ControllerBase
     {
         private IReturnInvoiceRepository _returnInvoiceRepository;
+        private IInvoiceRepository _invoiceRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
@@ -44,8 +45,9 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly String _createdBy;
         private readonly String _unitname;
         private readonly IHttpClientFactory _clientFactory;
-        public ReturnInvoiceController(IReturnInvoiceRepository returnInvoiceRepositor, IHttpClientFactory clientFactory, IInvoiceChildRepository invoiceChildRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryTranctionRepository inventoryTranctionRepository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public ReturnInvoiceController(IReturnInvoiceRepository returnInvoiceRepositor, IInvoiceRepository invoiceRepository, IHttpClientFactory clientFactory, IInvoiceChildRepository invoiceChildRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryTranctionRepository inventoryTranctionRepository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
+            _invoiceRepository= invoiceRepository;
             _returnInvoiceRepository = returnInvoiceRepositor;
             _logger = logger;
             _mapper = mapper;
@@ -220,7 +222,7 @@ namespace Tips.Warehouse.Api.Controllers
                 //    int returnInvoicecount = 1;
                 //    returnInvoiceDetails.InvoiceNumber = invoiceNumber + "-" + "R" + "-" + returnInvoicecount;
                 //}
-
+                var InvoiceDetails=await _invoiceRepository.GetInvoiceByInvoiceNumber(invoiceNumber);
 
                 if (returnInvoiceItemDto != null)
                 {
@@ -229,6 +231,7 @@ namespace Tips.Warehouse.Api.Controllers
                         ReturnInvoiceItem returnInvoiceItems = _mapper.Map<ReturnInvoiceItem>(returnInvoiceItemDto[i]);
                         returnInvoiceItems.QtyDistribution = _mapper.Map<List<ReturnInvoiceItemQtyDistribution>>(returnInvoiceItemDto[i].QtyDistribution);
                         returnInvoiceItems.InvoicedQty = returnInvoiceItemDto[i].InvoicedQty;
+                        var returnedqty = returnInvoiceItems.ReturnQty;
                         returnInvoiceItems.ReturnQty *= -1;
                         returnInvoiceItemsList.Add(returnInvoiceItems);
 
@@ -237,9 +240,14 @@ namespace Tips.Warehouse.Api.Controllers
 
                         var btoDeliveryOrderItemDetails = await _bTODeliveryOrderItemsRepository.GetBtoDelieveryOrderItemDetails(getBtoDeliveryOrderPartsId);
 
-                        btoDeliveryOrderItemDetails.OrderBalanceQty += returnInvoiceItemDto[i].ReturnQty;
-                        btoDeliveryOrderItemDetails.DispatchQty -= returnInvoiceItemDto[i].ReturnQty;
-                        btoDeliveryOrderItemDetails.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
+                        btoDeliveryOrderItemDetails.OrderBalanceQty += returnedqty;
+                        //btoDeliveryOrderItemDetails.OrderBalanceQty += returnInvoiceItemDto[i].ReturnQty;
+                        btoDeliveryOrderItemDetails.DispatchQty -= returnedqty;
+                        //btoDeliveryOrderItemDetails.DispatchQty -= returnInvoiceItemDto[i].ReturnQty;
+                        if (btoDeliveryOrderItemDetails.DispatchQty == btoDeliveryOrderItemDetails.BalanceDoQty) btoDeliveryOrderItemDetails.DoStatus = Status.Open;
+                        else if (btoDeliveryOrderItemDetails.BalanceDoQty == 0) btoDeliveryOrderItemDetails.DoStatus = Status.Closed;
+                        else btoDeliveryOrderItemDetails.DoStatus = Status.Closed;
+                       // btoDeliveryOrderItemDetails.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
                         //Update Inventory balanced Quantity 
 
                         //var PartNumber = returnInvoiceItemDto[i].FGPartNumber;
@@ -432,8 +440,24 @@ namespace Tips.Warehouse.Api.Controllers
                         //invoiceChildItemDetails.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
                         //_invoiceChildRepository.Update(invoiceChildItemDetails);
                         //_invoiceChildRepository.SaveAsync();
+                        if (InvoiceDetails != null)
+                        {
+                            foreach (var item in InvoiceDetails.invoiceChildItems)
+                            {
+                                if (item.FGItemNumber == returnInvoiceItems.FGPartNumber) item.ReturnInvoiceQty += returnInvoiceItems.ReturnQty;
+                                if (item.InvoicedQty == item.ReturnInvoiceQty) item.InvoiceItemStatus = Status.Closed;
+                                else if (item.ReturnInvoiceQty == 0) item.InvoiceItemStatus = Status.Open;
+                                else if (item.ReturnInvoiceQty > 0 && item.InvoicedQty > item.ReturnInvoiceQty) item.InvoiceItemStatus = Status.PartiallyClosed;
+                            }
+                            if (InvoiceDetails.invoiceChildItems.Count() == InvoiceDetails.invoiceChildItems.Where(x => x.InvoiceItemStatus == Status.Closed).Count()) InvoiceDetails.InvoiceStatus = Status.Closed;
+                            else if (InvoiceDetails.invoiceChildItems.Count() == InvoiceDetails.invoiceChildItems.Where(x => x.InvoiceItemStatus == Status.Open).Count()) InvoiceDetails.InvoiceStatus = Status.Open;
+                            else InvoiceDetails.InvoiceStatus = Status.PartiallyClosed;
+                            await _invoiceRepository.UpdateInvoiceFromReturnInvoice(InvoiceDetails);
+                            _invoiceRepository.SaveAsync();
+                        }
                     }
                 }
+                
 
                 returnInvoiceDetails.ReturnInvoiceItems = returnInvoiceItemsList;
 
