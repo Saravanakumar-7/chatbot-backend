@@ -19,7 +19,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? CustomerItemNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public OrderStatus StatusEnum { get; set; }
-
+        public decimal? ShortClosedQty { get; set; }
         [Precision(13, 3)]
         public decimal BalanceQty { get; set; }
 
@@ -128,6 +128,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         [Precision(13, 3)]
         public decimal DispatchQty { get; set; }
         public OrderStatus StatusEnum { get; set; }
+        public decimal? ShortClosedQty { get; set; }
         public bool NowShortClosed { get; set; }
         [Precision(18, 3)]
         public decimal? BasicAmount { get; set; }

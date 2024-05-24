@@ -1481,7 +1481,7 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<IEnumerable<ListOfBtoNumberDetails>> serviceResponse = new ServiceResponse<IEnumerable<ListOfBtoNumberDetails>>();
             try
             {
-                var getBTONumberList = await _repository.GetBtoNumberListByCustomerId(customerLeadId);
+                var getBTONumberList = await _repository.GetBtoNumberListByCustomerIdExcludingClosed(customerLeadId);
 
                 if (getBTONumberList == null)
                 {
@@ -1489,7 +1489,7 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.Message = $"BTODeliveryOrderNumbers not found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"BTODeliveryOrderNumbersList with id: {customerLeadId},not found.");
+                    _logger.LogError($"GetBtoNumberListByCustomerIdExcludingClosed with id: {customerLeadId},not found.");
                     return NotFound(serviceResponse);
                 }
                 else
@@ -1500,7 +1500,7 @@ namespace Tips.Warehouse.Api.Controllers
 
 
                     serviceResponse.Data = bTODeliveryNumberList;
-                    serviceResponse.Message = "Returned BTODeliveryNumberList Successfully";
+                    serviceResponse.Message = "Returned GetBtoNumberListByCustomerIdExcludingClosed Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -1508,7 +1508,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetBTODeliveryOrderNumberList action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetBtoNumberListByCustomerIdExcludingClosed action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong,try again ";
                 serviceResponse.Success = false;
