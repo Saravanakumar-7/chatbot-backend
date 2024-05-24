@@ -55,12 +55,13 @@ namespace Tips.Purchase.Api.Controllers
         private IPrItemsRepository _purchaseRequisitionItemRepository;
         private IPoAddprojectRepository _poAddprojectRepository;
         private readonly IHttpClientFactory _clientFactory;
+        private IPoItemHistoryRepository _poItemHistoryRepository;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
         private readonly HttpClient _httpClient;
-        public PurchaseOrderController(IPrItemsRepository purchaseRequisitionItemRepository, IHttpClientFactory clientFactory, HttpClient httpClient, IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository, IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository, IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IPoAddprojectRepository poAddprojectRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
+        public PurchaseOrderController(IPrItemsRepository purchaseRequisitionItemRepository, IPoItemHistoryRepository poItemHistoryRepository, IHttpClientFactory clientFactory, HttpClient httpClient, IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository, IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository, IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IPoAddprojectRepository poAddprojectRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
             _httpClient = httpClient;
@@ -76,6 +77,7 @@ namespace Tips.Purchase.Api.Controllers
             _pRItemsDocumentUploadRepository = pRItemsDocumentUploadRepository;
             _purchaseRequisitionItemRepository = purchaseRequisitionItemRepository;
             _poAddprojectRepository = poAddprojectRepository;
+            _poItemHistoryRepository = poItemHistoryRepository;
             _config = config;
             _clientFactory = clientFactory;
             _httpContextAccessor = httpContextAccessor;
@@ -851,6 +853,11 @@ namespace Tips.Purchase.Api.Controllers
                         foreach (var poItemDetails in purchaseOrderDetailbyId.POItems)
                         {
                             PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
+                            var poItemHistoryReceivedQty = await _poItemHistoryRepository.GetPoItemHistoryDetailsByPoItemId(poItemDtos.Id);
+                            if (poItemHistoryReceivedQty != null)
+                            {
+                                poItemDtos.ReceivedQty = poItemHistoryReceivedQty.ReceivedQty;
+                            }
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
                             poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
                             poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
@@ -2237,6 +2244,42 @@ namespace Tips.Purchase.Api.Controllers
                         PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
                         poItemDetails.BalanceQty = poItemDto[i].Qty;
                         poItemDetails.PoPartsStatus = false;
+
+                        if (poItemDto[i].NowShortClosed == true)
+                        {
+                            PoItemHistory poItemHistory = new PoItemHistory();
+                            poItemHistory.ItemNumber = poItemDetails.ItemNumber;
+                            poItemHistory.MftrItemNumber = poItemDetails.MftrItemNumber;
+                            poItemHistory.Description = poItemDetails.Description;
+                            poItemHistory.PoItemId = poItemDetails.Id;
+                            poItemHistory.UOM = poItemDetails.UOM;
+                            poItemHistory.UnitPrice = poItemDetails.UnitPrice;
+                            poItemHistory.Qty = poItemDetails.Qty;
+                            poItemHistory.PONumber = poItemDetails.PONumber;
+                            poItemHistory.BalanceQty = poItemDetails.BalanceQty;
+                            poItemHistory.ReceivedQty = poItemDetails.ReceivedQty;
+                            poItemHistory.PartType = poItemDetails.PartType;
+                            poItemHistory.SpecialInstruction = poItemDetails.SpecialInstruction;
+                            poItemHistory.IsTechnicalDocsRequired = poItemDetails.IsTechnicalDocsRequired;
+                            poItemHistory.PoPartsStatus = poItemDetails.PoPartsStatus;
+                            poItemHistory.SGST = poItemDetails.SGST;
+                            poItemHistory.CGST = poItemDetails.CGST;
+                            poItemHistory.IGST = poItemDetails.IGST;
+                            poItemHistory.UTGST = poItemDetails.UTGST;
+                            poItemHistory.SubTotal = poItemDetails.SubTotal;
+                            poItemHistory.TotalWithTax = poItemDetails.TotalWithTax;
+                            poItemHistory.CreatedBy = poItemDetails.CreatedBy;
+                            poItemHistory.CreatedOn = poItemDetails.CreatedOn;
+                            poItemHistory.LastModifiedBy = poItemDetails.LastModifiedBy;
+                            poItemHistory.LastModifiedOn = poItemDetails.LastModifiedOn;
+                            poItemHistory.PoStatus = poItemDetails.PoStatus;
+                            poItemHistory.ReasonforShortClose = poItemDetails.ReasonforShortClose;
+                            poItemHistory.Remarks = poItemDetails.Remarks;
+                            poItemHistory.PurchaseOrderId = poItemDetails.PurchaseOrderId;
+
+                            await _poItemHistoryRepository.CreatePoItemHistory(poItemHistory);
+                        }
+
                         poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
                         for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
                         {
@@ -2283,6 +2326,7 @@ namespace Tips.Purchase.Api.Controllers
                 }
                
                 _repository.SaveAsync();
+                _poItemHistoryRepository.SaveAsync();
                 _pRItemsDocumentUploadRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = " PurchaseOrder ShortClosed Successfully";

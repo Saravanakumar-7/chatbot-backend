@@ -2592,7 +2592,42 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetStockMovementSPReports()
+        {
+            ServiceResponse<IEnumerable<StockMovementSPReport>> serviceResponse = new ServiceResponse<IEnumerable<StockMovementSPReport>>();
+            try
+            {
+                var products = await _inventoryRepository.GetStockMovementSPReports();
 
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"StockMovementSPReportsWithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"StockMovementSPReportsWithParam hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned StockMovementSPReportsWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetStockMovementSPReports action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetInventorySPReportsWithParam([FromBody] InventorySPReportDto inventorySPReportDto)
         {

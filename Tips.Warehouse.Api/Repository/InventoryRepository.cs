@@ -818,6 +818,15 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<StockMovementSPReport>> GetStockMovementSPReports()
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<StockMovementSPReport>()
+            .FromSqlInterpolated($"CALL Stock_Movement_Report()")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<InventorySPReport>> GetInventorySPReportsWithParam(string PartNumber, string Description, string Warehouse,
                                                                                                    string Location, string ProjectNumber)
         {
