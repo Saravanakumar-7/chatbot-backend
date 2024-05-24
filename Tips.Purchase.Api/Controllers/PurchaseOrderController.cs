@@ -3380,7 +3380,7 @@ namespace Tips.Purchase.Api.Controllers
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
 
-                    var Operations = "From,CreatePurchaseOrder";
+                    var Operations = "From,Approval4";
                     var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
                     request1.Headers.Add("Authorization", token);
                     var response1 = await client.SendAsync(request1);

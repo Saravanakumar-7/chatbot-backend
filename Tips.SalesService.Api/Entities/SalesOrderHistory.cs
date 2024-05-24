@@ -18,7 +18,7 @@ namespace Tips.SalesService.Api.Entities
 
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
-
+        public decimal? ShortClosedQty { get; set; }
         public bool? SOStatus { get; set; } = false;
 
 

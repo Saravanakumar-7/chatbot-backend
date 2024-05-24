@@ -944,6 +944,11 @@ namespace Tips.SalesService.Api.Repository
             var result = await Create(salesOrderHistory);
             return result;
         }
+        public async Task<List<SalesOrderHistory>> GetSalesOrderHistoryBySONoAndItemNumberifShortCLosed(string SOnumber,string Itemnumber)
+        {
+            var SOHistory =await FindAll().Where(x => x.Remarks == "Item ShortClosed" && x.SalesOrderNumber == SOnumber && x.ItemNumber == Itemnumber).ToListAsync();
+            return SOHistory;
+        }
     }
     public class ScheduleDateHistoryRepository : RepositoryBase<ScheduleDateHistory>, IScheduleDateHistoryRepository
     {

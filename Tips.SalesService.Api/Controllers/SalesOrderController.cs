@@ -309,6 +309,8 @@ namespace Tips.SalesService.Api.Controllers
                                 SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
                                 salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
                                 salesOrderItemsDtos.SoConfirmationDates = _mapper.Map<List<SoConfirmationDateDto>>(salesOrderItemDetails.SoConfirmationDates);
+                                var ItemHistory = await _salesOrderHistory.GetSalesOrderHistoryBySONoAndItemNumberifShortCLosed(salesOrderItemsDtos.SalesOrderNumber, salesOrderItemsDtos.ItemNumber);
+                                if(ItemHistory!=null)salesOrderItemsDtos.ShortClosedQty= ItemHistory.Sum(x => x.ShortClosedQty);
                                 string itemNumber = salesOrderItemsDtos.ItemNumber;
                                 if (inventoryItemWithStockDetails.ContainsKey(itemNumber))
                                 {
@@ -3078,6 +3080,7 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderHistory.CGST = salesOrderItemsDetail.CGST;
                         salesOrderHistory.IGST = salesOrderItemsDetail.IGST;
                         salesOrderHistory.ReceivedDate = salesOrderItemsDetail.RequestedDate;
+                        salesOrderHistory.ShortClosedQty = salesOrderItemsDto[i].ShortClosedQty;
                         salesOrderHistory.Remarks = "Item ShortClosed";
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
                         await _salesOrderHistory.CreateSalesOrderHistory(salesOrderHistories);
