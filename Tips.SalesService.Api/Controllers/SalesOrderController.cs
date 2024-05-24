@@ -307,6 +307,7 @@ namespace Tips.SalesService.Api.Controllers
                             foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
                             {
                                 SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
+                                salesOrderItemsDtos.ShopOrderReleaseQty = salesOrderItemDetails.ShopOrderQty;
                                 salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
                                 salesOrderItemsDtos.SoConfirmationDates = _mapper.Map<List<SoConfirmationDateDto>>(salesOrderItemDetails.SoConfirmationDates);
                                 var ItemHistory = await _salesOrderHistory.GetSalesOrderHistoryBySONoAndItemNumberifShortCLosed(salesOrderItemsDtos.SalesOrderNumber, salesOrderItemsDtos.ItemNumber);
@@ -333,6 +334,7 @@ namespace Tips.SalesService.Api.Controllers
                         foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
                         {
                             SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
+                            salesOrderItemsDtos.ShopOrderReleaseQty = salesOrderItemDetails.ShopOrderQty;
                             salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
                             salesOrderItemsDtos.SoConfirmationDates = _mapper.Map<List<SoConfirmationDateDto>>(salesOrderItemDetails.SoConfirmationDates);
                             var client = _clientFactory.CreateClient();

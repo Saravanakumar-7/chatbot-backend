@@ -14,9 +14,11 @@ namespace Tips.SalesService.Api.Contracts
 
         Task<IEnumerable<ForeCastCustomerSupportItem>> GetForecastCustomerSupportRelesedDetailsByForecastNumber(string forecastNo);
 
-        Task<IEnumerable<ForeCastCustomerSupportItem>> GetForecastCustomerSupportItemByForecastNumber(string forecastNumber);
+        Task<IEnumerable<ForeCastCustomerSupportItem>> GetForecastCustomerSupportItemByForecastNumber(string forecastNumber, decimal revNumber);
 
         Task<IEnumerable<ForeCastCustomerSupportItem>> GetAllActiveForecastCsItemsByForecastNo(string forecastNo);
         Task<List<int>> ForcastCsReleasedItemList(string forcastNumber);
+        Task<bool> IsFullyReleasedForeCastCs(string rfqNumber, decimal revNumber);
+        Task<bool> IsNotYetReleasedForeCastCs(string rfqNumber, decimal revNumber);
     }
 }

@@ -239,7 +239,14 @@ namespace Tips.Purchase.Api.Repository
             }).ToListAsync();
             return revNoListbyPRNumber;
         }
+        public async Task<PurchaseRequisition> GetPrDetailsByPrNumber(string prNumber)
+        {
+            var prDetails = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PrNumber == prNumber && x.RevisionNumber == _tipsPurchaseDbContext.PurchaseRequisitions
+                                                                        .Where(x => x.PrNumber == prNumber).Max(x => x.RevisionNumber))
+                .FirstOrDefaultAsync();
 
+            return prDetails;
+        }
         public async Task<PurchaseRequisition> GetPurchaseRequisitionByPRNoAndRevNo(string prNumber, int revisionNumber)
         {
             var purchaseRequisitionDetail = await _tipsPurchaseDbContext.PurchaseRequisitions
