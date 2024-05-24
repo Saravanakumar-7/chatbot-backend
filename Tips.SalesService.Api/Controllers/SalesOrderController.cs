@@ -337,6 +337,8 @@ namespace Tips.SalesService.Api.Controllers
                             salesOrderItemsDtos.ShopOrderReleaseQty = salesOrderItemDetails.ShopOrderQty;
                             salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
                             salesOrderItemsDtos.SoConfirmationDates = _mapper.Map<List<SoConfirmationDateDto>>(salesOrderItemDetails.SoConfirmationDates);
+                            var ItemHistory = await _salesOrderHistory.GetSalesOrderHistoryBySONoAndItemNumberifShortCLosed(salesOrderItemsDtos.SalesOrderNumber, salesOrderItemsDtos.ItemNumber);
+                            if (ItemHistory != null) salesOrderItemsDtos.ShortClosedQty = ItemHistory.Sum(x => x.ShortClosedQty);
                             var client = _clientFactory.CreateClient();
                             var token = HttpContext.Request.Headers["Authorization"].ToString();
                             var itemNumber = salesOrderItemsDtos.ItemNumber;
