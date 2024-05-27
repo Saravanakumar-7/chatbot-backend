@@ -853,10 +853,11 @@ namespace Tips.Purchase.Api.Controllers
                         foreach (var poItemDetails in purchaseOrderDetailbyId.POItems)
                         {
                             PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
-                            var poItemHistoryReceivedQty = await _poItemHistoryRepository.GetPoItemHistoryDetailsByPoItemId(poItemDtos.Id);
+                            
+                            var poItemHistoryReceivedQty = await _poItemHistoryRepository.GetPoItemHistoryDetailsByPoItemId(poItemDtos.PONumber, poItemDtos.ItemNumber);
                             if (poItemHistoryReceivedQty != null)
-                            {
-                                poItemDtos.ReceivedQty = poItemHistoryReceivedQty.ReceivedQty;
+                            { 
+                                poItemDtos.ShortClosedQty = poItemHistoryReceivedQty.Sum(x => x.ShortClosedQty); 
                             }
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
                             poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
@@ -2194,7 +2195,7 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> ShortCloseForPurchaseOrder([FromBody] PurchaseOrderUpdateDto purchaseOrderUpdateDto)
+        public async Task<IActionResult> ShortCloseForPurchaseOrder([FromBody] PurchaseOrderForShortCloseDto purchaseOrderUpdateDto)
         {
             ServiceResponse<PurchaseOrderPostDto> serviceResponse = new ServiceResponse<PurchaseOrderPostDto>();
             try
@@ -2218,7 +2219,17 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError("Invalid PurchaseOrder object sent from client.");
                     return BadRequest(serviceResponse);
                 }
+                var poDetailBeforeUpdate = await _repository.GetPurchaseOrderById(purchaseOrderUpdateDto.Id);
 
+                if (poDetailBeforeUpdate is null)
+                {
+                    _logger.LogError($"ShortClose SalesOrder with id: {poDetailBeforeUpdate.Id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Update SalesOrder hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
                 var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderUpdateDto);
                 var AmountInWords = GetTotalValueInWords(purchaseOrderDetails.TotalAmount);
                 purchaseOrderDetails.AmountInWords = AmountInWords;
@@ -2235,27 +2246,68 @@ namespace Tips.Purchase.Api.Controllers
                         poIncoTermsList.Add(poIncoTermDetails);
                     }
                 }
-                purchaseOrderDetails.POIncoTerms = poIncoTermsList;
 
                 if (poItemDto != null)
                 {
                     for (int i = 0; i < poItemDto.Count; i++)
                     {
                         PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
-                        poItemDetails.BalanceQty = poItemDto[i].Qty;
-                        poItemDetails.PoPartsStatus = false;
 
                         if (poItemDto[i].NowShortClosed == true)
                         {
                             PoItemHistory poItemHistory = new PoItemHistory();
+                            poItemHistory.PONumber = poDetailBeforeUpdate.PONumber;
+                            poItemHistory.PODate = poDetailBeforeUpdate.PODate;
+                            poItemHistory.PoStatus = poDetailBeforeUpdate.PoStatus;
+                            poItemHistory.RevisionNumber = poDetailBeforeUpdate.RevisionNumber;
+                            poItemHistory.BillToId = poDetailBeforeUpdate.BillToId;
+                            poItemHistory.ShipToId = poDetailBeforeUpdate.ShipToId;
+                            poItemHistory.ProcurementType = poDetailBeforeUpdate.ProcurementType;
+                            poItemHistory.Currency = poDetailBeforeUpdate.Currency;
+                            poItemHistory.CompanyAliasName = poDetailBeforeUpdate.CompanyAliasName;
+                            poItemHistory.PoConfirmationStatus = poDetailBeforeUpdate.PoConfirmationStatus;
+                            poItemHistory.Transports = poDetailBeforeUpdate.Transports;
+                            poItemHistory.Other = poDetailBeforeUpdate.Other;
+                            poItemHistory.VendorName = poDetailBeforeUpdate.VendorName;
+                            poItemHistory.VendorId = poDetailBeforeUpdate.VendorId;
+                            poItemHistory.VendorNumber = poDetailBeforeUpdate.VendorNumber;
+                            poItemHistory.QuotationReferenceNumber = poDetailBeforeUpdate.QuotationReferenceNumber;
+                            poItemHistory.QuotationDate = poDetailBeforeUpdate.QuotationDate;
+                            poItemHistory.VendorAddress = poDetailBeforeUpdate.VendorAddress;
+                            poItemHistory.DeliveryTerms = poDetailBeforeUpdate.DeliveryTerms;
+                            poItemHistory.PaymentTerms = poDetailBeforeUpdate.PaymentTerms;
+                            poItemHistory.ShippingMode = poDetailBeforeUpdate.ShippingMode;
+                            poItemHistory.ShipTo = poDetailBeforeUpdate.ShipTo;
+                            poItemHistory.BillTo = poDetailBeforeUpdate.BillTo;
+                            poItemHistory.POFiles = poDetailBeforeUpdate.POFiles;
+                            poItemHistory.RetentionPeriod = poDetailBeforeUpdate.RetentionPeriod;
+                            poItemHistory.SpecialTermsAndConditions = poDetailBeforeUpdate.SpecialTermsAndConditions;
+                            poItemHistory.IsDeleted = poDetailBeforeUpdate.IsDeleted;
+                            poItemHistory.IsShortClosed = poDetailBeforeUpdate.IsShortClosed;
+                            poItemHistory.ShortClosedBy = poDetailBeforeUpdate.ShortClosedBy;
+                            poItemHistory.ShortClosedOn = poDetailBeforeUpdate.ShortClosedOn;
+                            poItemHistory.TotalAmount = poDetailBeforeUpdate.TotalAmount;
+                            poItemHistory.POApprovalI = poDetailBeforeUpdate.POApprovalI;
+                            poItemHistory.POApprovedIDate = poDetailBeforeUpdate.POApprovedIDate;
+                            poItemHistory.POApprovedIBy = poDetailBeforeUpdate.POApprovedIBy;
+                            poItemHistory.POApprovalII = poDetailBeforeUpdate.POApprovalII;
+                            poItemHistory.POApprovedIIDate = poDetailBeforeUpdate.POApprovedIIDate;
+                            poItemHistory.POApprovedIIBy = poDetailBeforeUpdate.POApprovedIIBy;
+                            poItemHistory.POApprovalIII = poDetailBeforeUpdate.POApprovalIII;
+                            poItemHistory.POApprovedIIIDate = poDetailBeforeUpdate.POApprovedIIIDate;
+                            poItemHistory.POApprovedIIIBy = poDetailBeforeUpdate.POApprovedIIIBy;
+                            poItemHistory.POApprovalIV = poDetailBeforeUpdate.POApprovalIV;
+                            poItemHistory.POApprovedIVDate = poDetailBeforeUpdate.POApprovedIVDate;
+                            poItemHistory.POApprovedIVBy = poDetailBeforeUpdate.POApprovedIVBy;
+                            poItemHistory.ApprovalCount = poDetailBeforeUpdate.ApprovalCount;
+                            poItemHistory.Unit = poDetailBeforeUpdate.Unit;
+                            poItemHistory.PoItemId = poItemDetails.Id;
                             poItemHistory.ItemNumber = poItemDetails.ItemNumber;
                             poItemHistory.MftrItemNumber = poItemDetails.MftrItemNumber;
                             poItemHistory.Description = poItemDetails.Description;
-                            poItemHistory.PoItemId = poItemDetails.Id;
                             poItemHistory.UOM = poItemDetails.UOM;
                             poItemHistory.UnitPrice = poItemDetails.UnitPrice;
                             poItemHistory.Qty = poItemDetails.Qty;
-                            poItemHistory.PONumber = poItemDetails.PONumber;
                             poItemHistory.BalanceQty = poItemDetails.BalanceQty;
                             poItemHistory.ReceivedQty = poItemDetails.ReceivedQty;
                             poItemHistory.PartType = poItemDetails.PartType;
@@ -2272,10 +2324,11 @@ namespace Tips.Purchase.Api.Controllers
                             poItemHistory.CreatedOn = poItemDetails.CreatedOn;
                             poItemHistory.LastModifiedBy = poItemDetails.LastModifiedBy;
                             poItemHistory.LastModifiedOn = poItemDetails.LastModifiedOn;
-                            poItemHistory.PoStatus = poItemDetails.PoStatus;
+                            poItemHistory.PoItemStatus = poItemDetails.PoStatus;
                             poItemHistory.ReasonforShortClose = poItemDetails.ReasonforShortClose;
                             poItemHistory.Remarks = poItemDetails.Remarks;
                             poItemHistory.PurchaseOrderId = poItemDetails.PurchaseOrderId;
+                            poItemHistory.ShortClosedQty = poItemDto[i].ShortClosedQty;
 
                             await _poItemHistoryRepository.CreatePoItemHistory(poItemHistory);
                         }
@@ -2294,10 +2347,7 @@ namespace Tips.Purchase.Api.Controllers
                         poItemDtoList.Add(poItemDetails);
                     }
                 }
-
-                purchaseOrderDetails.POItems = poItemDtoList;
-                await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
-
+                
                 if (purchaseOrderUpdateDto.POItems != null)
                 {
                     foreach (var pritem in purchaseOrderUpdateDto.POItems)
@@ -2324,7 +2374,11 @@ namespace Tips.Purchase.Api.Controllers
                         }
                     }
                 }
-               
+
+                var updateData = _mapper.Map(purchaseOrderUpdateDto, poDetailBeforeUpdate);
+                updateData.POItems = poItemDtoList;
+                updateData.POIncoTerms = poIncoTermsList;
+                await _repository.UpdatePurchaseOrder(updateData);
                 _repository.SaveAsync();
                 _poItemHistoryRepository.SaveAsync();
                 _pRItemsDocumentUploadRepository.SaveAsync();

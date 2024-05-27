@@ -20,6 +20,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal Qty { get; set; }
         public decimal BalanceQty { get; set; }
         public decimal ReceivedQty { get; set; }
+        public decimal? ShortClosedQty { get; set; }
         public PoPartType? PartType { get; set; }
         public string? SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
@@ -110,6 +111,47 @@ namespace Tips.Purchase.Api.Entities.Dto
         [Precision(13, 3)]
         public decimal TotalWithTax { get; set; }
         public bool NowShortClosed { get; set; }
+        public string? ReasonforShortClose { get; set; }
+        public string? Remarks { get; set; }
+        public List<PoAddProjectUpdateDto>? POAddprojects { get; set; }
+        public List<PoAddDeliveryScheduleUpdateDto>? POAddDeliverySchedules { get; set; }
+        public List<PoConfirmationDateUpdateDto>? POConfirmationDates { get; set; }
+        public List<PoSpecialInstructionUpdateDto>? POSpecialInstructions { get; set; }
+        public List<PrDetailsUpdateDto>? PrDetails { get; set; }
+
+    }
+    public class PoItemsShortCloseDto
+    {
+        public string? ItemNumber { get; set; }
+        public string? MftrItemNumber { get; set; }
+        public string? Description { get; set; }
+        public string? PONumber { get; set; }
+        public string? UOM { get; set; }
+        [Precision(18, 3)]
+        public decimal UnitPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal Qty { get; set; }
+        public decimal BalanceQty { get; set; }
+        public decimal ReceivedQty { get; set; }
+        public decimal? ShortClosedQty { get; set; }
+        public PoPartType? PartType { get; set; }
+        public string? SpecialInstruction { get; set; }
+        public bool IsTechnicalDocsRequired { get; set; }
+        [Precision(13, 3)]
+        public decimal SGST { get; set; }
+        [Precision(13, 3)]
+        public decimal CGST { get; set; }
+        [Precision(13, 3)]
+        public decimal IGST { get; set; }
+        [Precision(13, 3)]
+        public decimal UTGST { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? SubTotal { get; set; }
+        [Precision(13, 3)]
+        public decimal TotalWithTax { get; set; }
+        public PoStatus PoStatus { get; set; }
+        public bool NowShortClosed {  get; set; }
         public string? ReasonforShortClose { get; set; }
         public string? Remarks { get; set; }
         public List<PoAddProjectUpdateDto>? POAddprojects { get; set; }

@@ -5,7 +5,7 @@ namespace Tips.Purchase.Api.Contracts
     public interface IPoItemHistoryRepository : IRepositoryBase<PoItemHistory>
     {
         Task<PoItemHistory> CreatePoItemHistory(PoItemHistory poItemHistory);
-        Task<PoItemHistory> GetPoItemHistoryDetailsByPoItemId(int poItemId);
+        Task<List<PoItemHistory>> GetPoItemHistoryDetailsByPoItemId(string poNumber, string itemNumber);
 
     }
 }

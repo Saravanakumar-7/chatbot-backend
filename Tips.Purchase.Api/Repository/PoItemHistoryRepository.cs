@@ -17,11 +17,11 @@ namespace Tips.Purchase.Api.Repository
             var result = await Create(poItemHistory);
             return result;
         }
-        public async Task<PoItemHistory> GetPoItemHistoryDetailsByPoItemId(int poItemId)
+        public async Task<List<PoItemHistory>> GetPoItemHistoryDetailsByPoItemId(string poNumber , string itemNumber)
         {
             var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContext.PoItemHistories
-                 .Where(x => x.PoItemId == poItemId)
-                          .FirstOrDefaultAsync();
+                 .Where(x => x.PONumber == poNumber && x.ItemNumber == itemNumber)
+                          .ToListAsync();
 
             return getPODetailsByPONOandItemNo;
         }
