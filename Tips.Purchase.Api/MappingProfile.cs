@@ -16,10 +16,12 @@ namespace Tips.Purchase.Api
             CreateMap<PurchaseOrder, PurchaseOrderPostDto>().ReverseMap();
             CreateMap<PurchaseOrder, PurchaseOrderUpdateDto>().ReverseMap();
             CreateMap<PurchaseOrder, PurchaseOrderIdNameListDto>().ReverseMap();
+            CreateMap<PurchaseOrder, PurchaseOrderForShortCloseDto>().ReverseMap();
 
             CreateMap<PoItem, PoItemsDto>().ReverseMap();
             CreateMap<PoItem, PoItemsPostDto>().ReverseMap();
             CreateMap<PoItem, PoItemsUpdateDto>().ReverseMap();
+            CreateMap<PoItem, PoItemsShortCloseDto>().ReverseMap();
 
             CreateMap<PoAddProject, PoAddProjectDto>().ReverseMap();
             CreateMap<PoAddProject, PoAddProjectPostDto>().ReverseMap();

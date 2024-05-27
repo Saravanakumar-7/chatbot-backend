@@ -40,6 +40,7 @@ namespace Tips.SalesService.Api.Entities
         public bool? isSourcingAvailable { get; set; } = false;
         public bool? IsLpRelease { get; set; } = false;
         public bool IsModified { get; set; } = false;
+        public string? SBU { get; set; }
 
         [DefaultValue(0)]
         public CsRelease ReleaseStatus { get; set; }
