@@ -489,7 +489,7 @@ namespace Tips.SalesService.Api.Repository
         {
 
             IEnumerable<ListofSalesOrderDetails> getSalesorderList = await _tipsSalesServiceDbContext.SalesOrders
-                                .Where(b => b.CustomerId == Customerid && (b.SOStatus==OrderStatus.ShortClosed|| b.SOStatus == OrderStatus.Closed))
+                                .Where(b => b.CustomerId == Customerid && (b.SOStatus!=OrderStatus.ShortClosed|| b.SOStatus != OrderStatus.Closed))
                                 .Select(x => new ListofSalesOrderDetails()
                                 {
                                     SalesOrderId = x.Id,
