@@ -39,6 +39,8 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal TotalWithTax { get; set; }
         public PoStatus PoStatus { get; set; }
         public string? ReasonforShortClose { get; set; }
+        public string? ShortClosedBy { get; set; }
+        public DateTime? ShortClosedOn { get; set; }
         public string? Remarks { get; set; }
         public List<PoAddProjectDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleDto>? POAddDeliverySchedules { get; set; }
@@ -75,6 +77,8 @@ namespace Tips.Purchase.Api.Entities.Dto
         [Precision(13, 3)]
         public decimal TotalWithTax { get; set; }
         public string? ReasonforShortClose { get; set; }
+        public string? ShortClosedBy { get; set; }
+        public DateTime? ShortClosedOn { get; set; }
         public string? Remarks { get; set; }
         public List<PoAddProjectPostDto>? POAddprojects { get; set; }
         public List<PoAddDeliverySchedulePostDto>? POAddDeliverySchedules { get; set; }
@@ -112,6 +116,8 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal TotalWithTax { get; set; }
         public bool NowShortClosed { get; set; }
         public string? ReasonforShortClose { get; set; }
+        public string? ShortClosedBy { get; set; }
+        public DateTime? ShortClosedOn { get; set; }
         public string? Remarks { get; set; }
         public List<PoAddProjectUpdateDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleUpdateDto>? POAddDeliverySchedules { get; set; }
@@ -152,6 +158,8 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal TotalWithTax { get; set; }
         public PoStatus PoStatus { get; set; }
         public bool NowShortClosed {  get; set; }
+        public string? ShortClosedBy { get; set; }
+        public DateTime? ShortClosedOn { get; set; }
         public string? ReasonforShortClose { get; set; }
         public string? Remarks { get; set; }
         public List<PoAddProjectUpdateDto>? POAddprojects { get; set; }

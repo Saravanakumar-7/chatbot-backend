@@ -45,6 +45,8 @@ namespace Tips.Purchase.Api.Entities
 
         [Precision(13, 3)]
         public decimal TotalWithTax { get; set; }
+        public string? ShortClosedBy { get; set; }
+        public DateTime? ShortClosedOn { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

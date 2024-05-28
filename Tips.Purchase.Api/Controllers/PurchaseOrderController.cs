@@ -2320,6 +2320,8 @@ namespace Tips.Purchase.Api.Controllers
                             poItemHistory.UTGST = poItemDetails.UTGST;
                             poItemHistory.SubTotal = poItemDetails.SubTotal;
                             poItemHistory.TotalWithTax = poItemDetails.TotalWithTax;
+                            poItemHistory.ShortClosedBy = poItemDto[i].ShortClosedBy;
+                            poItemHistory.ShortClosedOn = poItemDto[i].ShortClosedOn;
                             poItemHistory.CreatedBy = poItemDetails.CreatedBy;
                             poItemHistory.CreatedOn = poItemDetails.CreatedOn;
                             poItemHistory.LastModifiedBy = poItemDetails.LastModifiedBy;
