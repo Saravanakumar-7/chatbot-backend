@@ -2255,6 +2255,8 @@ namespace Tips.Purchase.Api.Controllers
 
                         if (poItemDto[i].NowShortClosed == true)
                         {
+                            poItemDetails.ShortClosedBy = _createdBy;
+                            poItemDetails.ShortClosedOn = DateTime.Now;
                             PoItemHistory poItemHistory = new PoItemHistory();
                             poItemHistory.PONumber = poDetailBeforeUpdate.PONumber;
                             poItemHistory.PODate = poDetailBeforeUpdate.PODate;
@@ -2284,8 +2286,8 @@ namespace Tips.Purchase.Api.Controllers
                             poItemHistory.SpecialTermsAndConditions = poDetailBeforeUpdate.SpecialTermsAndConditions;
                             poItemHistory.IsDeleted = poDetailBeforeUpdate.IsDeleted;
                             poItemHistory.IsShortClosed = purchaseOrderDetails.IsShortClosed;
-                            poItemHistory.ShortClosedBy = purchaseOrderDetails.ShortClosedBy;
-                            poItemHistory.ShortClosedOn = purchaseOrderDetails.ShortClosedOn;
+                            poItemHistory.ShortClosedBy = poItemDetails.ShortClosedBy; 
+                            poItemHistory.ShortClosedOn = poItemDetails.ShortClosedOn;
                             poItemHistory.TotalAmount = poDetailBeforeUpdate.TotalAmount;
                             poItemHistory.POApprovalI = poDetailBeforeUpdate.POApprovalI;
                             poItemHistory.POApprovedIDate = poDetailBeforeUpdate.POApprovedIDate;
