@@ -17,6 +17,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerAliasName { get; set; }
         public string? CustomerId { get; set; }
         public string RFQNumber { get; set; }
+        public string? SalesPerson { get; set; }
         public string? CustomerRfqNumber { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }

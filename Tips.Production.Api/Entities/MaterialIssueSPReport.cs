@@ -23,5 +23,7 @@ namespace Tips.Production.Api.Entities
         public decimal? IssuedQty { get; set; }
         public string? UOM { get; set; }
         public string? Remarks { get; set; }
+        public decimal? RequiredQty { get; set; }
+        public decimal? BalanceIssueQnty { get; set; }
     }
 }

@@ -827,6 +827,15 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<InventoryForStockSPReport>> GetInventoryForStockSPReportsWithParam(string PartNumber, string Warehouse, string Location)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<InventoryForStockSPReport>()
+            .FromSqlInterpolated($"CALL inventory_for_stock_report({PartNumber},{Warehouse},{Location})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<InventorySPReport>> GetInventorySPReportsWithParam(string PartNumber, string Description, string Warehouse,
                                                                                                    string Location, string ProjectNumber)
         {

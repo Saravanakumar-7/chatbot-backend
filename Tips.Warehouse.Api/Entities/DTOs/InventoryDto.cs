@@ -410,5 +410,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? CustomerId { get; set; }
         public string? CustomerName { get; set; }
     }
-
+    public class InventoryForStockSPReportDto
+    {
+        public string? PartNumber { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+    }
 }
