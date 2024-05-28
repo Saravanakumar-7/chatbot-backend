@@ -252,7 +252,6 @@ namespace Tips.Warehouse.Api.Controllers
                         {
                             BTODeliveryOrderItemsDto bTODeliveryOrderItemsDtos = _mapper.Map<BTODeliveryOrderItemsDto>(deliveryOrderitemDetails);
                             bTODeliveryOrderItemsDtos.QtyDistribution = _mapper.Map<List<BtoDeliveryOrderItemQtyDistributionDto>>(deliveryOrderitemDetails.QtyDistribution);
-                            bTODeliveryOrderItemsDtos.DoStatus = Status.Open;
                             //bTODeliveryOrderItemsDtos.BTOSerialNumberDto = _mapper.Map<List<BTOSerialNumberDto>>(deliveryOrderitemDetails.BTOSerialNumbers);
                             bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDtos);
                         }
@@ -1435,7 +1434,7 @@ namespace Tips.Warehouse.Api.Controllers
                         {
                             BTODeliveryOrderItemsDto bTODeliveryOrderItemsDtos = _mapper.Map<BTODeliveryOrderItemsDto>(deliveryOrderitemDetails);
                             bTODeliveryOrderItemsDtos.QtyDistribution = _mapper.Map<List<BtoDeliveryOrderItemQtyDistributionDto>>(deliveryOrderitemDetails.QtyDistribution);
-                            bTODeliveryOrderItemsDtos.DoStatus = Status.Open;
+                           // bTODeliveryOrderItemsDtos.DoStatus = Status.Open;
                             //bTODeliveryOrderItemsDtos.BTOSerialNumberDto = _mapper.Map<List<BTOSerialNumberDto>>(deliveryOrderitemDetails.BTOSerialNumbers);
                             bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDtos);
                         }
