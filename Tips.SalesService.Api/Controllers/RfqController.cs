@@ -554,7 +554,9 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogInfo($"Returned RfqCustomerSupportByRfqNumber with id: {RfqNumber}");
 
                     RfqCustomerSupportDto rfqCSDto = _mapper.Map<RfqCustomerSupportDto>(getRfqCSByRfqNO);
-
+                    var rfqCSRevNo = Convert.ToInt32(rfqCSDto.RevisionNumber);
+                    var rfqDetails = await _rfqRepository.GetRfqDeatailsByRfqNoAndRevNo(rfqCSDto.RFQNumber, rfqCSRevNo);
+                    rfqCSDto.SalesPerson = rfqDetails.SalesPerson;
                     List<RfqCustomerSupportItemDto> rfqItemsDtos = new List<RfqCustomerSupportItemDto>();
                     foreach (var rfqCSItemDetail in getRfqCSByRfqNO.RfqCustomerSupportItems)
                     {

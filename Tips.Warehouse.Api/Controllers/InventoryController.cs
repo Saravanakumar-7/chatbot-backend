@@ -2703,7 +2703,43 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetInventoryForStockSPReportsWithParam([FromBody] InventoryForStockSPReportDto inventoryForStockSPReportDto)
+        {
+            ServiceResponse<IEnumerable<InventoryForStockSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventoryForStockSPReport>>();
+            try
+            {
+                var products = await _inventoryRepository.GetInventoryForStockSPReportsWithParam(inventoryForStockSPReportDto.PartNumber,
+                                                                                    inventoryForStockSPReportDto.Warehouse, inventoryForStockSPReportDto.Location);
 
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventoryForStockSPReportsWithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"InventoryForStockSPReportsWithParam hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InventoryForStockSPReportsWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetInventoryForStockSPReportsWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> GetInventoryWarehouseReport([FromBody] InventorySPReportDto inventoryWarehouseReportDto)
         {

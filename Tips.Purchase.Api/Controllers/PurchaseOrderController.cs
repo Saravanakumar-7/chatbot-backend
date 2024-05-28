@@ -2283,9 +2283,9 @@ namespace Tips.Purchase.Api.Controllers
                             poItemHistory.RetentionPeriod = poDetailBeforeUpdate.RetentionPeriod;
                             poItemHistory.SpecialTermsAndConditions = poDetailBeforeUpdate.SpecialTermsAndConditions;
                             poItemHistory.IsDeleted = poDetailBeforeUpdate.IsDeleted;
-                            poItemHistory.IsShortClosed = poDetailBeforeUpdate.IsShortClosed;
-                            poItemHistory.ShortClosedBy = poDetailBeforeUpdate.ShortClosedBy;
-                            poItemHistory.ShortClosedOn = poDetailBeforeUpdate.ShortClosedOn;
+                            poItemHistory.IsShortClosed = purchaseOrderDetails.IsShortClosed;
+                            poItemHistory.ShortClosedBy = purchaseOrderDetails.ShortClosedBy;
+                            poItemHistory.ShortClosedOn = purchaseOrderDetails.ShortClosedOn;
                             poItemHistory.TotalAmount = poDetailBeforeUpdate.TotalAmount;
                             poItemHistory.POApprovalI = poDetailBeforeUpdate.POApprovalI;
                             poItemHistory.POApprovedIDate = poDetailBeforeUpdate.POApprovedIDate;
