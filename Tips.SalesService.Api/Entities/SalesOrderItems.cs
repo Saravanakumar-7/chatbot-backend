@@ -13,8 +13,10 @@ namespace Tips.SalesService.Api.Entities
         public string? CustomerItemNumber { get; set; }
         public string? Description { get; set; }
         public string? SalesOrderNumber { get; set; }
-        public string? ProjectNumber { get; set; } 
+        public string? ProjectNumber { get; set; }
+        public string? ShortClosedBy { get; set; }
 
+        public DateTime? ShortClosedOn { get; set; }
         public OrderStatus StatusEnum { get; set; }       
         public string? UOM { get; set; }
         public string? Currency { get; set; }

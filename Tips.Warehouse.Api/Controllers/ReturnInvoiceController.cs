@@ -444,10 +444,12 @@ namespace Tips.Warehouse.Api.Controllers
                         {
                             foreach (var item in InvoiceDetails.invoiceChildItems)
                             {
-                                if (item.FGItemNumber == returnInvoiceItems.FGPartNumber) item.ReturnInvoiceQty += returnInvoiceItems.ReturnQty;
-                                if (item.InvoicedQty == item.ReturnInvoiceQty) item.InvoiceItemStatus = Status.Closed;
-                                else if (item.ReturnInvoiceQty == 0) item.InvoiceItemStatus = Status.Open;
-                                else if (item.ReturnInvoiceQty > 0 && item.InvoicedQty > item.ReturnInvoiceQty) item.InvoiceItemStatus = Status.PartiallyClosed;
+                                decimal? ReturnInvoiceQty=0;
+                                if (item.FGItemNumber == returnInvoiceItems.FGPartNumber) { item.ReturnInvoiceQty += returnInvoiceItems.ReturnQty; ReturnInvoiceQty = item.ReturnInvoiceQty * -1; }
+                                else continue;
+                                if (item.InvoicedQty == ReturnInvoiceQty) item.InvoiceItemStatus = Status.Closed;
+                                else if (ReturnInvoiceQty == 0) item.InvoiceItemStatus = Status.Open;
+                                else if (ReturnInvoiceQty > 0 && item.InvoicedQty > ReturnInvoiceQty) item.InvoiceItemStatus = Status.PartiallyClosed;
                             }
                             if (InvoiceDetails.invoiceChildItems.Count() == InvoiceDetails.invoiceChildItems.Where(x => x.InvoiceItemStatus == Status.Closed).Count()) InvoiceDetails.InvoiceStatus = Status.Closed;
                             else if (InvoiceDetails.invoiceChildItems.Count() == InvoiceDetails.invoiceChildItems.Where(x => x.InvoiceItemStatus == Status.Open).Count()) InvoiceDetails.InvoiceStatus = Status.Open;

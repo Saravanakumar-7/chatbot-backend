@@ -20,6 +20,8 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? ProjectNumber { get; set; }
         public OrderStatus StatusEnum { get; set; }
         public decimal? ShortClosedQty { get; set; }
+        public string? ShortClosedBy { get; set; }
+        public DateTime? ShortClosedOn { get; set; }
         [Precision(13, 3)]
         public decimal BalanceQty { get; set; }
 
@@ -132,7 +134,8 @@ namespace Tips.SalesService.Api.Entities.Dto
         public bool NowShortClosed { get; set; }
         [Precision(18, 3)]
         public decimal? BasicAmount { get; set; }
-
+        public string? ShortClosedBy { get; set; }
+        public DateTime? ShortClosedOn { get; set; }
         [Precision(13, 3)]
         public decimal? Discount { get; set; }
         public string? RoomName { get; set; }

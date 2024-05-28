@@ -3035,11 +3035,11 @@ namespace Tips.SalesService.Api.Controllers
                 var salesOrderItemsList = new List<SalesOrderItems>();
                 for (int i = 0; i < salesOrderItemsDto.Count; i++)
                 {
-                    SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);                    
-                    salesOrderItemsList.Add(salesOrderItemsDetail);
-
+                    SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);    
                     if (salesOrderItemsDto[i].NowShortClosed == true)
                     {
+                        salesOrderItemsDetail.ShortClosedBy = _createdBy;
+                        salesOrderItemsDetail.ShortClosedOn = DateTime.Now;
                         SalesOrderHistory salesOrderHistory = new SalesOrderHistory();
                         salesOrderHistory.SalesOrderNumber = salesOrderDetailBeforeUpdate.SalesOrderNumber;
                         salesOrderHistory.ProjectNumber = salesOrderDetailBeforeUpdate.ProjectNumber;
@@ -3061,10 +3061,10 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderHistory.Total = salesOrderDetailBeforeUpdate.Total;
                         salesOrderHistory.Unit = salesOrderDetailBeforeUpdate.Unit;
                         salesOrderHistory.IsShortClosed = salesOrderDetailBeforeUpdate.IsShortClosed;
-                        salesOrderHistory.ShortClosedBy = salesOrderDetailBeforeUpdate.ShortClosedBy;
-                        salesOrderHistory.ShortClosedOn = salesOrderDetailBeforeUpdate.ShortClosedOn;
-                        salesOrderHistory.CreatedBy = salesOrderDetailBeforeUpdate.CreatedBy;
-                        salesOrderHistory.CreatedOn = salesOrderDetailBeforeUpdate.CreatedOn;
+                        salesOrderHistory.ShortClosedBy = salesOrderItemsDetail.ShortClosedBy;
+                        salesOrderHistory.ShortClosedOn = salesOrderItemsDetail.ShortClosedOn;
+                        salesOrderHistory.CreatedBy = _createdBy;
+                        salesOrderHistory.CreatedOn = DateTime.Now;
                         salesOrderHistory.LastModifiedBy = salesOrderDetailBeforeUpdate.LastModifiedBy;
                         salesOrderHistory.LastModifiedOn = salesOrderDetailBeforeUpdate.LastModifiedOn;
                         salesOrderHistory.ItemNumber = salesOrderItemsDetail.ItemNumber;
@@ -3089,6 +3089,7 @@ namespace Tips.SalesService.Api.Controllers
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
                         await _salesOrderHistory.CreateSalesOrderHistory(salesOrderHistories);
                     }
+                    salesOrderItemsList.Add(salesOrderItemsDetail);
                 }
                 var salesAdditionalChargesList = new List<SalesOrderAdditionalCharges>();
                 if (salesAdditionalChargesDto != null)
