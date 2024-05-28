@@ -132,7 +132,7 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<PagedList<Invoice>> GetAllInvoices([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var getAllInvoiceList = FindAll()
+            var getAllInvoiceList = _tipsWarehouseDbContext.invoices
                 .OrderByDescending(x => x.Id)
                 .Where(inv =>
                     (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
