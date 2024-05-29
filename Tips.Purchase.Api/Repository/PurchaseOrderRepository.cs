@@ -1065,12 +1065,12 @@ namespace Tips.Purchase.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderApprovalSPReportWithParam(string VendorName, string PONumber, string itemNumber,
-                                                                                                     string RecordType, string Postatus, string Approval)
+        public async Task<IEnumerable<PurchaseOrderApprovalSPReport>> GetPurchaseOrderApprovalSPReportWithParam(string VendorName, string PONumber, string itemNumber,
+                                                                                                     string Postatus, string RecordType, string Approval)
         {
 
             var result = _tipsPurchaseDbContext
-            .Set<PurchaseOrderSPReport>()
+            .Set<PurchaseOrderApprovalSPReport>()
             .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus({VendorName},{PONumber},{itemNumber},{RecordType},{Postatus},{Approval})")
             .ToList();
 

@@ -403,8 +403,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? VendorName { get; set; }
         public string? PONumber { get; set; }
         public string? ItemNumber { get; set; }
-        public string? RecordType { get; set; }
         public string? Postatus { get; set; }
+        public string? RecordType { get; set; }
         public string? Approval { get; set; }
     }
 
