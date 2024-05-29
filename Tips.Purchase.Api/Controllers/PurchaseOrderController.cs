@@ -579,8 +579,8 @@ namespace Tips.Purchase.Api.Controllers
             try
             {
                 var products = await _repository.GetPurchaseOrderApprovalSPReportWithParam(purchaseOrderApprovalSPReport.VendorName, purchaseOrderApprovalSPReport.PONumber,
-                                                                                    purchaseOrderApprovalSPReport.ItemNumber, purchaseOrderApprovalSPReport.Postatus,
-                                                                                        purchaseOrderApprovalSPReport.RecordType, purchaseOrderApprovalSPReport.Approval);
+                                                                                    purchaseOrderApprovalSPReport.ItemNumber, purchaseOrderApprovalSPReport.RecordType,
+                                                                                        purchaseOrderApprovalSPReport.Postatus, purchaseOrderApprovalSPReport.Approval);
 
                 if (products == null)
                 {

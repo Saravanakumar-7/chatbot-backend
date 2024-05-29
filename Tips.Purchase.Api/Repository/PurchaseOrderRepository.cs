@@ -1066,7 +1066,7 @@ namespace Tips.Purchase.Api.Repository
         }
 
         public async Task<IEnumerable<PurchaseOrderApprovalSPReport>> GetPurchaseOrderApprovalSPReportWithParam(string VendorName, string PONumber, string itemNumber,
-                                                                                                     string Postatus, string RecordType, string Approval)
+                                                                                                     string RecordType, string Postatus, string Approval)
         {
 
             var result = _tipsPurchaseDbContext
