@@ -12,7 +12,7 @@ namespace Entities
         public int? Id { get; set; }
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
-        [Precision(13,3)]
+        [Precision(13,4)]
         public decimal? AddtionalChargesValueAmount { get; set; }
 
         [Precision(13, 3)]

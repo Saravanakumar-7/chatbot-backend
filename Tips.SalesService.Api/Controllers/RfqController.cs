@@ -1264,6 +1264,8 @@ namespace Tips.SalesService.Api.Controllers
                     RfqCustomerSupportDto rfCSqDto = _mapper.Map<RfqCustomerSupportDto>(rfqCsByRfqNoAndRevNo);
 
                     List<RfqCustomerSupportItemDto> rfqItemsDtos = new List<RfqCustomerSupportItemDto>();
+                    var rfqDetails = await _rfqRepository.GetRfqDeatailsByRfqNoAndRevNo(rfqNumber,Convert.ToInt32(revisionNumber));
+                    rfCSqDto.SalesPerson = rfqDetails.SalesPerson;
                     foreach (var rfqCSItemDetail in rfqCsByRfqNoAndRevNo.RfqCustomerSupportItems)
                     {
                         RfqCustomerSupportItemDto rfqCSItemDto = _mapper.Map<RfqCustomerSupportItemDto>(rfqCSItemDetail);
