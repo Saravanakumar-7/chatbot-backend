@@ -855,27 +855,27 @@ namespace Tips.Grin.Api.Controllers
                 }
                 //Update PoStatus in Purchase order And PoItem table
 
-                var grinPartsDetails = _mapper.Map<List<GrinQtyPoStatusUpdateDto>>(grinPartsDto);
-                var jsonCon = JsonConvert.SerializeObject(grinPartsDetails);
-                var data3 = new StringContent(jsonCon, Encoding.UTF8, "application/json");
-                //var result = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdatePoStatus"), datass);
+                //var grinPartsDetails = _mapper.Map<List<GrinQtyPoStatusUpdateDto>>(grinPartsDto);
+                //var jsonCon = JsonConvert.SerializeObject(grinPartsDetails);
+                //var data3 = new StringContent(jsonCon, Encoding.UTF8, "application/json");
+                ////var result = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdatePoStatus"), datass);
 
-                var client4 = _clientFactory.CreateClient();
-                var token4 = HttpContext.Request.Headers["Authorization"].ToString();
-                var request4 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
-                "UpdatePoStatus"))
-                {
-                    Content = data3
-                };
-                request4.Headers.Add("Authorization", token4);
+                //var client4 = _clientFactory.CreateClient();
+                //var token4 = HttpContext.Request.Headers["Authorization"].ToString();
+                //var request4 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
+                //"UpdatePoStatus"))
+                //{
+                //    Content = data3
+                //};
+                //request4.Headers.Add("Authorization", token4);
 
-                var result = await client4.SendAsync(request4);
-                if (result.StatusCode != HttpStatusCode.OK)
-                {
-                    UpdatePoStatus = result.StatusCode;
-                }
+                //var result = await client4.SendAsync(request4);
+                //if (result.StatusCode != HttpStatusCode.OK)
+                //{
+                //    UpdatePoStatus = result.StatusCode;
+                //}
 
-                if (getItemmResp == HttpStatusCode.OK && UpdatePoStatus == HttpStatusCode.OK && UpdatePoQty == HttpStatusCode.OK
+                if (getItemmResp == HttpStatusCode.OK /*&& UpdatePoStatus == HttpStatusCode.OK*/ && UpdatePoQty == HttpStatusCode.OK
                     && UpdatePoProjQty == HttpStatusCode.OK && createinvTrancResp == HttpStatusCode.OK && createinvResp == HttpStatusCode.OK)
                 {
                     _repository.SaveAsync();

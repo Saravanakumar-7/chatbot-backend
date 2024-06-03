@@ -9,7 +9,7 @@ namespace Tips.Purchase.Api.Contracts
 {
     public interface IPoItemsRepository : IRepositoryBase<PoItem>
     {
-        Task<IEnumerable<PoItem>> GetPODetailsByPONumberandItemNo(string PONumber, string ItemNumber);
+        //Task<IEnumerable<PoItem>> GetPODetailsByPONumberandItemNo(string PONumber, string ItemNumber);
         Task<string> UpdatePOOrderItem(PoItem poItem);
         Task<int?> GetPODetailsByPONumber(string PONumber);
         Task<List<OpenPurchaseOrderDto>> GetOpenPOTGDetailsByItem(string itemNumber);

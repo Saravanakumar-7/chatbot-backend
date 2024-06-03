@@ -207,17 +207,18 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? ItemNumber { get; set; }
         public decimal Qty { get; set; }
         public string? PONumber { get; set; }
-
-    }
-    public class PurchaseOrderStatusUpdateDto
-    {
-
-        public string? ItemNumber { get; set; }
-        public decimal Qty { get; set; }
-        public string? PONumber { get; set; }
         public int PoItemId { get; set; }
 
     }
+    //public class PurchaseOrderStatusUpdateDto
+    //{
+
+    //    public string? ItemNumber { get; set; }
+    //    public decimal Qty { get; set; }
+    //    public string? PONumber { get; set; }
+    //    public int PoItemId { get; set; }
+
+    //}
     public class OpenPurchaseOrderDto
     {
         public string? ItemNumber { get; set; }

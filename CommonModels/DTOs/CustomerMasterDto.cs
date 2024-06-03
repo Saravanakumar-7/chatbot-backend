@@ -88,7 +88,7 @@ namespace Entities.DTOs
         public string? TurnOver { get; set; }
         public string? DNBNumber { get; set; }
         public string? ICRA { get; set; }
-        public string? HeadCount { get; set; }
+        public int? HeadCount { get; set; }
         public string? Capacity { get; set; }
         public string? FloorSpace { get; set; }
         public string? Machine { get; set; }
@@ -214,7 +214,7 @@ namespace Entities.DTOs
         public string? TurnOver { get; set; }
         public string? DNBNumber { get; set; }
         public string? ICRA { get; set; }
-        public string? HeadCount { get; set; }
+        public int? HeadCount { get; set; }
         public string? Capacity { get; set; }
         public string? FloorSpace { get; set; }
         public string? Machine { get; set; }
@@ -337,7 +337,7 @@ namespace Entities.DTOs
     public string? TurnOver { get; set; }
     public string? DNBNumber { get; set; }
     public string? ICRA { get; set; }
-    public string? HeadCount { get; set; }
+    public int? HeadCount { get; set; }
     public string? Capacity { get; set; }
     public string? FloorSpace { get; set; }
     public string? Machine { get; set; }
