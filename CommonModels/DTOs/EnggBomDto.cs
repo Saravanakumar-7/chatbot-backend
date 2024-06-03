@@ -23,6 +23,7 @@ namespace Entities.DTOs
 
         [Precision(5,2)]
         public decimal? RevisionNumber { get; set; }
+        public string? Remarks { get; set; }
 
         [DefaultValue(true)]
         public bool IsActive { get; set; }
@@ -76,6 +77,7 @@ namespace Entities.DTOs
 
         [DefaultValue(true)]
         public bool IsActive { get; set; }
+        public string? Remarks { get; set; }
 
         public string Unit { get; set; }
 

@@ -16,6 +16,7 @@ namespace Tips.Production.Api.Contracts
         Task<string> UpdateMaterialReturnNote(MaterialReturnNote materialReturnNote);
         Task<string> DeleteMaterialReturnNote(MaterialReturnNote materialReturnNote);
         Task<PagedList<MaterialReturnNote>> GetAllMRNStatusOpen(PagingParameter pagingParameter, SearchParamess searchParamess);
+        Task<PagedList<MaterialReturnNote>> GetAllMRNOpenwithPartialStatus(PagingParameter pagingParameter, SearchParamess searchParammes);
         Task<IEnumerable<MaterialReturnNote>> GetAllMRNStatusClose();
         Task<IEnumerable<MaterialReturnNoteIdNameList>> GetAllMaterialReturnNoteIdNameList();
         Task<IEnumerable<MaterialReturnNote>> GetAllMaterialReturnNoteWithItems(MaterialReturnNoteSearchDto materialReturnNoteSearch);

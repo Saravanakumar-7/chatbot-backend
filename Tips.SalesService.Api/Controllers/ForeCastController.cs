@@ -66,28 +66,29 @@ namespace Tips.SalesService.Api.Controllers
                 for (int i = 0; i < getAllForeCast.Count; i++)
                 {
                     var forecastNo = getAllForeCast[i].ForeCastNumber;
-                    var rfqCsCount = await _itemRepository.GetForecastCustomerSupportItemByForecastNumber(forecastNo);
-                    if (getAllForeCast[i].isSourcingAvailable == true)
-                    {
+                    var revNO = getAllForeCast[i].RevisionNumber;
+                    var rfqCsCount = await _itemRepository.GetForecastCustomerSupportItemByForecastNumber(forecastNo,revNO);
+                    //if (getAllForeCast[i].isSourcingAvailable == true)
+                    //{
 
-                        var forecastCsCount = await _itemRepository.GetForecastCustomerSupportItemByForecastNumber(forecastNo);
+                        var isFullyReleasedCs = await _itemRepository.IsFullyReleasedForeCastCs(forecastNo,revNO);
 
-                        var forecastCsRelesed = await _itemRepository.GetForecastCustomerSupportRelesedDetailsByForecastNumber(forecastNo);
+                        var isNotYetReleasedCs = await _itemRepository.IsNotYetReleasedForeCastCs(forecastNo,revNO);
 
-                        var forecastCsUnRelesedCount = forecastCsCount.Count() - forecastCsRelesed.Count();
-                        if (forecastCsRelesed.Count() == 0)
-                        {
-                            getAllForeCast[i].IsCsRelease = CsRelease.NotYetReleased;
-                        }
-                        if (forecastCsUnRelesedCount == 0 && forecastCsCount.Count() != 0)
+                        if (isFullyReleasedCs)
                         {
                             getAllForeCast[i].IsCsRelease = CsRelease.FullyRelease;
                         }
-                        if (forecastCsUnRelesedCount != 0 && forecastCsRelesed.Count() != 0)
+                        else if (isNotYetReleasedCs)
+                        {
+                            getAllForeCast[i].IsCsRelease = CsRelease.NotYetReleased;
+                        }
+                       else
                         {
                             getAllForeCast[i].IsCsRelease = CsRelease.PartiallyRelease;
                         }
-                        if (forecastCsCount.Count() != 0)
+
+                        if (rfqCsCount.Count() != 0)
                         {
                             getAllForeCast[i].CsComplete = CsStatus.CsCompleted;
                         }
@@ -96,8 +97,7 @@ namespace Tips.SalesService.Api.Controllers
                             getAllForeCast[i].CsComplete = CsStatus.CsNotYetCompleted;
                         }
                     }
-                }
-
+                
 
                         var metadata = new
                         {

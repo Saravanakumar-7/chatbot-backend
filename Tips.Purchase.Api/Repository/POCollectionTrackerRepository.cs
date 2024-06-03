@@ -166,8 +166,7 @@ namespace Tips.Purchase.Api.Repository
             var purchaseOrderTotalValue = _tipsPurchaseDbContext.PurchaseOrders
                         .Where(x => x.VendorNumber == vendorId)
                         .OrderByDescending(x => x.CreatedOn)
-                        .Select(x=>x.TotalAmount)
-                        .Sum();
+                        .Sum(x=>x.TotalAmount);
 
             var pocollectionDetails = _tipsPurchaseDbContext.POCollectionTrackers
                 .Where(x => x.VendorId == vendorId)

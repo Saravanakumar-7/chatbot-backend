@@ -112,15 +112,15 @@ namespace Tips.Production.Api.Controllers
                     GetInv = rfqCustomerIdResponse.StatusCode;
                 }
                 var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
-                var vendorUOC = JsonConvert.DeserializeObject<OQCBinningInventoryDto>(rfqCustomerIdString);
+                var inventoryDetails = JsonConvert.DeserializeObject<OQCBinningInventoryDto>(rfqCustomerIdString);
                 var oqcbinninglocations = _mapper.Map<List<OQCBinningLocation>>(postoqcbinning.oQCBinningLocations);
                 decimal binningqty = 0;
                 foreach (var loc in oqcbinninglocations)
                 {
                     binningqty = loc.Quantity + binningqty;
                 }
-                // vendorUOC.data.Balance_Quantity = vendorUOC.data.Balance_Quantity - binningqty;
-                foreach (var inv in vendorUOC.data)
+                // inventoryDetails.data.Balance_Quantity = inventoryDetails.data.Balance_Quantity - binningqty;
+                foreach (var inv in inventoryDetails.data)
                 {
                     if (inv.Balance_Quantity >= binningqty)
                     {
@@ -142,7 +142,7 @@ namespace Tips.Production.Api.Controllers
                     string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(updateInventory);
                     //var rfqApiUrl_1 = _config["InventoryAPI"];
                     var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
-                    //await _httpClient.PutAsync($"{rfqApiUrl_1}UpdateInventory?Id={vendorUOC.data.Id}", content);
+                    //await _httpClient.PutAsync($"{rfqApiUrl_1}UpdateInventory?Id={inventoryDetails.data.Id}", content);
 
                     var client5 = _clientFactory.CreateClient();
                     var token5 = HttpContext.Request.Headers["Authorization"].ToString();
@@ -162,7 +162,7 @@ namespace Tips.Production.Api.Controllers
                 }
                 foreach (var loc in oqcBinningLocationList)
                 {
-                    var newinv = _mapper.Map<OQCBinningInventoryUpdateDto>(vendorUOC.data[0]);
+                    var newinv = _mapper.Map<OQCBinningInventoryUpdateDto>(inventoryDetails.data[0]);
                     newinv.GrinPartId = null;
                     newinv.Warehouse = loc.Warehouse;
                     newinv.Location = loc.Location;

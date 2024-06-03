@@ -8,6 +8,7 @@ using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Tips.Warehouse.Api.Entities.DTOs;
 using System.Security.Claims;
+using Entities.Enums;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -131,7 +132,7 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<PagedList<Invoice>> GetAllInvoices([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var getAllInvoiceList = FindAll()
+            var getAllInvoiceList = _tipsWarehouseDbContext.invoices
                 .OrderByDescending(x => x.Id)
                 .Where(inv =>
                     (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
@@ -220,7 +221,15 @@ namespace Tips.Warehouse.Api.Repository
                             .FirstOrDefaultAsync();
             return getInvoiceListById;
         }
-
+        public async Task<Invoice> GetInvoiceByInvoiceNumber(string InvoiceNumber)
+        {
+            var getInvoiceListById = await _tipsWarehouseDbContext.invoices
+                            .Where(x => x.InvoiceNumber == InvoiceNumber)
+                            .Include(o => o.InvoiceAdditionalCharges)
+                            .Include(k => k.invoiceChildItems)
+                            .FirstOrDefaultAsync();
+            return getInvoiceListById;
+        }
         public async Task<string> UpdateInvoice(Invoice invoice)
         {
             invoice.LastModifiedBy = _createdBy;
@@ -229,7 +238,12 @@ namespace Tips.Warehouse.Api.Repository
             string result = $"Invoice details of {invoice.Id} is updated successfully!";
             return result;
         }
-
+        public async Task<string> UpdateInvoiceFromReturnInvoice(Invoice invoice)
+        {           
+            Update(invoice);
+            string result = $"Invoice details of {invoice.Id} is updated successfully!";
+            return result;
+        }
         public async Task<string> DeleteInvoice(Invoice invoice)
         {
             Delete(invoice);
@@ -252,6 +266,15 @@ namespace Tips.Warehouse.Api.Repository
                               .ToListAsync();
 
             return invoiceIdNameList;
+        }
+        public async Task<Invoice> GetInvoiceByIdExceptClosed(int id)
+        {
+            var getInvoiceListById = await _tipsWarehouseDbContext.invoices
+                            .Where(x => x.Id == id)
+                            .Include(o => o.InvoiceAdditionalCharges)
+                            .Include(k => k.invoiceChildItems.Where(x=>x.InvoiceItemStatus!=Status.Closed))
+                            .FirstOrDefaultAsync();
+            return getInvoiceListById;
         }
     }
 

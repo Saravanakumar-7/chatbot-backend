@@ -120,7 +120,7 @@ namespace Contracts
         ITypeSolutionRepository TypeSolutionRepository { get; }
 
         IRoomNameRepository RoomNameRepository { get; }
-
+        IEmailIDsRepository EmailIDsRepository { get; }
         ICityRepository CityRepository { get; }
         IBHKRepository BHKRepository { get; }
         ILightningDesignerRepository LightningDesignerRepository { get; }

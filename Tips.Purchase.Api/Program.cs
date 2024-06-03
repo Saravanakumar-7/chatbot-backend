@@ -91,6 +91,7 @@ builder.Services.AddScoped<IPoConfirmationDateRepository, PoConfirmationDateRepo
 builder.Services.AddScoped<IPoConfirmationHistoryRepository, PoConfirmationHistoryRepository>();
 builder.Services.AddScoped<IPrItemsRepository, PurchaseRequisitionItemRepository>();
 builder.Services.AddScoped<IPoAddprojectRepository, PoAddprojectRepository>();
+builder.Services.AddScoped<IPoItemHistoryRepository, PoItemHistoryRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

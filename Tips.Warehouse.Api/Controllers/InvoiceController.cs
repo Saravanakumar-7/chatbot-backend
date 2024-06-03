@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
+using Azure;
 using Contracts;
 using Entities;
 using Entities.Enums;
@@ -629,6 +630,8 @@ namespace Tips.Warehouse.Api.Controllers
                     {
                         InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
                         invoiceChildItem.InitialDispatchQty = invoiceChildItem.InvoicedQty;
+                        invoiceChildItem.ReturnInvoiceQty = 0;
+                        invoiceChildItem.InvoiceItemStatus = Status.Open;
                         invoiceChildItemsEntityList.Add(invoiceChildItem);
 
                         var invoiceQty = invoiceChildItem.InvoicedQty;
@@ -645,14 +648,23 @@ namespace Tips.Warehouse.Api.Controllers
 
                 invoice.invoiceChildItems = invoiceChildItemsEntityList;
                 invoice.InvoiceAdditionalCharges = InvoiceAdditionalChargesList.ToList();
-
+                invoice.InvoiceStatus = Status.Open;
                 await _invoiceRepository.CreateInvoice(invoice);
-                _invoiceRepository.SaveAsync();
-
-
                 //Sales order additional charge update method
-                await SoAdditonalChargeUpdateOnInvoiceCreate(InvoiceAdditionalChargesList);
-
+                var response = await SoAdditonalChargeUpdateOnInvoiceCreate(InvoiceAdditionalChargesList);
+                if ((response.StatusCode == HttpStatusCode.OK))
+                {
+                    _invoiceRepository.SaveAsync();
+                }
+                else
+                {
+                    _logger.LogError($"Something went wrong inside CreateInvoice action inside SalesOrder Controller AdditionalChargeUpdateFromInvoice action");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Something went wrong ,try again";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Invoice Successfully Created";
                 serviceResponse.Success = true;
@@ -670,7 +682,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        private async Task SoAdditonalChargeUpdateOnInvoiceCreate(IEnumerable<InvoiceAdditionalCharges> InvoiceAdditionalChargesList)
+        private async Task<HttpResponseMessage> SoAdditonalChargeUpdateOnInvoiceCreate(IEnumerable<InvoiceAdditionalCharges> InvoiceAdditionalChargesList)
         {
             List<SalesOrderAdditionalChargesUpdate> salesOrderAdditionalChargesUpdates = new List<SalesOrderAdditionalChargesUpdate>();
 
@@ -684,22 +696,19 @@ namespace Tips.Warehouse.Api.Controllers
                 };
                 salesOrderAdditionalChargesUpdates.Add(additionalCharges);
             }
-
-
-
-
             var soAdditionalChargeJson = JsonConvert.SerializeObject(salesOrderAdditionalChargesUpdates);
             var data = new StringContent(soAdditionalChargeJson, Encoding.UTF8, "application/json");
             var client = _clientFactory.CreateClient();
             var token = HttpContext.Request.Headers["Authorization"].ToString();
             // var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "AdditionalChargeUpdateFromInvoice"), data);
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],"AdditionalChargeUpdateFromInvoice"))
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"], "AdditionalChargeUpdateFromInvoice"))
             {
                 Content = data
             };
             request.Headers.Add("Authorization", token);
 
             var response = await client.SendAsync(request);
+            return response;
         }
 
         private async Task InventoryTransactionSaveOnInvoiceCreate(Invoice invoice, List<InvoiceChildItem> invoiceChildItemsEntityList, int i, InvoiceChildItem invoiceChildItem)
@@ -737,7 +746,7 @@ namespace Tips.Warehouse.Api.Controllers
                 foreach (var doItem in btoItemDetails)
                 {
                     decimal doBalanceQty = Convert.ToDecimal(doItem.BalanceDoQty);
-                    
+
 
                     if (doBalanceQty >= invoiceQty)
                     {
@@ -752,7 +761,7 @@ namespace Tips.Warehouse.Api.Controllers
                         invoiceQty -= doBalanceQty;
                     }
 
-                    if (doItem.BalanceDoQty <= 0)
+                    if (doItem.BalanceDoQty == 0)
                     {
                         doItem.BalanceDoQty = 0;
                         doItem.DoStatus = Status.Closed;
@@ -780,7 +789,6 @@ namespace Tips.Warehouse.Api.Controllers
                 var bTODeliveryOrderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(doNumber);
                 bTODeliveryOrderDetails.DoStatus = Status.PartiallyClosed;
                 await _bTODeliveryOrderRepository.UpdateBTODeliveryOrder(bTODeliveryOrderDetails);
-
             }
             else
             {
@@ -905,6 +913,44 @@ namespace Tips.Warehouse.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetInvoiceByIdExceptClosed(int id)
+        {
+            ServiceResponse<InvoiceDto> serviceResponse = new ServiceResponse<InvoiceDto>();
+
+            try
+            {
+                var getInvoiceDetailById = await _invoiceRepository.GetInvoiceByIdExceptClosed(id);
+                if (getInvoiceDetailById == null)
+                {
+                    _logger.LogError($"Invoice with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Invoice with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned GetInvoiceByIdExceptClosed with id: {id}");
+                    var result = _mapper.Map<InvoiceDto>(getInvoiceDetailById);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned InvoiceById Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetInvoiceByIdExceptClosed for the Id:{id} action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
             }
         }
     }

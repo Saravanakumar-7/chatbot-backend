@@ -239,7 +239,14 @@ namespace Tips.Purchase.Api.Repository
             }).ToListAsync();
             return revNoListbyPRNumber;
         }
+        public async Task<PurchaseRequisition> GetPrDetailsByPrNumber(string prNumber)
+        {
+            var prDetails = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PrNumber == prNumber && x.RevisionNumber == _tipsPurchaseDbContext.PurchaseRequisitions
+                                                                        .Where(x => x.PrNumber == prNumber).Max(x => x.RevisionNumber))
+                .FirstOrDefaultAsync();
 
+            return prDetails;
+        }
         public async Task<PurchaseRequisition> GetPurchaseRequisitionByPRNoAndRevNo(string prNumber, int revisionNumber)
         {
             var purchaseRequisitionDetail = await _tipsPurchaseDbContext.PurchaseRequisitions
@@ -899,14 +906,14 @@ namespace Tips.Purchase.Api.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<PrItem> GetPrItemByPRNo(string prNo,string pritem)
+        public async Task<PrItem> GetPrItemByPRNo(string prNo, string pritem)
         {
             var prId = await _tipsPurchaseDbContexts.PurchaseRequisitions
-                .Where(x => x.PrNumber == prNo && x.RevisionNumber == _tipsPurchaseDbContexts.PurchaseRequisitions.Where(x=>x.PrNumber == prNo).Max(x=>x.RevisionNumber))
+                .Where(x => x.PrNumber == prNo && x.RevisionNumber == _tipsPurchaseDbContexts.PurchaseRequisitions.Where(x => x.PrNumber == prNo).Max(x => x.RevisionNumber))
                 .Select(x => x.Id)
                 .FirstOrDefaultAsync();
 
-            if (prId != 0) 
+            if (prId != 0)
             {
                 var prItems = await _tipsPurchaseDbContexts.PrItems
                     .Where(x => x.PurchaseRequistionId == prId && x.ItemNumber == pritem)
@@ -926,14 +933,14 @@ namespace Tips.Purchase.Api.Repository
                .Where(x => x.PrNumber == prNo && x.RevisionNumber == _tipsPurchaseDbContexts.PurchaseRequisitions.Where(x => x.PrNumber == prNo).Max(x => x.RevisionNumber))
                .Select(x => x.Id)
                .FirstOrDefaultAsync();
-            
-                PrStatus status=PrStatus.Open;
-                var prCount=_tipsPurchaseDbContexts.PrItems.Where(x => x.PurchaseRequistionId == prId).Count();
-                var prStatusCount =_tipsPurchaseDbContexts.PrItems.Where(x => x.PurchaseRequistionId == prId && x.PrStatus != PrStatus.Closed).Count();
-                if (prStatusCount == 0) status = PrStatus.Closed;
-                else if (prCount > prStatusCount) status = PrStatus.PartiallyClosed;
-                return status;
-                        
+
+            PrStatus status = PrStatus.Open;
+            var prCount = _tipsPurchaseDbContexts.PrItems.Where(x => x.PurchaseRequistionId == prId).Count();
+            var prStatusCount = _tipsPurchaseDbContexts.PrItems.Where(x => x.PurchaseRequistionId == prId && x.PrStatus != PrStatus.Closed).Count();
+            if (prStatusCount == 0) status = PrStatus.Closed;
+            else if (prCount > prStatusCount) status = PrStatus.PartiallyClosed;
+            return status;
+
         }
         public Task<IEnumerable<PrItem>> GetAllActivePrItems()
         {

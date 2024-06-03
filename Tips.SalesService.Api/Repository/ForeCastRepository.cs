@@ -571,10 +571,44 @@ namespace Tips.SalesService.Api.Repository
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<ForeCastCustomerSupportItem>> GetForecastCustomerSupportItemByForecastNumber(string forecastNumber)
+        public async Task<IEnumerable<ForeCastCustomerSupportItem>> GetForecastCustomerSupportItemByForecastNumber(string forecastNumber, decimal revNumber)
         {
-            var getForecastCSItemForecastNo = await _tipsSalesServiceDbContext.foreCastCustomerSupportItems.Where(x => x.ForecastNumber == forecastNumber).ToListAsync();
+            var csId = await _tipsSalesServiceDbContext.ForeCastCustomerSupports
+               .Where(x => x.ForecastNumber == forecastNumber && x.RevisionNumber == revNumber)
+               .Select(x => x.Id).FirstOrDefaultAsync();
+
+            var getForecastCSItemForecastNo = await _tipsSalesServiceDbContext.foreCastCustomerSupportItems
+                .Where(x => x.ForecastNumber == forecastNumber
+            && x.ForeCastCustomerSupportId == csId)
+                .ToListAsync();
             return getForecastCSItemForecastNo;
+        }
+        public async Task<bool> IsFullyReleasedForeCastCs(string rfqNumber, decimal revNumber)
+        {
+
+            var CsId = await _tipsSalesServiceDbContext.ForeCastCustomerSupports
+             .Where(s => s.ForecastNumber == rfqNumber && s.RevisionNumber == revNumber).Select(x => x.Id).FirstOrDefaultAsync();
+            if (CsId == 0)
+            {
+                return false;
+            }
+            var isFullyReleased = await _tipsSalesServiceDbContext.foreCastCustomerSupportItems
+                .Where(x => x.ForeCastCustomerSupportId == CsId)
+                .AllAsync(x => x.ReleaseStatus == true);
+
+            return isFullyReleased;
+        }
+        public async Task<bool> IsNotYetReleasedForeCastCs(string rfqNumber, decimal revNumber)
+        {
+
+            var CsId = await _tipsSalesServiceDbContext.ForeCastCustomerSupports
+             .Where(s => s.ForecastNumber == rfqNumber && s.RevisionNumber == revNumber).Select(x => x.Id).FirstOrDefaultAsync();
+
+            var isNotYetReleased = await _tipsSalesServiceDbContext.foreCastCustomerSupportItems
+                .Where(x => x.ForeCastCustomerSupportId == CsId)
+                .AllAsync(x => x.ReleaseStatus == false);
+
+            return isNotYetReleased;
         }
 
         public async Task<ForeCastCustomerSupportItem> GetForeCastCustomerSupportItemById(int id)

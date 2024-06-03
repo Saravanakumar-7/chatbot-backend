@@ -11,7 +11,7 @@ namespace Tips.SalesService.Api.Entities
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
 
-        [Precision(18,3)]
+        [Precision(18,4)]
         public decimal? AddtionalChargesValueAmount { get; set; }
 
         [Precision(18, 3)]

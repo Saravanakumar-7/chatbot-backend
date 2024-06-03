@@ -489,7 +489,7 @@ namespace Tips.SalesService.Api.Repository
         {
 
             IEnumerable<ListofSalesOrderDetails> getSalesorderList = await _tipsSalesServiceDbContext.SalesOrders
-                                .Where(b => b.CustomerId == Customerid)
+                                .Where(b => b.CustomerId == Customerid && (b.SOStatus!=OrderStatus.ShortClosed|| b.SOStatus != OrderStatus.Closed))
                                 .Select(x => new ListofSalesOrderDetails()
                                 {
                                     SalesOrderId = x.Id,
@@ -511,7 +511,12 @@ namespace Tips.SalesService.Api.Repository
 
             return salesOrderTotal;
         }
-
+        public async Task<string> UpdateSalesOrderShortClose(SalesOrder salesOrder)
+        {           
+            Update(salesOrder);
+            string result = $"SalesOrder of Detail {salesOrder.Id} is updated successfully!";
+            return result;
+        }
         public async Task<string> UpdateSalesOrder(SalesOrder salesOrder)
         {
             salesOrder.CreatedBy = salesOrder.CreatedBy;
@@ -938,6 +943,11 @@ namespace Tips.SalesService.Api.Repository
             salesOrderHistory.Unit = "Banglore";
             var result = await Create(salesOrderHistory);
             return result;
+        }
+        public async Task<List<SalesOrderHistory>> GetSalesOrderHistoryBySONoAndItemNumberifShortCLosed(string SOnumber,string Itemnumber)
+        {
+            var SOHistory =await FindAll().Where(x => x.Remarks == "Item ShortClosed" && x.SalesOrderNumber == SOnumber && x.ItemNumber == Itemnumber).ToListAsync();
+            return SOHistory;
         }
     }
     public class ScheduleDateHistoryRepository : RepositoryBase<ScheduleDateHistory>, IScheduleDateHistoryRepository

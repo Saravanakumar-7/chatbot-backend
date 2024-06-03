@@ -28,8 +28,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<List<InventoryQtyforDO>> GetInventorybyItemandProject(string itemNumber, string projectNumber);
         Task<Inventory?> GetInventorybyItemProjectWarehouseLocation(string itemNumber, string projectNumber, string warehouse, string location);
         Task<List<InventoryQtyforDO>> GetInventorybyItem(string itemNumber);
-        Task UpdateInventoryforBTO(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis);
-        Task UpdateInventoryforBTO_Keus(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis);
+        Task UpdateInventoryforBTO(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis, string DoNumber);
+        Task UpdateInventoryforBTO_Keus(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis, string DoNumber);
         Task UpdateInventoryforODO(List<OpenDeliveryOrderPartsQtyDistribution> ODOitemDis);
         Task<Inventory> GetInventoryFGDetailsByItemNumber(string ItemNumber);
 
@@ -83,8 +83,11 @@ namespace Tips.Warehouse.Api.Contracts
         Task<decimal> GetTotalStockOfSAItemNumberAndProjectNo(string itemNumber, string projectNo);
         Task<List<ConsumptionChildItemInventoryDto>> GetConsumptionChildItemStockWithWipQtyByProjectNo(string projectNo, List<string> itemNumberList);
         Task<IEnumerable<InventoryQtyForWeightedAvgCostDto>> GetInventoryQtybyItemNo(string itemNo);
+        Task<IEnumerable<CrossMarginSPReport>> GetCrossMarginSPReportsWithParam(string CustomerId, string CustomerName);
+        Task<IEnumerable<InventoryForStockSPReport>> GetInventoryForStockSPReportsWithParam(string PartNumber, string Warehouse, string Location);
         Task<IEnumerable<InventorySPReport>> GetInventorySPReportsWithParam(string PartNumber, string Description, string Warehouse,
                                                                                                    string Location, string ProjectNumber);
+        Task<IEnumerable<StockMovementSPReport>> GetStockMovementSPReports();
         Task<IEnumerable<Inventory>> GetInventoryWarehouseReport(string PartNumber, string Description, string Warehouse, string Location, string ProjectNumber);
         Task<IEnumerable<InventorySPReport>> InventorySPReportdate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<Inventory>> GetInventoryWIPReport(string PartNumber, string Description, string ProjectNumber);

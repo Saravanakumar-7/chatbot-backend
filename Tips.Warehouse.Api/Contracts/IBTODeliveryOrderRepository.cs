@@ -14,7 +14,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<string> GenerateBTONumber();
         Task<IEnumerable<ListOfBtoNumberDetails>> GetBtoNumberListByCustomerId(string customerLeadId);
         Task<BTODeliveryOrder> GetBtoDetailsByBtoNo(string BTONumber);
-
+        Task<string> UpdateBTODeliveryOrderFromReturnDO(BTODeliveryOrder bTODeliveryOrder);
         Task<PagedList<BTODeliveryOrder>> GetAllActiveBTODeliveryOrders(PagingParameter pagingParameter, SearchParams searchParams);
         Task<long> CreateBTODeliveryOrder(BTODeliveryOrder bTODeliveryOrder);
         Task<IEnumerable<ListOfBtoNumberDetails>> GetBtoNumberListBySalesOrderId(int salesOrderId);
@@ -35,5 +35,7 @@ namespace Tips.Warehouse.Api.Contracts
                                                                                                     string Warehouse, string Location, string KPN, string MPN, string ProjectNumber);
         Task<IEnumerable<DailyDOReport>> GetDailyDeliveryOrderReports();
         Task<SalesOrderNoandIdDto> GetAllSalesOrderNoAndIdByBTONo(string btoNumber);
+        Task<BTODeliveryOrder> GetBTODeliveryOrderByIdExcludingClosed(int id);
+        Task<IEnumerable<ListOfBtoNumberDetails>> GetBtoNumberListByCustomerIdExcludingClosed(string customerLeadId);
     }
 }

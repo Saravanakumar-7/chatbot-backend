@@ -27,7 +27,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal TotalValue { get; set; }
         public string? SerialNumber { get; set; }
-
+        public Status InvoiceItemStatus { get; set; }
         public int? SalesOrderID { get; set; }
 
         [Precision(13, 3)]
@@ -49,7 +49,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? InitialDispatchQty { get; set; }
         public int BtoDeliveryOrderPartsId { get; set; }
 
-
+        public decimal? ReturnInvoiceQty { get; set; }
         public int InvoiceId { get; set; }
     }
 
@@ -70,7 +70,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         public int BtoDeliveryOrderPartsId { get; set; }
 
-
+        public decimal? ReturnInvoiceQty { get; set; }
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
         public string UOC { get; set; }
@@ -95,7 +95,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal TotalValueWithTax { get; set; }
         public decimal Discount { get; set; }
         public string? DiscountType { get; set; }
-
+        public Status InvoiceItemStatus { get; set; }
     }
     public class InvoiceChildItemUpdateDto
     {
@@ -193,7 +193,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? DONumber { get; set; }
         public string? FGItemNumber { get; set; }
         public string? Description { get; set; }
-
+        public Status InvoiceItemStatus { get; set; }
+        public decimal? ReturnInvoiceQty { get; set; }
 
         [Precision(13, 3)]
         public decimal InvoicedQty { get; set; }
@@ -203,7 +204,6 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
-
         public string UOC { get; set; }
 
         [Precision(13, 3)]

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Entities.Enums;
+using System.ComponentModel.DataAnnotations;
 using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
@@ -20,7 +21,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+        public Status InvoiceStatus { get; set; }
         public List<InvoiceChildItemDto>? invoiceChildItems { get; set; }
         public List<InvoiceAdditionalChargesDto>? InvoiceAdditionalCharges { get; set; }
 
@@ -38,7 +39,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? CompanyName { get; set; }
         public string? Remarks { get; set; }
 
-
+        public Status InvoiceStatus { get; set; }
         public List<InvoiceChildItemPostDto>? InvoiceChildItems { get; set; }
         public List<InvoiceAdditionalChargesPostDto>? InvoiceAdditionalCharges { get; set; }
 
@@ -166,7 +167,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+        public Status InvoiceStatus { get; set; }
         public List<DoNoInvoiceChildItemDto>? invoiceChildItems { get; set; }
         public List<DoNoInvoiceAdditionalChargesDto>? InvoiceAdditionalCharges { get; set; }
 

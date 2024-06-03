@@ -24,5 +24,6 @@ namespace Tips.SalesService.Api.Contracts
          Task<string> UpdateQuote(Quote quote);
         Task<string> DeleteQuote(Quote quote);
         Task<Quote> GetQuoteByQuoteNumber(string quoteNumber);
+        Task<IEnumerable<QuoteSPReport>> GetQuoteSPReport();
     }
 }

@@ -451,6 +451,24 @@ namespace Tips.Grin.Api.Controllers
                         var client = _clientFactory.CreateClient();
                         var token = HttpContext.Request.Headers["Authorization"].ToString();
 
+                        //// Include the token in the Authorization header
+                        //var tokenValue = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+                        //if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
+                        //{
+                        //    var token = tokenValue.Substring(7);
+                        //    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        //}
+
+                        //Add ItemMasterEnggDetails in GrinParts
+                        //// Include the token in the Authorization header
+                        //var tokenValue = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
+                        //if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
+                        //{
+                        //    var token = tokenValue.Substring(7);
+                        //    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                        //}
+
+                        //Add ItemMasterEnggDetails in GrinParts
                         var ItemNumber = grinPartsItemMasterEnggDto.ItemNumber;
                         var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
 
@@ -811,7 +829,7 @@ namespace Tips.Grin.Api.Controllers
                         {
                             var grinPartsProjectNoDtoDetail = _mapper.Map<GrinUpdateProjectBalQtyDetailsDto>(projectNo);
                             grinPartsProjectNoDtoDetail.ItemNumber = grinparts.ItemNumber;
-                            grinPartsProjectNoDtoDetail.PONumber = grinparts.PONumber;
+                            grinPartsProjectNoDtoDetail.PoItemId = grinparts.PoItemId;
                             projectNameDtos.Add(grinPartsProjectNoDtoDetail);
                         }
 
@@ -837,27 +855,27 @@ namespace Tips.Grin.Api.Controllers
                 }
                 //Update PoStatus in Purchase order And PoItem table
 
-                var grinPartsDetails = _mapper.Map<List<GrinQtyPoStatusUpdateDto>>(grinPartsDto);
-                var jsonCon = JsonConvert.SerializeObject(grinPartsDetails);
-                var data3 = new StringContent(jsonCon, Encoding.UTF8, "application/json");
-                //var result = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdatePoStatus"), datass);
+                //var grinPartsDetails = _mapper.Map<List<GrinQtyPoStatusUpdateDto>>(grinPartsDto);
+                //var jsonCon = JsonConvert.SerializeObject(grinPartsDetails);
+                //var data3 = new StringContent(jsonCon, Encoding.UTF8, "application/json");
+                ////var result = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdatePoStatus"), datass);
 
-                var client4 = _clientFactory.CreateClient();
-                var token4 = HttpContext.Request.Headers["Authorization"].ToString();
-                var request4 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
-                "UpdatePoStatus"))
-                {
-                    Content = data3
-                };
-                request4.Headers.Add("Authorization", token4);
+                //var client4 = _clientFactory.CreateClient();
+                //var token4 = HttpContext.Request.Headers["Authorization"].ToString();
+                //var request4 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
+                //"UpdatePoStatus"))
+                //{
+                //    Content = data3
+                //};
+                //request4.Headers.Add("Authorization", token4);
 
-                var result = await client4.SendAsync(request4);
-                if (result.StatusCode != HttpStatusCode.OK)
-                {
-                    UpdatePoStatus = result.StatusCode;
-                }
+                //var result = await client4.SendAsync(request4);
+                //if (result.StatusCode != HttpStatusCode.OK)
+                //{
+                //    UpdatePoStatus = result.StatusCode;
+                //}
 
-                if (getItemmResp == HttpStatusCode.OK && UpdatePoStatus == HttpStatusCode.OK && UpdatePoQty == HttpStatusCode.OK
+                if (getItemmResp == HttpStatusCode.OK /*&& UpdatePoStatus == HttpStatusCode.OK*/ && UpdatePoQty == HttpStatusCode.OK
                     && UpdatePoProjQty == HttpStatusCode.OK && createinvTrancResp == HttpStatusCode.OK && createinvResp == HttpStatusCode.OK)
                 {
                     _repository.SaveAsync();
@@ -897,7 +915,8 @@ namespace Tips.Grin.Api.Controllers
                             var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
                             dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                             dynamic itemMasterObject = itemMasterObjectData;
-                            if (itemMasterObject.data != null)
+
+                            if (itemMasterObject != null && itemMasterObject.Count > 0)
                             {
                                 for (int i = 0; i < grins.GrinParts.Count; i++)
                                 {
@@ -1348,7 +1367,7 @@ namespace Tips.Grin.Api.Controllers
                         var grinNum = iqcConfirmation.GrinNumber;
                         if (grinNum != null)
                         {
-                            var iqcNum = grinNum.Replace("GRIN", "IQC");
+                            var iqcNum = grinNum.Replace("GRN", "IQC");
                             iqcConfirmation.IQCNumber = iqcNum;
                         }
 

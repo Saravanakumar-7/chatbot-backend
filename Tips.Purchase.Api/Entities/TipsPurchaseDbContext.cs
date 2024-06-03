@@ -32,6 +32,7 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PoConfirmationDate> PoConfirmationDates { get; set; }
         public DbSet<PoConfirmationDateHistory> PoConfirmationDateHistories { get; set; }
         public DbSet<PoConfirmationHistory> PoConfirmationHistories { get; set; }
+        public DbSet<PoItemHistory> PoItemHistories { get; set; }
         public DbSet<PRItemsDocumentUpload> PRItemsDocumentUploads { get; set; }
         public DbSet<PurchaseOrderSPReport> PurchaseOrderSPReports { get; set; }
         public DbSet<Tras_POSPReport> Tras_POSPReports { get; set; }
@@ -40,6 +41,7 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<podeliveryschedule_report_Dto> podeliveryschedule_Report_Dtos { get; set; }
         public DbSet<poproject_report_Dto> poproject_Report_Dtos { get; set; }
         public DbSet<PurchaseRequisitionSPReport> PurchaseRequisitionSPReports { get; set; }
+        public DbSet<PurchaseOrderApprovalSPReport> PurchaseOrderApprovalSPReports { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PurchaseOrderSPReport>().HasNoKey();
@@ -49,6 +51,7 @@ namespace Tips.Purchase.Api.Entities
             modelBuilder.Entity<podeliveryschedule_report_Dto>().HasNoKey();
             modelBuilder.Entity<poproject_report_Dto>().HasNoKey();
             modelBuilder.Entity<PurchaseRequisitionSPReport>().HasNoKey();
+            modelBuilder.Entity<PurchaseOrderApprovalSPReport>().HasNoKey();
         }
     }
 }

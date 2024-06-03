@@ -19,7 +19,9 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? CustomerItemNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public OrderStatus StatusEnum { get; set; }
-
+        public decimal? ShortClosedQty { get; set; }
+        public string? ShortClosedBy { get; set; }
+        public DateTime? ShortClosedOn { get; set; }
         [Precision(13, 3)]
         public decimal BalanceQty { get; set; }
 
@@ -128,10 +130,12 @@ namespace Tips.SalesService.Api.Entities.Dto
         [Precision(13, 3)]
         public decimal DispatchQty { get; set; }
         public OrderStatus StatusEnum { get; set; }
-
+        public decimal? ShortClosedQty { get; set; }
+        public bool NowShortClosed { get; set; }
         [Precision(18, 3)]
         public decimal? BasicAmount { get; set; }
-
+        public string? ShortClosedBy { get; set; }
+        public DateTime? ShortClosedOn { get; set; }
         [Precision(13, 3)]
         public decimal? Discount { get; set; }
         public string? RoomName { get; set; }
@@ -401,7 +405,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string mftrPartNumber { get; set; }
         public string description { get; set; }
         public string projectNumber { get; set; }
-        public int balance_Quantity { get; set; }
+        public decimal balance_Quantity { get; set; }
         public string uom { get; set; }
         public bool isStockAvailable { get; set; }
         public string warehouse { get; set; }

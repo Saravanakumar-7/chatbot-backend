@@ -137,6 +137,23 @@ namespace Tips.Production.Api.Repository
 
             return results;
         }
+        public async Task<IEnumerable<OQCAndOQCBinningSPReport>> GetOQCAndOQCBinningSPReportWithParam(string? ItemNumber, string? ShopOrderNumber)
+        {
+            var result = _tipsProductionDbContext
+            .Set<OQCAndOQCBinningSPReport>()
+            .FromSqlInterpolated($"OQC_VS_OQCBINNING_withparameter({ItemNumber},{ShopOrderNumber})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<OQCAndOQCBinningSPReport>> GetOQCAndOQCBinningSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsProductionDbContext.Set<OQCAndOQCBinningSPReport>()
+                      .FromSqlInterpolated($"OQC_VS_OQCBINNING_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
         public async Task<List<OQCStock>?> GetOQCAcceptedQty(string Itemnumber)
         {
             var AcceptedQty = await _tipsProductionDbContext.oQCs.Where(x => x.ItemNumber == Itemnumber).GroupBy(x => new { x.ItemNumber, x.ShopOrderNumber })

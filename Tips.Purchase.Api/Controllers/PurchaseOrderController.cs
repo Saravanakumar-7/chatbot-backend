@@ -30,6 +30,7 @@ using Tips.Purchase.Api.Entities.Dto;
 using Tips.Purchase.Api.Entities.DTOs;
 using Tips.Purchase.Api.Entities.Enums;
 using Tips.Purchase.Api.Repository;
+using EmailIDsDto = Tips.Purchase.Api.Entities.Dto.EmailIDsDto;
 using EmailTemplateDto = Tips.Purchase.Api.Entities.DTOs.EmailTemplateDto;
 //using static Org.BouncyCastle.Math.EC.ECCurve;
 
@@ -54,12 +55,13 @@ namespace Tips.Purchase.Api.Controllers
         private IPrItemsRepository _purchaseRequisitionItemRepository;
         private IPoAddprojectRepository _poAddprojectRepository;
         private readonly IHttpClientFactory _clientFactory;
+        private IPoItemHistoryRepository _poItemHistoryRepository;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
         private readonly HttpClient _httpClient;
-        public PurchaseOrderController(IPrItemsRepository purchaseRequisitionItemRepository, IHttpClientFactory clientFactory, HttpClient httpClient, IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository, IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository, IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IPoAddprojectRepository poAddprojectRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
+        public PurchaseOrderController(IPrItemsRepository purchaseRequisitionItemRepository, IPoItemHistoryRepository poItemHistoryRepository, IHttpClientFactory clientFactory, HttpClient httpClient, IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository, IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository, IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IPoAddprojectRepository poAddprojectRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
             _httpClient = httpClient;
@@ -75,6 +77,7 @@ namespace Tips.Purchase.Api.Controllers
             _pRItemsDocumentUploadRepository = pRItemsDocumentUploadRepository;
             _purchaseRequisitionItemRepository = purchaseRequisitionItemRepository;
             _poAddprojectRepository = poAddprojectRepository;
+            _poItemHistoryRepository = poItemHistoryRepository;
             _config = config;
             _clientFactory = clientFactory;
             _httpContextAccessor = httpContextAccessor;
@@ -568,6 +571,46 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderApprovalSPReportWithParam([FromBody] PurchaseOrderApprovalSPReportWithParamDTO purchaseOrderApprovalSPReport)
+
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderApprovalSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderApprovalSPReport>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderApprovalSPReportWithParam(purchaseOrderApprovalSPReport.VendorName, purchaseOrderApprovalSPReport.PONumber,
+                                                                                    purchaseOrderApprovalSPReport.ItemNumber, purchaseOrderApprovalSPReport.RecordType,
+                                                                                        purchaseOrderApprovalSPReport.Postatus, purchaseOrderApprovalSPReport.Approval);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrderApprovalSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderApprovalSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> GetListOfOpenPOQtyByItemNoList(List<string> itemNumberList)
@@ -810,6 +853,12 @@ namespace Tips.Purchase.Api.Controllers
                         foreach (var poItemDetails in purchaseOrderDetailbyId.POItems)
                         {
                             PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
+                            
+                            var poItemHistoryReceivedQty = await _poItemHistoryRepository.GetPoItemHistoryDetailsByPoItemId(poItemDtos.PONumber, poItemDtos.ItemNumber);
+                            if (poItemHistoryReceivedQty != null)
+                            { 
+                                poItemDtos.ShortClosedQty = poItemHistoryReceivedQty.Sum(x => x.ShortClosedQty); 
+                            }
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
                             poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
                             poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
@@ -1239,7 +1288,7 @@ namespace Tips.Purchase.Api.Controllers
                         }
 
                         var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
-                        var prDetail = await _repository.GetPrDetailsByPrNumber(prDetails.PRNumber);
+                        var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
                         prDetail.PrStatus = prItemClosedStatusCount;
                         await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
                     }
@@ -1252,20 +1301,28 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
-                           "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
-
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,CreatePurchaseOrder";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
-                    var mails = "accounts@avisionsystems.com";
+                    var mails = (emaildetails1.data.Where(x => x.operation == "CreatePurchaseOrder").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                    //var mails = "accounts@avisionsystems.com";
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+                    //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetails.PODate.ToString().Split(" ");
-                    email.To.Add(MailboxAddress.Parse(mails));
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
                     body = body.Replace("{{PO Number}}", purchaseOrderDetails.PONumber);
@@ -1293,7 +1350,7 @@ namespace Tips.Purchase.Api.Controllers
                             }
                         if (item.PrDetails.Count > 0)
                             foreach (var pr in item.PrDetails)
-                            {                                
+                            {
                                 if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
                                 else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
                             }
@@ -1305,8 +1362,9 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
-                    smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
@@ -1943,7 +2001,7 @@ namespace Tips.Purchase.Api.Controllers
                 var poItemDtoList = new List<PoItem>();
                 var poIncoTermDto = purchaseOrderUpdateDto.POIncoTerms;
                 var poIncoTermsList = new List<PoIncoTerm>();
-                
+
                 if (poIncoTermDto != null)
                 {
                     for (int i = 0; i < poIncoTermDto.Count; i++)
@@ -2024,7 +2082,7 @@ namespace Tips.Purchase.Api.Controllers
                                 var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
                                 if (prItemClosedStatusCount == 0)
                                 {
-                                    var prDetail = await _repository.GetPrDetailsByPrNumber(prDetails.PRNumber);
+                                    var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
                                     prDetail.PrStatus = PrStatus.Closed;
                                     await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
 
@@ -2044,13 +2102,27 @@ namespace Tips.Purchase.Api.Controllers
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,CreatePurchaseOrder";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
-                    var mails = "accounts@avisionsystems.com";
+                    //var mails = "accounts@avisionsystems.com";
+                    var mails = (emaildetails1.data.Where(x => x.operation == "CreatePurchaseOrder").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                    //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetails.PODate.ToString().Split(" ");
-                    email.To.Add(MailboxAddress.Parse(mails));
+                    //email.To.Add(MailboxAddress.Parse(mails));
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
                     email.Subject = "Purchase Order Modified Notification";
                     string body = emaildetails.data.template;
                     body = body.Replace("{{PO Number}}", purchaseOrderDetails.PONumber);
@@ -2090,8 +2162,12 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
-                    smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+                    //smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                    //smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
@@ -2118,6 +2194,216 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        [HttpPut]
+        public async Task<IActionResult> ShortCloseForPurchaseOrder([FromBody] PurchaseOrderForShortCloseDto purchaseOrderUpdateDto)
+        {
+            ServiceResponse<PurchaseOrderPostDto> serviceResponse = new ServiceResponse<PurchaseOrderPostDto>();
+            try
+            {
+                string serverKey = GetServerKey();
+                if (purchaseOrderUpdateDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "PurchaseOrder object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("PurchaseOrder object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseOrder object.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseOrder object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var poDetailBeforeUpdate = await _repository.GetPurchaseOrderById(purchaseOrderUpdateDto.Id);
+
+                if (poDetailBeforeUpdate is null)
+                {
+                    _logger.LogError($"ShortClose SalesOrder with id: {poDetailBeforeUpdate.Id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Update SalesOrder hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderUpdateDto);
+                var AmountInWords = GetTotalValueInWords(purchaseOrderDetails.TotalAmount);
+                purchaseOrderDetails.AmountInWords = AmountInWords;
+                var poItemDto = purchaseOrderUpdateDto.POItems;
+                var poItemDtoList = new List<PoItem>();
+                var poIncoTermDto = purchaseOrderUpdateDto.POIncoTerms;
+                var poIncoTermsList = new List<PoIncoTerm>();
+
+                if (poIncoTermDto != null)
+                {
+                    for (int i = 0; i < poIncoTermDto.Count; i++)
+                    {
+                        PoIncoTerm poIncoTermDetails = _mapper.Map<PoIncoTerm>(poIncoTermDto[i]);
+                        poIncoTermsList.Add(poIncoTermDetails);
+                    }
+                }
+
+                if (poItemDto != null)
+                {
+                    for (int i = 0; i < poItemDto.Count; i++)
+                    {
+                        PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+
+                        if (poItemDto[i].NowShortClosed == true)
+                        {
+                            poItemDetails.ShortClosedBy = _createdBy;
+                            poItemDetails.ShortClosedOn = DateTime.Now;
+                            PoItemHistory poItemHistory = new PoItemHistory();
+                            poItemHistory.PONumber = poDetailBeforeUpdate.PONumber;
+                            poItemHistory.PODate = poDetailBeforeUpdate.PODate;
+                            poItemHistory.PoStatus = poDetailBeforeUpdate.PoStatus;
+                            poItemHistory.RevisionNumber = poDetailBeforeUpdate.RevisionNumber;
+                            poItemHistory.BillToId = poDetailBeforeUpdate.BillToId;
+                            poItemHistory.ShipToId = poDetailBeforeUpdate.ShipToId;
+                            poItemHistory.ProcurementType = poDetailBeforeUpdate.ProcurementType;
+                            poItemHistory.Currency = poDetailBeforeUpdate.Currency;
+                            poItemHistory.CompanyAliasName = poDetailBeforeUpdate.CompanyAliasName;
+                            poItemHistory.PoConfirmationStatus = poDetailBeforeUpdate.PoConfirmationStatus;
+                            poItemHistory.Transports = poDetailBeforeUpdate.Transports;
+                            poItemHistory.Other = poDetailBeforeUpdate.Other;
+                            poItemHistory.VendorName = poDetailBeforeUpdate.VendorName;
+                            poItemHistory.VendorId = poDetailBeforeUpdate.VendorId;
+                            poItemHistory.VendorNumber = poDetailBeforeUpdate.VendorNumber;
+                            poItemHistory.QuotationReferenceNumber = poDetailBeforeUpdate.QuotationReferenceNumber;
+                            poItemHistory.QuotationDate = poDetailBeforeUpdate.QuotationDate;
+                            poItemHistory.VendorAddress = poDetailBeforeUpdate.VendorAddress;
+                            poItemHistory.DeliveryTerms = poDetailBeforeUpdate.DeliveryTerms;
+                            poItemHistory.PaymentTerms = poDetailBeforeUpdate.PaymentTerms;
+                            poItemHistory.ShippingMode = poDetailBeforeUpdate.ShippingMode;
+                            poItemHistory.ShipTo = poDetailBeforeUpdate.ShipTo;
+                            poItemHistory.BillTo = poDetailBeforeUpdate.BillTo;
+                            poItemHistory.POFiles = poDetailBeforeUpdate.POFiles;
+                            poItemHistory.RetentionPeriod = poDetailBeforeUpdate.RetentionPeriod;
+                            poItemHistory.SpecialTermsAndConditions = poDetailBeforeUpdate.SpecialTermsAndConditions;
+                            poItemHistory.IsDeleted = poDetailBeforeUpdate.IsDeleted;
+                            poItemHistory.IsShortClosed = purchaseOrderDetails.IsShortClosed;
+                            poItemHistory.ShortClosedBy = poItemDetails.ShortClosedBy; 
+                            poItemHistory.ShortClosedOn = poItemDetails.ShortClosedOn;
+                            poItemHistory.TotalAmount = poDetailBeforeUpdate.TotalAmount;
+                            poItemHistory.POApprovalI = poDetailBeforeUpdate.POApprovalI;
+                            poItemHistory.POApprovedIDate = poDetailBeforeUpdate.POApprovedIDate;
+                            poItemHistory.POApprovedIBy = poDetailBeforeUpdate.POApprovedIBy;
+                            poItemHistory.POApprovalII = poDetailBeforeUpdate.POApprovalII;
+                            poItemHistory.POApprovedIIDate = poDetailBeforeUpdate.POApprovedIIDate;
+                            poItemHistory.POApprovedIIBy = poDetailBeforeUpdate.POApprovedIIBy;
+                            poItemHistory.POApprovalIII = poDetailBeforeUpdate.POApprovalIII;
+                            poItemHistory.POApprovedIIIDate = poDetailBeforeUpdate.POApprovedIIIDate;
+                            poItemHistory.POApprovedIIIBy = poDetailBeforeUpdate.POApprovedIIIBy;
+                            poItemHistory.POApprovalIV = poDetailBeforeUpdate.POApprovalIV;
+                            poItemHistory.POApprovedIVDate = poDetailBeforeUpdate.POApprovedIVDate;
+                            poItemHistory.POApprovedIVBy = poDetailBeforeUpdate.POApprovedIVBy;
+                            poItemHistory.ApprovalCount = poDetailBeforeUpdate.ApprovalCount;
+                            poItemHistory.Unit = poDetailBeforeUpdate.Unit;
+                            poItemHistory.PoItemId = poItemDetails.Id;
+                            poItemHistory.ItemNumber = poItemDetails.ItemNumber;
+                            poItemHistory.MftrItemNumber = poItemDetails.MftrItemNumber;
+                            poItemHistory.Description = poItemDetails.Description;
+                            poItemHistory.UOM = poItemDetails.UOM;
+                            poItemHistory.UnitPrice = poItemDetails.UnitPrice;
+                            poItemHistory.Qty = poItemDetails.Qty;
+                            poItemHistory.BalanceQty = poItemDetails.BalanceQty;
+                            poItemHistory.ReceivedQty = poItemDetails.ReceivedQty;
+                            poItemHistory.PartType = poItemDetails.PartType;
+                            poItemHistory.SpecialInstruction = poItemDetails.SpecialInstruction;
+                            poItemHistory.IsTechnicalDocsRequired = poItemDetails.IsTechnicalDocsRequired;
+                            poItemHistory.PoPartsStatus = poItemDetails.PoPartsStatus;
+                            poItemHistory.SGST = poItemDetails.SGST;
+                            poItemHistory.CGST = poItemDetails.CGST;
+                            poItemHistory.IGST = poItemDetails.IGST;
+                            poItemHistory.UTGST = poItemDetails.UTGST;
+                            poItemHistory.SubTotal = poItemDetails.SubTotal;
+                            poItemHistory.TotalWithTax = poItemDetails.TotalWithTax;
+                            poItemHistory.ShortClosedBy = poItemDto[i].ShortClosedBy;
+                            poItemHistory.ShortClosedOn = poItemDto[i].ShortClosedOn;
+                            poItemHistory.CreatedBy = poItemDetails.CreatedBy;
+                            poItemHistory.CreatedOn = poItemDetails.CreatedOn;
+                            poItemHistory.LastModifiedBy = poItemDetails.LastModifiedBy;
+                            poItemHistory.LastModifiedOn = poItemDetails.LastModifiedOn;
+                            poItemHistory.PoItemStatus = poItemDetails.PoStatus;
+                            poItemHistory.ReasonforShortClose = poItemDetails.ReasonforShortClose;
+                            poItemHistory.Remarks = poItemDetails.Remarks;
+                            poItemHistory.PurchaseOrderId = poItemDetails.PurchaseOrderId;
+                            poItemHistory.ShortClosedQty = poItemDto[i].ShortClosedQty;
+
+                            await _poItemHistoryRepository.CreatePoItemHistory(poItemHistory);
+                        }
+
+                        poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                        for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                        {
+                            PoAddProject poaddproject = poItemDetails.POAddprojects[j];
+                            poaddproject.BalanceQty = poaddproject.ProjectQty;
+                        }
+
+                        poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
+                        poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                        poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
+                        poItemDetails.PONumber = purchaseOrderUpdateDto.PONumber;
+                        poItemDtoList.Add(poItemDetails);
+                    }
+                }
+                
+                if (purchaseOrderUpdateDto.POItems != null)
+                {
+                    foreach (var pritem in purchaseOrderUpdateDto.POItems)
+                    {
+                        if (pritem.PrDetails != null)
+                        {
+                            foreach (var pritemdetail in pritem.PrDetails)
+                            {
+                                if (pritemdetail.PrDetailDocumentUploadUpdateDtos != null)
+                                {
+                                    foreach (var prDetailsDto in pritemdetail.PrDetailDocumentUploadUpdateDtos)
+                                    {
+                                        var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
+                                        if (prUploadDocument != null)
+                                        {
+                                            prUploadDocument.Checked = true;
+                                            await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
+                                        }
+
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var updateData = _mapper.Map(purchaseOrderUpdateDto, poDetailBeforeUpdate);
+                updateData.POItems = poItemDtoList;
+                updateData.POIncoTerms = poIncoTermsList;
+                await _repository.UpdatePurchaseOrder(updateData);
+                _repository.SaveAsync();
+                _poItemHistoryRepository.SaveAsync();
+                _pRItemsDocumentUploadRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = " PurchaseOrder ShortClosed Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ShortCloseForPurchaseOrder action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //pass data from grin using _httpclient service to purchase
 
         [HttpPost]
@@ -2125,7 +2411,7 @@ namespace Tips.Purchase.Api.Controllers
         {
             foreach (var item in purchaseOrderUpdateQtyDetails)
             {
-                IEnumerable<PoItem> poItems = await _poItemsRepository.GetPODetailsByPONumberandItemNo(item.ItemNumber, item.PONumber);
+                IEnumerable<PoItem> poItems = await _poItemsRepository.GetPoItemDetailsByPONumberandItemNo(item.ItemNumber, item.PONumber, item.PoItemId);
                 decimal dispatchedQty = item.Qty;
 
                 foreach (var poItem in poItems)
@@ -2147,6 +2433,18 @@ namespace Tips.Purchase.Api.Controllers
                         poItem.BalanceQty = 0;
                     }
 
+                    if (poItem.BalanceQty == poItem.Qty)
+                    {
+                        poItem.PoStatus = PoStatus.Open;
+                    }
+                    else if (poItem.BalanceQty < poItem.Qty && poItem.BalanceQty > 0)
+                    {
+                        poItem.PoStatus = PoStatus.PartiallyClosed;
+                    }
+                    else
+                    {
+                        poItem.PoStatus = PoStatus.Closed;
+                    }
                     _poItemsRepository.UpdatePOOrderItem(poItem);
 
                     if (dispatchedQty <= 0)
@@ -2157,6 +2455,23 @@ namespace Tips.Purchase.Api.Controllers
             }
 
             _poItemsRepository.SaveAsync();
+
+            var poItemsPartiallyClosedStatusCount = await _poItemsRepository.GetPoItemsPartiallyClosedStatusCount(purchaseOrderUpdateQtyDetails[0].PONumber);
+
+            if (poItemsPartiallyClosedStatusCount != 0)
+            {
+                var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderUpdateQtyDetails[0].PONumber);
+                purchaseOrderDetails.PoStatus = PoStatus.PartiallyClosed;
+                await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
+
+            }
+            else
+            {
+                var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderUpdateQtyDetails[0].PONumber);
+                purchaseOrderDetails.PoStatus = PoStatus.Closed;
+                await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
+            }
+            _repository.SaveAsync();
             return Ok();
         }
 
@@ -2167,7 +2482,7 @@ namespace Tips.Purchase.Api.Controllers
         {
             foreach (var item in poProjectNoUpdateBalQtyDetails)
             {
-                IEnumerable<PoAddProject> poProjectNoDetails = await _poAddprojectRepository.GetPOProjectNoDetailsByProjectNo(item.ItemNumber, item.ProjectNumber,item.PONumber);
+                IEnumerable<PoAddProject> poProjectNoDetails = await _poAddprojectRepository.GetPOProjectNoDetailsByProjectNo(item.ItemNumber, item.ProjectNumber, item.PoItemId);
                 decimal dispatchedQty = item.ProjectQty;
 
                 foreach (var poProjectNos in poProjectNoDetails)
@@ -2204,50 +2519,50 @@ namespace Tips.Purchase.Api.Controllers
 
         //pass data from grin qty using _httpclient service to purchase
 
-        [HttpPost]
-        public async Task<IActionResult> UpdatePoStatus([FromBody] List<PurchaseOrderStatusUpdateDto> purchaseOrderStatusUpdateDto)
-        {
-            foreach (var item in purchaseOrderStatusUpdateDto)
-            {
-                IEnumerable<PoItem> poItems = await _poItemsRepository.GetPoItemDetailsByPONumberandItemNo(item.ItemNumber, item.PONumber);
+        //[HttpPost]
+        //public async Task<IActionResult> UpdatePoStatus([FromBody] List<PurchaseOrderStatusUpdateDto> purchaseOrderStatusUpdateDto)
+        //{
+        //    foreach (var item in purchaseOrderStatusUpdateDto)
+        //    {
+        //        IEnumerable<PoItem> poItems = await _poItemsRepository.GetPoItemDetailsByPONumberandItemNo(item.ItemNumber, item.PONumber, item.PoItemId);
 
-                foreach (var poItem in poItems)
-                {
-                    if (poItem.Qty == item.Qty)
-                    {
-                        poItem.PoStatus = PoStatus.Closed;
-                        await _poItemsRepository.UpdatePOOrderItem(poItem);
+        //        foreach (var poItem in poItems)
+        //        {
+        //            if (poItem.Qty == item.Qty)
+        //            {
+        //                poItem.PoStatus = PoStatus.Closed;
+        //                await _poItemsRepository.UpdatePOOrderItem(poItem);
 
-                    }
-                    else
-                    {
-                        poItem.PoStatus = PoStatus.PartiallyClosed;
-                        await _poItemsRepository.UpdatePOOrderItem(poItem);
-                    }
+        //            }
+        //            else
+        //            {
+        //                poItem.PoStatus = PoStatus.PartiallyClosed;
+        //                await _poItemsRepository.UpdatePOOrderItem(poItem);
+        //            }
 
-                }
-            }
-            _poItemsRepository.SaveAsync();
+        //        }
+        //    }
+        //    _poItemsRepository.SaveAsync();
 
-            var poItemsPartiallyClosedStatusCount = await _poItemsRepository.GetPoItemsPartiallyClosedStatusCount(purchaseOrderStatusUpdateDto[0].PONumber);
+        //    var poItemsPartiallyClosedStatusCount = await _poItemsRepository.GetPoItemsPartiallyClosedStatusCount(purchaseOrderStatusUpdateDto[0].PONumber);
 
-            if (poItemsPartiallyClosedStatusCount != 0)
-            {
-                var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
-                purchaseOrderDetails.PoStatus = PoStatus.PartiallyClosed;
-                await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
+        //    if (poItemsPartiallyClosedStatusCount != 0)
+        //    {
+        //        var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
+        //        purchaseOrderDetails.PoStatus = PoStatus.PartiallyClosed;
+        //        await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
 
-            }
-            else
-            {
-                var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
-                purchaseOrderDetails.PoStatus = PoStatus.Closed;
-                await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
-            }
-            _repository.SaveAsync();
+        //    }
+        //    else
+        //    {
+        //        var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
+        //        purchaseOrderDetails.PoStatus = PoStatus.Closed;
+        //        await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
+        //    }
+        //    _repository.SaveAsync();
 
-            return Ok();
-        }
+        //    return Ok();
+        //}
         //[HttpPut("{id}")]
         //public async Task<IActionResult> UpdatePurchaseOrder(int id, [FromBody] PurchaseOrderUpdateDto purchaseOrderUpdateDto)
         //{
@@ -2787,18 +3102,28 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],"GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,Approval1";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
                     var httpclientHandler = new HttpClientHandler();
-                    var httpClient = new HttpClient(httpclientHandler);                   
-                    var mails = new List<string>() {"bala@avisionsystems.com","anilyadav@avisionsystems.com" };
+                    var httpClient = new HttpClient(httpclientHandler);
+                    //var mails = new List<string>() {"bala@avisionsystems.com","anilyadav@avisionsystems.com" };
+                    var mails = (emaildetails1.data.Where(x => x.operation == "Approval1").Select(x => x.emailIds).FirstOrDefault()).Split(',');
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+                    //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
-                    email.To.AddRange(mails.Select(x=> MailboxAddress.Parse(x)));
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
                     body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
@@ -2838,8 +3163,10 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
-                    smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
@@ -2890,20 +3217,32 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],"GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,Approval2";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
                     var httpclientHandler = new HttpClientHandler();
-                    var httpClient = new HttpClient(httpclientHandler);                   
+                    var httpClient = new HttpClient(httpclientHandler);
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                    // email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
                     if (purchaseOrderDetailByPONumber.ApprovalCount > 2)
                     {
-                        var mails = "venkat.k@avisionsystems.com";
-                        email.To.Add(MailboxAddress.Parse(mails));
+                        //var mails = "venkat.k@avisionsystems.com";
+                        var mails = (emaildetails1.data.Where(x => x.operation == "Approval2").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                        email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+                        //email.To.Add(MailboxAddress.Parse(mails));
                         email.Subject = emaildetails.data.subject;
                         string body = emaildetails.data.template;
                         body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
@@ -2943,15 +3282,20 @@ namespace Tips.Purchase.Api.Controllers
                         email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                         using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                        smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
-                        smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+                        //smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                        //smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+                        int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                        smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                        smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
 
                         smtp.Send(email);
                         smtp.Disconnect(true);
                     }
                     else
                     {
-                        var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com" };
+                        //var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com" };
+                        //email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+                        var mails = (emaildetails1.data.Where(x => x.operation == "Approval2count2").Select(x => x.emailIds).FirstOrDefault()).Split(',');
                         email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
                         email.Subject = emaildetails.data.subject;
                         string body = emaildetails.data.template;
@@ -2992,14 +3336,15 @@ namespace Tips.Purchase.Api.Controllers
                         email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                         using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                        smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
-                        smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+                        int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                        smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                        smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
 
                         smtp.Send(email);
                         smtp.Disconnect(true);
                     }
-                    
-                    
+
+
 
                 }
                 serviceResponse.Message = "PurchaseOrderApprovalII Activated Successfully";
@@ -3046,18 +3391,29 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],"GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,Approval3";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
-                    var mails =new List<string>() { "eyalbn@uvisionuav.com", "yonatan@uvisionuav.com"};
+                    //var mails =new List<string>() { "eyalbn@uvisionuav.com", "yonatan@uvisionuav.com"};
+                    var mails = (emaildetails1.data.Where(x => x.operation == "Approval3").Select(x => x.emailIds).FirstOrDefault()).Split(',');
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
-                    email.To.AddRange(mails.Select(x=> MailboxAddress.Parse(x)));
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
                     body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
@@ -3097,8 +3453,9 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
-                    smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
@@ -3148,18 +3505,29 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],"GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,Approval4";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
-                    var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com"};
+                    // var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com"};
+                    var mails = (emaildetails1.data.Where(x => x.operation == "Approval4").Select(x => x.emailIds).FirstOrDefault()).Split(',');
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
                     var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
-                    email.To.AddRange(mails.Select(x=> MailboxAddress.Parse(x)));
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
                     body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
@@ -3199,8 +3567,11 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
-                    smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+                    //smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                    //smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
@@ -3442,18 +3813,28 @@ namespace Tips.Purchase.Api.Controllers
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
                     // var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
-                           "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
                     request.Headers.Add("Authorization", token);
-
                     var response = await client.SendAsync(request);
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,POConformation";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
-                    var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com", "accounts@avisionsystems.com", "bala@avisionsystems.com" };
+                    //var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com", "accounts@avisionsystems.com", "bala@avisionsystems.com" };
+                    var mails = (emaildetails1.data.Where(x => x.operation == "POConformation").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+
                     var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    // email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
                     var podate = PODetails.PODate.ToString().Split(" ");
                     email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
                     email.Subject = emaildetails.data.subject;
@@ -3495,8 +3876,9 @@ namespace Tips.Purchase.Api.Controllers
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
-                    smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
-                    smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
@@ -3580,7 +3962,7 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-        [HttpGet()] 
+        [HttpGet()]
         public async Task<IActionResult> Get_Tras_PurchaseOrderSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
             ServiceResponse<IEnumerable<Tras_POSPReport>> serviceResponse = new ServiceResponse<IEnumerable<Tras_POSPReport>>();

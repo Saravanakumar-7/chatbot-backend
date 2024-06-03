@@ -612,11 +612,11 @@ namespace Tips.Warehouse.Api.Controllers
                         //Update Inventory balanced Quantity 
                         if (serverKey == "keus")
                         {
-                            await _inventoryRepository.UpdateInventoryforBTO_Keus(bTODeliveryOrderItemsDetails.QtyDistribution);
+                            await _inventoryRepository.UpdateInventoryforBTO_Keus(bTODeliveryOrderItemsDetails.QtyDistribution, bTODeliveryOrder.BTONumber);
                         }
                         else
                         {
-                            await _inventoryRepository.UpdateInventoryforBTO(bTODeliveryOrderItemsDetails.QtyDistribution);
+                            await _inventoryRepository.UpdateInventoryforBTO(bTODeliveryOrderItemsDetails.QtyDistribution, bTODeliveryOrder.BTONumber);
                         }
 
                         //}
@@ -1397,6 +1397,119 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetAllSalesOrderNoAndIdByBTONo action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBTODeliveryOrderByIdExcludingClosed(int id)
+        {
+            ServiceResponse<BTODeliveryOrderDto> serviceResponse = new ServiceResponse<BTODeliveryOrderDto>();
+            try
+            {
+                var getBTODeliveryOrderDetailById = await _repository.GetBTODeliveryOrderByIdExcludingClosed(id);
+
+                if (getBTODeliveryOrderDetailById == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"BTODeliveryOrder  hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"BTODeliveryOrder with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {id}");
+
+                    BTODeliveryOrderDto bTODeliveryOrderDto = _mapper.Map<BTODeliveryOrderDto>(getBTODeliveryOrderDetailById);
+
+                    List<BTODeliveryOrderItemsDto> bTODeliveryOrderItemsDtoList = new List<BTODeliveryOrderItemsDto>();
+
+                    if (getBTODeliveryOrderDetailById.bTODeliveryOrderItems != null)
+                    {
+
+                        foreach (var deliveryOrderitemDetails in getBTODeliveryOrderDetailById.bTODeliveryOrderItems)
+                        {
+                            BTODeliveryOrderItemsDto bTODeliveryOrderItemsDtos = _mapper.Map<BTODeliveryOrderItemsDto>(deliveryOrderitemDetails);
+                            bTODeliveryOrderItemsDtos.QtyDistribution = _mapper.Map<List<BtoDeliveryOrderItemQtyDistributionDto>>(deliveryOrderitemDetails.QtyDistribution);
+                           // bTODeliveryOrderItemsDtos.DoStatus = Status.Open;
+                            //bTODeliveryOrderItemsDtos.BTOSerialNumberDto = _mapper.Map<List<BTOSerialNumberDto>>(deliveryOrderitemDetails.BTOSerialNumbers);
+                            bTODeliveryOrderItemsDtoList.Add(bTODeliveryOrderItemsDtos);
+                        }
+                    }
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    //var salesOrderObjectResult = await _httpClient.GetAsync(string.Concat(_config["SalesOrderAPI"],
+                    //                         "GetSalesOrderTotalBySalesOrderId?", "&SalesOrderId=", bTODeliveryOrderDto.SalesOrderId));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["SalesOrderAPI"],
+                           $"GetSalesOrderTotalBySalesOrderId?SalesOrderId={bTODeliveryOrderDto.SalesOrderId}"));
+                    request.Headers.Add("Authorization", token);
+
+                    var salesOrderObjectResult = await client.SendAsync(request);
+                    var salesOrderObjectString = await salesOrderObjectResult.Content.ReadAsStringAsync();
+                    dynamic salesOrderObjectData = JsonConvert.DeserializeObject(salesOrderObjectString);
+                    dynamic salesOrderObject = salesOrderObjectData;
+                    decimal salesOrderTotal = Convert.ToDecimal(salesOrderObject);
+                    bTODeliveryOrderDto.SOTotal = salesOrderTotal;
+
+                    bTODeliveryOrderDto.bTODeliveryOrderItems = bTODeliveryOrderItemsDtoList;
+
+                    serviceResponse.Data = bTODeliveryOrderDto;
+                    serviceResponse.Message = "Returned BTODeliveryOrderById Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetBTODeliveryOrderByIdExcludingClosed for the DO Id's:{id} action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetBtoNumberListByCustomerIdExcludingClosed(string customerLeadId)
+        {
+            ServiceResponse<IEnumerable<ListOfBtoNumberDetails>> serviceResponse = new ServiceResponse<IEnumerable<ListOfBtoNumberDetails>>();
+            try
+            {
+                var getBTONumberList = await _repository.GetBtoNumberListByCustomerIdExcludingClosed(customerLeadId);
+
+                if (getBTONumberList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"BTODeliveryOrderNumbers not found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"GetBtoNumberListByCustomerIdExcludingClosed with id: {customerLeadId},not found.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {customerLeadId}");
+
+                    var bTODeliveryNumberList = _mapper.Map<IEnumerable<ListOfBtoNumberDetails>>(getBTONumberList);
+
+
+                    serviceResponse.Data = bTODeliveryNumberList;
+                    serviceResponse.Message = "Returned GetBtoNumberListByCustomerIdExcludingClosed Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetBtoNumberListByCustomerIdExcludingClosed action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

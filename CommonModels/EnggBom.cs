@@ -26,7 +26,7 @@ namespace Entities
 
         [DefaultValue(true)]
         public bool IsActive { get; set; }
-
+        public string? Remarks { get; set; }
         public string Unit { get; set; }
         [DefaultValue(false)]
         public bool IsEnggBomRelease { get; set; }
