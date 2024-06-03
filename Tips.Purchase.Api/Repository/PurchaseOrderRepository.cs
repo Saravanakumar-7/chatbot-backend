@@ -1573,18 +1573,18 @@ namespace Tips.Purchase.Api.Repository
 
             return getPODetailsByPONOandItemNo;
         }
-        public async Task<IEnumerable<PoItem>> GetPODetailsByPONumberandItemNo(string ItemNumber, string PONumber)
-        {
-            var poId = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.PONumber == PONumber && x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders
-                                                                        .Where(x => x.PONumber == PONumber).Max(x => x.RevisionNumber))
-                                                                        .Select(x=>x.Id).FirstOrDefaultAsync();
+        //public async Task<IEnumerable<PoItem>> GetPODetailsByPONumberandItemNo(string ItemNumber, string PONumber)
+        //{
+        //    var poId = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.PONumber == PONumber && x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders
+        //                                                                .Where(x => x.PONumber == PONumber).Max(x => x.RevisionNumber))
+        //                                                                .Select(x=>x.Id).FirstOrDefaultAsync();
 
-            var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContexts.PoItems
-                 .Where(x => x.ItemNumber == ItemNumber && x.PONumber == PONumber && x.PoPartsStatus != true && x.PurchaseOrderId == poId)
-                          .ToListAsync();
+        //    var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContexts.PoItems
+        //         .Where(x => x.ItemNumber == ItemNumber && x.PONumber == PONumber && x.PoPartsStatus != true && x.PurchaseOrderId == poId)
+        //                  .ToListAsync();
 
-            return getPODetailsByPONOandItemNo;
-        }
+        //    return getPODetailsByPONOandItemNo;
+        //}
         public async Task<IEnumerable<PoItem>> GetPoItemDetailsByPONumberandItemNo(string ItemNumber, string PONumber, int poItemId)
         {
             var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContexts.PoItems

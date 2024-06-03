@@ -1419,7 +1419,7 @@ namespace Tips.Grin.Api.Controllers
                             {
 
                                 BinningInventoryDtoPost inventoryObjectNew = new BinningInventoryDtoPost();
-                                inventoryObjectNew.PartNumber = binningsItemsDto.ItemNumber;
+                                inventoryObjectNew.PartNumber = grinPartDetails.ItemNumber;
                                 inventoryObjectNew.MftrPartNumber = grinPartDetails.MftrItemNumber;
                                 inventoryObjectNew.Description = grinPartDetails.ItemDescription;
                                 inventoryObjectNew.ProjectNumber = location.ProjectNumber;
@@ -1431,6 +1431,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryObjectNew.Location = location.Location;
                                 inventoryObjectNew.GrinNo = binningDetail.GrinNumber;
                                 inventoryObjectNew.GrinPartId = grinId;
+                                inventoryObjectNew.LotNumber = grinPartDetails.LotNumber;
                                 inventoryObjectNew.PartType = grinPartDetails.ItemType; // we have to take parttype from grinparts model;
                                 inventoryObjectNew.ReferenceID = binningDetail.GrinNumber;
                                 inventoryObjectNew.ReferenceIDFrom = "GRIN";
@@ -1664,6 +1665,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryObjectNew.Location = location.Location;
                                 inventoryObjectNew.GrinNo = binningDetail.GrinNumber;
                                 inventoryObjectNew.GrinPartId = grinId;
+                                inventoryObjectNew.LotNumber = grinPartDetails.LotNumber;
                                 inventoryObjectNew.PartType = grinPartDetails.ItemType; // we have to take parttype from grinparts model;
                                 inventoryObjectNew.ReferenceID = binningDetail.GrinNumber;
                                 inventoryObjectNew.ReferenceIDFrom = "GRIN";
