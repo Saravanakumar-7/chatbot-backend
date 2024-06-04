@@ -1,4 +1,5 @@
 ﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {
@@ -17,6 +18,15 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? OrderBalanceQty { get; set; }
         public decimal? FGStock { get; set; }
         public decimal? Discount { get; set; }
+        public string? DiscountType { get; set; }
+        [Precision(13, 3)]
+        public decimal? SGST { get; set; }
+        [Precision(13, 3)]
+        public decimal? CGST { get; set; }
+        [Precision(13, 3)]
+        public decimal? UTGST { get; set; }
+        [Precision(13, 3)]
+        public decimal? IGST { get; set; }
         public decimal? NetValue { get; set; }
         public decimal DispatchQty { get; set; }
         public string? SerialNo { get; set; }
@@ -46,6 +56,15 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal DispatchQty { get; set; }
         public string? SerialNo { get; set; }
         public string? CustomerItemNumber { get; set; }
+        public string? DiscountType { get; set; }
+        [Precision(13, 3)]
+        public decimal? SGST { get; set; }
+        [Precision(13, 3)]
+        public decimal? CGST { get; set; }
+        [Precision(13, 3)]
+        public decimal? UTGST { get; set; }
+        [Precision(13, 3)]
+        public decimal? IGST { get; set; }
         // public List<BTOSerialNumberDtoPost> BTOSerialNumberDtoPost { get; set; }
         public List<BtoDeliveryOrderItemQtyDistributionPostDto>? QtyDistribution { get; set; }
     }

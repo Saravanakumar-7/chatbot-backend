@@ -25,6 +25,15 @@ namespace Tips.Warehouse.Api.Entities
         public decimal? OrderBalanceQty { get; set; }
         public decimal? FGStock { get; set; }
         public decimal? Discount { get; set; }
+        public string? DiscountType { get; set; }
+        [Precision(13, 3)]
+        public decimal? SGST { get; set; }
+        [Precision(13, 3)]
+        public decimal? CGST { get; set; }
+        [Precision(13, 3)]
+        public decimal? UTGST { get; set; }
+        [Precision(13, 3)]
+        public decimal? IGST { get; set; }
         public decimal? NetValue { get; set; }
         public decimal? DispatchQty { get; set; }
         public decimal InvoicedQty { get; set; }       

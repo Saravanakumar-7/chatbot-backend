@@ -433,7 +433,23 @@ namespace Tips.Warehouse.Api.Controllers
                         }
                         _bTODeliveryOrderItemsRepository.Update(btoDeliveryOrderItemDetails);
                         _bTODeliveryOrderItemsRepository.SaveAsync();
+                        // var getDoDetails=await _bTODeliveryOrderRepository.GetBTODeliveryOrderById(btoDeliveryOrderItemDetails.BTODeliveryOrderId);
+                        var doNumber=btoDeliveryOrderItemDetails.BTONumber;
+                         var bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount = await _bTODeliveryOrderItemsRepository.GetBTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount(doNumber);
 
+                        if (bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount != 0)
+                        {
+                            var bTODeliveryOrderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(doNumber);
+                            bTODeliveryOrderDetails.DoStatus = Status.PartiallyClosed;
+                            await _bTODeliveryOrderRepository.UpdateBTODeliveryOrder(bTODeliveryOrderDetails);
+                        }
+                        else
+                        {
+                            var bTODeliveryOrderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(doNumber);
+                            bTODeliveryOrderDetails.DoStatus = Status.Closed;
+                            await _bTODeliveryOrderRepository.UpdateBTODeliveryOrder(bTODeliveryOrderDetails);
+                        }
+                        _bTODeliveryOrderRepository.SaveAsync();
                         //update Dispatch Qty in InvoiceChildItem Table
                         //int getInvoiceChildItemId = returnInvoiceItemDto[i].InvoicePartsId;
                         //var invoiceChildItemDetails = await _invoiceChildRepository.GetInvoiceChildItemDetails(getInvoiceChildItemId);
@@ -459,7 +475,31 @@ namespace Tips.Warehouse.Api.Controllers
                         }
                     }
                 }
-                
+                foreach(var Returninv in returnInvoiceItemsList)
+                {
+                    var bTODeliveryOrderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(Returninv.DONumber);
+                    bTODeliveryOrderDetails.TotalValue = 0;
+                    foreach (var doitem in bTODeliveryOrderDetails.bTODeliveryOrderItems)
+                    {
+                        decimal? dispatch = doitem.DispatchQty;
+                        if (dispatch == 0) dispatch = 1;
+                        decimal? unitafterDiscount = 0;
+                        if (doitem.DiscountType == "Percentage")
+                        {
+                            unitafterDiscount = doitem.UnitPrice - ((doitem.UnitPrice * doitem.Discount) / 100);
+                        }
+                        else
+                        {
+                            unitafterDiscount = doitem.UnitPrice - doitem.Discount;
+                        }
+                        decimal? NewBasicAmt = unitafterDiscount * doitem.DispatchQty;
+                        decimal? TaxPercentage = (NewBasicAmt * ((doitem.CGST + doitem.SGST + doitem.IGST + doitem.UTGST) / 100));
+                        decimal? ItemDispatchvalue = NewBasicAmt + TaxPercentage;
+                        bTODeliveryOrderDetails.TotalValue += ItemDispatchvalue;
+                    }
+                    await _bTODeliveryOrderRepository.UpdateBTODeliveryOrderFromReturnDO(bTODeliveryOrderDetails);
+                    _bTODeliveryOrderRepository.SaveAsync();
+                }
 
                 returnInvoiceDetails.ReturnInvoiceItems = returnInvoiceItemsList;
 
