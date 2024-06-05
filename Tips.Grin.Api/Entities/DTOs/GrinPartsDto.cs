@@ -289,15 +289,14 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public decimal? Qty { get; set; }
         public string? PONumber { get; set; }
+    }
+    public class GrinQtyPoStatusUpdateDto
+    {
+        public string? ItemNumber { get; set; }
+        public decimal? Qty { get; set; }
+        public string? PONumber { get; set; }
         public int PoItemId { get; set; }
     }
-    //public class GrinQtyPoStatusUpdateDto
-    //{
-    //    public string? ItemNumber { get; set; }
-    //    public decimal? Qty { get; set; }
-    //    public string? PONumber { get; set; }
-    //    public int PoItemId { get; set; }
-    //}
     public class GrinPartsItemMasterEnggDto
     {
         public int Id { get; set; }

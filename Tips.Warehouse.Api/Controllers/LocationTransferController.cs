@@ -1004,10 +1004,10 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> MRNSPReportWithParam([FromBody] MRNSPReportGetDto mRNSPReportGetDto)
         {
-            ServiceResponse<IEnumerable<MRNSPReportDto>> serviceResponse = new ServiceResponse<IEnumerable<MRNSPReportDto>>();
+            ServiceResponse<IEnumerable<MRNSPReport>> serviceResponse = new ServiceResponse<IEnumerable<MRNSPReport>>();
             try
             {
-                var products = await _locationTransferRepository.MRNSPReportWithParam(mRNSPReportGetDto.ProjectNumber, mRNSPReportGetDto.ShopOrderType, mRNSPReportGetDto.ShopOrderNumber, mRNSPReportGetDto.PartNumber, mRNSPReportGetDto.PartType);
+                var products = await _locationTransferRepository.MRNSPReportWithParam(mRNSPReportGetDto.ProjectNumber, mRNSPReportGetDto.ShopOrderType, mRNSPReportGetDto.ShopOrderNumber, mRNSPReportGetDto.KPN, mRNSPReportGetDto.PartType);
                 if (products == null)
                 {
                     serviceResponse.Data = null;
@@ -1039,7 +1039,7 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> MRNSPReportDates([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            ServiceResponse<IEnumerable<MRNSPReportDto>> serviceResponse = new ServiceResponse<IEnumerable<MRNSPReportDto>>();
+            ServiceResponse<IEnumerable<MRNSPReport>> serviceResponse = new ServiceResponse<IEnumerable<MRNSPReport>>();
             try
             {
                 var products = await _locationTransferRepository.MRNSPReportDates(FromDate, ToDate);

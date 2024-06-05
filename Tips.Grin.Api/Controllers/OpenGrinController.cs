@@ -434,8 +434,19 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 await _openGrinRepository.CreateOpenGrin(openGrinDetails);
+                _openGrinRepository.SaveAsync();
 
-               
+                //if (openGrinDetails.OpenGrinParts != null)
+                //{
+                //    foreach (var openGrinPart in openGrinDetails.OpenGrinParts)
+                //    {
+                //        var openGrinPartId = await _openGrinPartsRepository.GetOpenGrinPartsDetailsbyId(openGrinPart.Id);
+                //        openGrinPartsId.LotNumber = openGrinDetails.OpenGrinNumber + openGrinPartId.Id;
+                //        await _openGrinPartsRepository.UpdateOpenGrinParts(openGrinPartId);
+
+                //    }
+                //}
+
 
                 //Create OpenGrin To Inventory
 

@@ -48,7 +48,7 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<DeliveryOrderSPReport> RecievableBTOs { get; set; }
         public DbSet<InvoiceSPReport> RecievableInvoices { get; set; }
         public DbSet<LocationTransferSPReport> RecievableLocationTransfers { get; set; }
-        public DbSet<MRNSPReportDto> MRNSPReportDtos { get; set; }        
+        public DbSet<MRNSPReport> MRNSPReports { get; set; }        
         public DbSet<OpenDeliveryOrderSPReport> RecievableODOs { get; set; }
         public DbSet<DailyDOReport> DailyDOReports { get; set; }
         public DbSet<ReturnInvoiceSPResport> ReturnInvoiceSPResports { get; set; }
@@ -70,7 +70,7 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<ReturnInvoiceSPResport>().HasNoKey();
             modelBuilder.Entity<ReturnOpenDeliveryOrderSPResport>().HasNoKey();
             modelBuilder.Entity<ReturnDOSPReport>().HasNoKey();
-            modelBuilder.Entity<MRNSPReportDto>().HasNoKey();
+            modelBuilder.Entity<MRNSPReport>().HasNoKey();
             modelBuilder.Entity<InventorySPReport>().HasNoKey();
             modelBuilder.Entity<ODOMonthlyConsumptionSPReport>().HasNoKey();
             modelBuilder.Entity<InventoryTranctionSPReport>().HasNoKey();

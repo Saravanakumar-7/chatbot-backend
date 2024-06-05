@@ -894,33 +894,69 @@ namespace Tips.SalesService.Api.Repository
         //                  .Distinct().ToListAsync();
 
         //return getAllActiveRfqNumberList;
+        ////}
+        //public async Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberListByCustomerId(string customerId)
+        //{
+        //    //var latestRfqs = await _tipsSalesServiceDbContext.Rfqs
+        //    //    .Where(r => r.CustomerId == customerId && r.IsModified == false)
+        //    //    .ToListAsync();
+
+        //    //var getAllActiveRfqNumberList = latestRfqs
+        //    //    .GroupBy(r => r.RfqNumber)
+        //    //    .SelectMany(group => group.Where(r => r.RevisionNumber == group.Max(g => g.RevisionNumber)))
+        //    //    .Select(x => new RfqNumberListDto
+        //    //    {
+        //    //        Id = x.Id,
+        //    //        RfqNumber = x.RfqNumber,
+        //    //        SalesPerson = x.SalesPerson,
+        //    //        CustomerName = x.CustomerName,
+        //    //        CustomerId = x.CustomerId,
+        //    //        RevisionNumber = x.RevisionNumber
+        //    //    });
+        //    var latestRfqs = await _tipsSalesServiceDbContext.Rfqs.GroupBy(r => r.RfqNumber)
+        //        .SelectMany(group => group.Where(r => r.RevisionNumber == group.Max(g => g.RevisionNumber)))
+        //       //.Where(r => r.CustomerId == customerId && r.IsModified == false)
+        //       .ToListAsync();
+
+        //    var getAllActiveRfqNumberList = latestRfqs.Where(r => r.CustomerId == customerId && r.IsModified == false)
+        //        //.GroupBy(r => r.RfqNumber)
+        //        //.SelectMany(group => group.Where(r => r.RevisionNumber == group.Max(g => g.RevisionNumber)))
+        //        .Select(x => new RfqNumberListDto
+        //        {
+        //            Id = x.Id,
+        //            RfqNumber = x.RfqNumber,
+        //            SalesPerson = x.SalesPerson,
+        //            CustomerName = x.CustomerName,
+        //            CustomerId = x.CustomerId,
+        //            RevisionNumber = x.RevisionNumber
+        //        });
+
+        //    return getAllActiveRfqNumberList;
         //}
+
         public async Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberListByCustomerId(string customerId)
         {
-            //var latestRfqs = await _tipsSalesServiceDbContext.Rfqs
-            //    .Where(r => r.CustomerId == customerId && r.IsModified == false)
-            //    .ToListAsync();
+            // Step 1: Retrieve the latest revision for each RfqNumber
+            var maxRevisions = await _tipsSalesServiceDbContext.Rfqs
+                .GroupBy(r => r.RfqNumber)
+                .Select(g => new
+                {
+                    RfqNumber = g.Key,
+                    MaxRevisionNumber = g.Max(r => r.RevisionNumber)
+                })
+                .ToListAsync();
 
-            //var getAllActiveRfqNumberList = latestRfqs
-            //    .GroupBy(r => r.RfqNumber)
-            //    .SelectMany(group => group.Where(r => r.RevisionNumber == group.Max(g => g.RevisionNumber)))
-            //    .Select(x => new RfqNumberListDto
-            //    {
-            //        Id = x.Id,
-            //        RfqNumber = x.RfqNumber,
-            //        SalesPerson = x.SalesPerson,
-            //        CustomerName = x.CustomerName,
-            //        CustomerId = x.CustomerId,
-            //        RevisionNumber = x.RevisionNumber
-            //    });
-            var latestRfqs = await _tipsSalesServiceDbContext.Rfqs.GroupBy(r => r.RfqNumber)
-                .SelectMany(group => group.Where(r => r.RevisionNumber == group.Max(g => g.RevisionNumber)))
-               //.Where(r => r.CustomerId == customerId && r.IsModified == false)
-               .ToListAsync();
+            // Step 2: Retrieve all RFQs
+            var allRfqs = await _tipsSalesServiceDbContext.Rfqs.ToListAsync();
 
-            var getAllActiveRfqNumberList = latestRfqs.Where(r => r.CustomerId == customerId && r.IsModified == false)
-                //.GroupBy(r => r.RfqNumber)
-                //.SelectMany(group => group.Where(r => r.RevisionNumber == group.Max(g => g.RevisionNumber)))
+            // Step 3: Filter the RFQs based on the latest revisions
+            var latestRfqs = allRfqs
+                .Where(r => maxRevisions.Any(mr => mr.RfqNumber == r.RfqNumber && mr.MaxRevisionNumber == r.RevisionNumber))
+                .ToList();
+
+            // Step 4: Apply additional filters and project to DTO
+            var getAllActiveRfqNumberList = latestRfqs
+                .Where(r => r.CustomerId == customerId && r.IsModified == false)
                 .Select(x => new RfqNumberListDto
                 {
                     Id = x.Id,
@@ -929,10 +965,12 @@ namespace Tips.SalesService.Api.Repository
                     CustomerName = x.CustomerName,
                     CustomerId = x.CustomerId,
                     RevisionNumber = x.RevisionNumber
-                });
+                })
+                .ToList();
 
             return getAllActiveRfqNumberList;
         }
+
 
 
         public async Task<Rfq> GetCustomerIdByRfqNumber(string rfqnumber)

@@ -835,6 +835,32 @@ namespace Tips.SalesService.Api.Repository
             return openSalesOrderQty;
 
         }
+        public async Task<List<SalesOrderFGandBalanceQtyByProjectNo>> GetAllSalesOrderFGOrTGItemDetailsByProjectNoAndItemNo(string projectNo , string itemNumber)
+        {
+            var salesOrderIdList = await _tipsSalesServiceDbContexts.SalesOrders
+                .Where(so => (so.SalesOrderStatus == SalesOrderStatus.BuildToPrint || so.SalesOrderStatus == SalesOrderStatus.Forecast) &&
+                             (so.SOStatus == OrderStatus.Open || so.SOStatus == OrderStatus.PartiallyClosed) &&
+                             so.IsShortClosed == false && so.ProjectNumber == projectNo // &&
+                                                                                        //so.ConfirmStatus == true && so.ApproveStatus == true
+                             ).Select(x => x.Id).ToListAsync();
+
+            var openSalesOrderQty = await _tipsSalesServiceDbContexts.SalesOrdersItems
+                .Where(x =>
+                            (x.StatusEnum == OrderStatus.Open || x.StatusEnum == OrderStatus.PartiallyClosed) &&
+                            x.BalanceQty > 0 && salesOrderIdList.Contains(x.SalesOrderId) && x.ItemNumber == itemNumber)
+                .GroupBy(x => new { x.ItemNumber, x.ProjectNumber })
+                .Select(group => new SalesOrderFGandBalanceQtyByProjectNo
+                {
+                    FGItemNumber = group.Key.ItemNumber,
+                    ProjectNumber = group.Key.ProjectNumber,
+                    Description = group.First().Description,
+                    UOM = group.First().UOM,
+                    Balance_Qty = group.Sum(x => x.BalanceQty)
+                }).ToListAsync();
+
+            return openSalesOrderQty;
+
+        }
 
         //update shoporderQty
         public async Task<IEnumerable<SalesOrderItems>> UpdateShopOrderBySalesOrderNoandItemNo(string salesOrderNumber, string itemNumber, string projectNumber)
