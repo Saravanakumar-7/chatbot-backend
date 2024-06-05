@@ -14,6 +14,7 @@ using MimeKit.Text;
 using Newtonsoft.Json;
 
 using Newtonsoft.Json.Linq;
+using NPOI.HPSF;
 using NPOI.SS.Formula.Eval;
 using NPOI.SS.Formula.Functions;
 using NuGet.Packaging;
@@ -21,6 +22,7 @@ using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
+using Tips.SalesService.Api.Entities.Enum;
 using Tips.SalesService.Api.Repository;
 using EmailIDsDto = Tips.SalesService.Api.Entities.DTOs.EmailIDsDto;
 using EmailTemplateDto = Tips.SalesService.Api.Entities.DTOs.EmailTemplateDto;
@@ -43,7 +45,7 @@ namespace Tips.SalesService.Api.Controllers
         private readonly IHttpClientFactory _clientFactory;
         public QuoteController(IQuoteRepository repository, IQuoteEmailsDetailsRepository quoteEmailsDetailsRepository, IHttpClientFactory clientFactory, HttpClient httpClient, IConfiguration config, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
         {
-            _quoteEmailsDetailsRepository=quoteEmailsDetailsRepository;
+            _quoteEmailsDetailsRepository = quoteEmailsDetailsRepository;
             _repository = repository;
             _logger = logger;
             _clientFactory = clientFactory;
@@ -694,19 +696,36 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendEmailforQuote(string SentTo,string? CusEmail,string jasperfileUrl,int Quoteid)
+        public async Task<IActionResult> SendEmailforQuote(string SentTo, string? CusEmail, string jasperfileUrl, int Quoteid)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
             try
             {
+                var quoteDetails = await _repository.GetQuoteById(Quoteid);
+                EmailTemplateDto? emaildetails = new EmailTemplateDto();
+                string? FileName;
                 var client = _clientFactory.CreateClient();
                 var token = HttpContext.Request.Headers["Authorization"].ToString();
-                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],"GetEmailTemplatebyProcessType?ProcessType=QuoteEmail"));
-                request.Headers.Add("Authorization", token);
-                var response = await client.SendAsync(request);
-                var EmailTempString = await response.Content.ReadAsStringAsync();
-                var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                if (quoteDetails.TypeOfSolution == "Automation" || quoteDetails.TypeOfSolution == "Upsell - Automation" || quoteDetails.TypeOfSolution == "Accessories" || quoteDetails.TypeOfSolution == "Lock")
+                {
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=QuoteAutomationEmail"));
+                    request.Headers.Add("Authorization", token);
+                    var response = await client.SendAsync(request);
 
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    FileName = "Quote_Automation_Book";
+                }
+                else
+                {
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=QuoteLightEmail"));
+                    request.Headers.Add("Authorization", token);
+                    var response = await client.SendAsync(request);
+
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    FileName = "QuoteLights_Book";
+                }
                 var Operations = "From";
                 var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
                 request1.Headers.Add("Authorization", token);
@@ -714,7 +733,6 @@ namespace Tips.SalesService.Api.Controllers
                 var EmailTempString1 = await response1.Content.ReadAsStringAsync();
                 var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
 
-                var quoteDetails = await _repository.GetQuoteById(Quoteid);
 
                 var httpclientHandler = new HttpClientHandler();
                 var httpClient = new HttpClient(httpclientHandler);
@@ -727,28 +745,44 @@ namespace Tips.SalesService.Api.Controllers
                 email.From.Add(MailboxAddress.Parse("chethan.v@wyzmindz.com"));
                 email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
                 email.Subject = emaildetails.data.subject;
-                string body = emaildetails.data.template;
-                body = body.Replace("{{Quote Number}}", quoteDetails.QuoteNumber);
-                body = body.Replace("{{RFQ Number}}", quoteDetails.RFQNumber);
-                body = body.Replace("{{Revision Number}}", quoteDetails.RevisionNumber.ToString());
-                body = body.Replace("{{Created On Date}}", quoteDetails.CreatedOn.ToString());
-                body = body.Replace("{{Created By}}", quoteDetails.CreatedBy);
-                body = body.Replace("{{Total Final Amount Value}}", quoteDetails.TotalFinalAmount.ToString());
-                body = body.Replace("{{Customer Name}}", quoteDetails.CustomerName);
-                body = body.Replace("{{Sales Person}}", quoteDetails.SalesPerson);
+                string? body;
+                //body = body.Replace("{{Quote Number}}", quoteDetails.QuoteNumber);
+                //body = body.Replace("{{RFQ Number}}", quoteDetails.RFQNumber);
+                //body = body.Replace("{{Revision Number}}", quoteDetails.RevisionNumber.ToString());
+                //body = body.Replace("{{Created On Date}}", quoteDetails.CreatedOn.ToString());
+                //body = body.Replace("{{Created By}}", quoteDetails.CreatedBy);
+                //body = body.Replace("{{Total Final Amount Value}}", quoteDetails.TotalFinalAmount.ToString());
+                //body = body.Replace("{{Customer Name}}", quoteDetails.CustomerName);
+                //body = body.Replace("{{Sales Person}}", quoteDetails.SalesPerson);
+                if (quoteDetails.TypeOfSolution == "Automation" || quoteDetails.TypeOfSolution == "Upsell - Automation" || quoteDetails.TypeOfSolution == "Accessories" || quoteDetails.TypeOfSolution == "Lock")
+                {
+                    body = null;
+                }
+                else
+                {                   
+                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "ardeo-quotation.html");
+                    body = System.IO.File.ReadAllText(htmlFilePath);
+                    body = body.Replace("{{Customer Name}}", quoteDetails.CustomerName);
+                }
+
                 var builder = new BodyBuilder();
-                builder.HtmlBody= body;
+                builder.HtmlBody = body;
                 using (HttpClient client1 = new HttpClient())
                 {
-                    HttpResponseMessage response2 = await client1.GetAsync(jasperfileUrl);
-                    response2.EnsureSuccessStatusCode();
+                    //HttpResponseMessage response2 = await client1.GetAsync(jasperfileUrl);
+                    //response2.EnsureSuccessStatusCode();
+                    var request2 = new HttpRequestMessage(HttpMethod.Get, jasperfileUrl);
+
+                    request2.Headers.Add("Authorization", "Basic amFzcGVyYWRtaW46Uk11aExncXdkOXBJUGI0");
+
+                    var response2 = await client1.SendAsync(request2);
                     byte[] fileBytes = await response2.Content.ReadAsByteArrayAsync();
-                    Uri uri = new Uri(jasperfileUrl);
-                    var filename= Path.GetFileName(uri.LocalPath);
-                    builder.Attachments.Add(filename, fileBytes, ContentType.Parse("application/pdf"));
+                    //Uri uri = new Uri(jasperfileUrl);
+                    //var filename= Path.GetFileName(uri.LocalPath);
+                    builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
                 }
-                    //email.Body = new TextPart(TextFormat.Html) { Text = body };
-                    email.Body=builder.ToMessageBody();
+                //email.Body = new TextPart(TextFormat.Html) { Text = body };
+                email.Body = builder.ToMessageBody();
 
                 using var smtp = new MailKit.Net.Smtp.SmtpClient();
                 int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
@@ -761,15 +795,15 @@ namespace Tips.SalesService.Api.Controllers
                 QuoteEmailsDetails quoteEmailsDetails = new QuoteEmailsDetails()
                 {
                     QuoteNumber = quoteDetails.QuoteNumber,
-                    RevisionNumber= quoteDetails.RevisionNumber,
-                    RFQNumber= quoteDetails.RFQNumber,
-                    SentTo= SentTo,
-                    CustomerEmailId= CusEmail,
-                    CustomerId=quoteDetails.CustomerId,
-                    CustomerName= quoteDetails.CustomerName,
-                    QuoteId=quoteDetails.Id
+                    RevisionNumber = quoteDetails.RevisionNumber,
+                    RFQNumber = quoteDetails.RFQNumber,
+                    SentTo = SentTo,
+                    CustomerEmailId = CusEmail,
+                    CustomerId = quoteDetails.CustomerId,
+                    CustomerName = quoteDetails.CustomerName,
+                    QuoteId = quoteDetails.Id
                 };
-               await _quoteEmailsDetailsRepository.CreateQuoteEmailsDetails(quoteEmailsDetails);
+                await _quoteEmailsDetailsRepository.CreateQuoteEmailsDetails(quoteEmailsDetails);
                 _quoteEmailsDetailsRepository.SaveAsync();
 
                 serviceResponse.Data = "Email sent successfully.";

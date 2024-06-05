@@ -265,7 +265,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int id { get; set; }
         public string processType { get; set; }
-        public string template { get; set; }
+        public string? template { get; set; }
         public string subject { get; set; }
     }
 
