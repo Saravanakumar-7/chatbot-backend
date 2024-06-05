@@ -2312,6 +2312,53 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CreateInventoryForOqcBinning([FromBody] InventoryOqcBinningPostDto inventoryDtoPost)
+        {
+            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+
+            try
+            {
+                if (inventoryDtoPost is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Inventory object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Inventory object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Inventory object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Inventory object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var createInvetory = _mapper.Map<Inventory>(inventoryDtoPost);
+                createInvetory.IsStockAvailable = true;
+                _inventoryRepository.CreateInventory(createInvetory);
+                _inventoryRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inventory Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+                //return Created("GetInventoryById", serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //Create Inventory From Grin Data
         [HttpPost]
         public async Task<IActionResult> CreateInventoryFromGrin([FromBody] InventoryGrinDtoPost inventoryDto)

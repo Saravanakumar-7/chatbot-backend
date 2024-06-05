@@ -167,6 +167,7 @@ namespace Tips.Production.Api.Controllers
                     newinv.Warehouse = loc.Warehouse;
                     newinv.Location = loc.Location;
                     newinv.Balance_Quantity = loc.Quantity;
+                    newinv.SerialNo = loc.SerialNo;
                     var json = JsonConvert.SerializeObject(newinv);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
                     // var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
@@ -175,7 +176,7 @@ namespace Tips.Production.Api.Controllers
                     var token1 = HttpContext.Request.Headers["Authorization"].ToString();
 
                     var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
-                    "CreateInventory"))
+                    "CreateInventoryForOqcBinning"))
                     {
                         Content = data
                     };

@@ -96,6 +96,7 @@ namespace Tips.Warehouse.Api
             CreateMap<Inventory, InventoryDtoUpdate>().ReverseMap();
             CreateMap<Inventory, InventoryGrinDtoPost>().ReverseMap();
             CreateMap<Inventory, InventorySPReport>().ReverseMap();
+            CreateMap<Inventory, InventoryOqcBinningPostDto>().ReverseMap();
 
             CreateMap<InventoryTranction, InventoryTranctionDto>().ReverseMap();
             CreateMap<InventoryTranction, InventoryTranctionDtoPost>().ReverseMap();
