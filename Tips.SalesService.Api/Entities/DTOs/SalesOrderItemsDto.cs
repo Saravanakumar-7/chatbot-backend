@@ -405,7 +405,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string mftrPartNumber { get; set; }
         public string description { get; set; }
         public string projectNumber { get; set; }
-        public int balance_Quantity { get; set; }
+        public decimal balance_Quantity { get; set; }
         public string uom { get; set; }
         public bool isStockAvailable { get; set; }
         public string warehouse { get; set; }
