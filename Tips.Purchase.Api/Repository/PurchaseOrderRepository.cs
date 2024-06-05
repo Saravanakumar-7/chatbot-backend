@@ -636,13 +636,19 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllLatestRevNoPurchaseOrderNameList()
         {
-            IEnumerable<PurchaseOrderIdNameListDto> purchaseOrderNameList = await _tipsPurchaseDbContext.PurchaseOrders.Where(x=>x.RevisionNumber== _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))
-                                .Select(x => new PurchaseOrderIdNameListDto()
-                                {
-                                    Id = x.Id,
-                                    PONumber = x.PONumber,
-                                }).OrderByDescending(x=>x.Id)
-                              .ToListAsync();
+            IEnumerable<PurchaseOrderIdNameListDto> purchaseOrderNameList = await _tipsPurchaseDbContext.PurchaseOrders
+                .Where(x => x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber)
+                && (
+                                        (x.ApprovalCount == 4 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == true) ||
+                                        (x.ApprovalCount == 2 && x.POApprovalI == true && x.POApprovalII == true)
+                    )
+                    )
+                .Select(x => new PurchaseOrderIdNameListDto()
+                {
+                    Id = x.Id,
+                    PONumber = x.PONumber,
+                }).OrderByDescending(x => x.Id)
+                .ToListAsync();
 
             return purchaseOrderNameList;
         }

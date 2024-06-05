@@ -460,6 +460,18 @@ namespace Tips.SalesService.Api.Repository
 
             return activeSalesOrderNameList;
         }
+        public async Task<IEnumerable<SalesOrderFGItemNumberDto>> GetAllSalesOrderFGItemNoListByProjectNo(string projectNo)
+        {
+            IEnumerable<SalesOrderFGItemNumberDto> fgItemNumberList = await _tipsSalesServiceDbContext.SalesOrdersItems
+                                .Where(x => x.ProjectNumber == projectNo && (x.StatusEnum == OrderStatus.Open || x.StatusEnum == OrderStatus.PartiallyClosed))
+                                .Select(x => new SalesOrderFGItemNumberDto()
+                                {
+                                    FGItemNumber = x.ItemNumber,
+                                })
+                              .ToListAsync();
+
+            return fgItemNumberList;
+        }
         public async Task<SalesOrder> GetSalesOrderById(int id)
         {
             var getSalesOrderbyId = await _tipsSalesServiceDbContext.SalesOrders.Where(x => x.Id == id)
