@@ -128,6 +128,7 @@ builder.Services.AddScoped<ICoverageReportRepository, CoverageReportRepository>(
 builder.Services.AddScoped<IDocumentUploadRepository, UploadDocumentRepository>();
 builder.Services.AddScoped<ISalesOrderAdditionalChargesHistoryRepository, SalesOrderAdditionalChargesHistoryRepository>();
 builder.Services.AddScoped<IScheduleDateHistoryRepository, ScheduleDateHistoryRepository>();
+builder.Services.AddScoped<IQuoteEmailsDetailsRepository, QuoteEmailsDetailsRepository>();
 
 //builder.Services.AddScoped<IRfqCustomerSupportNotesRepository, RfqCustomerSupportNotes>();
 
