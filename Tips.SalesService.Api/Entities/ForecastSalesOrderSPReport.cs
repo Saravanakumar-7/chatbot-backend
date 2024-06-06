@@ -33,5 +33,6 @@
         public decimal? OrderQty { get; set; }
         public decimal? DispatchQty { get; set; }
         public decimal? BalanceQty { get; set; }
+        public DateTime? RequestedDate { get; set; }
     }
 }
