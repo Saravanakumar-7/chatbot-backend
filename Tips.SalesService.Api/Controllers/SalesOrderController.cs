@@ -2652,6 +2652,33 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllSalesOrderFGItemNoListByProjectNo(string projectNo)
+        {
+            ServiceResponse<IEnumerable<SalesOrderFGItemNumberDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderFGItemNumberDto>>();
+            try
+            {
+                var fgItemNumberList = await _repository.GetAllSalesOrderFGItemNoListByProjectNo(projectNo);
+
+                var result = _mapper.Map<IEnumerable<SalesOrderFGItemNumberDto>>(fgItemNumberList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All SalesOrder FGItemNumberList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllSalesOrderFGItemNoListByProjectNo action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPut]
         public async Task<IActionResult> ActivateSalesOrderApprovalStatus(string salesOrderNumber)
         {

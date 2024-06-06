@@ -343,5 +343,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? KPN { get; set; }
         public string? SOStatus { get; set; }
     }
+    public class SalesOrderFGItemNumberDto
+    {
+        public string? FGItemNumber { get; set; }
+    }
 
 }

@@ -178,11 +178,11 @@ namespace Tips.Warehouse.Api.Repository
             
 
         }
-        public async Task<IEnumerable<MRNSPReportDto>> MRNSPReportWithParam(string? ProjectNumber,string? ShopOrderType,string? ShopOrderNumber,string? PartNumber,string? PartType)
+        public async Task<IEnumerable<MRNSPReport>> MRNSPReportWithParam(string? ProjectNumber,string? ShopOrderType,string? ShopOrderNumber,string? KPN,string? PartType)
         {
             var result = _tipsWarehouseDbContext
-            .Set<MRNSPReportDto>()
-            .FromSqlInterpolated($"CALL MRN_Report_with_parameter({ProjectNumber},{ShopOrderType},{ShopOrderNumber},{PartNumber},{PartType})")
+            .Set<MRNSPReport>()
+            .FromSqlInterpolated($"CALL MRN_Report_with_parameter({ProjectNumber},{ShopOrderType},{ShopOrderNumber},{KPN},{PartType})")
             .ToList();
             return result;
         }
@@ -194,9 +194,9 @@ namespace Tips.Warehouse.Api.Repository
 
             return results;
         }
-        public async Task<IEnumerable<MRNSPReportDto>> MRNSPReportDates(DateTime? FromDate, DateTime? ToDate)
+        public async Task<IEnumerable<MRNSPReport>> MRNSPReportDates(DateTime? FromDate, DateTime? ToDate)
         {
-            var results = _tipsWarehouseDbContext.Set<MRNSPReportDto>()
+            var results = _tipsWarehouseDbContext.Set<MRNSPReport>()
                          .FromSqlInterpolated($"CALL MRN_Report_with_date({FromDate},{ToDate})")
                          .ToList();
 
