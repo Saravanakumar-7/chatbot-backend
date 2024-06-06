@@ -154,9 +154,40 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
+        public async Task<IEnumerable<RfqSalesOrderSPReportForTrans>> GetRfqSalesOrderSPReportWithParamForTrans(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus, string ProjectNumber)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<RfqSalesOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL RFQ_salesorder_withparameter_Report({CustomerName},{SalesOrderNumber},{KPN},{SOStatus},{ProjectNumber})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<RfqSalesOrderSPReportForTrans>> GetRfqSalesOrderSPReportWithParamForAvision(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<RfqSalesOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL RFQ_salesorder_withparameter_Report({CustomerName},{SalesOrderNumber},{KPN},{SOStatus})")
+            .ToList();
+
+            return result;
+
+        }
+
         public async Task<IEnumerable<RfqSalesOrderSPReport>> GetRfqSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsSalesServiceDbContext.Set<RfqSalesOrderSPReport>()
+                        .FromSqlInterpolated($"CALL RFQ_salesorder_withdate_Report({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<RfqSalesOrderSPReportForTrans>> GetRfqSalesOrderSPReportWithDateForTransAvision(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<RfqSalesOrderSPReportForTrans>()
                         .FromSqlInterpolated($"CALL RFQ_salesorder_withdate_Report({FromDate},{ToDate})")
                         .ToList();
 
@@ -173,10 +204,38 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
+        public async Task<IEnumerable<ForecastSalesOrderSPReportForTrans>> GetForecastSalesOrderSPReportWithParamForTrans(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus, string ProjectNumber)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<ForecastSalesOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL Forecast_salesorder_with_parameter({CustomerName},{SalesOrderNumber},{KPN},{SOStatus},{ProjectNumber})")
+            .ToList();
 
+            return result;
+
+        }
+        public async Task<IEnumerable<ForecastSalesOrderSPReportForTrans>> GetForecastSalesOrderSPReportWithParamForAvision(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<ForecastSalesOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL Forecast_salesorder_with_parameter({CustomerName},{SalesOrderNumber},{KPN},{SOStatus})")
+            .ToList();
+
+            return result;
+
+        }
         public async Task<IEnumerable<ForecastSalesOrderSPReport>> GetForecastSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsSalesServiceDbContext.Set<ForecastSalesOrderSPReport>()
+                        .FromSqlInterpolated($"CALL Forecast_salesorder_with_date({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<ForecastSalesOrderSPReportForTrans>> GetForecastSalesOrderSPReportWithDateForTransAvision(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<ForecastSalesOrderSPReportForTrans>()
                         .FromSqlInterpolated($"CALL Forecast_salesorder_with_date({FromDate},{ToDate})")
                         .ToList();
 

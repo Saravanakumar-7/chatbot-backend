@@ -336,12 +336,28 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? KPN { get; set; }
         public string? SOStatus { get; set; }
     }
+    public class RfqSalesOrderSPResportDTOForTrans
+    {
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? KPN { get; set; }
+        public string? SOStatus { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
     public class ForecastSalesOrderSPResportDTO
     {
         public string? CustomerName { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string? KPN { get; set; }
         public string? SOStatus { get; set; }
+    }
+    public class ForecastSalesOrderSPResportDTOForTrans
+    {
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? KPN { get; set; }
+        public string? SOStatus { get; set; }
+        public string? ProjectNumber { get; set; }
     }
     public class SalesOrderFGItemNumberDto
     {
