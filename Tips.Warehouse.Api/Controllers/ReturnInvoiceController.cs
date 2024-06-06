@@ -244,8 +244,8 @@ namespace Tips.Warehouse.Api.Controllers
                         //btoDeliveryOrderItemDetails.OrderBalanceQty += returnInvoiceItemDto[i].ReturnQty;
                         btoDeliveryOrderItemDetails.DispatchQty -= returnedqty;
                         //btoDeliveryOrderItemDetails.DispatchQty -= returnInvoiceItemDto[i].ReturnQty;
-                        if (btoDeliveryOrderItemDetails.DispatchQty == btoDeliveryOrderItemDetails.BalanceDoQty) btoDeliveryOrderItemDetails.DoStatus = Status.Open;
-                        else if (btoDeliveryOrderItemDetails.BalanceDoQty == 0) btoDeliveryOrderItemDetails.DoStatus = Status.Closed;
+                        if (btoDeliveryOrderItemDetails.BalanceDoQty == 0) btoDeliveryOrderItemDetails.DoStatus = Status.Closed;
+                        else if (btoDeliveryOrderItemDetails.DispatchQty == btoDeliveryOrderItemDetails.BalanceDoQty) btoDeliveryOrderItemDetails.DoStatus = Status.Open;                       
                         else btoDeliveryOrderItemDetails.DoStatus = Status.Closed;
                        // btoDeliveryOrderItemDetails.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
                         //Update Inventory balanced Quantity 

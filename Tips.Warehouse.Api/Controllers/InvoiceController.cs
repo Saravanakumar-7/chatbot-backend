@@ -622,38 +622,39 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     var invoiceNumber = await _invoiceRepository.GenerateInvoiceNumber();
                     invoice.InvoiceNumber = invoiceNumber;
-                }
+                }              
 
-                if (invoiceitemsDto != null)
-                {
-                    for (int i = 0; i < invoiceitemsDto.Count; i++)
-                    {
-                        InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
-                        invoiceChildItem.InitialDispatchQty = invoiceChildItem.InvoicedQty;
-                        invoiceChildItem.ReturnInvoiceQty = 0;
-                        invoiceChildItem.InvoiceItemStatus = Status.Open;
-                        invoiceChildItemsEntityList.Add(invoiceChildItem);
-
-                        var invoiceQty = invoiceChildItem.InvoicedQty;
-                        var doNumber = invoiceitemsDto[i].DONumber;
-
-                        //DO Balance qty and Invoiced qty update method
-                        invoiceQty = await DoItemBalanceQtyUpdateBasedOnInvoiceQty(invoiceChildItem, invoiceQty, doNumber);
-
-                        //Add inventory Transaction Table
-                        await InventoryTransactionSaveOnInvoiceCreate(invoice, invoiceChildItemsEntityList, i, invoiceChildItem);
-
-                    }
-                }
-
-                invoice.invoiceChildItems = invoiceChildItemsEntityList;
+                
                 invoice.InvoiceAdditionalCharges = InvoiceAdditionalChargesList.ToList();
                 invoice.InvoiceStatus = Status.Open;
                 await _invoiceRepository.CreateInvoice(invoice);
                 //Sales order additional charge update method
                 var response = await SoAdditonalChargeUpdateOnInvoiceCreate(InvoiceAdditionalChargesList);
+
                 if ((response.StatusCode == HttpStatusCode.OK))
-                {
+                {                    
+                    if (invoiceitemsDto != null)
+                    {
+                        for (int i = 0; i < invoiceitemsDto.Count; i++)
+                        {
+                            InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
+                            invoiceChildItem.InitialDispatchQty = invoiceChildItem.InvoicedQty;
+                            invoiceChildItem.ReturnInvoiceQty = 0;
+                            invoiceChildItem.InvoiceItemStatus = Status.Open;
+                            invoiceChildItemsEntityList.Add(invoiceChildItem);
+
+                            var invoiceQty = invoiceChildItem.InvoicedQty;
+                            var doNumber = invoiceitemsDto[i].DONumber;
+
+                            //DO Balance qty and Invoiced qty update method
+                            invoiceQty = await DoItemBalanceQtyUpdateBasedOnInvoiceQty(invoiceChildItem, invoiceQty, doNumber);
+
+                            //Add inventory Transaction Table
+                            await InventoryTransactionSaveOnInvoiceCreate(invoice, invoiceChildItemsEntityList, i, invoiceChildItem);
+
+                        }
+                    }
+                    invoice.invoiceChildItems = invoiceChildItemsEntityList;
                     _invoiceRepository.SaveAsync();
                 }
                 else
