@@ -33,8 +33,4 @@
     <ProjectReference Include="..\LoggerService\LoggerService.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="EmailTemplates\" />
-  </ItemGroup>
-
 </Project>

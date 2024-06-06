@@ -724,7 +724,7 @@ namespace Tips.SalesService.Api.Controllers
 
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
-                    FileName = "QuoteLights_Book";
+                    FileName = "Quote_Lights_Book";
                 }
                 var Operations = "From";
                 var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
@@ -756,11 +756,14 @@ namespace Tips.SalesService.Api.Controllers
                 //body = body.Replace("{{Sales Person}}", quoteDetails.SalesPerson);
                 if (quoteDetails.TypeOfSolution == "Automation" || quoteDetails.TypeOfSolution == "Upsell - Automation" || quoteDetails.TypeOfSolution == "Accessories" || quoteDetails.TypeOfSolution == "Lock")
                 {
-                    body = null;
+                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-automation-quotation.html");
+                    body = System.IO.File.ReadAllText(htmlFilePath);
+                    body = body.Replace("{{Quote Number}}", quoteDetails.QuoteNumber);
+                    body = body.Replace("{{Customer Name}}", quoteDetails.CustomerName);
                 }
                 else
                 {                   
-                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "ardeo-quotation.html");
+                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-light-quotation.html");
                     body = System.IO.File.ReadAllText(htmlFilePath);
                     body = body.Replace("{{Customer Name}}", quoteDetails.CustomerName);
                 }
