@@ -158,7 +158,7 @@ namespace Tips.SalesService.Api.Repository
         {
             var result = _tipsSalesServiceDbContext
             .Set<RfqSalesOrderSPReportForTrans>()
-            .FromSqlInterpolated($"CALL RFQ_salesorder_withparameter_Report({CustomerName},{SalesOrderNumber},{KPN},{SOStatus},{ProjectNumber})")
+            .FromSqlInterpolated($"CALL RFQ_salesorder_withparameter_Report_tras({CustomerName},{SalesOrderNumber},{KPN},{SOStatus},{ProjectNumber})")
             .ToList();
 
             return result;
@@ -208,7 +208,7 @@ namespace Tips.SalesService.Api.Repository
         {
             var result = _tipsSalesServiceDbContext
             .Set<ForecastSalesOrderSPReportForTrans>()
-            .FromSqlInterpolated($"CALL Forecast_salesorder_with_parameter({CustomerName},{SalesOrderNumber},{KPN},{SOStatus},{ProjectNumber})")
+            .FromSqlInterpolated($"CALL Forecast_salesorder_with_parameter_tras({CustomerName},{SalesOrderNumber},{KPN},{SOStatus},{ProjectNumber})")
             .ToList();
 
             return result;

@@ -409,6 +409,18 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string Warehouse { get; set; }
         public string Location { get; set; }
     }
+    public class GrinReportWithParamForTransDto
+    {
+        public string GrinNumber { get; set; }
+        public string VendorName { get; set; }
+        public string PONumber { get; set; }
+        public string KPN { get; set; }
+        public string MPN { get; set; }
+        public string Warehouse { get; set; }
+        public string Location { get; set; }
+        public string ProjectNumber { get; set; }
+        
+    }
     public class GrinIQCConfirmationSaveDto
     {
         public string? GrinNumber { get; set; }

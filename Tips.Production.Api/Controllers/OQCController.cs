@@ -1022,6 +1022,42 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> GetOQCSPReportWithParamForTrans([FromBody] OQCSPReportForTransDto oqcSPReportDto)
+        {
+            ServiceResponse<IEnumerable<OQCSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OQCSPReport>>();
+            try
+            {
+                var products = await _oQCRepository.GetOQCSPReportWithParamForTrans(oqcSPReportDto.ItemNumber, oqcSPReportDto.ShopOrderNumber, oqcSPReportDto.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OQC hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OQC hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OQC Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetOQCSPReportWithParamForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetOQCSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
@@ -1095,6 +1131,45 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GetOQCAndOQCBinningSPReportWithParamForTrans([FromBody] OQCSPReportForTransDto oqcSPReportDto)
+        {
+            ServiceResponse<IEnumerable<OQCAndOQCBinningSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OQCAndOQCBinningSPReport>>();
+            try
+            {
+                var products = await _oQCRepository.GetOQCAndOQCBinningSPReportWithParamForTrans(oqcSPReportDto.ItemNumber, oqcSPReportDto.ShopOrderNumber,
+                                                                                                                oqcSPReportDto.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OQC And OQCBinning hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OQC And OQCBinning hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OQC And OQCBinning Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetOQCAndOQCBinningSPReportWithParamForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetOQCAndOQCBinningSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {

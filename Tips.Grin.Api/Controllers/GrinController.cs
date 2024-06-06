@@ -1960,6 +1960,47 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetGrinSPReportWithParamForTrans([FromBody] GrinReportWithParamForTransDto grinReportWithParam)
+        {
+            ServiceResponse<IEnumerable<Grin_ReportSP>> serviceResponse = new ServiceResponse<IEnumerable<Grin_ReportSP>>();
+            try
+            {
+                var products = await _repository.GetGrinSPReportWithParamForTrans(grinReportWithParam.GrinNumber, grinReportWithParam.VendorName,
+                                                                            grinReportWithParam.PONumber, grinReportWithParam.KPN,
+                                                                            grinReportWithParam.MPN, grinReportWithParam.Warehouse,
+                                                                            grinReportWithParam.Location, grinReportWithParam.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Grin hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Grin hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Grin Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //[HttpGet()]
         //public async Task<IActionResult> GetGrinSPReportWithParam([FromQuery] string? GrinNumber,[FromQuery] string? VendorName,[FromQuery] string? PONumber,[FromQuery] string? KPN,[FromQuery] string? MPN,[FromQuery] string? Warehouse,[FromQuery] string? Location)
         //{

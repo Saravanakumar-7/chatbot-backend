@@ -169,4 +169,10 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? GrinNumber { get; set; }
         public string? ItemNumber { get; set; }
     }
+    public class IQCConfirmationReportWithParamForTransDto
+    {
+        public string? GrinNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
 }

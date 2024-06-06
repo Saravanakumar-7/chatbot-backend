@@ -395,8 +395,15 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? PONumber { get; set; }
         public string? ItemNumber { get; set; }
     }
+    public class PurchaseOrderSPReportWithParamForTransDTO
+    {
+        public string? VendorName { get; set; }
+        public string? PONumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
 
-        public class PurchaseOrderApprovalSPReportWithParamDTO
+    public class PurchaseOrderApprovalSPReportWithParamDTO
         {
             public string? VendorName { get; set; }
             public string? PONumber { get; set; }

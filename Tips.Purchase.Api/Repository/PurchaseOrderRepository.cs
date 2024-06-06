@@ -1070,6 +1070,17 @@ namespace Tips.Purchase.Api.Repository
             return result;
         }
 
+        public async Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderSPReportWithParamForTrans(string VendorName, string PONumber, string itemNumber, string ProjectNumber)
+        {
+
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL Purchaseorder_with_parameter_tras({VendorName},{PONumber},{itemNumber},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+
         public async Task<IEnumerable<PurchaseOrderApprovalSPReport>> GetPurchaseOrderApprovalSPReportWithParam(string VendorName, string PONumber, string itemNumber,
                                                                                                      string RecordType, string Postatus, string Approval)
         {
@@ -1094,6 +1105,14 @@ namespace Tips.Purchase.Api.Repository
         {
             var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReport>()
                         .FromSqlInterpolated($"CALL Purchase_Order_withparameter_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReportForTrans>()
+                        .FromSqlInterpolated($"CALL Purchaseorder_with_date_tras({FromDate},{ToDate})")
                         .ToList();
 
             return results;
