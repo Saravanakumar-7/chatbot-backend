@@ -946,6 +946,47 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> ReturnInvoiceSPReportWithParameterForTrans([FromBody] ReturnInvoiceSPReportWithParamForTransDTO returnInvoiceSPReportDTO)
+        {
+            ServiceResponse<IEnumerable<ReturnInvoiceSPResport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceSPResport>>();
+            try
+            {
+                var products = await _returnInvoiceRepository.ReturnInvoiceSPReportWithParameterForTrans(returnInvoiceSPReportDTO.InvoiceNumber, returnInvoiceSPReportDTO.DoNumber,
+                                                                                        returnInvoiceSPReportDTO.CustomerName, returnInvoiceSPReportDTO.CustomerAliasName, 
+                                                                                        returnInvoiceSPReportDTO.SalesOrderNumber, returnInvoiceSPReportDTO.Location, 
+                                                                                        returnInvoiceSPReportDTO.Warehouse, returnInvoiceSPReportDTO.KPN, 
+                                                                                        returnInvoiceSPReportDTO.MPN, returnInvoiceSPReportDTO.IssuedBy, returnInvoiceSPReportDTO.ProjectNumber);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ReturnInvoiceSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ReturnInvoiceSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    //var result = _mapper.Map<IEnumerable<ReturnInvoiceSPReportDTO>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ReturnInvoiceSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside ReturnInvoiceSPReportWithParameterForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> GetReturnInvoiceNumberList()
         {

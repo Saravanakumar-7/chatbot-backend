@@ -43,6 +43,7 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PurchaseRequisitionSPReport> PurchaseRequisitionSPReports { get; set; }
         public DbSet<PurchaseOrderApprovalSPReport> PurchaseOrderApprovalSPReports { get; set; }
         public DbSet<PurchaseOrderSPReportForTrans> PurchaseOrderSPReportsForTrans { get; set; }
+        public DbSet<PurchaseRequisitionSPReportForTrans> PurchaseRequisitionSPReportForTrans { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PurchaseOrderSPReport>().HasNoKey();
@@ -54,6 +55,7 @@ namespace Tips.Purchase.Api.Entities
             modelBuilder.Entity<PurchaseRequisitionSPReport>().HasNoKey();
             modelBuilder.Entity<PurchaseOrderApprovalSPReport>().HasNoKey();
             modelBuilder.Entity<PurchaseOrderSPReportForTrans>().HasNoKey();
+            modelBuilder.Entity<PurchaseRequisitionSPReportForTrans>().HasNoKey();
         }
     }
 }

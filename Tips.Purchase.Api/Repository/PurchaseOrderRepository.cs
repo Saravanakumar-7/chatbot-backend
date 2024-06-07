@@ -1070,12 +1070,12 @@ namespace Tips.Purchase.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderSPReportWithParamForTrans(string VendorName, string PONumber, string itemNumber, string ProjectNumber)
+        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParamForTrans(string VendorName, string PONumber, string itemNumber, string ProjectNumber)
         {
 
             var result = _tipsPurchaseDbContext
-            .Set<PurchaseOrderSPReportForTrans>()
-            .FromSqlInterpolated($"CALL Purchaseorder_with_parameter_tras({VendorName},{PONumber},{itemNumber},{ProjectNumber})")
+            .Set<PurchaseOrderSPReport>()
+            .FromSqlInterpolated($"CALL Purchase_Order_withparameter_tras({VendorName},{PONumber},{itemNumber},{ProjectNumber})")
             .ToList();
 
             return result;
@@ -1088,6 +1088,17 @@ namespace Tips.Purchase.Api.Repository
             var result = _tipsPurchaseDbContext
             .Set<PurchaseOrderApprovalSPReport>()
             .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus({VendorName},{PONumber},{itemNumber},{RecordType},{Postatus},{Approval})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderApprovalSPReportWithParamForTrans(string VendorName, string PONumber, string itemNumber,
+                                                                                                     string RecordType, string Postatus, string Approval, string ProjectNumber)
+        {
+
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus_tras({VendorName},{PONumber},{itemNumber},{RecordType},{Postatus},{Approval},{ProjectNumber})")
             .ToList();
 
             return result;
@@ -1109,14 +1120,14 @@ namespace Tips.Purchase.Api.Repository
 
             return results;
         }
-        public async Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
-        {
-            var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReportForTrans>()
-                        .FromSqlInterpolated($"CALL Purchaseorder_with_date_tras({FromDate},{ToDate})")
-                        .ToList();
+        //public async Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        //{
+        //    var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReportForTrans>()
+        //                .FromSqlInterpolated($"CALL Purchaseorder_with_date_tras({FromDate},{ToDate})")
+        //                .ToList();
 
-            return results;
-        }
+        //    return results;
+        //}
 
         public async Task<PagedList<PurchaseOrder>> GetAllPurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {

@@ -149,6 +149,21 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? MPN { get; set; }
         public string? IssuedTo { get; set; }
     }
+    public class InvoiceSPReportWithParamForTransDTO
+    {
+        public string? InvoiceNumber { get; set; }
+        public string? DONumber { get; set; }
+        public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? Location { get; set; }
+        public string? Warehouse { get; set; }
+        public string? KPN { get; set; }
+        public string? MPN { get; set; }
+        public string? IssuedTo { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
     public class DoNoInvoiceDto
     {
 
