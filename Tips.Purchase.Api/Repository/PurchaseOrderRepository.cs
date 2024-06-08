@@ -1120,14 +1120,15 @@ namespace Tips.Purchase.Api.Repository
 
             return results;
         }
-        //public async Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
-        //{
-        //    var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReportForTrans>()
-        //                .FromSqlInterpolated($"CALL Purchaseorder_with_date_tras({FromDate},{ToDate})")
-        //                .ToList();
+        public async Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderApprovalSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate, string RecordType
+                                                                                                                 , string Approval)
+        {
+            var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReportForTrans>()
+                        .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus_withdate({FromDate},{ToDate},{RecordType},{Approval})")
+                        .ToList();
 
-        //    return results;
-        //}
+            return results;
+        }
 
         public async Task<PagedList<PurchaseOrder>> GetAllPurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
