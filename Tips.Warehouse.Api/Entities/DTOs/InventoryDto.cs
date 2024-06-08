@@ -98,6 +98,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ReferenceID { get; set; }
         public string? ReferenceIDFrom { get; set; }
         public string? ShopOrderNo { get; set; }
+        public string? SerialNo { get; set; }
         public string Unit { get; set; }
     }
 
