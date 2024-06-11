@@ -1921,6 +1921,7 @@ namespace Tips.Warehouse.Api.Controllers
                                     if (wipQtyInventoryQty > wipQtyInIssueTracker)
                                     {
                                         inventoryDetail.Balance_Quantity -= wipQtyInIssueTracker;
+                                        _inventoryRepository.Update(inventoryDetail);
 
                                         Inventory inventoryPost = new Inventory();
                                         inventoryPost.PartNumber = itemNumber;
@@ -1945,8 +1946,6 @@ namespace Tips.Warehouse.Api.Controllers
                                         inventoryPost.ReferenceIDFrom = "Material Return Note";
                                         await _inventoryRepository.CreateInventory(inventoryPost);
                                         wipQtyInIssueTracker = 0;
-
-                                        break;
                                     }
                                     else
                                     {
