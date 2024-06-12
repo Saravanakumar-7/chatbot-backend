@@ -310,38 +310,38 @@ namespace Tips.Warehouse.Api.Controllers
                     var availstock = loca.AvailableStockInLocation;
                     var transferQty = loca.TransferQty;
 
-                    //var client = _clientFactory.CreateClient();
-                    //var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    //var encodedItemNumber = Uri.EscapeDataString(toPartNumber);
-                    //var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
-                    //        $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
-                    //request.Headers.Add("Authorization", token);
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var encodedItemNumber = Uri.EscapeDataString(toPartNumber);
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
+                            $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+                    request.Headers.Add("Authorization", token);
 
-                    //var itemDetailFromItemmaster = await client.SendAsync(request);
-                    //// var itemDetailFromItemmaster = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"], "GetItemMasterByItemNumber?", "&ItemNumber=", HttpUtility.UrlEncode(toPartNumber)));
-                    //if (itemDetailFromItemmaster.StatusCode != HttpStatusCode.OK)
-                    //{
-                    //    GetItemMas = itemDetailFromItemmaster.StatusCode;
-                    //}
-                    //if (GetItemMas == HttpStatusCode.OK)
-                    //{
+                    var itemDetailFromItemmaster = await client.SendAsync(request);
+                    // var itemDetailFromItemmaster = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"], "GetItemMasterByItemNumber?", "&ItemNumber=", HttpUtility.UrlEncode(toPartNumber)));
+                    if (itemDetailFromItemmaster.StatusCode != HttpStatusCode.OK)
+                    {
+                        GetItemMas = itemDetailFromItemmaster.StatusCode;
+                    }
+                    if (GetItemMas == HttpStatusCode.OK)
+                    {
 
-                    //    _locationTransferRepository.SaveAsync();
+                        _locationTransferRepository.SaveAsync();
 
-                    //}
-                    //else
-                    //{
-                    //    _logger.LogError($"Something went wrong inside CreateLocationTransfer action. GetItemMaster  action Other Service Calling  failed! ");
-                    //    serviceResponse.Data = null;
-                    //    serviceResponse.Message = "Internal server error";
-                    //    serviceResponse.Success = false;
-                    //    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    //    return StatusCode(500, serviceResponse);
-                    //}
-                    //_logger.LogInfo("getitemmasterdata" + Convert.ToString(itemDetailFromItemmaster));
-                    //var itemDetail = await itemDetailFromItemmaster.Content.ReadAsStringAsync();
-                    //var itemData = JsonConvert.DeserializeObject<LocationTransItemMasterDetails>(itemDetail);
-                    //var itemObject = itemData.data;
+                    }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside CreateLocationTransfer action. GetItemMaster  action Other Service Calling  failed! ");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Internal server error";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
+                    _logger.LogInfo("getitemmasterdata" + Convert.ToString(itemDetailFromItemmaster));
+                    var itemDetail = await itemDetailFromItemmaster.Content.ReadAsStringAsync();
+                    var itemData = JsonConvert.DeserializeObject<LocationTransItemMasterDetails>(itemDetail);
+                    var itemObject = itemData.data;
 
                     //Add Inventory table
                     var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber);
