@@ -121,7 +121,34 @@ namespace Tips.Master.Api.Controllers
 
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllRegistrationFormUserList()
+        {
+            ServiceResponse<IEnumerable<RegistrationFormUserDetailsDto>> serviceResponse = new ServiceResponse<IEnumerable<RegistrationFormUserDetailsDto>>();
 
+            try
+            {
+                var activeRegistrationFormList = await _repository.RegistrationFormRepository.GetAllRegistrationFormUserList();
+                _logger.LogInfo("Returned all RegistrationFormList");
+                var result = _mapper.Map<IEnumerable<RegistrationFormUserDetailsDto>>(activeRegistrationFormList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all RegistrationFormUserList Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+
+            }
+        }
         //test
 
         [HttpGet]

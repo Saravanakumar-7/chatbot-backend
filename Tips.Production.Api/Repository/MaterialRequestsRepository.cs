@@ -91,7 +91,7 @@ namespace Tips.Production.Api.Repository
         {
             var materialRequests = FindAll().OrderByDescending(x => x.Id)
               .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.MRNumber.Contains(searchParammes.SearchValue)
-              || inv.ProjectNumber.Contains(searchParammes.SearchValue))) && inv.MrStatus != MaterialStatus.Closed);
+              || inv.ProjectNumber.Contains(searchParammes.SearchValue))) /*&& inv.MrStatus != MaterialStatus.Closed*/);
 
               
             return PagedList<MaterialRequests>.ToPagedList(materialRequests, pagingParameter.PageNumber, pagingParameter.PageSize);

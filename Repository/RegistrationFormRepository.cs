@@ -134,6 +134,20 @@ namespace Repository
             return registrationFormList;
 
         }
+        public async Task<IEnumerable<RegistrationFormUserDetailsDto>> GetAllRegistrationFormUserList()
+        {
+            IEnumerable<RegistrationFormUserDetailsDto> registrationFormUserList = await TipsMasterDbContext.RegistrationForms
+                           .Select(x => new RegistrationFormUserDetailsDto()
+                           {
+                               Id = x.Id,
+                               UserName = x.UserName,
+                               EmailId = x.EmailId,
+                           }).ToListAsync();
+
+
+            return registrationFormUserList;
+
+        }
 
         public async Task<string> UpdateRegistrationForm(RegistrationForm registrationForm)
         {

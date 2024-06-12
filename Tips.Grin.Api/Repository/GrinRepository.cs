@@ -14,6 +14,7 @@ using Entities.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
+using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 
 namespace Tips.Grin.Api.Repository
 {
@@ -129,6 +130,17 @@ namespace Tips.Grin.Api.Repository
                 .ToList();
 
                 return result;
+        }
+        public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParamForTrans(string? GrinNumber, string? VendorName, string? PONumber,
+                                                                                                    string? KPN, string? MPN, string? Warehouse, string? Location,
+                                                                                                    string? ProjectNumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<Grin_ReportSP>()
+            .FromSqlInterpolated($"CALL Grin_Report_withparameter_tras({GrinNumber},{VendorName},{PONumber},{KPN},{MPN},{Warehouse},{Location},{ProjectNumber})")
+            .ToList();
+
+            return result;
         }
         public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {

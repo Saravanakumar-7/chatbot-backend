@@ -43,6 +43,16 @@ namespace Tips.Grin.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<OpenGrin_SPReport>> GetOpenGrinSPReportWithParamForTrans(string? openGrinNumber, string? senderName, string? receiptRefNo
+                                                                                                                                         , string? ReferenceSONumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<OpenGrin_SPReport>()
+            .FromSqlInterpolated($"CALL Open_Grin_Report_withparameter_tras({openGrinNumber},{senderName},{receiptRefNo},{ReferenceSONumber})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<OpenGrin_SPReport>> GetOpenGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsGrinDbContext.Set<OpenGrin_SPReport>()

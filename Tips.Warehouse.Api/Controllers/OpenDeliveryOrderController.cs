@@ -1078,6 +1078,51 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> OpenDeliveryOrderSPReportWithParamForTrans([FromBody] OpenDeliveryOrderSPReportWithParamForTransDto openDeliveryOrderSPReport)
+
+        {
+            ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>>();
+            try
+            {
+                var products = await _repository.OpenDeliveryOrderSPReportWithParamForTrans(openDeliveryOrderSPReport.OpenDoNumber, openDeliveryOrderSPReport.CustomerName,
+                                                                                         openDeliveryOrderSPReport.CustomerAliasName, openDeliveryOrderSPReport.LeadId,
+                                                                                openDeliveryOrderSPReport.IssuedTo, openDeliveryOrderSPReport.KPN, openDeliveryOrderSPReport.MPN,
+                                                                                openDeliveryOrderSPReport.Warehouse, openDeliveryOrderSPReport.Location,
+                                                                                            openDeliveryOrderSPReport.ODOtype, openDeliveryOrderSPReport.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OpenDeliveryOrderSPReportDto hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OpenDeliveryOrderSPReportDto hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    //var result = _mapper.Map<IEnumerable<OpenDeliveryOrderSPReport>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OpenDeliveryOrderSPReportDto Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside OpenDeliveryOrderSPReportWithParamForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetODOMonthlyConsumptionSPReportWithParam([FromBody] ODOMonthlyConsumptionDto odoMonthlyConsumptionDto)
 

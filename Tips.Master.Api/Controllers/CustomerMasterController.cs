@@ -796,5 +796,42 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetCustomerLeadIdSPReportOnDailyBasis()
+        {
+            ServiceResponse<IEnumerable<CustomerMasterLeadIdSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CustomerMasterLeadIdSPReport>>();
+            try
+            {
+                var products = await _repository.CustomerMasterRepository.GetCustomerLeadIdDataOnDailyBasis();
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"GetCustomerLeadIdDataOnDailyBasis hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"GetCustomerLeadIdDataOnDailyBasis hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned GetCustomerLeadIdDataOnDailyBasis ";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetCustomerLeadIdSPReportOnDailyBasis action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 }

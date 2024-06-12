@@ -176,6 +176,47 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseRequisitionsSPReportWithParamForTrans([FromBody] PurchaseRequisitionSPReportWithParamForTransDTO purchaseRequisitionsSPReport)
+
+        {
+            ServiceResponse<IEnumerable<PurchaseRequisitionSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetPurchaseRequisitionsSPReportWithParamForTrans(purchaseRequisitionsSPReport.PrNumber, purchaseRequisitionsSPReport.ProcurementType,
+                                                                                         purchaseRequisitionsSPReport.ShippingMode, purchaseRequisitionsSPReport.PrStatus,
+                                                                                         purchaseRequisitionsSPReport.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseRequisitionSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseRequisitionSPReport hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned GetPurchaseRequisitionsSPReportWithParamForTrans Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseRequisitionsSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet()] // Adjust your route as needed
         public async Task<IActionResult> GetPurchaseRequisitionsSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {

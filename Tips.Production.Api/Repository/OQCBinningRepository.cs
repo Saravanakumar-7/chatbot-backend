@@ -66,6 +66,15 @@ namespace Tips.Production.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<OQCBinningSPReport>> GetOQCBinningSPReportWithParamForTrans(string? ItemNumber, string? ShopOrderNumber, string? ProjectNumber)
+        {
+            var result = _tipsProductionDbContext
+            .Set<OQCBinningSPReport>()
+            .FromSqlInterpolated($"OQC_Binning_with_parameter_tras({ItemNumber},{ShopOrderNumber},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<OQCBinningSPReport>> GetOQCBinningSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsProductionDbContext.Set<OQCBinningSPReport>()

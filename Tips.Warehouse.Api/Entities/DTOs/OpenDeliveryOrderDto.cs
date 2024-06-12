@@ -136,6 +136,20 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? Location { get; set; }
         public string? ODOtype { get; set; }
     }
+    public class OpenDeliveryOrderSPReportWithParamForTransDto
+    {
+        public string? OpenDoNumber { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
+        public string? LeadId { get; set; }
+        public string? IssuedTo { get; set; }
+        public string? KPN { get; set; }
+        public string? MPN { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public string? ODOtype { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
     public class ODOMonthlyConsumptionDto
     {
         public string? CustomerId { get; set; }
