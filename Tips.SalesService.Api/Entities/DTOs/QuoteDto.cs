@@ -244,7 +244,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ShortClosedRemarks { get; set; }
     }
 
-   
+
     public class Itemnumberimages
     {
         public List<Datum>? data { get; set; }
@@ -293,4 +293,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int? port { get; set; }
         public string? password { get; set; }
     }
-}
+    public class QuoteEmailPostDto
+    {
+        public string SentTo { get; set; }
+        public string? CusEmail { get; set; }
+        public string jasperfileUrl { get; set; }
+        public int Quoteid { get; set; }
+    }

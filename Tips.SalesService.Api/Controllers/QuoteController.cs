@@ -696,12 +696,12 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendEmailforQuote(string SentTo, string? CusEmail, string jasperfileUrl, int Quoteid)
+        public async Task<IActionResult> SendEmailforQuote([FromBody]QuoteEmailPostDto quoteEmailPostDto)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
             try
             {
-                var quoteDetails = await _repository.GetQuoteById(Quoteid);
+                var quoteDetails = await _repository.GetQuoteById(quoteEmailPostDto.Quoteid);
                 EmailTemplateDto? emaildetails = new EmailTemplateDto();
                 string? FileName;
                 var client = _clientFactory.CreateClient();
@@ -736,10 +736,10 @@ namespace Tips.SalesService.Api.Controllers
 
                 var httpclientHandler = new HttpClientHandler();
                 var httpClient = new HttpClient(httpclientHandler);
-                var mails = SentTo.Split(',').ToList();
-                if (!CusEmail.IsNullOrEmpty())
+                var mails = quoteEmailPostDto.SentTo.Split(',').ToList();
+                if (!quoteEmailPostDto.CusEmail.IsNullOrEmpty())
                 {
-                    mails.Add(CusEmail);
+                    mails.Add(quoteEmailPostDto.CusEmail);
                 }
                 var email = new MimeMessage();
                 email.From.Add(MailboxAddress.Parse("chethan.v@wyzmindz.com"));
@@ -774,7 +774,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     //HttpResponseMessage response2 = await client1.GetAsync(jasperfileUrl);
                     //response2.EnsureSuccessStatusCode();
-                    var request2 = new HttpRequestMessage(HttpMethod.Get, jasperfileUrl);
+                    var request2 = new HttpRequestMessage(HttpMethod.Get, quoteEmailPostDto.jasperfileUrl);
 
                     request2.Headers.Add("Authorization", "Basic amFzcGVyYWRtaW46Uk11aExncXdkOXBJUGI0");
 
@@ -800,8 +800,8 @@ namespace Tips.SalesService.Api.Controllers
                     QuoteNumber = quoteDetails.QuoteNumber,
                     RevisionNumber = quoteDetails.RevisionNumber,
                     RFQNumber = quoteDetails.RFQNumber,
-                    SentTo = SentTo,
-                    CustomerEmailId = CusEmail,
+                    SentTo = quoteEmailPostDto.SentTo,
+                    CustomerEmailId = quoteEmailPostDto.CusEmail,
                     CustomerId = quoteDetails.CustomerId,
                     CustomerName = quoteDetails.CustomerName,
                     QuoteId = quoteDetails.Id
