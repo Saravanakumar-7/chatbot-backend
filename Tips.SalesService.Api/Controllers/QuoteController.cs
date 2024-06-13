@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Http;
 using AutoMapper;
+using Azure;
 using Contracts;
 using Entities;
 using Entities.DTOs;
@@ -742,7 +743,7 @@ namespace Tips.SalesService.Api.Controllers
                     mails.Add(quoteEmailPostDto.CusEmail);
                 }
                 var email = new MimeMessage();
-                email.From.Add(MailboxAddress.Parse("chethan.v@wyzmindz.com"));
+                email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
                 email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
                 email.Subject = emaildetails.data.subject;
                 string? body;
@@ -757,6 +758,7 @@ namespace Tips.SalesService.Api.Controllers
                 if (quoteDetails.TypeOfSolution == "Automation" || quoteDetails.TypeOfSolution == "Upsell - Automation" || quoteDetails.TypeOfSolution == "Accessories" || quoteDetails.TypeOfSolution == "Lock")
                 {
                     string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-automation-quotation.html");
+                    
                     body = System.IO.File.ReadAllText(htmlFilePath);
                     body = body.Replace("{{Quote Number}}", quoteDetails.QuoteNumber);
                     body = body.Replace("{{Customer Name}}", quoteDetails.CustomerName);
@@ -764,26 +766,32 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {                   
                     string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-light-quotation.html");
+                    
                     body = System.IO.File.ReadAllText(htmlFilePath);
                     body = body.Replace("{{Customer Name}}", quoteDetails.CustomerName);
                 }
-
+                
                 var builder = new BodyBuilder();
                 builder.HtmlBody = body;
                 using (HttpClient client1 = new HttpClient())
                 {
                     //HttpResponseMessage response2 = await client1.GetAsync(jasperfileUrl);
                     //response2.EnsureSuccessStatusCode();
+                    
+                    client1.Timeout = TimeSpan.FromMinutes(5);
                     var request2 = new HttpRequestMessage(HttpMethod.Get, quoteEmailPostDto.jasperfileUrl);
 
                     request2.Headers.Add("Authorization", "Basic amFzcGVyYWRtaW46Uk11aExncXdkOXBJUGI0");
-
+                    request2.Headers.Add("X-Remote-Domain","1");
                     var response2 = await client1.SendAsync(request2);
+                    response2.EnsureSuccessStatusCode();
+                    
                     byte[] fileBytes = await response2.Content.ReadAsByteArrayAsync();
                     //Uri uri = new Uri(jasperfileUrl);
                     //var filename= Path.GetFileName(uri.LocalPath);
                     builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
                 }
+                
                 //email.Body = new TextPart(TextFormat.Html) { Text = body };
                 email.Body = builder.ToMessageBody();
 
@@ -794,7 +802,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 smtp.Send(email);
                 smtp.Disconnect(true);
-
+                
                 QuoteEmailsDetails quoteEmailsDetails = new QuoteEmailsDetails()
                 {
                     QuoteNumber = quoteDetails.QuoteNumber,
@@ -810,8 +818,8 @@ namespace Tips.SalesService.Api.Controllers
                 _quoteEmailsDetailsRepository.SaveAsync();
 
                 serviceResponse.Data = "Email sent successfully.";
-                serviceResponse.Message = $"Something went wrong ,try again";
-                serviceResponse.Success = false;
+                serviceResponse.Message = $"Email sent successfully.";
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }

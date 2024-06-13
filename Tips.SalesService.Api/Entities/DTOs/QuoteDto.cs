@@ -300,3 +300,4 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string jasperfileUrl { get; set; }
         public int Quoteid { get; set; }
     }
+}

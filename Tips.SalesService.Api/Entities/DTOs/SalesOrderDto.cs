@@ -343,5 +343,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? KPN { get; set; }
         public string? SOStatus { get; set; }
     }
-
+    public class SalesOrderEmailPostDto
+    {
+        public string SentTo { get; set; }
+        public string? CusEmail { get; set; }
+        public string jasperfileUrl { get; set; }
+        public int SalesOrderid { get; set; }
+    }
 }

@@ -9,11 +9,14 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
+using MimeKit;
 using MySqlX.XDevAPI;
 using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
@@ -27,6 +30,8 @@ using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
 using Tips.SalesService.Api.Entities.Enum;
 using Tips.SalesService.Api.Repository;
+using EmailIDsDto = Tips.SalesService.Api.Entities.DTOs.EmailIDsDto;
+using EmailTemplateDto = Tips.SalesService.Api.Entities.DTOs.EmailTemplateDto;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -36,6 +41,7 @@ namespace Tips.SalesService.Api.Controllers
     public class SalesOrderController : ControllerBase
     {
         private ISalesOrderRepository _repository;
+        private ISalesOrderEmailsDetailsRepository _salesOrderEmailsDetailsRepository;
         private ISalesOrderItemsRepository _salesOrderItemsRepository;
         private ISalesAdditionalChargesRepository _salesAdditionalChargesRepository;
         private ISoConfirmationDateRepository _soConfirmationDateRepository;
@@ -52,11 +58,12 @@ namespace Tips.SalesService.Api.Controllers
         private readonly String _createdBy;
         private readonly String _unitname;
         private readonly IHttpClientFactory _clientFactory;
-        public SalesOrderController(ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, IHttpClientFactory clientFactory, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
-            ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, IQuoteRepository quoteRepository , IHttpContextAccessor httpContextAccessor,
+        public SalesOrderController(ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, ISalesOrderEmailsDetailsRepository salesOrderEmailsDetailsRepository, IHttpClientFactory clientFactory, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
+            ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, IQuoteRepository quoteRepository, IHttpContextAccessor httpContextAccessor,
             ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
+            _salesOrderEmailsDetailsRepository = salesOrderEmailsDetailsRepository;
             _logger = logger;
             _mapper = mapper;
             _clientFactory = clientFactory;
@@ -235,7 +242,7 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        
+
         // GET api/<PurchaseOrderController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSalesOrderById(int id)
@@ -259,10 +266,10 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogInfo($"Returned owner with id: {id}");
                     SalesOrderDto salesOrderDto = _mapper.Map<SalesOrderDto>(salesOrderById);
 
-                    var quoteDetails = await _quoteRepository.GetQuoteByQuoteNumber(salesOrderDto.QuoteNumber);
-                    if (quoteDetails != null)
+                    var salesorderDetails = await _quoteRepository.GetQuoteByQuoteNumber(salesOrderDto.QuoteNumber);
+                    if (salesorderDetails != null)
                     {
-                        salesOrderDto.QuoteRef = quoteDetails.QuoteRef;
+                        salesOrderDto.QuoteRef = salesorderDetails.QuoteRef;
                     }
 
                     List<SalesOrderItemsDto> salesOrderItemsDtoList = new List<SalesOrderItemsDto>();
@@ -283,7 +290,7 @@ namespace Tips.SalesService.Api.Controllers
                     int salesOrderStatus = (int)salesOrderStatus1;
                     if (serverKey == "keus")
                     {
-                        List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x => x.ItemNumber).Distinct().ToList();    
+                        List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x => x.ItemNumber).Distinct().ToList();
                         if (itemNumberList != null)
                         {
                             var json = JsonConvert.SerializeObject(itemNumberList);
@@ -295,7 +302,7 @@ namespace Tips.SalesService.Api.Controllers
                             var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
                             $"GetAvailableStockQtyForSalesOrderItems?salesOrderNo={encodedSONumber}&salesOrderStatus={salesOrderStatus}"))
                             {
-                                Content=data
+                                Content = data
                             };
                             request.Headers.Add("Authorization", token);
 
@@ -311,7 +318,7 @@ namespace Tips.SalesService.Api.Controllers
                                 salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
                                 salesOrderItemsDtos.SoConfirmationDates = _mapper.Map<List<SoConfirmationDateDto>>(salesOrderItemDetails.SoConfirmationDates);
                                 var ItemHistory = await _salesOrderHistory.GetSalesOrderHistoryBySONoAndItemNumberifShortCLosed(salesOrderNo, salesOrderItemsDtos.ItemNumber);
-                                if(ItemHistory!=null)salesOrderItemsDtos.ShortClosedQty= ItemHistory.Sum(x => x.ShortClosedQty);
+                                if (ItemHistory != null) salesOrderItemsDtos.ShortClosedQty = ItemHistory.Sum(x => x.ShortClosedQty);
                                 string itemNumber = salesOrderItemsDtos.ItemNumber;
                                 if (inventoryItemWithStockDetails.ContainsKey(itemNumber))
                                 {
@@ -329,7 +336,7 @@ namespace Tips.SalesService.Api.Controllers
                     }
                     else
                     {
-                        List<(string, string)> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x => (x.ItemNumber, x.ProjectNumber)).Distinct().ToList();                       
+                        List<(string, string)> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x => (x.ItemNumber, x.ProjectNumber)).Distinct().ToList();
 
                         foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
                         {
@@ -359,9 +366,9 @@ namespace Tips.SalesService.Api.Controllers
                             //var inventoryQtyResponse = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByItemNo?", "itemNumber=", itemNumber, "&projectNo=", itemNumberList.Where(x=>x.Item1==itemNumber).Select(x=>x.Item2)));
                             var inventoryItemQtyDetails = await inventoryQtyResponse.Content.ReadAsStringAsync();
                             var inventoryItemWithStockDetails = JsonConvert.DeserializeObject<InventoryItemdetailsDto>(inventoryItemQtyDetails);
-                            if (inventoryItemWithStockDetails!=null)
+                            if (inventoryItemWithStockDetails != null)
                             {
-                                salesOrderItemsDtos.AvailableStock = inventoryItemWithStockDetails.data.Sum(x=>x.balance_Quantity);
+                                salesOrderItemsDtos.AvailableStock = inventoryItemWithStockDetails.data.Sum(x => x.balance_Quantity);
                             }
                             else
                             {
@@ -486,11 +493,11 @@ namespace Tips.SalesService.Api.Controllers
                 await _repository.CreateSalesOrder(createSalesOrder);
 
                 //ShortClose Quote Once SalesOrder Created
-                var quoteDetails =await _quoteRepository.GetQuoteByQuoteNumber(createSalesOrder.QuoteNumber);
-                if (quoteDetails!=null) 
+                var salesorderDetails = await _quoteRepository.GetQuoteByQuoteNumber(createSalesOrder.QuoteNumber);
+                if (salesorderDetails != null)
                 {
-                    quoteDetails.QuoteStatus = OrderStatus.Closed;
-                    _quoteRepository.UpdateQuote(quoteDetails);
+                    salesorderDetails.QuoteStatus = OrderStatus.Closed;
+                    _quoteRepository.UpdateQuote(salesorderDetails);
                     _quoteRepository.SaveAsync();
                 }
                 _repository.SaveAsync();
@@ -591,46 +598,46 @@ namespace Tips.SalesService.Api.Controllers
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                cfg.CreateMap<SalesOrder, SalesOrderReportDto>()
-                .ForMember(dest => dest.SalesOrdersItems, opt => opt.MapFrom(src => src.SalesOrdersItems
-                        .Select(prItem => new SalesOrderItemsReportDto
-                        {
-                            Id = prItem.Id,
-                            ItemNumber = prItem.ItemNumber,
-                            Description = prItem.Description,
-                            SalesOrderNumber = prItem.SalesOrderNumber,
-                            PriceList = prItem.PriceList,
-                            ProjectNumber = prItem.ProjectNumber,
-                            StatusEnum = prItem.StatusEnum,
-                            BalanceQty = prItem.BalanceQty,
-                            DispatchQty = prItem.DispatchQty,
-                            ShopOrderQty = prItem.ShopOrderQty,
-                            UOM = prItem.UOM,
-                            Currency = prItem.Currency,
-                            UnitPrice = prItem.UnitPrice,
-                            OrderQty = prItem.OrderQty,
-                            SGST = prItem.SGST,
-                            CGST = prItem.CGST,
-                            UTGST = prItem.UTGST,
-                            IGST = prItem.IGST,
-                            TotalAmount = prItem.TotalAmount,
-                            BasicAmount = prItem.BasicAmount,
-                            Discount = prItem.Discount,
-                            RoomName = prItem.RoomName,
-                            DiscountType = prItem.DiscountType,
-                            RequestedDate = prItem.RequestedDate,
-                            Remarks = prItem.Remarks,
-                            ScheduleDates = prItem.ScheduleDates
-                                .Select(scheduleDate => new ScheduleDateReportDto
-                                {
-                                    Id = scheduleDate.Id,
-                                    ItemNumber = prItem.ItemNumber,
-                                    SalesOrderNumber = src.SalesOrderNumber,
-                                    Date = scheduleDate.Date,
-                                    Quantity = scheduleDate.Quantity,
-                                }).ToList()
-                        })
-                     ));
+                    cfg.CreateMap<SalesOrder, SalesOrderReportDto>()
+                    .ForMember(dest => dest.SalesOrdersItems, opt => opt.MapFrom(src => src.SalesOrdersItems
+                            .Select(prItem => new SalesOrderItemsReportDto
+                            {
+                                Id = prItem.Id,
+                                ItemNumber = prItem.ItemNumber,
+                                Description = prItem.Description,
+                                SalesOrderNumber = prItem.SalesOrderNumber,
+                                PriceList = prItem.PriceList,
+                                ProjectNumber = prItem.ProjectNumber,
+                                StatusEnum = prItem.StatusEnum,
+                                BalanceQty = prItem.BalanceQty,
+                                DispatchQty = prItem.DispatchQty,
+                                ShopOrderQty = prItem.ShopOrderQty,
+                                UOM = prItem.UOM,
+                                Currency = prItem.Currency,
+                                UnitPrice = prItem.UnitPrice,
+                                OrderQty = prItem.OrderQty,
+                                SGST = prItem.SGST,
+                                CGST = prItem.CGST,
+                                UTGST = prItem.UTGST,
+                                IGST = prItem.IGST,
+                                TotalAmount = prItem.TotalAmount,
+                                BasicAmount = prItem.BasicAmount,
+                                Discount = prItem.Discount,
+                                RoomName = prItem.RoomName,
+                                DiscountType = prItem.DiscountType,
+                                RequestedDate = prItem.RequestedDate,
+                                Remarks = prItem.Remarks,
+                                ScheduleDates = prItem.ScheduleDates
+                                    .Select(scheduleDate => new ScheduleDateReportDto
+                                    {
+                                        Id = scheduleDate.Id,
+                                        ItemNumber = prItem.ItemNumber,
+                                        SalesOrderNumber = src.SalesOrderNumber,
+                                        Date = scheduleDate.Date,
+                                        Quantity = scheduleDate.Quantity,
+                                    }).ToList()
+                            })
+                         ));
                 });
                 var mapper = config.CreateMapper();
                 var result = mapper.Map<IEnumerable<SalesOrderReportDto>>(salesOrderList);
@@ -796,14 +803,14 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
                     {
-                           SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
+                        SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
                         if (salesOrderItemsDetail.StatusEnum != OrderStatus.ShortClosed)
                         {
                             salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty - salesOrderItemsDetail.DispatchQty;
                             salesOrderItemsDetail.SalesOrderNumber = salesOrderNumber;
                         }
-                            salesOrderItemsList.Add(salesOrderItemsDetail);
-                                           
+                        salesOrderItemsList.Add(salesOrderItemsDetail);
+
                     }
 
                     foreach (var salesOrderItemDetail in salesOrderDetailBeforeUpdate.SalesOrdersItems)
@@ -1230,9 +1237,9 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 _salesOrderItemsRepository.SaveAsync();
                 var salesdetails = await _repository.GetSalesOrderById(salesOrderDispatchQtyDto[0].SalesOrderId);
-                int? count = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum !=OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();               
-                if (count == 0) salesdetails.SOStatus= OrderStatus.Closed;           
-                else if(count > 0) salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                int? count = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();
+                if (count == 0) salesdetails.SOStatus = OrderStatus.Closed;
+                else if (count > 0) salesdetails.SOStatus = OrderStatus.PartiallyClosed;
                 await _repository.UpdateSalesOrderShortClose(salesdetails);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1327,7 +1334,7 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogError("Invalid SalesOrder object sent from the client.");
                     return BadRequest(serviceResponse);
                 }
-                int SalesorderId=0;
+                int SalesorderId = 0;
                 foreach (var item in salesOrderDispatchQtyDto)
                 {
                     var doReturnQty = item.ReturnQty;
@@ -1384,7 +1391,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 if (SalesorderId > 0)
                 {
-                    var salesdetails=await _repository.GetSalesOrderById(SalesorderId);
+                    var salesdetails = await _repository.GetSalesOrderById(SalesorderId);
                     if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Closed || x.StatusEnum == OrderStatus.ShortClosed).Count()) salesdetails.SOStatus = OrderStatus.Closed;
                     else if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Open).Count()) salesdetails.SOStatus = OrderStatus.Open;
                     else salesdetails.SOStatus = OrderStatus.PartiallyClosed;
@@ -1398,7 +1405,7 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError($"Something went wrong inside ReturnDOUpdateDispatchDetails action in SalesOrder Controller {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
-}
+        }
         //Update Balancre Qty and DispatchQty Using ReturnInvoice 
         [HttpPost]
         public async Task<IActionResult> ReturnInvoiceUpdateDispatchDetails([FromBody] List<ReturnDOSalesOrderDispatchQtyDto> salesOrderDispatchQtyDto)
@@ -1430,7 +1437,7 @@ namespace Tips.SalesService.Api.Controllers
                 foreach (var item in salesOrderDispatchQtyDto)
                 {
                     var invoiceReturnQty = item.ReturnQty;
-                    
+
                     IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo
                                                                                                                             (item.FGPartNumber, item.SalesOrderId);
                     SalesorderId = salesOrderItems.First().SalesOrderId;
@@ -1439,40 +1446,40 @@ namespace Tips.SalesService.Api.Controllers
                         foreach (var salesOrderDetails in salesOrderItems)
                         {
                             var salesOrderDisQty = salesOrderDetails.DispatchQty;
-                            
-                                if (salesOrderDetails.DispatchQty <= invoiceReturnQty)
-                                {
-                                    salesOrderDetails.BalanceQty += salesOrderDisQty;
-                                    salesOrderDetails.DispatchQty = 0;
-                                    invoiceReturnQty -= salesOrderDisQty;
-                                }
-                                else
-                                {
-                                    salesOrderDetails.BalanceQty += invoiceReturnQty;
-                                    salesOrderDetails.DispatchQty -= invoiceReturnQty;
-                                    invoiceReturnQty = 0; 
 
-                                }
+                            if (salesOrderDetails.DispatchQty <= invoiceReturnQty)
+                            {
+                                salesOrderDetails.BalanceQty += salesOrderDisQty;
+                                salesOrderDetails.DispatchQty = 0;
+                                invoiceReturnQty -= salesOrderDisQty;
+                            }
+                            else
+                            {
+                                salesOrderDetails.BalanceQty += invoiceReturnQty;
+                                salesOrderDetails.DispatchQty -= invoiceReturnQty;
+                                invoiceReturnQty = 0;
 
-                                if (salesOrderDetails.BalanceQty == salesOrderDetails.OrderQty)
-                                {
-                                    salesOrderDetails.StatusEnum = OrderStatus.Open;
-                                }
-                                else if (salesOrderDetails.BalanceQty < salesOrderDetails.OrderQty && salesOrderDetails.BalanceQty > 0)
-                                {
-                                    salesOrderDetails.StatusEnum = OrderStatus.PartiallyClosed;
-                                }
-                                else
-                                {
-                                    salesOrderDetails.StatusEnum = OrderStatus.Closed;
-                                }
-                                await _salesOrderItemsRepository.UpdateSalesOrderItem(salesOrderDetails);
+                            }
 
-                                if (invoiceReturnQty <= 0)
-                                {
-                                    break;
-                                }
-                            
+                            if (salesOrderDetails.BalanceQty == salesOrderDetails.OrderQty)
+                            {
+                                salesOrderDetails.StatusEnum = OrderStatus.Open;
+                            }
+                            else if (salesOrderDetails.BalanceQty < salesOrderDetails.OrderQty && salesOrderDetails.BalanceQty > 0)
+                            {
+                                salesOrderDetails.StatusEnum = OrderStatus.PartiallyClosed;
+                            }
+                            else
+                            {
+                                salesOrderDetails.StatusEnum = OrderStatus.Closed;
+                            }
+                            await _salesOrderItemsRepository.UpdateSalesOrderItem(salesOrderDetails);
+
+                            if (invoiceReturnQty <= 0)
+                            {
+                                break;
+                            }
+
                         }
                         _salesOrderItemsRepository.SaveAsync();
                     }
@@ -1501,7 +1508,7 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside ReturnInvoiceUpdateDispatchDetails action in SalesOrder Controller {ex.Message}");
-                return StatusCode(500,ex.Message);
+                return StatusCode(500, ex.Message);
             }
         }
         //Update shoporder Qty in salesorder while create shoporderUpdateShopOrderQty
@@ -1528,7 +1535,7 @@ namespace Tips.SalesService.Api.Controllers
             if (salesOrderItems.Count() > 0)
                 foreach (var item in salesOrderItems)
                 {
-                    if (item.BalanceQty>=shopOrderReleaseQtyDto.ReleaseQty)
+                    if (item.BalanceQty >= shopOrderReleaseQtyDto.ReleaseQty)
                     {
                         item.ShopOrderQty += shopOrderReleaseQtyDto.ReleaseQty;
                         await _salesOrderItemsRepository.UpdateSalesOrderItem(item);
@@ -1640,7 +1647,7 @@ namespace Tips.SalesService.Api.Controllers
                 //    "GetAllProductionBomFGListByItemNumber?"), content);
                 var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"],
                             $"GetAllProductionBomFGListByItemNumber"))
-                { Content=content};
+                { Content = content };
                 request.Headers.Add("Authorization", token);
 
                 var bomDetails = await client.SendAsync(request);
@@ -1653,7 +1660,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 ItemDetailsForShopOrderDto itemDetailsDto = new ItemDetailsForShopOrderDto();
                 itemDetailsDto.ItemNumber = bomData[0].itemNumber;
-                itemDetailsDto.ItemType = bomData[0].itemType; 
+                itemDetailsDto.ItemType = bomData[0].itemType;
                 itemDetailsDto.BomVersionNo = bomVersionNo[0] == 0 ? null : bomVersionNo;
 
 
@@ -1749,7 +1756,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-            } 
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
@@ -1758,50 +1765,50 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
-    }
+            }
 
-}
+        }
 
 
 
-//        [HttpGet()] // Adjust your route as needed
-//        public async Task<IActionResult> GetSalesorderReportWithParam([FromQuery] string? CustomerName,[FromQuery] string? SalesOrderNumber,
-//                [FromQuery] string? PartNumber
-//)
-//        {
-//            ServiceResponse<IEnumerable<SalesOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPResport>>();
-//            try
-//            {
-//                var products = await _repository.GetSalesorderReportWithParam(CustomerName, SalesOrderNumber, PartNumber);
+        //        [HttpGet()] // Adjust your route as needed
+        //        public async Task<IActionResult> GetSalesorderReportWithParam([FromQuery] string? CustomerName,[FromQuery] string? SalesOrderNumber,
+        //                [FromQuery] string? PartNumber
+        //)
+        //        {
+        //            ServiceResponse<IEnumerable<SalesOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPResport>>();
+        //            try
+        //            {
+        //                var products = await _repository.GetSalesorderReportWithParam(CustomerName, SalesOrderNumber, PartNumber);
 
-//                if (products == null)
-//                {
-//                    serviceResponse.Data = null;
-//                    serviceResponse.Message = $"SalesOrder hasn't been found.";
-//                    serviceResponse.Success = false;
-//                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-//                    _logger.LogError($"SalesOrder hasn't been found in db.");
-//                    return NotFound(serviceResponse);
-//                }
-//                else
-//                {
-//                    serviceResponse.Data = products;
-//                    serviceResponse.Message = "Returned SalesOrder Details";
-//                    serviceResponse.Success = true;
-//                    serviceResponse.StatusCode = HttpStatusCode.OK;
-//                    return Ok(serviceResponse);
-//                }
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError(ex.Message);
-//                serviceResponse.Data = null;
-//                serviceResponse.Message = $"Something went wrong inside GetSASalesOrderDetailsByItemNo action";
-//                serviceResponse.Success = false;
-//                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-//                return StatusCode(500, serviceResponse);
-//            }
-//        }
+        //                if (products == null)
+        //                {
+        //                    serviceResponse.Data = null;
+        //                    serviceResponse.Message = $"SalesOrder hasn't been found.";
+        //                    serviceResponse.Success = false;
+        //                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //                    _logger.LogError($"SalesOrder hasn't been found in db.");
+        //                    return NotFound(serviceResponse);
+        //                }
+        //                else
+        //                {
+        //                    serviceResponse.Data = products;
+        //                    serviceResponse.Message = "Returned SalesOrder Details";
+        //                    serviceResponse.Success = true;
+        //                    serviceResponse.StatusCode = HttpStatusCode.OK;
+        //                    return Ok(serviceResponse);
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                _logger.LogError(ex.Message);
+        //                serviceResponse.Data = null;
+        //                serviceResponse.Message = $"Something went wrong inside GetSASalesOrderDetailsByItemNo action";
+        //                serviceResponse.Success = false;
+        //                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //                return StatusCode(500, serviceResponse);
+        //            }
+        //        }
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetSalesOrderSPReportWithParam([FromBody] SalesOrderSPResportDTO salesOrderSPResport)
 
@@ -1994,7 +2001,7 @@ namespace Tips.SalesService.Api.Controllers
 
         }
 
-      
+
 
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetRfqSalesOrderSPReportWithParam([FromBody] RfqSalesOrderSPResportDTO rfqSalesOrderSPResportDTO)
@@ -2495,7 +2502,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var client = _clientFactory.CreateClient();
-                var token = HttpContext.Request.Headers["Authorization"].ToString();              
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
                 var encodedItemNumber = Uri.EscapeDataString(itemNumber);
 
                 var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"],
@@ -2579,7 +2586,7 @@ namespace Tips.SalesService.Api.Controllers
         private async Task<dynamic> GetSAQuantityFromBom(string item, string itemNumber)
         {
             var client = _clientFactory.CreateClient();
-            var token = HttpContext.Request.Headers["Authorization"].ToString();           
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
             var encodedItemNumber = Uri.EscapeDataString(itemNumber);
             var encodedItem = Uri.EscapeDataString(item);
 
@@ -2599,7 +2606,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         //receivable report 
-         
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllActiveSalesOrderIdNameList()
@@ -2840,7 +2847,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Message = $"Not All SalesOrderItems  has been ShortClosed.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500,serviceResponse);
+                    return StatusCode(500, serviceResponse);
                 }
 
                 serviceResponse.Data = null;
@@ -3035,7 +3042,7 @@ namespace Tips.SalesService.Api.Controllers
                 var salesOrderItemsList = new List<SalesOrderItems>();
                 for (int i = 0; i < salesOrderItemsDto.Count; i++)
                 {
-                    SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);    
+                    SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
                     if (salesOrderItemsDto[i].NowShortClosed == true)
                     {
                         salesOrderItemsDetail.ShortClosedBy = _createdBy;
@@ -3145,10 +3152,10 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogInfo($"Returned owner with id: {id}");
                     SalesOrderDto salesOrderDto = _mapper.Map<SalesOrderDto>(salesOrderById);
 
-                    var quoteDetails = await _quoteRepository.GetQuoteByQuoteNumber(salesOrderDto.QuoteNumber);
-                    if (quoteDetails != null)
+                    var salesorderDetails = await _quoteRepository.GetQuoteByQuoteNumber(salesOrderDto.QuoteNumber);
+                    if (salesorderDetails != null)
                     {
-                        salesOrderDto.QuoteRef = quoteDetails.QuoteRef;
+                        salesOrderDto.QuoteRef = salesorderDetails.QuoteRef;
                     }
 
                     List<SalesOrderItemsDto> salesOrderItemsDtoList = new List<SalesOrderItemsDto>();
@@ -3169,7 +3176,7 @@ namespace Tips.SalesService.Api.Controllers
                     int salesOrderStatus = (int)salesOrderStatus1;
                     if (serverKey == "keus")
                     {
-                        List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Where(x=>x.StatusEnum!=OrderStatus.ShortClosed|| x.StatusEnum != OrderStatus.Closed).Select(x => x.ItemNumber).Distinct().ToList();
+                        List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.ShortClosed || x.StatusEnum != OrderStatus.Closed).Select(x => x.ItemNumber).Distinct().ToList();
                         if (itemNumberList != null)
                         {
                             var json = JsonConvert.SerializeObject(itemNumberList);
@@ -3267,6 +3274,141 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError($"Something went wrong inside GetSalesOrderById action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SendEmailforSalesOrder([FromBody] SalesOrderEmailPostDto salesOrderEmailPostDto)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                var salesorderDetails = await _repository.GetSalesOrderById(salesOrderEmailPostDto.SalesOrderid);
+                EmailTemplateDto? emaildetails = new EmailTemplateDto();
+                string? FileName;
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation" || salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
+                {
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=SalesOrderAutomationEmail"));
+                    request.Headers.Add("Authorization", token);
+                    var response = await client.SendAsync(request);
+
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    FileName = "SalesOrder_Automation_Book";
+                }
+                else
+                {
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=SalesOrderLightEmail"));
+                    request.Headers.Add("Authorization", token);
+                    var response = await client.SendAsync(request);
+
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    FileName = "SalesOrder_Lights_Book";
+                }
+                var Operations = "From";
+                var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                request1.Headers.Add("Authorization", token);
+                var response1 = await client.SendAsync(request1);
+                var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
+
+                var httpclientHandler = new HttpClientHandler();
+                var httpClient = new HttpClient(httpclientHandler);
+                var mails = salesOrderEmailPostDto.SentTo.Split(',').ToList();
+                if (!salesOrderEmailPostDto.CusEmail.IsNullOrEmpty())
+                {
+                    mails.Add(salesOrderEmailPostDto.CusEmail);
+                }
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+                email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+                email.Subject = emaildetails.data.subject;
+                string? body;
+                //body = body.Replace("{{Quote Number}}", salesorderDetails.QuoteNumber);
+                //body = body.Replace("{{RFQ Number}}", salesorderDetails.RFQNumber);
+                //body = body.Replace("{{Revision Number}}", salesorderDetails.RevisionNumber.ToString());
+                //body = body.Replace("{{Created On Date}}", salesorderDetails.CreatedOn.ToString());
+                //body = body.Replace("{{Created By}}", salesorderDetails.CreatedBy);
+                //body = body.Replace("{{Total Final Amount Value}}", salesorderDetails.TotalFinalAmount.ToString());
+                //body = body.Replace("{{Customer Name}}", salesorderDetails.CustomerName);
+                //body = body.Replace("{{Sales Person}}", salesorderDetails.SalesPerson);
+                if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation" || salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
+                {
+                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-automation-salesorder.html");
+                    body = System.IO.File.ReadAllText(htmlFilePath);
+                    body = body.Replace("{{Sales-Order Number}}", salesorderDetails.SalesOrderNumber);
+                    body = body.Replace("{{Customer Name}}", salesorderDetails.CustomerName);
+                }
+                else
+                {
+                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-light-salesorder.html");
+                    body = System.IO.File.ReadAllText(htmlFilePath);
+                    body = body.Replace("{{Customer Name}}", salesorderDetails.CustomerName);
+                }
+
+                var builder = new BodyBuilder();
+                builder.HtmlBody = body;
+                using (HttpClient client1 = new HttpClient())
+                {
+                    //HttpResponseMessage response2 = await client1.GetAsync(jasperfileUrl);
+                    //response2.EnsureSuccessStatusCode();
+                    client1.Timeout = TimeSpan.FromMinutes(5);
+                    var request2 = new HttpRequestMessage(HttpMethod.Get, salesOrderEmailPostDto.jasperfileUrl);
+
+                    request2.Headers.Add("Authorization", "Basic amFzcGVyYWRtaW46Uk11aExncXdkOXBJUGI0");
+                    request2.Headers.Add("X-Remote-Domain", "1");
+
+                    var response2 = await client1.SendAsync(request2);
+                    byte[] fileBytes = await response2.Content.ReadAsByteArrayAsync();
+                    //Uri uri = new Uri(jasperfileUrl);
+                    //var filename= Path.GetFileName(uri.LocalPath);
+                    builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
+                }
+                //email.Body = new TextPart(TextFormat.Html) { Text = body };
+                email.Body = builder.ToMessageBody();
+
+                using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+                smtp.Send(email);
+                smtp.Disconnect(true);
+
+                SalesOrderEmailsDetails salesOrderEmailsDetails = new SalesOrderEmailsDetails()
+                {
+                    SalesOrderNumber = salesorderDetails.SalesOrderNumber,
+                    RevisionNumber = salesorderDetails.RevisionNumber,
+                    ProjectNumber = salesorderDetails.ProjectNumber,
+                    SentTo = salesOrderEmailPostDto.SentTo,
+                    CustomerEmailId = salesOrderEmailPostDto.CusEmail,
+                    CustomerId = salesorderDetails.CustomerId,
+                    CustomerName = salesorderDetails.CustomerName,
+                    SalesOrderId = salesorderDetails.Id,
+                    SentBy = _createdBy,
+                    SentOn = DateTime.Now
+                };
+                await _salesOrderEmailsDetailsRepository.CreateSalesOrderEmailsDetails(salesOrderEmailsDetails);
+                _salesOrderEmailsDetailsRepository.SaveAsync();
+
+                serviceResponse.Data = "Email sent successfully.";
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside SendEmailforSalesOrder action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
