@@ -509,51 +509,53 @@ namespace Tips.Grin.Api.Controllers
                         var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
                         var itemMasterObjectData = JsonConvert.DeserializeObject<OpenGrinInvDetails>(itemMasterObjectString);
                         var itemMasterObject = itemMasterObjectData.data;
-
-                        foreach (var openGrinDetail in openGrinParts.OpenGrinDetails)
+                        if (itemMasterObject.itemmasterAlternate.Count() > 0)
                         {
-                            OGInventoryDtoPost inventory = new OGInventoryDtoPost();
-
-                            inventory.PartNumber = openGrinParts.ItemNumber;
-                            inventory.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); 
-                            inventory.Description = openGrinParts.Description;
-                            inventory.ProjectNumber = openGrinParts.ReferenceSONumber;
-                            inventory.Balance_Quantity = openGrinDetail.Qty;
-                            inventory.IsStockAvailable = true;
-                            inventory.Max = itemMasterObject.max;
-                            inventory.Min = itemMasterObject.min;
-                            inventory.UOM = openGrinParts.UOM;
-                            inventory.Warehouse = openGrinDetail.Warehouse;
-                            inventory.Location = openGrinDetail.Location;
-                            inventory.GrinNo = openGrinDetails.OpenGrinNumber;
-                            inventory.GrinPartId = 0;
-                            inventory.PartType = openGrinParts.ItemType; // we have to take parttype from grinparts model;
-                            inventory.GrinMaterialType = "";
-                            inventory.ReferenceID = Convert.ToString(openGrinParts.Id);
-                            inventory.ReferenceIDFrom = "OpenGrin";
-                            inventory.ShopOrderNo = "";
-                            inventory.Unit = "";
-                            inventory.LotNumber = openGrinDetails.OpenGrinNumber + openGrinParts.Id;
-
-
-                            var json = JsonConvert.SerializeObject(inventory);
-                            var data = new StringContent(json, Encoding.UTF8, "application/json");
-                            //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), data);
-
-                            var client1 = _clientFactory.CreateClient();
-                            var token1 = HttpContext.Request.Headers["Authorization"].ToString();
-
-                            var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
-                            "CreateInventoryFromGrin"))
+                            foreach (var openGrinDetail in openGrinParts.OpenGrinDetails)
                             {
-                                Content = data
-                            };
-                            request1.Headers.Add("Authorization", token1);
+                                OGInventoryDtoPost inventory = new OGInventoryDtoPost();
 
-                            var response = await client1.SendAsync(request1);
-                            if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
+                                inventory.PartNumber = openGrinParts.ItemNumber;
+                                inventory.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                inventory.Description = openGrinParts.Description;
+                                inventory.ProjectNumber = openGrinParts.ReferenceSONumber;
+                                inventory.Balance_Quantity = openGrinDetail.Qty;
+                                inventory.IsStockAvailable = true;
+                                inventory.Max = itemMasterObject.max;
+                                inventory.Min = itemMasterObject.min;
+                                inventory.UOM = openGrinParts.UOM;
+                                inventory.Warehouse = openGrinDetail.Warehouse;
+                                inventory.Location = openGrinDetail.Location;
+                                inventory.GrinNo = openGrinDetails.OpenGrinNumber;
+                                inventory.GrinPartId = 0;
+                                inventory.PartType = openGrinParts.ItemType; // we have to take parttype from grinparts model;
+                                inventory.GrinMaterialType = "";
+                                inventory.ReferenceID = Convert.ToString(openGrinParts.Id);
+                                inventory.ReferenceIDFrom = "OpenGrin";
+                                inventory.ShopOrderNo = "";
+                                inventory.Unit = "";
+                                inventory.LotNumber = openGrinDetails.OpenGrinNumber + openGrinParts.Id;
 
-                           
+
+                                var json = JsonConvert.SerializeObject(inventory);
+                                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventoryFromGrin"), data);
+
+                                var client1 = _clientFactory.CreateClient();
+                                var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                                var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                                "CreateInventoryFromGrin"))
+                                {
+                                    Content = data
+                                };
+                                request1.Headers.Add("Authorization", token1);
+
+                                var response = await client1.SendAsync(request1);
+                                if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
+
+
+                            }
                         }
                     }
                 }

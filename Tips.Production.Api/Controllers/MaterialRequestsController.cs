@@ -797,7 +797,7 @@ namespace Tips.Production.Api.Controllers
                 
 
                 updateMaterialReqquest.MaterialRequestItems = materialReqItemList;
-                var updateMaterialReq = _mapper.Map(materialRequestUpdateDto, getMaterialRequest);
+                var updateMaterialReq = _mapper.Map(materialRequestUpdateDto, updateMaterialReqquest);
                 // updateMaterialReq.MaterialRequestItems = materialReqItemList;
                 int? totalitems = updateMaterialReq.MaterialRequestItems.Count();
                 if (totalitems > 0)

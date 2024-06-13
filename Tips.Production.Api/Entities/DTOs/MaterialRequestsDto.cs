@@ -16,6 +16,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public PartType ShopOrderType { get; set; }
         public string? ShopOrderNumber { get; set; }
         public string? IssuedBy { get; set; }
+        public string? IssuedTo { get; set; }
         public DateTime? IssuedOn { get; set; }
 
         public IssuedStatus IssuedStatus { get; set; }
@@ -42,8 +43,8 @@ namespace Tips.Production.Api.Entities.DTOs
   
         public PartType ShopOrderType { get; set; }
         public string? ShopOrderNumber { get; set; }
-        
 
+        public string? IssuedTo { get; set; }
 
 
         public List<MaterialRequestItemPostDto>? MaterialRequestItems { get; set; }
@@ -57,6 +58,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public PartType ShopOrderType { get; set; }
         public string? ShopOrderNumber { get; set; }
         public string MRNumber { get; set; }
+        public string? IssuedTo { get; set; }
         public string Unit { get; set; }
 
 

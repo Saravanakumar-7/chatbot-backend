@@ -1,3 +1,4 @@
+using Entities;
 using Microsoft.EntityFrameworkCore;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
@@ -61,6 +62,7 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<StockMovementSPReport> StockMovementSPReports { get; set; }
         public DbSet<InventoryForStockSPReport> InventoryForStockSPReports { get; set; }
         public DbSet<InvoiceForTransSPReport> InvoiceForTransSPReports { get; set; }
+        public DbSet<StockMovementLatestSPReport> CustomerMasterLeadIdSPReports { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ConsumptionReport>().HasNoKey();
@@ -81,6 +83,7 @@ namespace Tips.Warehouse.Api.Entities
             // Other entity configurations can be added here
             modelBuilder.Entity<DailyDOReport>().HasNoKey();
             modelBuilder.Entity<InvoiceForTransSPReport>().HasNoKey();
+            modelBuilder.Entity<StockMovementLatestSPReport>().HasNoKey();
             base.OnModelCreating(modelBuilder);
         }
         

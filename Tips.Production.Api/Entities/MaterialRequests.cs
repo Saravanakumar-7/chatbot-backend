@@ -24,6 +24,7 @@ namespace Tips.Production.Api.Entities
         [DefaultValue(0)]
         public ShortStatus StatusOfShort { get; set; }
         public MaterialStatus MrStatus { get; set; }
+        public string? IssuedTo {  get; set; }
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
