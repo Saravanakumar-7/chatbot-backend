@@ -54,11 +54,11 @@ namespace Tips.Production.Api.Repository
 
             return result;
         }
-        public async Task<IEnumerable<MaterialRequestSPReport>> GetMaterialIssueAgainstMaterialRequestSPReportWithParam(string? mRNumber, string? projectType,
+        public async Task<IEnumerable<MaterialIssueAgainstMRSPReport>> GetMaterialIssueAgainstMaterialRequestSPReportWithParam(string? mRNumber, string? projectType,
                                                                                                              string? projectNo, string? shopOrderNo,  string? KPN)
         {
             var result = _tipsProductionDbContext
-            .Set<MaterialRequestSPReport>()
+            .Set<MaterialIssueAgainstMRSPReport>()
             .FromSqlInterpolated($"Materialissue_against_Materialrequest_Report_withparameter({mRNumber},{projectType},{projectNo},{shopOrderNo},{KPN})")
             .ToList();
 
@@ -72,9 +72,9 @@ namespace Tips.Production.Api.Repository
 
             return results;
         }
-        public async Task<IEnumerable<MaterialRequestSPReport>> GetMaterialIssueAgainstMaterialRequestSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        public async Task<IEnumerable<MaterialIssueAgainstMRSPReport>> GetMaterialIssueAgainstMaterialRequestSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
-            var results = _tipsProductionDbContext.Set<MaterialRequestSPReport>()
+            var results = _tipsProductionDbContext.Set<MaterialIssueAgainstMRSPReport>()
                       .FromSqlInterpolated($"Materialissue_against_Materialrequest_withparameter_withdate({FromDate},{ToDate})")
                       .ToList();
 

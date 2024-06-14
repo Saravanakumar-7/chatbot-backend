@@ -172,7 +172,7 @@ namespace Tips.Production.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetMaterialIssueAgainstMaterialRequestSPReportWithParam([FromBody] MaterialIssueAgainstMaterialRequestReportWithParamDto materialIssueAgainstMaterialRequestReportWithParamDto)
         {
-            ServiceResponse<IEnumerable<MaterialRequestSPReport>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestSPReport>>();
+            ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReport>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReport>>();
             try
             {
                 var products = await _materialRequestRepository.GetMaterialIssueAgainstMaterialRequestSPReportWithParam(materialIssueAgainstMaterialRequestReportWithParamDto.MRNumber,
@@ -210,7 +210,7 @@ namespace Tips.Production.Api.Controllers
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetMaterialIssueAgainstMaterialRequestSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            ServiceResponse<IEnumerable<MaterialRequestSPReport>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestSPReport>>();
+            ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReport>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReport>>();
             try
             {
                 var products = await _materialRequestRepository.GetMaterialIssueAgainstMaterialRequestSPReportWithDate(FromDate, ToDate);

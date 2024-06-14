@@ -112,7 +112,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int? BillToId { get; set; }
         public string? ShipTo { get; set; }
         public int? ShipToId { get; set; }
-        public string? PaymentTerms { get; set; }        
+        public string? PaymentTerms { get; set; }
+        public string? Remarks { get; set; }
         public decimal? Total { get; set; }
         public SalesOrderStatus SalesOrderStatus { get; set; }
         [Precision(13, 3)]
