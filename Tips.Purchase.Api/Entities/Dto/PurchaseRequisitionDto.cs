@@ -106,7 +106,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? RetentionPeriod { get; set; }
 
         public string? SpecialTermsConditions { get; set; }
-   
+        public PrStatus PrStatus { get; set; }
+
         public string? Unit { get; set; }
 
         //public string? LastModifiedBy { get; set; }

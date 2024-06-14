@@ -326,7 +326,156 @@ namespace Tips.Warehouse.Api.Controllers
                     if (GetItemMas == HttpStatusCode.OK)
                     {
 
-                        _locationTransferRepository.SaveAsync();
+                        _logger.LogInfo("getitemmasterdata" + Convert.ToString(itemDetailFromItemmaster));
+                        var itemDetail = await itemDetailFromItemmaster.Content.ReadAsStringAsync();
+                        var itemData = JsonConvert.DeserializeObject<LocationTransItemMasterDetails>(itemDetail);
+                        var itemObject = itemData.data;
+
+                        //Add Inventory table
+                        var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber);
+                        if (inventoryDetails != null && inventoryDetails.Count() > 0)
+                        {
+                            foreach (var inventoryItem in inventoryDetails)
+                            {
+                                var LocaTransId = await _locationTransferRepository.GetLatestLocationTransferId();
+                                string LocationTransReferId = Convert.ToString(LocaTransId + 1);
+
+                                var balQty = inventoryItem.Balance_Quantity;
+                                if (transferQty >= balQty)
+                                {
+                                    inventoryItem.PartNumber = toPartNumber;
+                                    inventoryItem.ProjectNumber = toProjectNumber;
+                                    inventoryItem.MftrPartNumber = itemObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                    inventoryItem.Description = inventoryItem.Description;
+                                    inventoryItem.UOM = inventoryItem.UOM;
+                                    inventoryItem.Min = inventoryItem.Min;
+                                    inventoryItem.Max = inventoryItem.Max;
+                                    inventoryItem.Warehouse = toWarehouse;
+                                    inventoryItem.Location = toLocation;
+                                    inventoryItem.PartType = inventoryItem.PartType;
+                                    inventoryItem.ReferenceID = LocationTransReferId; /*Convert.ToString(loca.Id)*/;
+                                    inventoryItem.ReferenceIDFrom = "LocationTransfer";
+                                    await _inventoryRepository.UpdateInventory(inventoryItem);
+
+                                    transferQty -= balQty;
+
+                                    InventoryTranction inventoryTranctionPost = new InventoryTranction();
+                                    inventoryTranctionPost.PartNumber = inventoryItem.PartNumber;
+                                    inventoryTranctionPost.MftrPartNumber = inventoryItem.MftrPartNumber;
+                                    inventoryTranctionPost.ProjectNumber = inventoryItem.ProjectNumber;
+                                    inventoryTranctionPost.Description = inventoryItem.Description;
+                                    inventoryTranctionPost.Issued_Quantity = inventoryItem.Balance_Quantity;
+                                    inventoryTranctionPost.UOM = inventoryItem.UOM;
+                                    inventoryTranctionPost.GrinMaterialType = "";
+                                    inventoryTranctionPost.shopOrderNo = "";
+                                    inventoryTranctionPost.Unit = inventoryItem.Unit;
+                                    inventoryTranctionPost.GrinNo = "";
+                                    inventoryTranctionPost.GrinPartId = inventoryItem.GrinPartId;
+                                    inventoryTranctionPost.IsStockAvailable = true;
+                                    inventoryTranctionPost.Warehouse = inventoryItem.Warehouse;
+                                    inventoryTranctionPost.From_Location = fromLocation;
+                                    inventoryTranctionPost.TO_Location = inventoryItem.Location;
+                                    inventoryTranctionPost.PartType = inventoryItem.PartType;
+                                    inventoryTranctionPost.ReferenceID = inventoryItem.ReferenceID;
+                                    inventoryTranctionPost.ReferenceIDFrom = "LocationTransfer";
+                                    await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost);
+
+                                    _inventoryTranctionRepository.SaveAsync();
+
+                                    balQty = 0;
+                                }
+                                else
+                                {
+                                    inventoryItem.Balance_Quantity -= Convert.ToDecimal(transferQty);
+                                    await _inventoryRepository.UpdateInventory(inventoryItem);
+
+                                    InventoryTranction inventoryTranctionPost = new InventoryTranction();
+                                    inventoryTranctionPost.PartNumber = inventoryItem.PartNumber;
+                                    inventoryTranctionPost.MftrPartNumber = itemObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                    inventoryTranctionPost.ProjectNumber = inventoryItem.ProjectNumber;
+                                    inventoryTranctionPost.Description = inventoryItem.Description;
+                                    inventoryTranctionPost.Issued_Quantity = inventoryItem.Balance_Quantity;
+                                    inventoryTranctionPost.UOM = inventoryItem.UOM;
+                                    inventoryTranctionPost.GrinMaterialType = "";
+                                    inventoryTranctionPost.shopOrderNo = "";
+                                    inventoryTranctionPost.Unit = inventoryItem.Unit;
+                                    inventoryTranctionPost.GrinNo = "";
+                                    inventoryTranctionPost.GrinPartId = inventoryItem.GrinPartId;
+                                    inventoryTranctionPost.IsStockAvailable = true;
+                                    inventoryTranctionPost.Warehouse = inventoryItem.Warehouse;
+                                    inventoryTranctionPost.From_Location = fromLocation;
+                                    inventoryTranctionPost.TO_Location = inventoryItem.Location;
+                                    inventoryTranctionPost.PartType = inventoryItem.PartType;
+                                    inventoryTranctionPost.ReferenceID = LocationTransReferId; /*Convert.ToString(loca.Id)*/;
+                                    inventoryTranctionPost.ReferenceIDFrom = "LocationTransfer";
+                                    await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost);
+
+                                    _inventoryTranctionRepository.SaveAsync();
+
+                                    Inventory inventoryPost = new Inventory();
+                                    inventoryPost.PartNumber = toPartNumber;
+                                    inventoryPost.MftrPartNumber = itemObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                    inventoryPost.ProjectNumber = toProjectNumber;
+                                    inventoryPost.Description = inventoryItem.Description;
+                                    inventoryPost.Balance_Quantity = Convert.ToDecimal(transferQty);
+                                    inventoryPost.UOM = inventoryItem.UOM;
+                                    inventoryPost.Min = inventoryItem.Min;
+                                    inventoryPost.Max = inventoryItem.Max;
+                                    inventoryPost.GrinMaterialType = "";
+                                    inventoryPost.shopOrderNo = "";
+                                    inventoryPost.Unit = inventoryItem.Unit;
+                                    inventoryPost.GrinNo = "";
+                                    inventoryPost.GrinPartId = 0;
+                                    inventoryPost.LotNumber = "";
+                                    inventoryPost.IsStockAvailable = true;
+                                    inventoryPost.Warehouse = toWarehouse;
+                                    inventoryPost.Location = toLocation;
+                                    inventoryPost.PartType = inventoryItem.PartType;
+                                    inventoryPost.ReferenceID = LocationTransReferId; /*Convert.ToString(loca.Id);*/
+                                    inventoryPost.ReferenceIDFrom = "LocationTransfer";
+                                    await _inventoryRepository.CreateInventory(inventoryPost);
+
+                                    InventoryTranction inventoryTranctionPost1 = new InventoryTranction();
+                                    inventoryTranctionPost1.PartNumber = inventoryPost.PartNumber;
+                                    inventoryTranctionPost1.MftrPartNumber = inventoryPost.MftrPartNumber;
+                                    inventoryTranctionPost1.ProjectNumber = inventoryPost.ProjectNumber;
+                                    inventoryTranctionPost1.Description = inventoryPost.Description;
+                                    inventoryTranctionPost1.Issued_Quantity = Convert.ToDecimal(transferQty);
+                                    inventoryTranctionPost1.UOM = inventoryPost.UOM;
+                                    inventoryTranctionPost1.GrinMaterialType = "";
+                                    inventoryTranctionPost1.shopOrderNo = "";
+                                    inventoryTranctionPost1.Unit = inventoryPost.Unit;
+                                    inventoryTranctionPost1.GrinNo = "";
+                                    inventoryTranctionPost1.GrinPartId = inventoryPost.GrinPartId;
+                                    inventoryTranctionPost1.IsStockAvailable = true;
+                                    inventoryTranctionPost1.Warehouse = inventoryPost.Warehouse;
+                                    inventoryTranctionPost1.From_Location = fromLocation;
+                                    inventoryTranctionPost1.TO_Location = inventoryPost.Location;
+                                    inventoryTranctionPost1.PartType = inventoryPost.PartType;
+                                    inventoryTranctionPost1.ReferenceID = inventoryPost.ReferenceID;
+                                    inventoryTranctionPost1.ReferenceIDFrom = "LocationTransfer";
+                                    await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost1);
+
+
+
+                                    transferQty = 0;
+                                }
+                                if (transferQty <= 0)
+                                {
+                                    break;
+                                }
+                            }
+                            _inventoryRepository.SaveAsync();
+                            _inventoryTranctionRepository.SaveAsync();
+                        }
+                        else
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = " Inventory hasn't been found in db.";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                            return NotFound(serviceResponse);
+                        }
 
                     }
                     else
@@ -337,152 +486,6 @@ namespace Tips.Warehouse.Api.Controllers
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                         return StatusCode(500, serviceResponse);
-                    }
-                    _logger.LogInfo("getitemmasterdata" + Convert.ToString(itemDetailFromItemmaster));
-                    var itemDetail = await itemDetailFromItemmaster.Content.ReadAsStringAsync();
-                    var itemData = JsonConvert.DeserializeObject<LocationTransItemMasterDetails>(itemDetail);
-                    var itemObject = itemData.data;
-
-                    //Add Inventory table
-                    var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber);
-                    if (inventoryDetails != null && inventoryDetails.Count()>0)
-                    {
-                        foreach (var inventoryItem in inventoryDetails)
-                        {
-                            var balQty = inventoryItem.Balance_Quantity;
-                            if (transferQty >= balQty)
-                            {
-                                inventoryItem.PartNumber = toPartNumber;
-                                inventoryItem.ProjectNumber = toProjectNumber;
-                                inventoryItem.MftrPartNumber = inventoryItem.MftrPartNumber;
-                                inventoryItem.Description = inventoryItem.Description;
-                                inventoryItem.UOM = inventoryItem.UOM;
-                                inventoryItem.Min = inventoryItem.Min;
-                                inventoryItem.Max = inventoryItem.Max;
-                                inventoryItem.Warehouse = toWarehouse;
-                                inventoryItem.Location = toLocation;
-                                inventoryItem.PartType = inventoryItem.PartType;
-                                inventoryItem.ReferenceID = Convert.ToString(loca.Id);
-                                inventoryItem.ReferenceIDFrom = "LocationTransfer";
-                                await _inventoryRepository.UpdateInventory(inventoryItem);
-
-                                transferQty -= balQty;
-
-                                InventoryTranction inventoryTranctionPost = new InventoryTranction();
-                                inventoryTranctionPost.PartNumber = inventoryItem.PartNumber;
-                                inventoryTranctionPost.MftrPartNumber = inventoryItem.MftrPartNumber;
-                                inventoryTranctionPost.ProjectNumber = inventoryItem.ProjectNumber;
-                                inventoryTranctionPost.Description = inventoryItem.Description;
-                                inventoryTranctionPost.Issued_Quantity = inventoryItem.Balance_Quantity;
-                                inventoryTranctionPost.UOM = inventoryItem.UOM;
-                                inventoryTranctionPost.GrinMaterialType = "";
-                                inventoryTranctionPost.shopOrderNo = "";
-                                inventoryTranctionPost.Unit = inventoryItem.Unit;
-                                inventoryTranctionPost.GrinNo = "";
-                                inventoryTranctionPost.GrinPartId = inventoryItem.GrinPartId;
-                                inventoryTranctionPost.IsStockAvailable = true;
-                                inventoryTranctionPost.Warehouse = inventoryItem.Warehouse;
-                                inventoryTranctionPost.From_Location = fromLocation;
-                                inventoryTranctionPost.TO_Location = inventoryItem.Location;
-                                inventoryTranctionPost.PartType = inventoryItem.PartType;
-                                inventoryTranctionPost.ReferenceID = inventoryItem.ReferenceID;
-                                inventoryTranctionPost.ReferenceIDFrom = "LocationTransfer";
-                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost);
-
-                                _inventoryTranctionRepository.SaveAsync();
-
-                                balQty = 0;
-                            }
-                            else
-                            {
-                                inventoryItem.Balance_Quantity -= Convert.ToDecimal(transferQty);
-                                await _inventoryRepository.UpdateInventory(inventoryItem);
-
-                                InventoryTranction inventoryTranctionPost = new InventoryTranction();
-                                inventoryTranctionPost.PartNumber = inventoryItem.PartNumber;
-                                inventoryTranctionPost.MftrPartNumber = inventoryItem.MftrPartNumber;
-                                inventoryTranctionPost.ProjectNumber = inventoryItem.ProjectNumber;
-                                inventoryTranctionPost.Description = inventoryItem.Description;
-                                inventoryTranctionPost.Issued_Quantity = inventoryItem.Balance_Quantity;
-                                inventoryTranctionPost.UOM = inventoryItem.UOM;
-                                inventoryTranctionPost.GrinMaterialType = "";
-                                inventoryTranctionPost.shopOrderNo = "";
-                                inventoryTranctionPost.Unit = inventoryItem.Unit;
-                                inventoryTranctionPost.GrinNo = "";
-                                inventoryTranctionPost.GrinPartId = inventoryItem.GrinPartId;
-                                inventoryTranctionPost.IsStockAvailable = true;
-                                inventoryTranctionPost.Warehouse = inventoryItem.Warehouse;
-                                inventoryTranctionPost.From_Location = fromLocation;
-                                inventoryTranctionPost.TO_Location = inventoryItem.Location;
-                                inventoryTranctionPost.PartType = inventoryItem.PartType;
-                                inventoryTranctionPost.ReferenceID = inventoryItem.ReferenceID;
-                                inventoryTranctionPost.ReferenceIDFrom = "LocationTransfer";
-                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost);
-
-                                _inventoryTranctionRepository.SaveAsync();
-
-                                Inventory inventoryPost = new Inventory();
-                                inventoryPost.PartNumber = toPartNumber;
-                                inventoryPost.MftrPartNumber = inventoryItem.MftrPartNumber;  
-                                inventoryPost.ProjectNumber = toProjectNumber;
-                                inventoryPost.Description = inventoryItem.Description; 
-                                inventoryPost.Balance_Quantity = Convert.ToDecimal(transferQty);
-                                inventoryPost.UOM = inventoryItem.UOM;
-                                inventoryPost.Min = inventoryItem.Min;
-                                inventoryPost.Max = inventoryItem.Max;
-                                inventoryPost.GrinMaterialType = "";
-                                inventoryPost.shopOrderNo = "";
-                                inventoryPost.Unit = inventoryItem.Unit;
-                                inventoryPost.GrinNo = "";
-                                inventoryPost.GrinPartId = 0;
-                                inventoryPost.LotNumber = "";
-                                inventoryPost.IsStockAvailable = true;
-                                inventoryPost.Warehouse = toWarehouse;
-                                inventoryPost.Location = toLocation;
-                                inventoryPost.PartType = inventoryItem.PartType;
-                                inventoryPost.ReferenceID = "LocationTransfer";
-                                inventoryPost.ReferenceIDFrom = "LocationTransfer";
-                                await _inventoryRepository.CreateInventory(inventoryPost);
-
-                                InventoryTranction inventoryTranctionPost1 = new InventoryTranction();
-                                inventoryTranctionPost1.PartNumber = inventoryPost.PartNumber;
-                                inventoryTranctionPost1.MftrPartNumber = inventoryPost.MftrPartNumber;
-                                inventoryTranctionPost1.ProjectNumber = inventoryPost.ProjectNumber;
-                                inventoryTranctionPost1.Description = inventoryPost.Description;
-                                inventoryTranctionPost1.Issued_Quantity = Convert.ToDecimal(transferQty);
-                                inventoryTranctionPost1.UOM = inventoryPost.UOM;
-                                inventoryTranctionPost1.GrinMaterialType = "";
-                                inventoryTranctionPost1.shopOrderNo = "";
-                                inventoryTranctionPost1.Unit = inventoryPost.Unit;
-                                inventoryTranctionPost1.GrinNo = "";
-                                inventoryTranctionPost1.GrinPartId = inventoryPost.GrinPartId;
-                                inventoryTranctionPost1.IsStockAvailable = true;
-                                inventoryTranctionPost1.Warehouse = inventoryPost.Warehouse;
-                                inventoryTranctionPost1.From_Location = fromLocation;
-                                inventoryTranctionPost1.TO_Location = inventoryPost.Location;
-                                inventoryTranctionPost1.PartType = inventoryPost.PartType;
-                                inventoryTranctionPost1.ReferenceID = inventoryPost.ReferenceID;
-                                inventoryTranctionPost1.ReferenceIDFrom = "LocationTransfer";
-                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost1);
-
-                                _inventoryTranctionRepository.SaveAsync();
-
-                                transferQty = 0;
-                            }
-                            if (transferQty <= 0)
-                            {
-                                break;
-                            }
-                        }
-                        _inventoryRepository.SaveAsync();
-                    }
-                    else
-                    {
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = " Inventory hasn't been found in db.";
-                        serviceResponse.Success = false;
-                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                        return NotFound(serviceResponse);
                     }
                    
                 }

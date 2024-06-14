@@ -146,6 +146,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? SpecialTermsAndConditions { get; set; }
         public decimal TotalAmount { get; set; }
         public int? ApprovalCount { get; set; }
+        public PoStatus PoStatus { get; set; }
         public string? Unit { get; set; }
         //public string? LastModifiedBy { get; set; }
         //public DateTime? LastModifiedOn { get; set; }
