@@ -3399,8 +3399,8 @@ namespace Tips.SalesService.Api.Controllers
                 _salesOrderEmailsDetailsRepository.SaveAsync();
 
                 serviceResponse.Data = "Email sent successfully.";
-                serviceResponse.Message = $"Something went wrong ,try again";
-                serviceResponse.Success = false;
+                serviceResponse.Message = $"Email sent successfully";
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
