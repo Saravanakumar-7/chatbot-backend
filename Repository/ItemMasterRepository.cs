@@ -474,7 +474,7 @@ namespace Repository
         }
         public async Task<ItemMaster> GetItemMasterByItemNumber(string ItemNumber)
         {
-            var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == ItemNumber)
+            var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == ItemNumber && x.IsActive == true)
                  // .Include(c => c.FileUpload)
                  // .Include(x => x.ImageUpload)
                  .Include(t => t.ItemmasterAlternate)

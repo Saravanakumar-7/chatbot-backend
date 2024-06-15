@@ -858,7 +858,22 @@ namespace Tips.SalesService.Api.Repository
                     
             return PagedList<Rfq>.ToPagedList(rfqDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-                
+
+        public async Task<PagedList<Rfq>> GetAllRfqs([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
+        {
+            int searchValueInt;
+            bool isSearchValueInt = int.TryParse(searchParammes.SearchValue, out searchValueInt);
+            var rfqDetails = FindAll().Where(inv =>
+                   ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.RfqNumber.Contains(searchParammes.SearchValue) ||
+                    inv.LeadId.Contains(searchParammes.SearchValue) || inv.CustomerId.Contains(searchParammes.SearchValue) ||
+                    inv.CustomerName.Contains(searchParammes.SearchValue)) &&
+                    (!isSearchValueInt || inv.RevisionNumber == searchValueInt) && inv.IsModified == false)
+                   /* && (inv.RevisionNumber == _tipsSalesServiceDbContext.Rfqs.Where(r => r.RfqNumber == inv.RfqNumber).Max(r => r.RevisionNumber))*/)
+                .OrderByDescending(x => x.Id);
+
+            return PagedList<Rfq>.ToPagedList(rfqDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
         public async Task<Rfq> GetRfqById(int id)
         {
             var getRfqById = await _tipsSalesServiceDbContext.Rfqs.Where(x => x.Id == id)
@@ -1082,8 +1097,8 @@ namespace Tips.SalesService.Api.Repository
                 Update(getOldRfqDetails);
             }
 
-            rfq.CreatedBy = rfq.CreatedBy;
-            rfq.CreatedOn = rfq.CreatedOn;
+            rfq.CreatedBy = _createdBy;
+            rfq.CreatedOn = DateTime.Now;
            // rfq.LastModifiedBy = _createdBy;
            // rfq.LastModifiedOn = DateTime.Now;
             var getOldRevisionNumber = _tipsSalesServiceDbContext.Rfqs.Where(x => x.RfqNumber == rfq.RfqNumber).OrderByDescending(x => x.Id)
