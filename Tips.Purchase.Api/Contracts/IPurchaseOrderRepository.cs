@@ -51,6 +51,10 @@ namespace Tips.Purchase.Api.Contracts
                                                                                                      string RecordType, string Postatus, string Approval);
         Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderApprovalSPReportWithParamForTrans(string VendorName, string PONumber, string itemNumber,
                                                                                                      string RecordType, string Postatus, string Approval, string ProjectNumber);
+        Task<IEnumerable<PurchaseOrderSPReportForAvision>> GetPurchaseOrderApprovalSPReportWithParamForAvision(string VendorName, string PONumber, string itemNumber,
+                                                                                                    string RecordType, string Postatus, string Approval, string ProjectNumber);
+        Task<IEnumerable<PurchaseOrderSPReportForAvision>> GetPurchaseOrderApprovalSPReportWithDateForAvision(DateTime? FromDate, DateTime? ToDate, string RecordType
+                                                                                                                , string Approval);
         Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderApprovalSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate, string RecordType
                                                                                                                   , string Approval);

@@ -1103,6 +1103,26 @@ namespace Tips.Purchase.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<PurchaseOrderSPReportForAvision>> GetPurchaseOrderApprovalSPReportWithParamForAvision(string VendorName, string PONumber, string itemNumber,
+                                                                                                    string RecordType, string Postatus, string Approval, string ProjectNumber)
+        {
+
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseOrderSPReportForAvision>()
+            .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus_avision({VendorName},{PONumber},{itemNumber},{RecordType},{Postatus},{Approval},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<PurchaseOrderSPReportForAvision>> GetPurchaseOrderApprovalSPReportWithDateForAvision(DateTime? FromDate, DateTime? ToDate, string RecordType
+                                                                                                                , string Approval)
+        {
+            var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReportForAvision>()
+                        .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus_withdate_Avision({FromDate},{ToDate},{RecordType},{Approval})")
+                        .ToList();
+
+            return results;
+        }
         public async Task<PagedList<PurchaseOrderSPReport>> GetPurchaseOrderSPResport(PagingParameter pagingParameter)
         {
             var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReport>()

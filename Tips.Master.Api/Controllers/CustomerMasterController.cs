@@ -796,7 +796,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        [HttpPost] // Adjust your route as needed
+        [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetCustomerLeadIdSPReportOnDailyBasis()
         {
             ServiceResponse<IEnumerable<CustomerMasterLeadIdSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CustomerMasterLeadIdSPReport>>();

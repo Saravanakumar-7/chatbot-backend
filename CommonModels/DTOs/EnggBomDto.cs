@@ -201,6 +201,13 @@ namespace Entities.DTOs
     {
         public string? BOMId { get; set; }
     }
+    public class EnggBomDetailsDto
+    {
+        public string? ItemNumber { get; set; }
+        public string? ItemDescription { get; set; }
+        public PartType ItemType { get; set; }
+        public bool IsActive { get; set; }
 
+    }
 
 }

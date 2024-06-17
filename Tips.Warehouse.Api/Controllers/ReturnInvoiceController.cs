@@ -248,43 +248,9 @@ namespace Tips.Warehouse.Api.Controllers
                         else if (btoDeliveryOrderItemDetails.DispatchQty == btoDeliveryOrderItemDetails.BalanceDoQty) btoDeliveryOrderItemDetails.DoStatus = Status.Open;                       
                         else btoDeliveryOrderItemDetails.DoStatus = Status.Closed;
                        // btoDeliveryOrderItemDetails.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
+
                         //Update Inventory balanced Quantity 
 
-                        //var PartNumber = returnInvoiceItemDto[i].FGPartNumber;
-                        //var DONumber = returnInvoiceItemDto[i].DONumber;
-                        //var inventoryFGDetails = await _inventoryRepository.GetInventoryFGDetailsByItemNumber(PartNumber);
-                        //decimal ReturnQty = returnInvoiceItemDto[i].ReturnQty;
-
-                        //if (inventoryFGDetails != null)
-                        //{
-                        //    inventoryFGDetails.Balance_Quantity = inventoryFGDetails.Balance_Quantity + ReturnQty;
-
-                        //    _inventoryRepository.Update(inventoryFGDetails);
-                        //    _inventoryRepository.SaveAsync();
-                        //}
-                        //else
-                        //{
-                        //    Inventory inventory = new Inventory();
-                        //    inventory.PartNumber = returnInvoiceItemsList[i].FGPartNumber;
-                        //    inventory.MftrPartNumber = returnInvoiceItemsList[i].FGPartNumber;
-                        //    inventory.Description = returnInvoiceItemsList[i].Description;
-                        //    inventory.ProjectNumber = "";
-                        //    inventory.Balance_Quantity = ReturnQty;
-                        //    inventory.UOM = returnInvoiceItemsList[i].UOM;
-                        //    inventory.IsStockAvailable = true;
-                        //    inventory.Warehouse = "FG";
-                        //    inventory.Location = "FG";
-                        //    inventory.GrinNo = "";
-                        //    inventory.GrinPartId = 0;
-                        //    inventory.PartType = returnInvoiceItemsList[i].PartType;
-                        //    inventory.GrinMaterialType = "";
-                        //    inventory.ReferenceID = returnInvoiceDetails.InvoiceNumber; // return invoice number
-                        //    inventory.ReferenceIDFrom = "Return Invoice";
-                        //    inventory.shopOrderNo = "";
-
-                        //    await _inventoryRepository.CreateInventory(inventory);
-                        //    _inventoryRepository.SaveAsync();
-                        //}
                         foreach (var eachbin in returnInvoiceItems.QtyDistribution)
                         {
                             var client1 = _clientFactory.CreateClient();
@@ -331,6 +297,27 @@ namespace Tips.Warehouse.Api.Controllers
 
                                 await _inventoryRepository.CreateInventory(inventory);
 
+                                //add return details in to inventory table
+
+                                InventoryTranction inventoryTranction = new InventoryTranction();
+                                inventoryTranction.PartNumber = inventory.PartNumber;
+                                inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                inventoryTranction.Description = inventory.Description;
+                                inventoryTranction.Issued_Quantity = inventory.Balance_Quantity;
+                                inventoryTranction.UOM = inventory.UOM;
+                                inventoryTranction.Issued_DateTime = DateTime.Now;
+                                inventoryTranction.ReferenceID = inventory.ReferenceID;
+                                inventoryTranction.ReferenceIDFrom = inventory.ReferenceIDFrom;
+                                inventoryTranction.Issued_By = _createdBy;
+                                inventoryTranction.From_Location = inventory.Location;
+                                inventoryTranction.TO_Location = inventory.Location;
+                                inventoryTranction.Remarks = "Return Invoice";
+                                inventoryTranction.Warehouse = inventory.Warehouse;
+                                inventoryTranction.PartType = returnInvoiceItemsList[i].PartType;  /// Check this are you getting Part Type from Front End
+
+                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
+                              
+
                             }
                             else
                             {
@@ -340,63 +327,34 @@ namespace Tips.Warehouse.Api.Controllers
                                 exInv.Balance_Quantity += eachbin.DistributingQty;
                                 await _inventoryRepository.UpdateInventory(exInv);
 
+                                //add return details in to inventory table
 
+                                InventoryTranction inventoryTranction = new InventoryTranction();
+                                inventoryTranction.PartNumber = exInv.PartNumber;
+                                inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                inventoryTranction.Description = exInv.Description;
+                                inventoryTranction.Issued_Quantity = exInv.Balance_Quantity;
+                                inventoryTranction.UOM = exInv.UOM;
+                                inventoryTranction.Issued_DateTime = DateTime.Now;
+                                inventoryTranction.ReferenceID = exInv.ReferenceID;
+                                inventoryTranction.ReferenceIDFrom = exInv.ReferenceIDFrom;
+                                inventoryTranction.Issued_By = _createdBy;
+                                inventoryTranction.From_Location = exInv.Location;
+                                inventoryTranction.TO_Location = exInv.Location;
+                                inventoryTranction.Remarks = "Return Invoice";
+                                inventoryTranction.Warehouse = exInv.Warehouse;
+                                inventoryTranction.PartType = returnInvoiceItemsList[i].PartType;  /// Check this are you getting Part Type from Front End
+
+                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
                             }
 
                             _inventoryRepository.SaveAsync();
-                            //add return details in to inventory table
-
-                            InventoryTranction inventoryTranction = new InventoryTranction();
-                            inventoryTranction.PartNumber = returnInvoiceItemsList[i].FGPartNumber;
-                            inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); 
-                            inventoryTranction.Description = returnInvoiceItemsList[i].Description;
-                            inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
-                            inventoryTranction.UOM = returnInvoiceItemsList[i].UOM;
-                            inventoryTranction.Issued_DateTime = DateTime.Now;
-                            inventoryTranction.ReferenceID = returnInvoiceDetails.InvoiceNumber;
-                            inventoryTranction.ReferenceIDFrom = "Return Invoice";
-                            inventoryTranction.Issued_By = _createdBy;
-                            inventoryTranction.From_Location = "Invoice";
-                            inventoryTranction.TO_Location = eachbin.Location;
-                            inventoryTranction.Remarks = "Return Invoice";
-                            inventoryTranction.Warehouse = eachbin.Warehouse;
-                            inventoryTranction.PartType = returnInvoiceItemsList[i].PartType;  /// Check this are you getting Part Type from Front End
-
-                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
                             _inventoryTranctionRepository.SaveAsync();
 
 
                             //passing BtoNumber GetBtoDetails
                             var btoDeliveryorderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(returnInvoiceItemDto[i].DONumber);
 
-                            // Add return details in to btodeliveryorderhistory table
-
-                            //BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
-                            //bTODeliveryOrderHistory.BTONumber = returnInvoiceItemsList[i].DONumber;
-                            //bTODeliveryOrderHistory.CustomerName = returnInvoiceDetails.CustomerName;
-                            //bTODeliveryOrderHistory.CustomerAliasName = returnInvoiceDetails.CustomerAliasName;
-                            //bTODeliveryOrderHistory.CustomerId = btoDeliveryorderDetails.CustomerId;
-                            //bTODeliveryOrderHistory.PONumber = btoDeliveryorderDetails.PONumber;
-                            //bTODeliveryOrderHistory.IssuedTo = btoDeliveryorderDetails.IssuedTo;
-                            //bTODeliveryOrderHistory.DODate = Convert.ToDateTime(returnInvoiceDetails.CreatedOn);
-                            //bTODeliveryOrderHistory.FGItemNumber = returnInvoiceItemsList[i].FGPartNumber;
-                            //bTODeliveryOrderHistory.SalesOrderId = btoDeliveryOrderItemDetails.SalesOrderId;
-                            //bTODeliveryOrderHistory.Description = returnInvoiceItemsList[i].Description;
-                            //bTODeliveryOrderHistory.BalanceDoQty = Convert.ToDecimal(btoDeliveryOrderItemDetails.BalanceDoQty);
-                            //bTODeliveryOrderHistory.UnitPrice = Convert.ToDecimal(returnInvoiceItemsList[i].UnitPrice);
-                            //bTODeliveryOrderHistory.UOC = btoDeliveryOrderItemDetails.UOC;
-                            //bTODeliveryOrderHistory.UOM = returnInvoiceItemsList[i].UOM;
-                            //bTODeliveryOrderHistory.FGOrderQty = Convert.ToDecimal(btoDeliveryOrderItemDetails.FGOrderQty);
-                            //bTODeliveryOrderHistory.OrderBalanceQty = Convert.ToDecimal(btoDeliveryOrderItemDetails.OrderBalanceQty);
-                            //bTODeliveryOrderHistory.FGStock = Convert.ToDecimal(btoDeliveryOrderItemDetails.FGStock);
-                            //bTODeliveryOrderHistory.Discount = btoDeliveryOrderItemDetails.Discount;
-                            //bTODeliveryOrderHistory.NetValue = btoDeliveryOrderItemDetails.NetValue;
-                            //bTODeliveryOrderHistory.DispatchQty = ReturnQty;
-                            //bTODeliveryOrderHistory.InvoicedQty = btoDeliveryOrderItemDetails.InvoicedQty;
-                            //bTODeliveryOrderHistory.SerialNo = btoDeliveryOrderItemDetails.SerialNo;
-                            ////bTODeliveryOrderHistory.CreatedBy = returnInvoiceDetails.CreatedBy;
-                            ////bTODeliveryOrderHistory.LastModifiedOn = returnInvoiceDetails.LastModifiedOn;
-                            //bTODeliveryOrderHistory.Remark = "Return Invoice";
                             Guid guid = Guid.NewGuid();
                             BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
                             bTODeliveryOrderHistory.CustomerName = returnInvoiceDetails.CustomerName;
@@ -433,6 +391,7 @@ namespace Tips.Warehouse.Api.Controllers
                         }
                         _bTODeliveryOrderItemsRepository.Update(btoDeliveryOrderItemDetails);
                         _bTODeliveryOrderItemsRepository.SaveAsync();
+
                         // var getDoDetails=await _bTODeliveryOrderRepository.GetBTODeliveryOrderById(btoDeliveryOrderItemDetails.BTODeliveryOrderId);
                         var doNumber=btoDeliveryOrderItemDetails.BTONumber;
                          var bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount = await _bTODeliveryOrderItemsRepository.GetBTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount(doNumber);
@@ -450,6 +409,7 @@ namespace Tips.Warehouse.Api.Controllers
                             await _bTODeliveryOrderRepository.UpdateBTODeliveryOrder(bTODeliveryOrderDetails);
                         }
                         _bTODeliveryOrderRepository.SaveAsync();
+
                         //update Dispatch Qty in InvoiceChildItem Table
                         //int getInvoiceChildItemId = returnInvoiceItemDto[i].InvoicePartsId;
                         //var invoiceChildItemDetails = await _invoiceChildRepository.GetInvoiceChildItemDetails(getInvoiceChildItemId);
@@ -475,6 +435,7 @@ namespace Tips.Warehouse.Api.Controllers
                         }
                     }
                 }
+
                 foreach(var Returninv in returnInvoiceItemsList)
                 {
                     var bTODeliveryOrderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(Returninv.DONumber);
@@ -549,7 +510,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateInvoice action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateReturnInvoice action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;

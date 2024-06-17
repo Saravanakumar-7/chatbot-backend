@@ -31,15 +31,16 @@ namespace Tips.Master.Api.Controllers
         private IFileUploadRepository _fileUploadRepository;
         private IImageUploadRepository _imageUploadRepository;
         private IWebHostEnvironment _webHostEnvironment;
+        private IEnggBomRepository _enggBomRepository;
 
 
-        public ItemMasterController(IRepositoryWrapperForMaster repository, IWebHostEnvironment webHostEnvironment, IConfiguration config, IImageUploadRepository imageUploadRepository, IFileUploadRepository fileUploadRepository, ILoggerManager logger, IMapper mapper)
+        public ItemMasterController(IRepositoryWrapperForMaster repository, IEnggBomRepository enggBomRepository, IWebHostEnvironment webHostEnvironment, IConfiguration config, IImageUploadRepository imageUploadRepository, IFileUploadRepository fileUploadRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _config = config;
             _webHostEnvironment = webHostEnvironment;
-
+            _enggBomRepository = enggBomRepository;
             _fileUploadRepository = fileUploadRepository;
             _imageUploadRepository = imageUploadRepository;
             _mapper = mapper;
@@ -1338,155 +1339,13 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                //if (itemMasterDtoUpdate.ImageUpload == null && updateItemMasterEntity.ImageUpload == null) { }
-                //else if (itemMasterDtoUpdate.ImageUpload != null && updateItemMasterEntity.ImageUpload != null) { }
-                //else if (itemMasterDtoUpdate.ImageUpload == null && updateItemMasterEntity.ImageUpload != null)
-                //{
-                //    int imageId = updateItemMasterEntity.ImageUpload.Id;
-                //    await _repository.ImageUploadRepository.DeleteImage(imageId);
-                //}
-                //else if (itemMasterDtoUpdate.ImageUpload != null && updateItemMasterEntity.ImageUpload != null)
-                //{
-                //    int imageId = updateItemMasterEntity.ImageUpload.Id;
-                //    await _repository.ImageUploadRepository.DeleteImage(imageId);
-                //    var imageUploadDtoList = new ImageUpload();
-                //    var ImageUploadDetail = itemMasterDtoUpdate.ImageUpload;
-                //    byte[] imageContent = Convert.FromBase64String(ImageUploadDetail.FileByte);
-                //    var itemNumbers = itemMasterDtoUpdate.ItemNumber;
-                //    string imageName = ImageUploadDetail.FileName + "." + ImageUploadDetail.FileExtension;
-                //    string imageExt = Path.GetExtension(imageName).ToUpper();
-                //    if (imageExt == ".PNG" || imageExt == ".JPG" || imageExt == ".JPEG" || imageExt == ".GIF")
-                //    {
-                //        string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", /*/ guid.ToString() + "_" +/*/ imageName);
-                //        using (MemoryStream ms = new MemoryStream(imageContent))
-                //        {
-                //            ms.Position = 0;
-                //            using (var fileStream = new FileStream(imagePath, FileMode.Create, FileAccess.Write))
-                //            {
-                //                ms.WriteTo(fileStream);
-                //            }
-                //            var uploadedFiles = new ImageUpload
-                //            {
-                //                FileName = imageName,
-                //                FileExtension = imageExt,
-                //                FilePath = $"{Request.Scheme}://{Request.Host}/api/ItemMaster/Upload/ImageUpload/{imageName}",
-                //                ParentId = itemNumbers,
-                //                DocumentFrom = "ItemMaster Image Document",
-                //                FileByte = ImageUploadDetail.FileByte,
-                //                ItemMasterId = id
-                //            };
-                //            await _repository.ImageUploadRepository.ImageUploadDocument(uploadedFiles);
-                //            //_repository.SaveAsync();
-                //            if (uploadedFiles != null)
-                //            {
-                //                ImageUpload itemmasterImageDetails = _mapper.Map<ImageUpload>(uploadedFiles);
-                //                imageUploadDtoList = itemmasterImageDetails;
-                //            }
-                //        }
-                //    }
-                //    else
-                //    {
-                //        _logger.LogError("Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....");
-                //        serviceResponse.Data = null;
-                //        serviceResponse.Message = "Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....";
-                //        serviceResponse.Success = false;
-                //        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                //        return BadRequest(serviceResponse);
-                //    }
-                //}
-                //else if (itemMasterDtoUpdate.ImageUpload != null && updateItemMasterEntity.ImageUpload == null)
-                //{
-                //    var imageUploadDtoList = new ImageUpload();
-                //    var ImageUploadDetail = itemMasterDtoUpdate.ImageUpload;
-                //    byte[] imageContent = Convert.FromBase64String(ImageUploadDetail.FileByte);
-                //    var itemNumbers = itemMasterDtoUpdate.ItemNumber;
-                //    string imageName = ImageUploadDetail.FileName + "." + ImageUploadDetail.FileExtension;
-                //    string imageExt = Path.GetExtension(imageName).ToUpper();
-                //    if (imageExt == ".PNG" || imageExt == ".JPG" || imageExt == ".JPEG" || imageExt == ".GIF")
-                //    {
-                //        string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", /*/ guid.ToString() + "_" +/*/ imageName);
-                //        using (MemoryStream ms = new MemoryStream(imageContent))
-                //        {
-                //            ms.Position = 0;
-                //            using (var fileStream = new FileStream(imagePath, FileMode.Create, FileAccess.Write))
-                //            {
-                //                ms.WriteTo(fileStream);
-                //            }
-                //            var uploadedFiles = new ImageUpload
-                //            {
-                //                FileName = imageName,
-                //                FileExtension = imageExt,
-                //                FilePath = $"{Request.Scheme}://{Request.Host}/api/ItemMaster/Upload/ImageUpload/{imageName}",
-                //                ParentId = itemNumbers,
-                //                DocumentFrom = "ItemMaster Image Document",
-                //                FileByte = ImageUploadDetail.FileByte,
-                //                ItemMasterId = id
-                //            };
-                //            await _repository.ImageUploadRepository.ImageUploadDocument(uploadedFiles);
-                //            //_repository.SaveAsync();
-                //            if (uploadedFiles != null)
-                //            {
-                //                ImageUpload itemmasterImageDetails = _mapper.Map<ImageUpload>(uploadedFiles);
-                //                imageUploadDtoList = itemmasterImageDetails;
-                //            }
-                //        }
-                //    }
-                //    else
-                //    {
-                //        _logger.LogError("Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....");
-                //        serviceResponse.Data = null;
-                //        serviceResponse.Message = "Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....";
-                //        serviceResponse.Success = false;
-                //        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                //        return BadRequest(serviceResponse);
-                //    }
-                //}
-                //if (itemMasterDtoUpdate.FileUpload != null)
-                //{
-                //    foreach (var filE in itemMasterDtoUpdate.FileUpload)
-                //    {
-                //        if (filE.Id == null)
-                //        {
-                //            byte[] fileContent = Convert.FromBase64String(filE.FileByte);
-                //            var itemNumber = itemMasterDtoUpdate.ItemNumber;
-                //            string fileName = filE.FileName + "." + filE.FileExtension;
-                //            string FileExt = Path.GetExtension(fileName).ToUpper();
-
-                //            //Guid guids = Guid.NewGuid();
-                //            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload",/*guids.ToString() + "_" +*/ fileName);
-                //            using (MemoryStream ms = new MemoryStream(fileContent))
-                //            {
-                //                ms.Position = 0;
-                //                using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                //                {
-                //                    ms.WriteTo(fileStream);
-                //                }
-                //                var uploadedFile = new FileUpload
-                //                {
-                //                    FileName = fileName,
-                //                    FileExtension = FileExt,
-                //                    FilePath = filePath,
-                //                    ParentId = itemNumber,
-                //                    DocumentFrom = "ItemMaster File Document",
-                //                    FileByte = filE.FileByte
-                //                    //ItemMasterId=id
-                //                };
-                //                await _repository.FileUploadRepository.CreateFileUploadDocument(uploadedFile);
-                //                //_repository.SaveAsync();
-                //            }
-                //        }
-                //    }
-                //}
+               
                 var itemMasterAlternate = _mapper.Map<IEnumerable<ItemmasterAlternate>>(itemMasterDtoUpdate.ItemmasterAlternate);
                 var itemMasterApprovedVendor = _mapper.Map<IEnumerable<ItemMasterApprovedVendor>>(itemMasterDtoUpdate.ItemMasterApprovedVendor);
-                //var itemMasterFileUpload = _mapper.Map<IEnumerable<ItemMasterFileUpload>>(itemMasterDtoUpdate.ItemMasterFileUpload);
                 var itemMasterRouting = _mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoUpdate.ItemMasterRouting);
                 var itemMasterWarehouse = _mapper.Map<IEnumerable<ItemMasterWarehouse>>(itemMasterDtoUpdate.ItemMasterWarehouse);
                 updateItemMasterEntity.ItemmasterAlternate = null;
                 updateItemMasterEntity.ItemMasterApprovedVendor = null;
-                //itemMaster.ItemMasterFileUpload=itemMasterFileUpload.ToList();
-                //updateItemMasterEntity.ImageUpload = null;
-                //updateItemMasterEntity.FileUpload = null;
                 updateItemMasterEntity.ItemMasterRouting = null;
                 updateItemMasterEntity.ItemMasterWarehouse = null;
                 var itemMaster = _mapper.Map(itemMasterDtoUpdate, updateItemMasterEntity);
@@ -1501,6 +1360,42 @@ namespace Tips.Master.Api.Controllers
 
                 string result = await _repository.ItemMasterRepository.UpdateItemMaster(itemMaster);
                 _logger.LogInfo(result);
+
+                //Update EnggBom
+                //if (itemMaster.ItemNumber != null)
+                //{
+                //    var enggBomDetails = await _repository.EnggBomRepository.GetAllEnggBomDetailsByItemNumber(itemMaster.ItemNumber);
+
+                //    foreach (var enggBom in enggBomDetails)
+                //    {
+                //        enggBom.ItemNumber = itemMaster.ItemNumber;
+                //        enggBom.ItemDescription = itemMaster.Description;
+                //        enggBom.ItemType = itemMaster.ItemType;
+                //        enggBom.IsActive = itemMaster.IsActive;
+
+                //        var updateEnggBom = _mapper.Map<EnggBom>(enggBom);
+                //        await _repository.EnggBomRepository.UpdateEnggBom(updateEnggBom);
+                //    }
+                
+
+                //    //Update EnggBomChild
+                
+                //    var enggBomChildDetails = await _repository.EnggBomRepository.GetAllEnggChildBomDetailsByItemNumber(itemMaster.ItemNumber);
+
+                //    foreach (var enggBomChild in enggBomChildDetails)
+                //    {
+                //        enggBomChild.ItemNumber = itemMaster.ItemNumber;
+                //        enggBomChild.MftrItemNumbers = itemMaster.ItemmasterAlternate.Where(x=>x.IsDefault = true).Select(x => x.ManufacturerPartNo).FirstOrDefault();
+                //        enggBomChild.UOM = itemMaster.Uom;
+                //        enggBomChild.Description = itemMaster.Description;
+                //        enggBomChild.PartType = itemMaster.ItemType;
+                //        enggBomChild.IsActive = itemMaster.IsActive;
+
+                //        var updateEnggBomChild = _mapper.Map<EnggChildItem>(enggBomChild);
+                //        await _repository.EnggChildItemsRepository.UpdateEnggChilditems(updateEnggBomChild);
+                //    }
+                //}
+
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ItemMaster Updated Successfully";
