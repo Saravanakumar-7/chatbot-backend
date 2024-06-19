@@ -154,9 +154,40 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
+        public async Task<IEnumerable<RfqSalesOrderSPReportForTrans>> GetRfqSalesOrderSPReportWithParamForTrans(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus, string ProjectNumber)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<RfqSalesOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL RFQ_salesorder_withparameter_Report_tras({CustomerName},{SalesOrderNumber},{KPN},{SOStatus},{ProjectNumber})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<RfqSalesOrderSPReportForTrans>> GetRfqSalesOrderSPReportWithParamForAvision(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<RfqSalesOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL RFQ_salesorder_withparameter_Report({CustomerName},{SalesOrderNumber},{KPN},{SOStatus})")
+            .ToList();
+
+            return result;
+
+        }
+
         public async Task<IEnumerable<RfqSalesOrderSPReport>> GetRfqSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsSalesServiceDbContext.Set<RfqSalesOrderSPReport>()
+                        .FromSqlInterpolated($"CALL RFQ_salesorder_withdate_Report({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<RfqSalesOrderSPReportForTrans>> GetRfqSalesOrderSPReportWithDateForTransAvision(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<RfqSalesOrderSPReportForTrans>()
                         .FromSqlInterpolated($"CALL RFQ_salesorder_withdate_Report({FromDate},{ToDate})")
                         .ToList();
 
@@ -173,10 +204,38 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
+        public async Task<IEnumerable<ForecastSalesOrderSPReportForTrans>> GetForecastSalesOrderSPReportWithParamForTrans(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus, string ProjectNumber)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<ForecastSalesOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL Forecast_salesorder_with_parameter_tras({CustomerName},{SalesOrderNumber},{KPN},{SOStatus},{ProjectNumber})")
+            .ToList();
 
+            return result;
+
+        }
+        public async Task<IEnumerable<ForecastSalesOrderSPReportForTrans>> GetForecastSalesOrderSPReportWithParamForAvision(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<ForecastSalesOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL Forecast_salesorder_with_parameter({CustomerName},{SalesOrderNumber},{KPN},{SOStatus})")
+            .ToList();
+
+            return result;
+
+        }
         public async Task<IEnumerable<ForecastSalesOrderSPReport>> GetForecastSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsSalesServiceDbContext.Set<ForecastSalesOrderSPReport>()
+                        .FromSqlInterpolated($"CALL Forecast_salesorder_with_date({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<ForecastSalesOrderSPReportForTrans>> GetForecastSalesOrderSPReportWithDateForTransAvision(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<ForecastSalesOrderSPReportForTrans>()
                         .FromSqlInterpolated($"CALL Forecast_salesorder_with_date({FromDate},{ToDate})")
                         .ToList();
 
@@ -459,6 +518,18 @@ namespace Tips.SalesService.Api.Repository
                               .ToListAsync();
 
             return activeSalesOrderNameList;
+        }
+        public async Task<IEnumerable<SalesOrderFGItemNumberDto>> GetAllSalesOrderFGItemNoListByProjectNo(string projectNo)
+        {
+            IEnumerable<SalesOrderFGItemNumberDto> fgItemNumberList = await _tipsSalesServiceDbContext.SalesOrdersItems
+                                .Where(x => x.ProjectNumber == projectNo && (x.StatusEnum == OrderStatus.Open || x.StatusEnum == OrderStatus.PartiallyClosed))
+                                .Select(x => new SalesOrderFGItemNumberDto()
+                                {
+                                    FGItemNumber = x.ItemNumber,
+                                })
+                              .ToListAsync();
+
+            return fgItemNumberList;
         }
         public async Task<SalesOrder> GetSalesOrderById(int id)
         {
@@ -822,6 +893,32 @@ namespace Tips.SalesService.Api.Repository
                 .Where(x =>
                             (x.StatusEnum == OrderStatus.Open || x.StatusEnum == OrderStatus.PartiallyClosed) &&
                             x.BalanceQty > 0 && salesOrderIdList.Contains(x.SalesOrderId))
+                .GroupBy(x => new { x.ItemNumber, x.ProjectNumber })
+                .Select(group => new SalesOrderFGandBalanceQtyByProjectNo
+                {
+                    FGItemNumber = group.Key.ItemNumber,
+                    ProjectNumber = group.Key.ProjectNumber,
+                    Description = group.First().Description,
+                    UOM = group.First().UOM,
+                    Balance_Qty = group.Sum(x => x.BalanceQty)
+                }).ToListAsync();
+
+            return openSalesOrderQty;
+
+        }
+        public async Task<List<SalesOrderFGandBalanceQtyByProjectNo>> GetAllSalesOrderFGOrTGItemDetailsByProjectNoAndItemNo(string projectNo , string itemNumber)
+        {
+            var salesOrderIdList = await _tipsSalesServiceDbContexts.SalesOrders
+                .Where(so => (so.SalesOrderStatus == SalesOrderStatus.BuildToPrint || so.SalesOrderStatus == SalesOrderStatus.Forecast) &&
+                             (so.SOStatus == OrderStatus.Open || so.SOStatus == OrderStatus.PartiallyClosed) &&
+                             so.IsShortClosed == false && so.ProjectNumber == projectNo // &&
+                                                                                        //so.ConfirmStatus == true && so.ApproveStatus == true
+                             ).Select(x => x.Id).ToListAsync();
+
+            var openSalesOrderQty = await _tipsSalesServiceDbContexts.SalesOrdersItems
+                .Where(x =>
+                            (x.StatusEnum == OrderStatus.Open || x.StatusEnum == OrderStatus.PartiallyClosed) &&
+                            x.BalanceQty > 0 && salesOrderIdList.Contains(x.SalesOrderId) && x.ItemNumber == itemNumber)
                 .GroupBy(x => new { x.ItemNumber, x.ProjectNumber })
                 .Select(group => new SalesOrderFGandBalanceQtyByProjectNo
                 {

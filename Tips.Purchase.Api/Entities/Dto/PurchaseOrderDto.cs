@@ -146,6 +146,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? SpecialTermsAndConditions { get; set; }
         public decimal TotalAmount { get; set; }
         public int? ApprovalCount { get; set; }
+        public PoStatus PoStatus { get; set; }
         public string? Unit { get; set; }
         //public string? LastModifiedBy { get; set; }
         //public DateTime? LastModifiedOn { get; set; }
@@ -394,11 +395,25 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? VendorName { get; set; }
         public string? PONumber { get; set; }
         public string? ItemNumber { get; set; }
-        public string? RecordType { get; set; }
-        public string? Postatus { get; set; }
+    }
+    public class PurchaseOrderSPReportWithParamForTransDTO
+    {
+        public string? VendorName { get; set; }
+        public string? PONumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
     }
 
     public class PurchaseOrderApprovalSPReportWithParamDTO
+        {
+            public string? VendorName { get; set; }
+            public string? PONumber { get; set; }
+            public string? ItemNumber { get; set; }
+            public string? RecordType { get; set; }
+            public string? Postatus { get; set; }
+            public string? Approval { get; set; }
+        }
+    public class PurchaseOrderApprovalSPReportWithParamForTransDTO
     {
         public string? VendorName { get; set; }
         public string? PONumber { get; set; }
@@ -406,28 +421,28 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? RecordType { get; set; }
         public string? Postatus { get; set; }
         public string? Approval { get; set; }
+        public string? ProjectNumber { get; set; }
     }
-
 
     public class Tras_POSPReportDTO
-    {
-        public string? VendorName { get; set; }
-        public string? PONumber { get; set; }
-        public string? PartNumber { get; set; }
-    }
-    public class Data
-    {
-        public int id { get; set; }
-        public string processType { get; set; }
-        public string template { get; set; }
-        public string subject { get; set; }
-    }
+        {
+            public string? VendorName { get; set; }
+            public string? PONumber { get; set; }
+            public string? PartNumber { get; set; }
+        }
+        public class Data
+        {
+            public int id { get; set; }
+            public string processType { get; set; }
+            public string template { get; set; }
+            public string subject { get; set; }
+        }
 
-    public class EmailTemplateDto
-    {
-        public Data data { get; set; }
-        public string message { get; set; }
-        public bool success { get; set; }
-        public int statusCode { get; set; }
-    }
+        public class EmailTemplateDto
+        {
+            public Data data { get; set; }
+            public string message { get; set; }
+            public bool success { get; set; }
+            public int statusCode { get; set; }
+        }
 }

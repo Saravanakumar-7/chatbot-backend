@@ -79,7 +79,7 @@ namespace Tips.Grin.Api
             CreateMap<ReturnGrinDocumentUpload, ReturnGrinDocumentUploadDtoPost>().ReverseMap();
 
             CreateMap<GrinPartsPostDto, GrinUpdateQtyDetailsDto>().ReverseMap();
-            //CreateMap<GrinPartsPostDto, GrinQtyPoStatusUpdateDto>().ReverseMap();
+            CreateMap<GrinPartsPostDto, GrinQtyPoStatusUpdateDto>().ReverseMap();
 
             CreateMap<Grins, IQCConfirmationDto>().ReverseMap();
             CreateMap<GrinParts, IQCConfirmationItemsDto>().ReverseMap();

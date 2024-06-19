@@ -29,9 +29,9 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<MaterialRequestSPReport>> GetMaterialRequestSPReportWithParam(string? mRNumber, string? projectNo, string? KPN,
                                                                                                    string? shoporderNo);
         Task<IEnumerable<MaterialRequestSPReport>> GetMaterialRequestSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
-        Task<IEnumerable<MaterialRequestSPReport>> GetMaterialIssueAgainstMaterialRequestSPReportWithParam(string? mRNumber, string? projectType, 
+        Task<IEnumerable<MaterialIssueAgainstMRSPReport>> GetMaterialIssueAgainstMaterialRequestSPReportWithParam(string? mRNumber, string? projectType, 
                                                                                                 string? projectNo, string? KPN,string? shoporderNo);
-        Task<IEnumerable<MaterialRequestSPReport>> GetMaterialIssueAgainstMaterialRequestSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<MaterialIssueAgainstMRSPReport>> GetMaterialIssueAgainstMaterialRequestSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         public void SaveAsync();
     }
 }

@@ -141,6 +141,14 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? SenderName { get; set; }
         public string? ReceiptRefNo { get; set; }
     }
+    public class OpenGrinReportWithParamForTransDto
+    {
+        public string? OpenGrinNumber { get; set; }
+        public string? SenderName { get; set; }
+        public string? ReceiptRefNo { get; set; }
+        public string? ReferenceSONumber { get; set; }
+        
+    }
     public class OpenGrinInvDetails
     {
         public Datas data { get; set; }

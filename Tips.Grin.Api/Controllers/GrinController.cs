@@ -853,29 +853,29 @@ namespace Tips.Grin.Api.Controllers
                         }
                     }
                 }
-                //Update PoStatus in Purchase order And PoItem table
+               // Update PoStatus in Purchase order And PoItem table
 
-                //var grinPartsDetails = _mapper.Map<List<GrinQtyPoStatusUpdateDto>>(grinPartsDto);
-                //var jsonCon = JsonConvert.SerializeObject(grinPartsDetails);
-                //var data3 = new StringContent(jsonCon, Encoding.UTF8, "application/json");
-                ////var result = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdatePoStatus"), datass);
+                var grinPartsDetails = _mapper.Map<List<GrinQtyPoStatusUpdateDto>>(grinPartsDto);
+                var jsonCon = JsonConvert.SerializeObject(grinPartsDetails);
+                var data3 = new StringContent(jsonCon, Encoding.UTF8, "application/json");
+                //var result = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"], "UpdatePoStatus"), datass);
 
-                //var client4 = _clientFactory.CreateClient();
-                //var token4 = HttpContext.Request.Headers["Authorization"].ToString();
-                //var request4 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
-                //"UpdatePoStatus"))
-                //{
-                //    Content = data3
-                //};
-                //request4.Headers.Add("Authorization", token4);
+                var client4 = _clientFactory.CreateClient();
+                var token4 = HttpContext.Request.Headers["Authorization"].ToString();
+                var request4 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
+                "UpdatePoStatus"))
+                {
+                    Content = data3
+                };
+                request4.Headers.Add("Authorization", token4);
 
-                //var result = await client4.SendAsync(request4);
-                //if (result.StatusCode != HttpStatusCode.OK)
-                //{
-                //    UpdatePoStatus = result.StatusCode;
-                //}
+                var result = await client4.SendAsync(request4);
+                if (result.StatusCode != HttpStatusCode.OK)
+                {
+                    UpdatePoStatus = result.StatusCode;
+                }
 
-                if (getItemmResp == HttpStatusCode.OK /*&& UpdatePoStatus == HttpStatusCode.OK*/ && UpdatePoQty == HttpStatusCode.OK
+                if (getItemmResp == HttpStatusCode.OK && UpdatePoStatus == HttpStatusCode.OK && UpdatePoQty == HttpStatusCode.OK
                     && UpdatePoProjQty == HttpStatusCode.OK && createinvTrancResp == HttpStatusCode.OK && createinvResp == HttpStatusCode.OK)
                 {
                     _repository.SaveAsync();
@@ -1929,6 +1929,47 @@ namespace Tips.Grin.Api.Controllers
                                                                             grinReportWithParam.PONumber, grinReportWithParam.KPN,
                                                                             grinReportWithParam.MPN, grinReportWithParam.Warehouse,
                                                                             grinReportWithParam.Location);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Grin hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Grin hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Grin Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetGrinSPReportWithParamForTrans([FromBody] GrinReportWithParamForTransDto grinReportWithParam)
+        {
+            ServiceResponse<IEnumerable<Grin_ReportSP>> serviceResponse = new ServiceResponse<IEnumerable<Grin_ReportSP>>();
+            try
+            {
+                var products = await _repository.GetGrinSPReportWithParamForTrans(grinReportWithParam.GrinNumber, grinReportWithParam.VendorName,
+                                                                            grinReportWithParam.PONumber, grinReportWithParam.KPN,
+                                                                            grinReportWithParam.MPN, grinReportWithParam.Warehouse,
+                                                                            grinReportWithParam.Location, grinReportWithParam.ProjectNumber);
 
                 if (products == null)
                 {

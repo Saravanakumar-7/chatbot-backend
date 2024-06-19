@@ -827,6 +827,15 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<StockMovementLatestSPReport>> GetStockMovementLatestSPReports()
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<StockMovementLatestSPReport>()
+            .FromSqlInterpolated($"CALL Stock_Movement_Report_latest()")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<InventoryForStockSPReport>> GetInventoryForStockSPReportsWithParam(string PartNumber, string Warehouse, string Location)
         {
             var result = _tipsWarehouseDbContext

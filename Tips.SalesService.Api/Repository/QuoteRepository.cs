@@ -22,9 +22,9 @@ namespace Tips.SalesService.Api.Repository
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        private readonly HttpClient _httpClient;     
+        private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
-        private readonly IHttpClientFactory _clientFactory; 
+        private readonly IHttpClientFactory _clientFactory;
         public QuoteRepository(TipsSalesServiceDbContext repositoryContext, IHttpClientFactory clientFactory, HttpClient httpClient, IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsSalesServiceDbContext = repositoryContext;
@@ -195,7 +195,7 @@ namespace Tips.SalesService.Api.Repository
                .Where(x => x.RfqNumber == rfqNumber && x.RevisionNumber == rfqDetail.RevisionNumber)
                .FirstOrDefaultAsync();
 
-            
+
 
             //var rfqCsId = _tipsSalesServiceDbContext.RfqCustomerSupports
             //    .OrderByDescending(x => x.Id)
@@ -213,7 +213,7 @@ namespace Tips.SalesService.Api.Repository
             var client = _clientFactory.CreateClient();
             var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
             var baseurl = _config["ItemMasterMainAPI"];
-            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseurl}GetItemsImageUrls"){ Content= content};
+            var request = new HttpRequestMessage(HttpMethod.Post, $"{baseurl}GetItemsImageUrls") { Content = content };
             request.Headers.Add("Authorization", token);
 
             var itemdetails = await client.SendAsync(request);
@@ -235,7 +235,7 @@ namespace Tips.SalesService.Api.Repository
                 foreach (var priceListName in latestPriceListName)
                 {
                     itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
-                        .Where(d => d.ItemNumber == rfqItem.ItemNumber && d.PriceListName== priceListName)
+                        .Where(d => d.ItemNumber == rfqItem.ItemNumber && d.PriceListName == priceListName)
                         .OrderByDescending(d => d.CreatedOn)
                         .FirstOrDefault();
                     if (itemPriceList != null)
@@ -325,7 +325,7 @@ namespace Tips.SalesService.Api.Repository
             var content = new StringContent(data_1, Encoding.UTF8, "application/json");
             var baseurl = _config["ItemMasterMainAPI"];
             var client = _clientFactory.CreateClient();
-            var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();            
+            var token = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].ToString();
             var request = new HttpRequestMessage(HttpMethod.Post, $"{baseurl}GetItemsImageUrls") { Content = content };
             request.Headers.Add("Authorization", token);
 
@@ -342,71 +342,71 @@ namespace Tips.SalesService.Api.Repository
             //{
             //    var items = rfqEnggItems.Where(e => e.ItemNumber == itemNumber).ToList();
 
-                foreach (var rfqItem in rfqEnggItems)
+            foreach (var rfqItem in rfqEnggItems)
+            {
+
+                //var itemPriceList = _tipsSalesServiceDbContext.ReleaseLps
+                //    .Where(d => d.RLpItemNo == rfqItem.ItemNumber)
+                //    .OrderByDescending(d => d.CreatedOn)
+                //    .FirstOrDefault();
+                //
+
+                var itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
+                    .Where(d => d.ItemNumber == rfqItem.ItemNumber)
+                    .OrderByDescending(d => d.CreatedOn)
+                    .FirstOrDefault();
+
+                if (itemPriceList != null)
                 {
+                    //var itemdetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
+                    //    $"GetItemMasterByItemNumber?ItemNumber={rfqItem.ItemNumber}"));
 
-                    //var itemPriceList = _tipsSalesServiceDbContext.ReleaseLps
-                    //    .Where(d => d.RLpItemNo == rfqItem.ItemNumber)
-                    //    .OrderByDescending(d => d.CreatedOn)
-                    //    .FirstOrDefault();
-                    //
+                    //var inventoryObjectString = await itemdetails.Content.ReadAsStringAsync();
+                    //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                    //dynamic itemobject = inventoryObjectData.data;
 
-                    var itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
-                        .Where(d => d.ItemNumber == rfqItem.ItemNumber)
-                        .OrderByDescending(d => d.CreatedOn)
-                        .FirstOrDefault();
+                    //int? Imageid = itemobject.imageUpload;
+                    //string? imgbyte = null;
+                    //if (Imageid != null)
+                    //{
+                    //    var itemimage = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
+                    //   $"GetDownloadUrlDetailsforItemImage?imageid={Imageid}"));
 
-                    if (itemPriceList != null)
+                    //    var inventoryObjectStrin = await itemimage.Content.ReadAsStringAsync();
+                    //    var inventoryObjectDat = JsonConvert.DeserializeObject<GetitemImageDetailDto>(inventoryObjectStrin);
+                    //    var imagy = inventoryObjectDat.data;
+                    //    imgbyte = imagy.downloadUrl;
+
+                    var itemDetails = new rfqEnggItemDetailsForQuoteDto
                     {
-                        //var itemdetails = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
-                        //    $"GetItemMasterByItemNumber?ItemNumber={rfqItem.ItemNumber}"));
+                        RfqNumber = rfqDetail.RfqNumber,
+                        LeadId = rfqDetail.LeadId,
+                        CustomerName = rfqDetail.CustomerName,
+                        Rev = rfqDetail.RevisionNumber,
+                        CustomFields = rfqItem.CustomFields,
+                        CustomerItemNumber = rfqItem.CustomerItemNumber,
+                        ItemNumber = rfqItem.ItemNumber,
+                        Description = rfqItem.Description,
+                        CostingBomVersionNo = rfqItem.CostingBomVersionNo,
+                        ReleaseStatus = rfqItem.ReleaseStatus,
+                        Qty = rfqItem.Qty,
+                        UOC = itemPriceList.UOC,
+                        LeastCost = itemPriceList.LeastCost,
+                        LeastCostPlus = itemPriceList.LeastCostPlus,
+                        LeastCostminus = itemPriceList.LeastCostminus,
+                        DiscountPlus = itemPriceList.DiscountPlus,
+                        DiscountMinus = itemPriceList.DiscountMinus,
+                        Markup = itemPriceList.Markup,
+                        PriceListName = itemPriceList.PriceListName,
+                        ValidThrough = itemPriceList.ValidThrough,
+                        IsDiscountApplicable = itemPriceList.IsDiscountApplicable,
+                        ImageURL = itemobject.Where(x => x.itemnumber == rfqItem.ItemNumber).Select(x => x.downloadUrl).FirstOrDefault()
+                    };
 
-                        //var inventoryObjectString = await itemdetails.Content.ReadAsStringAsync();
-                        //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        //dynamic itemobject = inventoryObjectData.data;
-
-                        //int? Imageid = itemobject.imageUpload;
-                        //string? imgbyte = null;
-                        //if (Imageid != null)
-                        //{
-                        //    var itemimage = await _httpClient.GetAsync(string.Concat(_config["ItemMasterMainAPI"],
-                        //   $"GetDownloadUrlDetailsforItemImage?imageid={Imageid}"));
-
-                        //    var inventoryObjectStrin = await itemimage.Content.ReadAsStringAsync();
-                        //    var inventoryObjectDat = JsonConvert.DeserializeObject<GetitemImageDetailDto>(inventoryObjectStrin);
-                        //    var imagy = inventoryObjectDat.data;
-                        //    imgbyte = imagy.downloadUrl;
-                        
-                        var itemDetails = new rfqEnggItemDetailsForQuoteDto
-                        {
-                            RfqNumber = rfqDetail.RfqNumber,
-                            LeadId = rfqDetail.LeadId,
-                            CustomerName = rfqDetail.CustomerName,
-                            Rev = rfqDetail.RevisionNumber,
-                            CustomFields = rfqItem.CustomFields,
-                            CustomerItemNumber = rfqItem.CustomerItemNumber,
-                            ItemNumber = rfqItem.ItemNumber,
-                            Description = rfqItem.Description,
-                            CostingBomVersionNo = rfqItem.CostingBomVersionNo,
-                            ReleaseStatus = rfqItem.ReleaseStatus,
-                            Qty = rfqItem.Qty,
-                            UOC = itemPriceList.UOC,
-                            LeastCost = itemPriceList.LeastCost,
-                            LeastCostPlus = itemPriceList.LeastCostPlus,
-                            LeastCostminus = itemPriceList.LeastCostminus,
-                            DiscountPlus = itemPriceList.DiscountPlus,
-                            DiscountMinus = itemPriceList.DiscountMinus,
-                            Markup = itemPriceList.Markup,
-                            PriceListName = itemPriceList.PriceListName,
-                            ValidThrough = itemPriceList.ValidThrough,
-                            IsDiscountApplicable = itemPriceList.IsDiscountApplicable,
-                            ImageURL = itemobject.Where(x => x.itemnumber == rfqItem.ItemNumber).Select(x => x.downloadUrl).FirstOrDefault()
-                        };
-
-                        postdata.Add(itemDetails);
-                    }
+                    postdata.Add(itemDetails);
                 }
-            
+            }
+
             return postdata;
         }
 
@@ -433,6 +433,95 @@ namespace Tips.SalesService.Api.Repository
             return PagedList<Quote>.ToPagedList(quoteDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
+        public async Task<List<QuoteforKeusDto>> GetAllQuoteforKeus([FromQuery] string? CustomerName, [FromQuery] string? RFQNumber, [FromQuery] int Offset, [FromQuery] int Limit)
+        {
+            //var query = from a1 in _tipsSalesServiceDbContext.Quotes
+            //            join a2 in (from t in _tipsSalesServiceDbContext.QuoteEmailsDetails
+            //                        join sub in (from ted in _tipsSalesServiceDbContext.QuoteEmailsDetails
+            //                                     where ted.CustomerId != null && ted.TypeOfSolution != null
+            //                                     group ted by new { CustomerId = ted.CustomerId, TypeOfSolution = ted.TypeOfSolution } into g
+            //                                     select new { CustomerId = g.Key.CustomerId, TypeOfSolution = g.Key.TypeOfSolution, OldestSentOn = g.Min(x => x.SentOn) })
+            //                                    on new { t.CustomerId, t.TypeOfSolution } equals new { sub.CustomerId, sub.TypeOfSolution }
+            //                        where t.CustomerId == sub.CustomerId && t.TypeOfSolution == sub.TypeOfSolution && t.SentOn == sub.OldestSentOn
+            //                        )
+            //                       on new { a1.CustomerId, a1.TypeOfSolution } equals new { a2.CustomerId, a2.TypeOfSolution }
+            //            into joinedData
+            //            from quoteData in joinedData.DefaultIfEmpty()
+            //var query = from q in context.Quotes
+            //            join qe in
+            //                (from t in context.QuoteEmailDetails
+            //                 join sub in
+            //                    (from t1 in context.QuoteEmailDetails
+            //                     where t1.CustomerId != null && t1.TypeOfSolution != null
+            //                     group t1 by new { t1.CustomerId, t1.TypeOfSolution } into g
+            //                     select new
+            //                     {
+            //                         g.Key.CustomerId,
+            //                         g.Key.TypeOfSolution,
+            //                         OldestSentOn = g.Min(t2 => t2.SentOn)
+            //                     }) on new { t.CustomerId, t.TypeOfSolution, t.SentOn } equals new { sub.CustomerId, sub.TypeOfSolution, SentOn = sub.OldestSentOn }
+            //                 select t) into a2
+            //            on new { q.CustomerId, q.TypeOfSolution } equals new { a2.CustomerId, a2.TypeOfSolution } into joined
+            //            from sub in joined.DefaultIfEmpty()
+            //            select new QuoteforKeusDto
+            //            {
+            //                // Map properties from Quotes table
+            //                Id = quoteData.Id,
+            //                LeadId = quoteData.LeadId,
+            //                QuoteNumber = quoteData.QuoteNumber,
+            //                RFQNumber = quoteData.RFQNumber,
+            //                CustomerName = quoteData.CustomerName,
+            //                CustomerAliasName = quoteData.CustomerAliasName,
+            //                CustomerId = quoteData.CustomerId,
+            //                RoomName = quoteData.RoomName,
+            //                SalesPerson = quoteData.SalesPerson,
+            //                QuoteStatus = quoteData.QuoteStatus,
+            //                generalDiscountType = quoteData.generalDiscountType,
+            //                QuoteRef = quoteData.QuoteRef,
+            //                TotalAmount = quoteData.TotalAmount,
+            //                IsTheseRequiredToBePrintedInQuote = quoteData.IsTheseRequiredToBePrintedInQuote,
+            //                TotalAdditionalCharges = quoteData.TotalAdditionalCharges,
+            //                SpecialDiscountType = quoteData.SpecialDiscountType,
+            //                SpecialDiscountAmount = quoteData.SpecialDiscountAmount,
+            //                TotalFinalAmount = quoteData.TotalFinalAmount,
+            //                PaymentTerms = quoteData.PaymentTerms,
+            //                ProductType = quoteData.ProductType,
+            //                TypeOfSolution = quoteData.TypeOfSolution,
+            //                InstallationCharges = quoteData.InstallationCharges,
+            //                TotalAmountWithInstallationCharges = quoteData.TotalAmountWithInstallationCharges,
+            //                ReasonForModification = quoteData.ReasonForModification,
+            //                IsShortClosed = quoteData.IsShortClosed,
+            //                RevisionNumber = quoteData.RevisionNumber,
+            //                GeneralDiscount = quoteData.GeneralDiscount,
+            //                // Map properties from QuoteEmailsDetails (assuming FirstEmail* properties are from there)
+            //                FirstEmailQuoteNo = quoteData.QuoteNumber,
+            //                FirstEmailSentOn = quoteData.SentOn,
+            //                FirstEmailQuoteRevNo = quoteData.RevisionNumber,
+            //                FirstEmailQuoteValue = quoteData.QuoteValue,
+            //                // Include child tables (assuming navigation properties are set correctly)
+            //                //QuoteGeneralDtos = quoteData.QuoteGeneralDtos,
+            //                //QuoteAdditionalChargesDtos = quoteData.QuoteAdditionalChargesDtos,
+            //                //QuoteRFQNotesDtos = quoteData.QuoteRFQNotesDtos,
+            //                //QuoteOtherTermsDtos = quoteData.QuoteOtherTermsDtos,
+            //                //QuoteSpecialTermsDtos = quoteData.QuoteSpecialTermsDtos,
+            //                // Other properties (add as needed)
+            //               // EmailSentValue = quoteData.EmailSentValue,
+            //                Remarks = quoteData.Remarks,
+            //                Unit = quoteData.Unit,
+            //                CreatedBy = quoteData.CreatedBy,
+            //                CreatedOn = quoteData.CreatedOn,
+            //                LastModifiedBy = quoteData.LastModifiedBy,
+            //                LastModifiedOn = quoteData.LastModifiedOn
+            //            };
+
+
+            var result = _tipsSalesServiceDbContext
+           .Set<QuoteforKeusDto>()
+           .FromSqlInterpolated($"CALL GetAllQuoteDetailsSPforKeus({CustomerName},{RFQNumber},{Offset},{Limit})")
+           .ToList();
+
+            return result;
+        }
         public async Task<Quote> GetQuoteById(int id)
         {
             var quoteDetails = await _tipsSalesServiceDbContext.Quotes.Where(x => x.Id == id)

@@ -220,6 +220,46 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> InvoiceSPReportWithParameterForTrans([FromBody] InvoiceSPReportWithParamForTransDTO invoiceSPReport)
+        {
+            ServiceResponse<IEnumerable<InvoiceForTransSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceForTransSPReport>>();
+            try
+            {
+                var products = await _invoiceRepository.InvoiceSPReportWithParameterForTrans(invoiceSPReport.InvoiceNumber, invoiceSPReport.DONumber, 
+                                                                                    invoiceSPReport.CustomerId, invoiceSPReport.CustomerName, 
+                                                                                    invoiceSPReport.CustomerAliasName, invoiceSPReport.SalesOrderNumber, 
+                                                                                    invoiceSPReport.Location, invoiceSPReport.Warehouse, invoiceSPReport.KPN, 
+                                                                                    invoiceSPReport.MPN, invoiceSPReport.IssuedTo, invoiceSPReport.ProjectNumber);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Invoice hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Invoice hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Invoice Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside InvoiceSPReportWithParameterForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> SearchInvoice([FromQuery] SearchParames searchParams)
         {
@@ -622,38 +662,39 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     var invoiceNumber = await _invoiceRepository.GenerateInvoiceNumber();
                     invoice.InvoiceNumber = invoiceNumber;
-                }
+                }              
 
-                if (invoiceitemsDto != null)
-                {
-                    for (int i = 0; i < invoiceitemsDto.Count; i++)
-                    {
-                        InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
-                        invoiceChildItem.InitialDispatchQty = invoiceChildItem.InvoicedQty;
-                        invoiceChildItem.ReturnInvoiceQty = 0;
-                        invoiceChildItem.InvoiceItemStatus = Status.Open;
-                        invoiceChildItemsEntityList.Add(invoiceChildItem);
-
-                        var invoiceQty = invoiceChildItem.InvoicedQty;
-                        var doNumber = invoiceitemsDto[i].DONumber;
-
-                        //DO Balance qty and Invoiced qty update method
-                        invoiceQty = await DoItemBalanceQtyUpdateBasedOnInvoiceQty(invoiceChildItem, invoiceQty, doNumber);
-
-                        //Add inventory Transaction Table
-                        await InventoryTransactionSaveOnInvoiceCreate(invoice, invoiceChildItemsEntityList, i, invoiceChildItem);
-
-                    }
-                }
-
-                invoice.invoiceChildItems = invoiceChildItemsEntityList;
+                
                 invoice.InvoiceAdditionalCharges = InvoiceAdditionalChargesList.ToList();
                 invoice.InvoiceStatus = Status.Open;
                 await _invoiceRepository.CreateInvoice(invoice);
                 //Sales order additional charge update method
                 var response = await SoAdditonalChargeUpdateOnInvoiceCreate(InvoiceAdditionalChargesList);
+
                 if ((response.StatusCode == HttpStatusCode.OK))
-                {
+                {                    
+                    if (invoiceitemsDto != null)
+                    {
+                        for (int i = 0; i < invoiceitemsDto.Count; i++)
+                        {
+                            InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
+                            invoiceChildItem.InitialDispatchQty = invoiceChildItem.InvoicedQty;
+                            invoiceChildItem.ReturnInvoiceQty = 0;
+                            invoiceChildItem.InvoiceItemStatus = Status.Open;
+                            invoiceChildItemsEntityList.Add(invoiceChildItem);
+
+                            var invoiceQty = invoiceChildItem.InvoicedQty;
+                            var doNumber = invoiceitemsDto[i].DONumber;
+
+                            //DO Balance qty and Invoiced qty update method
+                            invoiceQty = await DoItemBalanceQtyUpdateBasedOnInvoiceQty(invoiceChildItem, invoiceQty, doNumber);
+
+                            //Add inventory Transaction Table
+                            await InventoryTransactionSaveOnInvoiceCreate(invoice, invoiceChildItemsEntityList, i, invoiceChildItem);
+
+                        }
+                    }
+                    invoice.invoiceChildItems = invoiceChildItemsEntityList;
                     _invoiceRepository.SaveAsync();
                 }
                 else

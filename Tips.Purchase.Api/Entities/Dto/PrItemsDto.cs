@@ -62,6 +62,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal? Qty { get; set; }
         public string? ReasonforShortClose { get; set; }
         public string? DrawingRevisionNumber { get; set; }
+        public PrStatus PrStatus { get; set; }
         public List<PrAddProjectDtoUpdate>? PrAddprojectsDtoUpdateList { get; set; }
         public List<PrAddDeliveryScheduleUpdateDto>? PrAddDeliverySchedulesDtoUpdateList { get; set; }
         public List<PrSpecialInstructionUpdateDto>? prSpecialInstructionsUpdateList { get; set; }

@@ -1,5 +1,6 @@
 ﻿  using Microsoft.EntityFrameworkCore;
 using Tips.SalesService.Api.Entities.Dto;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Entities
 {
@@ -115,6 +116,8 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<ForecastSalesOrderSPReport> ForecastSalesOrderSPReports { get; set; }
         public DbSet<RfqSPReport> RfqSPReports { get; set; }
         public DbSet<QuoteSPReport> QuoteSPReports { get; set; }
+        public DbSet<RfqSalesOrderSPReportForTrans> RfqSalesOrderSPReportsForTrans { get; set; }
+        public DbSet<ForecastSalesOrderSPReportForTrans> ForecastSalesOrderSPReportsForTrans { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RecievableCustomer>().HasNoKey();
@@ -130,6 +133,10 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<ForecastSalesOrderSPReport>().HasNoKey();
             modelBuilder.Entity<RfqSPReport>().HasNoKey();
             modelBuilder.Entity<QuoteSPReport>().HasNoKey();
+            modelBuilder.Entity<RfqSalesOrderSPReportForTrans>().HasNoKey();
+            modelBuilder.Entity<ForecastSalesOrderSPReportForTrans>().HasNoKey();
+            modelBuilder.Entity<QuoteforKeusDto>().HasNoKey();
+
         }
 
     }

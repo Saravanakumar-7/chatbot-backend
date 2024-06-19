@@ -9,6 +9,8 @@
         public decimal? RevisionNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerId { get; set; }
+        public decimal? SalesOrderValue { get; set; }
+        public string? TypeOfSolution { get; set; }
         public string? SentBy { get; set; }
         public DateTime? SentOn { get; set; }
         public string? SentTo { get; set; }

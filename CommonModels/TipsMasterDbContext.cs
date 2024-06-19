@@ -163,9 +163,11 @@ namespace Entities
         public DbSet<WeightedAvgRate> weighted_avg_rate { get; set; }
         public DbSet<EmailTemplate> emailtemplate { get; set; }
         public DbSet<EmailIDs> EmailIDs { get; set; }
+        public DbSet<CustomerMasterLeadIdSPReport> CustomerMasterLeadIdSPReports { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EnggBomSPReport>().HasNoKey();
+            modelBuilder.Entity<CustomerMasterLeadIdSPReport>().HasNoKey();
         }
 
 

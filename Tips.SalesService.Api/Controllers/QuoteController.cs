@@ -94,6 +94,30 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllQuoteforKeus([FromQuery] string? CustomerName, [FromQuery] string? RFQNumber, [FromQuery] int Offset, [FromQuery] int Limit)
+        {
+            ServiceResponse<List<QuoteforKeusDto>> serviceResponse = new ServiceResponse<List<QuoteforKeusDto>>();
+            try
+            {
+                var result = await _repository.GetAllQuoteforKeus(CustomerName, RFQNumber, Offset, Limit);
+                _logger.LogInfo("Returned all Quote for keus");
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Quotes Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         // GET api/<QuoteController>/5
         [HttpGet("{id}")]
@@ -703,29 +727,46 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var quoteDetails = await _repository.GetQuoteById(quoteEmailPostDto.Quoteid);
-                EmailTemplateDto? emaildetails = new EmailTemplateDto();
+                //EmailTemplateDto? emaildetails = new EmailTemplateDto();
+                string? emaildetails;
                 string? FileName;
                 var client = _clientFactory.CreateClient();
                 var token = HttpContext.Request.Headers["Authorization"].ToString();
-                if (quoteDetails.TypeOfSolution == "Automation" || quoteDetails.TypeOfSolution == "Upsell - Automation" || quoteDetails.TypeOfSolution == "Accessories" || quoteDetails.TypeOfSolution == "Lock")
+                if (quoteDetails.TypeOfSolution == "Automation" || quoteDetails.TypeOfSolution == "Upsell - Automation")
                 {
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=QuoteAutomationEmail"));
-                    request.Headers.Add("Authorization", token);
-                    var response = await client.SendAsync(request);
+                    //var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=QuoteAutomationEmail"));
+                    //request.Headers.Add("Authorization", token);
+                    //var response = await client.SendAsync(request);
 
-                    var EmailTempString = await response.Content.ReadAsStringAsync();
-                    emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    //var EmailTempString = await response.Content.ReadAsStringAsync();
+                    //emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    emaildetails = "Your Keus Automation Quotation";
                     FileName = "Quote_Automation_Book";
                 }
+                else if (quoteDetails.TypeOfSolution == "Accessories" || quoteDetails.TypeOfSolution == "Lock")
+                {
+                    emaildetails = "Your Keus Accessories Quotation";
+                    FileName = "Quote_Accessories_Book";
+                } 
                 else
                 {
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=QuoteLightEmail"));
-                    request.Headers.Add("Authorization", token);
-                    var response = await client.SendAsync(request);
+                    //var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=QuoteLightEmail"));
+                    //request.Headers.Add("Authorization", token);
+                    //var response = await client.SendAsync(request);
 
-                    var EmailTempString = await response.Content.ReadAsStringAsync();
-                    emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    //var EmailTempString = await response.Content.ReadAsStringAsync();
+                    //emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    emaildetails = "Your Keus Lights Quotation";
                     FileName = "Quote_Lights_Book";
+                }
+                if (emaildetails.IsNullOrEmpty())
+                {
+                    _logger.LogError($"The Subject of the Email is Empty as the Type of Solution has not matched any Type Of Solution");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Something went wrong ,try again";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
                 }
                 var Operations = "From";
                 var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
@@ -745,7 +786,7 @@ namespace Tips.SalesService.Api.Controllers
                 var email = new MimeMessage();
                 email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
                 email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
-                email.Subject = emaildetails.data.subject;
+                email.Subject = emaildetails;
                 string? body;
                 //body = body.Replace("{{Quote Number}}", quoteDetails.QuoteNumber);
                 //body = body.Replace("{{RFQ Number}}", quoteDetails.RFQNumber);
@@ -812,7 +853,9 @@ namespace Tips.SalesService.Api.Controllers
                     CustomerEmailId = quoteEmailPostDto.CusEmail,
                     CustomerId = quoteDetails.CustomerId,
                     CustomerName = quoteDetails.CustomerName,
-                    QuoteId = quoteDetails.Id
+                    QuoteValue=quoteDetails.TotalFinalAmount,
+                    QuoteId = quoteDetails.Id,
+                    TypeOfSolution=quoteDetails.TypeOfSolution
                 };
                 await _quoteEmailsDetailsRepository.CreateQuoteEmailsDetails(quoteEmailsDetails);
                 _quoteEmailsDetailsRepository.SaveAsync();

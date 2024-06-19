@@ -1,3 +1,4 @@
+using Entities;
 using Microsoft.EntityFrameworkCore;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
@@ -48,7 +49,7 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<DeliveryOrderSPReport> RecievableBTOs { get; set; }
         public DbSet<InvoiceSPReport> RecievableInvoices { get; set; }
         public DbSet<LocationTransferSPReport> RecievableLocationTransfers { get; set; }
-        public DbSet<MRNSPReportDto> MRNSPReportDtos { get; set; }        
+        public DbSet<MRNSPReport> MRNSPReports { get; set; }        
         public DbSet<OpenDeliveryOrderSPReport> RecievableODOs { get; set; }
         public DbSet<DailyDOReport> DailyDOReports { get; set; }
         public DbSet<ReturnInvoiceSPResport> ReturnInvoiceSPResports { get; set; }
@@ -60,6 +61,8 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<CrossMarginSPReport> CrossMarginSPReports { get; set; }
         public DbSet<StockMovementSPReport> StockMovementSPReports { get; set; }
         public DbSet<InventoryForStockSPReport> InventoryForStockSPReports { get; set; }
+        public DbSet<InvoiceForTransSPReport> InvoiceForTransSPReports { get; set; }
+        public DbSet<StockMovementLatestSPReport> CustomerMasterLeadIdSPReports { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ConsumptionReport>().HasNoKey();
@@ -70,7 +73,7 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<ReturnInvoiceSPResport>().HasNoKey();
             modelBuilder.Entity<ReturnOpenDeliveryOrderSPResport>().HasNoKey();
             modelBuilder.Entity<ReturnDOSPReport>().HasNoKey();
-            modelBuilder.Entity<MRNSPReportDto>().HasNoKey();
+            modelBuilder.Entity<MRNSPReport>().HasNoKey();
             modelBuilder.Entity<InventorySPReport>().HasNoKey();
             modelBuilder.Entity<ODOMonthlyConsumptionSPReport>().HasNoKey();
             modelBuilder.Entity<InventoryTranctionSPReport>().HasNoKey();
@@ -79,6 +82,8 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<InventoryForStockSPReport>().HasNoKey();
             // Other entity configurations can be added here
             modelBuilder.Entity<DailyDOReport>().HasNoKey();
+            modelBuilder.Entity<InvoiceForTransSPReport>().HasNoKey();
+            modelBuilder.Entity<StockMovementLatestSPReport>().HasNoKey();
             base.OnModelCreating(modelBuilder);
         }
         

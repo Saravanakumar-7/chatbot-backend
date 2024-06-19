@@ -9,6 +9,8 @@
         public string? RFQNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerId { get; set; }
+        public decimal? QuoteValue { get; set; }
+        public string? TypeOfSolution { get; set; }
         public string SentBy { get; set; }
         public DateTime SentOn { get; set;}
         public string SentTo { get; set; }

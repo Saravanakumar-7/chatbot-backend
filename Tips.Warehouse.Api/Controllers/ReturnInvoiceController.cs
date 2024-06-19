@@ -244,8 +244,8 @@ namespace Tips.Warehouse.Api.Controllers
                         //btoDeliveryOrderItemDetails.OrderBalanceQty += returnInvoiceItemDto[i].ReturnQty;
                         btoDeliveryOrderItemDetails.DispatchQty -= returnedqty;
                         //btoDeliveryOrderItemDetails.DispatchQty -= returnInvoiceItemDto[i].ReturnQty;
-                        if (btoDeliveryOrderItemDetails.DispatchQty == btoDeliveryOrderItemDetails.BalanceDoQty) btoDeliveryOrderItemDetails.DoStatus = Status.Open;
-                        else if (btoDeliveryOrderItemDetails.BalanceDoQty == 0) btoDeliveryOrderItemDetails.DoStatus = Status.Closed;
+                        if (btoDeliveryOrderItemDetails.BalanceDoQty == 0) btoDeliveryOrderItemDetails.DoStatus = Status.Closed;
+                        else if (btoDeliveryOrderItemDetails.DispatchQty == btoDeliveryOrderItemDetails.BalanceDoQty) btoDeliveryOrderItemDetails.DoStatus = Status.Open;                       
                         else btoDeliveryOrderItemDetails.DoStatus = Status.Closed;
                        // btoDeliveryOrderItemDetails.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
                         //Update Inventory balanced Quantity 
@@ -433,7 +433,23 @@ namespace Tips.Warehouse.Api.Controllers
                         }
                         _bTODeliveryOrderItemsRepository.Update(btoDeliveryOrderItemDetails);
                         _bTODeliveryOrderItemsRepository.SaveAsync();
+                        // var getDoDetails=await _bTODeliveryOrderRepository.GetBTODeliveryOrderById(btoDeliveryOrderItemDetails.BTODeliveryOrderId);
+                        var doNumber=btoDeliveryOrderItemDetails.BTONumber;
+                         var bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount = await _bTODeliveryOrderItemsRepository.GetBTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount(doNumber);
 
+                        if (bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount != 0)
+                        {
+                            var bTODeliveryOrderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(doNumber);
+                            bTODeliveryOrderDetails.DoStatus = Status.PartiallyClosed;
+                            await _bTODeliveryOrderRepository.UpdateBTODeliveryOrder(bTODeliveryOrderDetails);
+                        }
+                        else
+                        {
+                            var bTODeliveryOrderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(doNumber);
+                            bTODeliveryOrderDetails.DoStatus = Status.Closed;
+                            await _bTODeliveryOrderRepository.UpdateBTODeliveryOrder(bTODeliveryOrderDetails);
+                        }
+                        _bTODeliveryOrderRepository.SaveAsync();
                         //update Dispatch Qty in InvoiceChildItem Table
                         //int getInvoiceChildItemId = returnInvoiceItemDto[i].InvoicePartsId;
                         //var invoiceChildItemDetails = await _invoiceChildRepository.GetInvoiceChildItemDetails(getInvoiceChildItemId);
@@ -459,7 +475,31 @@ namespace Tips.Warehouse.Api.Controllers
                         }
                     }
                 }
-                
+                foreach(var Returninv in returnInvoiceItemsList)
+                {
+                    var bTODeliveryOrderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(Returninv.DONumber);
+                    bTODeliveryOrderDetails.TotalValue = 0;
+                    foreach (var doitem in bTODeliveryOrderDetails.bTODeliveryOrderItems)
+                    {
+                        decimal? dispatch = doitem.DispatchQty;
+                        if (dispatch == 0) dispatch = 1;
+                        decimal? unitafterDiscount = 0;
+                        if (doitem.DiscountType == "Percentage")
+                        {
+                            unitafterDiscount = doitem.UnitPrice - ((doitem.UnitPrice * doitem.Discount) / 100);
+                        }
+                        else
+                        {
+                            unitafterDiscount = doitem.UnitPrice - doitem.Discount;
+                        }
+                        decimal? NewBasicAmt = unitafterDiscount * doitem.DispatchQty;
+                        decimal? TaxPercentage = (NewBasicAmt * ((doitem.CGST + doitem.SGST + doitem.IGST + doitem.UTGST) / 100));
+                        decimal? ItemDispatchvalue = NewBasicAmt + TaxPercentage;
+                        bTODeliveryOrderDetails.TotalValue += ItemDispatchvalue;
+                    }
+                    await _bTODeliveryOrderRepository.UpdateBTODeliveryOrderFromReturnDO(bTODeliveryOrderDetails);
+                    _bTODeliveryOrderRepository.SaveAsync();
+                }
 
                 returnInvoiceDetails.ReturnInvoiceItems = returnInvoiceItemsList;
 
@@ -941,6 +981,47 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside ReturnInvoiceSPReport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> ReturnInvoiceSPReportWithParameterForTrans([FromBody] ReturnInvoiceSPReportWithParamForTransDTO returnInvoiceSPReportDTO)
+        {
+            ServiceResponse<IEnumerable<ReturnInvoiceSPResport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceSPResport>>();
+            try
+            {
+                var products = await _returnInvoiceRepository.ReturnInvoiceSPReportWithParameterForTrans(returnInvoiceSPReportDTO.InvoiceNumber, returnInvoiceSPReportDTO.DoNumber,
+                                                                                        returnInvoiceSPReportDTO.CustomerName, returnInvoiceSPReportDTO.CustomerAliasName, 
+                                                                                        returnInvoiceSPReportDTO.SalesOrderNumber, returnInvoiceSPReportDTO.Location, 
+                                                                                        returnInvoiceSPReportDTO.Warehouse, returnInvoiceSPReportDTO.KPN, 
+                                                                                        returnInvoiceSPReportDTO.MPN, returnInvoiceSPReportDTO.IssuedBy, returnInvoiceSPReportDTO.ProjectNumber);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ReturnInvoiceSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ReturnInvoiceSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    //var result = _mapper.Map<IEnumerable<ReturnInvoiceSPReportDTO>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ReturnInvoiceSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside ReturnInvoiceSPReportWithParameterForTrans action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

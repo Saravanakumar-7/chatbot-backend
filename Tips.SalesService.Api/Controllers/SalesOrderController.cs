@@ -2043,6 +2043,88 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetRfqSalesOrderSPReportWithParamForTrans([FromBody] RfqSalesOrderSPResportDTOForTrans rfqSalesOrderSPResportDTO)
+
+        {
+            ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetRfqSalesOrderSPReportWithParamForTrans(rfqSalesOrderSPResportDTO.CustomerName, rfqSalesOrderSPResportDTO.SalesOrderNumber,
+                                                                                                                        rfqSalesOrderSPResportDTO.KPN, rfqSalesOrderSPResportDTO.SOStatus
+                                                                                                                        , rfqSalesOrderSPResportDTO.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RfqSalesOrderSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqSalesOrderSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetRfqSalesOrderSPReportWithParamForAvision([FromBody] RfqSalesOrderSPResportDTO rfqSalesOrderSPResportDTO)
+
+        {
+            ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetRfqSalesOrderSPReportWithParamForAvision(rfqSalesOrderSPResportDTO.CustomerName, rfqSalesOrderSPResportDTO.SalesOrderNumber,
+                                                                                                                        rfqSalesOrderSPResportDTO.KPN, rfqSalesOrderSPResportDTO.SOStatus);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RfqSalesOrderSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqSalesOrderSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetRfqSalesOrderSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
@@ -2050,6 +2132,43 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var products = await _repository.GetRfqSalesOrderSPReportWithDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RfqSalesOrderSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqSalesOrderSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetRfqSalesOrderSPReportWithDateForTransAvision([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetRfqSalesOrderSPReportWithDateForTransAvision(FromDate, ToDate);
                 if (products == null)
                 {
                     serviceResponse.Data = null;
@@ -2120,6 +2239,87 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetForecastSalesOrderSPReportWithParamForTrans([FromBody] ForecastSalesOrderSPResportDTOForTrans forecastSalesOrderSPResportDTO)
+
+        {
+            ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetForecastSalesOrderSPReportWithParamForTrans(forecastSalesOrderSPResportDTO.CustomerName,
+                                                                             forecastSalesOrderSPResportDTO.SalesOrderNumber, forecastSalesOrderSPResportDTO.KPN, forecastSalesOrderSPResportDTO.SOStatus,
+                                                                             forecastSalesOrderSPResportDTO.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ForecastSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ForecastSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ForecastSalesOrderSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetForecastSalesOrderSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetForecastSalesOrderSPReportWithParamForAvision([FromBody] ForecastSalesOrderSPResportDTO forecastSalesOrderSPResportDTO)
+
+        {
+            ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetForecastSalesOrderSPReportWithParamForAvision(forecastSalesOrderSPResportDTO.CustomerName,
+                                                                             forecastSalesOrderSPResportDTO.SalesOrderNumber, forecastSalesOrderSPResportDTO.KPN, forecastSalesOrderSPResportDTO.SOStatus);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ForecastSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ForecastSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ForecastSalesOrderSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetForecastSalesOrderSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetForecastSalesOrderSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
@@ -2127,6 +2327,42 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var products = await _repository.GetForecastSalesOrderSPReportWithDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ForecastSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ForecastSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ForecastSalesOrderSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetForecastSalesOrderSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetForecastSalesOrderSPReportWithDateForTransAvision([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetForecastSalesOrderSPReportWithDateForTransAvision(FromDate, ToDate);
                 if (products == null)
                 {
                     serviceResponse.Data = null;
@@ -2297,6 +2533,7 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(28).SetCellValue("Order Qty");
                 headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
                 headerRow.CreateCell(30).SetCellValue("Balance Qty");
+                headerRow.CreateCell(31).SetCellValue("RequestedDate");
 
 
                 // Populate data rows
@@ -2335,6 +2572,219 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
                     row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
                     row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(31).SetCellValue(item.RequestedDate.HasValue ? item.RequestedDate.Value.ToString("MM/dd/yyyy") : "");
+                }
+
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportSalesOrderRFQSPReportToExcelForTrans([FromBody] RfqSalesOrderSPResportDTOForTrans salesOrderSPReport)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var salesOrderSPReportDetails = await _repository.GetRfqSalesOrderSPReportWithParamForTrans(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus
+                                                                                                                            ,salesOrderSPReport.ProjectNumber);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(1).SetCellValue("SOStatus");
+                headerRow.CreateCell(2).SetCellValue("Project Number");
+                headerRow.CreateCell(3).SetCellValue("Customer ID");
+                headerRow.CreateCell(4).SetCellValue("Customer Name");
+                headerRow.CreateCell(5).SetCellValue("Lead ID");
+                headerRow.CreateCell(6).SetCellValue("Order Type");
+                headerRow.CreateCell(7).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(8).SetCellValue("Product Type");
+                headerRow.CreateCell(9).SetCellValue("Material Group");
+                headerRow.CreateCell(10).SetCellValue("Item Type");
+                headerRow.CreateCell(11).SetCellValue("Sales Person");
+                headerRow.CreateCell(12).SetCellValue("SO Date");
+                headerRow.CreateCell(13).SetCellValue("KPN");
+                headerRow.CreateCell(14).SetCellValue("KPN Description");
+                headerRow.CreateCell(15).SetCellValue("UOC");
+                headerRow.CreateCell(16).SetCellValue("UOM");
+                headerRow.CreateCell(17).SetCellValue("Price List");
+                headerRow.CreateCell(18).SetCellValue("Unit Price");
+                headerRow.CreateCell(19).SetCellValue("Basic Amount");
+                headerRow.CreateCell(20).SetCellValue("DiscountType");
+                headerRow.CreateCell(21).SetCellValue("Discount");
+                headerRow.CreateCell(22).SetCellValue("SGST");
+                headerRow.CreateCell(23).SetCellValue("CGST");
+                headerRow.CreateCell(24).SetCellValue("IGST");
+                headerRow.CreateCell(25).SetCellValue("UTGST");
+                headerRow.CreateCell(26).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(27).SetCellValue("Total Amount");
+                headerRow.CreateCell(28).SetCellValue("Order Qty");
+                headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(30).SetCellValue("Balance Qty");
+                headerRow.CreateCell(31).SetCellValue("scheduledate");
+                headerRow.CreateCell(32).SetCellValue("scheduleqnty");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? item.SOStatus.Value.ToString() : ""); // Assuming SOStatus is nullable int
+                    row.CreateCell(2).SetCellValue(item.ProjectNumber ?? ""); // Assuming ProjectNumber is nullable string
+                    row.CreateCell(3).SetCellValue(item.CustomerId);
+                    row.CreateCell(4).SetCellValue(item.CustomerName);
+                    row.CreateCell(5).SetCellValue(item.LeadId);
+                    row.CreateCell(6).SetCellValue(item.OrderType);
+                    row.CreateCell(7).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(8).SetCellValue(item.ProductType);
+                    row.CreateCell(9).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(10).SetCellValue(item.ItemType); // Assuming ItemType is nullable int
+                    row.CreateCell(11).SetCellValue(item.SalesPerson);
+                    row.CreateCell(12).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(13).SetCellValue(item.KPN);
+                    row.CreateCell(14).SetCellValue(item.KPNDescription);
+                    row.CreateCell(15).SetCellValue(item.UOC);
+                    row.CreateCell(16).SetCellValue(item.UOM);
+                    row.CreateCell(17).SetCellValue(item.PriceList);
+                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(19).SetCellValue(Convert.ToDouble(item.BasicAmount)); // Assuming BasicAmount is decimal
+                    row.CreateCell(20).SetCellValue(item.DiscountType);
+                    row.CreateCell(21).SetCellValue(item.Discount);
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
+                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(31).SetCellValue(item.scheduledate.HasValue ? item.scheduledate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(32).SetCellValue(Convert.ToDouble(item.scheduleqnty));
+                }
+
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportSalesOrderRFQSPReportToExcelForAvision([FromBody] RfqSalesOrderSPResportDTO salesOrderSPReport)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var salesOrderSPReportDetails = await _repository.GetRfqSalesOrderSPReportWithParamForAvision(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(1).SetCellValue("SOStatus");
+                headerRow.CreateCell(2).SetCellValue("Project Number");
+                headerRow.CreateCell(3).SetCellValue("Customer ID");
+                headerRow.CreateCell(4).SetCellValue("Customer Name");
+                headerRow.CreateCell(5).SetCellValue("Lead ID");
+                headerRow.CreateCell(6).SetCellValue("Order Type");
+                headerRow.CreateCell(7).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(8).SetCellValue("Product Type");
+                headerRow.CreateCell(9).SetCellValue("Material Group");
+                headerRow.CreateCell(10).SetCellValue("Item Type");
+                headerRow.CreateCell(11).SetCellValue("Sales Person");
+                headerRow.CreateCell(12).SetCellValue("SO Date");
+                headerRow.CreateCell(13).SetCellValue("KPN");
+                headerRow.CreateCell(14).SetCellValue("KPN Description");
+                headerRow.CreateCell(15).SetCellValue("UOC");
+                headerRow.CreateCell(16).SetCellValue("UOM");
+                headerRow.CreateCell(17).SetCellValue("Price List");
+                headerRow.CreateCell(18).SetCellValue("Unit Price");
+                headerRow.CreateCell(19).SetCellValue("Basic Amount");
+                headerRow.CreateCell(20).SetCellValue("DiscountType");
+                headerRow.CreateCell(21).SetCellValue("Discount");
+                headerRow.CreateCell(22).SetCellValue("SGST");
+                headerRow.CreateCell(23).SetCellValue("CGST");
+                headerRow.CreateCell(24).SetCellValue("IGST");
+                headerRow.CreateCell(25).SetCellValue("UTGST");
+                headerRow.CreateCell(26).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(27).SetCellValue("Total Amount");
+                headerRow.CreateCell(28).SetCellValue("Order Qty");
+                headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(30).SetCellValue("Balance Qty");
+                headerRow.CreateCell(31).SetCellValue("scheduledate");
+                headerRow.CreateCell(32).SetCellValue("scheduleqnty");
+
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? item.SOStatus.Value.ToString() : ""); // Assuming SOStatus is nullable int
+                    row.CreateCell(2).SetCellValue(item.ProjectNumber ?? ""); // Assuming ProjectNumber is nullable string
+                    row.CreateCell(3).SetCellValue(item.CustomerId);
+                    row.CreateCell(4).SetCellValue(item.CustomerName);
+                    row.CreateCell(5).SetCellValue(item.LeadId);
+                    row.CreateCell(6).SetCellValue(item.OrderType);
+                    row.CreateCell(7).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(8).SetCellValue(item.ProductType);
+                    row.CreateCell(9).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(10).SetCellValue(item.ItemType); // Assuming ItemType is nullable int
+                    row.CreateCell(11).SetCellValue(item.SalesPerson);
+                    row.CreateCell(12).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(13).SetCellValue(item.KPN);
+                    row.CreateCell(14).SetCellValue(item.KPNDescription);
+                    row.CreateCell(15).SetCellValue(item.UOC);
+                    row.CreateCell(16).SetCellValue(item.UOM);
+                    row.CreateCell(17).SetCellValue(item.PriceList);
+                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(19).SetCellValue(Convert.ToDouble(item.BasicAmount)); // Assuming BasicAmount is decimal
+                    row.CreateCell(20).SetCellValue(item.DiscountType);
+                    row.CreateCell(21).SetCellValue(item.Discount);
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
+                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(31).SetCellValue(item.scheduledate.HasValue ? item.scheduledate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(32).SetCellValue(Convert.ToDouble(item.scheduleqnty));
                 }
 
 
@@ -2399,7 +2849,7 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(28).SetCellValue("Order Qty");
                 headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
                 headerRow.CreateCell(30).SetCellValue("Balance Qty");
-
+                headerRow.CreateCell(31).SetCellValue("RequestedDate");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -2437,6 +2887,219 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
                     row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
                     row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(31).SetCellValue(item.RequestedDate.HasValue ? item.RequestedDate.Value.ToString("MM/dd/yyyy") : "");
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                // Return appropriate error response to the client
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportSalesOrderForecastSPReportToExcelForTrans([FromBody] ForecastSalesOrderSPResportDTOForTrans salesOrderSPReport)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var salesOrderSPReportDetails = await _repository.GetForecastSalesOrderSPReportWithParamForTrans(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus
+                                                                                                                                            , salesOrderSPReport.ProjectNumber);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(1).SetCellValue("SOStatus");
+                headerRow.CreateCell(2).SetCellValue("Project Number");
+                headerRow.CreateCell(3).SetCellValue("Customer ID");
+                headerRow.CreateCell(4).SetCellValue("Customer Name");
+                headerRow.CreateCell(5).SetCellValue("Lead ID");
+                headerRow.CreateCell(6).SetCellValue("Order Type");
+                headerRow.CreateCell(7).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(8).SetCellValue("Product Type");
+                headerRow.CreateCell(9).SetCellValue("Material Group");
+                headerRow.CreateCell(10).SetCellValue("Item Type");
+                headerRow.CreateCell(11).SetCellValue("Sales Person");
+                headerRow.CreateCell(12).SetCellValue("SO Date");
+                headerRow.CreateCell(13).SetCellValue("KPN");
+                headerRow.CreateCell(14).SetCellValue("KPN Description");
+                headerRow.CreateCell(15).SetCellValue("UOC");
+                headerRow.CreateCell(16).SetCellValue("UOM");
+                headerRow.CreateCell(17).SetCellValue("Price List");
+                headerRow.CreateCell(18).SetCellValue("Unit Price");
+                headerRow.CreateCell(19).SetCellValue("Basic Amount");
+                headerRow.CreateCell(20).SetCellValue("DiscountType");
+                headerRow.CreateCell(21).SetCellValue("Discount");
+                headerRow.CreateCell(22).SetCellValue("SGST");
+                headerRow.CreateCell(23).SetCellValue("CGST");
+                headerRow.CreateCell(24).SetCellValue("IGST");
+                headerRow.CreateCell(25).SetCellValue("UTGST");
+                headerRow.CreateCell(26).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(27).SetCellValue("Total Amount");
+                headerRow.CreateCell(28).SetCellValue("Order Qty");
+                headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(30).SetCellValue("Balance Qty");
+                headerRow.CreateCell(31).SetCellValue("scheduledate");
+                headerRow.CreateCell(32).SetCellValue("scheduleqnty");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? item.SOStatus.Value.ToString() : ""); // Adding SOStatus
+                    row.CreateCell(2).SetCellValue(item.ProjectNumber ?? ""); // Adding ProjectNumber
+                    row.CreateCell(3).SetCellValue(item.CustomerId);
+                    row.CreateCell(4).SetCellValue(item.CustomerName);
+                    row.CreateCell(5).SetCellValue(item.LeadId);
+                    row.CreateCell(6).SetCellValue(item.OrderType);
+                    row.CreateCell(7).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(8).SetCellValue(item.ProductType);
+                    row.CreateCell(9).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(10).SetCellValue(item.ItemType); // Assuming ItemType is nullable int
+                    row.CreateCell(11).SetCellValue(item.SalesPerson);
+                    row.CreateCell(12).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(13).SetCellValue(item.KPN);
+                    row.CreateCell(14).SetCellValue(item.KPNDescription);
+                    row.CreateCell(15).SetCellValue(item.UOC);
+                    row.CreateCell(16).SetCellValue(item.UOM);
+                    row.CreateCell(17).SetCellValue(item.PriceList);
+                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(19).SetCellValue(Convert.ToDouble(item.BasicAmount)); // Assuming BasicAmount is decimal
+                    row.CreateCell(20).SetCellValue(item.DiscountType);
+                    row.CreateCell(21).SetCellValue(item.Discount);
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
+                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(31).SetCellValue(item.scheduledate.HasValue ? item.scheduledate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(32).SetCellValue(Convert.ToDouble(item.scheduleqnty));
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                // Return appropriate error response to the client
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ExportSalesOrderForecastSPReportToExcelForAvision([FromBody] ForecastSalesOrderSPResportDTO salesOrderSPReport)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var salesOrderSPReportDetails = await _repository.GetForecastSalesOrderSPReportWithParamForAvision(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(1).SetCellValue("SOStatus");
+                headerRow.CreateCell(2).SetCellValue("Project Number");
+                headerRow.CreateCell(3).SetCellValue("Customer ID");
+                headerRow.CreateCell(4).SetCellValue("Customer Name");
+                headerRow.CreateCell(5).SetCellValue("Lead ID");
+                headerRow.CreateCell(6).SetCellValue("Order Type");
+                headerRow.CreateCell(7).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(8).SetCellValue("Product Type");
+                headerRow.CreateCell(9).SetCellValue("Material Group");
+                headerRow.CreateCell(10).SetCellValue("Item Type");
+                headerRow.CreateCell(11).SetCellValue("Sales Person");
+                headerRow.CreateCell(12).SetCellValue("SO Date");
+                headerRow.CreateCell(13).SetCellValue("KPN");
+                headerRow.CreateCell(14).SetCellValue("KPN Description");
+                headerRow.CreateCell(15).SetCellValue("UOC");
+                headerRow.CreateCell(16).SetCellValue("UOM");
+                headerRow.CreateCell(17).SetCellValue("Price List");
+                headerRow.CreateCell(18).SetCellValue("Unit Price");
+                headerRow.CreateCell(19).SetCellValue("Basic Amount");
+                headerRow.CreateCell(20).SetCellValue("DiscountType");
+                headerRow.CreateCell(21).SetCellValue("Discount");
+                headerRow.CreateCell(22).SetCellValue("SGST");
+                headerRow.CreateCell(23).SetCellValue("CGST");
+                headerRow.CreateCell(24).SetCellValue("IGST");
+                headerRow.CreateCell(25).SetCellValue("UTGST");
+                headerRow.CreateCell(26).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(27).SetCellValue("Total Amount");
+                headerRow.CreateCell(28).SetCellValue("Order Qty");
+                headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(30).SetCellValue("Balance Qty");
+                headerRow.CreateCell(31).SetCellValue("scheduledate");
+                headerRow.CreateCell(32).SetCellValue("scheduleqnty");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? item.SOStatus.Value.ToString() : ""); // Adding SOStatus
+                    row.CreateCell(2).SetCellValue(item.ProjectNumber ?? ""); // Adding ProjectNumber
+                    row.CreateCell(3).SetCellValue(item.CustomerId);
+                    row.CreateCell(4).SetCellValue(item.CustomerName);
+                    row.CreateCell(5).SetCellValue(item.LeadId);
+                    row.CreateCell(6).SetCellValue(item.OrderType);
+                    row.CreateCell(7).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(8).SetCellValue(item.ProductType);
+                    row.CreateCell(9).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(10).SetCellValue(item.ItemType); // Assuming ItemType is nullable int
+                    row.CreateCell(11).SetCellValue(item.SalesPerson);
+                    row.CreateCell(12).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(13).SetCellValue(item.KPN);
+                    row.CreateCell(14).SetCellValue(item.KPNDescription);
+                    row.CreateCell(15).SetCellValue(item.UOC);
+                    row.CreateCell(16).SetCellValue(item.UOM);
+                    row.CreateCell(17).SetCellValue(item.PriceList);
+                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(19).SetCellValue(Convert.ToDouble(item.BasicAmount)); // Assuming BasicAmount is decimal
+                    row.CreateCell(20).SetCellValue(item.DiscountType);
+                    row.CreateCell(21).SetCellValue(item.Discount);
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
+                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(31).SetCellValue(item.scheduledate.HasValue ? item.scheduledate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(32).SetCellValue(Convert.ToDouble(item.scheduleqnty));
                 }
 
                 // Save Excel workbook to a memory stream
@@ -2659,6 +3322,33 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllSalesOrderFGItemNoListByProjectNo(string projectNo)
+        {
+            ServiceResponse<IEnumerable<SalesOrderFGItemNumberDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderFGItemNumberDto>>();
+            try
+            {
+                var fgItemNumberList = await _repository.GetAllSalesOrderFGItemNoListByProjectNo(projectNo);
+
+                var result = _mapper.Map<IEnumerable<SalesOrderFGItemNumberDto>>(fgItemNumberList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All SalesOrder FGItemNumberList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllSalesOrderFGItemNoListByProjectNo action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPut]
         public async Task<IActionResult> ActivateSalesOrderApprovalStatus(string salesOrderNumber)
         {
@@ -3287,29 +3977,51 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var salesorderDetails = await _repository.GetSalesOrderById(salesOrderEmailPostDto.SalesOrderid);
-                EmailTemplateDto? emaildetails = new EmailTemplateDto();
+                //EmailTemplateDto? emaildetails = new EmailTemplateDto();
+                string? emaildetails = $"Your Confirmed Keus Sales Order- {salesorderDetails.SalesOrderNumber}: Version- {salesorderDetails.RevisionNumber}";
                 string? FileName;
                 var client = _clientFactory.CreateClient();
                 var token = HttpContext.Request.Headers["Authorization"].ToString();
-                if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation" || salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
-                {
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=SalesOrderAutomationEmail"));
-                    request.Headers.Add("Authorization", token);
-                    var response = await client.SendAsync(request);
+                //if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation" || salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
+                //{
+                //    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=SalesOrderAutomationEmail"));
+                //    request.Headers.Add("Authorization", token);
+                //    var response = await client.SendAsync(request);
 
-                    var EmailTempString = await response.Content.ReadAsStringAsync();
-                    emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                //    var EmailTempString = await response.Content.ReadAsStringAsync();
+                //    emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                //    FileName = "SalesOrder_Automation_Book";
+                //}
+                //else
+                //{
+                //    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=SalesOrderLightEmail"));
+                //    request.Headers.Add("Authorization", token);
+                //    var response = await client.SendAsync(request);
+
+                //    var EmailTempString = await response.Content.ReadAsStringAsync();
+                //    emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                //    FileName = "SalesOrder_Lights_Book";
+                //}
+                if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation")
+                {
                     FileName = "SalesOrder_Automation_Book";
                 }
-                else
+                else if (salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
                 {
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=SalesOrderLightEmail"));
-                    request.Headers.Add("Authorization", token);
-                    var response = await client.SendAsync(request);
-
-                    var EmailTempString = await response.Content.ReadAsStringAsync();
-                    emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                    FileName = "SalesOrder_Accessories_Book";
+                }
+                else
+                {                    
                     FileName = "SalesOrder_Lights_Book";
+                }
+                if (emaildetails.IsNullOrEmpty())
+                {
+                    _logger.LogError($"The Subject of the Email is Empty as the Type of Solution has not matched any Type Of Solution");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Something went wrong ,try again";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
                 }
                 var Operations = "From";
                 var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
@@ -3329,7 +4041,7 @@ namespace Tips.SalesService.Api.Controllers
                 var email = new MimeMessage();
                 email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
                 email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
-                email.Subject = emaildetails.data.subject;
+                email.Subject = emaildetails;
                 string? body;
                 //body = body.Replace("{{Quote Number}}", salesorderDetails.QuoteNumber);
                 //body = body.Replace("{{RFQ Number}}", salesorderDetails.RFQNumber);
@@ -3392,6 +4104,8 @@ namespace Tips.SalesService.Api.Controllers
                     CustomerId = salesorderDetails.CustomerId,
                     CustomerName = salesorderDetails.CustomerName,
                     SalesOrderId = salesorderDetails.Id,
+                    SalesOrderValue=salesorderDetails.TotalFinalAmount,
+                    TypeOfSolution=salesorderDetails.TypeOfSolution,
                     SentBy = _createdBy,
                     SentOn = DateTime.Now
                 };

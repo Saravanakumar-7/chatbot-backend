@@ -13,6 +13,7 @@ namespace Tips.Production.Api.Contracts
         Task<PagedList<OQCBinning>> GetAllOQCBinning(PagingParameter pagingParameter, SearchParamess searchParamess);
         Task<List<OQCStock>?> GetOqcBinningShopOrderQty(string Itemnumber);
         Task<IEnumerable<OQCBinningSPReport>> GetOQCBinningSPReportWithParam(string? ItemNumber, string? ShopOrderNumber);
+        Task<IEnumerable<OQCBinningSPReport>> GetOQCBinningSPReportWithParamForTrans(string? ItemNumber, string? ShopOrderNumber, string? ProjectNumber);
         Task<IEnumerable<OQCBinningSPReport>> GetOQCBinningSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         void SaveAsync();
     }

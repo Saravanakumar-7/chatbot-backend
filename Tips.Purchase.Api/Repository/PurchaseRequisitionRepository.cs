@@ -106,6 +106,16 @@ namespace Tips.Purchase.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportWithParamForTrans(string PrNumber, string ProcurementType, string ShippingMode, string PrStatus, string ProjectNumber)
+        {
+
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseRequisitionSPReportForTrans>()
+            .FromSqlInterpolated($"CALL Purchaserequisition_with_parameters_tras({PrNumber},{ProcurementType},{ShippingMode},{PrStatus},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<PurchaseRequisitionSPReport>> GetPurchaseRequisitionsSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsPurchaseDbContext.Set<PurchaseRequisitionSPReport>()

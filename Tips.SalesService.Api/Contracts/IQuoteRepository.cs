@@ -2,6 +2,7 @@
 using Entities;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Tips.SalesService.Api.Contracts
 {
@@ -10,8 +11,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<PagedList<Quote>> GetAllQuote(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<Quote> GetQuoteById(int id);
         Task<string> GenerateQuoteNumber();
-         
-        Task CreateShortClosed(ShortClosedDto shortClosedDto);
+        Task<List<QuoteforKeusDto>> GetAllQuoteforKeus([FromQuery] string? CustomerName, [FromQuery] string? RFQNumber, [FromQuery] int Offset, [FromQuery] int Limit);        Task CreateShortClosed(ShortClosedDto shortClosedDto);
         Task<IEnumerable<rfqEnggItemDetailsForQuoteDto>> GetAllRfqEnggDetailsByRfqNo(string rfqNumber);
 
         Task<int?> GetQuoteNumberAutoIncrementCount(DateTime date);

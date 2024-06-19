@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
@@ -444,6 +445,79 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderApprovalSPReportWithDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate, [FromQuery] string RecordType, [FromQuery] string Approval)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderApprovalSPReportWithDateForTrans(FromDate, ToDate, RecordType, Approval);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderApprovalSPReportWithDateForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        //[HttpGet()] // Adjust your route as needed
+        //public async Task<IActionResult> GetPurchaseOrderSPReportWithDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        //{
+        //    ServiceResponse<IEnumerable<PurchaseOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReportForTrans>>();
+        //    try
+        //    {
+        //        var products = await _repository.GetPurchaseOrderSPReportWithDateForTrans(FromDate, ToDate);
+
+        //        if (products == null)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            _logger.LogError($"PurchaseOrder hasn't been found in db.");
+        //            return Ok(serviceResponse);
+        //        }
+        //        else
+        //        {
+        //            serviceResponse.Data = products;
+        //            serviceResponse.Message = "Returned PurchaseOrder Details";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(serviceResponse);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderSPReportWithDateForTrans action";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
 
         [HttpGet]
         public async Task<IActionResult> GetPurchaseOrderSPResport([FromQuery] PagingParameter pagingParameter)
@@ -538,8 +612,7 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<PurchaseOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReport>>();
             try
             {
-                var products = await _repository.GetPurchaseOrderSPReportWithParam(purchaseOrderSPReport.VendorName, purchaseOrderSPReport.PONumber, purchaseOrderSPReport.ItemNumber,
-                                                                                                                        purchaseOrderSPReport.RecordType, purchaseOrderSPReport.Postatus);
+                var products = await _repository.GetPurchaseOrderSPReportWithParam(purchaseOrderSPReport.VendorName, purchaseOrderSPReport.PONumber, purchaseOrderSPReport.ItemNumber);
 
                 if (products == null)
                 {
@@ -565,6 +638,46 @@ namespace Tips.Purchase.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderSPReportWithParamForTrans([FromBody] PurchaseOrderSPReportWithParamForTransDTO purchaseOrderSPReportWithParamForTransDTO)
+
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReport>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderSPReportWithParamForTrans(purchaseOrderSPReportWithParamForTransDTO.VendorName, purchaseOrderSPReportWithParamForTransDTO.PONumber,
+                                                                                    purchaseOrderSPReportWithParamForTransDTO.ItemNumber, purchaseOrderSPReportWithParamForTransDTO.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderSPReportWithParamForTrans action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -606,6 +719,47 @@ namespace Tips.Purchase.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderApprovalSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderApprovalSPReportWithParamForTrans([FromBody] PurchaseOrderApprovalSPReportWithParamForTransDTO purchaseOrderApprovalSPReport)
+
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderApprovalSPReportWithParamForTrans(purchaseOrderApprovalSPReport.VendorName, purchaseOrderApprovalSPReport.PONumber,
+                                                                                    purchaseOrderApprovalSPReport.ItemNumber, purchaseOrderApprovalSPReport.RecordType,
+                                                                                        purchaseOrderApprovalSPReport.Postatus, purchaseOrderApprovalSPReport.Approval,
+                                                                                        purchaseOrderApprovalSPReport.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrderApprovalSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderApprovalSPReportWithParamForTrans action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2411,12 +2565,12 @@ namespace Tips.Purchase.Api.Controllers
         {
             foreach (var item in purchaseOrderUpdateQtyDetails)
             {
-                IEnumerable<PoItem> poItems = await _poItemsRepository.GetPoItemDetailsByPONumberandItemNo(item.ItemNumber, item.PONumber, item.PoItemId);
+                IEnumerable<PoItem> poItems = await _poItemsRepository.GetPODetailsByPONumberandItemNo(item.ItemNumber, item.PONumber);
                 decimal dispatchedQty = item.Qty;
 
                 foreach (var poItem in poItems)
                 {
-                    poItem.ReceivedQty = item.Qty;
+                    poItem.ReceivedQty += item.Qty;
                     if (poItem.BalanceQty >= dispatchedQty)
                     {
                         if (poItem.BalanceQty == dispatchedQty)
@@ -2433,18 +2587,6 @@ namespace Tips.Purchase.Api.Controllers
                         poItem.BalanceQty = 0;
                     }
 
-                    if (poItem.BalanceQty == poItem.Qty)
-                    {
-                        poItem.PoStatus = PoStatus.Open;
-                    }
-                    else if (poItem.BalanceQty < poItem.Qty && poItem.BalanceQty > 0)
-                    {
-                        poItem.PoStatus = PoStatus.PartiallyClosed;
-                    }
-                    else
-                    {
-                        poItem.PoStatus = PoStatus.Closed;
-                    }
                     _poItemsRepository.UpdatePOOrderItem(poItem);
 
                     if (dispatchedQty <= 0)
@@ -2455,23 +2597,6 @@ namespace Tips.Purchase.Api.Controllers
             }
 
             _poItemsRepository.SaveAsync();
-
-            var poItemsPartiallyClosedStatusCount = await _poItemsRepository.GetPoItemsPartiallyClosedStatusCount(purchaseOrderUpdateQtyDetails[0].PONumber);
-
-            if (poItemsPartiallyClosedStatusCount != 0)
-            {
-                var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderUpdateQtyDetails[0].PONumber);
-                purchaseOrderDetails.PoStatus = PoStatus.PartiallyClosed;
-                await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
-
-            }
-            else
-            {
-                var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderUpdateQtyDetails[0].PONumber);
-                purchaseOrderDetails.PoStatus = PoStatus.Closed;
-                await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
-            }
-            _repository.SaveAsync();
             return Ok();
         }
 
@@ -2519,50 +2644,50 @@ namespace Tips.Purchase.Api.Controllers
 
         //pass data from grin qty using _httpclient service to purchase
 
-        //[HttpPost]
-        //public async Task<IActionResult> UpdatePoStatus([FromBody] List<PurchaseOrderStatusUpdateDto> purchaseOrderStatusUpdateDto)
-        //{
-        //    foreach (var item in purchaseOrderStatusUpdateDto)
-        //    {
-        //        IEnumerable<PoItem> poItems = await _poItemsRepository.GetPoItemDetailsByPONumberandItemNo(item.ItemNumber, item.PONumber, item.PoItemId);
+        [HttpPost]
+        public async Task<IActionResult> UpdatePoStatus([FromBody] List<PurchaseOrderStatusUpdateDto> purchaseOrderStatusUpdateDto)
+        {
+            foreach (var item in purchaseOrderStatusUpdateDto)
+            {
+                var poItem = await _poItemsRepository.GetPoItemDetailsByPONumberandItemNo(item.ItemNumber, item.PONumber, item.PoItemId);
 
-        //        foreach (var poItem in poItems)
-        //        {
-        //            if (poItem.Qty == item.Qty)
-        //            {
-        //                poItem.PoStatus = PoStatus.Closed;
-        //                await _poItemsRepository.UpdatePOOrderItem(poItem);
+                    if (poItem.BalanceQty == poItem.Qty)
+                    {
+                        poItem.PoStatus = PoStatus.Open;
+                    }
+                    else if (poItem.BalanceQty < poItem.Qty && poItem.BalanceQty > 0)
+                    {
+                        poItem.PoStatus = PoStatus.PartiallyClosed;
+                    }
+                    else
+                    {
+                        poItem.PoStatus = PoStatus.Closed;
+                    }
 
-        //            }
-        //            else
-        //            {
-        //                poItem.PoStatus = PoStatus.PartiallyClosed;
-        //                await _poItemsRepository.UpdatePOOrderItem(poItem);
-        //            }
+               await  _poItemsRepository.UpdatePOOrderItem(poItem);
 
-        //        }
-        //    }
-        //    _poItemsRepository.SaveAsync();
+            }
+            _poItemsRepository.SaveAsync();
 
-        //    var poItemsPartiallyClosedStatusCount = await _poItemsRepository.GetPoItemsPartiallyClosedStatusCount(purchaseOrderStatusUpdateDto[0].PONumber);
+            var poItemsPartiallyClosedStatusCount = await _poItemsRepository.GetPoItemsPartiallyClosedStatusCount(purchaseOrderStatusUpdateDto[0].PONumber);
 
-        //    if (poItemsPartiallyClosedStatusCount != 0)
-        //    {
-        //        var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
-        //        purchaseOrderDetails.PoStatus = PoStatus.PartiallyClosed;
-        //        await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
+            if (poItemsPartiallyClosedStatusCount != 0)
+            {
+                var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
+                purchaseOrderDetails.PoStatus = PoStatus.PartiallyClosed;
+                await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
 
-        //    }
-        //    else
-        //    {
-        //        var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
-        //        purchaseOrderDetails.PoStatus = PoStatus.Closed;
-        //        await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
-        //    }
-        //    _repository.SaveAsync();
+            }
+            else
+            {
+                var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
+                purchaseOrderDetails.PoStatus = PoStatus.Closed;
+                await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
+            }
+            _repository.SaveAsync();
 
-        //    return Ok();
-        //}
+            return Ok();
+        }
         //[HttpPut("{id}")]
         //public async Task<IActionResult> UpdatePurchaseOrder(int id, [FromBody] PurchaseOrderUpdateDto purchaseOrderUpdateDto)
         //{

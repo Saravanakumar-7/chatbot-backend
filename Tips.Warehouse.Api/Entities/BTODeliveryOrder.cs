@@ -26,6 +26,8 @@ namespace Tips.Warehouse.Api.Entities
         public string? TypeOfSolution { get; set; }
         [Precision(13, 3)]
         public decimal? TotalValue { get; set; }
+        [Precision(13, 3)]
+        public decimal? InitialTotalValue { get; set; }
         public string? OrderType { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }

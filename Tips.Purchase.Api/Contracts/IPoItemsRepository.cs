@@ -9,7 +9,7 @@ namespace Tips.Purchase.Api.Contracts
 {
     public interface IPoItemsRepository : IRepositoryBase<PoItem>
     {
-        //Task<IEnumerable<PoItem>> GetPODetailsByPONumberandItemNo(string PONumber, string ItemNumber);
+        Task<IEnumerable<PoItem>> GetPODetailsByPONumberandItemNo(string PONumber, string ItemNumber);
         Task<string> UpdatePOOrderItem(PoItem poItem);
         Task<int?> GetPODetailsByPONumber(string PONumber);
         Task<List<OpenPurchaseOrderDto>> GetOpenPOTGDetailsByItem(string itemNumber);
@@ -21,7 +21,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<List<OpenPoQuantityDto>> GetListOfOpenPOQtyByItemNoList(List<string> itemNumberList);
         Task<PoItem> GetPoItemDetailsById(int poItemId);
         Task<int?> GetPoItemsPartiallyClosedStatusCount(string poNumber);
-        Task<IEnumerable<PoItem>> GetPoItemDetailsByPONumberandItemNo(string ItemNumber, string PONumber, int poItemId);
+        Task<PoItem> GetPoItemDetailsByPONumberandItemNo(string ItemNumber, string PONumber, int poItemId);
         Task<OpenPurchaseOrderDto?> GetOpenPOTGDetailsByItemForCoverage(string itemNumber);
         Task<OpenPurchaseOrderByProjectNoDto?> GetOpenPOTGDetailsByItemAndProjecNoForCoverage(string itemNumber, string projectNo);
         Task<List<OpenPoQuantityDto>> GetListOfOpenPOQtyByItemNoListByProjectNo(string projectNo, List<string> itemNumberList);

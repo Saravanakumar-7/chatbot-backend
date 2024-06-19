@@ -60,6 +60,15 @@ namespace Tips.Grin.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<IQCConfirmation_SPReport>> GetIQCConfirmationSPReportWithParamForTrans(string? GrinNumber, string? itemNo, string? ProjectNumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<IQCConfirmation_SPReport>()
+            .FromSqlInterpolated($"CALL iqc_confirmation_with_parameters_tras({GrinNumber},{itemNo},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<IQCConfirmation_SPReport>> GetIQCConfirmationSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsGrinDbContext.Set<IQCConfirmation_SPReport>()

@@ -457,7 +457,7 @@ namespace Tips.Production.Api.Controllers
             {
                 if (materialReturnNoteUpdateDto is null)
                 {
-                    _logger.LogError("Update MaterialReturnNote object sent from client is null.");
+                    _logger.LogInfo("Update MaterialReturnNote object sent from client is null.");
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Update MaterialReturnNote object is null";
                     serviceResponse.Success = false;

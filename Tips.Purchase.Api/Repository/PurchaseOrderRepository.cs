@@ -636,13 +636,19 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllLatestRevNoPurchaseOrderNameList()
         {
-            IEnumerable<PurchaseOrderIdNameListDto> purchaseOrderNameList = await _tipsPurchaseDbContext.PurchaseOrders.Where(x=>x.RevisionNumber== _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))
-                                .Select(x => new PurchaseOrderIdNameListDto()
-                                {
-                                    Id = x.Id,
-                                    PONumber = x.PONumber,
-                                }).OrderByDescending(x=>x.Id)
-                              .ToListAsync();
+            IEnumerable<PurchaseOrderIdNameListDto> purchaseOrderNameList = await _tipsPurchaseDbContext.PurchaseOrders
+                .Where(x => x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber)
+                && (
+                                        (x.ApprovalCount == 4 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == true) ||
+                                        (x.ApprovalCount == 2 && x.POApprovalI == true && x.POApprovalII == true)
+                    )
+                    )
+                .Select(x => new PurchaseOrderIdNameListDto()
+                {
+                    Id = x.Id,
+                    PONumber = x.PONumber,
+                }).OrderByDescending(x => x.Id)
+                .ToListAsync();
 
             return purchaseOrderNameList;
         }
@@ -1053,13 +1059,23 @@ namespace Tips.Purchase.Api.Repository
             return pendingPOApprovalIINameList;
         }
 
-        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParam(string VendorName, string PONumber, string itemNumber,
-                                                                                                             string RecordType, string Postatus)
+        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParam(string VendorName, string PONumber, string itemNumber)
         {
 
             var result = _tipsPurchaseDbContext
             .Set<PurchaseOrderSPReport>()
-            .FromSqlInterpolated($"CALL Purchase_Order_withparameter({VendorName},{PONumber},{itemNumber},{RecordType},{Postatus})")
+            .FromSqlInterpolated($"CALL Purchase_Order_withparameter({VendorName},{PONumber},{itemNumber})")
+            .ToList();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParamForTrans(string VendorName, string PONumber, string itemNumber, string ProjectNumber)
+        {
+
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseOrderSPReport>()
+            .FromSqlInterpolated($"CALL Purchase_Order_withparameter_tras({VendorName},{PONumber},{itemNumber},{ProjectNumber})")
             .ToList();
 
             return result;
@@ -1072,6 +1088,17 @@ namespace Tips.Purchase.Api.Repository
             var result = _tipsPurchaseDbContext
             .Set<PurchaseOrderApprovalSPReport>()
             .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus({VendorName},{PONumber},{itemNumber},{RecordType},{Postatus},{Approval})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderApprovalSPReportWithParamForTrans(string VendorName, string PONumber, string itemNumber,
+                                                                                                     string RecordType, string Postatus, string Approval, string ProjectNumber)
+        {
+
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus_tras({VendorName},{PONumber},{itemNumber},{RecordType},{Postatus},{Approval},{ProjectNumber})")
             .ToList();
 
             return result;
@@ -1089,6 +1116,15 @@ namespace Tips.Purchase.Api.Repository
         {
             var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReport>()
                         .FromSqlInterpolated($"CALL Purchase_Order_withparameter_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderApprovalSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate, string RecordType
+                                                                                                                 , string Approval)
+        {
+            var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReportForTrans>()
+                        .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus_withdate({FromDate},{ToDate},{RecordType},{Approval})")
                         .ToList();
 
             return results;
@@ -1573,23 +1609,23 @@ namespace Tips.Purchase.Api.Repository
 
             return getPODetailsByPONOandItemNo;
         }
-        //public async Task<IEnumerable<PoItem>> GetPODetailsByPONumberandItemNo(string ItemNumber, string PONumber)
-        //{
-        //    var poId = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.PONumber == PONumber && x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders
-        //                                                                .Where(x => x.PONumber == PONumber).Max(x => x.RevisionNumber))
-        //                                                                .Select(x=>x.Id).FirstOrDefaultAsync();
+        public async Task<IEnumerable<PoItem>> GetPODetailsByPONumberandItemNo(string ItemNumber, string PONumber)
+        {
+            var poId = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.PONumber == PONumber && x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders
+                                                                        .Where(x => x.PONumber == PONumber).Max(x => x.RevisionNumber))
+                                                                        .Select(x => x.Id).FirstOrDefaultAsync();
 
-        //    var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContexts.PoItems
-        //         .Where(x => x.ItemNumber == ItemNumber && x.PONumber == PONumber && x.PoPartsStatus != true && x.PurchaseOrderId == poId)
-        //                  .ToListAsync();
+            var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContexts.PoItems
+                 .Where(x => x.ItemNumber == ItemNumber && x.PONumber == PONumber && x.PoPartsStatus != true && x.PurchaseOrderId == poId)
+                          .ToListAsync();
 
-        //    return getPODetailsByPONOandItemNo;
-        //}
-        public async Task<IEnumerable<PoItem>> GetPoItemDetailsByPONumberandItemNo(string ItemNumber, string PONumber, int poItemId)
+            return getPODetailsByPONOandItemNo;
+        }
+        public async Task<PoItem> GetPoItemDetailsByPONumberandItemNo(string ItemNumber, string PONumber, int poItemId)
         {
             var getPODetailsByPONOandItemNo = await _tipsPurchaseDbContexts.PoItems
                  .Where(x => x.ItemNumber == ItemNumber && x.PONumber == PONumber && x.Id == poItemId)
-                          .ToListAsync();
+                          .FirstOrDefaultAsync();
 
             return getPODetailsByPONOandItemNo;
         }

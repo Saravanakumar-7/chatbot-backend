@@ -227,6 +227,154 @@ namespace Tips.SalesService.Api.Controllers
 
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllRfqForKeus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
+        {
+            ServiceResponse<IEnumerable<RfqDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqDto>>();
+
+            try
+            {
+                var getAllRfq = await _rfqRepository.GetAllRfq(pagingParameter, searchParammes);
+
+                for (int i = 0; i < getAllRfq.Count(); i++)
+                {
+                    var rfq = getAllRfq[i].RfqNumber;
+                    var revNO = getAllRfq[i].RevisionNumber;
+
+                    var rfqCsCount = await _itemRepository.GetRfqCustomerSupportItemByRfqNumber(rfq, revNO);
+                    //if (getAllRfq[i].isSourcingAvailable == true)
+                    //{
+
+                    var isFullyReleased = await _itemRepository.IsFullyReleasedRfqEngg(rfq, revNO);
+                    var isNotYetReleased = await _itemRepository.IsNotYetReleasedRfqEngg(rfq, revNO);
+
+
+                    if (isFullyReleased)
+                    {
+                        getAllRfq[i].IsEnggRelease = CsRelease.FullyRelease;
+                    }
+                    else if (isNotYetReleased)
+                    {
+                        getAllRfq[i].IsEnggRelease = CsRelease.NotYetReleased;
+                    }
+                    else
+                    {
+                        getAllRfq[i].IsEnggRelease = CsRelease.PartiallyRelease;
+                    }
+                    var rfqEnggCount = await _rfqenggItemRepository.GetRfqEnggCountByRfqNumber(rfq, revNO);
+
+                    if (rfqEnggCount.Count() != 0)
+                    {
+                        getAllRfq[i].EnggComplete = EnggStatus.EnggCompleted;
+                    }
+                    else
+                    {
+                        getAllRfq[i].EnggComplete = EnggStatus.EnggNotYetCompleted;
+                    }
+
+                    // Use the 'status' variable as needed
+
+
+                    //var rfqEnggRelese = await _rfqenggItemRepository.GetRfqEnggRelesedDetailsByRfqNumber(rfq);
+                    //var rfqEnggUnRelesedCount = rfqEnggCount.Count() - rfqEnggRelese.Count();
+                    //if (rfqEnggRelese.Count() == 0)
+                    //{
+                    //    getAllRfq[i].IsEnggRelease = CsRelease.NotYetReleased;
+                    //}
+                    //if (rfqEnggUnRelesedCount == 0)
+                    //{
+                    //    getAllRfq[i].IsEnggRelease = CsRelease.FullyRelease;
+                    //}
+                    //if (rfqEnggUnRelesedCount != 0 && rfqEnggRelese.Count() != 0)
+                    //{
+                    //    getAllRfq[i].IsEnggRelease = CsRelease.PartiallyRelease;
+                    //}
+                    //if (rfqEnggCount.Count() != 0)
+                    //{
+                    //    getAllRfq[i].EnggComplete = EnggStatus.EnggCompleted;
+                    //}
+                    //else
+                    //{
+                    //    getAllRfq[i].EnggComplete = EnggStatus.EnggNotYetCompleted;
+                    //}
+                    //}
+
+                    var isFullyReleasedCs = await _itemRepository.IsFullyReleasedRfqCs(rfq, revNO);
+                    var isNotYetReleasedCs = await _itemRepository.IsNotYetReleasedRfqCs(rfq, revNO);
+
+
+                    if (isFullyReleasedCs)
+                    {
+                        getAllRfq[i].IsCsRelease = CsRelease.FullyRelease;
+                    }
+                    else if (isNotYetReleasedCs)
+                    {
+                        getAllRfq[i].IsCsRelease = CsRelease.NotYetReleased;
+                    }
+                    else
+                    {
+                        getAllRfq[i].IsCsRelease = CsRelease.PartiallyRelease;
+                    }
+
+
+                    //var rfqCsRelesed = await _itemRepository.GetRfqCustomerSupportRelesedDetailsByRfqNumber(rfq);
+
+                    //var rfqCsUnRelesedCount = rfqCsCount.Count() - rfqCsRelesed.Count();
+                    //if(rfqCsRelesed.Count() == 0 )
+                    //{
+                    //    getAllRfq[i].IsCsRelease = CsRelease.NotYetReleased;
+                    //}
+                    //if(rfqCsUnRelesedCount == 0 && rfqCsCount.Count() != 0)
+                    ////if (rfqCsUnRelesedCount == 0)
+                    //{
+                    //    getAllRfq[i].IsCsRelease = CsRelease.FullyRelease;
+                    //}
+                    //if(rfqCsUnRelesedCount != 0 && rfqCsRelesed.Count() != 0)
+                    ////if (rfqCsUnRelesedCount != 0)
+                    //{
+                    //    getAllRfq[i].IsCsRelease = CsRelease.PartiallyRelease;
+                    //}
+                    if (rfqCsCount.Count() != 0)
+                    {
+                        getAllRfq[i].CsComplete = CsStatus.CsCompleted;
+                    }
+                    else
+                    {
+                        getAllRfq[i].CsComplete = CsStatus.CsNotYetCompleted;
+                    }
+                }
+                var metadata = new
+                {
+                    getAllRfq.TotalCount,
+                    getAllRfq.PageSize,
+                    getAllRfq.CurrentPage,
+                    getAllRfq.HasNext,
+                    getAllRfq.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all rfq");
+
+                var result = _mapper.Map<IEnumerable<RfqDto>>(getAllRfq);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Rfqs Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
         //passing rfqnumber and revision number to get the data
 
         [HttpGet]

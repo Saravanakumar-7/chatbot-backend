@@ -40,9 +40,9 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public ReturnBtoDeliveryOrderController(IBTODeliveryOrderRepository bTODeliveryOrderRepository,IReturnBtoDeliveryOrderRepository repository, IHttpClientFactory clientFactory, IInventoryTranctionRepository inventoryTranctionRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryRepository inventoryRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public ReturnBtoDeliveryOrderController(IBTODeliveryOrderRepository bTODeliveryOrderRepository, IReturnBtoDeliveryOrderRepository repository, IHttpClientFactory clientFactory, IInventoryTranctionRepository inventoryTranctionRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryRepository inventoryRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
-            _bTODeliveryOrderRepository=bTODeliveryOrderRepository;
+            _bTODeliveryOrderRepository = bTODeliveryOrderRepository;
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
@@ -164,6 +164,46 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside ReturnDOSPReport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> ReturnDOSPReportWithParamForTrans([FromBody] ReturnDOSPReportWithParamForTransDTO returnDOSPReportDTO)
+        {
+            ServiceResponse<IEnumerable<ReturnDOSPReport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnDOSPReport>>();
+            try
+            {
+                var products = await _repository.ReturnDOSPReportWithParamForTrans(returnDOSPReportDTO.ReturnBTONumber, returnDOSPReportDTO.CustomerName, returnDOSPReportDTO.CustomerAliasName,
+                                                        returnDOSPReportDTO.CustomerLeadId, returnDOSPReportDTO.SalesOrderNumber, returnDOSPReportDTO.ProductType,
+                                                        returnDOSPReportDTO.TypeOfSolution, returnDOSPReportDTO.Warehouse, returnDOSPReportDTO.Location,
+                                                        returnDOSPReportDTO.KPN, returnDOSPReportDTO.MPN, returnDOSPReportDTO.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ReturnDOSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ReturnDOSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ReturnDOSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside ReturnDOSPReportWithParamForTrans action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -599,7 +639,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                             InventoryTranction inventoryTranction = new InventoryTranction();
                             inventoryTranction.PartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
-                            inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); 
+                            inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                             inventoryTranction.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
                             inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
                             inventoryTranction.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
@@ -724,20 +764,37 @@ namespace Tips.Warehouse.Api.Controllers
                         }
                         if (Dodetails != null)
                         {
+                            Dodetails.TotalValue = 0;
                             foreach (var doitem in Dodetails.bTODeliveryOrderItems)
                             {
                                 if (doitem.BalanceDoQty == doitem.InitialDispatchQty) doitem.DoStatus = Status.Open;
                                 else if (doitem.BalanceDoQty > 0 && doitem.BalanceDoQty < doitem.InitialDispatchQty) doitem.DoStatus = Status.PartiallyClosed;
                                 else if (doitem.BalanceDoQty == 0) doitem.DoStatus = Status.Closed;
+
+                                decimal? dispatch = doitem.DispatchQty;
+                                if (dispatch == 0) dispatch = 1;
+                                decimal? unitafterDiscount = 0;
+                                if (doitem.DiscountType == "Percentage")
+                                {
+                                    unitafterDiscount = doitem.UnitPrice - ((doitem.UnitPrice * doitem.Discount) / 100);
+                                }
+                                else
+                                {
+                                    unitafterDiscount = doitem.UnitPrice - doitem.Discount;
+                                }
+                                decimal? NewBasicAmt = unitafterDiscount * doitem.DispatchQty;
+                                decimal? TaxPercentage = (NewBasicAmt * ((doitem.CGST + doitem.SGST + doitem.IGST + doitem.UTGST) / 100));
+                                decimal? ItemDispatchvalue = NewBasicAmt + TaxPercentage;
+                                Dodetails.TotalValue += ItemDispatchvalue;
                             }
                             var mainDostatus = Dodetails.bTODeliveryOrderItems.Where(x => x.DoStatus == Status.Closed).Count();
                             if (Dodetails.bTODeliveryOrderItems.Count() == Dodetails.bTODeliveryOrderItems.Where(x => x.DoStatus == Status.Closed).Count()) Dodetails.DoStatus = Status.Closed;
-                            else if(Dodetails.bTODeliveryOrderItems.Count()==Dodetails.bTODeliveryOrderItems.Where(x=>x.DoStatus==Status.Open).Count()) Dodetails.DoStatus = Status.Open;
+                            else if (Dodetails.bTODeliveryOrderItems.Count() == Dodetails.bTODeliveryOrderItems.Where(x => x.DoStatus == Status.Open).Count()) Dodetails.DoStatus = Status.Open;
                             else Dodetails.DoStatus = Status.PartiallyClosed;
                             await _bTODeliveryOrderRepository.UpdateBTODeliveryOrderFromReturnDO(Dodetails);
                             _bTODeliveryOrderRepository.SaveAsync();
                         }
-                    }                    
+                    }
                 }
 
                 returnBtoDeliveryOrder.ReturnBtoDeliveryOrderItems = returnBtoDeliveryOrderItemsDtoList;

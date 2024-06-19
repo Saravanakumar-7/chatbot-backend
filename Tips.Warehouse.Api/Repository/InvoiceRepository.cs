@@ -130,6 +130,15 @@ namespace Tips.Warehouse.Api.Repository
             return result;
 
         }
+        public async Task<IEnumerable<InvoiceForTransSPReport>> InvoiceSPReportWithParameterForTrans(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName, string? CustomerAliasName, string? SalesOrderNumber, string? Location, string? Warehouse, string? KPN, string? MPN, string? IssuedTo, string? ProjectNumber)
+        {
+            var result = _tipsWarehouseDbContext.Set<InvoiceForTransSPReport>()
+                            .FromSqlInterpolated($"CALL Invoice_Report_withparameter_tras({InvoiceNumber},{DONumber},{CustomerId},{CustomerName},{CustomerAliasName},{SalesOrderNumber},{Location},{Warehouse},{KPN},{MPN},{IssuedTo},{ProjectNumber})")
+                            .ToList();
+
+            return result;
+
+        }
         public async Task<PagedList<Invoice>> GetAllInvoices([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             var getAllInvoiceList = _tipsWarehouseDbContext.invoices

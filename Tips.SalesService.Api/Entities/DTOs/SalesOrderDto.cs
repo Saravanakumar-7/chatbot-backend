@@ -112,7 +112,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int? BillToId { get; set; }
         public string? ShipTo { get; set; }
         public int? ShipToId { get; set; }
-        public string? PaymentTerms { get; set; }        
+        public string? PaymentTerms { get; set; }
+        public string? Remarks { get; set; }
         public decimal? Total { get; set; }
         public SalesOrderStatus SalesOrderStatus { get; set; }
         [Precision(13, 3)]
@@ -336,12 +337,32 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? KPN { get; set; }
         public string? SOStatus { get; set; }
     }
+    public class RfqSalesOrderSPResportDTOForTrans
+    {
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? KPN { get; set; }
+        public string? SOStatus { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
     public class ForecastSalesOrderSPResportDTO
     {
         public string? CustomerName { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string? KPN { get; set; }
         public string? SOStatus { get; set; }
+    }
+    public class ForecastSalesOrderSPResportDTOForTrans
+    {
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? KPN { get; set; }
+        public string? SOStatus { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
+    public class SalesOrderFGItemNumberDto
+    {
+        public string? FGItemNumber { get; set; }
     }
     public class SalesOrderEmailPostDto
     {

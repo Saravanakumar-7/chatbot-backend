@@ -1,9 +1,9 @@
 ﻿namespace Tips.SalesService.Api.Entities
 {
-    public class RfqSalesOrderSPReport
+    public class ForecastSalesOrderSPReportForTrans
     {
         public string? SalesOrderNumber { get; set; }
-        public int? SOStatus {  get; set; }
+        public int? SOStatus { get; set; }
         public string? ProjectNumber { get; set; }
         public string? CustomerId { get; set; }
         public string? CustomerName { get; set; }
@@ -33,6 +33,9 @@
         public decimal? OrderQty { get; set; }
         public decimal? DispatchQty { get; set; }
         public decimal? BalanceQty { get; set; }
-        public DateTime? RequestedDate { get; set; }
+        public DateTime? scheduledate { get; set; }
+        public decimal? scheduleqnty { get; set; }
+        
+
     }
 }
