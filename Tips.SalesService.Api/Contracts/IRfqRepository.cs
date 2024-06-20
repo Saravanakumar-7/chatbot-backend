@@ -28,6 +28,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<Rfq> RfqCsByRfqNumbers(string id);
         Task<Rfq> RfqEnggByRfqNumbers(string id);
         Task<Rfq> RfqDetailsByRfqNumbers(string rfqNumber);
+        Task<int> GetLastestRfqRevNoByRfqNumber(string rfqNumber);
         Task<Rfq> GetCustomerIdByRfqNumber(string rfqnumber);
         Task<IEnumerable<Rfq>> GetRevNumberByRfqNumberList(string rfqnumber);
         Task<Rfq> RfqLpcostingByRfqNumbers(string id);

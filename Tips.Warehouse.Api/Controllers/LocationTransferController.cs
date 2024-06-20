@@ -426,7 +426,7 @@ namespace Tips.Warehouse.Api.Controllers
                                     inventoryPost.Unit = inventoryItem.Unit;
                                     inventoryPost.GrinNo = "";
                                     inventoryPost.GrinPartId = 0;
-                                    inventoryPost.LotNumber = "";
+                                    inventoryPost.LotNumber = inventoryItem.LotNumber;
                                     inventoryPost.IsStockAvailable = true;
                                     inventoryPost.Warehouse = toWarehouse;
                                     inventoryPost.Location = toLocation;
@@ -470,8 +470,9 @@ namespace Tips.Warehouse.Api.Controllers
                         }
                         else
                         {
+                            _logger.LogError($"Something went wrong inside CreateLocationTransfer action. Inventory hasn't been found in db");
                             serviceResponse.Data = null;
-                            serviceResponse.Message = " Inventory hasn't been found in db.";
+                            serviceResponse.Message = " Inventory hasn't been found";
                             serviceResponse.Success = false;
                             serviceResponse.StatusCode = HttpStatusCode.NotFound;
                             return NotFound(serviceResponse);
@@ -489,12 +490,13 @@ namespace Tips.Warehouse.Api.Controllers
                     }
                    
                 }
+
                 _locationTransferRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "locationTransfer Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetLocationTransferId", serviceResponse);
+                return Ok( serviceResponse);
             }
             catch (Exception ex)
             {

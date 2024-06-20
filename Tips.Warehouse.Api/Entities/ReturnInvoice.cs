@@ -12,6 +12,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? CustomerAliasName { get; set; }
         public string? CompanyName { get; set; }
         public string? Remarks { get; set; }
+        public decimal? ReturnInvoiceValue { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

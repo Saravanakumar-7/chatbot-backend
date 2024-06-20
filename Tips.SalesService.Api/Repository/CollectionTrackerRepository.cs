@@ -215,11 +215,12 @@ namespace Tips.SalesService.Api.Repository
                                 where e.CustomerId == customerId
                                 join d in _tipsSalesServiceDbContext.SOBreakDowns on e.SalesOrderNumber equals d.SalesOrderNumber into dept
                                 from SOBreakDown in dept.DefaultIfEmpty()
-                                group new { e, SOBreakDown } by new { e.Id, e.SalesOrderNumber, e.Total } into g
+                                group new { e, SOBreakDown } by new { e.Id, e.SalesOrderNumber, e.Total ,e.TypeOfSolution} into g
                                 select new OpenSalesOrderDetailsDto
                                 {
                                     SalesOrderId = g.Key.Id,
                                     SalesOrderNo = g.Key.SalesOrderNumber,
+                                    TypeOfSolution = g.Key.TypeOfSolution,
                                     TotalValue = g.Key.Total,
                                     PendingValue = g.Key.Total - g.Sum(x => x.SOBreakDown.AmountAgainstSO),
                                     AmountRecieved = g.Sum(x => x.SOBreakDown.AmountAgainstSO)
@@ -241,6 +242,7 @@ namespace Tips.SalesService.Api.Repository
                                 {
                                     SalesOrderId = e.Id,
                                     SalesOrderNo = e.SalesOrderNumber,
+                                    TypeOfSolution = e.TypeOfSolution,
                                     TotalValue = e.Total,
                                     PendingValue = e.Total,
                                     AmountRecieved = 0
