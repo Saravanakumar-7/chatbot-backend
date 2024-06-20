@@ -855,6 +855,15 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<TrascationKPNWSPReport>> GetTrascationKPNWSPReportsWithParam(string KPN)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<TrascationKPNWSPReport>()
+            .FromSqlInterpolated($"CALL Trascation_Report_KPNW({KPN})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<Inventory>> GetInventoryWarehouseReport(string PartNumber, string Description, string Warehouse,string Location, string ProjectNumber)
         {
             string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };

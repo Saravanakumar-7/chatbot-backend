@@ -25,6 +25,7 @@ namespace Tips.Production.Api.Entities
         public decimal? UnitPrice { get; set; }
         public string? UOC { get; set; }
         public decimal? ShopOrder_qty { get; set; }
+        public decimal? RequiredQty { get; set; }
         public string? UOM { get; set; }
         public string? Remarks { get; set; }
     }

@@ -405,6 +405,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? Location { get; set; }
         public string? ProjectNumber { get; set; }
     }
+    public class TrascationKPNWSPReportsDto
+    {
+        public string? KPN { get; set; }
+    }
     public class CrossMarginSPReportDto
     {
         public string? CustomerId { get; set; }
