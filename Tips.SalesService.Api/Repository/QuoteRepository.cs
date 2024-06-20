@@ -435,90 +435,16 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<List<QuoteforKeusDto>> GetAllQuoteforKeus([FromQuery] string? CustomerName, [FromQuery] string? RFQNumber, [FromQuery] int Offset, [FromQuery] int Limit)
         {
-            //var query = from a1 in _tipsSalesServiceDbContext.Quotes
-            //            join a2 in (from t in _tipsSalesServiceDbContext.QuoteEmailsDetails
-            //                        join sub in (from ted in _tipsSalesServiceDbContext.QuoteEmailsDetails
-            //                                     where ted.CustomerId != null && ted.TypeOfSolution != null
-            //                                     group ted by new { CustomerId = ted.CustomerId, TypeOfSolution = ted.TypeOfSolution } into g
-            //                                     select new { CustomerId = g.Key.CustomerId, TypeOfSolution = g.Key.TypeOfSolution, OldestSentOn = g.Min(x => x.SentOn) })
-            //                                    on new { t.CustomerId, t.TypeOfSolution } equals new { sub.CustomerId, sub.TypeOfSolution }
-            //                        where t.CustomerId == sub.CustomerId && t.TypeOfSolution == sub.TypeOfSolution && t.SentOn == sub.OldestSentOn
-            //                        )
-            //                       on new { a1.CustomerId, a1.TypeOfSolution } equals new { a2.CustomerId, a2.TypeOfSolution }
-            //            into joinedData
-            //            from quoteData in joinedData.DefaultIfEmpty()
-            //var query = from q in context.Quotes
-            //            join qe in
-            //                (from t in context.QuoteEmailDetails
-            //                 join sub in
-            //                    (from t1 in context.QuoteEmailDetails
-            //                     where t1.CustomerId != null && t1.TypeOfSolution != null
-            //                     group t1 by new { t1.CustomerId, t1.TypeOfSolution } into g
-            //                     select new
-            //                     {
-            //                         g.Key.CustomerId,
-            //                         g.Key.TypeOfSolution,
-            //                         OldestSentOn = g.Min(t2 => t2.SentOn)
-            //                     }) on new { t.CustomerId, t.TypeOfSolution, t.SentOn } equals new { sub.CustomerId, sub.TypeOfSolution, SentOn = sub.OldestSentOn }
-            //                 select t) into a2
-            //            on new { q.CustomerId, q.TypeOfSolution } equals new { a2.CustomerId, a2.TypeOfSolution } into joined
-            //            from sub in joined.DefaultIfEmpty()
-            //            select new QuoteforKeusDto
-            //            {
-            //                // Map properties from Quotes table
-            //                Id = quoteData.Id,
-            //                LeadId = quoteData.LeadId,
-            //                QuoteNumber = quoteData.QuoteNumber,
-            //                RFQNumber = quoteData.RFQNumber,
-            //                CustomerName = quoteData.CustomerName,
-            //                CustomerAliasName = quoteData.CustomerAliasName,
-            //                CustomerId = quoteData.CustomerId,
-            //                RoomName = quoteData.RoomName,
-            //                SalesPerson = quoteData.SalesPerson,
-            //                QuoteStatus = quoteData.QuoteStatus,
-            //                generalDiscountType = quoteData.generalDiscountType,
-            //                QuoteRef = quoteData.QuoteRef,
-            //                TotalAmount = quoteData.TotalAmount,
-            //                IsTheseRequiredToBePrintedInQuote = quoteData.IsTheseRequiredToBePrintedInQuote,
-            //                TotalAdditionalCharges = quoteData.TotalAdditionalCharges,
-            //                SpecialDiscountType = quoteData.SpecialDiscountType,
-            //                SpecialDiscountAmount = quoteData.SpecialDiscountAmount,
-            //                TotalFinalAmount = quoteData.TotalFinalAmount,
-            //                PaymentTerms = quoteData.PaymentTerms,
-            //                ProductType = quoteData.ProductType,
-            //                TypeOfSolution = quoteData.TypeOfSolution,
-            //                InstallationCharges = quoteData.InstallationCharges,
-            //                TotalAmountWithInstallationCharges = quoteData.TotalAmountWithInstallationCharges,
-            //                ReasonForModification = quoteData.ReasonForModification,
-            //                IsShortClosed = quoteData.IsShortClosed,
-            //                RevisionNumber = quoteData.RevisionNumber,
-            //                GeneralDiscount = quoteData.GeneralDiscount,
-            //                // Map properties from QuoteEmailsDetails (assuming FirstEmail* properties are from there)
-            //                FirstEmailQuoteNo = quoteData.QuoteNumber,
-            //                FirstEmailSentOn = quoteData.SentOn,
-            //                FirstEmailQuoteRevNo = quoteData.RevisionNumber,
-            //                FirstEmailQuoteValue = quoteData.QuoteValue,
-            //                // Include child tables (assuming navigation properties are set correctly)
-            //                //QuoteGeneralDtos = quoteData.QuoteGeneralDtos,
-            //                //QuoteAdditionalChargesDtos = quoteData.QuoteAdditionalChargesDtos,
-            //                //QuoteRFQNotesDtos = quoteData.QuoteRFQNotesDtos,
-            //                //QuoteOtherTermsDtos = quoteData.QuoteOtherTermsDtos,
-            //                //QuoteSpecialTermsDtos = quoteData.QuoteSpecialTermsDtos,
-            //                // Other properties (add as needed)
-            //               // EmailSentValue = quoteData.EmailSentValue,
-            //                Remarks = quoteData.Remarks,
-            //                Unit = quoteData.Unit,
-            //                CreatedBy = quoteData.CreatedBy,
-            //                CreatedOn = quoteData.CreatedOn,
-            //                LastModifiedBy = quoteData.LastModifiedBy,
-            //                LastModifiedOn = quoteData.LastModifiedOn
-            //            };
-
-
             var result = _tipsSalesServiceDbContext
            .Set<QuoteforKeusDto>()
            .FromSqlInterpolated($"CALL GetAllQuoteDetailsSPforKeus({CustomerName},{RFQNumber},{Offset},{Limit})")
            .ToList();
+
+            return result;
+        }
+        public async Task<int> GetAllQuoteCountforKeus()
+        {
+            var result = await _tipsSalesServiceDbContext.Quotes.CountAsync();          
 
             return result;
         }

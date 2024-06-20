@@ -95,12 +95,21 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllQuoteforKeus([FromQuery] string? CustomerName, [FromQuery] string? RFQNumber, [FromQuery] int Offset, [FromQuery] int Limit)
+        public async Task<IActionResult> GetAllQuoteforKeus([FromQuery] PagingParameter pagingParameter,[FromQuery] string? CustomerName, [FromQuery] string? RFQNumber, [FromQuery] int Offset, [FromQuery] int Limit)
         {
             ServiceResponse<List<QuoteforKeusDto>> serviceResponse = new ServiceResponse<List<QuoteforKeusDto>>();
             try
             {
                 var result = await _repository.GetAllQuoteforKeus(CustomerName, RFQNumber, Offset, Limit);
+                var TotalCount = await _repository.GetAllQuoteCountforKeus();
+                var metadata = new
+                {
+                    TotalCount,
+                    pagingParameter.PageSize,
+                    pagingParameter.PageNumber                    
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all Quote for keus");
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Quotes Successfully";

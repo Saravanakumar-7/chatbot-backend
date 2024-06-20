@@ -104,7 +104,7 @@ namespace Tips.SalesService.Api.Repository
 
         }
         public async Task<IEnumerable<SalesOrderSPReport>> GetSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN)
-        {           
+        {
             var result = _tipsSalesServiceDbContext
             .Set<SalesOrderSPReport>()
             .FromSqlInterpolated($"CALL SalesOrder_withparameter_Report({CustomerName},{SalesOrderNumber},{KPN})")
@@ -362,6 +362,23 @@ namespace Tips.SalesService.Api.Repository
 
             return PagedList<SalesOrder>.ToPagedList(getAllActiveSalesOrder, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        public async Task<PagedList<SalesOrder>> GetAllSalesOrderforKeus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
+        {
+            var salesOrderDetails = FindAll().OrderByDescending(x => x.Id)
+               .Where(inv => (string.IsNullOrWhiteSpace(searchParammes.SearchValue))
+                              // Add this condition to filter by SalesOrderNumber
+                              || (string.IsNullOrEmpty(searchParammes.SearchValue))
+                              || inv.SalesOrderNumber.Contains(searchParammes.SearchValue)
+                              || inv.ProjectNumber.Contains(searchParammes.SearchValue)
+                              || inv.CustomerName.Contains(searchParammes.SearchValue)
+                              || inv.CustomerId.Contains(searchParammes.SearchValue)
+                            )
+               .Include(t => t.SalesOrdersItems)
+               .ThenInclude(p => p.ScheduleDates)
+               .Include(p => p.SalesOrderAdditionalCharges);
+
+            return PagedList<SalesOrder>.ToPagedList(salesOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
 
         public async Task<PagedList<SalesOrder>> GetAllSalesOrder([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
@@ -560,7 +577,7 @@ namespace Tips.SalesService.Api.Repository
         {
 
             IEnumerable<ListofSalesOrderDetails> getSalesorderList = await _tipsSalesServiceDbContext.SalesOrders
-                                .Where(b => b.CustomerId == Customerid && b.SOStatus!=OrderStatus.ShortClosed && b.SOStatus != OrderStatus.Closed)
+                                .Where(b => b.CustomerId == Customerid && b.SOStatus != OrderStatus.ShortClosed && b.SOStatus != OrderStatus.Closed)
                                 .Select(x => new ListofSalesOrderDetails()
                                 {
                                     SalesOrderId = x.Id,
@@ -583,7 +600,7 @@ namespace Tips.SalesService.Api.Repository
             return salesOrderTotal;
         }
         public async Task<string> UpdateSalesOrderShortClose(SalesOrder salesOrder)
-        {           
+        {
             Update(salesOrder);
             string result = $"SalesOrder of Detail {salesOrder.Id} is updated successfully!";
             return result;
@@ -906,7 +923,7 @@ namespace Tips.SalesService.Api.Repository
             return openSalesOrderQty;
 
         }
-        public async Task<List<SalesOrderFGandBalanceQtyByProjectNo>> GetAllSalesOrderFGOrTGItemDetailsByProjectNoAndItemNo(string projectNo , string itemNumber)
+        public async Task<List<SalesOrderFGandBalanceQtyByProjectNo>> GetAllSalesOrderFGOrTGItemDetailsByProjectNoAndItemNo(string projectNo, string itemNumber)
         {
             var salesOrderIdList = await _tipsSalesServiceDbContexts.SalesOrders
                 .Where(so => (so.SalesOrderStatus == SalesOrderStatus.BuildToPrint || so.SalesOrderStatus == SalesOrderStatus.Forecast) &&
@@ -960,7 +977,7 @@ namespace Tips.SalesService.Api.Repository
         {
 
             var getSalesOrderDetailsBySOandItemNo = await _tipsSalesServiceDbContexts.SalesOrdersItems
-                 .Where(x => x.ItemNumber == ItemNumber && x.SalesOrderId == SalesOrderId && x.DispatchQty>0 && x.StatusEnum != OrderStatus.Open)
+                 .Where(x => x.ItemNumber == ItemNumber && x.SalesOrderId == SalesOrderId && x.DispatchQty > 0 && x.StatusEnum != OrderStatus.Open)
                           .ToListAsync();
 
             return getSalesOrderDetailsBySOandItemNo;
@@ -1041,9 +1058,9 @@ namespace Tips.SalesService.Api.Repository
             var result = await Create(salesOrderHistory);
             return result;
         }
-        public async Task<List<SalesOrderHistory>> GetSalesOrderHistoryBySONoAndItemNumberifShortCLosed(string SOnumber,string Itemnumber)
+        public async Task<List<SalesOrderHistory>> GetSalesOrderHistoryBySONoAndItemNumberifShortCLosed(string SOnumber, string Itemnumber)
         {
-            var SOHistory =await FindAll().Where(x => x.Remarks == "Item ShortClosed" && x.SalesOrderNumber == SOnumber && x.ItemNumber == Itemnumber).ToListAsync();
+            var SOHistory = await FindAll().Where(x => x.Remarks == "Item ShortClosed" && x.SalesOrderNumber == SOnumber && x.ItemNumber == Itemnumber).ToListAsync();
             return SOHistory;
         }
     }
