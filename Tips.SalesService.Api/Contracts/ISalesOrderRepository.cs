@@ -19,8 +19,9 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> DeleteSalesOrder(SalesOrder salesOrder);
         Task<string> UpdateSalesOrderShortClose(SalesOrder salesOrder);
         Task<IEnumerable<SalesOrder>> SearchSalesOrder([FromQuery] SearchParammes searchParammes);
-
+        Task<List<SalesOrderforKeusDto>> GetAllSalesOrderforKeus([FromQuery] string? SearchTerm, [FromQuery] int Offset, [FromQuery] int Limit);
         Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParam);
+        Task<int> GetAllSalesOrderCountforKeus(string? SearchTerm);
         Task<PagedList<SalesOrder>> GetAllSalesOrderForecast(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<PagedList<SalesOrder>> GetAllSalesOrderRfq(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<IEnumerable<SalesOrderIdNameListDto>> GetAllSalesOrderIdNameList();

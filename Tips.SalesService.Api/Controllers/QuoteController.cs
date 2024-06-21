@@ -18,6 +18,7 @@ using Newtonsoft.Json.Linq;
 using NPOI.HPSF;
 using NPOI.SS.Formula.Eval;
 using NPOI.SS.Formula.Functions;
+using NuGet.Configuration;
 using NuGet.Packaging;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
@@ -25,6 +26,7 @@ using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
 using Tips.SalesService.Api.Entities.Enum;
 using Tips.SalesService.Api.Repository;
+
 using EmailIDsDto = Tips.SalesService.Api.Entities.DTOs.EmailIDsDto;
 using EmailTemplateDto = Tips.SalesService.Api.Entities.DTOs.EmailTemplateDto;
 
@@ -95,18 +97,18 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllQuoteforKeus([FromQuery] PagingParameter pagingParameter,[FromQuery] string? CustomerName, [FromQuery] string? RFQNumber, [FromQuery] int Offset, [FromQuery] int Limit)
+        public async Task<IActionResult> GetAllQuoteforKeus([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromQuery] int Offset, [FromQuery] int Limit)
         {
             ServiceResponse<List<QuoteforKeusDto>> serviceResponse = new ServiceResponse<List<QuoteforKeusDto>>();
             try
             {
-                var result = await _repository.GetAllQuoteforKeus(CustomerName, RFQNumber, Offset, Limit);
-                var TotalCount = await _repository.GetAllQuoteCountforKeus();
+                var result = await _repository.GetAllQuoteforKeus(SearchTerm, Offset, Limit);
+                var TotalCount = await _repository.GetAllQuoteCountforKeus(SearchTerm);
                 var metadata = new
                 {
                     TotalCount,
                     pagingParameter.PageSize,
-                    pagingParameter.PageNumber                    
+                    CurrentPage=pagingParameter.PageNumber
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
@@ -730,7 +732,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendEmailforQuote([FromBody]QuoteEmailPostDto quoteEmailPostDto)
+        public async Task<IActionResult> SendEmailforQuote([FromBody] QuoteEmailPostDto quoteEmailPostDto)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
             try
@@ -756,7 +758,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     emaildetails = "Your Keus Accessories Quotation";
                     FileName = "Quote_Accessories_Book";
-                } 
+                }
                 else
                 {
                     //var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=QuoteLightEmail"));
@@ -808,40 +810,40 @@ namespace Tips.SalesService.Api.Controllers
                 if (quoteDetails.TypeOfSolution == "Automation" || quoteDetails.TypeOfSolution == "Upsell - Automation" || quoteDetails.TypeOfSolution == "Accessories" || quoteDetails.TypeOfSolution == "Lock")
                 {
                     string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-automation-quotation.html");
-                    
+
                     body = System.IO.File.ReadAllText(htmlFilePath);
                     body = body.Replace("{{Quote Number}}", quoteDetails.QuoteNumber);
                     body = body.Replace("{{Customer Name}}", quoteDetails.CustomerName);
                 }
                 else
-                {                   
+                {
                     string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-light-quotation.html");
-                    
+
                     body = System.IO.File.ReadAllText(htmlFilePath);
                     body = body.Replace("{{Customer Name}}", quoteDetails.CustomerName);
                 }
-                
+
                 var builder = new BodyBuilder();
                 builder.HtmlBody = body;
                 using (HttpClient client1 = new HttpClient())
                 {
                     //HttpResponseMessage response2 = await client1.GetAsync(jasperfileUrl);
                     //response2.EnsureSuccessStatusCode();
-                    
+
                     client1.Timeout = TimeSpan.FromMinutes(5);
                     var request2 = new HttpRequestMessage(HttpMethod.Get, quoteEmailPostDto.jasperfileUrl);
 
                     request2.Headers.Add("Authorization", "Basic amFzcGVyYWRtaW46Uk11aExncXdkOXBJUGI0");
-                    request2.Headers.Add("X-Remote-Domain","1");
+                    request2.Headers.Add("X-Remote-Domain", "1");
                     var response2 = await client1.SendAsync(request2);
                     response2.EnsureSuccessStatusCode();
-                    
+
                     byte[] fileBytes = await response2.Content.ReadAsByteArrayAsync();
                     //Uri uri = new Uri(jasperfileUrl);
                     //var filename= Path.GetFileName(uri.LocalPath);
                     builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
                 }
-                
+
                 //email.Body = new TextPart(TextFormat.Html) { Text = body };
                 email.Body = builder.ToMessageBody();
 
@@ -852,7 +854,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 smtp.Send(email);
                 smtp.Disconnect(true);
-                
+
                 QuoteEmailsDetails quoteEmailsDetails = new QuoteEmailsDetails()
                 {
                     QuoteNumber = quoteDetails.QuoteNumber,
@@ -862,9 +864,9 @@ namespace Tips.SalesService.Api.Controllers
                     CustomerEmailId = quoteEmailPostDto.CusEmail,
                     CustomerId = quoteDetails.CustomerId,
                     CustomerName = quoteDetails.CustomerName,
-                    QuoteValue=quoteDetails.TotalFinalAmount,
+                    QuoteValue = quoteDetails.TotalFinalAmount,
                     QuoteId = quoteDetails.Id,
-                    TypeOfSolution=quoteDetails.TypeOfSolution
+                    TypeOfSolution = quoteDetails.TypeOfSolution
                 };
                 await _quoteEmailsDetailsRepository.CreateQuoteEmailsDetails(quoteEmailsDetails);
                 _quoteEmailsDetailsRepository.SaveAsync();
@@ -880,6 +882,29 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError($"Something went wrong inside SendEmailforQuote action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> SendWhatsAppforQuote()
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+               
+                serviceResponse.Data = null;
+                serviceResponse.Message = "WhatsApp Message sent Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside SendWhatsAppforQuote action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

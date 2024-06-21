@@ -155,18 +155,18 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public bool SoConfirmationStatus { get; set; }
         [DefaultValue(false)]
         public bool ApproveStatus { get; set; }
-        public string? FirstEmailSalesOrderNo { get; set; }
+        public string? FirstEmailSalesNo { get; set; }
         public DateTime? FirstEmailSentOn { get; set; }
-        public decimal? FirstEmailSalesOrderRevNo { get; set; }
-        public decimal? FirstEmailSalesOrderValue { get; set; }
-        public decimal? SalesOrderUntaxedValue { get; set; }
+        public decimal? FirstEmailSalesRevNo { get; set; }
+        public decimal? FirstEmailSalesValue { get; set; }
+        public decimal? SalesUntaxedValue { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<SalesOrderItemsDto>? SalesOrdersItems { get; set; }
-        public List<SalesOrderAdditionalChargesDto>? SalesOrderAdditionalCharges { get; set; }
+        //public List<SalesOrderItemsDto>? SalesOrdersItems { get; set; }
+        //public List<SalesOrderAdditionalChargesDto>? SalesOrderAdditionalCharges { get; set; }
     }
     public class SalesOrderPostDto
     {

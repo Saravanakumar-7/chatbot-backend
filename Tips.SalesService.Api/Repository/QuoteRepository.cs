@@ -433,18 +433,24 @@ namespace Tips.SalesService.Api.Repository
             return PagedList<Quote>.ToPagedList(quoteDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<List<QuoteforKeusDto>> GetAllQuoteforKeus([FromQuery] string? CustomerName, [FromQuery] string? RFQNumber, [FromQuery] int Offset, [FromQuery] int Limit)
+        public async Task<List<QuoteforKeusDto>> GetAllQuoteforKeus([FromQuery] string? SearchTerm, [FromQuery] int Offset, [FromQuery] int Limit)
         {
             var result = _tipsSalesServiceDbContext
            .Set<QuoteforKeusDto>()
-           .FromSqlInterpolated($"CALL GetAllQuoteDetailsSPforKeus({CustomerName},{RFQNumber},{Offset},{Limit})")
+           .FromSqlInterpolated($"CALL GetAllQuoteDetailsSPforKeus({SearchTerm},{Offset},{Limit})")
            .ToList();
 
             return result;
         }
-        public async Task<int> GetAllQuoteCountforKeus()
+        public async Task<int> GetAllQuoteCountforKeus(string? SearchTerm)
         {
-            var result = await _tipsSalesServiceDbContext.Quotes.CountAsync();          
+            var result =await FindAll()
+            .Where(inv => (string.IsNullOrWhiteSpace(SearchTerm)
+            || inv.RFQNumber.Contains(SearchTerm)            
+            || inv.CustomerName.Contains(SearchTerm)
+            || inv.QuoteNumber.Contains(SearchTerm)
+            || inv.CustomerId.Contains(SearchTerm)
+            )).CountAsync();
 
             return result;
         }

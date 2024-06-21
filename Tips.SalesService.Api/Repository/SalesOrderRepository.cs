@@ -420,6 +420,27 @@ namespace Tips.SalesService.Api.Repository
             //return PagedList<SalesOrder>.ToPagedList(salesOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
+        public async Task<List<SalesOrderforKeusDto>> GetAllSalesOrderforKeus([FromQuery] string? SearchTerm, [FromQuery] int Offset, [FromQuery] int Limit)
+        {
+            var result = _tipsSalesServiceDbContext
+           .Set<SalesOrderforKeusDto>()
+           .FromSqlInterpolated($"CALL GetAllSalesDetailsSPforKeus({SearchTerm},{Offset},{Limit})")
+           .ToList();
+
+            return result;
+        }
+        public async Task<int> GetAllSalesOrderCountforKeus(string? SearchTerm)
+        {
+            var result = await FindAll()
+            .Where(inv => (string.IsNullOrWhiteSpace(SearchTerm)
+            || inv.SalesOrderNumber.Contains(SearchTerm)
+            || inv.ProjectNumber.Contains(SearchTerm)
+            || inv.CustomerName.Contains(SearchTerm)
+            || inv.CustomerId.Contains(SearchTerm)
+            )).CountAsync();
+
+            return result;
+        }
         public async Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParam)
         {
             var salesOrderDetails = _tipsSalesServiceDbContext.SalesOrders

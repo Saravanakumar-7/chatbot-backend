@@ -9,6 +9,7 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using MailKit.Search;
 using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -4128,6 +4129,43 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllSalesOrderforKeus([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromQuery] int Offset, [FromQuery] int Limit)
+        {
+            ServiceResponse<IEnumerable<SalesOrderforKeusDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderforKeusDto>>();
+            try
+            {
+                var getAllSalesOrder = await _repository.GetAllSalesOrderforKeus(SearchTerm, Offset, Limit);
+                var TotalCount = await _repository.GetAllSalesOrderCountforKeus(SearchTerm);
+
+                var metadata = new
+                {
+                    TotalCount,
+                    pagingParameter.PageSize,
+                    CurrentPage = pagingParameter.PageNumber
+                };
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all SalesOrders for Keus");                
+                serviceResponse.Data = getAllSalesOrder;
+                serviceResponse.Message = "Returned all SalesOrders for Keus";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInfo($"Returned owner with id: {ex.Message}{ex.InnerException}");
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = ($"Returned owner with id: {ex.Message}{ex.InnerException}");
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 
 

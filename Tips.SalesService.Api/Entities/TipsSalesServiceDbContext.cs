@@ -136,7 +136,8 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<RfqSalesOrderSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<ForecastSalesOrderSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<QuoteforKeusDto>().HasNoKey();
-
+            modelBuilder.Entity<SalesOrderforKeusDto>().HasNoKey();
+            
         }
 
     }
