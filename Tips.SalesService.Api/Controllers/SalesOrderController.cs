@@ -281,7 +281,7 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
                         {
-                            SalesOrderAdditionalChargesDto additionalChargesDetails = _mapper.Map<SalesOrderAdditionalChargesDto>(salesAdditionalChargesDto[i]);
+                            SalesOrderAdditionalChargesDto additionalChargesDetails = _mapper.Map<SalesOrderAdditionalChargesDto>(salesAdditionalChargesDto[i]); 
                             salesAdditionalChargesList.Add(additionalChargesDetails);
                         }
                     }
