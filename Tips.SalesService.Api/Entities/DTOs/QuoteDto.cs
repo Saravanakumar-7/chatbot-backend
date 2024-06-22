@@ -61,6 +61,72 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public List<QuoteOtherTermsDto>? QuoteOtherTermsDtos { get; set; }
         public List<QuoteSpecialTermsDto>? QuoteSpecialTermsDtos { get; set; }
     }
+    public class QuoteforKeusDto
+    {
+        public int Id { get; set; }
+        public string? LeadId { get; set; }
+        public string? QuoteNumber { get; set; }
+        public string? RFQNumber { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
+        public string? CustomerId { get; set; }
+        public string? RoomName { get; set; }
+        public string? SalesPerson { get; set; }
+        public OrderStatus QuoteStatus { get; set; }
+        public string? generalDiscountType { get; set; }
+        public string? QuoteRef { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAmount { get; set; }
+
+        public bool? IsTheseRequiredToBePrintedInQuote { get; set; }
+
+        [Precision(18, 3)]
+
+        public decimal? TotalAdditionalCharges { get; set; }
+        public string? SpecialDiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SpecialDiscountAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal TotalFinalAmount { get; set; }
+        public string? PaymentTerms { get; set; }
+        public string? ProductType { get; set; }
+        public string? TypeOfSolution { get; set; }
+        [Precision(13, 3)]
+        public decimal? InstallationCharges { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? TotalAmountWithInstallationCharges { get; set; }
+
+        public string? ReasonForModification { get; set; }
+        public bool IsShortClosed { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? GeneralDiscount { get; set; }
+        public string? FirstEmailQuoteNo { get; set; }
+        public DateTime? FirstEmailSentOn { get; set; }
+        public decimal? FirstEmailQuoteRevNo { get; set; }
+        public decimal? FirstEmailQuoteValue { get; set; }
+        public decimal? QuoteUntaxedValue { get; set; }
+       // public decimal? EmailSentValue { get; set; }
+        public string? Remarks { get; set; }
+        public string Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        //public List<QuoteGeneralDto>? QuoteGeneralDtos { get; set; }
+        //public List<QuoteAdditionalChargesDto>? QuoteAdditionalChargesDtos { get; set; }
+        //public List<QuoteRFQNotesDto>? QuoteRFQNotesDtos { get; set; }
+        //public List<QuoteOtherTermsDto>? QuoteOtherTermsDtos { get; set; }
+        //public List<QuoteSpecialTermsDto>? QuoteSpecialTermsDtos { get; set; }
+    }
+    
     public class QuotePostDto
     {
         public string? LeadId { get; set; }
@@ -244,7 +310,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ShortClosedRemarks { get; set; }
     }
 
-   
+
     public class Itemnumberimages
     {
         public List<Datum>? data { get; set; }
@@ -261,5 +327,43 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? fileExtension { get; set; }
         public string? downloadUrl { get; set; }
     }
+    public class Data1
+    {
+        public int id { get; set; }
+        public string processType { get; set; }
+        public string? template { get; set; }
+        public string subject { get; set; }
+    }
 
+    public class EmailTemplateDto
+    {
+        public Data1 data { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
+        public int statusCode { get; set; }
+    }
+    public class EmailIDsDto
+    {
+        public Datum1[] data { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
+        public int statusCode { get; set; }
+    }
+
+    public class Datum1
+    {
+        public int id { get; set; }
+        public string operation { get; set; }
+        public string emailIds { get; set; }
+        public string? host { get; set; }
+        public int? port { get; set; }
+        public string? password { get; set; }
+    }
+    public class QuoteEmailPostDto
+    {
+        public string SentTo { get; set; }
+        public string? CusEmail { get; set; }
+        public string jasperfileUrl { get; set; }
+        public int Quoteid { get; set; }
+    }
 }

@@ -1,5 +1,6 @@
 ﻿  using Microsoft.EntityFrameworkCore;
 using Tips.SalesService.Api.Entities.Dto;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Entities
 {
@@ -12,7 +13,8 @@ namespace Tips.SalesService.Api.Entities
         }
 
         public DbSet<Rfq> Rfqs { get; set; }
-
+        public DbSet<QuoteEmailsDetails> QuoteEmailsDetails { get; set; }
+        public DbSet<SalesOrderEmailsDetails> SalesOrderEmailsDetails { get; set; }
         public DbSet<RfqNumber> rfqNumbers { get ;set;}
         public DbSet<RfqCustomerSupport> RfqCustomerSupports { get; set; }
 
@@ -134,6 +136,9 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<QuoteSPReport>().HasNoKey();
             modelBuilder.Entity<RfqSalesOrderSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<ForecastSalesOrderSPReportForTrans>().HasNoKey();
+            modelBuilder.Entity<QuoteforKeusDto>().HasNoKey();
+            modelBuilder.Entity<SalesOrderforKeusDto>().HasNoKey();
+            
             modelBuilder.Entity<RfqSalesOrderRoomWiseSPReport>().HasNoKey();
         }
 
