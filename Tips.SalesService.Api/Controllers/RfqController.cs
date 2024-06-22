@@ -2847,7 +2847,7 @@ namespace Tips.SalesService.Api.Controllers
                 oldversionRFQdetails.Remarks = rfqCustomerSupportUpdateDto.Remarks;
                 oldversionRFQdetails.ReasonForModification = rfqCustomerSupportUpdateDto.ReasonForModification;
                 oldversionRFQdetails.RevisionNumber = latestRfqrevNo + 1;
-                var oldRFQcsReleasedItems = await _itemRepository.RfqCsReleasedItemList(rfqCustomerSupportUpdateDto.RfqNumber);
+                var oldRFQcsReleasedItems = await _itemRepository.RfqCsReleasedItemsList(rfqCustomerSupportUpdateDto.RfqNumber, rfqCustomerSupportUpdateDto.RevisionNumber);
                 var updatedItems = new List<RfqCustomerSupportItemUpdateDto>();
                 int flag = 0;
                 foreach (var itemList in rfqCustomerSupportUpdateDto.RfqCustomerSupportItems)
@@ -2882,9 +2882,11 @@ namespace Tips.SalesService.Api.Controllers
                 oldversionRFQdetails.Id = 0;
                 oldversionRFQdetails.CreatedBy = _createdBy;
                 oldversionRFQdetails.CreatedOn = DateTime.Now;
-                _rfqRepository.Create(oldversionRFQdetails);
+                await _rfqRepository.Create(oldversionRFQdetails);
+
                 rfqCustomerSupportUpdateDto.RfqCustomerSupportItems = null;
                 rfqCustomerSupportUpdateDto.RfqCustomerSupportItems = updatedItems;
+
                 RfqCustomerSupport CS = null;
                 var rfqCSItemDto = rfqCustomerSupportUpdateDto.RfqCustomerSupportItems;
                 var rfqCsItemList = new List<RfqCustomerSupportItems>();
@@ -2915,7 +2917,7 @@ namespace Tips.SalesService.Api.Controllers
                         rfqCsnotelist.Add(rfqCSnoteDetail);
                     }
                 }
-                RfqCustomerSupport oldCSdetails = await _repository.GetRfqCustomerSupportDetailsbyrfqnumber(rfqCustomerSupportUpdateDto.RfqNumber);
+                RfqCustomerSupport oldCSdetails = await _repository.GetRfqCustomerSupportDetailsbyRfqNoAndRevNo(rfqCustomerSupportUpdateDto.RfqNumber, rfqCustomerSupportUpdateDto.RevisionNumber);
                 oldCSdetails.Id = 0;
                 oldCSdetails.LeadId = oldversionRFQdetails.LeadId;
                 oldCSdetails.CustomerName = oldversionRFQdetails.CustomerName;

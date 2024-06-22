@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<PagedList<CollectionTracker>> GetAllCollectionTrackers(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<CollectionTracker> GetCollectionTrackerById(int id);
         Task<CollectionTrackerDetailsDto> GetSOCollectionTrackerByCustomerId(string customerId);
+        Task<List<OpenSalesOrderDetailsForKeusDto>> GetOpenSODetailsByCustomerIdForKeus(string salesOrderNumber);
         Task<int?> CreateCollectionTracker(CollectionTracker collectionTracker);
         Task<string> UpdateCollectionTracker(CollectionTracker collectionTracker);
         Task<string> DeleteCollectionTracker(CollectionTracker collectionTracker);

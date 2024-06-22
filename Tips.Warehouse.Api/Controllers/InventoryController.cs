@@ -1386,6 +1386,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryDetails[i].Location = "WIP";
                         inventoryDetails[i].shopOrderNo = shopOrderNumber;
                         inventoryDetails[i].IsStockAvailable = true;
+                        inventoryDetails[i].ReferenceIDFrom = "Material Issue";
 
                         /** Dont Change the Position of IssuedQty and BalanceQty Code in this Method .it should be always last ***********************/
                         issuedQty -= balanceqty;

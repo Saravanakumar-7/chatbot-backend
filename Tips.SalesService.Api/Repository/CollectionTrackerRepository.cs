@@ -254,7 +254,56 @@ namespace Tips.SalesService.Api.Repository
             }
         }
 
-            public async Task<CollectionTrackerDetailsDto> GetSOCollectionTrackerByCustomerId(string customerId)
+        public async Task<List<OpenSalesOrderDetailsForKeusDto>> GetOpenSODetailsByCustomerIdForKeus(string salesOrderNumber)
+        {
+
+            var soBreakDownDetails = _tipsSalesServiceDbContext.SOBreakDowns.Where(x => x.SalesOrderNumber == salesOrderNumber).Count();
+            if (soBreakDownDetails != 0)
+            {
+                var SODetails = from e in _tipsSalesServiceDbContext.SalesOrders
+                                where e.SalesOrderNumber == salesOrderNumber
+                                join d in _tipsSalesServiceDbContext.SOBreakDowns on e.SalesOrderNumber equals d.SalesOrderNumber into dept
+                                from SOBreakDown in dept.DefaultIfEmpty()
+                                group new { e, SOBreakDown } by new { e.Id, e.SalesOrderNumber, e.Total, e.TypeOfSolution } into g
+                                select new OpenSalesOrderDetailsForKeusDto
+                                {
+                                    SalesOrderId = g.Key.Id,
+                                    SalesOrderNo = g.Key.SalesOrderNumber,
+                                    TypeOfSolution = g.Key.TypeOfSolution,
+                                    TotalValue = g.Key.Total,
+                                    PendingValue = g.Key.Total - g.Sum(x => x.SOBreakDown.AmountAgainstSO),
+                                    AmountRecieved = g.Sum(x => x.SOBreakDown.AmountAgainstSO)
+                                };
+
+                var soData = SODetails.ToList();
+
+                return soData;
+
+
+            }
+            else
+            {
+                var SODetails = from e in _tipsSalesServiceDbContext.SalesOrders
+                                where e.SalesOrderNumber == salesOrderNumber
+                                join d in _tipsSalesServiceDbContext.SOBreakDowns on e.CustomerId equals d.CustomerId into dept
+                                from SOBreakDown in dept.DefaultIfEmpty()
+                                select new OpenSalesOrderDetailsForKeusDto
+                                {
+                                    SalesOrderId = e.Id,
+                                    SalesOrderNo = e.SalesOrderNumber,
+                                    TypeOfSolution = e.TypeOfSolution,
+                                    TotalValue = e.Total,
+                                    PendingValue = e.Total,
+                                    AmountRecieved = 0
+                                };
+
+                var soData = SODetails.ToList();
+
+                return soData;
+            }
+        }
+
+        public async Task<CollectionTrackerDetailsDto> GetSOCollectionTrackerByCustomerId(string customerId)
         {
             var salesOrderTotalValue = _tipsSalesServiceDbContext.SalesOrders
                     .Where(x => x.CustomerId == customerId)
@@ -297,43 +346,43 @@ namespace Tips.SalesService.Api.Repository
 
                 return collectiveTrackerDetails;
             }
-
-
-            //var salesOrderTotalValue = _tipsSalesServiceDbContext.SalesOrders.Where(x => x.CustomerId == customerId).Sum(s => s.Total);
-
-            //var collectionDetails = _tipsSalesServiceDbContext.CollectionTrackers.Where(x => x.CustomerId == customerId).Select(x=>x.AlreadyRecieved).Count();
-            //if (collectionDetails != 0)
-            //{
-            //    var amountRecieved = _tipsSalesServiceDbContext.CollectionTrackers.Where(x => x.CustomerId == customerId).Sum(x=>x.AmountRecieved);
-            //    var alreadyRecieved = _tipsSalesServiceDbContext.CollectionTrackers.Where(x => x.CustomerId == customerId).Sum(x => x.AlreadyRecieved);
-
-            //    var alreadyRecievedData = Convert.ToInt32(alreadyRecieved) + Convert.ToInt32(amountRecieved);
-
-            //    var collectiveTrackerDetails = await _tipsSalesServiceDbContext.SalesOrders
-            //                    .Select(s => new CollectionTrackerDetailsDto()
-            //                    {
-            //                        TotalSumOfSOAmount = salesOrderTotalValue,
-            //                        AlreadyRecieved = Convert.ToDecimal(alreadyRecievedData)
-
-            //                    }).Distinct().FirstOrDefaultAsync();
-
-            //    return collectiveTrackerDetails;
-            //}
-            //else
-            //{
-            //    var alreadyRecieved = 0;
-            //    var collectiveTrackerDetails = await _tipsSalesServiceDbContext.SalesOrders
-            //                   .Select(s => new CollectionTrackerDetailsDto()
-            //                   {
-            //                       TotalSumOfSOAmount = salesOrderTotalValue,
-            //                       AlreadyRecieved = alreadyRecieved
-
-            //                   }).Distinct().FirstOrDefaultAsync();
-
-            //    return collectiveTrackerDetails;
-            //}
-
         }
+
+                //var salesOrderTotalValue = _tipsSalesServiceDbContext.SalesOrders.Where(x => x.CustomerId == customerId).Sum(s => s.Total);
+
+                //var collectionDetails = _tipsSalesServiceDbContext.CollectionTrackers.Where(x => x.CustomerId == customerId).Select(x=>x.AlreadyRecieved).Count();
+                //if (collectionDetails != 0)
+                //{
+                //    var amountRecieved = _tipsSalesServiceDbContext.CollectionTrackers.Where(x => x.CustomerId == customerId).Sum(x=>x.AmountRecieved);
+                //    var alreadyRecieved = _tipsSalesServiceDbContext.CollectionTrackers.Where(x => x.CustomerId == customerId).Sum(x => x.AlreadyRecieved);
+
+                //    var alreadyRecievedData = Convert.ToInt32(alreadyRecieved) + Convert.ToInt32(amountRecieved);
+
+                //    var collectiveTrackerDetails = await _tipsSalesServiceDbContext.SalesOrders
+                //                    .Select(s => new CollectionTrackerDetailsDto()
+                //                    {
+                //                        TotalSumOfSOAmount = salesOrderTotalValue,
+                //                        AlreadyRecieved = Convert.ToDecimal(alreadyRecievedData)
+
+                //                    }).Distinct().FirstOrDefaultAsync();
+
+                //    return collectiveTrackerDetails;
+                //}
+                //else
+                //{
+                //    var alreadyRecieved = 0;
+                //    var collectiveTrackerDetails = await _tipsSalesServiceDbContext.SalesOrders
+                //                   .Select(s => new CollectionTrackerDetailsDto()
+                //                   {
+                //                       TotalSumOfSOAmount = salesOrderTotalValue,
+                //                       AlreadyRecieved = alreadyRecieved
+
+                //                   }).Distinct().FirstOrDefaultAsync();
+
+                //    return collectiveTrackerDetails;
+                //}
+
+            
 
         public async Task<string> UpdateCollectionTracker(CollectionTracker collectionTracker)
         {
@@ -345,3 +394,4 @@ namespace Tips.SalesService.Api.Repository
         }
     }
 }
+

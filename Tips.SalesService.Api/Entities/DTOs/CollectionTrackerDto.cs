@@ -67,6 +67,17 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? PendingValue { get; set; }
         public decimal AmountRecieved { get; set; }
     }
+
+    public class OpenSalesOrderDetailsForKeusDto
+    {
+        public int SalesOrderId { get; set; }
+        public string SalesOrderNo { get; set; }
+        public string TypeOfSolution { get; set; }
+        public decimal? TotalValue { get; set; }
+        public decimal? PendingValue { get; set; }
+        public decimal AmountRecieved { get; set; }
+    }
+
     public class CollectionTrackerSearchDto
     {
         public List<string> CustomerId { get; set; }

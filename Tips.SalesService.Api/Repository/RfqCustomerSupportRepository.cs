@@ -53,6 +53,16 @@ namespace Tips.SalesService.Api.Repository
             getRfqCSById.RfqCustomerSupportNotes = null;
             return getRfqCSById;
         }
+
+        public async Task<RfqCustomerSupport> GetRfqCustomerSupportDetailsbyRfqNoAndRevNo(string rfqno ,int revNo)
+        {
+            var getRfqCSById = await _tipsSalesServiceDbContext.RfqCustomerSupports.Where(x => x.RfqNumber == rfqno && x.RevisionNumber == revNo)
+                           .FirstOrDefaultAsync();
+            getRfqCSById.RfqCustomerSupportItems = null;
+            getRfqCSById.RfqCustomerSupportNotes = null;
+            return getRfqCSById;
+        }
+
         public async Task<string> UpdateRfqCSRev(string rfqnumber, int rfqrev)
         {
             var csdetails = await _tipsSalesServiceDbContext.RfqCustomerSupports.Where(x => x.RfqNumber == rfqnumber).OrderByDescending(x => x.Id)
@@ -413,6 +423,19 @@ namespace Tips.SalesService.Api.Repository
 
             var releaseItemList = await _tipsSalesServiceDbContext.RfqCustomerSupportItems
               .Where(x => x.RfqNumber == rfqNumber && x.ReleaseStatus == true && x.RfqCustomerSupportId == latestrfqCsId).Select(x => x.Id)
+              .ToListAsync();
+
+            return releaseItemList;
+        }
+        public async Task<List<int>> RfqCsReleasedItemsList(string rfqNumber,int revNo)
+        {
+            var rfqCsId = await _tipsSalesServiceDbContext.RfqCustomerSupports
+            .Where(x => x.RfqNumber == rfqNumber && x.RevisionNumber == revNo)
+            .Select(x => x.Id)
+            .FirstOrDefaultAsync();
+
+            var releaseItemList = await _tipsSalesServiceDbContext.RfqCustomerSupportItems
+              .Where(x => x.RfqNumber == rfqNumber && x.ReleaseStatus == true && x.RfqCustomerSupportId == rfqCsId).Select(x => x.Id)
               .ToListAsync();
 
             return releaseItemList;
@@ -832,17 +855,34 @@ namespace Tips.SalesService.Api.Repository
         public async Task<IEnumerable<RfqNumberListDto>> GetAllRfqNumberList()
         {
             IEnumerable<RfqNumberListDto> rfqNumberList = await _tipsSalesServiceDbContext.Rfqs
-                                .Select(x => new RfqNumberListDto()
+                                .GroupBy(x=>x.RfqNumber)
+                                .Select(group => new RfqNumberListDto()
                                 {
-                                    Id = x.Id,
-                                    RfqNumber = x.RfqNumber,
-                                    SalesPerson = x.SalesPerson,
-                                    CustomerName = x.CustomerName
+                                    Id = group.First().Id,
+                                    RfqNumber = group.Key,
+                                    SalesPerson = group.First().SalesPerson,
+                                    CustomerName = group.First().CustomerName
                                 })
                               .OrderByDescending(x => x.Id).ToListAsync();
 
             return rfqNumberList;
         }
+        //public async Task<IEnumerable<RfqNumberListDto>> GetAllRfqNumberList()
+        //{
+        //    var rfqNumberList = await _tipsSalesServiceDbContext.Rfqs
+        //        .GroupBy(x => x.RfqNumber) 
+        //        .Select(group => group.OrderByDescending(x => x.Id).FirstOrDefault()) 
+        //        .Select(x => new RfqNumberListDto
+        //        {
+        //            Id = x.Id,
+        //            RfqNumber = x.RfqNumber,
+        //            SalesPerson = x.SalesPerson,
+        //            CustomerName = x.CustomerName
+        //        })
+        //        .ToListAsync();
+
+        //    return rfqNumberList;
+        //}
 
         public async Task<Rfq> GetRfqDeatailsByRfqNoAndRevNo(string rfqNumber, int revisionNumber)
         {

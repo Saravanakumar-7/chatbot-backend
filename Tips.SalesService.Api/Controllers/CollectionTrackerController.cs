@@ -149,6 +149,44 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetCollectionTrackerByCustomerIdForKeus(string SalesOrderNumber)
+        {
+            ServiceResponse<IEnumerable<OpenSalesOrderDetailsForKeusDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenSalesOrderDetailsForKeusDto>>();
+            try
+            {
+                var openSalesOrderDetails = await _repository.GetOpenSODetailsByCustomerIdForKeus(SalesOrderNumber);
+                if (openSalesOrderDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CollectionTracker with id hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CollectionTracker with id: {SalesOrderNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned CollectionTracker with id: {SalesOrderNumber}");
+                    var result = _mapper.Map<List<OpenSalesOrderDetailsForKeusDto>>(openSalesOrderDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned CollectionTrackerById Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetCollectionTrackerByCustomerIdForKeus action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetCollectionTrackerById action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> SearchCollectionTrackerDate([FromQuery] SearchDateParam searchDateParam)
         {
             ServiceResponse<IEnumerable<CollectionTrackerDto>> serviceResponse = new ServiceResponse<IEnumerable<CollectionTrackerDto>>();

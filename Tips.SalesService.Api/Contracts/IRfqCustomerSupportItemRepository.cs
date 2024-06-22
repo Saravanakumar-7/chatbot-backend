@@ -13,7 +13,7 @@ namespace Tips.SalesService.Api.Contracts
     {
         Task<IEnumerable<RfqCustomerSupportItems>> GetAllRfqCustomerSupportItem();
         Task<List<int>> RfqCsReleasedItemList(string rfqNumber);
-
+        Task<List<int>> RfqCsReleasedItemsList(string rfqNumber, int revNo);
         Task<RfqCustomerSupportItems> GetRfqCustomerSupportItemById(int id);
         Task<IEnumerable<RfqCustomerSupportItems>> GetRfqCustomerSupportItemByRfqNumber(string rfqNumber);
         Task<IEnumerable<RfqCustomerSupportItems>> GetRfqCustomerSupportRelesedDetailsByRfqNumber(string rfqNumber);
