@@ -125,16 +125,19 @@ namespace Tips.SalesService.Api.Repository
         public async Task<Quote> ChangeQuoteVersion(Quote quote)
         {
             var getIdByRfqNumber = _tipsSalesServiceDbContext.Quotes
-                .Where(x => x.RFQNumber == quote.RFQNumber)
+                .Where(x => x.QuoteNumber == quote.QuoteNumber)
                 .OrderByDescending(x => x.Id)
                 .Select(x => x.Id)
                 .FirstOrDefault();
+
             var getOldRevisionNumber = _tipsSalesServiceDbContext.Quotes
                 .Where(x => x.Id == getIdByRfqNumber)
                 .FirstOrDefault();
+
             getOldRevisionNumber.LastModifiedBy = _createdBy;
             getOldRevisionNumber.LastModifiedOn = DateTime.Now;
             Update(getOldRevisionNumber);
+
             var increaseVersionNumber = 1;
             var convertversionnumber = Convert.ToDecimal(increaseVersionNumber);
             var version = getOldRevisionNumber.RevisionNumber + convertversionnumber;

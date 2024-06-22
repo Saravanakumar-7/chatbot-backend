@@ -733,7 +733,8 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     SalesOrderId = Convert.ToInt32(additionalChargeItem.SalesOrderId),
                     InvoicedValue = Convert.ToDecimal(additionalChargeItem.InvoicedValue),
-                    SalesAdditionalChargeId = additionalChargeItem.SalesAdditionalChargeId
+                    SalesAdditionalChargeId = additionalChargeItem.SalesAdditionalChargeId,
+                    SOAdditionalStatus = additionalChargeItem.SOAdditionalStatus,
                 };
                 salesOrderAdditionalChargesUpdates.Add(additionalCharges);
             }

@@ -41,11 +41,12 @@ namespace Tips.Warehouse.Api.Controllers
         private IBTODeliveryOrderItemsRepository _bTODeliveryOrderItemsRepository;
         private IBTODeliveryOrderHistoryRepository _bTODeliveryOrderHistoryRepository;
         private IBTODeliveryOrderRepository _bTODeliveryOrderRepository;
+        private IInvoiceAdditionalChargeRepository _invoiceAdditionalChargeRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
         private readonly IHttpClientFactory _clientFactory;
-        public ReturnInvoiceController(IReturnInvoiceRepository returnInvoiceRepositor, IInvoiceRepository invoiceRepository, IHttpClientFactory clientFactory, IInvoiceChildRepository invoiceChildRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryTranctionRepository inventoryTranctionRepository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public ReturnInvoiceController(IInvoiceAdditionalChargeRepository invoiceAdditionalChargeRepository, IReturnInvoiceRepository returnInvoiceRepositor, IInvoiceRepository invoiceRepository, IHttpClientFactory clientFactory, IInvoiceChildRepository invoiceChildRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryTranctionRepository inventoryTranctionRepository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
             _invoiceRepository= invoiceRepository;
             _returnInvoiceRepository = returnInvoiceRepositor;
@@ -60,6 +61,7 @@ namespace Tips.Warehouse.Api.Controllers
             _bTODeliveryOrderItemsRepository = bTODeliveryOrderItemsRepository;
             _bTODeliveryOrderHistoryRepository = bTODeliveryOrderHistoryRepository;
             _bTODeliveryOrderRepository = bTODeliveryOrderRepository;
+            _invoiceAdditionalChargeRepository = invoiceAdditionalChargeRepository;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
@@ -196,6 +198,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var returnInvoiceDetails = _mapper.Map<ReturnInvoice>(ReturnInvoiceDtoPost);
                 var returnInvoiceItemDto = ReturnInvoiceDtoPost.ReturnInvoiceItems;
                 var returnInvoiceItemsList = new List<ReturnInvoiceItem>();
+                var returnInvoiceAdditionalChargesList = _mapper.Map<IEnumerable<ReturnInvoiceAdditionalCharge>>(ReturnInvoiceDtoPost.ReturnInvoiceAdditionalChargesDto);
                 var invoiceNumber = returnInvoiceDetails.InvoiceNumber;
                 HttpStatusCode salesOrderUpdateStatusCode = HttpStatusCode.OK;
                 var returnInvoiceNumberCount = await _returnInvoiceRepository.GetReturnInvoiceByInvoiceNo(invoiceNumber);
@@ -418,6 +421,8 @@ namespace Tips.Warehouse.Api.Controllers
                         //_invoiceChildRepository.SaveAsync();
                         if (InvoiceDetails != null)
                         {
+                            Status invoiceChildStatus = Status.Open;
+                            Status invoiceAdditionalStatus = Status.Open;
                             foreach (var item in InvoiceDetails.invoiceChildItems)
                             {
                                 decimal? ReturnInvoiceQty=0;
@@ -427,9 +432,35 @@ namespace Tips.Warehouse.Api.Controllers
                                 else if (ReturnInvoiceQty == 0) item.InvoiceItemStatus = Status.Open;
                                 else if (ReturnInvoiceQty > 0 && item.InvoicedQty > ReturnInvoiceQty) item.InvoiceItemStatus = Status.PartiallyClosed;
                             }
-                            if (InvoiceDetails.invoiceChildItems.Count() == InvoiceDetails.invoiceChildItems.Where(x => x.InvoiceItemStatus == Status.Closed).Count()) InvoiceDetails.InvoiceStatus = Status.Closed;
-                            else if (InvoiceDetails.invoiceChildItems.Count() == InvoiceDetails.invoiceChildItems.Where(x => x.InvoiceItemStatus == Status.Open).Count()) InvoiceDetails.InvoiceStatus = Status.Open;
-                            else InvoiceDetails.InvoiceStatus = Status.PartiallyClosed;
+                            //if (InvoiceDetails.invoiceChildItems.Count() == InvoiceDetails.invoiceChildItems.Where(x => x.InvoiceItemStatus == Status.Closed).Count()) InvoiceDetails.InvoiceStatus = Status.Closed;
+                            //else if (InvoiceDetails.invoiceChildItems.Count() == InvoiceDetails.invoiceChildItems.Where(x => x.InvoiceItemStatus == Status.Open).Count()) InvoiceDetails.InvoiceStatus = Status.Open;
+                            //else InvoiceDetails.InvoiceStatus = Status.PartiallyClosed;
+
+                            foreach(var returnInvoiceAdditional in returnInvoiceAdditionalChargesList)
+                            {
+                                var invoiceAdditionalChargeDetails = await _invoiceAdditionalChargeRepository.GetInvoiceAdditionalChargesDetailsById(returnInvoiceAdditional.SalesOrderId
+                                                                                                                                                    ,returnInvoiceAdditional.InvoiceAdditionalChargeId);
+                                invoiceAdditionalChargeDetails.AlreadyReturnedValue = returnInvoiceAdditional.ReturnInvoicedValue;
+                                invoiceAdditionalChargeDetails.InvoicedValue -= returnInvoiceAdditional.ReturnInvoicedValue;
+                                invoiceAdditionalChargeDetails.InvoiceAdditionalStatus = returnInvoiceAdditional.InvoiceAdditionalStatus;
+                                await _invoiceAdditionalChargeRepository.UpdateInvoiceAdditionalChargesDetails(invoiceAdditionalChargeDetails);
+
+                            }
+                            _invoiceAdditionalChargeRepository.SaveAsync();
+
+                            int? invoiceChildStatusCount = InvoiceDetails.invoiceChildItems.Where(x => x.InvoiceItemStatus != Status.Closed).Count();
+
+                            int? invoiceAddStatusCount = InvoiceDetails.InvoiceAdditionalCharges.Where(x => x.SOAdditionalStatus != Status.Closed).Count();
+
+                            if (invoiceChildStatusCount == 0 && invoiceAddStatusCount == 0)
+                            {
+                                InvoiceDetails.InvoiceStatus = Status.Closed;
+                            }
+                            else
+                            {
+                                InvoiceDetails.InvoiceStatus = Status.PartiallyClosed;
+                            }
+
                             await _invoiceRepository.UpdateInvoiceFromReturnInvoice(InvoiceDetails);
                             _invoiceRepository.SaveAsync();
                         }
@@ -462,6 +493,7 @@ namespace Tips.Warehouse.Api.Controllers
                     _bTODeliveryOrderRepository.SaveAsync();
                 }
 
+                returnInvoiceDetails.ReturnInvoiceAdditionalCharges = returnInvoiceAdditionalChargesList.ToList();
                 returnInvoiceDetails.ReturnInvoiceItems = returnInvoiceItemsList;
 
                 await _returnInvoiceRepository.CreateReturnInvoice(returnInvoiceDetails);
@@ -483,6 +515,8 @@ namespace Tips.Warehouse.Api.Controllers
                 request.Headers.Add("Authorization", token);
 
                 var response = await client.SendAsync(request);
+
+                var response1 = await SoAdditonalChargeUpdateOnReturnInvoiceCreate(returnInvoiceAdditionalChargesList);
                 //var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnInvoiceUpdateDispatchDetails"), data);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
@@ -517,6 +551,35 @@ namespace Tips.Warehouse.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+        }
+        private async Task<HttpResponseMessage> SoAdditonalChargeUpdateOnReturnInvoiceCreate(IEnumerable<ReturnInvoiceAdditionalCharge> InvoiceAdditionalChargesList)
+        {
+            List<SalesOrderAdditionalChargesUpdate> salesOrderAdditionalChargesUpdates = new List<SalesOrderAdditionalChargesUpdate>();
+
+            foreach (var additionalChargeItem in InvoiceAdditionalChargesList)
+            {
+                SalesOrderAdditionalChargesUpdate additionalCharges = new SalesOrderAdditionalChargesUpdate
+                {
+                    SalesOrderId = Convert.ToInt32(additionalChargeItem.SalesOrderId),
+                    InvoicedValue = Convert.ToDecimal(additionalChargeItem.InvoicedValue),
+                    SalesAdditionalChargeId = additionalChargeItem.SalesAdditionalChargeId,
+                    SOAdditionalStatus = additionalChargeItem.SOAdditionalStatus,
+                };
+                salesOrderAdditionalChargesUpdates.Add(additionalCharges);
+            }
+            var soAdditionalChargeJson = JsonConvert.SerializeObject(salesOrderAdditionalChargesUpdates);
+            var data = new StringContent(soAdditionalChargeJson, Encoding.UTF8, "application/json");
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            // var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "AdditionalChargeUpdateFromInvoice"), data);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"], "AdditionalChargeUpdateFromInvoice"))
+            {
+                Content = data
+            };
+            request.Headers.Add("Authorization", token);
+
+            var response = await client.SendAsync(request);
+            return response;
         }
 
         [HttpPost]

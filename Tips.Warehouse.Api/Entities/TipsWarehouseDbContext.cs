@@ -64,6 +64,7 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<InvoiceForTransSPReport> InvoiceForTransSPReports { get; set; }
         public DbSet<StockMovementLatestSPReport> CustomerMasterLeadIdSPReports { get; set; }
         public DbSet<TrascationKPNWSPReport> TrascationKPNWSPReports { get; set; }
+        public DbSet<ReturnInvoiceAdditionalCharge> ReturnInvoiceAdditionalCharges { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ConsumptionReport>().HasNoKey();

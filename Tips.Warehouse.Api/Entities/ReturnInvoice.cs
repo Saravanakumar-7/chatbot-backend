@@ -19,5 +19,6 @@ namespace Tips.Warehouse.Api.Entities
         public DateTime? LastModifiedOn { get; set; }
 
         public List<ReturnInvoiceItem>? ReturnInvoiceItems { get; set; }
+        public List<ReturnInvoiceAdditionalCharge>? ReturnInvoiceAdditionalCharges { get; set; }
     }
 }

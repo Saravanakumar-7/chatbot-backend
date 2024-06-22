@@ -116,6 +116,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var getReturnInvoiceListById = await _tipsWarehouseDbContext.ReturnInvoices
                       .Where(x => x.Id == id)
+                      .Include(x=>x.ReturnInvoiceAdditionalCharges)
                       .Include(k => k.ReturnInvoiceItems).ThenInclude(x => x.QtyDistribution)
                        .FirstOrDefaultAsync();
             return getReturnInvoiceListById;

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using Tips.SalesService.Api.Entities.Enum;
 
 namespace Tips.SalesService.Api.Entities
 {
@@ -27,6 +28,7 @@ namespace Tips.SalesService.Api.Entities
 
         [Precision(13, 3)]
         public decimal? TotalValue { get; set; }
+        public SoStatus SOAdditionalStatus { get; set; }
 
         [Precision(13, 3)]
         public decimal InvoicedValue { get; set; }

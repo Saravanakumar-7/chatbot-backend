@@ -285,7 +285,7 @@ namespace Tips.SalesService.Api.Repository
             {
                 var SODetails = from e in _tipsSalesServiceDbContext.SalesOrders
                                 where e.SalesOrderNumber == salesOrderNumber
-                                join d in _tipsSalesServiceDbContext.SOBreakDowns on e.CustomerId equals d.CustomerId into dept
+                                join d in _tipsSalesServiceDbContext.SOBreakDowns on e.SalesOrderNumber equals d.SalesOrderNumber into dept
                                 from SOBreakDown in dept.DefaultIfEmpty()
                                 select new OpenSalesOrderDetailsForKeusDto
                                 {

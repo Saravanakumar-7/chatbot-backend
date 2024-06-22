@@ -17,6 +17,7 @@
         public DateTime? LastModifiedOn { get; set; }
 
         public List<ReturnInvoiceItemDto>? ReturnInvoiceItems { get; set; }
+        public List<ReturnInvoiceAdditionalChargesDto>? ReturnInvoiceAdditionalChargesDto { get; set; }
     }
 
     public class ReturnInvoiceDtoPost
@@ -30,6 +31,7 @@
         public string? ReturnPdfPrint { get; set; }
 
         public List<ReturnInvoiceItemDtoPost>? ReturnInvoiceItems { get; set; }
+        public List<ReturnInvoiceAdditionalChargesPostDto>? ReturnInvoiceAdditionalChargesDto { get; set; }
     }
 
    public class ReturnInvoiceDtoUpdate
@@ -49,6 +51,7 @@
         public DateTime? LastModifiedOn { get; set; }
 
         public List<ReturnInvoiceItemDtoUpdate>? ReturnInvoiceItems { get; set; }
+        public List<ReturnInvoiceAdditionalChargesUpdateDto>? ReturnInvoiceAdditionalChargesDto { get; set; }
     }
     public class ReturnInvoiceNumberListDto
     {

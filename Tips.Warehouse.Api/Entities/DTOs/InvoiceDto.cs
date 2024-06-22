@@ -83,6 +83,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public int SalesOrderId { get; set; }
         public decimal InvoicedValue { get; set; }
         public int SalesAdditionalChargeId { get; set; }
+        public Status SOAdditionalStatus { get; set; }
 
     }
     public class InvoiceReportDto

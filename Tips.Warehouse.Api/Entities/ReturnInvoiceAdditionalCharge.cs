@@ -1,10 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Entities.Enums;
+﻿using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Warehouse.Api.Entities
 {
-    public class InvoiceAdditionalCharges
+    public class ReturnInvoiceAdditionalCharge
     {
         [Key]
         public int Id { get; set; }
@@ -31,14 +31,15 @@ namespace Tips.Warehouse.Api.Entities
 
         [Precision(13, 3)]
         public decimal? TotalValue { get; set; }
-        public Status SOAdditionalStatus { get; set; }
-        public Status InvoiceAdditionalStatus { get; set; }
-        public decimal? AlreadyReturnedValue { get; set; }
-
         [Precision(13, 3)]
         public decimal? InvoicedValue { get; set; }
         public int SalesAdditionalChargeId { get; set; }
-        public int InvoiceId { get; set; }
-        public Invoice? Invoice { get; set; }
+        public int InvoiceAdditionalChargeId { get; set; }
+        public Status SOAdditionalStatus { get; set; }
+        public Status InvoiceAdditionalStatus { get; set; }
+        [Precision(13, 3)]
+        public decimal? ReturnInvoicedValue { get; set; }
+        public int ReturnInvoiceId { get; set; }
+        public ReturnInvoice? ReturnInvoice { get; set; }
     }
 }

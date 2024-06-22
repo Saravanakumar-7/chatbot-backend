@@ -163,7 +163,15 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
+        public async Task<IEnumerable<RfqSalesOrderRoomWiseSPReport>> GetRfqSalesOrderRoomWiseSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<RfqSalesOrderRoomWiseSPReport>()
+                        .FromSqlInterpolated($"CALL RFQ_salesorder_withRoomwise_withdate({FromDate},{ToDate})")
+                        .ToList();
 
+            return results;
+
+        }
         public async Task<IEnumerable<RfqSalesOrderSPReportForTrans>> GetRfqSalesOrderSPReportWithParamForTrans(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus, string ProjectNumber)
         {
             var result = _tipsSalesServiceDbContext
