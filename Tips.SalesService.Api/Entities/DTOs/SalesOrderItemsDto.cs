@@ -423,5 +423,5 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string lastModifiedBy { get; set; }
         public DateTime? lastModifiedOn { get; set; }
     }
-
+    
 }
