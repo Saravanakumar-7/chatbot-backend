@@ -572,7 +572,7 @@ namespace Tips.Warehouse.Api.Controllers
             var client = _clientFactory.CreateClient();
             var token = HttpContext.Request.Headers["Authorization"].ToString();
             // var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "AdditionalChargeUpdateFromInvoice"), data);
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"], "AdditionalChargeUpdateFromInvoice"))
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"], "AdditionalChargeUpdateFromReturnInvoice"))
             {
                 Content = data
             };

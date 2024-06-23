@@ -342,7 +342,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public bool success { get; set; }
         public int statusCode { get; set; }
     }
-    public class EmailIDsDto
+    public class SalesEmailIDsDto
     {
         public Datum1[] data { get; set; }
         public string message { get; set; }

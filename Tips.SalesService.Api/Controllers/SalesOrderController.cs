@@ -9,7 +9,6 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
-using MailKit.Search;
 using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,8 +30,6 @@ using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
 using Tips.SalesService.Api.Entities.Enum;
 using Tips.SalesService.Api.Repository;
-using EmailIDsDto = Tips.SalesService.Api.Entities.DTOs.EmailIDsDto;
-using EmailTemplateDto = Tips.SalesService.Api.Entities.DTOs.EmailTemplateDto;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -42,13 +39,13 @@ namespace Tips.SalesService.Api.Controllers
     public class SalesOrderController : ControllerBase
     {
         private ISalesOrderRepository _repository;
-        private ISalesOrderEmailsDetailsRepository _salesOrderEmailsDetailsRepository;
         private ISalesOrderItemsRepository _salesOrderItemsRepository;
         private ISalesAdditionalChargesRepository _salesAdditionalChargesRepository;
         private ISoConfirmationDateRepository _soConfirmationDateRepository;
         private ISoConfirmationDateHistoryRepository _soConfirmationDateHistoryRepository;
         private IScheduleDateHistoryRepository _scheduleDateHistoryRepository;
         private ISalesOrderAdditionalChargesHistoryRepository _salesOrderAdditionalChargesHistoryRepository;
+        private ISalesOrderEmailsDetailsRepository _salesOrderEmailsDetailsRepository;
         private IQuoteRepository _quoteRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
@@ -59,12 +56,11 @@ namespace Tips.SalesService.Api.Controllers
         private readonly String _createdBy;
         private readonly String _unitname;
         private readonly IHttpClientFactory _clientFactory;
-        public SalesOrderController(ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, ISalesOrderEmailsDetailsRepository salesOrderEmailsDetailsRepository, IHttpClientFactory clientFactory, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
+        public SalesOrderController(ISalesOrderEmailsDetailsRepository salesOrderEmailsDetailsRepository,ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, IHttpClientFactory clientFactory, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
             ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, IQuoteRepository quoteRepository, IHttpContextAccessor httpContextAccessor,
             ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
-            _salesOrderEmailsDetailsRepository = salesOrderEmailsDetailsRepository;
             _logger = logger;
             _mapper = mapper;
             _clientFactory = clientFactory;
@@ -75,6 +71,7 @@ namespace Tips.SalesService.Api.Controllers
             _soConfirmationDateHistoryRepository = soConfirmationDateHistoryRepository;
             _scheduleDateHistoryRepository = scheduleDateHistoryRepository;
             _salesOrderAdditionalChargesHistoryRepository = salesOrderAdditionalChargesHistoryRepository;
+            _salesOrderEmailsDetailsRepository = salesOrderEmailsDetailsRepository;
             _quoteRepository = quoteRepository;
             _httpClient = httpClient;
             _config = config;
@@ -267,10 +264,10 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogInfo($"Returned owner with id: {id}");
                     SalesOrderDto salesOrderDto = _mapper.Map<SalesOrderDto>(salesOrderById);
 
-                    var salesorderDetails = await _quoteRepository.GetQuoteByQuoteNumber(salesOrderDto.QuoteNumber);
-                    if (salesorderDetails != null)
+                    var quoteDetails = await _quoteRepository.GetQuoteByQuoteNumber(salesOrderDto.QuoteNumber);
+                    if (quoteDetails != null)
                     {
-                        salesOrderDto.QuoteRef = salesorderDetails.QuoteRef;
+                        salesOrderDto.QuoteRef = quoteDetails.QuoteRef;
                     }
 
                     List<SalesOrderItemsDto> salesOrderItemsDtoList = new List<SalesOrderItemsDto>();
@@ -281,8 +278,15 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
                         {
-                            SalesOrderAdditionalChargesDto additionalChargesDetails = _mapper.Map<SalesOrderAdditionalChargesDto>(salesAdditionalChargesDto[i]); 
-                            salesAdditionalChargesList.Add(additionalChargesDetails);
+                            SalesOrderAdditionalChargesDto additionalChargesDetails = _mapper.Map<SalesOrderAdditionalChargesDto>(salesAdditionalChargesDto[i]);
+                            if (additionalChargesDetails.SOAdditionalStatus != SoStatus.Closed)
+                            {
+                                salesAdditionalChargesList.Add(additionalChargesDetails);
+                            }
+                            else
+                            {
+                                continue;
+                            }
                         }
                     }
                     string salesOrderNo = salesOrderDto.SalesOrderNumber;
@@ -494,11 +498,11 @@ namespace Tips.SalesService.Api.Controllers
                 await _repository.CreateSalesOrder(createSalesOrder);
 
                 //ShortClose Quote Once SalesOrder Created
-                var salesorderDetails = await _quoteRepository.GetQuoteByQuoteNumber(createSalesOrder.QuoteNumber);
-                if (salesorderDetails != null)
+                var quoteDetails = await _quoteRepository.GetQuoteByQuoteNumber(createSalesOrder.QuoteNumber);
+                if (quoteDetails != null)
                 {
-                    salesorderDetails.QuoteStatus = OrderStatus.Closed;
-                    _quoteRepository.UpdateQuote(salesorderDetails);
+                    quoteDetails.QuoteStatus = OrderStatus.Closed;
+                    _quoteRepository.UpdateQuote(quoteDetails);
                     _quoteRepository.SaveAsync();
                 }
                 _repository.SaveAsync();
@@ -1237,10 +1241,22 @@ namespace Tips.SalesService.Api.Controllers
                     }
                 }
                 _salesOrderItemsRepository.SaveAsync();
+
                 var salesdetails = await _repository.GetSalesOrderById(salesOrderDispatchQtyDto[0].SalesOrderId);
-                int? count = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();
-                if (count == 0) salesdetails.SOStatus = OrderStatus.Closed;
-                else if (count > 0) salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+
+                int? soItemStatusCount = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();
+
+                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count();
+
+                if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                {
+                    salesdetails.SOStatus = OrderStatus.Closed;
+                }
+                else
+                {
+                    salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                }
+
                 await _repository.UpdateSalesOrderShortClose(salesdetails);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1392,10 +1408,25 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 if (SalesorderId > 0)
                 {
-                    var salesdetails = await _repository.GetSalesOrderById(SalesorderId);
-                    if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Closed || x.StatusEnum == OrderStatus.ShortClosed).Count()) salesdetails.SOStatus = OrderStatus.Closed;
-                    else if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Open).Count()) salesdetails.SOStatus = OrderStatus.Open;
-                    else salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                    //var salesdetails=await _repository.GetSalesOrderById(SalesorderId);
+                    //if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Closed || x.StatusEnum == OrderStatus.ShortClosed).Count()) salesdetails.SOStatus = OrderStatus.Closed;
+                    //else if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Open).Count()) salesdetails.SOStatus = OrderStatus.Open;
+                    //else salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+
+                    var salesdetails = await _repository.GetSalesOrderById(salesOrderDispatchQtyDto[0].SalesOrderId);
+
+                    int? soItemStatusCount = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();
+
+                    int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count();
+
+                    if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                    {
+                        salesdetails.SOStatus = OrderStatus.Closed;
+                    }
+                    else
+                    {
+                        salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                    }
                     await _repository.UpdateSalesOrderShortClose(salesdetails);
                     _repository.SaveAsync();
                 }
@@ -1496,10 +1527,25 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 if (SalesorderId > 0)
                 {
-                    var salesdetails = await _repository.GetSalesOrderById(SalesorderId);
-                    if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Closed || x.StatusEnum == OrderStatus.ShortClosed).Count()) salesdetails.SOStatus = OrderStatus.Closed;
-                    else if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Open).Count()) salesdetails.SOStatus = OrderStatus.Open;
-                    else salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                    //var salesdetails = await _repository.GetSalesOrderById(SalesorderId);
+                    //if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Closed || x.StatusEnum == OrderStatus.ShortClosed).Count()) salesdetails.SOStatus = OrderStatus.Closed;
+                    //else if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Open).Count()) salesdetails.SOStatus = OrderStatus.Open;
+                    //else salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+
+                    var salesdetails = await _repository.GetSalesOrderById(salesOrderDispatchQtyDto[0].SalesOrderId);
+
+                    int? soItemStatusCount = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();
+
+                    int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count();
+
+                    if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                    {
+                        salesdetails.SOStatus = OrderStatus.Closed;
+                    }
+                    else
+                    {
+                        salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                    }
                     await _repository.UpdateSalesOrderShortClose(salesdetails);
                     _repository.SaveAsync();
                 }
@@ -1611,9 +1657,29 @@ namespace Tips.SalesService.Api.Controllers
                     var salesAdditionalCharges = await _salesAdditionalChargesRepository.GetSalesAdditionalChargesById(item.SalesOrderId, item.SalesAdditionalChargeId);
 
                     salesAdditionalCharges.InvoicedValue += item.InvoicedValue;
+                    salesAdditionalCharges.SOAdditionalStatus = item.SOAdditionalStatus;
                     await _salesAdditionalChargesRepository.UpdateSalesAdditionalCharges(salesAdditionalCharges);
-                    _salesAdditionalChargesRepository.SaveAsync();
+
                 }
+                _salesAdditionalChargesRepository.SaveAsync();
+
+                var salesdetails = await _repository.GetSalesOrderById(soAdditionalChargeUpdateDto[0].SalesOrderId);
+
+                int? soItemStatusCount = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();
+
+                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count();
+
+                if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                {
+                    salesdetails.SOStatus = OrderStatus.Closed;
+                }
+                else
+                {
+                    salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                }
+
+                await _repository.UpdateSalesOrderShortClose(salesdetails);
+                _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SalesOrder Successfully Updated";
                 serviceResponse.Success = true;
@@ -1622,7 +1688,7 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside InvoiceUpdateDispatchDetails action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside AdditionalChargeUpdateFromInvoice action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal error in SalesOrderUpdate";
                 serviceResponse.Success = false;
@@ -1631,6 +1697,75 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AdditionalChargeUpdateFromReturnInvoice([FromBody] List<SoAdditionalChargeUpdateDto> soAdditionalChargeUpdateDto)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                if (soAdditionalChargeUpdateDto == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "SalesOrder object sent from the client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("SalesOrder object sent from the client is null.");
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid SalesOrder object sent from the client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid SalesOrder object sent from the client.");
+                    return BadRequest(serviceResponse);
+                }
+                foreach (var item in soAdditionalChargeUpdateDto)
+                {
+                    var salesAdditionalCharges = await _salesAdditionalChargesRepository.GetSalesAdditionalChargesById(item.SalesOrderId, item.SalesAdditionalChargeId);
+
+                    salesAdditionalCharges.InvoicedValue -= item.InvoicedValue;
+                    salesAdditionalCharges.SOAdditionalStatus = item.SOAdditionalStatus;
+                    await _salesAdditionalChargesRepository.UpdateSalesAdditionalCharges(salesAdditionalCharges);
+
+                }
+                _salesAdditionalChargesRepository.SaveAsync();
+
+                var salesdetails = await _repository.GetSalesOrderById(soAdditionalChargeUpdateDto[0].SalesOrderId);
+
+                int? soItemStatusCount = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();
+
+                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count();
+
+                if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                {
+                    salesdetails.SOStatus = OrderStatus.Closed;
+                }
+                else
+                {
+                    salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                }
+
+                await _repository.UpdateSalesOrderShortClose(salesdetails);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "SalesOrder Successfully Updated";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside AdditionalChargeUpdateFromReturnInvoice action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         //getsalesorderdetailbyitemnoandsalesorderId
 
@@ -2044,6 +2179,44 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetRfqSalesOrderRoomWiseSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+
+        {
+            ServiceResponse<IEnumerable<RfqSalesOrderRoomWiseSPReport>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderRoomWiseSPReport>>();
+            try
+            {
+                var products = await _repository.GetRfqSalesOrderRoomWiseSPReportWithDate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqSalesOrderRoomWiseSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqSalesOrderRoomWiseSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RfqSalesOrderRoomWiseSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqSalesOrderRoomWiseSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetRfqSalesOrderRoomWiseSPReportWithParam([FromBody] SalesOrderSPResportDTO rfqSalesOrderRoomWiseSPResportDTO)
 
@@ -2639,7 +2812,7 @@ namespace Tips.SalesService.Api.Controllers
             {
                 // Get data from repository using stored procedure
                 var salesOrderSPReportDetails = await _repository.GetRfqSalesOrderSPReportWithParamForTrans(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus
-                                                                                                                            ,salesOrderSPReport.ProjectNumber);
+                                                                                                                            , salesOrderSPReport.ProjectNumber);
 
                 // Create a new Excel workbook
                 IWorkbook workbook = new XSSFWorkbook();
@@ -3884,10 +4057,10 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogInfo($"Returned owner with id: {id}");
                     SalesOrderDto salesOrderDto = _mapper.Map<SalesOrderDto>(salesOrderById);
 
-                    var salesorderDetails = await _quoteRepository.GetQuoteByQuoteNumber(salesOrderDto.QuoteNumber);
-                    if (salesorderDetails != null)
+                    var quoteDetails = await _quoteRepository.GetQuoteByQuoteNumber(salesOrderDto.QuoteNumber);
+                    if (quoteDetails != null)
                     {
-                        salesOrderDto.QuoteRef = salesorderDetails.QuoteRef;
+                        salesOrderDto.QuoteRef = quoteDetails.QuoteRef;
                     }
 
                     List<SalesOrderItemsDto> salesOrderItemsDtoList = new List<SalesOrderItemsDto>();
@@ -4011,7 +4184,6 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpPost]
         public async Task<IActionResult> SendEmailforSalesOrder([FromBody] SalesOrderEmailPostDto salesOrderEmailPostDto)
         {
@@ -4053,7 +4225,7 @@ namespace Tips.SalesService.Api.Controllers
                     FileName = "SalesOrder_Accessories_Book";
                 }
                 else
-                {                    
+                {
                     FileName = "SalesOrder_Lights_Book";
                 }
                 if (emaildetails.IsNullOrEmpty())
@@ -4070,7 +4242,7 @@ namespace Tips.SalesService.Api.Controllers
                 request1.Headers.Add("Authorization", token);
                 var response1 = await client.SendAsync(request1);
                 var EmailTempString1 = await response1.Content.ReadAsStringAsync();
-                var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+                var emaildetails1 = JsonConvert.DeserializeObject<SalesEmailIDsDto>(EmailTempString1);
 
 
                 var httpclientHandler = new HttpClientHandler();
@@ -4146,8 +4318,8 @@ namespace Tips.SalesService.Api.Controllers
                     CustomerId = salesorderDetails.CustomerId,
                     CustomerName = salesorderDetails.CustomerName,
                     SalesOrderId = salesorderDetails.Id,
-                    SalesOrderValue=salesorderDetails.TotalFinalAmount,
-                    TypeOfSolution=salesorderDetails.TypeOfSolution,
+                    SalesOrderValue = salesorderDetails.TotalFinalAmount,
+                    TypeOfSolution = salesorderDetails.TypeOfSolution,
                     SentBy = _createdBy,
                     SentOn = DateTime.Now
                 };
@@ -4188,7 +4360,7 @@ namespace Tips.SalesService.Api.Controllers
                 };
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                _logger.LogInfo("Returned all SalesOrders for Keus");                
+                _logger.LogInfo("Returned all SalesOrders for Keus");
                 serviceResponse.Data = getAllSalesOrder;
                 serviceResponse.Message = "Returned all SalesOrders for Keus";
                 serviceResponse.Success = true;
@@ -4206,7 +4378,6 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
     }
 
 

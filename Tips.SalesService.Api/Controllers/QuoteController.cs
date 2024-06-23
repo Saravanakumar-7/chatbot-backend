@@ -27,7 +27,7 @@ using Tips.SalesService.Api.Entities.DTOs;
 using Tips.SalesService.Api.Entities.Enum;
 using Tips.SalesService.Api.Repository;
 
-using EmailIDsDto = Tips.SalesService.Api.Entities.DTOs.EmailIDsDto;
+using SalesEmailIDsDto = Tips.SalesService.Api.Entities.DTOs.SalesEmailIDsDto;
 using EmailTemplateDto = Tips.SalesService.Api.Entities.DTOs.EmailTemplateDto;
 
 namespace Tips.SalesService.Api.Controllers
@@ -784,7 +784,7 @@ namespace Tips.SalesService.Api.Controllers
                 request1.Headers.Add("Authorization", token);
                 var response1 = await client.SendAsync(request1);
                 var EmailTempString1 = await response1.Content.ReadAsStringAsync();
-                var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+                var emaildetails1 = JsonConvert.DeserializeObject<SalesEmailIDsDto>(EmailTempString1);
 
 
                 var httpclientHandler = new HttpClientHandler();
