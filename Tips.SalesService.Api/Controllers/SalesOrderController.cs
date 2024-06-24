@@ -56,7 +56,7 @@ namespace Tips.SalesService.Api.Controllers
         private readonly String _createdBy;
         private readonly String _unitname;
         private readonly IHttpClientFactory _clientFactory;
-        public SalesOrderController(ISalesOrderEmailsDetailsRepository salesOrderEmailsDetailsRepository,ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, IHttpClientFactory clientFactory, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
+        public SalesOrderController(ISalesOrderEmailsDetailsRepository salesOrderEmailsDetailsRepository, ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, IHttpClientFactory clientFactory, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
             ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, IQuoteRepository quoteRepository, IHttpContextAccessor httpContextAccessor,
             ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
@@ -279,14 +279,8 @@ namespace Tips.SalesService.Api.Controllers
                         for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
                         {
                             SalesOrderAdditionalChargesDto additionalChargesDetails = _mapper.Map<SalesOrderAdditionalChargesDto>(salesAdditionalChargesDto[i]);
-                            if (additionalChargesDetails.SOAdditionalStatus != SoStatus.Closed)
-                            {
-                                salesAdditionalChargesList.Add(additionalChargesDetails);
-                            }
-                            else
-                            {
-                                continue;
-                            }
+
+                            salesAdditionalChargesList.Add(additionalChargesDetails);
                         }
                     }
                     string salesOrderNo = salesOrderDto.SalesOrderNumber;
@@ -405,6 +399,71 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSalesOrderDetailsWithOutClosedAdditionalChargesById(int id)
+        {
+            ServiceResponse<SalesOrderDto> serviceResponse = new ServiceResponse<SalesOrderDto>();
+            try
+            {
+                var salesOrderById = await _repository.GetSalesOrderById(id);
+                string serverKey = GetServerKey();
+                if (salesOrderById == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrder  hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesOrder with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {id}");
+                    SalesOrderDto salesOrderDto = _mapper.Map<SalesOrderDto>(salesOrderById);
+
+                    var quoteDetails = await _quoteRepository.GetQuoteByQuoteNumber(salesOrderDto.QuoteNumber);
+                    if (quoteDetails != null)
+                    {
+                        salesOrderDto.QuoteRef = quoteDetails.QuoteRef;
+                    }
+
+                    var salesAdditionalChargesDto = salesOrderDto.SalesOrderAdditionalCharges;
+
+                    var salesAdditionalChargesList = new List<SalesOrderAdditionalChargesDto>();
+                    if (salesAdditionalChargesDto != null)
+                    {
+                        for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
+                        {
+                            SalesOrderAdditionalChargesDto additionalChargesDetails = _mapper.Map<SalesOrderAdditionalChargesDto>(salesAdditionalChargesDto[i]);
+                            if (additionalChargesDetails.SOAdditionalStatus != SoStatus.Closed)
+                            {
+                                salesAdditionalChargesList.Add(additionalChargesDetails);
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                    }
+                    salesOrderDto.SalesOrdersItems = null;
+                    salesOrderDto.SalesOrderAdditionalCharges = salesAdditionalChargesList;
+                    serviceResponse.Data = salesOrderDto;
+                    serviceResponse.Message = $"Returned SalesOrder with id: {id}";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetSalesOrderById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         // POST api/<PurchaseOrderController>
         [HttpPost]
@@ -2711,7 +2770,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 // Create a new Excel workbook
                 IWorkbook workbook = new XSSFWorkbook();
-                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+                ISheet sheet = workbook.CreateSheet("RFQSPReport");
 
                 // Set header row
                 var headerRow = sheet.CreateRow(0);
@@ -2796,7 +2855,106 @@ namespace Tips.SalesService.Api.Controllers
                     var excelBytes = memoryStream.ToArray();
 
                     // Send Excel file as a response
-                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "RFQSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportSalesOrderRFQRoomWiseSPReportToExcel([FromBody] SalesOrderSPResportDTO rfqRoomWiseSPReport)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var salesOrderSPReportDetails = await _repository.GetRfqSalesOrderRoomWiseSPReportWithParam(rfqRoomWiseSPReport.CustomerName, rfqRoomWiseSPReport.SalesOrderNumber, rfqRoomWiseSPReport.KPN);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("RFQRoomWiseSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(1).SetCellValue("Customer ID");
+                headerRow.CreateCell(2).SetCellValue("Customer Name");
+                headerRow.CreateCell(3).SetCellValue("Lead ID");
+                headerRow.CreateCell(4).SetCellValue("Order Type");
+                headerRow.CreateCell(5).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(6).SetCellValue("Product Type");
+                headerRow.CreateCell(7).SetCellValue("Material Group");
+                headerRow.CreateCell(8).SetCellValue("Sales Person");
+                headerRow.CreateCell(9).SetCellValue("SO Date");
+                headerRow.CreateCell(10).SetCellValue("RoomName");
+                headerRow.CreateCell(11).SetCellValue("KPN");
+                headerRow.CreateCell(12).SetCellValue("KPN Description");
+                headerRow.CreateCell(13).SetCellValue("UOC");
+                headerRow.CreateCell(14).SetCellValue("UOM");
+                headerRow.CreateCell(15).SetCellValue("Price List");
+                headerRow.CreateCell(16).SetCellValue("Unit Price");
+                headerRow.CreateCell(17).SetCellValue("Basic Amount");
+                headerRow.CreateCell(18).SetCellValue("DiscountType");
+                headerRow.CreateCell(19).SetCellValue("Discount");
+                headerRow.CreateCell(20).SetCellValue("SGST");
+                headerRow.CreateCell(21).SetCellValue("CGST");
+                headerRow.CreateCell(22).SetCellValue("IGST");
+                headerRow.CreateCell(23).SetCellValue("UTGST");
+                headerRow.CreateCell(24).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(25).SetCellValue("Total Amount");
+                headerRow.CreateCell(26).SetCellValue("Order Qty");
+                headerRow.CreateCell(27).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(28).SetCellValue("Balance Qty");
+
+
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(1).SetCellValue(item.CustomerId);
+                    row.CreateCell(2).SetCellValue(item.CustomerName);
+                    row.CreateCell(3).SetCellValue(item.LeadId);
+                    row.CreateCell(4).SetCellValue(item.OrderType);
+                    row.CreateCell(5).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(6).SetCellValue(item.ProductType);
+                    row.CreateCell(7).SetCellValue(item.MaterialGroup);// Assuming ItemType is nullable int
+                    row.CreateCell(8).SetCellValue(item.SalesPerson);
+                    row.CreateCell(9).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(10).SetCellValue(item.RoomName);
+                    row.CreateCell(11).SetCellValue(item.KPN);
+                    row.CreateCell(12).SetCellValue(item.KPNDescription);
+                    row.CreateCell(13).SetCellValue(item.UOC);
+                    row.CreateCell(14).SetCellValue(item.UOM);
+                    row.CreateCell(15).SetCellValue(item.PriceList);
+                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(17).SetCellValue(Convert.ToDouble(item.BasicAmount)); // Assuming BasicAmount is decimal
+                    row.CreateCell(18).SetCellValue(item.DiscountType);
+                    row.CreateCell(19).SetCellValue(item.Discount);
+                    row.CreateCell(20).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
+                    row.CreateCell(21).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                }
+
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "RFQRoomWiseSPReport.xlsx");
                 }
             }
             catch (Exception ex)
@@ -2816,7 +2974,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 // Create a new Excel workbook
                 IWorkbook workbook = new XSSFWorkbook();
-                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+                ISheet sheet = workbook.CreateSheet("RFQSPReport");
 
                 // Set header row
                 var headerRow = sheet.CreateRow(0);
@@ -2902,7 +3060,7 @@ namespace Tips.SalesService.Api.Controllers
                     var excelBytes = memoryStream.ToArray();
 
                     // Send Excel file as a response
-                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "RFQSPReport.xlsx");
                 }
             }
             catch (Exception ex)
@@ -2921,7 +3079,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 // Create a new Excel workbook
                 IWorkbook workbook = new XSSFWorkbook();
-                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+                ISheet sheet = workbook.CreateSheet("RFQSPReport");
 
                 // Set header row
                 var headerRow = sheet.CreateRow(0);
@@ -3008,7 +3166,7 @@ namespace Tips.SalesService.Api.Controllers
                     var excelBytes = memoryStream.ToArray();
 
                     // Send Excel file as a response
-                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "RFQSPReport.xlsx");
                 }
             }
             catch (Exception ex)
@@ -3027,7 +3185,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 // Create a new Excel workbook
                 IWorkbook workbook = new XSSFWorkbook();
-                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+                ISheet sheet = workbook.CreateSheet("ForecastSPReport");
 
                 // Set header row
                 var headerRow = sheet.CreateRow(0);
@@ -3110,7 +3268,7 @@ namespace Tips.SalesService.Api.Controllers
                     var excelBytes = memoryStream.ToArray();
 
                     // Send Excel file as a response
-                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ForecastSPReport.xlsx");
                 }
             }
             catch (Exception ex)
@@ -3132,7 +3290,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 // Create a new Excel workbook
                 IWorkbook workbook = new XSSFWorkbook();
-                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+                ISheet sheet = workbook.CreateSheet("ForecastSPReport");
 
                 // Set header row
                 var headerRow = sheet.CreateRow(0);
@@ -3217,7 +3375,7 @@ namespace Tips.SalesService.Api.Controllers
                     var excelBytes = memoryStream.ToArray();
 
                     // Send Excel file as a response
-                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ForecastSPReport.xlsx");
                 }
             }
             catch (Exception ex)
@@ -3237,7 +3395,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 // Create a new Excel workbook
                 IWorkbook workbook = new XSSFWorkbook();
-                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+                ISheet sheet = workbook.CreateSheet("ForecastSPReport");
 
                 // Set header row
                 var headerRow = sheet.CreateRow(0);
@@ -3322,7 +3480,7 @@ namespace Tips.SalesService.Api.Controllers
                     var excelBytes = memoryStream.ToArray();
 
                     // Send Excel file as a response
-                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ForecastSPReport.xlsx");
                 }
             }
             catch (Exception ex)
