@@ -113,7 +113,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? FirstEmailQuoteRevNo { get; set; }
         public decimal? FirstEmailQuoteValue { get; set; }
         public decimal? QuoteUntaxedValue { get; set; }
-       // public decimal? EmailSentValue { get; set; }
+        // public decimal? EmailSentValue { get; set; }
         public string? Remarks { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
@@ -126,7 +126,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         //public List<QuoteOtherTermsDto>? QuoteOtherTermsDtos { get; set; }
         //public List<QuoteSpecialTermsDto>? QuoteSpecialTermsDtos { get; set; }
     }
-    
+
     public class QuotePostDto
     {
         public string? LeadId { get; set; }
@@ -366,4 +366,41 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string jasperfileUrl { get; set; }
         public int Quoteid { get; set; }
     }
+    public class QuoteSPResportParamDTO
+    {
+        public string? CustomerId { get; set; }
+    }
+
+    public class SoSummaryQuotationDto
+    {
+        public string? CustomerName { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+        public string? FirstQuotenumber { get; set; }
+        public decimal? FirstRevisionnumber { get; set; }
+        public DateTime? FirstCreatedOn { get; set; }
+        public decimal? FirstGeneralDiscount { get; set; }
+        public decimal? FirstDiscountValue { get; set; }
+        public string? FirstgeneralDiscountType { get; set; }
+        public decimal? FirstUntaxedamount { get; set; }
+        public decimal? FirstTaxedvalue { get; set; }
+        public string? LatestQuotenumber { get; set; }
+        public decimal? LatestRevisionnumber { get; set; }
+        public DateTime? LatestCreatedOn { get; set; }
+        public decimal? LatestGeneralDiscount { get; set; }
+        public decimal? LatestDiscountValue { get; set; }
+        public string? LatestgeneralDiscountType { get; set; }
+        public decimal? LatestUntaxedvalue { get; set; }
+        public decimal? LatestTaxedvalue { get; set; }
+        public string? SOlatestSalesorder { get; set; }
+        public int? SOlatestRevisionnumber { get; set; }
+        public DateTime? SOlatestCreatedOn { get; set; }
+        public string? SOlatestDiscount { get; set; }
+        public double? SOlatestDiscountValue { get; set; }
+        public string? SODiscountType { get; set; }
+        public decimal? SOlatestUntaxedvalue { get; set; }
+        public decimal? SOlatestTaxedvalue { get; set; }
+    }
+
+
 }

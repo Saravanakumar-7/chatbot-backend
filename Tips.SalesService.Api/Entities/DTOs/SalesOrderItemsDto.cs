@@ -65,7 +65,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public DateTime RequestedDate { get; set; }
         public string? Remarks { get; set; }
         public List<ScheduleDateDto>? ScheduleDates { get; set; }
-        public List<SoConfirmationDateDto> SoConfirmationDates { get; set; }
+        public List<SoConfirmationDateDto>? SoConfirmationDates { get; set; }
 
     }
 
@@ -168,6 +168,7 @@ namespace Tips.SalesService.Api.Entities.Dto
         public DateTime RequestedDate { get; set; }
         public string? Remarks { get; set; }
         public List<ScheduleDateUpdateDto>? ScheduleDates { get; set; }
+        public List<SoConfirmationDateDto>? SoConfirmationDates { get; set; }
 
     }
     public class ListOfProjectNoDto
@@ -225,7 +226,7 @@ namespace Tips.SalesService.Api.Entities.Dto
     public class SoAdditionalChargeUpdateFromReturnDto
     {
         public int SalesOrderId { get; set; }
-        public decimal InvoicedValue { get; set; }
+        public decimal ReturnInvoicedValue { get; set; }
         public int SalesAdditionalChargeId { get; set; }
     }
     public class SARevisionNumber
@@ -431,5 +432,14 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string lastModifiedBy { get; set; }
         public DateTime? lastModifiedOn { get; set; }
     }
-    
+    public class SalesOrderConfirmationDateDto
+    {
+        public int SalesOrderId { get; set; }
+        public int SalesOrderItemId { get; set; }
+        public DateTime ConfirmationDate { get; set; }
+
+        [Precision(13, 3)]
+        public decimal Qty { get; set; }
+    }
+
 }

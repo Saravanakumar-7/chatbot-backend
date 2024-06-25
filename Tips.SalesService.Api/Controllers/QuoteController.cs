@@ -29,6 +29,8 @@ using Tips.SalesService.Api.Repository;
 
 using SalesEmailIDsDto = Tips.SalesService.Api.Entities.DTOs.SalesEmailIDsDto;
 using EmailTemplateDto = Tips.SalesService.Api.Entities.DTOs.EmailTemplateDto;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -905,6 +907,218 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside SendWhatsAppforQuote action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetQuotationSPReportWithParam([FromBody] QuoteSPResportParamDTO quoteSPReportDto)
+
+        {
+            ServiceResponse<IEnumerable<QuotationSPReport>> serviceResponse = new ServiceResponse<IEnumerable<QuotationSPReport>>();
+            try
+            {
+                var products = await _repository.GetQuotationSPReportWithParam(quoteSPReportDto.CustomerId);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Quotation hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Quotation hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Quotation Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetQuotationSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetQuotationSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<QuotationSPReport>> serviceResponse = new ServiceResponse<IEnumerable<QuotationSPReport>>();
+            try
+            {
+                var products = await _repository.GetQuotationSPReportWithDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Quotation hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Quotation hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Quotation Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetQuotationSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+        [HttpPost]
+        public async Task<IActionResult> ExportQuotationRFQSPReportToExcel([FromBody] QuoteSPResportParamDTO quoteSPReportDto)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var quotationSPReportDetails = await _repository.GetQuotationSPReportWithParam(quoteSPReportDto.CustomerId);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("QuotationSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Quote Number");
+                headerRow.CreateCell(1).SetCellValue("Quotation Version No");
+                headerRow.CreateCell(2).SetCellValue("RFQ Number");
+                headerRow.CreateCell(3).SetCellValue("Customer ID");
+                headerRow.CreateCell(4).SetCellValue("Customer Name");
+                headerRow.CreateCell(5).SetCellValue("Lead ID");
+                headerRow.CreateCell(6).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(7).SetCellValue("Product Type");
+                headerRow.CreateCell(8).SetCellValue("Material Group");
+                headerRow.CreateCell(9).SetCellValue("Sales Person");
+                headerRow.CreateCell(10).SetCellValue("Quote Created On");
+                headerRow.CreateCell(11).SetCellValue("Quote Sent On");
+                headerRow.CreateCell(12).SetCellValue("Room Name");
+                headerRow.CreateCell(13).SetCellValue("KPN");
+                headerRow.CreateCell(14).SetCellValue("KPN Description");
+                headerRow.CreateCell(15).SetCellValue("UOC");
+                headerRow.CreateCell(16).SetCellValue("UOM");
+                headerRow.CreateCell(17).SetCellValue("Price List");
+                headerRow.CreateCell(18).SetCellValue("Unit Price");
+                headerRow.CreateCell(19).SetCellValue("Basic Amount");
+                headerRow.CreateCell(20).SetCellValue("Discount Type");
+                headerRow.CreateCell(21).SetCellValue("SGST");
+                headerRow.CreateCell(22).SetCellValue("CGST");
+                headerRow.CreateCell(23).SetCellValue("IGST");
+                headerRow.CreateCell(24).SetCellValue("UTGST");
+                headerRow.CreateCell(25).SetCellValue("Total Final Amount");
+                headerRow.CreateCell(26).SetCellValue("Order Qty");
+                headerRow.CreateCell(27).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(28).SetCellValue("Balance Qty");
+                headerRow.CreateCell(29).SetCellValue("MSL");
+
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in  quotationSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.QuoteNumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.QuotationVersionNo.HasValue ? Convert.ToDouble(item.QuotationVersionNo.Value) : 0);
+                    row.CreateCell(2).SetCellValue(item.RfqNumber ?? "");
+                    row.CreateCell(3).SetCellValue(item.CustomerId ?? "");
+                    row.CreateCell(4).SetCellValue(item.CustomerName ?? "");
+                    row.CreateCell(5).SetCellValue(item.LeadId ?? "");
+                    row.CreateCell(6).SetCellValue(item.TypeOfSolution ?? "");
+                    row.CreateCell(7).SetCellValue(item.ProductType ?? "");
+                    row.CreateCell(8).SetCellValue(item.MaterialGroup ?? "");
+                    row.CreateCell(9).SetCellValue(item.SalesPerson ?? "");
+                    row.CreateCell(10).SetCellValue(item.QuoteCreatedOn.HasValue ? item.QuoteCreatedOn.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(11).SetCellValue(item.QuoteSentOn.HasValue ? item.QuoteSentOn.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(12).SetCellValue(item.RoomName ?? "");
+                    row.CreateCell(13).SetCellValue(item.KPN ?? "");
+                    row.CreateCell(14).SetCellValue(item.KPNDescription ?? "");
+                    row.CreateCell(15).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(16).SetCellValue(item.Uom ?? "");
+                    row.CreateCell(17).SetCellValue(item.PriceList ?? "");
+                    row.CreateCell(18).SetCellValue(item.UnitPrice.HasValue ? Convert.ToDouble(item.UnitPrice.Value) : 0);
+                    row.CreateCell(19).SetCellValue(item.BasicAmount.HasValue ? Convert.ToDouble(item.BasicAmount.Value) : 0);
+                    row.CreateCell(20).SetCellValue(item.DiscountType ?? "");
+                    row.CreateCell(21).SetCellValue(item.SGST.HasValue ? Convert.ToDouble(item.SGST.Value) : 0);
+                    row.CreateCell(22).SetCellValue(item.CGST.HasValue ? Convert.ToDouble(item.CGST.Value) : 0);
+                    row.CreateCell(23).SetCellValue(item.IGST.HasValue ? Convert.ToDouble(item.IGST.Value) : 0);
+                    row.CreateCell(24).SetCellValue(item.UTGST.HasValue ? Convert.ToDouble(item.UTGST.Value) : 0);
+                    row.CreateCell(25).SetCellValue(item.TotalFinalAmount.HasValue ? Convert.ToDouble(item.TotalFinalAmount.Value) : 0);
+                    row.CreateCell(26).SetCellValue(item.OrderQty.HasValue ? Convert.ToDouble(item.OrderQty.Value) : 0);
+                    row.CreateCell(27).SetCellValue(item.DispatchQty.HasValue ? Convert.ToDouble(item.DispatchQty.Value) : 0);
+                    row.CreateCell(28).SetCellValue(item.BalanceQty.HasValue ? Convert.ToDouble(item.BalanceQty.Value) : 0);
+                    row.CreateCell(29).SetCellValue(item.MSL.HasValue ? Convert.ToDouble(item.MSL.Value) : 0);
+                }
+
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "QuotationSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetSoSummaryQuotationSPReport()
+
+        {
+            ServiceResponse<IEnumerable<SoSummaryQuotationDto>> serviceResponse = new ServiceResponse<IEnumerable<SoSummaryQuotationDto>>();
+            try
+            {
+                var products = await _repository.GetSoSummaryQuotationSPReport();
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SoSummaryQuotationSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SoSummaryQuotationSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned GetSoSummaryQuotationSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetSOSummarySPReportWithParam action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

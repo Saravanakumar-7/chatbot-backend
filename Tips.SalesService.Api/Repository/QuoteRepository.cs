@@ -58,6 +58,35 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
+        public async Task<IEnumerable<SoSummaryQuotationDto>> GetSoSummaryQuotationSPReport()
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SoSummaryQuotationDto>()
+            .FromSqlInterpolated($"CALL so_summary_with_quotation_data()")
+            .ToList();
+
+            return result;
+
+        }
+        public async Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithParam(string CustomerId)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<QuotationSPReport>()
+            .FromSqlInterpolated($"CALL quotation_report_with_parameter({CustomerId})")
+            .ToList();
+
+            return result;
+
+        }
+        public async Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<QuotationSPReport>()
+                        .FromSqlInterpolated($"CALL GetQuotationSPReportWithDate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
         public async Task<string> GenerateQuoteNumber()
         {
             using var transaction = await _tipsSalesServiceDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);

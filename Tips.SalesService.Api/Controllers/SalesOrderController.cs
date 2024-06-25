@@ -1788,7 +1788,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     var salesAdditionalCharges = await _salesAdditionalChargesRepository.GetSalesAdditionalChargesById(item.SalesOrderId, item.SalesAdditionalChargeId);
 
-                    salesAdditionalCharges.InvoicedValue -= item.InvoicedValue;
+                    salesAdditionalCharges.InvoicedValue -= item.ReturnInvoicedValue;
 
                     if(salesAdditionalCharges.TotalValue == salesAdditionalCharges.InvoicedValue)
                     {
@@ -3951,47 +3951,37 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var salesOrderDetailById = await _repository.GetSalesOrderById(soItemConfirmationDateDto[0][0].SalesOrderId);
-                if (salesOrderDetailById == null)
+                string serverKey = GetServerKey();
+                var soid_1 = soItemConfirmationDateDto.First();
+                var SoId = soid_1.First();
+                var SODetails = await _repository.GetSalesOrderById(SoId.SalesOrderId);
+                foreach (var soItemConfirmationDateSet in soItemConfirmationDateDto)
                 {
-                    _logger.LogError($"SalesOrder with SalesOrderId: {soItemConfirmationDateDto[0][0].SalesOrderId}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"SalesOrder with SalesOrderId hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-
-                //Updating SoConfirmationDate table
-                var soItemConfirmationDateDtoDetails = await _soConfirmationDateRepository.GetSoConfirmationDateDetailsById(soItemConfirmationDateDto[0][0].SalesOrderItemsId);
-
-                if (soItemConfirmationDateDtoDetails.Count() == 0)
-                {
-                    var soConfirmationDateDtoDetails = soItemConfirmationDateDto
-                        .SelectMany(SoItemConfirmationDateDtoList => SoItemConfirmationDateDtoList)
-                        .Select(soConfirmationDate => new SoConfirmationDate
-                        {
-                            ConfirmationDate = soConfirmationDate.ConfirmationDate,
-                            Qty = soConfirmationDate.Qty,
-                            SalesOrderItemsId = soConfirmationDate.SalesOrderItemsId
-                        })
-                        .ToList();
-
-                    await _soConfirmationDateRepository.CreateSoConfirmationDateList(soConfirmationDateDtoDetails);
-                    _soConfirmationDateRepository.SaveAsync();
-                }
-
-                else
-                {
-                    await _soConfirmationDateRepository.DeleteSoConfirmationDateList(soItemConfirmationDateDtoDetails);
-                    _soConfirmationDateRepository.SaveAsync();
-
-                    var soItemConfirmationDateDtoList = await _soConfirmationDateRepository.GetSoConfirmationDateDetailsById(soItemConfirmationDateDto[0][0].SalesOrderItemsId);
-
-                    if (soItemConfirmationDateDtoList.Count() == 0)
+                    if (!soItemConfirmationDateSet.Any())
                     {
-                        var soConfirmationDateDtoDetails = soItemConfirmationDateDto
-                            .SelectMany(PoItemConfirmationDateDtoList => PoItemConfirmationDateDtoList)
+                        // Skip empty sets
+                        continue;
+                    }
+
+                    var firstItemInSet = soItemConfirmationDateSet.First(); // Get the first item in the set
+
+                    var salesOrderDetailById = await _repository.GetSalesOrderById(firstItemInSet.SalesOrderId);
+                    if (salesOrderDetailById == null)
+                    {
+                        _logger.LogError($"SalesOrder with SalesOrderId: {firstItemInSet.SalesOrderId}, hasn't been found in db.");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"SalesOrder with SalesOrderId hasn't been found.";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        return NotFound(serviceResponse);
+                    }
+
+                    //Updating SoConfirmationDate table
+                    var soItemConfirmationDateDtoDetails = await _soConfirmationDateRepository.GetSoConfirmationDateDetailsById(firstItemInSet.SalesOrderItemsId);
+
+                    if (soItemConfirmationDateDtoDetails.Count() == 0)
+                    {
+                        var soConfirmationDateDtoDetails = soItemConfirmationDateSet
                             .Select(soConfirmationDate => new SoConfirmationDate
                             {
                                 ConfirmationDate = soConfirmationDate.ConfirmationDate,
@@ -4003,63 +3993,87 @@ namespace Tips.SalesService.Api.Controllers
                         await _soConfirmationDateRepository.CreateSoConfirmationDateList(soConfirmationDateDtoDetails);
                         _soConfirmationDateRepository.SaveAsync();
                     }
+
                     else
                     {
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = "SoConfirmationDateDetails have been Found";
-                        serviceResponse.Success = true;
-                        serviceResponse.StatusCode = HttpStatusCode.OK;
-                        return Ok(serviceResponse);
+                        await _soConfirmationDateRepository.DeleteSoConfirmationDateList(soItemConfirmationDateDtoDetails);
+                        _soConfirmationDateRepository.SaveAsync();
+
+                        var soItemConfirmationDateDtoList = await _soConfirmationDateRepository.GetSoConfirmationDateDetailsById(firstItemInSet.SalesOrderItemsId);
+
+                        if (soItemConfirmationDateDtoList.Count() == 0)
+                        {
+                            var soConfirmationDateDtoDetails = soItemConfirmationDateSet
+                                .Select(soConfirmationDate => new SoConfirmationDate
+                                {
+                                    ConfirmationDate = soConfirmationDate.ConfirmationDate,
+                                    Qty = soConfirmationDate.Qty,
+                                    SalesOrderItemsId = soConfirmationDate.SalesOrderItemsId
+                                })
+                                .ToList();
+
+                            await _soConfirmationDateRepository.CreateSoConfirmationDateList(soConfirmationDateDtoDetails);
+                            _soConfirmationDateRepository.SaveAsync();
+                        }
+                        else
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "SoConfirmationDateDetails have been Found";
+                            serviceResponse.Success = true;
+                            serviceResponse.StatusCode = HttpStatusCode.OK;
+                            return Ok(serviceResponse);
+                        }
+
                     }
 
-                }
-
-                //Update SoConfirmationHistory Table
-                var soItemConfirmationDateDetails = await _soConfirmationDateRepository.GetSoConfirmationDateDetailsById(soItemConfirmationDateDto[0][0].SalesOrderItemsId);
-                if (soItemConfirmationDateDetails != null)
-                {
-                    foreach (var soConfirmationDate in soItemConfirmationDateDetails)
+                    //Update SoConfirmationHistory Table
+                    var soItemConfirmationDateDetails = await _soConfirmationDateRepository.GetSoConfirmationDateDetailsById(firstItemInSet.SalesOrderItemsId);
+                    if (soItemConfirmationDateDetails != null)
                     {
-                        var purchaseOrderItemDetailById = await _salesOrderItemsRepository.GetSalesOrderItemDetailsById(soItemConfirmationDateDto[0][0].SalesOrderItemsId);
-                        SoConfirmationDateHistory soConfirmationDateHistory = new SoConfirmationDateHistory();
-                        soConfirmationDateHistory.ItemNumber = purchaseOrderItemDetailById.ItemNumber;
-                        soConfirmationDateHistory.Description = purchaseOrderItemDetailById.Description;
-                        soConfirmationDateHistory.SalesOrderNumber = purchaseOrderItemDetailById.SalesOrderNumber;
-                        soConfirmationDateHistory.ProjectNumber = purchaseOrderItemDetailById.ProjectNumber;
-                        soConfirmationDateHistory.StatusEnum = purchaseOrderItemDetailById.StatusEnum;
-                        soConfirmationDateHistory.Qty = soConfirmationDate.Qty;
-                        soConfirmationDateHistory.ConfirmationDate = soConfirmationDate.ConfirmationDate;
-                        soConfirmationDateHistory.UOM = purchaseOrderItemDetailById.UOM;
-                        soConfirmationDateHistory.Currency = purchaseOrderItemDetailById.Currency;
-                        soConfirmationDateHistory.TotalAmount = purchaseOrderItemDetailById.TotalAmount;
-                        soConfirmationDateHistory.BasicAmount = purchaseOrderItemDetailById.BasicAmount;
-                        soConfirmationDateHistory.Discount = purchaseOrderItemDetailById.Discount;
-                        soConfirmationDateHistory.RoomName = purchaseOrderItemDetailById.RoomName;
-                        soConfirmationDateHistory.DiscountType = purchaseOrderItemDetailById.DiscountType;
-                        soConfirmationDateHistory.UnitPrice = purchaseOrderItemDetailById.UnitPrice;
-                        soConfirmationDateHistory.OrderQty = purchaseOrderItemDetailById.OrderQty;
-                        soConfirmationDateHistory.BalanceQty = purchaseOrderItemDetailById.BalanceQty;
-                        soConfirmationDateHistory.DispatchQty = purchaseOrderItemDetailById.DispatchQty;
-                        soConfirmationDateHistory.ShopOrderQty = purchaseOrderItemDetailById.ShopOrderQty;
-                        soConfirmationDateHistory.SGST = purchaseOrderItemDetailById.SGST;
-                        soConfirmationDateHistory.CGST = purchaseOrderItemDetailById.CGST;
-                        soConfirmationDateHistory.UTGST = purchaseOrderItemDetailById.UTGST;
-                        soConfirmationDateHistory.IGST = purchaseOrderItemDetailById.IGST;
-                        soConfirmationDateHistory.RequestedDate = purchaseOrderItemDetailById.RequestedDate;
-                        soConfirmationDateHistory.PriceList = purchaseOrderItemDetailById.PriceList;
-                        soConfirmationDateHistory.Remarks = purchaseOrderItemDetailById.Remarks;
+                        foreach (var soConfirmationDate in soItemConfirmationDateDetails)
+                        {
+                            var purchaseOrderItemDetailById = await _salesOrderItemsRepository.GetSalesOrderItemDetailsById(firstItemInSet.SalesOrderItemsId);
+                            SoConfirmationDateHistory soConfirmationDateHistory = new SoConfirmationDateHistory();
+                            soConfirmationDateHistory.ItemNumber = purchaseOrderItemDetailById.ItemNumber;
+                            soConfirmationDateHistory.Description = purchaseOrderItemDetailById.Description;
+                            soConfirmationDateHistory.SalesOrderNumber = purchaseOrderItemDetailById.SalesOrderNumber;
+                            soConfirmationDateHistory.ProjectNumber = purchaseOrderItemDetailById.ProjectNumber;
+                            soConfirmationDateHistory.StatusEnum = purchaseOrderItemDetailById.StatusEnum;
+                            soConfirmationDateHistory.Qty = soConfirmationDate.Qty;
+                            soConfirmationDateHistory.ConfirmationDate = soConfirmationDate.ConfirmationDate;
+                            soConfirmationDateHistory.UOM = purchaseOrderItemDetailById.UOM;
+                            soConfirmationDateHistory.Currency = purchaseOrderItemDetailById.Currency;
+                            soConfirmationDateHistory.TotalAmount = purchaseOrderItemDetailById.TotalAmount;
+                            soConfirmationDateHistory.BasicAmount = purchaseOrderItemDetailById.BasicAmount;
+                            soConfirmationDateHistory.Discount = purchaseOrderItemDetailById.Discount;
+                            soConfirmationDateHistory.RoomName = purchaseOrderItemDetailById.RoomName;
+                            soConfirmationDateHistory.DiscountType = purchaseOrderItemDetailById.DiscountType;
+                            soConfirmationDateHistory.UnitPrice = purchaseOrderItemDetailById.UnitPrice;
+                            soConfirmationDateHistory.OrderQty = purchaseOrderItemDetailById.OrderQty;
+                            soConfirmationDateHistory.BalanceQty = purchaseOrderItemDetailById.BalanceQty;
+                            soConfirmationDateHistory.DispatchQty = purchaseOrderItemDetailById.DispatchQty;
+                            soConfirmationDateHistory.ShopOrderQty = purchaseOrderItemDetailById.ShopOrderQty;
+                            soConfirmationDateHistory.SGST = purchaseOrderItemDetailById.SGST;
+                            soConfirmationDateHistory.CGST = purchaseOrderItemDetailById.CGST;
+                            soConfirmationDateHistory.UTGST = purchaseOrderItemDetailById.UTGST;
+                            soConfirmationDateHistory.IGST = purchaseOrderItemDetailById.IGST;
+                            soConfirmationDateHistory.RequestedDate = purchaseOrderItemDetailById.RequestedDate;
+                            soConfirmationDateHistory.PriceList = purchaseOrderItemDetailById.PriceList;
+                            soConfirmationDateHistory.Remarks = purchaseOrderItemDetailById.Remarks;
+                            soConfirmationDateHistory.CreatedBy = _createdBy;
+                            soConfirmationDateHistory.CreatedOn = DateTime.Now;
 
-                        await _soConfirmationDateHistoryRepository.CreateSoConfirmationHistory(soConfirmationDateHistory);
+                            await _soConfirmationDateHistoryRepository.CreateSoConfirmationHistory(soConfirmationDateHistory);
+                        }
+                        _soConfirmationDateHistoryRepository.SaveAsync();
                     }
-                    _soConfirmationDateHistoryRepository.SaveAsync();
+
+                    //Update SoConfirmationStatus in SalesOrder Table
+                    //santhosh
+                    salesOrderDetailById.SoConfirmationStatus = true;
+                    string result = await _repository.UpdateSalesOrder(salesOrderDetailById);
+                    _repository.SaveAsync();
                 }
-
-                //Update SoConfirmationStatus in SalesOrder Table
-                //santhosh
-                //salesOrderDetailById.SoConfirmationStatus = true;
-                string result = await _repository.UpdateSalesOrder(salesOrderDetailById);
-                _repository.SaveAsync();
-
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SoConfirmationStatus have been Updated";
                 serviceResponse.Success = true;

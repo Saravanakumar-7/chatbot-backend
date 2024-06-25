@@ -675,7 +675,7 @@ namespace Tips.Warehouse.Api.Controllers
                 ReturnSalesOrderAdditionalChargesUpdateDto additionalCharges = new ReturnSalesOrderAdditionalChargesUpdateDto
                 {
                     SalesOrderId = Convert.ToInt32(additionalChargeItem.SalesOrderId),
-                    InvoicedValue = Convert.ToDecimal(additionalChargeItem.InvoicedValue),
+                    ReturnInvoicedValue = Convert.ToDecimal(additionalChargeItem.ReturnInvoicedValue),
                     SalesAdditionalChargeId = additionalChargeItem.SalesAdditionalChargeId,
                 };
                 salesOrderAdditionalChargesUpdates.Add(additionalCharges);
