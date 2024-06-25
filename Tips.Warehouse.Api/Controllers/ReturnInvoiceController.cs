@@ -446,7 +446,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                             int? invoiceChildStatusCount = InvoiceDetails.invoiceChildItems?.Where(x => x.InvoiceItemStatus != Status.Closed).Count() ?? 0;
 
-                            int? invoiceAddStatusCount = InvoiceDetails.InvoiceAdditionalCharges?.Where(x => x.SOAdditionalStatus != Status.Closed).Count() ?? 0;
+                            int? invoiceAddStatusCount = InvoiceDetails.InvoiceAdditionalCharges?.Where(x => x.InvoiceAdditionalStatus != Status.Closed).Count() ?? 0;
 
 
                             if (invoiceChildStatusCount == 0 && invoiceAddStatusCount == 0)
@@ -498,7 +498,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                     int? invoiceChildStatusCount = InvoiceDetails.invoiceChildItems?.Where(x => x.InvoiceItemStatus != Status.Closed).Count() ?? 0;
 
-                    int? invoiceAddStatusCount = InvoiceDetails.InvoiceAdditionalCharges?.Where(x => x.SOAdditionalStatus != Status.Closed).Count() ?? 0;
+                    int? invoiceAddStatusCount = InvoiceDetails.InvoiceAdditionalCharges?.Where(x => x.InvoiceAdditionalStatus != Status.Closed).Count() ?? 0;
 
 
                     if (invoiceChildStatusCount == 0 && invoiceAddStatusCount == 0)
