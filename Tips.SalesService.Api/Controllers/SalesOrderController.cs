@@ -4069,7 +4069,7 @@ namespace Tips.SalesService.Api.Controllers
                     }
 
                     //Update SoConfirmationStatus in SalesOrder Table
-                    //santhosh
+                    
                     salesOrderDetailById.SoConfirmationStatus = true;
                     string result = await _repository.UpdateSalesOrder(salesOrderDetailById);
                     _repository.SaveAsync();
