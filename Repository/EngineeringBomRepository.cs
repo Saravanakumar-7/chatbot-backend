@@ -1373,7 +1373,11 @@ namespace Repository
                     }
                     else
                     {
-                        fgItemNumberList.Add(item.Key, enggBomIdsWithQtyDict[itemType.Key]);
+                        // fgItemNumberList.Add(item.Key, enggBomIdsWithQtyDict[itemType.Key]);
+                        if (!fgItemNumberList.ContainsKey(item.Key))
+                        {
+                            fgItemNumberList.Add(item.Key, enggBomIdsWithQtyDict[itemType.Key]);
+                        }
                     }
                 }
             }
