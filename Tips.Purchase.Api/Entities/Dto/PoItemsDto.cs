@@ -117,6 +117,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public bool NowShortClosed { get; set; }
         public string? ReasonforShortClose { get; set; }
         public string? ShortClosedBy { get; set; }
+        public PoStatus PoStatus { get; set; }
         public DateTime? ShortClosedOn { get; set; }
         public string? Remarks { get; set; }
         public List<PoAddProjectUpdateDto>? POAddprojects { get; set; }

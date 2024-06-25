@@ -36,8 +36,8 @@ namespace Repository
         }
         public async Task<FGFinalLandedandMoqPrice> GetEngganditsPP(string FGItemNumber, decimal FGRevno, List<RfqSourcingPPdetailsforEngg> rfqSourcingPPdetails)
         {
-            var FGid = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == FGItemNumber && x.RevisionNumber == FGRevno).Select(x => x.BOMId).FirstOrDefaultAsync();
-            List<EnggChildItem> FGchilditems = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == FGid).ToListAsync();
+            var FGid = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == FGItemNumber && x.RevisionNumber == FGRevno && x.IsActive == true).Select(x => x.BOMId).FirstOrDefaultAsync();
+            List<EnggChildItem> FGchilditems = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == FGid && x.IsActive == true).ToListAsync();
             FGFinalLandedandMoqPrice FGFinalLandedandMoqPrice = new FGFinalLandedandMoqPrice()
             {
                 FGItemNumber = FGItemNumber,
@@ -92,8 +92,8 @@ namespace Repository
         }
         public async Task<SAFinalLandedandMoqPrice> GetEnggFGSA(string SAItemNumber, decimal SAQty, List<RfqSourcingPPdetailsforEngg> rfqSourcingPPdetails)
         {
-            var SAid = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == SAItemNumber).OrderByDescending(x => x.BOMId).Select(x => x.BOMId).FirstOrDefaultAsync();
-            List<EnggChildItem> SAchilditems = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == SAid).ToListAsync();
+            var SAid = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == SAItemNumber && x.IsActive == true).OrderByDescending(x => x.BOMId).Select(x => x.BOMId).FirstOrDefaultAsync();
+            List<EnggChildItem> SAchilditems = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == SAid && x.IsActive == true).ToListAsync();
             SAFinalLandedandMoqPrice sAFinalLandedandMoqPrice = new SAFinalLandedandMoqPrice()
             {
                 SAFinalLandindPrice = 0,
@@ -276,6 +276,7 @@ namespace Repository
         public async Task<IEnumerable<EnggBomItemDto>> GetAllEnggBOMItemNumber()
         {
             IEnumerable<EnggBomItemDto> getAllEnggBomItems = await _tipsMasterDbContext.EnggBoms
+                .Where (x=>x.IsActive == true)
             .Select(c => new EnggBomItemDto()
             {
                 ItemNumber = c.ItemNumber,
@@ -333,10 +334,10 @@ namespace Repository
             List<EnggBomFGItemNumberWithQtyDto> enggBomFGItemNumberWithQtyDtos = new List<EnggBomFGItemNumberWithQtyDto>();
             foreach (var rfqfgitem in itemNumberList)
             {
-                int fgdetails = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == rfqfgitem.ItemNumber && x.RevisionNumber == rfqfgitem.CostingBomVersionNo)
+                int fgdetails = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == rfqfgitem.ItemNumber && x.RevisionNumber == rfqfgitem.CostingBomVersionNo && x.IsActive == true)
                     .Select(x => x.BOMId)
                     .FirstOrDefaultAsync();
-                var fgbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == fgdetails).OrderByDescending(x => x.PartType).ToListAsync();
+                var fgbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == fgdetails && x.IsActive == true).OrderByDescending(x => x.PartType).ToListAsync();
                 if (fgbomdetails != null)
                 {
                     foreach (var childofFG in fgbomdetails)
@@ -396,7 +397,7 @@ namespace Repository
         {
             List<EnggBomFGCostItemNumberWithQtyDto> enggBomFGItemNumberWithQtyDtos = new List<EnggBomFGCostItemNumberWithQtyDto>();
 
-            int bomId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgItemMaster && x.IsEnggBomRelease == true)
+            int bomId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgItemMaster && x.IsEnggBomRelease == true && x.IsActive == true)
                 .OrderByDescending(x => x.RevisionNumber)
                 .Select(x => x.BOMId)
                 .FirstOrDefaultAsync();
@@ -407,7 +408,7 @@ namespace Repository
             //                .Select(m => m.BOMId)
             //                .FirstOrDefaultAsync();
 
-            var fgbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == bomId).OrderByDescending(x => x.PartType).ToListAsync();
+            var fgbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == bomId && x.IsActive == true).OrderByDescending(x => x.PartType).ToListAsync();
                 if (fgbomdetails != null)
                 {
                     foreach (var childofFG in fgbomdetails)
@@ -468,10 +469,10 @@ namespace Repository
         public async Task<List<EnggBomFGItemNumberWithQtyDto>> GetSABomItemsChildDetails(string SAitemnumber, decimal SAQty)//, string SAversion)
         {
             List<EnggBomFGItemNumberWithQtyDto> enggBomSAItemNumberWithQtyDtos = new List<EnggBomFGItemNumberWithQtyDto>();
-            int sadetails = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == SAitemnumber).OrderByDescending(x => x.RevisionNumber)
+            int sadetails = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == SAitemnumber && x.IsActive == true).OrderByDescending(x => x.RevisionNumber)
                 //&& x.RevisionNumber == decimal.Parse(SAversion))
                 .Select(x => x.BOMId).FirstOrDefaultAsync();
-            var sabomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == sadetails).OrderByDescending(x => x.PartType).ToListAsync();
+            var sabomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == sadetails && x.IsActive == true).OrderByDescending(x => x.PartType).ToListAsync();
             if (sabomdetails != null)
             {
                 foreach (var childofSA in sabomdetails)
@@ -530,12 +531,12 @@ namespace Repository
         {
 
             var maxRevisionNumber = await _tipsMasterDbContext.EnggBoms
-                    .Where(x => x.ItemNumber == fgPartNumber && x.ItemType == PartType.FG)
+                    .Where(x => x.ItemNumber == fgPartNumber && x.ItemType == PartType.FG && x.IsActive == true)
                     .MaxAsync(x => x.RevisionNumber);
 
             var bomId = await _tipsMasterDbContext.EnggBoms
                 .Where(x => x.ItemNumber == fgPartNumber && x.ItemType == PartType.FG
-                        && x.RevisionNumber == maxRevisionNumber)
+                        && x.RevisionNumber == maxRevisionNumber && x.IsActive == true)
                 .Select(x => x.BOMId)
                 .FirstOrDefaultAsync();
 
@@ -550,11 +551,11 @@ namespace Repository
         public async Task<IEnumerable<EnggBomFGItemNumber>> GetAllEnggBomFGItemNoListByItemNumber(string itemNumber)
         {
             List<int> bomDetails = await _tipsMasterDbContext.EnggChildItems
-                                .Where(x => x.ItemNumber == itemNumber && x.PartType == PartType.SA || x.PartType == PartType.PurchasePart)
+                                .Where(x => x.ItemNumber == itemNumber && x.IsActive == true && (x.PartType == PartType.SA || x.PartType == PartType.PurchasePart))
                                 .Select(x => x.EnggBomId).Distinct().ToListAsync();
 
             IEnumerable<EnggBomFGItemNumber> getAllBomGroupList = await _tipsMasterDbContext.EnggBoms
-                .Where(x => bomDetails.Contains(x.BOMId))
+                .Where(x => bomDetails.Contains(x.BOMId) && x.IsActive == true)
                 .Select(c => new EnggBomFGItemNumber()
                 {
                     ItemNumber = c.ItemNumber,
@@ -565,8 +566,41 @@ namespace Repository
             return getAllBomGroupList;
         }
 
+        public async Task<IEnumerable<EnggBomDetailsDto>> GetAllEnggBomDetailsByItemNumber(string itemNumber)
+        {
 
+            IEnumerable<EnggBomDetailsDto> getAllBomGroupList = await _tipsMasterDbContext.EnggBoms
+                .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
+                .Select(c => new EnggBomDetailsDto()
+                {
+                    ItemNumber = c.ItemNumber,
+                    ItemDescription = c.ItemDescription,
+                    ItemType = c.ItemType,
+                    IsActive = c.IsActive
+                })
+              .ToListAsync();
 
+            return getAllBomGroupList;
+        }
+
+        public async Task<IEnumerable<EnggChildBomDetailsDto>> GetAllEnggChildBomDetailsByItemNumber(string itemNumber)
+        {
+
+            IEnumerable<EnggChildBomDetailsDto> getAllBomGroupList = await _tipsMasterDbContext.EnggChildItems
+                .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
+                .Select(c => new EnggChildBomDetailsDto()
+                {
+                    ItemNumber = c.ItemNumber,
+                    MftrItemNumbers = c.MftrItemNumbers,
+                    UOM = c.UOM,
+                    Description = c.Description,
+                    PartType = c.PartType,
+                    IsActive = c.IsActive
+                })
+              .ToListAsync();
+
+            return getAllBomGroupList;
+        }
 
         //test
         // Define a recursive method to find the parent FG item number for a given SA item number
@@ -574,7 +608,7 @@ namespace Repository
         {
             // Fetch the EnggBomId of the SA item number
             var saEnggBomId = await _tipsMasterDbContext.EnggChildItems
-                .Where(x => x.ItemNumber == saItemNumber)
+                .Where(x => x.ItemNumber == saItemNumber && x.IsActive == true)
                 .Select(x => x.EnggBomId)
                 .FirstOrDefaultAsync();
 
@@ -586,7 +620,7 @@ namespace Repository
 
             // Fetch the parent FG item number using the EnggBomId
             var parentFgItemNumber = await _tipsMasterDbContext.EnggBoms
-                .Where(x => x.BOMId == saEnggBomId && x.ItemType == PartType.FG)
+                .Where(x => x.BOMId == saEnggBomId && x.ItemType == PartType.FG && x.IsActive == true)
                 .Select(x => x.ItemNumber)
                 .FirstOrDefaultAsync();
 
@@ -598,7 +632,7 @@ namespace Repository
 
             // Check if the parent FG item has any child SA items and recursively find their parent FG item numbers
             var childSaItemNumbers = await _tipsMasterDbContext.EnggChildItems
-                .Where(x => x.EnggBomId == saEnggBomId && x.PartType == PartType.SA)
+                .Where(x => x.EnggBomId == saEnggBomId && x.PartType == PartType.SA && x.IsActive == true)
                 .Select(x => x.ItemNumber)
                 .ToListAsync();
 
@@ -661,7 +695,7 @@ namespace Repository
         public async Task<int> GetEnggBomId(string ItemNumber)
         {
             int enggBomId = _tipsMasterDbContext.EnggBoms
-               .Where(e => e.ItemNumber == ItemNumber)
+               .Where(e => e.ItemNumber == ItemNumber && e.IsActive == true)
                .Select(e => e.BOMId)
                .FirstOrDefault();
             return enggBomId;
@@ -669,7 +703,7 @@ namespace Repository
         public async Task<IEnumerable<string>> GetEnggChildItemNumber(int enggBomId)
         {
             var enggBomIds = await _tipsMasterDbContext.EnggChildItems
-               .Where(e => e.EnggBomId == enggBomId)
+               .Where(e => e.EnggBomId == enggBomId && e.IsActive == true)
                .Select(e => e.ItemNumber)
                 .ToListAsync();
             return enggBomIds;
@@ -677,7 +711,7 @@ namespace Repository
         public async Task<List<EnggChildItem>> GetEnggChildItemNumberByEnggbom(int bomId)
         {
             var enggBomIds = await _tipsMasterDbContext.EnggChildItems
-               .Where(e => e.EnggBomId == bomId)
+               .Where(e => e.EnggBomId == bomId && e.IsActive == true)
                 .ToListAsync();
             return enggBomIds;
         }
@@ -700,7 +734,7 @@ namespace Repository
             // Replace this with the actual SA child item number you want to find the parent FG item number for
 
             var fgParentItemNumbers = await _tipsMasterDbContext.EnggChildItems
-      .Where(x => x.ItemNumber == itemNumber && x.PartType == PartType.SA)
+      .Where(x => x.ItemNumber == itemNumber && x.PartType == PartType.SA && x.IsActive == true )
       .Join(
           _tipsMasterDbContext.EnggChildItems,
           childBomId => childBomId.EnggBomId,
@@ -720,7 +754,7 @@ namespace Repository
         }
         public async Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber)
         {
-            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber)
+            var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == fgPartNumber && x.IsActive == true)
                                 .Include(t => t.EnggChildItems)
                                 .ThenInclude(x => x.EnggAlternates)
                                 .Include(m => m.NREConsumable)
@@ -739,7 +773,7 @@ namespace Repository
             //return EnggBomDetailsbyId;
 
             var EnggBomDetailsbyId = await _tipsMasterDbContext.EnggBoms
-           .Where(x => x.ItemNumber == fgPartNumber && x.RevisionNumber == revisionNo)
+           .Where(x => x.ItemNumber == fgPartNumber && x.RevisionNumber == revisionNo && x.IsActive == true)
             .Select(x => new
             {
                 EnggBom = x,
@@ -776,7 +810,7 @@ namespace Repository
         public async Task<IEnumerable<object>> GetAllEnggBomItemNumberVersionList()
         {
             var enggBomDetails = _tipsMasterDbContext.EnggBoms
-            .Where(x => x.IsEnggBomRelease == false)
+            .Where(x => x.IsEnggBomRelease == false && x.IsActive == true)
             .GroupBy(bom => bom.ItemNumber)
             .Select(group => new
             {
@@ -800,7 +834,7 @@ namespace Repository
         public async Task<EnggBom> ReleasedEnggBomByItemAndRevisionNumber(string itemNumber, decimal revisionNumber)
         {
             var releaseEnggBom = await _tipsMasterDbContext.EnggBoms
-            .Where(x => x.ItemNumber == itemNumber && x.RevisionNumber == revisionNumber)
+            .Where(x => x.ItemNumber == itemNumber && x.RevisionNumber == revisionNumber && x.IsActive == true)
             .FirstOrDefaultAsync();
 
             releaseEnggBom.IsEnggBomRelease = true;
@@ -819,7 +853,7 @@ namespace Repository
         public async Task<IEnumerable<EngineeringBom>> GetAllEnggBomVersionListByItemNumber(string itemNumber)
         {
             var enggBomDetails = await _tipsMasterDbContext.EngineeringBoms
-                .Where(x => x.ItemNumber == itemNumber)
+                .Where(x => x.ItemNumber == itemNumber )
                 .ToListAsync();
 
             return enggBomDetails;
@@ -827,7 +861,7 @@ namespace Repository
 
         public async Task<EnggBom> GetEnggBomByItemNoAndRevNo(string itemNumber, decimal revisionNumber)
         {
-            var EnggBomDetailsbyItemNumber = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == itemNumber && x.RevisionNumber == revisionNumber)
+            var EnggBomDetailsbyItemNumber = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == itemNumber && x.RevisionNumber == revisionNumber && x.IsActive == true)
                                .Include(m => m.NREConsumable)
                                .Include(t => t.EnggChildItems)
                                .ThenInclude(x => x.EnggAlternates)
@@ -989,7 +1023,7 @@ namespace Repository
         public async Task<CostingBom> ReleasedCostBomByItemAndRevisionNumber(string itemNumber, decimal revisionNumber)
         {
             var releaseCostBom = await _tipsMasterDbContext.CostingBoms
-            .Where(x => x.ItemNumber == itemNumber && x.ReleaseVersion == revisionNumber)
+            .Where(x => x.ItemNumber == itemNumber && x.ReleaseVersion == revisionNumber && x.IsActive == true)
             .FirstOrDefaultAsync();
 
             releaseCostBom.IsReleaseProductCompleted = true;
@@ -1016,7 +1050,7 @@ namespace Repository
         public async Task<IEnumerable<CostingBom>> GetAllCostingBomVersionListByItemNumber(string itemNumber)
         {
             var costingBomDetails = await _tipsMasterDbContext.CostingBoms
-             .Where(x => x.ItemNumber == itemNumber).ToListAsync();
+             .Where(x => x.ItemNumber == itemNumber && x.IsActive == true).ToListAsync();
 
             return costingBomDetails;
         }
@@ -1050,7 +1084,7 @@ namespace Repository
         public async Task<List<ProductionBom>?> GetLatestProBomCountByItemNumber(string itemNumber)
         {
             List<ProductionBom>? latestReleaseVersionsCount = await _tipsMasterDbContext.ProductionBoms
-                 .Where(x => x.ItemNumber == itemNumber)
+                 .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
                  .ToListAsync();
 
             return latestReleaseVersionsCount;
@@ -1067,7 +1101,7 @@ namespace Repository
         public async Task<IEnumerable<object>> GetAllReleaseProductBomItemNumberVersionList()
         {
             var releaseProductBomDetails = _tipsMasterDbContext.CostingBoms
-            .Where(x => x.IsReleaseCostCompleted == true && x.IsReleaseProductCompleted == false)
+            .Where(x => x.IsReleaseCostCompleted == true && x.IsReleaseProductCompleted == false && x.IsActive == true)
             .GroupBy(bom => bom.ItemNumber)
             .Select(group => new
             {
@@ -1118,7 +1152,7 @@ namespace Repository
         public async Task<ProductionBom> GetProductionBomByItemNumber(string itemNumber, decimal bomRevisonNumber)
         {
             var productionBomDetail = await _tipsMasterDbContext.ProductionBoms
-                                    .Where(x => x.ItemNumber == itemNumber && x.ReleaseVersion == bomRevisonNumber)
+                                    .Where(x => x.ItemNumber == itemNumber && x.ReleaseVersion == bomRevisonNumber && x.IsActive == true)
                                   .FirstOrDefaultAsync();
 
             return productionBomDetail;
@@ -1137,7 +1171,7 @@ namespace Repository
         public async Task<decimal> GetLatestProductionBomByItemNumber(string itemNumber)
         {
             decimal maxRevisionNumber = await _tipsMasterDbContext.ProductionBoms
-                .Where(x => x.ItemNumber == itemNumber)
+                .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
                 .MaxAsync(x => (decimal?)x.ReleaseVersion) ?? -1;
 
             return maxRevisionNumber;
@@ -1148,7 +1182,7 @@ namespace Repository
         public async Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber)
         {
             var productionBomDetails = await _tipsMasterDbContext.ProductionBoms
-               .Where(x => x.ItemNumber == itemNumber)
+               .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
              .ToListAsync();
 
             return productionBomDetails;
@@ -1157,7 +1191,7 @@ namespace Repository
         public async Task<IEnumerable<ProductionBomRevisionNumber>> GetAllProductionBomFGListByItemNumber(string itemNumber)
         {
             var latestReleaseVersion = _tipsMasterDbContext.ProductionBoms
-             .Where(x => x.ItemNumber == itemNumber && x.IsActive)
+             .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
              .OrderByDescending(x => x.ReleaseVersion)
              .Select(x => x.ReleaseVersion)
              .FirstOrDefault();
@@ -1303,7 +1337,7 @@ namespace Repository
             if (enggBomIdsWithQty.Count > 0)
             {
                 var fgParents = await _tipsMasterDbContext.EnggBoms
-                    .Where(x => enggBomIds.Contains(x.BOMId))
+                    .Where(x => enggBomIds.Contains(x.BOMId) && x.IsActive == true)
                     .Select(x => new { x.ItemNumber, x.ItemType, x.BOMId, x.RevisionNumber })
                     .ToListAsync();
 

@@ -76,6 +76,15 @@ namespace Tips.Warehouse.Api.Repository
             return LocationTransferbyId;
         }
 
+        public async Task<int> GetLatestLocationTransferId()
+        {
+            var latestLocationTransferId = await _tipsWarehouseDbContext.locationTransfers
+                                                 .OrderByDescending(x => x.Id)
+                                                 .Select(x => x.Id)
+                                                 .FirstOrDefaultAsync();
+            return latestLocationTransferId;
+        }
+
         public async Task<string> UpdateLocationTransfer(LocationTransfer locationTransfer)
         {
             locationTransfer.LastModifiedBy = _createdBy;

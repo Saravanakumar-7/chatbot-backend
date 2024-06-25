@@ -15,6 +15,7 @@ namespace Tips.Warehouse.Api.Entities
 
         [Precision(13, 3)]
         public decimal ReturnQty { get; set; }
+        public decimal? ReturnInvoiceValue { get; set; }
 
         public string? UOM { get; set; }
 

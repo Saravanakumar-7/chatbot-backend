@@ -120,4 +120,14 @@ namespace Entities.DTOs
 
 
     }
+    public class EnggChildBomDetailsDto
+    {
+        public string? ItemNumber { get; set; }
+        public string? MftrItemNumbers { get; set; }
+        public string? UOM { get; set; }
+        public string? Description { get; set; }
+        public PartType PartType { get; set; }
+        public bool IsActive { get; set; }
+
+    }
 }

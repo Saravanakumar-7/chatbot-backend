@@ -22,6 +22,8 @@ namespace Contracts
         Task<string> UpdateEnggBom(EnggBom enggBom);
         Task<string> DeleteEnggBom(EnggBom enggBom); 
         Task<IEnumerable<EnggBomFGItemNumber>> GetAllEnggBomFGItemNoListByItemNumber(string itemNumber);
+        Task<IEnumerable<EnggBomDetailsDto>> GetAllEnggBomDetailsByItemNumber(string itemNumber);
+        Task<IEnumerable<EnggChildBomDetailsDto>> GetAllEnggChildBomDetailsByItemNumber(string itemNumber);
          //Task<List<EnggBomFGItemNumber>> GetFgParentItems(string saItemNumber);
         Task<List<EnggBomFGItemNumber>> GetAllFgItemNumberListBySaItemNumber(string childItemNumber);
         Task <IEnumerable<object>> GetAllEnggBomItemNumberVersionList();

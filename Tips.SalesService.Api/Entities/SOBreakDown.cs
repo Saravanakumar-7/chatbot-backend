@@ -4,6 +4,7 @@
     {
         public int Id { get; set; }
         public string SalesOrderNumber { get; set; }
+        public string? TypeOfSolution { get; set; }
         public string CustomerId { get; set; }
         public decimal TotalValue { get; set; }
         public decimal PendingValue { get; set; }

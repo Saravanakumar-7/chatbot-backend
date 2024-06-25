@@ -26,6 +26,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<RfqCustomerSupport> GetRfqCsLatestRevNoByRfqnumber(string rfqNumber);
         Task<string> UpdateRfqCSRev(string rfqnumber, int rfqrev);
         Task<RfqCustomerSupport> GetRfqCustomerSupportDetailsbyrfqnumber(string rfqno);
+        Task<RfqCustomerSupport> GetRfqCustomerSupportDetailsbyRfqNoAndRevNo(string rfqno, int revNo);
 
     }
 

@@ -146,6 +146,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? SpecialTermsAndConditions { get; set; }
         public decimal TotalAmount { get; set; }
         public int? ApprovalCount { get; set; }
+        public PoStatus PoStatus { get; set; }
         public string? Unit { get; set; }
         //public string? LastModifiedBy { get; set; }
         //public DateTime? LastModifiedOn { get; set; }
@@ -395,8 +396,15 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? PONumber { get; set; }
         public string? ItemNumber { get; set; }
     }
+    public class PurchaseOrderSPReportWithParamForTransDTO
+    {
+        public string? VendorName { get; set; }
+        public string? PONumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
 
-        public class PurchaseOrderApprovalSPReportWithParamDTO
+    public class PurchaseOrderApprovalSPReportWithParamDTO
         {
             public string? VendorName { get; set; }
             public string? PONumber { get; set; }
@@ -405,9 +413,18 @@ namespace Tips.Purchase.Api.Entities.DTOs
             public string? Postatus { get; set; }
             public string? Approval { get; set; }
         }
+    public class PurchaseOrderApprovalSPReportWithParamForTransDTO
+    {
+        public string? VendorName { get; set; }
+        public string? PONumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? RecordType { get; set; }
+        public string? Postatus { get; set; }
+        public string? Approval { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
 
-
-        public class Tras_POSPReportDTO
+    public class Tras_POSPReportDTO
         {
             public string? VendorName { get; set; }
             public string? PONumber { get; set; }

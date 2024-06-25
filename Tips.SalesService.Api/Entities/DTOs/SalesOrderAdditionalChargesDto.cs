@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
+using Tips.SalesService.Api.Entities.Enum;
 
 namespace Tips.SalesService.Api.Entities.DTOs
 {
@@ -30,6 +31,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? SGST { get; set; }
+        public SoStatus SOAdditionalStatus { get; set; }
 
     }
 
@@ -58,6 +60,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? SGST { get; set; }
+        public SoStatus SOAdditionalStatus { get; set; }
 
     }
     public class SalesOrderAdditionalChargesUpdateDto
@@ -85,6 +88,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? SGST { get; set; }
+        public SoStatus SOAdditionalStatus { get; set; }
 
     }
     public class SalesOrderAdditionalChargesReportDto

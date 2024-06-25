@@ -333,7 +333,7 @@ namespace Tips.Production.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetMaterialIssueByShopOrderNo(string shopOrderNumber)
         {
-            ServiceResponse<MaterialIssueDto> serviceResponse = new ServiceResponse<MaterialIssueDto>();
+            ServiceResponse<MaterialIssuesDto> serviceResponse = new ServiceResponse<MaterialIssuesDto>();
 
             try
             {
@@ -353,18 +353,99 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogInfo($"Returned MaterialIssueDetails with shopOrderNumber: {shopOrderNumber}");
 
-                    MaterialIssueDto materialIssueDto = _mapper.Map<MaterialIssueDto>(materialIssueDetail);
+                    //MaterialIssueDto materialIssueDto = _mapper.Map<MaterialIssueDto>(materialIssueDetail);
 
-                    List<MaterialIssueItemDto> MaterialIssueItemList = new List<MaterialIssueItemDto>();
+                    //List<MaterialIssueItemDto> MaterialIssueItemList = new List<MaterialIssueItemDto>();
 
-                    foreach (var materialIssueItemDetails in materialIssueDetail.materialIssueItems)
+                    //foreach (var materialIssueItemDetails in materialIssueDetail.materialIssueItems)
+                    //{
+                    //    MaterialIssueItemDto MaterialIssueItemDto = _mapper.Map<MaterialIssueItemDto>(materialIssueItemDetails);
+                    //    MaterialIssueItemList.Add(MaterialIssueItemDto);
+                    //}
+
+                    //materialIssueDto.materialIssueItems = MaterialIssueItemList;
+                    //serviceResponse.Data = materialIssueDto;
+                    var materialIssueDetails = _mapper.Map<MaterialIssuesDto>(materialIssueDetail);
+                    List<string> MaterialIssueItemProjectNumbers = await _materialIssueItemRepository.GetMaterialIssueItemProjectNumbersById(materialIssueDetail.Id);
+                    if (MaterialIssueItemProjectNumbers.Count > 0)
                     {
-                        MaterialIssueItemDto MaterialIssueItemDto = _mapper.Map<MaterialIssueItemDto>(materialIssueItemDetails);
-                        MaterialIssueItemList.Add(MaterialIssueItemDto);
+                        materialIssueDetails.ProjectNumber = string.Join(",", MaterialIssueItemProjectNumbers);
+                    }
+                    List<MaterialIssueItemsDto> materialIssueItemDtos = materialIssueDetails.materialIssueItems;
+
+                    var groupedMaterialIssueItemDtoList = materialIssueItemDtos
+                    .GroupBy(item => item.PartNumber)
+                    .Select(group => new MaterialIssueItemsDto
+                    {
+                        Id = group.First().Id,
+                        PartNumber = group.Key,
+                        Description = group.First().Description,
+                        ProjectNumber = group.First().ProjectNumber,
+                        PartType = group.First().PartType,
+                        UOM = group.First().UOM,
+                        RequiredQty = group.Sum(item => item.RequiredQty),
+                        AvailableQty = 0,     //group.First().AvailableQty,
+                        IssuedQty = group.Sum(item => item.IssuedQty),
+                        Unit = group.First().Unit,
+                        CreatedBy = group.First().CreatedBy,
+                        CreatedOn = group.First().CreatedOn,
+                        LastModifiedBy = group.First().LastModifiedBy,
+                        LastModifiedOn = group.First().LastModifiedOn,
+                        MaterialIssuedStatus = group.First().MaterialIssuedStatus,
+                        MaterialIssueId = group.First().MaterialIssueId
+                    })
+            .ToList();
+
+                    List<MaterialIssueItemsDto> groupedMaterialIssueItemList = new List<MaterialIssueItemsDto>();
+                    for (int i = 0; i < groupedMaterialIssueItemDtoList.Count(); i++)
+                    {
+                        decimal balanceQuantity = 0;
+                        //var partnumber = materialIssueDetailById.materialIssueItems[i].PartNumber;
+                        //var projectnumber = materialIssueDetailById.materialIssueItems[i].ProjectNumber;
+                        //var partnumber = Uri.EscapeDataString(groupedMaterialIssueItemDtoList[i].PartNumber);
+                        //var projectnumber = Uri.EscapeDataString(groupedMaterialIssueItemDtoList[i].ProjectNumber);
+                        //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                        //     "GetInventoryStockByItemAndProjectNo?", "itemNumber=", partnumber, "&projectNumber=", projectnumber));
+
+                        var client = _clientFactory.CreateClient();
+                        var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                        var ItemNumber = groupedMaterialIssueItemDtoList[i].PartNumber;
+                        var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+                        var projectNumber = groupedMaterialIssueItemDtoList[i].ProjectNumber;
+                        var encodedProjectNumber = Uri.EscapeDataString(projectNumber);
+
+                        var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                            $"GetInventoryStockByItemAndProjectNo?itemNumber={encodedItemNumber}&projectNumber={encodedProjectNumber}"));
+                        request.Headers.Add("Authorization", token);
+
+                        var inventoryObjectResult = await client.SendAsync(request);
+                        if (inventoryObjectResult != null && inventoryObjectResult.StatusCode == HttpStatusCode.OK)
+                        {
+                            var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                            dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                            JArray inventoryArray = inventoryObjectData.data; // Use JArray instead of 
+                            balanceQuantity = 0;
+
+                            if (inventoryArray != null)
+                            {
+                                foreach (var item in inventoryArray)
+                                {
+                                    decimal itemBalanceQty = Convert.ToDecimal(item["balanceQty"]);
+                                    balanceQuantity += itemBalanceQty;
+                                }
+                            }
+                        }
+
+                        groupedMaterialIssueItemDtoList[i].AvailableQty = balanceQuantity;
+
+                        groupedMaterialIssueItemList.Add(groupedMaterialIssueItemDtoList[i]);
+
                     }
 
-                    materialIssueDto.materialIssueItems = MaterialIssueItemList;
-                    serviceResponse.Data = materialIssueDto;
+                    //} 
+                    materialIssueDetails.materialIssueItems = groupedMaterialIssueItemList;
+                    serviceResponse.Data = materialIssueDetails;
                     serviceResponse.Message = $"Returned MaterialIssueDetails";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

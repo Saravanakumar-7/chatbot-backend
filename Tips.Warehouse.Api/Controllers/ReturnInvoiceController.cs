@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MySqlX.XDevAPI;
 using Newtonsoft.Json;
+using Tips.SalesService.Api.Entities.DTOs;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
@@ -41,13 +42,14 @@ namespace Tips.Warehouse.Api.Controllers
         private IBTODeliveryOrderItemsRepository _bTODeliveryOrderItemsRepository;
         private IBTODeliveryOrderHistoryRepository _bTODeliveryOrderHistoryRepository;
         private IBTODeliveryOrderRepository _bTODeliveryOrderRepository;
+        private IInvoiceAdditionalChargeRepository _invoiceAdditionalChargeRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
         private readonly IHttpClientFactory _clientFactory;
-        public ReturnInvoiceController(IReturnInvoiceRepository returnInvoiceRepositor, IInvoiceRepository invoiceRepository, IHttpClientFactory clientFactory, IInvoiceChildRepository invoiceChildRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryTranctionRepository inventoryTranctionRepository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
+        public ReturnInvoiceController(IInvoiceAdditionalChargeRepository invoiceAdditionalChargeRepository, IReturnInvoiceRepository returnInvoiceRepositor, IInvoiceRepository invoiceRepository, IHttpClientFactory clientFactory, IInvoiceChildRepository invoiceChildRepository, HttpClient httpClient, IConfiguration config, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IBTODeliveryOrderHistoryRepository bTODeliveryOrderHistoryRepository, IBTODeliveryOrderItemsRepository bTODeliveryOrderItemsRepository, IInventoryTranctionRepository inventoryTranctionRepository, IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper, IHttpContextAccessor httpContextAccessor)
         {
-            _invoiceRepository= invoiceRepository;
+            _invoiceRepository = invoiceRepository;
             _returnInvoiceRepository = returnInvoiceRepositor;
             _logger = logger;
             _mapper = mapper;
@@ -60,6 +62,7 @@ namespace Tips.Warehouse.Api.Controllers
             _bTODeliveryOrderItemsRepository = bTODeliveryOrderItemsRepository;
             _bTODeliveryOrderHistoryRepository = bTODeliveryOrderHistoryRepository;
             _bTODeliveryOrderRepository = bTODeliveryOrderRepository;
+            _invoiceAdditionalChargeRepository = invoiceAdditionalChargeRepository;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
@@ -122,9 +125,9 @@ namespace Tips.Warehouse.Api.Controllers
 
             try
             {
-                var getReturnInvoiceDetailById = await _returnInvoiceRepository.GetReturnInvoiceById(id);
+                var returnInvoiceDetailById = await _returnInvoiceRepository.GetReturnInvoiceById(id);
 
-                if (getReturnInvoiceDetailById == null)
+                if (returnInvoiceDetailById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"GetReturnInvoice with id hasn't been found in db.";
@@ -136,18 +139,24 @@ namespace Tips.Warehouse.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned OpenDeliveryOrdersDetails with id: {id}");
-                    var result = _mapper.Map<ReturnInvoiceDto>(getReturnInvoiceDetailById);
+                    var result = _mapper.Map<ReturnInvoiceDto>(returnInvoiceDetailById);
                     List<ReturnInvoiceItemDto> returnInvoiceItemDtos = new List<ReturnInvoiceItemDto>();
-                    if (getReturnInvoiceDetailById.ReturnInvoiceItems != null)
+                    if (returnInvoiceDetailById.ReturnInvoiceItems != null)
                     {
-                        foreach (var returnInvoiceitemDetails in getReturnInvoiceDetailById.ReturnInvoiceItems)
+                        foreach (var returnInvoiceitemDetails in returnInvoiceDetailById.ReturnInvoiceItems)
                         {
                             ReturnInvoiceItemDto returnInvoiceItemDto = _mapper.Map<ReturnInvoiceItemDto>(returnInvoiceitemDetails);
                             returnInvoiceItemDto.QtyDistribution = _mapper.Map<List<ReturnInvoiceItemQtyDistributionDto>>(returnInvoiceitemDetails.QtyDistribution);
                             returnInvoiceItemDtos.Add(returnInvoiceItemDto);
                         }
                     }
+                    if (returnInvoiceDetailById.ReturnInvoiceAdditionalCharges != null)
+                    {
+                        List<ReturnInvoiceAdditionalChargesDto> returnInvoiceAdditionalChargesDetails = _mapper.Map<List<ReturnInvoiceAdditionalChargesDto>>(returnInvoiceDetailById.ReturnInvoiceAdditionalCharges.ToList());
+                        result.ReturnInvoiceAdditionalChargesDto = returnInvoiceAdditionalChargesDetails;
+                    }
                     result.ReturnInvoiceItems = returnInvoiceItemDtos;
+                    
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned GetReturnInvoiceById Successfully";
                     serviceResponse.Success = true;
@@ -196,6 +205,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var returnInvoiceDetails = _mapper.Map<ReturnInvoice>(ReturnInvoiceDtoPost);
                 var returnInvoiceItemDto = ReturnInvoiceDtoPost.ReturnInvoiceItems;
                 var returnInvoiceItemsList = new List<ReturnInvoiceItem>();
+                var returnInvoiceAdditionalChargesList = ReturnInvoiceDtoPost.ReturnInvoiceAdditionalChargesDto;
                 var invoiceNumber = returnInvoiceDetails.InvoiceNumber;
                 HttpStatusCode salesOrderUpdateStatusCode = HttpStatusCode.OK;
                 var returnInvoiceNumberCount = await _returnInvoiceRepository.GetReturnInvoiceByInvoiceNo(invoiceNumber);
@@ -222,9 +232,9 @@ namespace Tips.Warehouse.Api.Controllers
                 //    int returnInvoicecount = 1;
                 //    returnInvoiceDetails.InvoiceNumber = invoiceNumber + "-" + "R" + "-" + returnInvoicecount;
                 //}
-                var InvoiceDetails=await _invoiceRepository.GetInvoiceByInvoiceNumber(invoiceNumber);
+                var InvoiceDetails = await _invoiceRepository.GetInvoiceByInvoiceNumber(invoiceNumber);
 
-                if (returnInvoiceItemDto != null)
+                if (returnInvoiceItemDto != null && returnInvoiceItemDto.Count() > 0)
                 {
                     for (int i = 0; i < returnInvoiceItemDto.Count; i++)
                     {
@@ -244,47 +254,13 @@ namespace Tips.Warehouse.Api.Controllers
                         //btoDeliveryOrderItemDetails.OrderBalanceQty += returnInvoiceItemDto[i].ReturnQty;
                         btoDeliveryOrderItemDetails.DispatchQty -= returnedqty;
                         //btoDeliveryOrderItemDetails.DispatchQty -= returnInvoiceItemDto[i].ReturnQty;
-                        if (btoDeliveryOrderItemDetails.DispatchQty == btoDeliveryOrderItemDetails.BalanceDoQty) btoDeliveryOrderItemDetails.DoStatus = Status.Open;
-                        else if (btoDeliveryOrderItemDetails.BalanceDoQty == 0) btoDeliveryOrderItemDetails.DoStatus = Status.Closed;
+                        if (btoDeliveryOrderItemDetails.BalanceDoQty == 0) btoDeliveryOrderItemDetails.DoStatus = Status.Closed;
+                        else if (btoDeliveryOrderItemDetails.DispatchQty == btoDeliveryOrderItemDetails.BalanceDoQty) btoDeliveryOrderItemDetails.DoStatus = Status.Open;
                         else btoDeliveryOrderItemDetails.DoStatus = Status.Closed;
-                       // btoDeliveryOrderItemDetails.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
+                        // btoDeliveryOrderItemDetails.InvoicedQty -= returnInvoiceItemDto[i].ReturnQty;
+
                         //Update Inventory balanced Quantity 
 
-                        //var PartNumber = returnInvoiceItemDto[i].FGPartNumber;
-                        //var DONumber = returnInvoiceItemDto[i].DONumber;
-                        //var inventoryFGDetails = await _inventoryRepository.GetInventoryFGDetailsByItemNumber(PartNumber);
-                        //decimal ReturnQty = returnInvoiceItemDto[i].ReturnQty;
-
-                        //if (inventoryFGDetails != null)
-                        //{
-                        //    inventoryFGDetails.Balance_Quantity = inventoryFGDetails.Balance_Quantity + ReturnQty;
-
-                        //    _inventoryRepository.Update(inventoryFGDetails);
-                        //    _inventoryRepository.SaveAsync();
-                        //}
-                        //else
-                        //{
-                        //    Inventory inventory = new Inventory();
-                        //    inventory.PartNumber = returnInvoiceItemsList[i].FGPartNumber;
-                        //    inventory.MftrPartNumber = returnInvoiceItemsList[i].FGPartNumber;
-                        //    inventory.Description = returnInvoiceItemsList[i].Description;
-                        //    inventory.ProjectNumber = "";
-                        //    inventory.Balance_Quantity = ReturnQty;
-                        //    inventory.UOM = returnInvoiceItemsList[i].UOM;
-                        //    inventory.IsStockAvailable = true;
-                        //    inventory.Warehouse = "FG";
-                        //    inventory.Location = "FG";
-                        //    inventory.GrinNo = "";
-                        //    inventory.GrinPartId = 0;
-                        //    inventory.PartType = returnInvoiceItemsList[i].PartType;
-                        //    inventory.GrinMaterialType = "";
-                        //    inventory.ReferenceID = returnInvoiceDetails.InvoiceNumber; // return invoice number
-                        //    inventory.ReferenceIDFrom = "Return Invoice";
-                        //    inventory.shopOrderNo = "";
-
-                        //    await _inventoryRepository.CreateInventory(inventory);
-                        //    _inventoryRepository.SaveAsync();
-                        //}
                         foreach (var eachbin in returnInvoiceItems.QtyDistribution)
                         {
                             var client1 = _clientFactory.CreateClient();
@@ -310,7 +286,7 @@ namespace Tips.Warehouse.Api.Controllers
                             {
                                 Inventory inventory = new Inventory();
                                 inventory.PartNumber = returnInvoiceItemsList[i].FGPartNumber;
-                                inventory.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); 
+                                inventory.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                                 inventory.Description = returnInvoiceItemsList[i].Description;
                                 inventory.ProjectNumber = eachbin.ProjectNumber;
                                 inventory.Balance_Quantity = eachbin.DistributingQty;
@@ -331,6 +307,27 @@ namespace Tips.Warehouse.Api.Controllers
 
                                 await _inventoryRepository.CreateInventory(inventory);
 
+                                //add return details in to inventory table
+
+                                InventoryTranction inventoryTranction = new InventoryTranction();
+                                inventoryTranction.PartNumber = inventory.PartNumber;
+                                inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                inventoryTranction.Description = inventory.Description;
+                                inventoryTranction.Issued_Quantity = inventory.Balance_Quantity;
+                                inventoryTranction.UOM = inventory.UOM;
+                                inventoryTranction.Issued_DateTime = DateTime.Now;
+                                inventoryTranction.ReferenceID = inventory.ReferenceID;
+                                inventoryTranction.ReferenceIDFrom = inventory.ReferenceIDFrom;
+                                inventoryTranction.Issued_By = _createdBy;
+                                inventoryTranction.From_Location = inventory.Location;
+                                inventoryTranction.TO_Location = inventory.Location;
+                                inventoryTranction.Remarks = "Return Invoice";
+                                inventoryTranction.Warehouse = inventory.Warehouse;
+                                inventoryTranction.PartType = returnInvoiceItemsList[i].PartType;  /// Check this are you getting Part Type from Front End
+
+                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
+
+
                             }
                             else
                             {
@@ -340,63 +337,34 @@ namespace Tips.Warehouse.Api.Controllers
                                 exInv.Balance_Quantity += eachbin.DistributingQty;
                                 await _inventoryRepository.UpdateInventory(exInv);
 
+                                //add return details in to inventory table
 
+                                InventoryTranction inventoryTranction = new InventoryTranction();
+                                inventoryTranction.PartNumber = exInv.PartNumber;
+                                inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                inventoryTranction.Description = exInv.Description;
+                                inventoryTranction.Issued_Quantity = exInv.Balance_Quantity;
+                                inventoryTranction.UOM = exInv.UOM;
+                                inventoryTranction.Issued_DateTime = DateTime.Now;
+                                inventoryTranction.ReferenceID = exInv.ReferenceID;
+                                inventoryTranction.ReferenceIDFrom = exInv.ReferenceIDFrom;
+                                inventoryTranction.Issued_By = _createdBy;
+                                inventoryTranction.From_Location = exInv.Location;
+                                inventoryTranction.TO_Location = exInv.Location;
+                                inventoryTranction.Remarks = "Return Invoice";
+                                inventoryTranction.Warehouse = exInv.Warehouse;
+                                inventoryTranction.PartType = returnInvoiceItemsList[i].PartType;  /// Check this are you getting Part Type from Front End
+
+                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
                             }
 
                             _inventoryRepository.SaveAsync();
-                            //add return details in to inventory table
-
-                            InventoryTranction inventoryTranction = new InventoryTranction();
-                            inventoryTranction.PartNumber = returnInvoiceItemsList[i].FGPartNumber;
-                            inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); 
-                            inventoryTranction.Description = returnInvoiceItemsList[i].Description;
-                            inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
-                            inventoryTranction.UOM = returnInvoiceItemsList[i].UOM;
-                            inventoryTranction.Issued_DateTime = DateTime.Now;
-                            inventoryTranction.ReferenceID = returnInvoiceDetails.InvoiceNumber;
-                            inventoryTranction.ReferenceIDFrom = "Return Invoice";
-                            inventoryTranction.Issued_By = _createdBy;
-                            inventoryTranction.From_Location = "Invoice";
-                            inventoryTranction.TO_Location = eachbin.Location;
-                            inventoryTranction.Remarks = "Return Invoice";
-                            inventoryTranction.Warehouse = eachbin.Warehouse;
-                            inventoryTranction.PartType = returnInvoiceItemsList[i].PartType;  /// Check this are you getting Part Type from Front End
-
-                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
                             _inventoryTranctionRepository.SaveAsync();
 
 
                             //passing BtoNumber GetBtoDetails
                             var btoDeliveryorderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(returnInvoiceItemDto[i].DONumber);
 
-                            // Add return details in to btodeliveryorderhistory table
-
-                            //BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
-                            //bTODeliveryOrderHistory.BTONumber = returnInvoiceItemsList[i].DONumber;
-                            //bTODeliveryOrderHistory.CustomerName = returnInvoiceDetails.CustomerName;
-                            //bTODeliveryOrderHistory.CustomerAliasName = returnInvoiceDetails.CustomerAliasName;
-                            //bTODeliveryOrderHistory.CustomerId = btoDeliveryorderDetails.CustomerId;
-                            //bTODeliveryOrderHistory.PONumber = btoDeliveryorderDetails.PONumber;
-                            //bTODeliveryOrderHistory.IssuedTo = btoDeliveryorderDetails.IssuedTo;
-                            //bTODeliveryOrderHistory.DODate = Convert.ToDateTime(returnInvoiceDetails.CreatedOn);
-                            //bTODeliveryOrderHistory.FGItemNumber = returnInvoiceItemsList[i].FGPartNumber;
-                            //bTODeliveryOrderHistory.SalesOrderId = btoDeliveryOrderItemDetails.SalesOrderId;
-                            //bTODeliveryOrderHistory.Description = returnInvoiceItemsList[i].Description;
-                            //bTODeliveryOrderHistory.BalanceDoQty = Convert.ToDecimal(btoDeliveryOrderItemDetails.BalanceDoQty);
-                            //bTODeliveryOrderHistory.UnitPrice = Convert.ToDecimal(returnInvoiceItemsList[i].UnitPrice);
-                            //bTODeliveryOrderHistory.UOC = btoDeliveryOrderItemDetails.UOC;
-                            //bTODeliveryOrderHistory.UOM = returnInvoiceItemsList[i].UOM;
-                            //bTODeliveryOrderHistory.FGOrderQty = Convert.ToDecimal(btoDeliveryOrderItemDetails.FGOrderQty);
-                            //bTODeliveryOrderHistory.OrderBalanceQty = Convert.ToDecimal(btoDeliveryOrderItemDetails.OrderBalanceQty);
-                            //bTODeliveryOrderHistory.FGStock = Convert.ToDecimal(btoDeliveryOrderItemDetails.FGStock);
-                            //bTODeliveryOrderHistory.Discount = btoDeliveryOrderItemDetails.Discount;
-                            //bTODeliveryOrderHistory.NetValue = btoDeliveryOrderItemDetails.NetValue;
-                            //bTODeliveryOrderHistory.DispatchQty = ReturnQty;
-                            //bTODeliveryOrderHistory.InvoicedQty = btoDeliveryOrderItemDetails.InvoicedQty;
-                            //bTODeliveryOrderHistory.SerialNo = btoDeliveryOrderItemDetails.SerialNo;
-                            ////bTODeliveryOrderHistory.CreatedBy = returnInvoiceDetails.CreatedBy;
-                            ////bTODeliveryOrderHistory.LastModifiedOn = returnInvoiceDetails.LastModifiedOn;
-                            //bTODeliveryOrderHistory.Remark = "Return Invoice";
                             Guid guid = Guid.NewGuid();
                             BTODeliveryOrderHistory bTODeliveryOrderHistory = new BTODeliveryOrderHistory();
                             bTODeliveryOrderHistory.CustomerName = returnInvoiceDetails.CustomerName;
@@ -434,6 +402,24 @@ namespace Tips.Warehouse.Api.Controllers
                         _bTODeliveryOrderItemsRepository.Update(btoDeliveryOrderItemDetails);
                         _bTODeliveryOrderItemsRepository.SaveAsync();
 
+                        // var getDoDetails=await _bTODeliveryOrderRepository.GetBTODeliveryOrderById(btoDeliveryOrderItemDetails.BTODeliveryOrderId);
+                        var doNumber = btoDeliveryOrderItemDetails.BTONumber;
+                        var bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount = await _bTODeliveryOrderItemsRepository.GetBTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount(doNumber);
+
+                        if (bTODeliveryOrderItemsPartiallyClosedAndOpenStatusCount != 0)
+                        {
+                            var bTODeliveryOrderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(doNumber);
+                            bTODeliveryOrderDetails.DoStatus = Status.PartiallyClosed;
+                            await _bTODeliveryOrderRepository.UpdateBTODeliveryOrder(bTODeliveryOrderDetails);
+                        }
+                        else
+                        {
+                            var bTODeliveryOrderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(doNumber);
+                            bTODeliveryOrderDetails.DoStatus = Status.Closed;
+                            await _bTODeliveryOrderRepository.UpdateBTODeliveryOrder(bTODeliveryOrderDetails);
+                        }
+                        _bTODeliveryOrderRepository.SaveAsync();
+
                         //update Dispatch Qty in InvoiceChildItem Table
                         //int getInvoiceChildItemId = returnInvoiceItemDto[i].InvoicePartsId;
                         //var invoiceChildItemDetails = await _invoiceChildRepository.GetInvoiceChildItemDetails(getInvoiceChildItemId);
@@ -442,65 +428,228 @@ namespace Tips.Warehouse.Api.Controllers
                         //_invoiceChildRepository.SaveAsync();
                         if (InvoiceDetails != null)
                         {
+                            Status invoiceChildStatus = Status.Open;
+                            Status invoiceAdditionalStatus = Status.Open;
                             foreach (var item in InvoiceDetails.invoiceChildItems)
                             {
-                                decimal? ReturnInvoiceQty=0;
+                                decimal? ReturnInvoiceQty = 0;
                                 if (item.FGItemNumber == returnInvoiceItems.FGPartNumber) { item.ReturnInvoiceQty += returnInvoiceItems.ReturnQty; ReturnInvoiceQty = item.ReturnInvoiceQty * -1; }
                                 else continue;
                                 if (item.InvoicedQty == ReturnInvoiceQty) item.InvoiceItemStatus = Status.Closed;
                                 else if (ReturnInvoiceQty == 0) item.InvoiceItemStatus = Status.Open;
                                 else if (ReturnInvoiceQty > 0 && item.InvoicedQty > ReturnInvoiceQty) item.InvoiceItemStatus = Status.PartiallyClosed;
                             }
-                            if (InvoiceDetails.invoiceChildItems.Count() == InvoiceDetails.invoiceChildItems.Where(x => x.InvoiceItemStatus == Status.Closed).Count()) InvoiceDetails.InvoiceStatus = Status.Closed;
-                            else if (InvoiceDetails.invoiceChildItems.Count() == InvoiceDetails.invoiceChildItems.Where(x => x.InvoiceItemStatus == Status.Open).Count()) InvoiceDetails.InvoiceStatus = Status.Open;
-                            else InvoiceDetails.InvoiceStatus = Status.PartiallyClosed;
+
+                            //if (InvoiceDetails.invoiceChildItems.Count() == InvoiceDetails.invoiceChildItems.Where(x => x.InvoiceItemStatus == Status.Closed).Count()) InvoiceDetails.InvoiceStatus = Status.Closed;
+                            //else if (InvoiceDetails.invoiceChildItems.Count() == InvoiceDetails.invoiceChildItems.Where(x => x.InvoiceItemStatus == Status.Open).Count()) InvoiceDetails.InvoiceStatus = Status.Open;
+                            //else InvoiceDetails.InvoiceStatus = Status.PartiallyClosed;
+
+                            int? invoiceChildStatusCount = InvoiceDetails.invoiceChildItems?.Where(x => x.InvoiceItemStatus != Status.Closed).Count() ?? 0;
+
+                            int? invoiceAddStatusCount = InvoiceDetails.InvoiceAdditionalCharges?.Where(x => x.SOAdditionalStatus != Status.Closed).Count() ?? 0;
+
+
+                            if (invoiceChildStatusCount == 0 && invoiceAddStatusCount == 0)
+                            {
+                                InvoiceDetails.InvoiceStatus = Status.Closed;
+                            }
+                            else
+                            {
+                                InvoiceDetails.InvoiceStatus = Status.PartiallyClosed;
+                            }
+
+
                             await _invoiceRepository.UpdateInvoiceFromReturnInvoice(InvoiceDetails);
                             _invoiceRepository.SaveAsync();
                         }
                     }
                 }
-                
+                //var InvoiceDetails = await _invoiceRepository.GetInvoiceByInvoiceNumber(invoiceNumber);
 
+                if (returnInvoiceAdditionalChargesList != null && returnInvoiceAdditionalChargesList.Count() > 0)
+                {
+                    foreach (var returnInvoiceAdditional in returnInvoiceAdditionalChargesList)
+                    {
+                        //var invoiceAdditionalChargeDetails = await _invoiceAdditionalChargeRepository.GetInvoiceAdditionalChargesDetailsById(returnInvoiceAdditional.SalesOrderId
+                        //                                                                                                                    , returnInvoiceAdditional.InvoiceAdditionalChargeId);
+                        //invoiceAdditionalChargeDetails.AlreadyReturnedValue += returnInvoiceAdditional.ReturnInvoicedValue;
+                        //invoiceAdditionalChargeDetails.InvoicedValue -= returnInvoiceAdditional.ReturnInvoicedValue;
+                        //invoiceAdditionalChargeDetails.InvoiceAdditionalStatus = returnInvoiceAdditional.InvoiceAdditionalStatus;
+                        //await _invoiceAdditionalChargeRepository.UpdateInvoiceAdditionalChargesDetails(invoiceAdditionalChargeDetails);
+                        if (InvoiceDetails.InvoiceAdditionalCharges != null)
+                        {
+                            foreach (var InvDetails in InvoiceDetails.InvoiceAdditionalCharges)
+                            {
+                                if (InvDetails.SalesOrderId == returnInvoiceAdditional.SalesOrderId && InvDetails.Id == returnInvoiceAdditional.InvoiceAdditionalChargeId)
+                                {
+                                    if(InvDetails.AlreadyReturnedValue  == null)
+                                    {
+                                        InvDetails.AlreadyReturnedValue = 0;
+                                    }
+                                    InvDetails.AlreadyReturnedValue += returnInvoiceAdditional.ReturnInvoicedValue;
+                                    InvDetails.InvoicedValue -= returnInvoiceAdditional.ReturnInvoicedValue;
+                                    InvDetails.InvoiceAdditionalStatus = returnInvoiceAdditional.InvoiceAdditionalStatus;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    //_invoiceAdditionalChargeRepository.SaveAsync();
+
+                    int? invoiceChildStatusCount = InvoiceDetails.invoiceChildItems?.Where(x => x.InvoiceItemStatus != Status.Closed).Count() ?? 0;
+
+                    int? invoiceAddStatusCount = InvoiceDetails.InvoiceAdditionalCharges?.Where(x => x.SOAdditionalStatus != Status.Closed).Count() ?? 0;
+
+
+                    if (invoiceChildStatusCount == 0 && invoiceAddStatusCount == 0)
+                    {
+                        InvoiceDetails.InvoiceStatus = Status.Closed;
+                    }
+                    else
+                    {
+                        InvoiceDetails.InvoiceStatus = Status.PartiallyClosed;
+                    }
+
+                    await _invoiceRepository.UpdateInvoiceFromReturnInvoice(InvoiceDetails);
+                    _invoiceRepository.SaveAsync();
+                }
+
+                if (returnInvoiceItemsList != null && returnInvoiceItemsList.Count() > 0)
+                {
+                    foreach (var Returninv in returnInvoiceItemsList)
+                    {
+                        var bTODeliveryOrderDetails = await _bTODeliveryOrderRepository.GetBtoDetailsByBtoNo(Returninv.DONumber);
+                        bTODeliveryOrderDetails.TotalValue = 0;
+                        foreach (var doitem in bTODeliveryOrderDetails.bTODeliveryOrderItems)
+                        {
+                            decimal? dispatch = doitem.DispatchQty;
+                            if (dispatch == 0) dispatch = 1;
+                            decimal? unitafterDiscount = 0;
+                            if (doitem.DiscountType == "Percentage")
+                            {
+                                unitafterDiscount = doitem.UnitPrice - ((doitem.UnitPrice * doitem.Discount) / 100);
+                            }
+                            else
+                            {
+                                unitafterDiscount = doitem.UnitPrice - doitem.Discount;
+                            }
+                            decimal? NewBasicAmt = unitafterDiscount * doitem.DispatchQty;
+                            decimal? TaxPercentage = (NewBasicAmt * ((doitem.CGST + doitem.SGST + doitem.IGST + doitem.UTGST) / 100));
+                            decimal? ItemDispatchvalue = NewBasicAmt + TaxPercentage;
+                            bTODeliveryOrderDetails.TotalValue += ItemDispatchvalue;
+                        }
+                        await _bTODeliveryOrderRepository.UpdateBTODeliveryOrderFromReturnDO(bTODeliveryOrderDetails);
+                        _bTODeliveryOrderRepository.SaveAsync();
+                    }
+                }
+
+                var returnInvoiceAdditionalChargesDetails = _mapper.Map<List<ReturnInvoiceAdditionalCharge>>(returnInvoiceAdditionalChargesList);
+                returnInvoiceDetails.ReturnInvoiceAdditionalCharges = returnInvoiceAdditionalChargesDetails.ToList();
                 returnInvoiceDetails.ReturnInvoiceItems = returnInvoiceItemsList;
 
                 await _returnInvoiceRepository.CreateReturnInvoice(returnInvoiceDetails);
 
 
                 //update balance qty and dispatch qty in sales order table for return Invoice concept
-
-                var invoiceReturnDetails = _mapper.Map<List<BtoInvoiceReturnQtyDetailsDto>>(returnInvoiceItemDto);
-
-                var json = JsonConvert.SerializeObject(invoiceReturnDetails);
-                var data = new StringContent(json, Encoding.UTF8, "application/json");
-                var client = _clientFactory.CreateClient();
-                var token = HttpContext.Request.Headers["Authorization"].ToString();
-                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
-                           "ReturnInvoiceUpdateDispatchDetails"))
+                if (returnInvoiceItemDto.Count() > 0 && returnInvoiceAdditionalChargesDetails.Count() > 0)
                 {
-                    Content = data
-                };
-                request.Headers.Add("Authorization", token);
+                    var invoiceReturnDetails = _mapper.Map<List<BtoInvoiceReturnQtyDetailsDto>>(returnInvoiceItemDto);
+                    //var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnInvoiceUpdateDispatchDetails"), data);
+                    var json = JsonConvert.SerializeObject(invoiceReturnDetails);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
+                               "ReturnInvoiceUpdateDispatchDetails"))
+                    {
+                        Content = data
+                    };
+                    request.Headers.Add("Authorization", token);
 
-                var response = await client.SendAsync(request);
-                //var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnInvoiceUpdateDispatchDetails"), data);
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    salesOrderUpdateStatusCode = response.StatusCode;
+                    var response = await client.SendAsync(request);
+
+                    var response1 = await SoAdditonalChargeUpdateOnReturnInvoiceCreate(returnInvoiceAdditionalChargesDetails);
+
+                    if (response.StatusCode != HttpStatusCode.OK && response1.StatusCode != HttpStatusCode.OK)
+                    {
+                        salesOrderUpdateStatusCode = response.StatusCode;
+                    }
+
+                    if (salesOrderUpdateStatusCode == HttpStatusCode.OK)
+                    {
+                        _returnInvoiceRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside Create CreateReturnInvoice action: SalesOrder Service Calling");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
                 }
-
-                if (salesOrderUpdateStatusCode == HttpStatusCode.OK)
+                else if(returnInvoiceItemDto.Count() > 0 && returnInvoiceAdditionalChargesDetails.Count() == 0)
                 {
-                    _returnInvoiceRepository.SaveAsync();
+                    var invoiceReturnDetails = _mapper.Map<List<BtoInvoiceReturnQtyDetailsDto>>(returnInvoiceItemDto);
+                    //var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnInvoiceUpdateDispatchDetails"), data);
+                    var json = JsonConvert.SerializeObject(invoiceReturnDetails);
+                    var data = new StringContent(json, Encoding.UTF8, "application/json");
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
+                               "ReturnInvoiceUpdateDispatchDetails"))
+                    {
+                        Content = data
+                    };
+                    request.Headers.Add("Authorization", token);
+
+                    var response = await client.SendAsync(request);
+
+                    if (response.StatusCode != HttpStatusCode.OK )
+                    {
+                        salesOrderUpdateStatusCode = response.StatusCode;
+                    }
+
+                    if (salesOrderUpdateStatusCode == HttpStatusCode.OK)
+                    {
+                        _returnInvoiceRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside Create CreateReturnInvoice action: SalesOrder Service Calling");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
                 }
                 else
                 {
-                    _logger.LogError($"Something went wrong inside Create CreateReturnInvoice action: SalesOrder Service Calling");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Saving Failed";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500, serviceResponse);
+                    var response1 = await SoAdditonalChargeUpdateOnReturnInvoiceCreate(returnInvoiceAdditionalChargesDetails);
+
+                    if (response1.StatusCode != HttpStatusCode.OK)
+                    {
+                        salesOrderUpdateStatusCode = response1.StatusCode;
+                    }
+
+                    if (salesOrderUpdateStatusCode == HttpStatusCode.OK)
+                    {
+                        _returnInvoiceRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside Create CreateReturnInvoice action: SalesOrder Service Calling");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
                 }
+                    
+                
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Invoice Successfully Created";
                 serviceResponse.Success = true;
@@ -509,13 +658,41 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateInvoice action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateReturnInvoice action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+        }
+        private async Task<HttpResponseMessage> SoAdditonalChargeUpdateOnReturnInvoiceCreate(IEnumerable<ReturnInvoiceAdditionalCharge> InvoiceAdditionalChargesList)
+        {
+            List<ReturnSalesOrderAdditionalChargesUpdateDto> salesOrderAdditionalChargesUpdates = new List<ReturnSalesOrderAdditionalChargesUpdateDto>();
+
+            foreach (var additionalChargeItem in InvoiceAdditionalChargesList)
+            {
+                ReturnSalesOrderAdditionalChargesUpdateDto additionalCharges = new ReturnSalesOrderAdditionalChargesUpdateDto
+                {
+                    SalesOrderId = Convert.ToInt32(additionalChargeItem.SalesOrderId),
+                    InvoicedValue = Convert.ToDecimal(additionalChargeItem.InvoicedValue),
+                    SalesAdditionalChargeId = additionalChargeItem.SalesAdditionalChargeId,
+                };
+                salesOrderAdditionalChargesUpdates.Add(additionalCharges);
+            }
+            var soAdditionalChargeJson = JsonConvert.SerializeObject(salesOrderAdditionalChargesUpdates);
+            var data = new StringContent(soAdditionalChargeJson, Encoding.UTF8, "application/json");
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            // var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "AdditionalChargeUpdateFromInvoice"), data);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"], "AdditionalChargeUpdateFromReturnInvoice"))
+            {
+                Content = data
+            };
+            request.Headers.Add("Authorization", token);
+
+            var response = await client.SendAsync(request);
+            return response;
         }
 
         [HttpPost]
@@ -724,7 +901,7 @@ namespace Tips.Warehouse.Api.Controllers
                 //var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnInvoiceUpdateDispatchDetails"), data);
                 var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
                             "ReturnInvoiceUpdateDispatchDetails"))
-                { Content= data };
+                { Content = data };
                 request.Headers.Add("Authorization", token);
 
                 var response = await client.SendAsync(request);
@@ -941,6 +1118,47 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside ReturnInvoiceSPReport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> ReturnInvoiceSPReportWithParameterForTrans([FromBody] ReturnInvoiceSPReportWithParamForTransDTO returnInvoiceSPReportDTO)
+        {
+            ServiceResponse<IEnumerable<ReturnInvoiceSPResport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceSPResport>>();
+            try
+            {
+                var products = await _returnInvoiceRepository.ReturnInvoiceSPReportWithParameterForTrans(returnInvoiceSPReportDTO.InvoiceNumber, returnInvoiceSPReportDTO.DoNumber,
+                                                                                        returnInvoiceSPReportDTO.CustomerName, returnInvoiceSPReportDTO.CustomerAliasName,
+                                                                                        returnInvoiceSPReportDTO.SalesOrderNumber, returnInvoiceSPReportDTO.Location,
+                                                                                        returnInvoiceSPReportDTO.Warehouse, returnInvoiceSPReportDTO.KPN,
+                                                                                        returnInvoiceSPReportDTO.MPN, returnInvoiceSPReportDTO.IssuedBy, returnInvoiceSPReportDTO.ProjectNumber);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ReturnInvoiceSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ReturnInvoiceSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    //var result = _mapper.Map<IEnumerable<ReturnInvoiceSPReportDTO>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ReturnInvoiceSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside ReturnInvoiceSPReportWithParameterForTrans action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

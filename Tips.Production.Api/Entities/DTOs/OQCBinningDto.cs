@@ -135,4 +135,10 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public string? ShopOrderNumber { get; set; }
     }
+    public class OQCBinningSPReportForTranDto
+    {
+        public string? ItemNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
 }

@@ -46,9 +46,18 @@ namespace Tips.Purchase.Api.Contracts
         Task<string> GeneratePONumberForAvision();
         Task<PagedList<PurchaseOrderSPReport>> GetPurchaseOrderSPResport(PagingParameter pagingParameter);
         Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParam(string VendorName, string PONumber, string itemNumber);
+        Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParamForTrans(string VendorName, string PONumber, string itemNumber, string ProjectNumber);
         Task<IEnumerable<PurchaseOrderApprovalSPReport>> GetPurchaseOrderApprovalSPReportWithParam(string VendorName, string PONumber, string itemNumber,
                                                                                                      string RecordType, string Postatus, string Approval);
+        Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderApprovalSPReportWithParamForTrans(string VendorName, string PONumber, string itemNumber,
+                                                                                                     string RecordType, string Postatus, string Approval, string ProjectNumber);
+        Task<IEnumerable<PurchaseOrderSPReportForAvision>> GetPurchaseOrderApprovalSPReportWithParamForAvision(string VendorName, string PONumber, string itemNumber,
+                                                                                                    string RecordType, string Postatus, string Approval, string ProjectNumber);
+        Task<IEnumerable<PurchaseOrderSPReportForAvision>> GetPurchaseOrderApprovalSPReportWithDateForAvision(DateTime? FromDate, DateTime? ToDate, string RecordType
+                                                                                                                , string Approval);
         Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderApprovalSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate, string RecordType
+                                                                                                                  , string Approval);
         Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIList(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIList(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIList(PagingParameter pagingParameter, SearchParamess searchParams);

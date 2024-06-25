@@ -203,7 +203,15 @@ namespace Repository
 
             return getCustomerMasterById;
         }
+        public async Task<IEnumerable<CustomerMasterLeadIdSPReport>> GetCustomerLeadIdDataOnDailyBasis()
+        {
+            var result = TipsMasterDbContext
+            .Set<CustomerMasterLeadIdSPReport>()
+            .FromSqlInterpolated($"CALL customerlead_data_ondaily_basis()")
+            .ToList();
 
+            return result;
+        }
         public async Task<string> UpdateCustomerMaster(CustomerMaster customerMaster)
         {
             customerMaster.LastModifiedBy = _createdBy;

@@ -129,6 +129,15 @@ namespace Tips.Production.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<OQCSPReport>> GetOQCSPReportWithParamForTrans(string? ItemNumber, string? ShopOrderNumber, string? ProjectNumber)
+        {
+            var result = _tipsProductionDbContext
+            .Set<OQCSPReport>()
+            .FromSqlInterpolated($"OQC_with_parameter_tras({ItemNumber},{ShopOrderNumber},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<OQCSPReport>> GetOQCSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsProductionDbContext.Set<OQCSPReport>()
@@ -142,6 +151,15 @@ namespace Tips.Production.Api.Repository
             var result = _tipsProductionDbContext
             .Set<OQCAndOQCBinningSPReport>()
             .FromSqlInterpolated($"OQC_VS_OQCBINNING_withparameter({ItemNumber},{ShopOrderNumber})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<OQCAndOQCBinningSPReport>> GetOQCAndOQCBinningSPReportWithParamForTrans(string? ItemNumber, string? ShopOrderNumber ,string? ProjectNumber)
+        {
+            var result = _tipsProductionDbContext
+            .Set<OQCAndOQCBinningSPReport>()
+            .FromSqlInterpolated($"OQC_VS_OQCBINNING_withparameter_tras({ItemNumber},{ShopOrderNumber},{ProjectNumber})")
             .ToList();
 
             return result;

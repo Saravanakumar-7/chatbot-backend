@@ -1,5 +1,6 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.DTOs;
 
@@ -8,6 +9,7 @@ namespace Tips.SalesService.Api.Contracts
     public interface IRfqRepository : IRepositoryBase<Rfq>
     {
         Task<PagedList<Rfq>> GetAllRfq(PagingParameter pagingParameter, SearchParammes searchParammes);
+        Task<PagedList<Rfq>> GetAllRfqs(PagingParameter pagingParameter,SearchParammes searchParammes);
         Task<Rfq> GetRfqById(int id);
         Task<IEnumerable<LatestRfqNumberListDto>> GetAllActiveLatestRfqNumbers();
         Task<int?> CreateRfq(Rfq rfq);
@@ -26,6 +28,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<Rfq> RfqCsByRfqNumbers(string id);
         Task<Rfq> RfqEnggByRfqNumbers(string id);
         Task<Rfq> RfqDetailsByRfqNumbers(string rfqNumber);
+        Task<int> GetLastestRfqRevNoByRfqNumber(string rfqNumber);
         Task<Rfq> GetCustomerIdByRfqNumber(string rfqnumber);
         Task<IEnumerable<Rfq>> GetRevNumberByRfqNumberList(string rfqnumber);
         Task<Rfq> RfqLpcostingByRfqNumbers(string id);

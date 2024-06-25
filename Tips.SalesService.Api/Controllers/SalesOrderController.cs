@@ -9,11 +9,14 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
+using MimeKit;
 using MySqlX.XDevAPI;
 using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
@@ -42,6 +45,7 @@ namespace Tips.SalesService.Api.Controllers
         private ISoConfirmationDateHistoryRepository _soConfirmationDateHistoryRepository;
         private IScheduleDateHistoryRepository _scheduleDateHistoryRepository;
         private ISalesOrderAdditionalChargesHistoryRepository _salesOrderAdditionalChargesHistoryRepository;
+        private ISalesOrderEmailsDetailsRepository _salesOrderEmailsDetailsRepository;
         private IQuoteRepository _quoteRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
@@ -52,8 +56,8 @@ namespace Tips.SalesService.Api.Controllers
         private readonly String _createdBy;
         private readonly String _unitname;
         private readonly IHttpClientFactory _clientFactory;
-        public SalesOrderController(ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, IHttpClientFactory clientFactory, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
-            ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, IQuoteRepository quoteRepository , IHttpContextAccessor httpContextAccessor,
+        public SalesOrderController(ISalesOrderEmailsDetailsRepository salesOrderEmailsDetailsRepository, ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, IHttpClientFactory clientFactory, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
+            ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, IQuoteRepository quoteRepository, IHttpContextAccessor httpContextAccessor,
             ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
@@ -67,6 +71,7 @@ namespace Tips.SalesService.Api.Controllers
             _soConfirmationDateHistoryRepository = soConfirmationDateHistoryRepository;
             _scheduleDateHistoryRepository = scheduleDateHistoryRepository;
             _salesOrderAdditionalChargesHistoryRepository = salesOrderAdditionalChargesHistoryRepository;
+            _salesOrderEmailsDetailsRepository = salesOrderEmailsDetailsRepository;
             _quoteRepository = quoteRepository;
             _httpClient = httpClient;
             _config = config;
@@ -235,7 +240,7 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        
+
         // GET api/<PurchaseOrderController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSalesOrderById(int id)
@@ -274,6 +279,7 @@ namespace Tips.SalesService.Api.Controllers
                         for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
                         {
                             SalesOrderAdditionalChargesDto additionalChargesDetails = _mapper.Map<SalesOrderAdditionalChargesDto>(salesAdditionalChargesDto[i]);
+
                             salesAdditionalChargesList.Add(additionalChargesDetails);
                         }
                     }
@@ -283,7 +289,7 @@ namespace Tips.SalesService.Api.Controllers
                     int salesOrderStatus = (int)salesOrderStatus1;
                     if (serverKey == "keus")
                     {
-                        List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x => x.ItemNumber).Distinct().ToList();    
+                        List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x => x.ItemNumber).Distinct().ToList();
                         if (itemNumberList != null)
                         {
                             var json = JsonConvert.SerializeObject(itemNumberList);
@@ -295,7 +301,7 @@ namespace Tips.SalesService.Api.Controllers
                             var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
                             $"GetAvailableStockQtyForSalesOrderItems?salesOrderNo={encodedSONumber}&salesOrderStatus={salesOrderStatus}"))
                             {
-                                Content=data
+                                Content = data
                             };
                             request.Headers.Add("Authorization", token);
 
@@ -311,7 +317,7 @@ namespace Tips.SalesService.Api.Controllers
                                 salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
                                 salesOrderItemsDtos.SoConfirmationDates = _mapper.Map<List<SoConfirmationDateDto>>(salesOrderItemDetails.SoConfirmationDates);
                                 var ItemHistory = await _salesOrderHistory.GetSalesOrderHistoryBySONoAndItemNumberifShortCLosed(salesOrderNo, salesOrderItemsDtos.ItemNumber);
-                                if(ItemHistory!=null)salesOrderItemsDtos.ShortClosedQty= ItemHistory.Sum(x => x.ShortClosedQty);
+                                if (ItemHistory != null) salesOrderItemsDtos.ShortClosedQty = ItemHistory.Sum(x => x.ShortClosedQty);
                                 string itemNumber = salesOrderItemsDtos.ItemNumber;
                                 if (inventoryItemWithStockDetails.ContainsKey(itemNumber))
                                 {
@@ -329,7 +335,7 @@ namespace Tips.SalesService.Api.Controllers
                     }
                     else
                     {
-                        List<(string, string)> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x => (x.ItemNumber, x.ProjectNumber)).Distinct().ToList();                       
+                        List<(string, string)> itemNumberList = salesOrderById?.SalesOrdersItems?.Select(x => (x.ItemNumber, x.ProjectNumber)).Distinct().ToList();
 
                         foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
                         {
@@ -359,9 +365,9 @@ namespace Tips.SalesService.Api.Controllers
                             //var inventoryQtyResponse = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByItemNo?", "itemNumber=", itemNumber, "&projectNo=", itemNumberList.Where(x=>x.Item1==itemNumber).Select(x=>x.Item2)));
                             var inventoryItemQtyDetails = await inventoryQtyResponse.Content.ReadAsStringAsync();
                             var inventoryItemWithStockDetails = JsonConvert.DeserializeObject<InventoryItemdetailsDto>(inventoryItemQtyDetails);
-                            if (inventoryItemWithStockDetails!=null)
+                            if (inventoryItemWithStockDetails != null)
                             {
-                                salesOrderItemsDtos.AvailableStock = inventoryItemWithStockDetails.data.Sum(x=>x.balance_Quantity);
+                                salesOrderItemsDtos.AvailableStock = inventoryItemWithStockDetails.data.Sum(x => x.balance_Quantity);
                             }
                             else
                             {
@@ -393,6 +399,74 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSalesOrderDetailsWithOutClosedAdditionalChargesById(int id)
+        {
+            ServiceResponse<SalesOrderDto> serviceResponse = new ServiceResponse<SalesOrderDto>();
+            try
+            {
+                var salesOrderById = await _repository.GetSalesOrderById(id);
+                string serverKey = GetServerKey();
+                if (salesOrderById == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrder  hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesOrder with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {id}");
+                    SalesOrderDto salesOrderDto = _mapper.Map<SalesOrderDto>(salesOrderById);
+
+                    var quoteDetails = await _quoteRepository.GetQuoteByQuoteNumber(salesOrderDto.QuoteNumber);
+                    if (quoteDetails != null)
+                    {
+                        salesOrderDto.QuoteRef = quoteDetails.QuoteRef;
+                    }
+
+                    var salesAdditionalChargesDto = salesOrderDto.SalesOrderAdditionalCharges;
+
+                    var salesAdditionalChargesList = new List<SalesOrderAdditionalChargesDto>();
+                    if (salesAdditionalChargesDto != null)
+                    {
+                        for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
+                        {
+                            SalesOrderAdditionalChargesDto additionalChargesDetails = _mapper.Map<SalesOrderAdditionalChargesDto>(salesAdditionalChargesDto[i]);
+                            if (additionalChargesDetails.SOAdditionalStatus != SoStatus.Closed)
+                            {
+                                salesAdditionalChargesList.Add(additionalChargesDetails);
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+                    }
+
+                    salesOrderDto.SalesOrdersItems = null;
+                    salesOrderDto.SalesOrderAdditionalCharges = salesAdditionalChargesList;
+
+                    _logger.LogInfo($"Returned SalesOrder with id: {id}");
+                    serviceResponse.Data = salesOrderDto;
+                    serviceResponse.Message = $"Returned SalesOrder with id: {id}";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetSalesOrderById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         // POST api/<PurchaseOrderController>
         [HttpPost]
@@ -486,8 +560,8 @@ namespace Tips.SalesService.Api.Controllers
                 await _repository.CreateSalesOrder(createSalesOrder);
 
                 //ShortClose Quote Once SalesOrder Created
-                var quoteDetails =await _quoteRepository.GetQuoteByQuoteNumber(createSalesOrder.QuoteNumber);
-                if (quoteDetails!=null) 
+                var quoteDetails = await _quoteRepository.GetQuoteByQuoteNumber(createSalesOrder.QuoteNumber);
+                if (quoteDetails != null)
                 {
                     quoteDetails.QuoteStatus = OrderStatus.Closed;
                     _quoteRepository.UpdateQuote(quoteDetails);
@@ -591,46 +665,46 @@ namespace Tips.SalesService.Api.Controllers
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                cfg.CreateMap<SalesOrder, SalesOrderReportDto>()
-                .ForMember(dest => dest.SalesOrdersItems, opt => opt.MapFrom(src => src.SalesOrdersItems
-                        .Select(prItem => new SalesOrderItemsReportDto
-                        {
-                            Id = prItem.Id,
-                            ItemNumber = prItem.ItemNumber,
-                            Description = prItem.Description,
-                            SalesOrderNumber = prItem.SalesOrderNumber,
-                            PriceList = prItem.PriceList,
-                            ProjectNumber = prItem.ProjectNumber,
-                            StatusEnum = prItem.StatusEnum,
-                            BalanceQty = prItem.BalanceQty,
-                            DispatchQty = prItem.DispatchQty,
-                            ShopOrderQty = prItem.ShopOrderQty,
-                            UOM = prItem.UOM,
-                            Currency = prItem.Currency,
-                            UnitPrice = prItem.UnitPrice,
-                            OrderQty = prItem.OrderQty,
-                            SGST = prItem.SGST,
-                            CGST = prItem.CGST,
-                            UTGST = prItem.UTGST,
-                            IGST = prItem.IGST,
-                            TotalAmount = prItem.TotalAmount,
-                            BasicAmount = prItem.BasicAmount,
-                            Discount = prItem.Discount,
-                            RoomName = prItem.RoomName,
-                            DiscountType = prItem.DiscountType,
-                            RequestedDate = prItem.RequestedDate,
-                            Remarks = prItem.Remarks,
-                            ScheduleDates = prItem.ScheduleDates
-                                .Select(scheduleDate => new ScheduleDateReportDto
-                                {
-                                    Id = scheduleDate.Id,
-                                    ItemNumber = prItem.ItemNumber,
-                                    SalesOrderNumber = src.SalesOrderNumber,
-                                    Date = scheduleDate.Date,
-                                    Quantity = scheduleDate.Quantity,
-                                }).ToList()
-                        })
-                     ));
+                    cfg.CreateMap<SalesOrder, SalesOrderReportDto>()
+                    .ForMember(dest => dest.SalesOrdersItems, opt => opt.MapFrom(src => src.SalesOrdersItems
+                            .Select(prItem => new SalesOrderItemsReportDto
+                            {
+                                Id = prItem.Id,
+                                ItemNumber = prItem.ItemNumber,
+                                Description = prItem.Description,
+                                SalesOrderNumber = prItem.SalesOrderNumber,
+                                PriceList = prItem.PriceList,
+                                ProjectNumber = prItem.ProjectNumber,
+                                StatusEnum = prItem.StatusEnum,
+                                BalanceQty = prItem.BalanceQty,
+                                DispatchQty = prItem.DispatchQty,
+                                ShopOrderQty = prItem.ShopOrderQty,
+                                UOM = prItem.UOM,
+                                Currency = prItem.Currency,
+                                UnitPrice = prItem.UnitPrice,
+                                OrderQty = prItem.OrderQty,
+                                SGST = prItem.SGST,
+                                CGST = prItem.CGST,
+                                UTGST = prItem.UTGST,
+                                IGST = prItem.IGST,
+                                TotalAmount = prItem.TotalAmount,
+                                BasicAmount = prItem.BasicAmount,
+                                Discount = prItem.Discount,
+                                RoomName = prItem.RoomName,
+                                DiscountType = prItem.DiscountType,
+                                RequestedDate = prItem.RequestedDate,
+                                Remarks = prItem.Remarks,
+                                ScheduleDates = prItem.ScheduleDates
+                                    .Select(scheduleDate => new ScheduleDateReportDto
+                                    {
+                                        Id = scheduleDate.Id,
+                                        ItemNumber = prItem.ItemNumber,
+                                        SalesOrderNumber = src.SalesOrderNumber,
+                                        Date = scheduleDate.Date,
+                                        Quantity = scheduleDate.Quantity,
+                                    }).ToList()
+                            })
+                         ));
                 });
                 var mapper = config.CreateMapper();
                 var result = mapper.Map<IEnumerable<SalesOrderReportDto>>(salesOrderList);
@@ -796,14 +870,14 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
                     {
-                           SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
+                        SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
                         if (salesOrderItemsDetail.StatusEnum != OrderStatus.ShortClosed)
                         {
                             salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty - salesOrderItemsDetail.DispatchQty;
                             salesOrderItemsDetail.SalesOrderNumber = salesOrderNumber;
                         }
-                            salesOrderItemsList.Add(salesOrderItemsDetail);
-                                           
+                        salesOrderItemsList.Add(salesOrderItemsDetail);
+
                     }
 
                     foreach (var salesOrderItemDetail in salesOrderDetailBeforeUpdate.SalesOrdersItems)
@@ -1229,10 +1303,22 @@ namespace Tips.SalesService.Api.Controllers
                     }
                 }
                 _salesOrderItemsRepository.SaveAsync();
+
                 var salesdetails = await _repository.GetSalesOrderById(salesOrderDispatchQtyDto[0].SalesOrderId);
-                int? count = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum !=OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();               
-                if (count == 0) salesdetails.SOStatus= OrderStatus.Closed;           
-                else if(count > 0) salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+
+                int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
+
+                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
+
+                if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                {
+                    salesdetails.SOStatus = OrderStatus.Closed;
+                }
+                else
+                {
+                    salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                }
+
                 await _repository.UpdateSalesOrderShortClose(salesdetails);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1327,7 +1413,7 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogError("Invalid SalesOrder object sent from the client.");
                     return BadRequest(serviceResponse);
                 }
-                int SalesorderId=0;
+                int SalesorderId = 0;
                 foreach (var item in salesOrderDispatchQtyDto)
                 {
                     var doReturnQty = item.ReturnQty;
@@ -1384,10 +1470,25 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 if (SalesorderId > 0)
                 {
-                    var salesdetails=await _repository.GetSalesOrderById(SalesorderId);
-                    if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Closed || x.StatusEnum == OrderStatus.ShortClosed).Count()) salesdetails.SOStatus = OrderStatus.Closed;
-                    else if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Open).Count()) salesdetails.SOStatus = OrderStatus.Open;
-                    else salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                    //var salesdetails=await _repository.GetSalesOrderById(SalesorderId);
+                    //if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Closed || x.StatusEnum == OrderStatus.ShortClosed).Count()) salesdetails.SOStatus = OrderStatus.Closed;
+                    //else if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Open).Count()) salesdetails.SOStatus = OrderStatus.Open;
+                    //else salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+
+                    var salesdetails = await _repository.GetSalesOrderById(salesOrderDispatchQtyDto[0].SalesOrderId);
+
+                    int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
+
+                    int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
+
+                    if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                    {
+                        salesdetails.SOStatus = OrderStatus.Closed;
+                    }
+                    else
+                    {
+                        salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                    }
                     await _repository.UpdateSalesOrderShortClose(salesdetails);
                     _repository.SaveAsync();
                 }
@@ -1398,7 +1499,7 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError($"Something went wrong inside ReturnDOUpdateDispatchDetails action in SalesOrder Controller {ex.Message}");
                 return StatusCode(500, ex.Message);
             }
-}
+        }
         //Update Balancre Qty and DispatchQty Using ReturnInvoice 
         [HttpPost]
         public async Task<IActionResult> ReturnInvoiceUpdateDispatchDetails([FromBody] List<ReturnDOSalesOrderDispatchQtyDto> salesOrderDispatchQtyDto)
@@ -1430,7 +1531,7 @@ namespace Tips.SalesService.Api.Controllers
                 foreach (var item in salesOrderDispatchQtyDto)
                 {
                     var invoiceReturnQty = item.ReturnQty;
-                    
+
                     IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo
                                                                                                                             (item.FGPartNumber, item.SalesOrderId);
                     SalesorderId = salesOrderItems.First().SalesOrderId;
@@ -1439,40 +1540,40 @@ namespace Tips.SalesService.Api.Controllers
                         foreach (var salesOrderDetails in salesOrderItems)
                         {
                             var salesOrderDisQty = salesOrderDetails.DispatchQty;
-                            
-                                if (salesOrderDetails.DispatchQty <= invoiceReturnQty)
-                                {
-                                    salesOrderDetails.BalanceQty += salesOrderDisQty;
-                                    salesOrderDetails.DispatchQty = 0;
-                                    invoiceReturnQty -= salesOrderDisQty;
-                                }
-                                else
-                                {
-                                    salesOrderDetails.BalanceQty += invoiceReturnQty;
-                                    salesOrderDetails.DispatchQty -= invoiceReturnQty;
-                                    invoiceReturnQty = 0; 
 
-                                }
+                            if (salesOrderDetails.DispatchQty <= invoiceReturnQty)
+                            {
+                                salesOrderDetails.BalanceQty += salesOrderDisQty;
+                                salesOrderDetails.DispatchQty = 0;
+                                invoiceReturnQty -= salesOrderDisQty;
+                            }
+                            else
+                            {
+                                salesOrderDetails.BalanceQty += invoiceReturnQty;
+                                salesOrderDetails.DispatchQty -= invoiceReturnQty;
+                                invoiceReturnQty = 0;
 
-                                if (salesOrderDetails.BalanceQty == salesOrderDetails.OrderQty)
-                                {
-                                    salesOrderDetails.StatusEnum = OrderStatus.Open;
-                                }
-                                else if (salesOrderDetails.BalanceQty < salesOrderDetails.OrderQty && salesOrderDetails.BalanceQty > 0)
-                                {
-                                    salesOrderDetails.StatusEnum = OrderStatus.PartiallyClosed;
-                                }
-                                else
-                                {
-                                    salesOrderDetails.StatusEnum = OrderStatus.Closed;
-                                }
-                                await _salesOrderItemsRepository.UpdateSalesOrderItem(salesOrderDetails);
+                            }
 
-                                if (invoiceReturnQty <= 0)
-                                {
-                                    break;
-                                }
-                            
+                            if (salesOrderDetails.BalanceQty == salesOrderDetails.OrderQty)
+                            {
+                                salesOrderDetails.StatusEnum = OrderStatus.Open;
+                            }
+                            else if (salesOrderDetails.BalanceQty < salesOrderDetails.OrderQty && salesOrderDetails.BalanceQty > 0)
+                            {
+                                salesOrderDetails.StatusEnum = OrderStatus.PartiallyClosed;
+                            }
+                            else
+                            {
+                                salesOrderDetails.StatusEnum = OrderStatus.Closed;
+                            }
+                            await _salesOrderItemsRepository.UpdateSalesOrderItem(salesOrderDetails);
+
+                            if (invoiceReturnQty <= 0)
+                            {
+                                break;
+                            }
+
                         }
                         _salesOrderItemsRepository.SaveAsync();
                     }
@@ -1488,10 +1589,25 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 if (SalesorderId > 0)
                 {
-                    var salesdetails = await _repository.GetSalesOrderById(SalesorderId);
-                    if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Closed || x.StatusEnum == OrderStatus.ShortClosed).Count()) salesdetails.SOStatus = OrderStatus.Closed;
-                    else if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Open).Count()) salesdetails.SOStatus = OrderStatus.Open;
-                    else salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                    //var salesdetails = await _repository.GetSalesOrderById(SalesorderId);
+                    //if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Closed || x.StatusEnum == OrderStatus.ShortClosed).Count()) salesdetails.SOStatus = OrderStatus.Closed;
+                    //else if (salesdetails.SalesOrdersItems.Count() == salesdetails.SalesOrdersItems.Where(x => x.StatusEnum == OrderStatus.Open).Count()) salesdetails.SOStatus = OrderStatus.Open;
+                    //else salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+
+                    var salesdetails = await _repository.GetSalesOrderById(salesOrderDispatchQtyDto[0].SalesOrderId);
+
+                    int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
+
+                    int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
+
+                    if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                    {
+                        salesdetails.SOStatus = OrderStatus.Closed;
+                    }
+                    else
+                    {
+                        salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                    }
                     await _repository.UpdateSalesOrderShortClose(salesdetails);
                     _repository.SaveAsync();
                 }
@@ -1501,7 +1617,7 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside ReturnInvoiceUpdateDispatchDetails action in SalesOrder Controller {ex.Message}");
-                return StatusCode(500,ex.Message);
+                return StatusCode(500, ex.Message);
             }
         }
         //Update shoporder Qty in salesorder while create shoporderUpdateShopOrderQty
@@ -1528,7 +1644,7 @@ namespace Tips.SalesService.Api.Controllers
             if (salesOrderItems.Count() > 0)
                 foreach (var item in salesOrderItems)
                 {
-                    if (item.BalanceQty>=shopOrderReleaseQtyDto.ReleaseQty)
+                    if (item.BalanceQty >= shopOrderReleaseQtyDto.ReleaseQty)
                     {
                         item.ShopOrderQty += shopOrderReleaseQtyDto.ReleaseQty;
                         await _salesOrderItemsRepository.UpdateSalesOrderItem(item);
@@ -1603,9 +1719,29 @@ namespace Tips.SalesService.Api.Controllers
                     var salesAdditionalCharges = await _salesAdditionalChargesRepository.GetSalesAdditionalChargesById(item.SalesOrderId, item.SalesAdditionalChargeId);
 
                     salesAdditionalCharges.InvoicedValue += item.InvoicedValue;
+                    salesAdditionalCharges.SOAdditionalStatus = item.SOAdditionalStatus;
                     await _salesAdditionalChargesRepository.UpdateSalesAdditionalCharges(salesAdditionalCharges);
-                    _salesAdditionalChargesRepository.SaveAsync();
+
                 }
+                _salesAdditionalChargesRepository.SaveAsync();
+
+                var salesdetails = await _repository.GetSalesOrderById(soAdditionalChargeUpdateDto[0].SalesOrderId);
+
+                int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
+
+                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
+
+                if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                {
+                    salesdetails.SOStatus = OrderStatus.Closed;
+                }
+                else
+                {
+                    salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                }
+
+                await _repository.UpdateSalesOrderShortClose(salesdetails);
+                _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SalesOrder Successfully Updated";
                 serviceResponse.Success = true;
@@ -1614,7 +1750,7 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside InvoiceUpdateDispatchDetails action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside AdditionalChargeUpdateFromInvoice action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal error in SalesOrderUpdate";
                 serviceResponse.Success = false;
@@ -1623,6 +1759,87 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AdditionalChargeUpdateFromReturnInvoice([FromBody] List<SoAdditionalChargeUpdateFromReturnDto> soAdditionalChargeUpdateDto)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                if (soAdditionalChargeUpdateDto == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "SalesOrder object sent from the client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("SalesOrder object sent from the client is null.");
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid SalesOrder object sent from the client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid SalesOrder object sent from the client.");
+                    return BadRequest(serviceResponse);
+                }
+                foreach (var item in soAdditionalChargeUpdateDto)
+                {
+                    var salesAdditionalCharges = await _salesAdditionalChargesRepository.GetSalesAdditionalChargesById(item.SalesOrderId, item.SalesAdditionalChargeId);
+
+                    salesAdditionalCharges.InvoicedValue -= item.InvoicedValue;
+
+                    if(salesAdditionalCharges.TotalValue == salesAdditionalCharges.InvoicedValue)
+                    {
+                        salesAdditionalCharges.SOAdditionalStatus = SoStatus.Closed;
+                    }
+                    else if(salesAdditionalCharges.TotalValue > salesAdditionalCharges.InvoicedValue && salesAdditionalCharges.InvoicedValue != 0)
+                    {
+                        salesAdditionalCharges.SOAdditionalStatus = SoStatus.PartiallyClosed;
+                    }
+                    else
+                    {
+                        salesAdditionalCharges.SOAdditionalStatus = SoStatus.Open;
+                    }
+                    await _salesAdditionalChargesRepository.UpdateSalesAdditionalCharges(salesAdditionalCharges);
+
+                }
+                _salesAdditionalChargesRepository.SaveAsync();
+
+                var salesdetails = await _repository.GetSalesOrderById(soAdditionalChargeUpdateDto[0].SalesOrderId);
+
+                int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
+
+                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
+
+                if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                {
+                    salesdetails.SOStatus = OrderStatus.Closed;
+                }
+                else
+                {
+                    salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                }
+
+                await _repository.UpdateSalesOrderShortClose(salesdetails);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "SalesOrder Successfully Updated";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside AdditionalChargeUpdateFromReturnInvoice action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         //getsalesorderdetailbyitemnoandsalesorderId
 
@@ -1640,7 +1857,7 @@ namespace Tips.SalesService.Api.Controllers
                 //    "GetAllProductionBomFGListByItemNumber?"), content);
                 var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"],
                             $"GetAllProductionBomFGListByItemNumber"))
-                { Content=content};
+                { Content = content };
                 request.Headers.Add("Authorization", token);
 
                 var bomDetails = await client.SendAsync(request);
@@ -1653,7 +1870,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 ItemDetailsForShopOrderDto itemDetailsDto = new ItemDetailsForShopOrderDto();
                 itemDetailsDto.ItemNumber = bomData[0].itemNumber;
-                itemDetailsDto.ItemType = bomData[0].itemType; 
+                itemDetailsDto.ItemType = bomData[0].itemType;
                 itemDetailsDto.BomVersionNo = bomVersionNo[0] == 0 ? null : bomVersionNo;
 
 
@@ -1749,7 +1966,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-            } 
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
@@ -1758,50 +1975,50 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
-    }
+            }
 
-}
+        }
 
 
 
-//        [HttpGet()] // Adjust your route as needed
-//        public async Task<IActionResult> GetSalesorderReportWithParam([FromQuery] string? CustomerName,[FromQuery] string? SalesOrderNumber,
-//                [FromQuery] string? PartNumber
-//)
-//        {
-//            ServiceResponse<IEnumerable<SalesOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPResport>>();
-//            try
-//            {
-//                var products = await _repository.GetSalesorderReportWithParam(CustomerName, SalesOrderNumber, PartNumber);
+        //        [HttpGet()] // Adjust your route as needed
+        //        public async Task<IActionResult> GetSalesorderReportWithParam([FromQuery] string? CustomerName,[FromQuery] string? SalesOrderNumber,
+        //                [FromQuery] string? PartNumber
+        //)
+        //        {
+        //            ServiceResponse<IEnumerable<SalesOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPResport>>();
+        //            try
+        //            {
+        //                var products = await _repository.GetSalesorderReportWithParam(CustomerName, SalesOrderNumber, PartNumber);
 
-//                if (products == null)
-//                {
-//                    serviceResponse.Data = null;
-//                    serviceResponse.Message = $"SalesOrder hasn't been found.";
-//                    serviceResponse.Success = false;
-//                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-//                    _logger.LogError($"SalesOrder hasn't been found in db.");
-//                    return NotFound(serviceResponse);
-//                }
-//                else
-//                {
-//                    serviceResponse.Data = products;
-//                    serviceResponse.Message = "Returned SalesOrder Details";
-//                    serviceResponse.Success = true;
-//                    serviceResponse.StatusCode = HttpStatusCode.OK;
-//                    return Ok(serviceResponse);
-//                }
-//            }
-//            catch (Exception ex)
-//            {
-//                _logger.LogError(ex.Message);
-//                serviceResponse.Data = null;
-//                serviceResponse.Message = $"Something went wrong inside GetSASalesOrderDetailsByItemNo action";
-//                serviceResponse.Success = false;
-//                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-//                return StatusCode(500, serviceResponse);
-//            }
-//        }
+        //                if (products == null)
+        //                {
+        //                    serviceResponse.Data = null;
+        //                    serviceResponse.Message = $"SalesOrder hasn't been found.";
+        //                    serviceResponse.Success = false;
+        //                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //                    _logger.LogError($"SalesOrder hasn't been found in db.");
+        //                    return NotFound(serviceResponse);
+        //                }
+        //                else
+        //                {
+        //                    serviceResponse.Data = products;
+        //                    serviceResponse.Message = "Returned SalesOrder Details";
+        //                    serviceResponse.Success = true;
+        //                    serviceResponse.StatusCode = HttpStatusCode.OK;
+        //                    return Ok(serviceResponse);
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                _logger.LogError(ex.Message);
+        //                serviceResponse.Data = null;
+        //                serviceResponse.Message = $"Something went wrong inside GetSASalesOrderDetailsByItemNo action";
+        //                serviceResponse.Success = false;
+        //                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //                return StatusCode(500, serviceResponse);
+        //            }
+        //        }
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetSalesOrderSPReportWithParam([FromBody] SalesOrderSPResportDTO salesOrderSPResport)
 
@@ -1994,7 +2211,7 @@ namespace Tips.SalesService.Api.Controllers
 
         }
 
-      
+
 
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetRfqSalesOrderSPReportWithParam([FromBody] RfqSalesOrderSPResportDTO rfqSalesOrderSPResportDTO)
@@ -2037,12 +2254,208 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetRfqSalesOrderRoomWiseSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+
+        {
+            ServiceResponse<IEnumerable<RfqSalesOrderRoomWiseSPReport>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderRoomWiseSPReport>>();
+            try
+            {
+                var products = await _repository.GetRfqSalesOrderRoomWiseSPReportWithDate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqSalesOrderRoomWiseSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqSalesOrderRoomWiseSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RfqSalesOrderRoomWiseSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqSalesOrderRoomWiseSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetRfqSalesOrderRoomWiseSPReportWithParam([FromBody] SalesOrderSPResportDTO rfqSalesOrderRoomWiseSPResportDTO)
+
+        {
+            ServiceResponse<IEnumerable<RfqSalesOrderRoomWiseSPReport>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderRoomWiseSPReport>>();
+            try
+            {
+                var products = await _repository.GetRfqSalesOrderRoomWiseSPReportWithParam(rfqSalesOrderRoomWiseSPResportDTO.CustomerName, rfqSalesOrderRoomWiseSPResportDTO.SalesOrderNumber,
+                                                                                                                        rfqSalesOrderRoomWiseSPResportDTO.KPN);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqSalesOrderRoomWiseSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqSalesOrderRoomWiseSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RfqSalesOrderRoomWiseSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqSalesOrderRoomWiseSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetRfqSalesOrderSPReportWithParamForTrans([FromBody] RfqSalesOrderSPResportDTOForTrans rfqSalesOrderSPResportDTO)
+
+        {
+            ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetRfqSalesOrderSPReportWithParamForTrans(rfqSalesOrderSPResportDTO.CustomerName, rfqSalesOrderSPResportDTO.SalesOrderNumber,
+                                                                                                                        rfqSalesOrderSPResportDTO.KPN, rfqSalesOrderSPResportDTO.SOStatus
+                                                                                                                        , rfqSalesOrderSPResportDTO.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RfqSalesOrderSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqSalesOrderSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetRfqSalesOrderSPReportWithParamForAvision([FromBody] RfqSalesOrderSPResportDTO rfqSalesOrderSPResportDTO)
+
+        {
+            ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetRfqSalesOrderSPReportWithParamForAvision(rfqSalesOrderSPResportDTO.CustomerName, rfqSalesOrderSPResportDTO.SalesOrderNumber,
+                                                                                                                        rfqSalesOrderSPResportDTO.KPN, rfqSalesOrderSPResportDTO.SOStatus);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RfqSalesOrderSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqSalesOrderSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetRfqSalesOrderSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
             ServiceResponse<IEnumerable<RfqSalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderSPReport>>();
             try
             {
                 var products = await _repository.GetRfqSalesOrderSPReportWithDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RfqSalesOrderSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRfqSalesOrderSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetRfqSalesOrderSPReportWithDateForTransAvision([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetRfqSalesOrderSPReportWithDateForTransAvision(FromDate, ToDate);
                 if (products == null)
                 {
                     serviceResponse.Data = null;
@@ -2113,6 +2526,87 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetForecastSalesOrderSPReportWithParamForTrans([FromBody] ForecastSalesOrderSPResportDTOForTrans forecastSalesOrderSPResportDTO)
+
+        {
+            ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetForecastSalesOrderSPReportWithParamForTrans(forecastSalesOrderSPResportDTO.CustomerName,
+                                                                             forecastSalesOrderSPResportDTO.SalesOrderNumber, forecastSalesOrderSPResportDTO.KPN, forecastSalesOrderSPResportDTO.SOStatus,
+                                                                             forecastSalesOrderSPResportDTO.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ForecastSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ForecastSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ForecastSalesOrderSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetForecastSalesOrderSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetForecastSalesOrderSPReportWithParamForAvision([FromBody] ForecastSalesOrderSPResportDTO forecastSalesOrderSPResportDTO)
+
+        {
+            ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetForecastSalesOrderSPReportWithParamForAvision(forecastSalesOrderSPResportDTO.CustomerName,
+                                                                             forecastSalesOrderSPResportDTO.SalesOrderNumber, forecastSalesOrderSPResportDTO.KPN, forecastSalesOrderSPResportDTO.SOStatus);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ForecastSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ForecastSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ForecastSalesOrderSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetForecastSalesOrderSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetForecastSalesOrderSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
@@ -2120,6 +2614,42 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var products = await _repository.GetForecastSalesOrderSPReportWithDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ForecastSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ForecastSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ForecastSalesOrderSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetForecastSalesOrderSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetForecastSalesOrderSPReportWithDateForTransAvision([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetForecastSalesOrderSPReportWithDateForTransAvision(FromDate, ToDate);
                 if (products == null)
                 {
                     serviceResponse.Data = null;
@@ -2255,7 +2785,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 // Create a new Excel workbook
                 IWorkbook workbook = new XSSFWorkbook();
-                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+                ISheet sheet = workbook.CreateSheet("RFQSPReport");
 
                 // Set header row
                 var headerRow = sheet.CreateRow(0);
@@ -2290,6 +2820,7 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(28).SetCellValue("Order Qty");
                 headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
                 headerRow.CreateCell(30).SetCellValue("Balance Qty");
+                headerRow.CreateCell(31).SetCellValue("RequestedDate");
 
 
                 // Populate data rows
@@ -2328,6 +2859,7 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
                     row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
                     row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(31).SetCellValue(item.RequestedDate.HasValue ? item.RequestedDate.Value.ToString("MM/dd/yyyy") : "");
                 }
 
 
@@ -2338,7 +2870,7 @@ namespace Tips.SalesService.Api.Controllers
                     var excelBytes = memoryStream.ToArray();
 
                     // Send Excel file as a response
-                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "RFQSPReport.xlsx");
                 }
             }
             catch (Exception ex)
@@ -2348,16 +2880,116 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ExportSalesOrderForecastSPReportToExcel([FromBody] ForecastSalesOrderSPResportDTO salesOrderSPReport)
+        public async Task<IActionResult> ExportSalesOrderRFQRoomWiseSPReportToExcel([FromBody] SalesOrderSPResportDTO rfqRoomWiseSPReport)
         {
             try
             {
                 // Get data from repository using stored procedure
-                var salesOrderSPReportDetails = await _repository.GetForecastSalesOrderSPReportWithParam(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus);
+                var salesOrderSPReportDetails = await _repository.GetRfqSalesOrderRoomWiseSPReportWithParam(rfqRoomWiseSPReport.CustomerName, rfqRoomWiseSPReport.SalesOrderNumber, rfqRoomWiseSPReport.KPN);
 
                 // Create a new Excel workbook
                 IWorkbook workbook = new XSSFWorkbook();
-                ISheet sheet = workbook.CreateSheet("SalesOrderSPReport");
+                ISheet sheet = workbook.CreateSheet("RFQRoomWiseSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(1).SetCellValue("Customer ID");
+                headerRow.CreateCell(2).SetCellValue("Customer Name");
+                headerRow.CreateCell(3).SetCellValue("Lead ID");
+                headerRow.CreateCell(4).SetCellValue("Order Type");
+                headerRow.CreateCell(5).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(6).SetCellValue("Product Type");
+                headerRow.CreateCell(7).SetCellValue("Material Group");
+                headerRow.CreateCell(8).SetCellValue("Sales Person");
+                headerRow.CreateCell(9).SetCellValue("SO Date");
+                headerRow.CreateCell(10).SetCellValue("RoomName");
+                headerRow.CreateCell(11).SetCellValue("KPN");
+                headerRow.CreateCell(12).SetCellValue("KPN Description");
+                headerRow.CreateCell(13).SetCellValue("UOC");
+                headerRow.CreateCell(14).SetCellValue("UOM");
+                headerRow.CreateCell(15).SetCellValue("Price List");
+                headerRow.CreateCell(16).SetCellValue("Unit Price");
+                headerRow.CreateCell(17).SetCellValue("Basic Amount");
+                headerRow.CreateCell(18).SetCellValue("DiscountType");
+                headerRow.CreateCell(19).SetCellValue("Discount");
+                headerRow.CreateCell(20).SetCellValue("SGST");
+                headerRow.CreateCell(21).SetCellValue("CGST");
+                headerRow.CreateCell(22).SetCellValue("IGST");
+                headerRow.CreateCell(23).SetCellValue("UTGST");
+                headerRow.CreateCell(24).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(25).SetCellValue("Total Amount");
+                headerRow.CreateCell(26).SetCellValue("Order Qty");
+                headerRow.CreateCell(27).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(28).SetCellValue("Balance Qty");
+
+
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(1).SetCellValue(item.CustomerId);
+                    row.CreateCell(2).SetCellValue(item.CustomerName);
+                    row.CreateCell(3).SetCellValue(item.LeadId);
+                    row.CreateCell(4).SetCellValue(item.OrderType);
+                    row.CreateCell(5).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(6).SetCellValue(item.ProductType);
+                    row.CreateCell(7).SetCellValue(item.MaterialGroup);// Assuming ItemType is nullable int
+                    row.CreateCell(8).SetCellValue(item.SalesPerson);
+                    row.CreateCell(9).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(10).SetCellValue(item.RoomName);
+                    row.CreateCell(11).SetCellValue(item.KPN);
+                    row.CreateCell(12).SetCellValue(item.KPNDescription);
+                    row.CreateCell(13).SetCellValue(item.UOC);
+                    row.CreateCell(14).SetCellValue(item.UOM);
+                    row.CreateCell(15).SetCellValue(item.PriceList);
+                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(17).SetCellValue(Convert.ToDouble(item.BasicAmount)); // Assuming BasicAmount is decimal
+                    row.CreateCell(18).SetCellValue(item.DiscountType);
+                    row.CreateCell(19).SetCellValue(item.Discount);
+                    row.CreateCell(20).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
+                    row.CreateCell(21).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                }
+
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "RFQRoomWiseSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportSalesOrderRFQSPReportToExcelForTrans([FromBody] RfqSalesOrderSPResportDTOForTrans salesOrderSPReport)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var salesOrderSPReportDetails = await _repository.GetRfqSalesOrderSPReportWithParamForTrans(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus
+                                                                                                                            , salesOrderSPReport.ProjectNumber);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("RFQSPReport");
 
                 // Set header row
                 var headerRow = sheet.CreateRow(0);
@@ -2392,7 +3024,218 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(28).SetCellValue("Order Qty");
                 headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
                 headerRow.CreateCell(30).SetCellValue("Balance Qty");
+                headerRow.CreateCell(31).SetCellValue("scheduledate");
+                headerRow.CreateCell(32).SetCellValue("scheduleqnty");
 
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? item.SOStatus.Value.ToString() : ""); // Assuming SOStatus is nullable int
+                    row.CreateCell(2).SetCellValue(item.ProjectNumber ?? ""); // Assuming ProjectNumber is nullable string
+                    row.CreateCell(3).SetCellValue(item.CustomerId);
+                    row.CreateCell(4).SetCellValue(item.CustomerName);
+                    row.CreateCell(5).SetCellValue(item.LeadId);
+                    row.CreateCell(6).SetCellValue(item.OrderType);
+                    row.CreateCell(7).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(8).SetCellValue(item.ProductType);
+                    row.CreateCell(9).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(10).SetCellValue(item.ItemType); // Assuming ItemType is nullable int
+                    row.CreateCell(11).SetCellValue(item.SalesPerson);
+                    row.CreateCell(12).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(13).SetCellValue(item.KPN);
+                    row.CreateCell(14).SetCellValue(item.KPNDescription);
+                    row.CreateCell(15).SetCellValue(item.UOC);
+                    row.CreateCell(16).SetCellValue(item.UOM);
+                    row.CreateCell(17).SetCellValue(item.PriceList);
+                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(19).SetCellValue(Convert.ToDouble(item.BasicAmount)); // Assuming BasicAmount is decimal
+                    row.CreateCell(20).SetCellValue(item.DiscountType);
+                    row.CreateCell(21).SetCellValue(item.Discount);
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
+                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(31).SetCellValue(item.scheduledate.HasValue ? item.scheduledate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(32).SetCellValue(Convert.ToDouble(item.scheduleqnty));
+                }
+
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "RFQSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportSalesOrderRFQSPReportToExcelForAvision([FromBody] RfqSalesOrderSPResportDTO salesOrderSPReport)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var salesOrderSPReportDetails = await _repository.GetRfqSalesOrderSPReportWithParamForAvision(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("RFQSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(1).SetCellValue("SOStatus");
+                headerRow.CreateCell(2).SetCellValue("Project Number");
+                headerRow.CreateCell(3).SetCellValue("Customer ID");
+                headerRow.CreateCell(4).SetCellValue("Customer Name");
+                headerRow.CreateCell(5).SetCellValue("Lead ID");
+                headerRow.CreateCell(6).SetCellValue("Order Type");
+                headerRow.CreateCell(7).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(8).SetCellValue("Product Type");
+                headerRow.CreateCell(9).SetCellValue("Material Group");
+                headerRow.CreateCell(10).SetCellValue("Item Type");
+                headerRow.CreateCell(11).SetCellValue("Sales Person");
+                headerRow.CreateCell(12).SetCellValue("SO Date");
+                headerRow.CreateCell(13).SetCellValue("KPN");
+                headerRow.CreateCell(14).SetCellValue("KPN Description");
+                headerRow.CreateCell(15).SetCellValue("UOC");
+                headerRow.CreateCell(16).SetCellValue("UOM");
+                headerRow.CreateCell(17).SetCellValue("Price List");
+                headerRow.CreateCell(18).SetCellValue("Unit Price");
+                headerRow.CreateCell(19).SetCellValue("Basic Amount");
+                headerRow.CreateCell(20).SetCellValue("DiscountType");
+                headerRow.CreateCell(21).SetCellValue("Discount");
+                headerRow.CreateCell(22).SetCellValue("SGST");
+                headerRow.CreateCell(23).SetCellValue("CGST");
+                headerRow.CreateCell(24).SetCellValue("IGST");
+                headerRow.CreateCell(25).SetCellValue("UTGST");
+                headerRow.CreateCell(26).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(27).SetCellValue("Total Amount");
+                headerRow.CreateCell(28).SetCellValue("Order Qty");
+                headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(30).SetCellValue("Balance Qty");
+                headerRow.CreateCell(31).SetCellValue("scheduledate");
+                headerRow.CreateCell(32).SetCellValue("scheduleqnty");
+
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? item.SOStatus.Value.ToString() : ""); // Assuming SOStatus is nullable int
+                    row.CreateCell(2).SetCellValue(item.ProjectNumber ?? ""); // Assuming ProjectNumber is nullable string
+                    row.CreateCell(3).SetCellValue(item.CustomerId);
+                    row.CreateCell(4).SetCellValue(item.CustomerName);
+                    row.CreateCell(5).SetCellValue(item.LeadId);
+                    row.CreateCell(6).SetCellValue(item.OrderType);
+                    row.CreateCell(7).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(8).SetCellValue(item.ProductType);
+                    row.CreateCell(9).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(10).SetCellValue(item.ItemType); // Assuming ItemType is nullable int
+                    row.CreateCell(11).SetCellValue(item.SalesPerson);
+                    row.CreateCell(12).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(13).SetCellValue(item.KPN);
+                    row.CreateCell(14).SetCellValue(item.KPNDescription);
+                    row.CreateCell(15).SetCellValue(item.UOC);
+                    row.CreateCell(16).SetCellValue(item.UOM);
+                    row.CreateCell(17).SetCellValue(item.PriceList);
+                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(19).SetCellValue(Convert.ToDouble(item.BasicAmount)); // Assuming BasicAmount is decimal
+                    row.CreateCell(20).SetCellValue(item.DiscountType);
+                    row.CreateCell(21).SetCellValue(item.Discount);
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
+                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(31).SetCellValue(item.scheduledate.HasValue ? item.scheduledate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(32).SetCellValue(Convert.ToDouble(item.scheduleqnty));
+                }
+
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "RFQSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportSalesOrderForecastSPReportToExcel([FromBody] ForecastSalesOrderSPResportDTO salesOrderSPReport)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var salesOrderSPReportDetails = await _repository.GetForecastSalesOrderSPReportWithParam(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("ForecastSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(1).SetCellValue("SOStatus");
+                headerRow.CreateCell(2).SetCellValue("Project Number");
+                headerRow.CreateCell(3).SetCellValue("Customer ID");
+                headerRow.CreateCell(4).SetCellValue("Customer Name");
+                headerRow.CreateCell(5).SetCellValue("Lead ID");
+                headerRow.CreateCell(6).SetCellValue("Order Type");
+                headerRow.CreateCell(7).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(8).SetCellValue("Product Type");
+                headerRow.CreateCell(9).SetCellValue("Material Group");
+                headerRow.CreateCell(10).SetCellValue("Item Type");
+                headerRow.CreateCell(11).SetCellValue("Sales Person");
+                headerRow.CreateCell(12).SetCellValue("SO Date");
+                headerRow.CreateCell(13).SetCellValue("KPN");
+                headerRow.CreateCell(14).SetCellValue("KPN Description");
+                headerRow.CreateCell(15).SetCellValue("UOC");
+                headerRow.CreateCell(16).SetCellValue("UOM");
+                headerRow.CreateCell(17).SetCellValue("Price List");
+                headerRow.CreateCell(18).SetCellValue("Unit Price");
+                headerRow.CreateCell(19).SetCellValue("Basic Amount");
+                headerRow.CreateCell(20).SetCellValue("DiscountType");
+                headerRow.CreateCell(21).SetCellValue("Discount");
+                headerRow.CreateCell(22).SetCellValue("SGST");
+                headerRow.CreateCell(23).SetCellValue("CGST");
+                headerRow.CreateCell(24).SetCellValue("IGST");
+                headerRow.CreateCell(25).SetCellValue("UTGST");
+                headerRow.CreateCell(26).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(27).SetCellValue("Total Amount");
+                headerRow.CreateCell(28).SetCellValue("Order Qty");
+                headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(30).SetCellValue("Balance Qty");
+                headerRow.CreateCell(31).SetCellValue("RequestedDate");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -2430,6 +3273,7 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
                     row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
                     row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(31).SetCellValue(item.RequestedDate.HasValue ? item.RequestedDate.Value.ToString("MM/dd/yyyy") : "");
                 }
 
                 // Save Excel workbook to a memory stream
@@ -2439,7 +3283,219 @@ namespace Tips.SalesService.Api.Controllers
                     var excelBytes = memoryStream.ToArray();
 
                     // Send Excel file as a response
-                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SalesOrderSPReport.xlsx");
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ForecastSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                // Return appropriate error response to the client
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportSalesOrderForecastSPReportToExcelForTrans([FromBody] ForecastSalesOrderSPResportDTOForTrans salesOrderSPReport)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var salesOrderSPReportDetails = await _repository.GetForecastSalesOrderSPReportWithParamForTrans(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus
+                                                                                                                                            , salesOrderSPReport.ProjectNumber);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("ForecastSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(1).SetCellValue("SOStatus");
+                headerRow.CreateCell(2).SetCellValue("Project Number");
+                headerRow.CreateCell(3).SetCellValue("Customer ID");
+                headerRow.CreateCell(4).SetCellValue("Customer Name");
+                headerRow.CreateCell(5).SetCellValue("Lead ID");
+                headerRow.CreateCell(6).SetCellValue("Order Type");
+                headerRow.CreateCell(7).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(8).SetCellValue("Product Type");
+                headerRow.CreateCell(9).SetCellValue("Material Group");
+                headerRow.CreateCell(10).SetCellValue("Item Type");
+                headerRow.CreateCell(11).SetCellValue("Sales Person");
+                headerRow.CreateCell(12).SetCellValue("SO Date");
+                headerRow.CreateCell(13).SetCellValue("KPN");
+                headerRow.CreateCell(14).SetCellValue("KPN Description");
+                headerRow.CreateCell(15).SetCellValue("UOC");
+                headerRow.CreateCell(16).SetCellValue("UOM");
+                headerRow.CreateCell(17).SetCellValue("Price List");
+                headerRow.CreateCell(18).SetCellValue("Unit Price");
+                headerRow.CreateCell(19).SetCellValue("Basic Amount");
+                headerRow.CreateCell(20).SetCellValue("DiscountType");
+                headerRow.CreateCell(21).SetCellValue("Discount");
+                headerRow.CreateCell(22).SetCellValue("SGST");
+                headerRow.CreateCell(23).SetCellValue("CGST");
+                headerRow.CreateCell(24).SetCellValue("IGST");
+                headerRow.CreateCell(25).SetCellValue("UTGST");
+                headerRow.CreateCell(26).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(27).SetCellValue("Total Amount");
+                headerRow.CreateCell(28).SetCellValue("Order Qty");
+                headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(30).SetCellValue("Balance Qty");
+                headerRow.CreateCell(31).SetCellValue("scheduledate");
+                headerRow.CreateCell(32).SetCellValue("scheduleqnty");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? item.SOStatus.Value.ToString() : ""); // Adding SOStatus
+                    row.CreateCell(2).SetCellValue(item.ProjectNumber ?? ""); // Adding ProjectNumber
+                    row.CreateCell(3).SetCellValue(item.CustomerId);
+                    row.CreateCell(4).SetCellValue(item.CustomerName);
+                    row.CreateCell(5).SetCellValue(item.LeadId);
+                    row.CreateCell(6).SetCellValue(item.OrderType);
+                    row.CreateCell(7).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(8).SetCellValue(item.ProductType);
+                    row.CreateCell(9).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(10).SetCellValue(item.ItemType); // Assuming ItemType is nullable int
+                    row.CreateCell(11).SetCellValue(item.SalesPerson);
+                    row.CreateCell(12).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(13).SetCellValue(item.KPN);
+                    row.CreateCell(14).SetCellValue(item.KPNDescription);
+                    row.CreateCell(15).SetCellValue(item.UOC);
+                    row.CreateCell(16).SetCellValue(item.UOM);
+                    row.CreateCell(17).SetCellValue(item.PriceList);
+                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(19).SetCellValue(Convert.ToDouble(item.BasicAmount)); // Assuming BasicAmount is decimal
+                    row.CreateCell(20).SetCellValue(item.DiscountType);
+                    row.CreateCell(21).SetCellValue(item.Discount);
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
+                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(31).SetCellValue(item.scheduledate.HasValue ? item.scheduledate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(32).SetCellValue(Convert.ToDouble(item.scheduleqnty));
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ForecastSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                // Return appropriate error response to the client
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ExportSalesOrderForecastSPReportToExcelForAvision([FromBody] ForecastSalesOrderSPResportDTO salesOrderSPReport)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var salesOrderSPReportDetails = await _repository.GetForecastSalesOrderSPReportWithParamForAvision(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("ForecastSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(1).SetCellValue("SOStatus");
+                headerRow.CreateCell(2).SetCellValue("Project Number");
+                headerRow.CreateCell(3).SetCellValue("Customer ID");
+                headerRow.CreateCell(4).SetCellValue("Customer Name");
+                headerRow.CreateCell(5).SetCellValue("Lead ID");
+                headerRow.CreateCell(6).SetCellValue("Order Type");
+                headerRow.CreateCell(7).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(8).SetCellValue("Product Type");
+                headerRow.CreateCell(9).SetCellValue("Material Group");
+                headerRow.CreateCell(10).SetCellValue("Item Type");
+                headerRow.CreateCell(11).SetCellValue("Sales Person");
+                headerRow.CreateCell(12).SetCellValue("SO Date");
+                headerRow.CreateCell(13).SetCellValue("KPN");
+                headerRow.CreateCell(14).SetCellValue("KPN Description");
+                headerRow.CreateCell(15).SetCellValue("UOC");
+                headerRow.CreateCell(16).SetCellValue("UOM");
+                headerRow.CreateCell(17).SetCellValue("Price List");
+                headerRow.CreateCell(18).SetCellValue("Unit Price");
+                headerRow.CreateCell(19).SetCellValue("Basic Amount");
+                headerRow.CreateCell(20).SetCellValue("DiscountType");
+                headerRow.CreateCell(21).SetCellValue("Discount");
+                headerRow.CreateCell(22).SetCellValue("SGST");
+                headerRow.CreateCell(23).SetCellValue("CGST");
+                headerRow.CreateCell(24).SetCellValue("IGST");
+                headerRow.CreateCell(25).SetCellValue("UTGST");
+                headerRow.CreateCell(26).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(27).SetCellValue("Total Amount");
+                headerRow.CreateCell(28).SetCellValue("Order Qty");
+                headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(30).SetCellValue("Balance Qty");
+                headerRow.CreateCell(31).SetCellValue("scheduledate");
+                headerRow.CreateCell(32).SetCellValue("scheduleqnty");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? item.SOStatus.Value.ToString() : ""); // Adding SOStatus
+                    row.CreateCell(2).SetCellValue(item.ProjectNumber ?? ""); // Adding ProjectNumber
+                    row.CreateCell(3).SetCellValue(item.CustomerId);
+                    row.CreateCell(4).SetCellValue(item.CustomerName);
+                    row.CreateCell(5).SetCellValue(item.LeadId);
+                    row.CreateCell(6).SetCellValue(item.OrderType);
+                    row.CreateCell(7).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(8).SetCellValue(item.ProductType);
+                    row.CreateCell(9).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(10).SetCellValue(item.ItemType); // Assuming ItemType is nullable int
+                    row.CreateCell(11).SetCellValue(item.SalesPerson);
+                    row.CreateCell(12).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
+                    row.CreateCell(13).SetCellValue(item.KPN);
+                    row.CreateCell(14).SetCellValue(item.KPNDescription);
+                    row.CreateCell(15).SetCellValue(item.UOC);
+                    row.CreateCell(16).SetCellValue(item.UOM);
+                    row.CreateCell(17).SetCellValue(item.PriceList);
+                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.UnitPrice)); // Assuming UnitPrice is decimal
+                    row.CreateCell(19).SetCellValue(Convert.ToDouble(item.BasicAmount)); // Assuming BasicAmount is decimal
+                    row.CreateCell(20).SetCellValue(item.DiscountType);
+                    row.CreateCell(21).SetCellValue(item.Discount);
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
+                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
+                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(31).SetCellValue(item.scheduledate.HasValue ? item.scheduledate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(32).SetCellValue(Convert.ToDouble(item.scheduleqnty));
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "ForecastSPReport.xlsx");
                 }
             }
             catch (Exception ex)
@@ -2495,7 +3551,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var client = _clientFactory.CreateClient();
-                var token = HttpContext.Request.Headers["Authorization"].ToString();              
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
                 var encodedItemNumber = Uri.EscapeDataString(itemNumber);
 
                 var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"],
@@ -2579,7 +3635,7 @@ namespace Tips.SalesService.Api.Controllers
         private async Task<dynamic> GetSAQuantityFromBom(string item, string itemNumber)
         {
             var client = _clientFactory.CreateClient();
-            var token = HttpContext.Request.Headers["Authorization"].ToString();           
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
             var encodedItemNumber = Uri.EscapeDataString(itemNumber);
             var encodedItem = Uri.EscapeDataString(item);
 
@@ -2599,7 +3655,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         //receivable report 
-         
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllActiveSalesOrderIdNameList()
@@ -2867,7 +3923,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Message = $"Not All SalesOrderItems  has been ShortClosed.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500,serviceResponse);
+                    return StatusCode(500, serviceResponse);
                 }
 
                 serviceResponse.Data = null;
@@ -3062,7 +4118,7 @@ namespace Tips.SalesService.Api.Controllers
                 var salesOrderItemsList = new List<SalesOrderItems>();
                 for (int i = 0; i < salesOrderItemsDto.Count; i++)
                 {
-                    SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);    
+                    SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
                     if (salesOrderItemsDto[i].NowShortClosed == true)
                     {
                         salesOrderItemsDetail.ShortClosedBy = _createdBy;
@@ -3134,6 +4190,8 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 _salesOrderHistory.SaveAsync();
+
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = " SalesOrder Successfully Updated";
                 serviceResponse.Success = true;
@@ -3187,7 +4245,14 @@ namespace Tips.SalesService.Api.Controllers
                         for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
                         {
                             SalesOrderAdditionalChargesDto additionalChargesDetails = _mapper.Map<SalesOrderAdditionalChargesDto>(salesAdditionalChargesDto[i]);
-                            salesAdditionalChargesList.Add(additionalChargesDetails);
+                            if (additionalChargesDetails.SOAdditionalStatus != SoStatus.Closed)
+                            {
+                                salesAdditionalChargesList.Add(additionalChargesDetails);
+                            }
+                            else
+                            {
+                                continue;
+                            }
                         }
                     }
                     string salesOrderNo = salesOrderDto.SalesOrderNumber;
@@ -3196,7 +4261,7 @@ namespace Tips.SalesService.Api.Controllers
                     int salesOrderStatus = (int)salesOrderStatus1;
                     if (serverKey == "keus")
                     {
-                        List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Where(x=>x.StatusEnum!=OrderStatus.ShortClosed|| x.StatusEnum != OrderStatus.Closed).Select(x => x.ItemNumber).Distinct().ToList();
+                        List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.ShortClosed || x.StatusEnum != OrderStatus.Closed).Select(x => x.ItemNumber).Distinct().ToList();
                         if (itemNumberList != null)
                         {
                             var json = JsonConvert.SerializeObject(itemNumberList);
@@ -3294,6 +4359,200 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError($"Something went wrong inside GetSalesOrderById action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> SendEmailforSalesOrder([FromBody] SalesOrderEmailPostDto salesOrderEmailPostDto)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                var salesorderDetails = await _repository.GetSalesOrderById(salesOrderEmailPostDto.SalesOrderid);
+                //EmailTemplateDto? emaildetails = new EmailTemplateDto();
+                string? emaildetails = $"Your Confirmed Keus Sales Order- {salesorderDetails.SalesOrderNumber}: Version- {salesorderDetails.RevisionNumber}";
+                string? FileName;
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                //if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation" || salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
+                //{
+                //    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=SalesOrderAutomationEmail"));
+                //    request.Headers.Add("Authorization", token);
+                //    var response = await client.SendAsync(request);
+
+                //    var EmailTempString = await response.Content.ReadAsStringAsync();
+                //    emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                //    FileName = "SalesOrder_Automation_Book";
+                //}
+                //else
+                //{
+                //    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=SalesOrderLightEmail"));
+                //    request.Headers.Add("Authorization", token);
+                //    var response = await client.SendAsync(request);
+
+                //    var EmailTempString = await response.Content.ReadAsStringAsync();
+                //    emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                //    FileName = "SalesOrder_Lights_Book";
+                //}
+                if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation")
+                {
+                    FileName = "SalesOrder_Automation_Book";
+                }
+                else if (salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
+                {
+                    FileName = "SalesOrder_Accessories_Book";
+                }
+                else
+                {
+                    FileName = "SalesOrder_Lights_Book";
+                }
+                if (emaildetails.IsNullOrEmpty())
+                {
+                    _logger.LogError($"The Subject of the Email is Empty as the Type of Solution has not matched any Type Of Solution");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Something went wrong ,try again";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+                var Operations = "From";
+                var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                request1.Headers.Add("Authorization", token);
+                var response1 = await client.SendAsync(request1);
+                var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                var emaildetails1 = JsonConvert.DeserializeObject<SalesEmailIDsDto>(EmailTempString1);
+
+
+                var httpclientHandler = new HttpClientHandler();
+                var httpClient = new HttpClient(httpclientHandler);
+                var mails = salesOrderEmailPostDto.SentTo.Split(',').ToList();
+                if (!salesOrderEmailPostDto.CusEmail.IsNullOrEmpty())
+                {
+                    mails.Add(salesOrderEmailPostDto.CusEmail);
+                }
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+                email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+                email.Subject = emaildetails;
+                string? body;
+                //body = body.Replace("{{Quote Number}}", salesorderDetails.QuoteNumber);
+                //body = body.Replace("{{RFQ Number}}", salesorderDetails.RFQNumber);
+                //body = body.Replace("{{Revision Number}}", salesorderDetails.RevisionNumber.ToString());
+                //body = body.Replace("{{Created On Date}}", salesorderDetails.CreatedOn.ToString());
+                //body = body.Replace("{{Created By}}", salesorderDetails.CreatedBy);
+                //body = body.Replace("{{Total Final Amount Value}}", salesorderDetails.TotalFinalAmount.ToString());
+                //body = body.Replace("{{Customer Name}}", salesorderDetails.CustomerName);
+                //body = body.Replace("{{Sales Person}}", salesorderDetails.SalesPerson);
+                if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation" || salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
+                {
+                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-automation-salesorder.html");
+                    body = System.IO.File.ReadAllText(htmlFilePath);
+                    body = body.Replace("{{Sales-Order Number}}", salesorderDetails.SalesOrderNumber);
+                    body = body.Replace("{{Customer Name}}", salesorderDetails.CustomerName);
+                }
+                else
+                {
+                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-light-salesorder.html");
+                    body = System.IO.File.ReadAllText(htmlFilePath);
+                    body = body.Replace("{{Customer Name}}", salesorderDetails.CustomerName);
+                }
+
+                var builder = new BodyBuilder();
+                builder.HtmlBody = body;
+                using (HttpClient client1 = new HttpClient())
+                {
+                    //HttpResponseMessage response2 = await client1.GetAsync(jasperfileUrl);
+                    //response2.EnsureSuccessStatusCode();
+                    client1.Timeout = TimeSpan.FromMinutes(5);
+                    var request2 = new HttpRequestMessage(HttpMethod.Get, salesOrderEmailPostDto.jasperfileUrl);
+
+                    request2.Headers.Add("Authorization", "Basic amFzcGVyYWRtaW46Uk11aExncXdkOXBJUGI0");
+                    request2.Headers.Add("X-Remote-Domain", "1");
+
+                    var response2 = await client1.SendAsync(request2);
+                    byte[] fileBytes = await response2.Content.ReadAsByteArrayAsync();
+                    //Uri uri = new Uri(jasperfileUrl);
+                    //var filename= Path.GetFileName(uri.LocalPath);
+                    builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
+                }
+                //email.Body = new TextPart(TextFormat.Html) { Text = body };
+                email.Body = builder.ToMessageBody();
+
+                using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+                smtp.Send(email);
+                smtp.Disconnect(true);
+
+                SalesOrderEmailsDetails salesOrderEmailsDetails = new SalesOrderEmailsDetails()
+                {
+                    SalesOrderNumber = salesorderDetails.SalesOrderNumber,
+                    RevisionNumber = salesorderDetails.RevisionNumber,
+                    ProjectNumber = salesorderDetails.ProjectNumber,
+                    SentTo = salesOrderEmailPostDto.SentTo,
+                    CustomerEmailId = salesOrderEmailPostDto.CusEmail,
+                    CustomerId = salesorderDetails.CustomerId,
+                    CustomerName = salesorderDetails.CustomerName,
+                    SalesOrderId = salesorderDetails.Id,
+                    SalesOrderValue = salesorderDetails.TotalFinalAmount,
+                    TypeOfSolution = salesorderDetails.TypeOfSolution,
+                    SentBy = _createdBy,
+                    SentOn = DateTime.Now
+                };
+                await _salesOrderEmailsDetailsRepository.CreateSalesOrderEmailsDetails(salesOrderEmailsDetails);
+                _salesOrderEmailsDetailsRepository.SaveAsync();
+
+                serviceResponse.Data = "Email sent successfully.";
+                serviceResponse.Message = $"Email sent successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside SendEmailforSalesOrder action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllSalesOrderforKeus([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromQuery] int Offset, [FromQuery] int Limit)
+        {
+            ServiceResponse<IEnumerable<SalesOrderforKeusDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderforKeusDto>>();
+            try
+            {
+                var getAllSalesOrder = await _repository.GetAllSalesOrderforKeus(SearchTerm, Offset, Limit);
+                var TotalCount = await _repository.GetAllSalesOrderCountforKeus(SearchTerm);
+
+                var metadata = new
+                {
+                    TotalCount,
+                    pagingParameter.PageSize,
+                    CurrentPage = pagingParameter.PageNumber
+                };
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all SalesOrders for Keus");
+                serviceResponse.Data = getAllSalesOrder;
+                serviceResponse.Message = "Returned all SalesOrders for Keus";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInfo($"Returned owner with id: {ex.Message}{ex.InnerException}");
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = ($"Returned owner with id: {ex.Message}{ex.InnerException}");
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

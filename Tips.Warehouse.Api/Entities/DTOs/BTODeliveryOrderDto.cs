@@ -26,6 +26,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
         public decimal? TotalValue { get; set; }
+        public decimal? InitialTotalValue { get; set; }
         public string? OrderType { get; set; }
         public Status DoStatus { get; set; }
         public string? Unit { get; set; }
@@ -53,6 +54,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
         public decimal? TotalValue { get; set; }
+        public decimal? InitialTotalValue { get; set; }
         public string? OrderType { get; set; }
         public List<BTODeliveryOrderItemsDtoPost>? BTODeliveryOrderItemsDtoPost { get; set; }
     }

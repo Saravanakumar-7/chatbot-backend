@@ -113,17 +113,16 @@ namespace Tips.Warehouse.Api.Repository
                         LotNumber = record.LotNumber
                     };
                     mRNIssueTrackerDtos.Add(mRNIssueTrackerDto);
-                    shopOrderMaterialIssueTracker[i].IssuedQty = 0;
+                    shopOrderMaterialIssueTracker[i].IssuedQty = record.ConvertedToFgQty;
                     returnedQty -= wipQty;
                 }
-
-                if(returnedQty <= 0)
+                _tipsWarehouseDbContext.Update(shopOrderMaterialIssueTracker[i]);
+                if (returnedQty <= 0)
                 {
                     break;
                 }
-                _tipsWarehouseDbContext.Update(shopOrderMaterialIssueTracker[i]);
             }
-            _tipsWarehouseDbContext.SaveChangesAsync();
+            await _tipsWarehouseDbContext.SaveChangesAsync();
             return mRNIssueTrackerDtos;
         }
     }

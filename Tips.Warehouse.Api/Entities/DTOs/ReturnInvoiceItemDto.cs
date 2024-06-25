@@ -15,6 +15,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal InvoicedQty { get; set; }
+        public decimal? ReturnInvoiceValue { get; set; }
         public string? UOM { get; set; }
 
         public PartType PartType { get; set; }
@@ -63,6 +64,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal InvoicedQty { get; set; }
+        public decimal? ReturnInvoiceValue { get; set; }
         public string? UOM { get; set; }
         public PartType PartType { get; set; }
 
@@ -105,6 +107,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? CustomerItemNumber { get; set; }
         [Precision(13, 3)]
         public decimal InvoicedQty { get; set; }
+        public decimal? ReturnInvoiceValue { get; set; }
         public string? UOM { get; set; }
 
         [Precision(13, 3)]
@@ -140,7 +143,6 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? FGPartNumber { get; set; }
         public int? SalesOrderId { get; set; }
         public decimal? ReturnQty { get; set; }
-
     }
     public class ReturnInvoiceItemDoNoDto
     {

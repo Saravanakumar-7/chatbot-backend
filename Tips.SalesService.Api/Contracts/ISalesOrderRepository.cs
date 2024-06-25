@@ -19,8 +19,9 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> DeleteSalesOrder(SalesOrder salesOrder);
         Task<string> UpdateSalesOrderShortClose(SalesOrder salesOrder);
         Task<IEnumerable<SalesOrder>> SearchSalesOrder([FromQuery] SearchParammes searchParammes);
-
+        Task<List<SalesOrderforKeusDto>> GetAllSalesOrderforKeus([FromQuery] string? SearchTerm, [FromQuery] int Offset, [FromQuery] int Limit);
         Task<IEnumerable<SalesOrder>> SearchSalesOrderDate([FromQuery] SearchDateParam searchDateParam);
+        Task<int> GetAllSalesOrderCountforKeus(string? SearchTerm);
         Task<PagedList<SalesOrder>> GetAllSalesOrderForecast(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<PagedList<SalesOrder>> GetAllSalesOrderRfq(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<IEnumerable<SalesOrderIdNameListDto>> GetAllSalesOrderIdNameList();
@@ -47,9 +48,17 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<SOMonthlyConsumptionSPReport>> GetSOMonthlyConsumptionSPReportWithParam(string CustomerId);
         Task<IEnumerable<SOMonthlyConsumptionSPReport>> GetSOMonthlyConsumptionSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<RfqSalesOrderSPReport>> GetRfqSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus);
+        Task<IEnumerable<RfqSalesOrderRoomWiseSPReport>> GetRfqSalesOrderRoomWiseSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN);
+        Task<IEnumerable<RfqSalesOrderRoomWiseSPReport>> GetRfqSalesOrderRoomWiseSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<RfqSalesOrderSPReportForTrans>> GetRfqSalesOrderSPReportWithParamForTrans(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus,string ProjectNumber);
+        Task<IEnumerable<RfqSalesOrderSPReportForTrans>> GetRfqSalesOrderSPReportWithParamForAvision(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus);
+        Task<IEnumerable<RfqSalesOrderSPReportForTrans>> GetRfqSalesOrderSPReportWithDateForTransAvision(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<RfqSalesOrderSPReport>> GetRfqSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<ForecastSalesOrderSPReport>> GetForecastSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus);
+        Task<IEnumerable<ForecastSalesOrderSPReportForTrans>> GetForecastSalesOrderSPReportWithParamForTrans(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus, string ProjectNumber);
+        Task<IEnumerable<ForecastSalesOrderSPReportForTrans>> GetForecastSalesOrderSPReportWithParamForAvision(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus);
         Task<IEnumerable<ForecastSalesOrderSPReport>> GetForecastSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<ForecastSalesOrderSPReportForTrans>> GetForecastSalesOrderSPReportWithDateForTransAvision(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<SalesOrderFGItemNumberDto>> GetAllSalesOrderFGItemNoListByProjectNo(string projectNo);
     }
 }

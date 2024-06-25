@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
+using Tips.SalesService.Api.Entities.Enum;
 
 namespace Tips.SalesService.Api.Entities.Dto
 {
@@ -219,6 +220,13 @@ namespace Tips.SalesService.Api.Entities.Dto
         public int SalesOrderId { get; set; }
         public decimal InvoicedValue { get; set; }
         public int SalesAdditionalChargeId { get; set; }
+        public SoStatus SOAdditionalStatus { get; set; }
+    }
+    public class SoAdditionalChargeUpdateFromReturnDto
+    {
+        public int SalesOrderId { get; set; }
+        public decimal InvoicedValue { get; set; }
+        public int SalesAdditionalChargeId { get; set; }
     }
     public class SARevisionNumber
     {
@@ -423,5 +431,5 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string lastModifiedBy { get; set; }
         public DateTime? lastModifiedOn { get; set; }
     }
-
+    
 }

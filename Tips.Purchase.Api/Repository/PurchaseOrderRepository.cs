@@ -1070,6 +1070,17 @@ namespace Tips.Purchase.Api.Repository
             return result;
         }
 
+        public async Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithParamForTrans(string VendorName, string PONumber, string itemNumber, string ProjectNumber)
+        {
+
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseOrderSPReport>()
+            .FromSqlInterpolated($"CALL Purchase_Order_withparameter_tras({VendorName},{PONumber},{itemNumber},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+
         public async Task<IEnumerable<PurchaseOrderApprovalSPReport>> GetPurchaseOrderApprovalSPReportWithParam(string VendorName, string PONumber, string itemNumber,
                                                                                                      string RecordType, string Postatus, string Approval)
         {
@@ -1080,6 +1091,37 @@ namespace Tips.Purchase.Api.Repository
             .ToList();
 
             return result;
+        }
+        public async Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderApprovalSPReportWithParamForTrans(string VendorName, string PONumber, string itemNumber,
+                                                                                                     string RecordType, string Postatus, string Approval, string ProjectNumber)
+        {
+
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus_tras({VendorName},{PONumber},{itemNumber},{RecordType},{Postatus},{Approval},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<PurchaseOrderSPReportForAvision>> GetPurchaseOrderApprovalSPReportWithParamForAvision(string VendorName, string PONumber, string itemNumber,
+                                                                                                    string RecordType, string Postatus, string Approval, string ProjectNumber)
+        {
+
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseOrderSPReportForAvision>()
+            .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus_avision({VendorName},{PONumber},{itemNumber},{RecordType},{Postatus},{Approval},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<PurchaseOrderSPReportForAvision>> GetPurchaseOrderApprovalSPReportWithDateForAvision(DateTime? FromDate, DateTime? ToDate, string RecordType
+                                                                                                                , string Approval)
+        {
+            var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReportForAvision>()
+                        .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus_withdate_Avision({FromDate},{ToDate},{RecordType},{Approval})")
+                        .ToList();
+
+            return results;
         }
         public async Task<PagedList<PurchaseOrderSPReport>> GetPurchaseOrderSPResport(PagingParameter pagingParameter)
         {
@@ -1094,6 +1136,15 @@ namespace Tips.Purchase.Api.Repository
         {
             var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReport>()
                         .FromSqlInterpolated($"CALL Purchase_Order_withparameter_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderApprovalSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate, string RecordType
+                                                                                                                 , string Approval)
+        {
+            var results = _tipsPurchaseDbContext.Set<PurchaseOrderSPReportForTrans>()
+                        .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus_withdate({FromDate},{ToDate},{RecordType},{Approval})")
                         .ToList();
 
             return results;

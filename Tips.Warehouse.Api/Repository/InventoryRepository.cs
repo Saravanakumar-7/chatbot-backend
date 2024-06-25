@@ -827,6 +827,15 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<StockMovementLatestSPReport>> GetStockMovementLatestSPReports()
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<StockMovementLatestSPReport>()
+            .FromSqlInterpolated($"CALL Stock_Movement_Report_latest()")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<InventoryForStockSPReport>> GetInventoryForStockSPReportsWithParam(string PartNumber, string Warehouse, string Location)
         {
             var result = _tipsWarehouseDbContext
@@ -842,6 +851,15 @@ namespace Tips.Warehouse.Api.Repository
             var result = _tipsWarehouseDbContext
             .Set<InventorySPReport>()
             .FromSqlInterpolated($"CALL inventory_with_locationtranfer_parameter({PartNumber},{Description},{Warehouse},{Location},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<TrascationKPNWSPReport>> GetTrascationKPNWSPReportsWithParam(string KPN)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<TrascationKPNWSPReport>()
+            .FromSqlInterpolated($"CALL Trascation_Report_KPNW({KPN})")
             .ToList();
 
             return result;

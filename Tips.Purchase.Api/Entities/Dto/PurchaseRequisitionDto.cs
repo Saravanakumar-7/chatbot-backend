@@ -106,7 +106,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? RetentionPeriod { get; set; }
 
         public string? SpecialTermsConditions { get; set; }
-   
+        public PrStatus PrStatus { get; set; }
+
         public string? Unit { get; set; }
 
         //public string? LastModifiedBy { get; set; }
@@ -230,5 +231,13 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? ProcurementType { get; set; }
         public string? ShippingMode { get; set; }
         public string? PrStatus { get; set; }
+    }
+    public class PurchaseRequisitionSPReportWithParamForTransDTO
+    {
+        public string? PrNumber { get; set; }
+        public string? ProcurementType { get; set; }
+        public string? ShippingMode { get; set; }
+        public string? PrStatus { get; set; }
+        public string? ProjectNumber { get; set; }
     }
 }
