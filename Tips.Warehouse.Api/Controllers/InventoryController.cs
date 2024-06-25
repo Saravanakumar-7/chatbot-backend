@@ -2365,7 +2365,40 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> GetRandomInventoryItemDetails()
+        {
+            ServiceResponse<IEnumerable<InventoryDto>> serviceResponse = new ServiceResponse<IEnumerable<InventoryDto>>();
+            try
+            {
+                var inventoryDetails = await _inventoryRepository.GetRandomInventoryItemDetails();
 
+                _logger.LogInfo("Returned all Inventory");
+                
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.CreateMap<Inventory, InventoryDto>()
+                        .ForMember(dest => dest.Balance_Quantity, opt => opt.MapFrom(src => src.Balance_Quantity));
+                });
+                var mapper = config.CreateMapper();
+
+                var result = mapper.Map<IEnumerable<InventoryDto>>(inventoryDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all InventoryDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> CreateInventory([FromBody] InventoryDtoPost inventoryDtoPost)
         {
