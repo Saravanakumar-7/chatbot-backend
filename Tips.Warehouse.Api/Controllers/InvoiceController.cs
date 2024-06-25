@@ -149,7 +149,7 @@ namespace Tips.Warehouse.Api.Controllers
                            Id = invoiceAdditionalCharges.Id,
                            InvoiceNumber = src.InvoiceNumber,
                            SalesOrderId = invoiceAdditionalCharges.SalesOrderId,
-                           DONumber = invoiceAdditionalCharges.DONumber,
+                           //DONumber = invoiceAdditionalCharges.DONumber,
                            AdditionalChargesLabelName = invoiceAdditionalCharges.AdditionalChargesLabelName,
                            AddtionalChargesValueType = invoiceAdditionalCharges.AddtionalChargesValueType,
                            AddtionalChargesValueAmount = invoiceAdditionalCharges.AddtionalChargesValueAmount,
@@ -315,7 +315,7 @@ namespace Tips.Warehouse.Api.Controllers
                            Id = invoiceAdditionalCharges.Id,
                            InvoiceNumber = src.InvoiceNumber,
                            SalesOrderId = invoiceAdditionalCharges.SalesOrderId,
-                           DONumber = invoiceAdditionalCharges.DONumber,
+                           //DONumber = invoiceAdditionalCharges.DONumber,
                            AdditionalChargesLabelName = invoiceAdditionalCharges.AdditionalChargesLabelName,
                            AddtionalChargesValueType = invoiceAdditionalCharges.AddtionalChargesValueType,
                            AddtionalChargesValueAmount = invoiceAdditionalCharges.AddtionalChargesValueAmount,
@@ -404,7 +404,7 @@ namespace Tips.Warehouse.Api.Controllers
                            Id = invoiceAdditionalCharges.Id,
                            InvoiceNumber = src.InvoiceNumber,
                            SalesOrderId = invoiceAdditionalCharges.SalesOrderId,
-                           DONumber = invoiceAdditionalCharges.DONumber,
+                           //DONumber = invoiceAdditionalCharges.DONumber,
                            AdditionalChargesLabelName = invoiceAdditionalCharges.AdditionalChargesLabelName,
                            AddtionalChargesValueType = invoiceAdditionalCharges.AddtionalChargesValueType,
                            AddtionalChargesValueAmount = invoiceAdditionalCharges.AddtionalChargesValueAmount,
@@ -465,6 +465,90 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetInvoicestById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetInvoiceDetailsWithOutClosedAdditionalChargesById(int id)
+        {
+            ServiceResponse<InvoiceDto> serviceResponse = new ServiceResponse<InvoiceDto>();
+
+            try
+            {
+                var invoiceDetailById = await _invoiceRepository.GetInvoiceById(id);
+                if (invoiceDetailById == null)
+                {
+                    _logger.LogError($"Invoice with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Invoice with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound();
+                }
+                else
+                {
+                    InvoiceDto invoiceDto = _mapper.Map<InvoiceDto>(invoiceDetailById);
+                    var invoiceChildItems = invoiceDetailById.invoiceChildItems;
+                    var invoiceChidItemList = new List<InvoiceChildItemDto>();
+
+                    if (invoiceDetailById.invoiceChildItems != null)
+                    {
+                        foreach (var invoiceChildItemsDetails in invoiceDetailById.invoiceChildItems)
+                        {
+                            InvoiceChildItemDto invoiceChildItem = _mapper.Map<InvoiceChildItemDto>(invoiceChildItemsDetails);
+                            if (invoiceChildItem.InvoiceItemStatus != Status.Closed)
+                            {
+                                invoiceChidItemList.Add(invoiceChildItem);
+                            }
+                            else
+                            {
+                                continue;
+                            }
+
+                        }
+                    }
+
+                   // var invoiceAdditionalChargesList = new List<InvoiceAdditionalChargesDto>();
+                    List<InvoiceAdditionalChargesDto> invoiceAdditionalChargesDetails = _mapper.Map<List<InvoiceAdditionalChargesDto>>(invoiceDetailById.InvoiceAdditionalCharges.Where(x => x.InvoiceAdditionalStatus != Status.Closed).ToList());
+                    //invoiceAdditionalChargesList.AddRange(invoiceAdditionalChargesDetails);
+                    //invoiceAdditionalChargesList.AddRange(invoiceAdditionalChargesDetails.Where(x => x.InvoiceAdditionalStatus != Status.Closed).ToList());
+
+                    //if (invoiceDetailById.InvoiceAdditionalCharges != null)
+                    //{
+                    //    foreach (var invoiceAdditional in invoiceDetailById.InvoiceAdditionalCharges)
+                    //    {
+                    //        InvoiceAdditionalChargesDto invoiceAdditionalChargesDetails = _mapper.Map<InvoiceAdditionalChargesDto>(invoiceAdditional);
+                    //        if (invoiceAdditionalChargesDetails.InvoiceAdditionalStatus != Status.Closed)
+                    //        {
+                    //            invoiceAdditionalChargesList.Add(invoiceAdditionalChargesDetails);
+                    //        }
+                    //        else
+                    //        {
+                    //            continue;
+                    //        }
+
+                    //    }
+                    //}
+
+                    invoiceDto.invoiceChildItems = invoiceChidItemList;
+                    invoiceDto.InvoiceAdditionalCharges = invoiceAdditionalChargesDetails;
+
+                    _logger.LogInfo($"Returned Invoice with id: {id}");
+                    serviceResponse.Data = invoiceDto;
+                    serviceResponse.Message = "Returned InvoiceById Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
@@ -662,18 +746,18 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     var invoiceNumber = await _invoiceRepository.GenerateInvoiceNumber();
                     invoice.InvoiceNumber = invoiceNumber;
-                }              
-
+                }           
                 
-                invoice.InvoiceAdditionalCharges = InvoiceAdditionalChargesList.ToList();
                 invoice.InvoiceStatus = Status.Open;
+                invoice.InvoiceAdditionalCharges = InvoiceAdditionalChargesList.ToList();
                 await _invoiceRepository.CreateInvoice(invoice);
-                //Sales order additional charge update method
-                var response = await SoAdditonalChargeUpdateOnInvoiceCreate(InvoiceAdditionalChargesList);
 
-                if ((response.StatusCode == HttpStatusCode.OK))
-                {                    
-                    if (invoiceitemsDto != null)
+                //Sales order additional charge update method
+                if (invoiceitemsDto != null && invoiceitemsDto.Count() > 0 && InvoiceAdditionalChargesList.Count() > 0)
+                {
+                    var response = await SoAdditonalChargeUpdateOnInvoiceCreate(InvoiceAdditionalChargesList);
+
+                    if ((response.StatusCode == HttpStatusCode.OK))
                     {
                         for (int i = 0; i < invoiceitemsDto.Count; i++)
                         {
@@ -693,18 +777,60 @@ namespace Tips.Warehouse.Api.Controllers
                             await InventoryTransactionSaveOnInvoiceCreate(invoice, invoiceChildItemsEntityList, i, invoiceChildItem);
 
                         }
+                        invoice.invoiceChildItems = invoiceChildItemsEntityList;
+                        _invoiceRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside Create InvoiceItemAndAdditionalCharges action: SoAdditonalChargeUpdateOnInvoiceCreate Service Calling");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
+                }
+                else if (invoiceitemsDto != null && invoiceitemsDto.Count() > 0 && InvoiceAdditionalChargesList.Count() == 0)
+                {
+                    for (int i = 0; i < invoiceitemsDto.Count; i++)
+                    {
+                        InvoiceChildItem invoiceChildItem = _mapper.Map<InvoiceChildItem>(invoiceitemsDto[i]);
+                        invoiceChildItem.InitialDispatchQty = invoiceChildItem.InvoicedQty;
+                        invoiceChildItem.ReturnInvoiceQty = 0;
+                        invoiceChildItem.InvoiceItemStatus = Status.Open;
+                        invoiceChildItemsEntityList.Add(invoiceChildItem);
+
+                        var invoiceQty = invoiceChildItem.InvoicedQty;
+                        var doNumber = invoiceitemsDto[i].DONumber;
+
+                        //DO Balance qty and Invoiced qty update method
+                        invoiceQty = await DoItemBalanceQtyUpdateBasedOnInvoiceQty(invoiceChildItem, invoiceQty, doNumber);
+
+                        //Add inventory Transaction Table
+                        await InventoryTransactionSaveOnInvoiceCreate(invoice, invoiceChildItemsEntityList, i, invoiceChildItem);
+
                     }
                     invoice.invoiceChildItems = invoiceChildItemsEntityList;
                     _invoiceRepository.SaveAsync();
                 }
                 else
                 {
-                    _logger.LogError($"Something went wrong inside CreateInvoice action inside SalesOrder Controller AdditionalChargeUpdateFromInvoice action");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"Something went wrong ,try again";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500, serviceResponse);
+                    var response1 = await SoAdditonalChargeUpdateOnInvoiceCreate(InvoiceAdditionalChargesList);
+
+                    if ((response1.StatusCode == HttpStatusCode.OK))
+                    {
+                        _invoiceRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside Create CreateInvoiceAdditionalCharges action: SoAdditonalChargeUpdateOnInvoiceCreate Service Calling");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
+
                 }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Invoice Successfully Created";

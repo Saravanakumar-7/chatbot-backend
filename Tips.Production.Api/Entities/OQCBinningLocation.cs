@@ -9,6 +9,7 @@ namespace Tips.Production.Api.Entities
         public string? Location { get; set; }
         [Precision(13, 3)]
         public decimal Quantity { get; set; }
+        public string? SerialNo { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
