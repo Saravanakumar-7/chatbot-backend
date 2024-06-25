@@ -21,6 +21,7 @@ using Entities.Enums;
 using System.Collections;
 using System.Security.Claims;
 using System.Reflection.PortableExecutable;
+using NPOI.SS.Formula.Functions;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -300,6 +301,39 @@ namespace Tips.Warehouse.Api.Repository
         //                        .Select(projectGroup => projectGroup.First()))));
         //    }
         //}
+        public async Task<IEnumerable<Inventory>> GetRandomInventoryItemDetails()
+        {
+            
+                string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
+                List<string> Items = await _tipsWarehouseDbContext.Inventories.Where(inv => !skipWareHouse.Contains(inv.Warehouse)).Select(x => x.PartNumber).Distinct().OrderBy(i => Guid.NewGuid()).Take(5).ToListAsync();
+                
+                IQueryable<Inventory> query = _tipsWarehouseDbContext.Inventories.Where(inv => Items.Contains(inv.PartNumber) && !skipWareHouse.Contains(inv.Warehouse));
+                            
+                var inventoryItems = await query.ToListAsync();
+
+                // Group the inventory items by PartNumber, Warehouse, Location, and ProjectNumber
+                var groupedItems = inventoryItems                    
+                    .GroupBy(item => new { item.PartNumber, item.Warehouse, item.Location, item.ProjectNumber })
+                    .ToDictionary(
+                        group => $"{group.Key.PartNumber}|{group.Key.Warehouse}|{group.Key.Location}|{group.Key.ProjectNumber}",
+                        group => group.ToList());
+
+                // Calculate the sum of Balance_Quantity for each group and update the first item's Balance_Quantity
+                foreach (var group in groupedItems.Values)
+                {
+                    var sum = group.Sum(inv => inv.Balance_Quantity);
+                    group.First().Balance_Quantity = sum;
+                    var remainingItems = group.Skip(1).ToList();
+                    foreach (var item in remainingItems)
+                    {
+                        group.Remove(item);
+                    }
+                }
+
+                // Flatten the dictionary and return the inventory items
+                return groupedItems.Values.SelectMany(group => group);
+            
+        }
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfBalQty(InventoryDetailsBalQty inventoryDetailsBalQty)
         {
             using (var context = _tipsWarehouseDbContext)
@@ -338,7 +372,7 @@ namespace Tips.Warehouse.Api.Repository
                         query = query.Where(inv => inventoryDetailsBalQty.ProjectNumber.Contains(inv.ProjectNumber));
                     }
                 }
-
+                //
                 // Execute the query to retrieve inventory items
                 var inventoryItems = await query.ToListAsync();
 
