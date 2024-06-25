@@ -114,7 +114,7 @@ builder.Services.AddScoped<IReturnOpenDeliveryOrderPartsRepository, ReturnOpenDe
 builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();
 builder.Services.AddScoped<IBTODeliveryOrderInventoryHistoryRepository, BTODeliveryOrderInventoryHistoryRepository>();
-
+builder.Services.AddScoped<IInvoiceAdditionalChargeRepository, InvoiceAdditionalChargeRepository>();
 
 builder.Services.AddScoped<MySqlConnection>();
 

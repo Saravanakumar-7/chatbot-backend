@@ -445,8 +445,11 @@ namespace Tips.SalesService.Api.Controllers
                             }
                         }
                     }
+
                     salesOrderDto.SalesOrdersItems = null;
                     salesOrderDto.SalesOrderAdditionalCharges = salesAdditionalChargesList;
+
+                    _logger.LogInfo($"Returned SalesOrder with id: {id}");
                     serviceResponse.Data = salesOrderDto;
                     serviceResponse.Message = $"Returned SalesOrder with id: {id}";
                     serviceResponse.Success = true;
@@ -1303,9 +1306,9 @@ namespace Tips.SalesService.Api.Controllers
 
                 var salesdetails = await _repository.GetSalesOrderById(salesOrderDispatchQtyDto[0].SalesOrderId);
 
-                int? soItemStatusCount = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();
+                int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
 
-                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count();
+                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
 
                 if (soItemStatusCount == 0 && soAddStatusCount == 0)
                 {
@@ -1474,9 +1477,9 @@ namespace Tips.SalesService.Api.Controllers
 
                     var salesdetails = await _repository.GetSalesOrderById(salesOrderDispatchQtyDto[0].SalesOrderId);
 
-                    int? soItemStatusCount = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();
+                    int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
 
-                    int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count();
+                    int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
 
                     if (soItemStatusCount == 0 && soAddStatusCount == 0)
                     {
@@ -1593,9 +1596,9 @@ namespace Tips.SalesService.Api.Controllers
 
                     var salesdetails = await _repository.GetSalesOrderById(salesOrderDispatchQtyDto[0].SalesOrderId);
 
-                    int? soItemStatusCount = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();
+                    int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
 
-                    int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count();
+                    int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
 
                     if (soItemStatusCount == 0 && soAddStatusCount == 0)
                     {
@@ -1724,9 +1727,9 @@ namespace Tips.SalesService.Api.Controllers
 
                 var salesdetails = await _repository.GetSalesOrderById(soAdditionalChargeUpdateDto[0].SalesOrderId);
 
-                int? soItemStatusCount = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();
+                int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
 
-                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count();
+                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
 
                 if (soItemStatusCount == 0 && soAddStatusCount == 0)
                 {
@@ -1757,7 +1760,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AdditionalChargeUpdateFromReturnInvoice([FromBody] List<SoAdditionalChargeUpdateDto> soAdditionalChargeUpdateDto)
+        public async Task<IActionResult> AdditionalChargeUpdateFromReturnInvoice([FromBody] List<SoAdditionalChargeUpdateFromReturnDto> soAdditionalChargeUpdateDto)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
             try
@@ -1786,7 +1789,19 @@ namespace Tips.SalesService.Api.Controllers
                     var salesAdditionalCharges = await _salesAdditionalChargesRepository.GetSalesAdditionalChargesById(item.SalesOrderId, item.SalesAdditionalChargeId);
 
                     salesAdditionalCharges.InvoicedValue -= item.InvoicedValue;
-                    salesAdditionalCharges.SOAdditionalStatus = item.SOAdditionalStatus;
+
+                    if(salesAdditionalCharges.TotalValue == salesAdditionalCharges.InvoicedValue)
+                    {
+                        salesAdditionalCharges.SOAdditionalStatus = SoStatus.Closed;
+                    }
+                    else if(salesAdditionalCharges.TotalValue > salesAdditionalCharges.InvoicedValue && salesAdditionalCharges.InvoicedValue != 0)
+                    {
+                        salesAdditionalCharges.SOAdditionalStatus = SoStatus.PartiallyClosed;
+                    }
+                    else
+                    {
+                        salesAdditionalCharges.SOAdditionalStatus = SoStatus.Open;
+                    }
                     await _salesAdditionalChargesRepository.UpdateSalesAdditionalCharges(salesAdditionalCharges);
 
                 }
@@ -1794,9 +1809,9 @@ namespace Tips.SalesService.Api.Controllers
 
                 var salesdetails = await _repository.GetSalesOrderById(soAdditionalChargeUpdateDto[0].SalesOrderId);
 
-                int? soItemStatusCount = salesdetails.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count();
+                int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
 
-                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count();
+                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
 
                 if (soItemStatusCount == 0 && soAddStatusCount == 0)
                 {
@@ -4230,7 +4245,14 @@ namespace Tips.SalesService.Api.Controllers
                         for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
                         {
                             SalesOrderAdditionalChargesDto additionalChargesDetails = _mapper.Map<SalesOrderAdditionalChargesDto>(salesAdditionalChargesDto[i]);
-                            salesAdditionalChargesList.Add(additionalChargesDetails);
+                            if (additionalChargesDetails.SOAdditionalStatus != SoStatus.Closed)
+                            {
+                                salesAdditionalChargesList.Add(additionalChargesDetails);
+                            }
+                            else
+                            {
+                                continue;
+                            }
                         }
                     }
                     string salesOrderNo = salesOrderDto.SalesOrderNumber;

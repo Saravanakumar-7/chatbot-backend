@@ -37,8 +37,6 @@ namespace Tips.Warehouse.Api.Entities
         public decimal ReturnInvoicedValue { get; set; }
         public int SalesAdditionalChargeId { get; set; }
         public int InvoiceAdditionalChargeId { get; set; }
-        public Status SOAdditionalStatus { get; set; }
-        public Status InvoiceAdditionalStatus { get; set; }
         public int ReturnInvoiceId { get; set; }
         public ReturnInvoice? ReturnInvoice { get; set; }
     }

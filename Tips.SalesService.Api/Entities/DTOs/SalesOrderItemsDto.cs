@@ -222,6 +222,12 @@ namespace Tips.SalesService.Api.Entities.Dto
         public int SalesAdditionalChargeId { get; set; }
         public SoStatus SOAdditionalStatus { get; set; }
     }
+    public class SoAdditionalChargeUpdateFromReturnDto
+    {
+        public int SalesOrderId { get; set; }
+        public decimal InvoicedValue { get; set; }
+        public int SalesAdditionalChargeId { get; set; }
+    }
     public class SARevisionNumber
     {
         public string ItemNumber { get; set; }

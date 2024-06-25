@@ -76,4 +76,11 @@
 
         public List<ReturnInvoiceItemDoNoDto>? ReturnInvoiceItems { get; set; }
     }
+    public class ReturnSalesOrderAdditionalChargesUpdateDto
+    {
+        public int SalesOrderId { get; set; }
+        public decimal InvoicedValue { get; set; }
+        public int SalesAdditionalChargeId { get; set; }
+
+    }
 }

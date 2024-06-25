@@ -35,8 +35,6 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal ReturnInvoicedValue { get; set; }
         public int SalesAdditionalChargeId { get; set; }
         public int InvoiceAdditionalChargeId { get; set; }
-        public Status SOAdditionalStatus { get; set; }
-        public Status InvoiceAdditionalStatus { get; set; }
     }
     public class ReturnInvoiceAdditionalChargesPostDto
     {
@@ -69,7 +67,6 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal ReturnInvoicedValue { get; set; }
         public int SalesAdditionalChargeId { get; set; }
         public int InvoiceAdditionalChargeId { get; set; }
-        public Status SOAdditionalStatus { get; set; }
         public Status InvoiceAdditionalStatus { get; set; }
     }
     public class ReturnInvoiceAdditionalChargesUpdateDto
@@ -103,7 +100,5 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal ReturnInvoicedValue { get; set; }
         public int SalesAdditionalChargeId { get; set; }
         public int InvoiceAdditionalChargeId { get; set; }
-        public Status SOAdditionalStatus { get; set; }
-        public Status InvoiceAdditionalStatus { get; set; }
     }
 }
