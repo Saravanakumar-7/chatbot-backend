@@ -33,7 +33,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal SGST { get; set; }
-        public Status SOAdditionalStatus { get; set; }
         public Status InvoiceAdditionalStatus { get; set; }
         public decimal? AlreadyReturnedValue { get; set; }
         public int SalesAdditionalChargeId { get; set; }
@@ -99,7 +98,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal SGST { get; set; }
-        public Status SOAdditionalStatus { get; set; }
         public Status InvoiceAdditionalStatus { get; set; }
         public int SalesAdditionalChargeId { get; set; }
 

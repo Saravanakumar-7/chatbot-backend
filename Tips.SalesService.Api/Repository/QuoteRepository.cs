@@ -81,7 +81,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsSalesServiceDbContext.Set<QuotationSPReport>()
-                        .FromSqlInterpolated($"CALL GetQuotationSPReportWithDate({FromDate},{ToDate})")
+                        .FromSqlInterpolated($"CALL quotation_report_with_date({FromDate},{ToDate})")
                         .ToList();
 
             return results;

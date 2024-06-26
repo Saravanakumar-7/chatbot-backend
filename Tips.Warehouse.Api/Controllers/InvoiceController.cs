@@ -700,7 +700,8 @@ namespace Tips.Warehouse.Api.Controllers
                 var invoiceitemsDto = invoicePostDto.InvoiceChildItems;
 
                 var invoiceChildItemsEntityList = new List<InvoiceChildItem>();
-                var InvoiceAdditionalChargesList = _mapper.Map<IEnumerable<InvoiceAdditionalCharges>>(invoicePostDto.InvoiceAdditionalCharges);
+                var invoiceAdditionalChargePostDto = invoicePostDto.InvoiceAdditionalCharges;
+                var InvoiceAdditionalChargesList = _mapper.Map<IEnumerable<InvoiceAdditionalCharges>>(invoiceAdditionalChargePostDto);
 
 
                 var date = DateTime.Now;
@@ -753,9 +754,9 @@ namespace Tips.Warehouse.Api.Controllers
                 await _invoiceRepository.CreateInvoice(invoice);
 
                 //Sales order additional charge update method
-                if (invoiceitemsDto != null && invoiceitemsDto.Count() > 0 && InvoiceAdditionalChargesList.Count() > 0)
+                if (invoiceitemsDto != null && invoiceitemsDto.Count() > 0 && invoiceAdditionalChargePostDto != null && invoiceAdditionalChargePostDto.Count() > 0)
                 {
-                    var response = await SoAdditonalChargeUpdateOnInvoiceCreate(InvoiceAdditionalChargesList);
+                    var response = await SoAdditonalChargeUpdateOnInvoiceCreate(invoiceAdditionalChargePostDto);
 
                     if ((response.StatusCode == HttpStatusCode.OK))
                     {
@@ -790,7 +791,7 @@ namespace Tips.Warehouse.Api.Controllers
                         return StatusCode(500, serviceResponse);
                     }
                 }
-                else if (invoiceitemsDto != null && invoiceitemsDto.Count() > 0 && InvoiceAdditionalChargesList.Count() == 0)
+                else if (invoiceitemsDto != null && invoiceitemsDto.Count() > 0 && invoiceAdditionalChargePostDto == null)
                 {
                     for (int i = 0; i < invoiceitemsDto.Count; i++)
                     {
@@ -815,7 +816,7 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 else
                 {
-                    var response1 = await SoAdditonalChargeUpdateOnInvoiceCreate(InvoiceAdditionalChargesList);
+                    var response1 = await SoAdditonalChargeUpdateOnInvoiceCreate(invoiceAdditionalChargePostDto);
 
                     if ((response1.StatusCode == HttpStatusCode.OK))
                     {
@@ -849,11 +850,11 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        private async Task<HttpResponseMessage> SoAdditonalChargeUpdateOnInvoiceCreate(IEnumerable<InvoiceAdditionalCharges> InvoiceAdditionalChargesList)
+        private async Task<HttpResponseMessage> SoAdditonalChargeUpdateOnInvoiceCreate(IEnumerable<InvoiceAdditionalChargesPostDto> invoiceAdditionalChargePostDto)
         {
             List<SalesOrderAdditionalChargesUpdate> salesOrderAdditionalChargesUpdates = new List<SalesOrderAdditionalChargesUpdate>();
 
-            foreach (var additionalChargeItem in InvoiceAdditionalChargesList)
+            foreach (var additionalChargeItem in invoiceAdditionalChargePostDto)
             {
                 SalesOrderAdditionalChargesUpdate additionalCharges = new SalesOrderAdditionalChargesUpdate
                 {

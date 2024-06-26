@@ -33,7 +33,6 @@ namespace Tips.Warehouse.Api.Entities
         public decimal TotalValue { get; set; }
         [Precision(13, 3)]
         public decimal InvoicedValue { get; set; }
-        public Status SOAdditionalStatus { get; set; }
         public Status InvoiceAdditionalStatus { get; set; }
         public decimal? AlreadyReturnedValue { get; set; }
         public int SalesAdditionalChargeId { get; set; }
