@@ -28,6 +28,8 @@ namespace Tips.SalesService.Api.Contracts
         Task<Quote> GetQuoteByQuoteNumber(string quoteNumber);
         Task<IEnumerable<QuoteSPReport>> GetQuoteSPReport();
         Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithParam(string CustomerId);
+        Task<IEnumerable<SoSummaryQuotationDto>> GetSoSummaryQuotationSPReportWithParam(string FirstQuotenumber, string SOlatestSalesorder);
+        Task<IEnumerable<SoSummaryQuotationDto>> GetSoSummaryQuotationSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<SoSummaryQuotationDto>> GetSoSummaryQuotationSPReport();
     }

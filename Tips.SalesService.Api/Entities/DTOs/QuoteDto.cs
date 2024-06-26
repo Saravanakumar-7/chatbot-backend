@@ -370,7 +370,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public string? CustomerId { get; set; }
     }
-
+    public class SoSummaryQuotePostDto
+    {
+        public string? FirstQuotenumber { get; set; }
+        public string? SOlatestSalesorder { get; set; }
+    }
     public class SoSummaryQuotationDto
     {
         public string? CustomerName { get; set; }
