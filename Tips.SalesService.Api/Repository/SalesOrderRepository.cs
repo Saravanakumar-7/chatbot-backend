@@ -451,10 +451,10 @@ namespace Tips.SalesService.Api.Repository
         {
             var result = await FindAll()
             .Where(inv => (string.IsNullOrWhiteSpace(SearchTerm)
-            || inv.SalesOrderNumber.Contains(SearchTerm)
-            || inv.ProjectNumber.Contains(SearchTerm)
-            || inv.CustomerName.Contains(SearchTerm)
-            || inv.CustomerId.Contains(SearchTerm)
+            || inv.SalesOrderNumber==SearchTerm
+            || inv.ProjectNumber==SearchTerm
+            || inv.CustomerName==SearchTerm
+            || inv.CustomerId==SearchTerm
             )).CountAsync();
 
             return result;
