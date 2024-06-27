@@ -43,6 +43,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<List<InventoryBalanceQtyMaterialIssue>> GetInventoryStockByItemAndProjectNo(string itemNumber, string projectNumber);
         Task<Inventory> GetInventoryDetailsByItemAndProjectNo(string itemNumber, string projectNumber);
         Task<List<Inventory>> GetInventoryDetailsByItemNoandProjectNo(string ItemNumber, string ProjectNo);
+        Task<List<Inventory>> GetInventoryDetailsByItemNoandProjectNoandWarehouseandLocation(string ItemNumber, string ProjectNo, string Warehouse, string Location);
         Task<List<Inventory>> GetInventoryByItemNo(string itemNumber); 
         Task<ConsumptionInventoryDto> GetConsumptionInventoryByItemNo(string itemNumber);
         //aravind

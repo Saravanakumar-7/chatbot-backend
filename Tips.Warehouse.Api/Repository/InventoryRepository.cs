@@ -1146,6 +1146,15 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryDetail;
         }
+        public async Task<List<Inventory>> GetInventoryDetailsByItemNoandProjectNoandWarehouseandLocation(string ItemNumber, string ProjectNo, string Warehouse, string Location)
+        {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
+            var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber
+            && x.IsStockAvailable == true && x.ProjectNumber == ProjectNo && !skipWareHouse.Contains(x.Warehouse) && x.Warehouse == Warehouse && x.Location == Location)
+                          .ToListAsync();
+
+            return inventoryDetail;
+        }
 
         //Get Inventory WIP from location and warehouse
         public async Task<List<Inventory>> GetWIPInventoryDetailsByItemNo(string ItemNumber, string ShopOrderNumber)

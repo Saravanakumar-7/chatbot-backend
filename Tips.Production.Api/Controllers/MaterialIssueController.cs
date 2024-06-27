@@ -672,6 +672,159 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> IssueMaterialIssue(int id, [FromBody] MaterialIssueUpdateDto materialIssueUpdateDto)
+        {
+            ServiceResponse<MaterialIssueUpdateDto> serviceResponse = new ServiceResponse<MaterialIssueUpdateDto>();
+
+            try
+            {
+                if (materialIssueUpdateDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "MaterialIssue object sent from client is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("MaterialIssue object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid MaterialIssue object sent from client";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid MaterialIssue object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var materialIssueDetailsById = await _materialIssueRepository.GetMaterialIssueById(id);
+                if (materialIssueDetailsById is null)
+                {
+                    _logger.LogError($"MaterialIssue with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " Update MaterialIssue with id hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                var allMaterialIssueItems = await _materialIssueItemRepository.GetMaterialIssueItemById(id);
+                //List<InventoryDtoForMaterialIssue> inventoryDtoForIssue = new List<InventoryDtoForMaterialIssue>();
+
+                // get latest production bom version by passing fgnumber
+                //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], 
+                //                        "GetLatestEnggProductionBomVersionDetailByItemNumber?","&fgPartNumber=", materialIssueDetailsById.ItemNumber));
+                //var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                //dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                //dynamic itemMasterObject = itemMasterObjectData.data;
+
+                if (allMaterialIssueItems == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Internal Server Error!";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Material Issue Item with Given MaterailId does not existins. Error in  UpdateMaterialIssue action");
+                    return NotFound(serviceResponse);
+                }
+
+                ShopOrder shopOrderDetail = await _shopOrderRepository.GetShopOrderByShopOrderNo(materialIssueDetailsById.ShopOrderNumber);
+                decimal bomRevNo = shopOrderDetail.BomRevisionNo;
+                HttpStatusCode updateMaterialIssueResp = HttpStatusCode.OK;
+                List<MaterialIssueItemUpdateDto> materialIssueItemDtos = materialIssueUpdateDto.MaterialIssueItems;
+                var materialIssueLocationList =new List<MaterialIssueLocation>();
+                foreach (var updatedItem in materialIssueItemDtos)
+                {
+                    if (updatedItem.NewIssueQty > 0)
+                    {
+                        var existingItem = allMaterialIssueItems
+                            .FirstOrDefault(i => i.Id == updatedItem.Id);
+
+                        if (existingItem != null)
+                        {
+                            MaterialIssueLocation materialIssueLocations  = _mapper.Map<MaterialIssueLocation>(updatedItem.MaterialIssueLocationDto);
+                            materialIssueLocationList.Add(materialIssueLocations);
+
+                            existingItem.IssuedQty += updatedItem.NewIssueQty;
+                            existingItem.MaterialIssueLocations = materialIssueLocationList;
+
+                            var projectNo = existingItem.ProjectNumber;
+                            decimal newIssuedQty = updatedItem.NewIssueQty;
+                            var partnumber = updatedItem.PartNumber;
+
+                            //Add SO Material Issue tracker table
+                            foreach (var materialIssueLocation in updatedItem.MaterialIssueLocationDto)
+                            {
+                                InventoryDtoForMaterialIssueLocation inventoryDtoForIssue = new InventoryDtoForMaterialIssueLocation();
+                                inventoryDtoForIssue.PartNumber = partnumber;
+                                inventoryDtoForIssue.ProjectNumber = projectNo;
+                                inventoryDtoForIssue.DataFrom = "ShopOrder";
+                                inventoryDtoForIssue.Bomversion = bomRevNo;
+                                inventoryDtoForIssue.ShopOrderNumber = materialIssueUpdateDto.ShopOrderNumber;
+                                inventoryDtoForIssue.Warehouse = materialIssueLocation.Warehouse;
+                                inventoryDtoForIssue.Location = materialIssueLocation.Location;
+                                inventoryDtoForIssue.DistributingQty = materialIssueLocation.DistributingQty;
+
+                                var json = JsonConvert.SerializeObject(inventoryDtoForIssue);
+                                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnMaterialIssue"), data);
+
+                                var client1 = _clientFactory.CreateClient();
+                                var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                                var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                                "UpdateInventoryOnMaterialIssue"))
+                                {
+                                    Content = data
+                                };
+                                request1.Headers.Add("Authorization", token1);
+
+                                var response = await client1.SendAsync(request1);
+                                if (response.StatusCode != HttpStatusCode.OK)
+                                {
+                                    updateMaterialIssueResp = response.StatusCode;
+                                }
+
+                                await _materialIssueItemRepository.UpdateMaterialIssueItem(existingItem);
+
+
+                            }
+                        }
+                    }
+                }
+                if (updateMaterialIssueResp == HttpStatusCode.OK)
+                {
+                    _materialIssueItemRepository.SaveAsync();
+                }
+                else
+                {
+                    _logger.LogError($"Something went wrong inside UpdateMaterialIssue action. Inventory update action UpdateInventoryOnMaterialIssue failed! ");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Internal server error";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+                //string result = await _materialIssueRepository.UpdateMaterialIssue(materialIssueDetailsById);
+
+                //_logger.LogInfo(result);
+                //_materialIssueRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "MaterialIssue Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside UpdateMaterialIssue action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> SearchMaterialIssueDate([FromQuery] SearchDateparames searchDateParam)
         {

@@ -329,6 +329,18 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
 
     }
+    public class InventoryDtoForMaterialIssueLocation
+    {
+        public string PartNumber { get; set; }
+        public string ProjectNumber { get; set; }
+        public decimal DistributingQty { get; set; }
+        public string ShopOrderNumber { get; set; }
+        public string Warehouse { get; set; }
+        public string Location { get; set; }
+        public decimal Bomversion { get; set; }
+
+
+    }
 
     public class InventoryDtoForShopOrderConfirmation
     {

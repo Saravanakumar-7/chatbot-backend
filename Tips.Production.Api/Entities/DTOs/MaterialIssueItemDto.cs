@@ -107,6 +107,18 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal Bomversion { get; set; }
 
     }
+    public class InventoryDtoForMaterialIssueLocation
+    {
+        public string PartNumber { get; set; }
+        public string ProjectNumber { get; set; }
+        public string? DataFrom { get; set; }
+        public string ShopOrderNumber { get; set; }
+        public string Warehouse { get; set; }
+        public string Location { get; set; }
+        public decimal DistributingQty { get; set; }
+        public decimal Bomversion { get; set; }
+
+    }
     public class InventoryTranctionForMaterialIssue
     {
         [Key]
