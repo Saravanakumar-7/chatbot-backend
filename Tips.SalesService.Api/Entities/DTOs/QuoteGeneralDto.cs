@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.SalesService.Api.Entities.DTOs
 {
@@ -9,6 +10,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? Description { get; set; }
          public string? PriceList { get; set; }
         public string? CustomerItemNumber { get; set; }
+        public int PartType { get; set; }
         [Precision(13, 3)]
         public decimal? Qty { get; set; }
 

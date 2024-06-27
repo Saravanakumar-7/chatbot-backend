@@ -2174,6 +2174,45 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetCustomerWiseTransactionSPReportWithParam([FromBody] SOMonthlyConsumptionDto customerWiseTransactionSPReport)
+
+        {
+            ServiceResponse<IEnumerable<CustomerWiseTransactionSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CustomerWiseTransactionSPReport>>();
+            try
+            {
+                var products = await _repository.GetCustomerWiseTransactionSPReportWithParam(customerWiseTransactionSPReport.CustomerId);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CustomerWiseTransactionSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CustomerWiseTransactionSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned CustomerWiseTransactionSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetCustomerWiseTransactionSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetSOMonthlyConsumptionSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
@@ -4069,7 +4108,7 @@ namespace Tips.SalesService.Api.Controllers
                     }
 
                     //Update SoConfirmationStatus in SalesOrder Table
-                    //santhosh
+                    
                     salesOrderDetailById.SoConfirmationStatus = true;
                     string result = await _repository.UpdateSalesOrder(salesOrderDetailById);
                     _repository.SaveAsync();

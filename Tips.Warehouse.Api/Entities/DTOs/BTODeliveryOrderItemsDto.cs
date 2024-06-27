@@ -11,6 +11,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? Description { get; set; }
         public decimal? BalanceDoQty { get; set; }
         public decimal InvoicedQty { get; set; }
+        public PartType PartType { get; set; }
         public decimal? UnitPrice { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
@@ -45,6 +46,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? FGItemNumber { get; set; }
         public int? SalesOrderId { get; set; }
         public string? Description { get; set; }
+        public PartType PartType { get; set; }
         public decimal? UnitPrice { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }

@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using Tips.SalesService.Api.Entities.Enum;
@@ -14,6 +15,7 @@ namespace Tips.SalesService.Api.Entities
         public string? Description { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
+        public PartType PartType { get; set; }
         public string? ShortClosedBy { get; set; }
 
         public DateTime? ShortClosedOn { get; set; }

@@ -173,48 +173,80 @@ namespace Tips.SalesService.Api.Controllers
 
                     foreach (var quoteItems in quoteGeneralList)
                     {
-                        if (serverKey == "keus")
+                        var client2 = _clientFactory.CreateClient();
+                        var token2 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                        var ItemNumber = quoteItems.ItemNumber;
+                        var encodedItemNo = Uri.EscapeDataString(ItemNumber);
+
+                        var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterMainAPI"],
+                            $"GetItemMasterByItemNumber?ItemNumber={encodedItemNo}"));
+                        request2.Headers.Add("Authorization", token2);
+
+                        var itemMasterObjectResult = await client2.SendAsync(request2);
+                        if (itemMasterObjectResult.StatusCode == HttpStatusCode.OK)
                         {
-                            var client = _clientFactory.CreateClient();
-                            var token = HttpContext.Request.Headers["Authorization"].ToString();
-                            var encodedItemNumber = Uri.EscapeDataString(quoteItems.ItemNumber);
-                            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                            $"GetStockDetailsForAllLocationWarehouseByItemNo?ItemNumber={encodedItemNumber}"));
-                            request.Headers.Add("Authorization", token);
 
-                            var inventoryObjectResult = await client.SendAsync(request);
-                            //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?",
-                            //                                                                                                                "ItemNumber=", quoteItems.ItemNumber));
-                            var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                            dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                            dynamic inventoryObject = inventoryObjectData.data;
+                            _logger.LogInfo("getitemmasterdata" + Convert.ToString(itemMasterObjectResult));
+                            var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                            var itemMatserObjectData = JsonConvert.DeserializeObject<QuoteItemMasterDetails>(itemMasterObjectString);
+                            var itemMasterTranctionObject = itemMatserObjectData.data;
 
-                            // Convert double to decimal
-                            decimal availableStock = Convert.ToDecimal(inventoryObject);
+                            if (serverKey == "keus")
+                            {
+                                var client = _clientFactory.CreateClient();
+                                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                                var encodedItemNumber = Uri.EscapeDataString(quoteItems.ItemNumber);
+                                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                                $"GetStockDetailsForAllLocationWarehouseByItemNo?ItemNumber={encodedItemNumber}"));
+                                request.Headers.Add("Authorization", token);
 
-                            quoteItems.AvailableStock = availableStock;
+                                var inventoryObjectResult = await client.SendAsync(request);
+                                //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNo?",
+                                //                                                                                                                "ItemNumber=", quoteItems.ItemNumber));
+                                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                                dynamic inventoryObject = inventoryObjectData.data;
+
+                                // Convert double to decimal
+                                decimal availableStock = Convert.ToDecimal(inventoryObject);
+
+                                quoteItems.AvailableStock = availableStock;
+                                quoteItems.PartType = itemMasterTranctionObject.itemType;
+                            }
+                            else
+                            {
+                                var client = _clientFactory.CreateClient();
+                                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                                var encodedItemNumber = Uri.EscapeDataString(quoteItems.ItemNumber);
+                                var encodedRFQNumber = Uri.EscapeDataString(rfqnumber);
+                                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                                $"GetStockDetailsForAllLocationWarehouseByItemNoAndProjectNo?ItemNumber={encodedItemNumber}&ProjectNo={encodedRFQNumber}"));
+                                request.Headers.Add("Authorization", token);
+
+                                var inventoryObjectResult = await client.SendAsync(request);
+                                //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNoAndProjectNo?",
+                                //                                                                                                    "ItemNumber=", quoteItems.ItemNumber, "&ProjectNo=",rfqnumber));
+                                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                                dynamic inventoryObject = inventoryObjectData;
+
+                                // Convert double to decimal
+                                decimal availableStock = Convert.ToDecimal(inventoryObject);
+
+                                quoteItems.AvailableStock = availableStock;
+                                quoteItems.PartType = itemMasterTranctionObject.itemType;
+                            }
                         }
                         else
                         {
-                            var client = _clientFactory.CreateClient();
-                            var token = HttpContext.Request.Headers["Authorization"].ToString();
-                            var encodedItemNumber = Uri.EscapeDataString(quoteItems.ItemNumber);
-                            var encodedRFQNumber = Uri.EscapeDataString(rfqnumber);
-                            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                            $"GetStockDetailsForAllLocationWarehouseByItemNoAndProjectNo?ItemNumber={encodedItemNumber}&ProjectNo={encodedRFQNumber}"));
-                            request.Headers.Add("Authorization", token);
-
-                            var inventoryObjectResult = await client.SendAsync(request);
-                            //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetStockDetailsForAllLocationWarehouseByItemNoAndProjectNo?",
-                            //                                                                                                    "ItemNumber=", quoteItems.ItemNumber, "&ProjectNo=",rfqnumber));
-                            var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                            dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                            dynamic inventoryObject = inventoryObjectData;
-
-                            // Convert double to decimal
-                            decimal availableStock = Convert.ToDecimal(inventoryObject);
-
-                            quoteItems.AvailableStock = availableStock;
+                                _logger.LogError($"Something went wrong inside Create GetQuoteById action: ItemMaster PartType is not avaivable");
+                                serviceResponse.Data = null;
+                                serviceResponse.Message = "ItemMaster Details is null";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                return StatusCode(500, serviceResponse);
+                            
                         }
                     }
 
@@ -1123,6 +1155,81 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetSoSummaryQuotationSPReportWithParam([FromBody] SoSummaryQuotePostDto quoteSPReportDto)
+
+        {
+            ServiceResponse<IEnumerable<SoSummaryQuotationDto>> serviceResponse = new ServiceResponse<IEnumerable<SoSummaryQuotationDto>>();
+            try
+            {
+                var products = await _repository.GetSoSummaryQuotationSPReportWithParam(quoteSPReportDto.FirstQuotenumber, quoteSPReportDto.SOlatestSalesorder);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SoSummaryQuotationSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SoSummaryQuotationSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned GetSoSummaryQuotationSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetSoSummaryQuotationSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetSoSummaryQuotationSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<SoSummaryQuotationDto>> serviceResponse = new ServiceResponse<IEnumerable<SoSummaryQuotationDto>>();
+            try
+            {
+                var products = await _repository.GetSoSummaryQuotationSPReportWithDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Quotation hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Quotation hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Quotation Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetSoSummaryQuotationSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
         }
     }
 }

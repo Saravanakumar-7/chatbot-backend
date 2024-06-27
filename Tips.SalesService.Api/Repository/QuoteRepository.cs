@@ -68,6 +68,25 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
+        public async Task<IEnumerable<SoSummaryQuotationDto>> GetSoSummaryQuotationSPReportWithParam(string FirstQuotenumber, string SOlatestSalesorder)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SoSummaryQuotationDto>()
+            .FromSqlInterpolated($"CALL so_summary_with_quotation_data_withparameter({FirstQuotenumber},{SOlatestSalesorder})")
+            .ToList();
+
+            return result;
+
+        }
+        public async Task<IEnumerable<SoSummaryQuotationDto>> GetSoSummaryQuotationSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<SoSummaryQuotationDto>()
+                        .FromSqlInterpolated($"CALL so_summary_with_quotation_data_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
         public async Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithParam(string CustomerId)
         {
             var result = _tipsSalesServiceDbContext
@@ -81,7 +100,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsSalesServiceDbContext.Set<QuotationSPReport>()
-                        .FromSqlInterpolated($"CALL GetQuotationSPReportWithDate({FromDate},{ToDate})")
+                        .FromSqlInterpolated($"CALL quotation_report_with_date({FromDate},{ToDate})")
                         .ToList();
 
             return results;
