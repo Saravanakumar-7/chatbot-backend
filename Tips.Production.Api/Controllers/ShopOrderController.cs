@@ -682,6 +682,7 @@ namespace Tips.Production.Api.Controllers
                             materialIssueItem.RequiredQty = (bom.quantity * shopOrder.ShopOrderItems[i].ReleaseQty);
                             materialIssueItem.IssuedQty = 0;
                             materialIssueItem.MaterialIssuedStatus = IssuedStatus.Open;
+                            materialIssueItem.MaterialIssueLocations = null;
                             materialIssueItemList.Add(materialIssueItem);
                         }
                     }
@@ -700,6 +701,7 @@ namespace Tips.Production.Api.Controllers
                         RequiredQty = group.Sum(item => item.RequiredQty),
                         IssuedQty = 0,
                         MaterialIssuedStatus = IssuedStatus.Open,
+                        MaterialIssueLocations = null
                     })
                     .ToList();
                 materialIssue.materialIssueItems = groupedMaterialIssueItems;

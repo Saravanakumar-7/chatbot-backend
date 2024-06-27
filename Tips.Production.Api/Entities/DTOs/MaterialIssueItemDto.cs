@@ -29,7 +29,8 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
         public IssuedStatus MaterialIssuedStatus { get; set; } 
         public int MaterialIssueId { get; set; }
-        
+        public List<MaterialIssueLocationDto> MaterialIssueLocationDto { get; set; }
+
     }
 
     public class MaterialIssueItemPostDto
@@ -42,7 +43,8 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? UOM { get; set; }
         [Precision(13, 3)]
         public decimal RequiredQty { get; set; }
-          
+        public List<MaterialIssueLocationPostDto> MaterialIssueLocationDto { get; set; }
+
     }
 
     public class MaterialIssueItemUpdateDto
@@ -65,7 +67,8 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? Unit { get; set; }
         public IssuedStatus MaterialIssuedStatus { get; set; }
         public int MaterialIssueId { get; set; }
-        
+        public List<MaterialIssueLocationUpdateDto> MaterialIssueLocationDto { get; set; }
+
     }
     public class MaterialIssueItemReportDto
     {
