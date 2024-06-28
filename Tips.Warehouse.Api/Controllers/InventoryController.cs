@@ -1651,7 +1651,7 @@ namespace Tips.Warehouse.Api.Controllers
                                 /** Dont Change the Position of IssuedQty and BalanceQty Code in this Method .it should be always last ***********************/
                                 //create inventory transaction
 
-                                Inventory wipInventory = MRInsertWipDetailsInInventoryWhenIssuedQtyIsMore(invItem, issuedQty, shopOrderNumber);
+                                Inventory wipInventory = MRInsertWipDetailsInInventoryWhenIssuedQtyIsMore(invItem, lotNoWiseIssuedQty, shopOrderNumber);
                                 wipInventory.ReferenceID = mrNumber;
                                 await _inventoryRepository.CreateInventory(wipInventory);
 
