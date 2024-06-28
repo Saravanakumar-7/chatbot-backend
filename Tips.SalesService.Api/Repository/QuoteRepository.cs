@@ -497,10 +497,10 @@ namespace Tips.SalesService.Api.Repository
         {
             var result =await FindAll()
             .Where(inv => (string.IsNullOrWhiteSpace(SearchTerm)
-            || inv.RFQNumber.Contains(SearchTerm)            
-            || inv.CustomerName.Contains(SearchTerm)
-            || inv.QuoteNumber.Contains(SearchTerm)
-            || inv.CustomerId.Contains(SearchTerm)
+            || inv.RFQNumber==SearchTerm            
+            || inv.CustomerName==SearchTerm
+            || inv.QuoteNumber==SearchTerm
+            || inv.CustomerId==SearchTerm
             )).CountAsync();
 
             return result;
