@@ -870,6 +870,15 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<StockMovementHistorySPReport>> GetStockMovementHistorySPReportsWithDate(DateTime? FromDate, DateTime? ToDate,string ItemNumber)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<StockMovementHistorySPReport>()
+            .FromSqlInterpolated($"CALL stockmovement_history_report_withdate({FromDate},{ToDate},{ItemNumber})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<InventoryForStockSPReport>> GetInventoryForStockSPReportsWithParam(string PartNumber, string Warehouse, string Location)
         {
             var result = _tipsWarehouseDbContext

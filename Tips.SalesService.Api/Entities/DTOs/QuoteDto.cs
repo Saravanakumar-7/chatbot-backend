@@ -499,5 +499,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         //public string lastModifiedBy { get; set; }
         //public DateTime? lastModifiedOn { get; set; }
     }
+    public class QuoteNoDto
+    {
+        public int Id { get; set; }
+        public string? QuoteNumber { get; set; }
+    }
 
 }

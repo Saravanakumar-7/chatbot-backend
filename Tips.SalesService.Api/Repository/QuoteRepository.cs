@@ -106,6 +106,18 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
+        public async Task<IEnumerable<QuoteNoDto>> GetAllQuoteNumberList()
+        {
+            IEnumerable<QuoteNoDto> quoteNoList = await _tipsSalesServiceDbContext.Quotes
+                                .Select(x => new QuoteNoDto()
+                                {
+                                    Id = x.Id,
+                                    QuoteNumber = x.QuoteNumber,
+                                })
+                              .ToListAsync();
+
+            return quoteNoList;
+        }
         public async Task<string> GenerateQuoteNumber()
         {
             using var transaction = await _tipsSalesServiceDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);

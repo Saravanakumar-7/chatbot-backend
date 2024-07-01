@@ -3011,7 +3011,7 @@ namespace Tips.Warehouse.Api.Controllers
                 else
                 {
                     serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned GetStockMovementLatestSPReports Details";
+                    serviceResponse.Message = "Returned StockMovementLatestSPReports Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -3022,6 +3022,44 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetStockMovementLatestSPReports action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetStockMovementHistorySPReportsWithDate(StockMovementHistorySPReportDto stockMovementHistorySPReportDto)
+        {
+            ServiceResponse<IEnumerable<StockMovementHistorySPReport>> serviceResponse = new ServiceResponse<IEnumerable<StockMovementHistorySPReport>>();
+            try
+            {
+                var products = await _inventoryRepository.GetStockMovementHistorySPReportsWithDate(stockMovementHistorySPReportDto.FromDate, stockMovementHistorySPReportDto.ToDate,
+                                                                                                                    stockMovementHistorySPReportDto.ItemNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"StockMovementHistorySPReportsWithDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"StockMovementHistorySPReportsWithDate hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned StockMovementHistorySPReportsWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetStockMovementHistorySPReportsWithDate action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

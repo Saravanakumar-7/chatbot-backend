@@ -428,6 +428,12 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? CustomerId { get; set; }
         public string? CustomerName { get; set; }
     }
+    public class StockMovementHistorySPReportDto
+    {
+        public DateTime FromDate { get; set; }
+        public DateTime ToDate { get; set; }
+        public string? ItemNumber { get; set; }
+    }
     public class InventoryForStockSPReportDto
     {
         public string? PartNumber { get; set; }
