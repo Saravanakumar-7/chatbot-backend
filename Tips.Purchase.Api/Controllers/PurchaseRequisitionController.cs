@@ -10,11 +10,14 @@ using AutoMapper;
 using Azure;
 using Contracts;
 using Entities;
+using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.IdentityModel.Tokens;
+using MimeKit;
+using MimeKit.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tips.Purchase.Api.Contracts;
@@ -1667,6 +1670,79 @@ namespace Tips.Purchase.Api.Controllers
                 string result = await _repository.UpdatePurchaseRequisition_ForApproval(purchaseRequisitionDetailByPRNumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
+                string serverKey = GetServerKey();
+                if (serverKey == "avision")
+                {
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseRequisition"));
+                    request.Headers.Add("Authorization", token);
+                    var response = await client.SendAsync(request);
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,PRApproval1";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    var mails = (emaildetails1.data.Where(x => x.operation == "PRApproval1").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
+                    email.Subject = emaildetails.data.subject;
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{PR Numbers}}", purchaseRequisitionDetailByPRNumber.PrNumber);
+                    body = body.Replace("{{PR Revision No}}", purchaseRequisitionDetailByPRNumber.RevisionNumber.ToString());
+                    body = body.Replace("{{PR Created Date}}", purchaseRequisitionDetailByPRNumber.CreatedOn.ToString());
+                    body = body.Replace("{{PR Purpose}}", string.IsNullOrEmpty(purchaseRequisitionDetailByPRNumber.Purpose) ? "--" : purchaseRequisitionDetailByPRNumber.Purpose);
+                    
+                    body = body.Replace("{{PR Created By}}", purchaseRequisitionDetailByPRNumber.CreatedBy);
+                    body = body.Replace("{{Approval1}}", purchaseRequisitionDetailByPRNumber.PrApprovedIBy);
+                    body = body.Replace("{{Approval2}}", "Awaiting");
+                   
+                    
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRDeliveryDate = null;
+                    foreach (var item in purchaseRequisitionDetailByPRNumber.PrItemsDtoList)
+                    {
+
+                        if (item.prAddprojectsDtoList.Count > 0)
+                            foreach (var project in item.prAddprojectsDtoList)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                            }
+                        if (item.prAddDeliverySchedulesDtoList.Count > 0)
+                            foreach (var pr in item.prAddDeliverySchedulesDtoList)
+                            {
+                                if (PRDeliveryDate.IsNullOrEmpty()) { PRDeliveryDate = pr.PrDeliveryDate.ToString(); tempPRno.Add(pr.PrDeliveryDate.ToString()); }
+                                else if (!tempPRno.Contains(pr.PrDeliveryDate.ToString())) { PRDeliveryDate = PRDeliveryDate + ", " + pr.PrDeliveryDate.ToString(); tempPRno.Add(pr.PrDeliveryDate.ToString()); }
+                            }
+
+                    }
+                    body = body.Replace("{{Project Ref No}}", ProjectNos);
+                    body = body.Replace("{{PR Delivery Dates}}", PRDeliveryDate);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+
+                }
                 serviceResponse.Message = "PurchaseRequisitionApprovalI Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -1706,6 +1782,80 @@ namespace Tips.Purchase.Api.Controllers
                 string result = await _repository.UpdatePurchaseRequisition_ForApproval(purchaseRequisitionDetailByPRNumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
+                string serverKey = GetServerKey();
+                if (serverKey == "avision")
+                {
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseRequisition"));
+                    request.Headers.Add("Authorization", token);
+                    var response = await client.SendAsync(request);
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,PRApproval1";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    var mails = (emaildetails1.data.Where(x => x.operation == "PRApproval1").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
+                    email.Subject = emaildetails.data.subject;
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{PR Numbers}}", purchaseRequisitionDetailByPRNumber.PrNumber);
+                    body = body.Replace("{{PR Revision No}}", purchaseRequisitionDetailByPRNumber.RevisionNumber.ToString());
+                    body = body.Replace("{{PR Created Date}}", purchaseRequisitionDetailByPRNumber.CreatedOn.ToString());
+                    body = body.Replace("{{PR Purpose}}", string.IsNullOrEmpty(purchaseRequisitionDetailByPRNumber.Purpose) ? "--" : purchaseRequisitionDetailByPRNumber.Purpose);
+
+                    body = body.Replace("{{PR Created By}}", purchaseRequisitionDetailByPRNumber.CreatedBy);
+                    body = body.Replace("{{Approval1}}", purchaseRequisitionDetailByPRNumber.PrApprovedIBy);
+                    body = body.Replace("{{Approval2}}", purchaseRequisitionDetailByPRNumber.PrApprovedIIBy);
+
+
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRDeliveryDate = null;
+                    foreach (var item in purchaseRequisitionDetailByPRNumber.PrItemsDtoList)
+                    {
+
+                        if (item.prAddprojectsDtoList.Count > 0)
+                            foreach (var project in item.prAddprojectsDtoList)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                            }
+                        if (item.prAddDeliverySchedulesDtoList.Count > 0)
+                            foreach (var pr in item.prAddDeliverySchedulesDtoList)
+                            {
+                                if (PRDeliveryDate.IsNullOrEmpty()) { PRDeliveryDate = pr.PrDeliveryDate.ToString(); tempPRno.Add(pr.PrDeliveryDate.ToString()); }
+                                else if (!tempPRno.Contains(pr.PrDeliveryDate.ToString())) { PRDeliveryDate = PRDeliveryDate + ", " + pr.PrDeliveryDate.ToString(); tempPRno.Add(pr.PrDeliveryDate.ToString()); }
+                            }
+
+                    }
+                    body = body.Replace("{{Project Ref No}}", ProjectNos);
+                    body = body.Replace("{{PR Delivery Dates}}", PRDeliveryDate);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+
+                }
+
                 serviceResponse.Message = "PurchaseRequisitionApprovalII Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
