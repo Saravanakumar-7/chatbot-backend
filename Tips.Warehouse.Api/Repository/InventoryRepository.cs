@@ -870,6 +870,15 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<StockMovementHistorySPReport>> GetStockMovementHistorySPReportsWithDate(DateTime? FromDate, DateTime? ToDate,string ItemNumber)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<StockMovementHistorySPReport>()
+            .FromSqlInterpolated($"CALL stockmovement_history_report_withdate({FromDate},{ToDate},{ItemNumber})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<InventoryForStockSPReport>> GetInventoryForStockSPReportsWithParam(string PartNumber, string Warehouse, string Location)
         {
             var result = _tipsWarehouseDbContext
@@ -1142,6 +1151,15 @@ namespace Tips.Warehouse.Api.Repository
             string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
             var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber
             && x.IsStockAvailable == true && x.ProjectNumber == ProjectNo && !skipWareHouse.Contains(x.Warehouse))
+                          .ToListAsync();
+
+            return inventoryDetail;
+        }
+        public async Task<List<Inventory>> GetInventoryDetailsByItemNoandProjectNoandWarehouseandLocation(string ItemNumber, string ProjectNo, string Warehouse, string Location)
+        {
+            string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
+            var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber
+            && x.IsStockAvailable == true && x.ProjectNumber == ProjectNo && !skipWareHouse.Contains(x.Warehouse) && x.Warehouse == Warehouse && x.Location == Location)
                           .ToListAsync();
 
             return inventoryDetail;

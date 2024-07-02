@@ -1473,7 +1473,188 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateInventoryOnMaterialIssueLocation(InventoryDtoForMaterialIssueLocation dtoForMaterialIssue)
+        {
+            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+            try
+            {
+                var inventoryDetails = await _inventoryRepository
+                        .GetInventoryDetailsByItemNoandProjectNoandWarehouseandLocation(dtoForMaterialIssue.PartNumber, dtoForMaterialIssue.ProjectNumber, dtoForMaterialIssue.Warehouse,
+                                                                                                        dtoForMaterialIssue.Location);
+
+                if (inventoryDetails == null || inventoryDetails.Count() > 0)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory Details hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with itemNumber: {dtoForMaterialIssue.PartNumber}, is invalid");
+                    return NotFound(serviceResponse);
+                }
+
+                decimal disQty = dtoForMaterialIssue.DistributingQty;
+                string shopOrderNumber = dtoForMaterialIssue.ShopOrderNumber;
+                for (int i = 0; i < inventoryDetails.Count(); i++)
+                {
+                    decimal balanceqty = inventoryDetails[i].Balance_Quantity;
+                    decimal lotNoWiseIssuedQty = 0;
+                    if (inventoryDetails[i].Balance_Quantity <= disQty)
+                    {
+
+                        lotNoWiseIssuedQty = balanceqty;
+
+
+                        ///*********************************** Add data to Material Issue Tracker *************************/
+                        ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = InsertMaterialIssueDataToMaterialIssueTracker(dtoForMaterialIssue, inventoryDetails[i], lotNoWiseIssuedQty);
+                        int transactionId = await _materialIssueTrackerRepository.AddDataToMaterialIssueTracker(shopOrderMaterialIssueTracker);
+
+                        /*********************************** End of Add data to Material Issue Tracker *************************/
+
+                        inventoryDetails[i].Warehouse = "WIP";
+                        inventoryDetails[i].Location = "WIP";
+                        inventoryDetails[i].shopOrderNo = shopOrderNumber;
+                        inventoryDetails[i].IsStockAvailable = true;
+                        inventoryDetails[i].ReferenceIDFrom = "Material Issue";
+
+                        /** Dont Change the Position of IssuedQty and BalanceQty Code in this Method .it should be always last ***********************/
+                        disQty -= balanceqty;
+                        balanceqty = 0;
+                    }
+                    else
+                    {
+                        inventoryDetails[i].Balance_Quantity -= disQty;
+
+                        lotNoWiseIssuedQty = disQty;
+
+                        Inventory wipInventory = InsertWipDetailsInInventoryWhenIssuedQtyIsMore(inventoryDetails[i], disQty, shopOrderNumber);
+
+                        await _inventoryRepository.CreateInventory(wipInventory);
+
+                        InventoryTranction inventoryTransaction1 = new InventoryTranction();
+                        inventoryTransaction1.PartNumber = wipInventory.PartNumber;
+                        inventoryTransaction1.MftrPartNumber = wipInventory.MftrPartNumber;
+                        inventoryTransaction1.LotNumber = wipInventory.LotNumber;
+                        inventoryTransaction1.Description = wipInventory.Description;
+                        inventoryTransaction1.PartType = wipInventory.PartType;
+                        inventoryTransaction1.ProjectNumber = wipInventory.ProjectNumber;
+                        inventoryTransaction1.Issued_Quantity = wipInventory.Balance_Quantity;
+                        inventoryTransaction1.UOM = wipInventory.UOM;
+                        inventoryTransaction1.Issued_DateTime = DateTime.Now;
+                        inventoryTransaction1.ReferenceID = wipInventory.ReferenceID;
+                        inventoryTransaction1.ReferenceIDFrom = wipInventory.ReferenceIDFrom;
+                        inventoryTransaction1.BOM_Version_No = 0;
+                        inventoryTransaction1.IsStockAvailable = wipInventory.IsStockAvailable;
+                        inventoryTransaction1.From_Location = wipInventory.Location;
+                        inventoryTransaction1.TO_Location = wipInventory.Location;
+                        inventoryTransaction1.Unit = wipInventory.Unit;
+                        inventoryTransaction1.GrinMaterialType = wipInventory.GrinMaterialType;
+                        inventoryTransaction1.Remarks = "Issue Material";
+                        inventoryTransaction1.IsStockAvailable = wipInventory.IsStockAvailable;
+                        inventoryTransaction1.Warehouse = wipInventory.Warehouse;
+                        inventoryTransaction1.GrinNo = wipInventory.GrinNo;
+                        inventoryTransaction1.GrinPartId = wipInventory.GrinPartId;
+                        inventoryTransaction1.shopOrderNo = shopOrderNumber;
+
+                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransaction1);
+
+
+                        ///*********************************** Add data to Material Issue Tracker *************************/
+                        ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = InsertMaterialIssueDataToMaterialIssueTracker(dtoForMaterialIssue, inventoryDetails[i], lotNoWiseIssuedQty);
+                        int transactionId = await _materialIssueTrackerRepository.AddDataToMaterialIssueTracker(shopOrderMaterialIssueTracker);
+
+                        /*********************************** End of Add data to Material Issue Tracker *************************/
+
+                        /******* Dont Change the Position of IssuedQty and BalanceQty 
+                         * Code in this Method. it should be always last ***********************/
+
+                        disQty = 0;
+                    }
+
+                    string result = await _inventoryRepository.UpdateInventory(inventoryDetails[i]);
+
+
+                    InventoryTranction inventoryTransaction = new InventoryTranction();
+                    inventoryTransaction.PartNumber = inventoryDetails[i].PartNumber;
+                    inventoryTransaction.MftrPartNumber = inventoryDetails[i].MftrPartNumber;
+                    inventoryTransaction.LotNumber = inventoryDetails[i].LotNumber;
+                    inventoryTransaction.Description = inventoryDetails[i].Description;
+                    inventoryTransaction.PartType = inventoryDetails[i].PartType;
+                    inventoryTransaction.ProjectNumber = inventoryDetails[i].ProjectNumber;
+                    inventoryTransaction.Issued_Quantity = inventoryDetails[i].Balance_Quantity;
+                    inventoryTransaction.UOM = inventoryDetails[i].UOM;
+                    inventoryTransaction.Issued_DateTime = DateTime.Now;
+                    inventoryTransaction.ReferenceID = inventoryDetails[i].ReferenceID;
+                    inventoryTransaction.ReferenceIDFrom = inventoryDetails[i].ReferenceIDFrom;
+                    inventoryTransaction.BOM_Version_No = 0;
+                    inventoryTransaction.IsStockAvailable = inventoryDetails[i].IsStockAvailable;
+                    inventoryTransaction.From_Location = inventoryDetails[i].Location;
+                    inventoryTransaction.TO_Location = inventoryDetails[i].Location;
+                    inventoryTransaction.Unit = inventoryDetails[i].Unit;
+                    inventoryTransaction.GrinMaterialType = inventoryDetails[i].GrinMaterialType;
+                    inventoryTransaction.Remarks = "Issue Material";
+                    inventoryTransaction.IsStockAvailable = inventoryDetails[i].IsStockAvailable;
+                    inventoryTransaction.Warehouse = inventoryDetails[i].Warehouse;
+                    inventoryTransaction.GrinNo = inventoryDetails[i].GrinNo;
+                    inventoryTransaction.GrinPartId = inventoryDetails[i].GrinPartId;
+                    inventoryTransaction.shopOrderNo = shopOrderNumber;
+
+                    await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransaction);
+
+                    if (disQty <= 0)
+                    {
+                        break;
+                    }
+                }
+
+                _inventoryRepository.SaveAsync();
+                _inventoryTranctionRepository.SaveAsync();
+                _materialIssueTrackerRepository.SaveAsync();
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         private static ShopOrderMaterialIssueTracker InsertDataToMaterialIssueTracker(InventoryDtoForMaterialIssue dtoForMaterialIssue, Inventory inventoryDetail, decimal lotNoWiseIssuedQty)
+        {
+            string shopOrderNumber = dtoForMaterialIssue.ShopOrderNumber;
+            ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = new ShopOrderMaterialIssueTracker
+            {
+                ShopOrderNumber = shopOrderNumber,
+                Bomversion = dtoForMaterialIssue.Bomversion,
+                PartNumber = inventoryDetail.PartNumber,
+                LotNumber = inventoryDetail.LotNumber,
+                MftrPartNumber = inventoryDetail.MftrPartNumber,
+                Description = inventoryDetail.Description,
+                ProjectNumber = inventoryDetail.ProjectNumber,
+                IssuedQty = lotNoWiseIssuedQty,
+                ConvertedToFgQty = 0,
+                UOM = inventoryDetail.UOM,
+                Warehouse = inventoryDetail.Warehouse,
+                Location = inventoryDetail.Location,
+                Unit = inventoryDetail.Unit,
+                PartType = inventoryDetail.PartType,
+                DataFrom = "ShopOrder",
+                MRNumber = "NULL"
+            };
+            return shopOrderMaterialIssueTracker;
+        }
+
+        private static ShopOrderMaterialIssueTracker InsertMaterialIssueDataToMaterialIssueTracker(InventoryDtoForMaterialIssueLocation dtoForMaterialIssue, Inventory inventoryDetail, decimal lotNoWiseIssuedQty)
         {
             string shopOrderNumber = dtoForMaterialIssue.ShopOrderNumber;
             ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = new ShopOrderMaterialIssueTracker
@@ -1651,7 +1832,7 @@ namespace Tips.Warehouse.Api.Controllers
                                 /** Dont Change the Position of IssuedQty and BalanceQty Code in this Method .it should be always last ***********************/
                                 //create inventory transaction
 
-                                Inventory wipInventory = MRInsertWipDetailsInInventoryWhenIssuedQtyIsMore(invItem, issuedQty, shopOrderNumber);
+                                Inventory wipInventory = MRInsertWipDetailsInInventoryWhenIssuedQtyIsMore(invItem, lotNoWiseIssuedQty, shopOrderNumber);
                                 wipInventory.ReferenceID = mrNumber;
                                 await _inventoryRepository.CreateInventory(wipInventory);
 
@@ -2830,7 +3011,7 @@ namespace Tips.Warehouse.Api.Controllers
                 else
                 {
                     serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned GetStockMovementLatestSPReports Details";
+                    serviceResponse.Message = "Returned StockMovementLatestSPReports Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -2841,6 +3022,44 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetStockMovementLatestSPReports action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetStockMovementHistorySPReportsWithDate(StockMovementHistorySPReportDto stockMovementHistorySPReportDto)
+        {
+            ServiceResponse<IEnumerable<StockMovementHistorySPReport>> serviceResponse = new ServiceResponse<IEnumerable<StockMovementHistorySPReport>>();
+            try
+            {
+                var products = await _inventoryRepository.GetStockMovementHistorySPReportsWithDate(stockMovementHistorySPReportDto.FromDate, stockMovementHistorySPReportDto.ToDate,
+                                                                                                                    stockMovementHistorySPReportDto.ItemNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"StockMovementHistorySPReportsWithDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"StockMovementHistorySPReportsWithDate hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned StockMovementHistorySPReportsWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetStockMovementHistorySPReportsWithDate action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

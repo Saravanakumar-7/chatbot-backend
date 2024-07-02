@@ -1231,6 +1231,31 @@ namespace Tips.SalesService.Api.Controllers
             }
 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllQuoteNumberList()
+        {
+            ServiceResponse<IEnumerable<QuoteNoDto>> serviceResponse = new ServiceResponse<IEnumerable<QuoteNoDto>>();
+            try
+            {
+                var quoteNoList = await _repository.GetAllQuoteNumberList();
+                var result = _mapper.Map<IEnumerable<QuoteNoDto>>(quoteNoList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all QuoteNumberList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllQuoteNumberList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }
 

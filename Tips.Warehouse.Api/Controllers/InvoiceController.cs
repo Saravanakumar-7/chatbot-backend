@@ -791,7 +791,7 @@ namespace Tips.Warehouse.Api.Controllers
                         return StatusCode(500, serviceResponse);
                     }
                 }
-                else if (invoiceitemsDto != null && invoiceitemsDto.Count() > 0 && invoiceAdditionalChargePostDto == null)
+                else if (invoiceitemsDto != null && invoiceitemsDto.Count() > 0 && invoiceAdditionalChargePostDto.Count() == 0)
                 {
                     for (int i = 0; i < invoiceitemsDto.Count; i++)
                     {

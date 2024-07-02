@@ -28,5 +28,6 @@ namespace Tips.Production.Api.Entities
         public IssuedStatus MaterialIssuedStatus { get; set; } = IssuedStatus.Open;
         public int MaterialIssueId { get; set; }
         public MaterialIssue MaterialIssue { get; set; }
+        public List<MaterialIssueLocation>? MaterialIssueLocations { get; set; }
     }
 }
