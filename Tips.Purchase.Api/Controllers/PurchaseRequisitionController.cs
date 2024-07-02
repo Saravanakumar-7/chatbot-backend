@@ -1793,7 +1793,7 @@ namespace Tips.Purchase.Api.Controllers
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
 
-                    var Operations = "From,PRApproval1";
+                    var Operations = "From,PRApproval2";
                     var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
                     request1.Headers.Add("Authorization", token);
                     var response1 = await client.SendAsync(request1);
@@ -1801,7 +1801,7 @@ namespace Tips.Purchase.Api.Controllers
                     var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
                     var httpclientHandler = new HttpClientHandler();
                     var httpClient = new HttpClient(httpclientHandler);
-                    var mails = (emaildetails1.data.Where(x => x.operation == "PRApproval1").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                    var mails = (emaildetails1.data.Where(x => x.operation == "PRApproval2").Select(x => x.emailIds).FirstOrDefault()).Split(',');
                     var email = new MimeMessage();
                     email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
 
