@@ -12,6 +12,10 @@ namespace Tips.Warehouse.Api
     {
         public MappingProfile()
         {
+            CreateMap<InventoryForServiceItems, InventoryForServiceItemsGrinDtoPost>().ReverseMap();
+            CreateMap<InventoryForServiceItems, InventoryForServiceItemsDto>().ReverseMap();
+            CreateMap<InventoryForServiceItems, InventoryForServiceItemsDtoUpdate>().ReverseMap();
+
             CreateMap<InvoiceSPReport, InvoiceSPReportDTO>().ReverseMap();
             CreateMap<LocationTransferSPReport, LocationTransferSPReportDTO>().ReverseMap();
             CreateMap<OpenDeliveryOrderSPReport, OpenDeliveryOrderSPReportDto>().ReverseMap();

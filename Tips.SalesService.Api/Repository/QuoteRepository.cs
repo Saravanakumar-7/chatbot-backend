@@ -41,7 +41,7 @@ namespace Tips.SalesService.Api.Repository
         {
             var date = DateTime.Now;
             quote.CreatedBy = _createdBy;
-            quote.CreatedOn = date.Date;
+            quote.CreatedOn = date;
             quote.Unit = _unitname;
             var version = 1;
             quote.RevisionNumber = Convert.ToDecimal(version);
@@ -87,11 +87,11 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
-        public async Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithParam(string CustomerId)
+        public async Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithParam(string? CustomerId,string? QuoteNumber,string? QuotationVersionNo)
         {
             var result = _tipsSalesServiceDbContext
             .Set<QuotationSPReport>()
-            .FromSqlInterpolated($"CALL quotation_report_with_parameter({CustomerId})")
+            .FromSqlInterpolated($"CALL quotation_report_with_parameter({CustomerId},{QuoteNumber},{QuotationVersionNo})")
             .ToList();
 
             return result;
@@ -109,12 +109,15 @@ namespace Tips.SalesService.Api.Repository
         public async Task<IEnumerable<QuoteNoDto>> GetAllQuoteNumberList()
         {
             IEnumerable<QuoteNoDto> quoteNoList = await _tipsSalesServiceDbContext.Quotes
+                                .GroupBy(x => x.QuoteNumber)
+                                .Select(g => g.First())
                                 .Select(x => new QuoteNoDto()
                                 {
                                     Id = x.Id,
                                     QuoteNumber = x.QuoteNumber,
                                 })
                               .ToListAsync();
+
 
             return quoteNoList;
         }

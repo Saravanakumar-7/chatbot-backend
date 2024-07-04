@@ -952,7 +952,7 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<QuotationSPReport>> serviceResponse = new ServiceResponse<IEnumerable<QuotationSPReport>>();
             try
             {
-                var products = await _repository.GetQuotationSPReportWithParam(quoteSPReportDto.CustomerId);
+                var products = await _repository.GetQuotationSPReportWithParam(quoteSPReportDto.CustomerId, quoteSPReportDto.QuoteNumber, quoteSPReportDto.QuotationVersionNo);
 
                 if (products == null)
                 {
@@ -1025,7 +1025,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 // Get data from repository using stored procedure
-                var quotationSPReportDetails = await _repository.GetQuotationSPReportWithParam(quoteSPReportDto.CustomerId);
+                var quotationSPReportDetails = await _repository.GetQuotationSPReportWithParam(quoteSPReportDto.CustomerId, quoteSPReportDto.QuoteNumber, quoteSPReportDto.QuotationVersionNo);
 
                 // Create a new Excel workbook
                 IWorkbook workbook = new XSSFWorkbook();

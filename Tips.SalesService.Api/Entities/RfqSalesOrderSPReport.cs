@@ -34,6 +34,7 @@
         public decimal? DispatchQty { get; set; }
         public decimal? BalanceQty { get; set; }
         public DateTime? RequestedDate { get; set; }
-        public decimal? Min { get; set; }
+        public decimal? MSL { get; set; }
+        public decimal? StdCost { get; set; }
     }
 }

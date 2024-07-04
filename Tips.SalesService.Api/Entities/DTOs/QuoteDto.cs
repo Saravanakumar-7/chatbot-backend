@@ -369,6 +369,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class QuoteSPResportParamDTO
     {
         public string? CustomerId { get; set; }
+        public string? QuoteNumber { get; set; }
+        public string? QuotationVersionNo { get; set; }
     }
     public class SoSummaryQuotePostDto
     {

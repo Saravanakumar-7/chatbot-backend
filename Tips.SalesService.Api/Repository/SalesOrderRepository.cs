@@ -41,7 +41,7 @@ namespace Tips.SalesService.Api.Repository
         {
             var date = DateTime.Now;
             salesOrder.CreatedBy = _createdBy;
-            salesOrder.CreatedOn = date.Date;
+            salesOrder.CreatedOn = date;
             salesOrder.Unit = _unitname;
             var version = 1;
             salesOrder.RevisionNumber = (version);
@@ -147,7 +147,7 @@ namespace Tips.SalesService.Api.Repository
         {
             var result = _tipsSalesServiceDbContext
             .Set<RfqSalesOrderSPReport>()
-            .FromSqlInterpolated($"CALL RFQ_salesorder_withparameter_Report({CustomerName},{SalesOrderNumber},{KPN},{SOStatus})")
+            .FromSqlInterpolated($"CALL RFQ_salesorder_Kpnwise_withparameter_Report({CustomerName},{SalesOrderNumber},{KPN},{SOStatus})")
             .ToList();
 
             return result;
@@ -197,7 +197,7 @@ namespace Tips.SalesService.Api.Repository
         public async Task<IEnumerable<RfqSalesOrderSPReport>> GetRfqSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsSalesServiceDbContext.Set<RfqSalesOrderSPReport>()
-                        .FromSqlInterpolated($"CALL RFQ_salesorder_withdate_Report({FromDate},{ToDate})")
+                        .FromSqlInterpolated($"CALL RFQ_salesorder_Kpnwise_withdate_Report({FromDate},{ToDate})")
                         .ToList();
 
             return results;

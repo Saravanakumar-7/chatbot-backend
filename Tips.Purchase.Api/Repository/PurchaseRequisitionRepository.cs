@@ -88,7 +88,7 @@ namespace Tips.Purchase.Api.Repository
         {
             var date = DateTime.Now;
             purchaseRequisitions.CreatedBy = _createdBy;
-            purchaseRequisitions.CreatedOn = date.Date;
+            purchaseRequisitions.CreatedOn = date;
            // Guid purchaseRequisitionsNumber = Guid.NewGuid();
            // purchaseRequisitions.PRNumber = "PR-" + purchaseRequisitionsNumber.ToString();
             purchaseRequisitions.Unit = _unitname;

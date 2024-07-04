@@ -1934,7 +1934,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                             /*********************************** End of Add data to Material Issue Tracker *************************/
 
-                           
+
 
                             if (issuedQty <= 0)
                             {
@@ -2178,7 +2178,7 @@ namespace Tips.Warehouse.Api.Controllers
                                         inventoryTranction.From_Location = inventoryDetail.Location;
                                         inventoryTranction.TO_Location = inventoryDetail.Location;
                                         inventoryTranction.Warehouse = inventoryDetail.Warehouse;
-
+                                        inventoryTranction.Remarks = "Open Material Return Note";
                                         await _inventoryTranctionRepository.Create(inventoryTranction);
 
                                         Inventory inventoryPost = new Inventory();
@@ -2555,7 +2555,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var inventoryDetails = await _inventoryRepository.GetRandomInventoryItemDetails();
 
                 _logger.LogInfo("Returned all Inventory");
-                
+
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.CreateMap<Inventory, InventoryDto>()
