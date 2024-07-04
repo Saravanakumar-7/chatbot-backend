@@ -24,9 +24,12 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<InvoiceIdNameList>> GetAllInvoiceIdNameList();
         Task<PagedList<InvoiceSPReport>> InvoiceSPReport(PagingParameter pagingParameter);
         Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<InvoiceSPReportForTrans>> InvoiceSPReportDateForTrans(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportWithParameter(string InvoiceNumber, string DONumber, string LeadId, string CustomerName,
                                                    string CustomerAliasName, string SalesOrderNumber, string Location, string Warehouse, string KPN, string MPN, string IssuedTo);
-        Task<IEnumerable<InvoiceForTransSPReport>> InvoiceSPReportWithParameterForTrans(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName, string? CustomerAliasName, string? SalesOrderNumber, string? Location, string? Warehouse, string? KPN, string? MPN, string? IssuedTo, string? ProjectNumber);
+        Task<IEnumerable<InvoiceSPReportForTrans>> InvoiceSPReportWithParameterForTrans(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName,
+                                                                                                        string? SalesOrderNumber, string? Location,
+                                                                                                       string? Warehouse, string? KPN, string? MPN, string? IssuedTo, string? ProjectNumber);
         Task<Invoice> GetInvoiceByInvoiceNumber(string InvoiceNumber);
         Task<Invoice> GetInvoiceByIdExceptClosed(int id);
     }

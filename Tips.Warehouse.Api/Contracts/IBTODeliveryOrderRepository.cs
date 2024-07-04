@@ -30,9 +30,12 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<DailyDOReport>> GetDailyDeliveryOrderReports(string LeadId, string SONumber, string DOnumber, string DispatchKPN);
         Task<PagedList<DeliveryOrderSPReport>> DeliveryOrderSPReport(PagingParameter pagingParameter);
         Task<IEnumerable<DeliveryOrderSPReport>> DeliveryOrderSPReportdate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<DeliveryOrderSPReportForTrans>> DeliveryOrderSPReportdateForTrans(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<DeliveryOrderSPReport>> GetDeliveryOrderSPReportsWithParam(string DONumber, string CustomerName, string CustomerAliasName,
                                                                                                     string CustomerID, string SalesOrderNumber, string ProductType,
                                                                                                     string Warehouse, string Location, string KPN, string MPN, string ProjectNumber);
+        Task<IEnumerable<DeliveryOrderSPReportForTrans>> GetDeliveryOrderSPReportsWithParamForTrans(string DONumber, string CustomerName, string SalesOrderNumber, string ProductType,
+                                                                                                    string Warehouse, string Location, string ItemNumber, string MPN, string ProjectNumber);
         Task<IEnumerable<DailyDOReport>> GetDailyDeliveryOrderReports();
         Task<SalesOrderNoandIdDto> GetAllSalesOrderNoAndIdByBTONo(string btoNumber);
         Task<BTODeliveryOrder> GetBTODeliveryOrderByIdExcludingClosed(int id);

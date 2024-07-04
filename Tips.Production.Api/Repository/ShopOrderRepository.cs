@@ -58,6 +58,14 @@ namespace Tips.Production.Api.Repository
 
             return results;
         }
+        public async Task<PagedList<ShopOrderSPReportForTrans>> GetShopOrderNumberSPReportForTrans(PagingParameter pagingParameter)
+        {
+            var results = _tipsProductionDbContext.Set<ShopOrderSPReportForTrans>()
+                        .FromSqlInterpolated($"CALL Shop_Order_Report_tras")
+                        .ToList();
+
+            return PagedList<ShopOrderSPReportForTrans>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize); 
+        }
         public async Task<IEnumerable<ShopOrderNumberSPReport>> GetShopOrderSPReportWithParam(string? shopOrderNo, string? projectType,
                                                                                                   string? projectNo,string? salesOrderNo, string? KPN, string? MPN)
         {
@@ -68,10 +76,28 @@ namespace Tips.Production.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<ShopOrderSPReportForTrans>> GetShopOrderSPReportWithParamForTrans(string? WorkOrderNumber, string? projectType,
+                                                                                                 string? projectNo, string? salesOrderNo, string? KPN, string? MPN)
+        {
+            var result = _tipsProductionDbContext
+            .Set<ShopOrderSPReportForTrans>()
+            .FromSqlInterpolated($"Shop_Order_Report_withparameter_tras({WorkOrderNumber},{projectType},{projectNo},{salesOrderNo},{KPN},{MPN})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<ShopOrderNumberSPReport>> GetShopOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsProductionDbContext.Set<ShopOrderNumberSPReport>()
                       .FromSqlInterpolated($"Shop_Order_Report_withparameter_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<ShopOrderSPReportForTrans>> GetShopOrderSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsProductionDbContext.Set<ShopOrderSPReportForTrans>()
+                      .FromSqlInterpolated($"Shop_Order_Report_withparameter_withdate_tras({FromDate},{ToDate})")
                       .ToList();
 
             return results;

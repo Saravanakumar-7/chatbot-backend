@@ -12,6 +12,7 @@ using System.Reflection;
 using Tips.Purchase.Api.Entities.Enums;
 using System.Collections.Generic;
 using Entities.DTOs;
+using MySqlX.XDevAPI.Common;
 
 namespace Tips.Purchase.Api.Repository
 {
@@ -106,15 +107,33 @@ namespace Tips.Purchase.Api.Repository
 
             return result;
         }
-        public async Task<IEnumerable<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportWithParamForTrans(string PrNumber, string ProcurementType, string ShippingMode, string PrStatus, string ProjectNumber)
+        public async Task<PagedList<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportForTrans(PagingParameter pagingParameter)
         {
 
             var result = _tipsPurchaseDbContext
             .Set<PurchaseRequisitionSPReportForTrans>()
-            .FromSqlInterpolated($"CALL Purchaserequisition_with_parameters_tras({PrNumber},{ProcurementType},{ShippingMode},{PrStatus},{ProjectNumber})")
+            .FromSqlInterpolated($"CALL Purchaserequisition_without_parameter_tras()")
+            .ToList();
+
+            return PagedList<PurchaseRequisitionSPReportForTrans>.ToPagedList(result.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+        public async Task<IEnumerable<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportWithParamForTrans(string PrNumber, string ProcurementType,string PrStatus, string ProjectNumber)
+        {
+
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseRequisitionSPReportForTrans>()
+            .FromSqlInterpolated($"CALL Purchaserequisition_with_parameters_tras({PrNumber},{ProcurementType},{PrStatus},{ProjectNumber})")
             .ToList();
 
             return result;
+        }
+        public async Task<IEnumerable<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsPurchaseDbContext.Set<PurchaseRequisitionSPReportForTrans>()
+                        .FromSqlInterpolated($"CALL Purchaserequisition_with_date_parameters_tras({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
         }
         public async Task<IEnumerable<PurchaseRequisitionSPReport>> GetPurchaseRequisitionsSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {

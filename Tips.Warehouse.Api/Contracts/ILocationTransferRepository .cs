@@ -22,6 +22,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<LocationTransferSPReport>> LocationTransferSPReportWithParam(string FromPartNumber, string FromPartType, string FromWarehouse, string FromLocation, string FromProjectNumber, string ToPartnumber, string ToPartType, string ToWarehouse, string ToLocation, string ToProjectNumber);
         Task<IEnumerable<LocationTransferSPReport>> LocationTransferSPReportDates(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<MRNSPReport>> MRNSPReportWithParam(string? ProjectNumber, string? ShopOrderType, string? ShopOrderNumber, string? KPN, string? PartType);
+        Task<IEnumerable<MRNSPReportForTrans>> MRNSPReportWithParamForTrans(string? ProjectNumber, string? ShopOrderType, string? ShopOrderNumber, string? PartNumber, string? PartType);
+        Task<IEnumerable<MRNSPReportForTrans>> MRNSPReportDatesForTrans(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<MRNSPReport>> MRNSPReportDates(DateTime? FromDate, DateTime? ToDate);
         Task<int> GetLatestLocationTransferId();
     }

@@ -135,7 +135,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetIQCConfirmationSPReportWithParamForTrans([FromBody] IQCConfirmationReportWithParamForTransDto iQCConfirmationReportWithParamDto)
         {
-            ServiceResponse<IEnumerable<IQCConfirmation_SPReport>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmation_SPReport>>();
+            ServiceResponse<IEnumerable<IQCConfirmationSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationSPReportForTrans>>();
             try
             {
                 var products = await _iQCConfirmationRepository.GetIQCConfirmationSPReportWithParamForTrans(iQCConfirmationReportWithParamDto.GrinNumber,
@@ -155,7 +155,7 @@ namespace Tips.Grin.Api.Controllers
                 {
 
                     serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned IQCConfirmation Details";
+                    serviceResponse.Message = "Returned IQCConfirmationSPReportWithParamForTrans Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -166,6 +166,55 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetIQCConfirmationSPReportWithParamForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetIQCConfirmationSPReportForTrans([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<IQCConfirmationSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationSPReportForTrans>>();
+            try
+            {
+                var products = await _iQCConfirmationRepository.GetIQCConfirmationSPReportForTrans(pagingParameter);
+
+                var metadata = new
+                {
+                    products.TotalCount,
+                    products.PageSize,
+                    products.CurrentPage,
+                    products.HasNext,
+                    products.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                _logger.LogInfo("Returned all GetGrinSPReport");
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"IQCConfirmation hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"IQCConfirmation hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned IQCConfirmationSPReportForTrans Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetIQCConfirmationSPReportForTrans action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -215,6 +264,43 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetIQCConfirmationSPReport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetIQCConfirmationSPReportWithDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<IQCConfirmationSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationSPReportForTrans>>();
+            try
+            {
+                var products = await _iQCConfirmationRepository.GetIQCConfirmationSPReportWithDateForTrans(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"IQCConfirmation hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"IQCConfirmation hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned IQCConfirmationSPReportWithDateForTrans Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetIQCConfirmationSPReportWithDateForTrans action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

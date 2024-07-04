@@ -1402,6 +1402,34 @@ namespace Tips.Warehouse.Api.Controllers
 
                         await _inventoryRepository.CreateInventory(wipInventory);
 
+                        InventoryTranction inventoryTransaction1 = new InventoryTranction();
+                        inventoryTransaction1.PartNumber = wipInventory.PartNumber;
+                        inventoryTransaction1.MftrPartNumber = wipInventory.MftrPartNumber;
+                        inventoryTransaction1.LotNumber = wipInventory.LotNumber;
+                        inventoryTransaction1.Description = wipInventory.Description;
+                        inventoryTransaction1.PartType = wipInventory.PartType;
+                        inventoryTransaction1.ProjectNumber = wipInventory.ProjectNumber;
+                        inventoryTransaction1.Issued_Quantity = wipInventory.Balance_Quantity;
+                        inventoryTransaction1.UOM = wipInventory.UOM;
+                        inventoryTransaction1.Issued_DateTime = DateTime.Now;
+                        // inventoryTransaction1.Issued_By = 
+                        inventoryTransaction1.ReferenceID = wipInventory.ReferenceID;
+                        inventoryTransaction1.ReferenceIDFrom = wipInventory.ReferenceIDFrom;
+                        inventoryTransaction1.BOM_Version_No = 0;
+                        inventoryTransaction1.IsStockAvailable = wipInventory.IsStockAvailable;
+                        inventoryTransaction1.From_Location = wipInventory.Location;
+                        inventoryTransaction1.TO_Location = wipInventory.Location;
+                        inventoryTransaction1.Unit = wipInventory.Unit;
+                        inventoryTransaction1.GrinMaterialType = wipInventory.GrinMaterialType;
+                        inventoryTransaction1.Remarks = "Issue Material";
+                        inventoryTransaction1.IsStockAvailable = wipInventory.IsStockAvailable;
+                        inventoryTransaction1.Warehouse = wipInventory.Warehouse;
+                        inventoryTransaction1.GrinNo = wipInventory.GrinNo;
+                        inventoryTransaction1.GrinPartId = wipInventory.GrinPartId;
+                        inventoryTransaction1.shopOrderNo = shopOrderNumber;
+
+                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransaction1);
+
 
                         ///*********************************** Add data to Material Issue Tracker *************************/
                         ShopOrderMaterialIssueTracker shopOrderMaterialIssueTracker = InsertDataToMaterialIssueTracker(dtoForMaterialIssue, inventoryDetails[i], lotNoWiseIssuedQty);
@@ -1541,6 +1569,7 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTransaction1.Issued_Quantity = wipInventory.Balance_Quantity;
                         inventoryTransaction1.UOM = wipInventory.UOM;
                         inventoryTransaction1.Issued_DateTime = DateTime.Now;
+                       // inventoryTransaction1.Issued_By = 
                         inventoryTransaction1.ReferenceID = wipInventory.ReferenceID;
                         inventoryTransaction1.ReferenceIDFrom = wipInventory.ReferenceIDFrom;
                         inventoryTransaction1.BOM_Version_No = 0;
@@ -1584,6 +1613,7 @@ namespace Tips.Warehouse.Api.Controllers
                     inventoryTransaction.Issued_Quantity = inventoryDetails[i].Balance_Quantity;
                     inventoryTransaction.UOM = inventoryDetails[i].UOM;
                     inventoryTransaction.Issued_DateTime = DateTime.Now;
+                    inventoryTransaction.Issued_By = inventoryDetails[i].LastModifiedBy;
                     inventoryTransaction.ReferenceID = inventoryDetails[i].ReferenceID;
                     inventoryTransaction.ReferenceIDFrom = inventoryDetails[i].ReferenceIDFrom;
                     inventoryTransaction.BOM_Version_No = 0;

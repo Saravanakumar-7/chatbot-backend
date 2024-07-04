@@ -875,6 +875,43 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> OpenDeliveryOrderSPReportDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<OpenDeliveryOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.OpenDeliveryOrderSPReportDateForTrans(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OpenDeliveryOrderSPReportDates hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OpenDeliveryOrderSPReportDates hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OpenDeliveryOrderSPReportDates Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside OpenDeliveryOrderSPReportDateForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOpenDeliveryOrder(int id, [FromBody] OpenDeliveryOrderDtoUpdate openDeliveryOrderDtoUpdate)
         {
@@ -1083,13 +1120,13 @@ namespace Tips.Warehouse.Api.Controllers
         public async Task<IActionResult> OpenDeliveryOrderSPReportWithParamForTrans([FromBody] OpenDeliveryOrderSPReportWithParamForTransDto openDeliveryOrderSPReport)
 
         {
-            ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReport>>();
+            ServiceResponse<IEnumerable<OpenDeliveryOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReportForTrans>>();
             try
             {
                 var products = await _repository.OpenDeliveryOrderSPReportWithParamForTrans(openDeliveryOrderSPReport.OpenDoNumber, openDeliveryOrderSPReport.CustomerName,
-                                                                                         openDeliveryOrderSPReport.CustomerAliasName, openDeliveryOrderSPReport.LeadId,
-                                                                                openDeliveryOrderSPReport.IssuedTo, openDeliveryOrderSPReport.KPN, openDeliveryOrderSPReport.MPN,
-                                                                                openDeliveryOrderSPReport.Warehouse, openDeliveryOrderSPReport.Location,
+                                                                                            openDeliveryOrderSPReport.LeadId,openDeliveryOrderSPReport.IssuedTo, 
+                                                                                            openDeliveryOrderSPReport.ItemNumber, openDeliveryOrderSPReport.MPN,
+                                                                                            openDeliveryOrderSPReport.Warehouse, openDeliveryOrderSPReport.Location,
                                                                                             openDeliveryOrderSPReport.ODOtype, openDeliveryOrderSPReport.ProjectNumber);
 
                 if (products == null)

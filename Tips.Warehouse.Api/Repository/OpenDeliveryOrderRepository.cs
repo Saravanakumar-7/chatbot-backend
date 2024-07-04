@@ -123,20 +123,28 @@ namespace Tips.Warehouse.Api.Repository
 
         }
 
-        public async Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReportWithParamForTrans(string OpenDONumber, string CustomerName, string CustomerAliasName, string LeadId,
-           string IssuedTo, string KPN, string MPN, string Warehouse, string Location, string ODOType, string ProjectNumber)
+        public async Task<IEnumerable<OpenDeliveryOrderSPReportForTrans>> OpenDeliveryOrderSPReportWithParamForTrans(string OpenDONumber, string CustomerName, string LeadId,
+                                                                                                                 string IssuedTo, string ItemNumber, string MPN, string Warehouse, 
+                                                                                                                 string Location, string ODOType, string ProjectNumber)
         {
 
             var result = _tipsWarehouseDbContext
-            .Set<OpenDeliveryOrderSPReport>()
-            .FromSqlInterpolated($"CALL Open_Delivery_Order_Report_withparameter_tras({OpenDONumber},{CustomerName},{CustomerAliasName},{LeadId},{IssuedTo},{KPN},{MPN},{Warehouse},{Location},{ODOType},{ProjectNumber})")
+            .Set<OpenDeliveryOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL Open_Delivery_Order_Report_withparameter_tras({OpenDONumber},{CustomerName},{LeadId},{IssuedTo},{ItemNumber},{MPN},{Warehouse},{Location},{ODOType},{ProjectNumber})")
             .ToList();
 
             return result;
 
 
         }
+        public async Task<IEnumerable<OpenDeliveryOrderSPReportForTrans>> OpenDeliveryOrderSPReportDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<OpenDeliveryOrderSPReportForTrans>()
+                          .FromSqlInterpolated($"CALL Open_Delivery_Order_Report_withparameter_withdate_tras({FromDate},{ToDate})")
+                          .ToList();
 
+            return results;
+        }
         public async Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReportDates(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsWarehouseDbContext.Set<OpenDeliveryOrderSPReport>()

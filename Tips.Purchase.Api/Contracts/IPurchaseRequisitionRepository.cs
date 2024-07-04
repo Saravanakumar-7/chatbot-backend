@@ -40,9 +40,11 @@ namespace Tips.Purchase.Api.Contracts
         Task<PagedList<PurchaseRequisition>> GetAllLastestPendingPRApprovalIIList(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<List<GetDownloadUrlDto>> GetDownloadUrlPrItemsDetails(string FileIds);
         Task<PurchaseRequisition> GetPurchaseRequisitionByPRNo(string prNumber);
+        Task<PagedList<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportForTrans(PagingParameter pagingParameter);
         Task<IEnumerable<PurchaseRequisitionSPReport>> GetPurchaseRequisitionsSPReportWithParam(string PrNumber, string ProcurementType, string ShippingMode, string PrStatus);
-        Task<IEnumerable<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportWithParamForTrans(string PrNumber, string ProcurementType, string ShippingMode, string PrStatus, string ProjectNumber);
+        Task<IEnumerable<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportWithParamForTrans(string PrNumber, string ProcurementType, string PrStatus, string ProjectNumber);
         Task<IEnumerable<PurchaseRequisitionSPReport>> GetPurchaseRequisitionsSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
         Task<PurchaseRequisition> GetPrDetailsByPrNumber(string prNumber);
     }
 }

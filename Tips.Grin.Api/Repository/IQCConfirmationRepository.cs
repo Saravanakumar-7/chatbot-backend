@@ -51,6 +51,15 @@ namespace Tips.Grin.Api.Repository
 
             return PagedList<IQCConfirmation_SPReport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        public async Task<PagedList<IQCConfirmationSPReportForTrans>> GetIQCConfirmationSPReportForTrans(PagingParameter pagingParameter)
+        {
+
+            var results = _tipsGrinDbContext.Set<IQCConfirmationSPReportForTrans>()
+                      .FromSqlInterpolated($"CALL iqc_confirmation_without_parameter_tras")
+                      .ToList();
+
+            return PagedList<IQCConfirmationSPReportForTrans>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
         public async Task<IEnumerable<IQCConfirmation_SPReport>> GetIQCConfirmationSPReportWithParam(string? GrinNumber, string? itemNo)
         {
             var result = _tipsGrinDbContext
@@ -60,10 +69,10 @@ namespace Tips.Grin.Api.Repository
 
             return result;
         }
-        public async Task<IEnumerable<IQCConfirmation_SPReport>> GetIQCConfirmationSPReportWithParamForTrans(string? GrinNumber, string? itemNo, string? ProjectNumber)
+        public async Task<IEnumerable<IQCConfirmationSPReportForTrans>> GetIQCConfirmationSPReportWithParamForTrans(string? GrinNumber, string? itemNo, string? ProjectNumber)
         {
             var result = _tipsGrinDbContext
-            .Set<IQCConfirmation_SPReport>()
+            .Set<IQCConfirmationSPReportForTrans>()
             .FromSqlInterpolated($"CALL iqc_confirmation_with_parameters_tras({GrinNumber},{itemNo},{ProjectNumber})")
             .ToList();
 
@@ -77,7 +86,14 @@ namespace Tips.Grin.Api.Repository
 
             return results;
         }
+        public async Task<IEnumerable<IQCConfirmationSPReportForTrans>> GetIQCConfirmationSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<IQCConfirmationSPReportForTrans>()
+                      .FromSqlInterpolated($"CALL iqc_confirmation_with_parameter_withdate_tras({FromDate},{ToDate})")
+                      .ToList();
 
+            return results;
+        }
         public async Task<IEnumerable<IQCConfirmation>> SearchIQCConfirmation([FromQuery] SearchParames searchParames)
         {
            

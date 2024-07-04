@@ -149,4 +149,36 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? KPN { get; set; }
         public string? MPN { get; set; }
     }
+    public class ShopOrderReportWithParamDtoForTrans
+    {
+        public string? WorkOrderNumber { get; set; }
+        public string? ProjectType { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? KPN { get; set; }
+        public string? MPN { get; set; }
+    }
+    public class ShopOrderSPReportForTrans
+    {
+        public string? WorkOrderNumber { get; set; }
+        public DateTime? WorkOrderDate { get; set; }
+        public string? ProjectType { get; set; }
+        public int? ItemType { get; set; }
+        public string? ItemNumber { get; set; }
+        public decimal? BOMversion { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public decimal? salesorederQty { get; set; }
+        public decimal? OpenSalesOrderQty { get; set; }
+        public decimal? ReleaseQty { get; set; }
+        public string? KPN { get; set; }
+        public string? MPN { get; set; }
+        public string? Description { get; set; }
+        public decimal? ShopOrder_qty { get; set; }
+        public string? UOM { get; set; }
+        public decimal? WO_confirmed_Qty { get; set; }
+        public decimal? WO_Balance_Qty { get; set; }
+        public string? Status { get; set; }
+    }
+
 }

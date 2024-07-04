@@ -35,12 +35,18 @@ namespace Tips.Grin.Api.Entities
         public DbSet<Grin_ReportSP> Grin_ReportSPs { get; set; }
         public DbSet<OpenGrin_SPReport> OpenGrin_SPReports { get; set; }
         public DbSet<IQCConfirmation_SPReport> IQCConfirmation_SPReports { get; set; }
-        
+        public DbSet<GrinSPReportForTrans> GrinSPReportForTrans { get; set; }
+        public DbSet<OpenGrinSpReportForTrans> OpenGrinSpReports { get; set; }
+        public DbSet<IQCConfirmationSPReportForTrans> IQCConfirmationSPReportForTrans { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Grin_ReportSP>().HasNoKey();
             modelBuilder.Entity<IQCConfirmation_SPReport>().HasNoKey();
             modelBuilder.Entity<OpenGrin_SPReport>().HasNoKey();
+            modelBuilder.Entity<GrinSPReportForTrans>().HasNoKey();
+            modelBuilder.Entity<OpenGrinSpReportForTrans>().HasNoKey();
+            modelBuilder.Entity<IQCConfirmationSPReportForTrans>().HasNoKey();
         }
 
 

@@ -98,6 +98,54 @@ namespace Tips.Production.Api.Controllers
 
             return Ok(products);
         }
+        [HttpGet]
+        public async Task<IActionResult> GetMaterialIssueSPReportForTrans([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<MaterialIssueSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueSPReportForTrans>>();
+            try
+            {
+                var products = await _materialIssueRepository.GetMaterialIssueSPReportForTrans(pagingParameter);
+
+                var metadata = new
+                {
+                    products.TotalCount,
+                    products.PageSize,
+                    products.CurrentPage,
+                    products.HasNext,
+                    products.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                _logger.LogInfo("Returned all GetMaterialIssueSPReport");
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"MaterialIssue hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"MaterialIssue hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned MaterialIssueSPReportForTrans Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetMaterialIssueSPReportForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> GetMaterialIssueSPReportWithParam([FromBody] MaterialIssueReportWithParamDto materialIssueReportWithParamDto)
         {
@@ -136,6 +184,46 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GetMaterialIssueSPReportWithParamForTrans([FromBody] MaterialIssueReportWithParamDtoForTrans materialIssueReportWithParamDto)
+        {
+            ServiceResponse<IEnumerable<MaterialIssueSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueSPReportForTrans>>();
+            try
+            {
+                var products = await _materialIssueRepository.GetMaterialIssueSPReportWithParamForTrans(materialIssueReportWithParamDto.WorkorderNo,
+                                                                            materialIssueReportWithParamDto.ItemNumber, materialIssueReportWithParamDto.ProjectNumber,
+                                                                            materialIssueReportWithParamDto.SalesOrderNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"MaterialIssue hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"MaterialIssue hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned MaterialIssueSPReportWithParamForTrans Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetMaterialIssueSPReportWithParamForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetMaterialIssueSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
@@ -172,6 +260,45 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetMaterialIssueSPReportWithDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<MaterialIssueSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueSPReportForTrans>>();
+            try
+            {
+                var products = await _materialIssueRepository.GetMaterialIssueSPReportWithDateForTrans(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"MaterialIssue hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"MaterialIssue hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned MaterialIssueSPReportWithDateForTrans Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetMaterialIssueSPReportWithDateForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         private string GetServerKey()
         {
             var serverName = Environment.MachineName;
@@ -673,7 +800,7 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> IssueMaterialIssue(int id, [FromBody] MaterialIssueUpdateDto materialIssueUpdateDto)
+        public async Task<IActionResult> IssueMaterialIssue(int id, [FromBody] IssueMaterialIssueUpdateDto materialIssueUpdateDto)
         {
             ServiceResponse<MaterialIssueUpdateDto> serviceResponse = new ServiceResponse<MaterialIssueUpdateDto>();
 
@@ -730,7 +857,7 @@ namespace Tips.Production.Api.Controllers
                 ShopOrder shopOrderDetail = await _shopOrderRepository.GetShopOrderByShopOrderNo(materialIssueDetailsById.ShopOrderNumber);
                 decimal bomRevNo = shopOrderDetail.BomRevisionNo;
                 HttpStatusCode updateMaterialIssueResp = HttpStatusCode.OK;
-                List<MaterialIssueItemUpdateDto> materialIssueItemDtos = materialIssueUpdateDto.MaterialIssueItems;
+                List<IssueMaterialIssueItemUpdateDto> materialIssueItemDtos = materialIssueUpdateDto.MaterialIssueItems;
                 var materialIssueLocationList =new List<MaterialIssueLocation>();
                 foreach (var updatedItem in materialIssueItemDtos)
                 {

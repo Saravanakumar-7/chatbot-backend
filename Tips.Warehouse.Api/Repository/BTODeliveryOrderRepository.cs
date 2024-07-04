@@ -140,6 +140,16 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<DeliveryOrderSPReportForTrans>> GetDeliveryOrderSPReportsWithParamForTrans(string DONumber, string CustomerName,string SalesOrderNumber, string ProductType,
+                                                                                                    string Warehouse, string Location, string ItemNumber, string MPN, string ProjectNumber)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<DeliveryOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL Delivery_Order_Report_withparameter_tras({DONumber},{CustomerName},{SalesOrderNumber},{ProductType},{Warehouse},{Location},{ItemNumber},{MPN},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
         public async Task<PagedList<DeliveryOrderSPReport>> DeliveryOrderSPReport(PagingParameter pagingParameter)
         {
             var results = _tipsWarehouseDbContext.Set<DeliveryOrderSPReport>()
@@ -153,6 +163,14 @@ namespace Tips.Warehouse.Api.Repository
         {
             var results = _tipsWarehouseDbContext.Set<DeliveryOrderSPReport>()
                          .FromSqlInterpolated($"CALL Delivery_Order_Report_withparameter_withdate({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<DeliveryOrderSPReportForTrans>> DeliveryOrderSPReportdateForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<DeliveryOrderSPReportForTrans>()
+                         .FromSqlInterpolated($"CALL Delivery_Order_Report_withparameter_withdate_tras({FromDate},{ToDate})")
                          .ToList();
 
             return results;

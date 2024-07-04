@@ -121,6 +121,15 @@ namespace Tips.Grin.Api.Repository
 
             return PagedList<Grin_ReportSP>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+        public async Task<PagedList<GrinSPReportForTrans>> GetGrinSPReportForTrans(PagingParameter pagingParameter)
+        {
+
+            var results = _tipsGrinDbContext.Set<GrinSPReportForTrans>()
+                      .FromSqlInterpolated($"CALL Grin_Report_tras")
+                      .ToList();
+
+            return PagedList<GrinSPReportForTrans>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
         public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string? GrinNumber, string? VendorName, string? PONumber, 
                                                                                                     string? KPN, string? MPN, string? Warehouse, string? Location)
         {
@@ -131,13 +140,13 @@ namespace Tips.Grin.Api.Repository
 
                 return result;
         }
-        public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParamForTrans(string? GrinNumber, string? VendorName, string? PONumber,
-                                                                                                    string? KPN, string? MPN, string? Warehouse, string? Location,
+        public async Task<IEnumerable<GrinSPReportForTrans>> GetGrinSPReportWithParamForTrans(string? GrinNumber, string? VendorName, string? PONumber,
+                                                                                                    string? ItemNumber, string? MPN, string? Warehouse, string? Location,
                                                                                                     string? ProjectNumber)
         {
             var result = _tipsGrinDbContext
-            .Set<Grin_ReportSP>()
-            .FromSqlInterpolated($"CALL Grin_Report_withparameter_tras({GrinNumber},{VendorName},{PONumber},{KPN},{MPN},{Warehouse},{Location},{ProjectNumber})")
+            .Set<GrinSPReportForTrans>()
+            .FromSqlInterpolated($"CALL Grin_Report_withparameter_tras({GrinNumber},{VendorName},{PONumber},{ItemNumber},{MPN},{Warehouse},{Location},{ProjectNumber})")
             .ToList();
 
             return result;
@@ -146,6 +155,14 @@ namespace Tips.Grin.Api.Repository
         {
             var results = _tipsGrinDbContext.Set<Grin_ReportSP>()
                       .FromSqlInterpolated($"CALL Grin_Report_withparameter_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<GrinSPReportForTrans>> GetGrinSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<GrinSPReportForTrans>()
+                      .FromSqlInterpolated($"CALL Grin_Report_withparameter_withdate_tras({FromDate},{ToDate})")
                       .ToList();
 
             return results;

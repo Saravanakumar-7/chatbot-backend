@@ -236,7 +236,6 @@ namespace Tips.Purchase.Api.Entities.DTOs
     {
         public string? PrNumber { get; set; }
         public string? ProcurementType { get; set; }
-        public string? ShippingMode { get; set; }
         public string? PrStatus { get; set; }
         public string? ProjectNumber { get; set; }
     }

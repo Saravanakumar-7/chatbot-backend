@@ -195,6 +195,14 @@ namespace Tips.Warehouse.Api.Repository
             .ToList();
             return result;
         }
+        public async Task<IEnumerable<MRNSPReportForTrans>> MRNSPReportWithParamForTrans(string? ProjectNumber, string? ShopOrderType, string? ShopOrderNumber, string? PartNumber, string? PartType)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<MRNSPReportForTrans>()
+            .FromSqlInterpolated($"CALL MRN_Report_with_parameter_tras({ProjectNumber},{ShopOrderType},{ShopOrderNumber},{PartNumber},{PartType})")
+            .ToList();
+            return result;
+        }
         public async Task<IEnumerable<LocationTransferSPReport>> LocationTransferSPReportDates(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsWarehouseDbContext.Set<LocationTransferSPReport>()
@@ -207,6 +215,14 @@ namespace Tips.Warehouse.Api.Repository
         {
             var results = _tipsWarehouseDbContext.Set<MRNSPReport>()
                          .FromSqlInterpolated($"CALL MRN_Report_with_date({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<MRNSPReportForTrans>> MRNSPReportDatesForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<MRNSPReportForTrans>()
+                         .FromSqlInterpolated($"CALL MRN_Report_with_date_tras({FromDate},{ToDate})")
                          .ToList();
 
             return results;

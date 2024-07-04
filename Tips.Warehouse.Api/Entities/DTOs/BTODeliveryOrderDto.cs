@@ -158,6 +158,48 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ProjectNumber { get; set; }
 
     }
+    public class DeliveryOrderReportWithParamDTOForTrans
+    {
+        public string? DoNumber { get; set; }
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? ProductType { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? MPN { get; set; }
+        public string? ProjectNumber { get; set; }
+
+    }
+    public class DeliveryOrderSPReportForTrans
+    {
+        public string? DoNumber { get; set; }
+        public DateTime? DODate { get; set; }
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public int? SalesOrderRevisionNumber { get; set; }
+        public string? ProductType { get; set; }
+        public string? OrderType { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? MPN { get; set; }
+        public string? Description { get; set; }
+        public string? UOM { get; set; }
+        public decimal? DispatchQty { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public string? IssuedTo { get; set; }
+        public string? IssuedBy { get; set; }
+        public decimal? Discount { get; set; }
+        public decimal? TotalAmount { get; set; }
+        public string? UOC { get; set; }
+        public decimal? FGOrderQty { get; set; }
+        public decimal? OrderBalanceQty { get; set; }
+        public decimal? DoReturnQty { get; set; }
+        public string? SerialNo { get; set; }
+        public string? Remarks { get; set; }
+    }
+
     public class SalesOrderNoandIdDto
     {
         public int? SalesOrderId { get; set; }
