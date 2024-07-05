@@ -765,7 +765,7 @@ namespace Tips.Grin.Api.Controllers
                         var client = _clientFactory.CreateClient();
                         var token = HttpContext.Request.Headers["Authorization"].ToString();
 
-                        var ItemNumber = iQcItemNo;
+                        var ItemNumber = iQCDto[i].ItemNumber;
                         var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
 
                         var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterEnggAPI"],
@@ -1241,7 +1241,7 @@ namespace Tips.Grin.Api.Controllers
                         {
                             grinParts.IsBinningCompleted = true;
                         }
-                         string result = await _grinPartsRepository.UpdateGrinQty(grinParts);
+                        string result = await _grinPartsRepository.UpdateGrinQty(grinParts);
                         _grinPartsRepository.SaveAsync();
 
                         //Updating binning Status in GrinParts
@@ -1380,7 +1380,7 @@ namespace Tips.Grin.Api.Controllers
                         var client = _clientFactory.CreateClient();
                         var token = HttpContext.Request.Headers["Authorization"].ToString();
 
-                        var ItemNumber = iQcItemNo;
+                        var ItemNumber = iQCDto[i].ItemNumber;
                         var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
 
                         var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterEnggAPI"],
@@ -2436,7 +2436,7 @@ namespace Tips.Grin.Api.Controllers
 
 
                     //Updating IQC Status in GrinParts
-                     
+
                     grinPartsDetails.IsIqcCompleted = true;
                     await _grinPartsRepository.UpdateGrinQty(grinPartsDetails);
                     _grinPartsRepository.SaveAsync();
@@ -2967,7 +2967,7 @@ namespace Tips.Grin.Api.Controllers
 
                     var grinParts = _mapper.Map<GrinParts>(updatedGrinPartsQty);
                     if (itemMasterObject.poMaterialType == "ServiceItem") grinParts.IsBinningCompleted = true;
-                        string result = await _grinPartsRepository.UpdateGrinQty(grinParts);
+                    string result = await _grinPartsRepository.UpdateGrinQty(grinParts);
                     if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && getInvTrancGrinId == HttpStatusCode.OK && updateInvTranc == HttpStatusCode.OK && createInv == HttpStatusCode.OK && createInvTrans == HttpStatusCode.OK && getItemmResp == HttpStatusCode.OK)
                     {
                         _iQCConfirmationItemsRepository.SaveAsync();

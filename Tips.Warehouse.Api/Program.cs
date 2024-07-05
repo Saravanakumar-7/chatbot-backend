@@ -115,6 +115,7 @@ builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddScoped<IOpenDeliveryOrderRepository, OpenDeliveryOrderRepository>();
 builder.Services.AddScoped<IBTODeliveryOrderInventoryHistoryRepository, BTODeliveryOrderInventoryHistoryRepository>();
 builder.Services.AddScoped<IInvoiceAdditionalChargeRepository, InvoiceAdditionalChargeRepository>();
+builder.Services.AddScoped<IInventoryForServiceItemsRepository, InventoryForServiceItemsRepository>();
 
 builder.Services.AddScoped<MySqlConnection>();
 

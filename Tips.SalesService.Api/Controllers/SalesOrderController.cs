@@ -1790,11 +1790,11 @@ namespace Tips.SalesService.Api.Controllers
 
                     salesAdditionalCharges.InvoicedValue -= item.ReturnInvoicedValue;
 
-                    if(salesAdditionalCharges.TotalValue == salesAdditionalCharges.InvoicedValue)
+                    if (salesAdditionalCharges.TotalValue == salesAdditionalCharges.InvoicedValue)
                     {
                         salesAdditionalCharges.SOAdditionalStatus = SoStatus.Closed;
                     }
-                    else if(salesAdditionalCharges.TotalValue > salesAdditionalCharges.InvoicedValue && salesAdditionalCharges.InvoicedValue != 0)
+                    else if (salesAdditionalCharges.TotalValue > salesAdditionalCharges.InvoicedValue && salesAdditionalCharges.InvoicedValue != 0)
                     {
                         salesAdditionalCharges.SOAdditionalStatus = SoStatus.PartiallyClosed;
                     }
@@ -4108,7 +4108,7 @@ namespace Tips.SalesService.Api.Controllers
                     }
 
                     //Update SoConfirmationStatus in SalesOrder Table
-                    
+
                     salesOrderDetailById.SoConfirmationStatus = true;
                     string result = await _repository.UpdateSalesOrder(salesOrderDetailById);
                     _repository.SaveAsync();
@@ -4425,8 +4425,9 @@ namespace Tips.SalesService.Api.Controllers
             {
                 var salesorderDetails = await _repository.GetSalesOrderById(salesOrderEmailPostDto.SalesOrderid);
                 //EmailTemplateDto? emaildetails = new EmailTemplateDto();
-                string? emaildetails = $"Your Confirmed Keus Sales Order- {salesorderDetails.SalesOrderNumber}: Version- {salesorderDetails.RevisionNumber}";
+
                 string? FileName;
+                string? emaildetails;
                 var client = _clientFactory.CreateClient();
                 var token = HttpContext.Request.Headers["Authorization"].ToString();
                 //if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation" || salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
@@ -4451,14 +4452,19 @@ namespace Tips.SalesService.Api.Controllers
                 //}
                 if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation")
                 {
+                    emaildetails = $"Your Confirmed Keus Automation Sales Order - {salesorderDetails.SalesOrderNumber}: Version - {salesorderDetails.RevisionNumber}";
                     FileName = "SalesOrder_Automation_Book";
                 }
                 else if (salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
                 {
+                    emaildetails = $"Your Confirmed Keus Accessories Sales Order - {salesorderDetails.SalesOrderNumber}: Version - {salesorderDetails.RevisionNumber}";
+
                     FileName = "SalesOrder_Accessories_Book";
                 }
                 else
                 {
+                    emaildetails = $"Your Confirmed Keus Lights Sales Order - {salesorderDetails.SalesOrderNumber}: Version - {salesorderDetails.RevisionNumber}";
+
                     FileName = "SalesOrder_Lights_Book";
                 }
                 if (emaildetails.IsNullOrEmpty())
