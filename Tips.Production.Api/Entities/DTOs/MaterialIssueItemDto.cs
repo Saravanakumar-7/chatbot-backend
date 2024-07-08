@@ -138,7 +138,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string ShopOrderNumber { get; set; }
         public string Warehouse { get; set; }
         public string Location { get; set; }
-        public decimal DistributingQty { get; set; }
+        public decimal? DistributingQty { get; set; }
         public decimal Bomversion { get; set; }
 
     }

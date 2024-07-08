@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using Tips.SalesService.Api.Entities.Enum;
 
 namespace Tips.SalesService.Api.Entities
 {
@@ -8,9 +10,14 @@ namespace Tips.SalesService.Api.Entities
     {
         [Key]
         public int Id { get; set; }
+
+        public string? LeadId { get; set; }
         public string? SalesOrderNumber { get; set; }
+        public string? SalesPerson { get; set; }
         public string? ProjectNumber { get; set; }
         public string? QuoteNumber { get; set; }
+        [Precision(13, 1)]
+        public int? QuoteRevisionNumber { get; set; }
         public DateTime? OrderDate { get; set; }
         public string? OrderType { get; set; }
         public string? CustomerName { get; set; }
@@ -19,8 +26,10 @@ namespace Tips.SalesService.Api.Entities
         [Precision(13, 1)]
         public decimal? RevisionNumber { get; set; }
         public decimal? ShortClosedQty { get; set; }
-        public bool? SOStatus { get; set; } = false;
-
+        public SalesOrderStatus SalesOrderStatus { get; set; }
+        public OrderStatus SOStatus { get; set; }
+        public string? ProductType { get; set; }
+        public string? TypeOfSolution { get; set; }
 
         //PO Details
         public string? PONumber { get; set; }
@@ -44,20 +53,34 @@ namespace Tips.SalesService.Api.Entities
 
         public string? ShortClosedBy { get; set; }
 
-        public DateTime? ShortClosedOn { get; set; }    
+        public DateTime? ShortClosedOn { get; set; }
+        public string? ReasonForModification { get; set; }
+        [Precision(13, 3)]
+        public decimal? InstallationCharges { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? TotalAmountWithInstallationCharges { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAdditionalCharges { get; set; }
+        public string? SpecialDiscountType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SpecialDiscountAmount { get; set; }
+        [Precision(18, 3)]
+        public decimal TotalFinalAmount { get; set; }
+        [DefaultValue(false)]
+        public bool ConfirmStatus { get; set; }
+        [DefaultValue(false)]
+        public bool ApproveStatus { get; set; }
+        public DateTime? ConfirmDate { get; set; }
+        public bool SoConfirmationStatus { get; set; }
 
         public string? ItemNumber { get; set; }
+        public string? CustomerItemNumber { get; set; }
         public string? Description { get; set; }
+        public PartType PartType { get; set; }
         public OrderStatus StatusEnum { get; set; }
-
-        [Precision(13, 3)]
-        public decimal? BalanceQty { get; set; }
-
-        [Precision(13, 3)]
-        public decimal? DispatchQty { get; set; }
-
-        [Precision(13, 3)]
-        public decimal? ShopOrderQty { get; set; }
         public string? UOM { get; set; }
         public string? Currency { get; set; }
 
@@ -69,12 +92,22 @@ namespace Tips.SalesService.Api.Entities
 
         [Precision(18, 3)]
         public decimal? Discount { get; set; }
-
+        public string? RoomName { get; set; }
+        public string? DiscountType { get; set; }
         [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
 
         [Precision(13, 3)]
         public decimal? OrderQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? BalanceQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? DispatchQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? ShopOrderQty { get; set; }
+
 
         [Precision(13, 3)]
         public decimal? SGST { get; set; }
@@ -84,10 +117,9 @@ namespace Tips.SalesService.Api.Entities
         public decimal? UTGST { get; set; }
         [Precision(13, 3)]
         public decimal? IGST { get; set; }
-         
-
         public DateTime RequestedDate { get; set; }
         public string? Remarks { get; set; }
+        public int SalesOrderId { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

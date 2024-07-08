@@ -1297,22 +1297,48 @@ namespace Tips.Warehouse.Api.Repository
 
             string wipWarehouse = "WIP";
 
-            var itemStock = await _tipsWarehouseDbContext.Inventories
-                .Where(x => itemNumberList.Contains(x.PartNumber) && x.ProjectNumber == projectNo && x.IsStockAvailable == true && x.Balance_Quantity > 0 &&
-                            partTypes.Contains(x.PartType) && !skipWareHouse.Contains(x.Warehouse))
-                .GroupBy(x => x.PartNumber)
-                .Select(group => new ConsumptionChildItemInventoryDto
-                {
-                    PartNumber = group.Key,
-                    BalanceQuantity = group.Any(x => x.Warehouse != wipWarehouse)
-                        ? group.Where(x => x.Warehouse != wipWarehouse).Sum(x => x.Balance_Quantity)
-                        : 0, // Sum Balance_Quantity only when Warehouse is not "WIP"
-                    WipQuantity = group.Any(x => x.Warehouse == wipWarehouse)
-                        ? group.Where(x => x.Warehouse == wipWarehouse).Sum(x => x.Balance_Quantity)
-                        : 0 // Set WIPQty based on presence of WIP warehouse
-                })
-                .ToListAsync();
+            //var itemStock = await _tipsWarehouseDbContext.Inventories
+            //    .Where(x => itemNumberList.Contains(x.PartNumber) && x.ProjectNumber == projectNo && x.IsStockAvailable == true && x.Balance_Quantity > 0 &&
+            //                partTypes.Contains(x.PartType) && !skipWareHouse.Contains(x.Warehouse))
+            //    .GroupBy(x => x.PartNumber)
+            //    .Select(group => new ConsumptionChildItemInventoryDto
+            //    {
+            //        PartNumber = group.Key,
+            //        BalanceQuantity = group.Any(x => x.Warehouse != wipWarehouse)
+            //            ? group.Where(x => x.Warehouse != wipWarehouse).Sum(x => x.Balance_Quantity)
+            //            : 0, // Sum Balance_Quantity only when Warehouse is not "WIP"
+            //        WipQuantity = group.Any(x => x.Warehouse == wipWarehouse)
+            //            ? group.Where(x => x.Warehouse == wipWarehouse).Sum(x => x.Balance_Quantity)
+            //            : 0 // Set WIPQty based on presence of WIP warehouse
+            //    })
+            //    .ToListAsync();
 
+            //return itemStock;
+            var itemStock = new List<ConsumptionChildItemInventoryDto>();
+            int batchSize = 100; // Adjust batch size as per your needs
+            int totalCount = itemNumberList.Count;
+            for (int i = 0; i < totalCount; i += batchSize)
+            {
+                var batchItemNumbers = itemNumberList.Skip(i).Take(batchSize).ToList();
+                var batchQuery = await _tipsWarehouseDbContext.Inventories
+                    .Where(x => batchItemNumbers.Contains(x.PartNumber) && x.ProjectNumber == projectNo && x.IsStockAvailable == true && x.Balance_Quantity > 0 &&
+                                partTypes.Contains(x.PartType) && !skipWareHouse.Contains(x.Warehouse))
+                    .GroupBy(x => x.PartNumber)
+                    .Select(group => new ConsumptionChildItemInventoryDto
+                    {
+                        PartNumber = group.Key,
+                        BalanceQuantity = group.Any(x => x.Warehouse != wipWarehouse)
+                            ? group.Where(x => x.Warehouse != wipWarehouse).Sum(x => x.Balance_Quantity)
+                            : 0,
+                        WipQuantity = group.Any(x => x.Warehouse == wipWarehouse)
+                            ? group.Where(x => x.Warehouse == wipWarehouse).Sum(x => x.Balance_Quantity)
+                            : 0
+                    })
+                    .ToListAsync();
+
+                itemStock.AddRange(batchQuery);
+                
+            }
             return itemStock;
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Tips.Purchase.Api.Entities.Dto;
+using Tips.Purchase.Api.Entities.DTOs;
 
 namespace Tips.Purchase.Api.Entities
 {
@@ -58,6 +59,7 @@ namespace Tips.Purchase.Api.Entities
             modelBuilder.Entity<PurchaseOrderSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<PurchaseRequisitionSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<PurchaseOrderSPReportForAvision>().HasNoKey();
+            modelBuilder.Entity<PurchaseRequisitionSPReportForAvision>().HasNoKey();
         }
     }
 }

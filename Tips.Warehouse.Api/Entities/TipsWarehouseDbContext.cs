@@ -92,6 +92,8 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<MRNSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<OpenDeliveryOrderSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<DeliveryOrderSPReportForTrans>().HasNoKey();
+            modelBuilder.Entity<InvoiceSPReportForTrans>().HasNoKey();
+            
             base.OnModelCreating(modelBuilder);
         }
         
