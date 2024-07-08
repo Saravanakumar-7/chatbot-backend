@@ -883,15 +883,20 @@ namespace Tips.SalesService.Api.Controllers
                     foreach (var salesOrderItemDetail in salesOrderDetailBeforeUpdate.SalesOrdersItems)
                     {
                         SalesOrderHistory salesOrderHistory = new SalesOrderHistory();
+                        salesOrderHistory.LeadId = salesOrderDetailBeforeUpdate.LeadId;
                         salesOrderHistory.SalesOrderNumber = salesOrderDetailBeforeUpdate.SalesOrderNumber;
+                        salesOrderHistory.SalesPerson = salesOrderDetailBeforeUpdate.SalesPerson;
                         salesOrderHistory.ProjectNumber = salesOrderDetailBeforeUpdate.ProjectNumber;
                         salesOrderHistory.QuoteNumber = salesOrderDetailBeforeUpdate.QuoteNumber;
+                        salesOrderHistory.QuoteRevisionNumber = salesOrderDetailBeforeUpdate.QuoteRevisionNumber;
                         salesOrderHistory.OrderDate = salesOrderDetailBeforeUpdate.OrderDate;
                         salesOrderHistory.OrderType = salesOrderDetailBeforeUpdate.OrderType;
                         salesOrderHistory.CustomerName = salesOrderDetailBeforeUpdate.CustomerName;
                         salesOrderHistory.CustomerId = salesOrderDetailBeforeUpdate.CustomerId;
                         salesOrderHistory.RevisionNumber = salesOrderDetailBeforeUpdate.RevisionNumber;
-                        //salesOrderHistory.SOStatus = salesOrderDetailBeforeUpdate.SOStatus;
+                        salesOrderHistory.SOStatus = salesOrderDetailBeforeUpdate.SOStatus;
+                        salesOrderHistory.ProductType = salesOrderDetailBeforeUpdate.ProductType;
+                        salesOrderHistory.TypeOfSolution = salesOrderDetailBeforeUpdate.TypeOfSolution;
                         salesOrderHistory.PONumber = salesOrderDetailBeforeUpdate.PONumber;
                         salesOrderHistory.PODate = salesOrderDetailBeforeUpdate.PODate;
                         salesOrderHistory.ReceivedDate = salesOrderDetailBeforeUpdate.ReceivedDate;
@@ -900,7 +905,18 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderHistory.ShipTo = salesOrderDetailBeforeUpdate.ShipTo;
                         salesOrderHistory.ShipToId = salesOrderDetailBeforeUpdate.ShipToId;
                         salesOrderHistory.PaymentTerms = salesOrderDetailBeforeUpdate.PaymentTerms;
+                        salesOrderHistory.ReasonForModification = salesOrderDetailBeforeUpdate.ReasonForModification;
+                        salesOrderHistory.InstallationCharges = salesOrderDetailBeforeUpdate.InstallationCharges;
+                        salesOrderHistory.TotalAmountWithInstallationCharges = salesOrderDetailBeforeUpdate.TotalAmountWithInstallationCharges;
+                        salesOrderHistory.TotalAdditionalCharges = salesOrderDetailBeforeUpdate.TotalAdditionalCharges;
+                        salesOrderHistory.SpecialDiscountType = salesOrderDetailBeforeUpdate.SpecialDiscountType;
+                        salesOrderHistory.SpecialDiscountAmount = salesOrderDetailBeforeUpdate.SpecialDiscountAmount;
                         salesOrderHistory.Total = salesOrderDetailBeforeUpdate.Total;
+                        salesOrderHistory.TotalFinalAmount = salesOrderDetailBeforeUpdate.TotalFinalAmount;
+                        salesOrderHistory.ConfirmStatus = salesOrderDetailBeforeUpdate.ConfirmStatus;
+                        salesOrderHistory.ApproveStatus = salesOrderDetailBeforeUpdate.ApproveStatus;
+                        salesOrderHistory.ConfirmDate = salesOrderDetailBeforeUpdate.ConfirmDate;
+                        salesOrderHistory.SoConfirmationStatus = salesOrderDetailBeforeUpdate.SoConfirmationStatus;
                         salesOrderHistory.Unit = salesOrderDetailBeforeUpdate.Unit;
                         salesOrderHistory.IsShortClosed = salesOrderDetailBeforeUpdate.IsShortClosed;
                         salesOrderHistory.ShortClosedBy = salesOrderDetailBeforeUpdate.ShortClosedBy;
@@ -910,23 +926,29 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderHistory.LastModifiedBy = salesOrderDetailBeforeUpdate.LastModifiedBy;
                         salesOrderHistory.LastModifiedOn = salesOrderDetailBeforeUpdate.LastModifiedOn;
                         salesOrderHistory.ItemNumber = salesOrderItemDetail.ItemNumber;
+                        salesOrderHistory.CustomerItemNumber = salesOrderItemDetail.CustomerItemNumber;
                         salesOrderHistory.Description = salesOrderItemDetail.Description;
-                        salesOrderHistory.BalanceQty = salesOrderItemDetail.BalanceQty;
-                        salesOrderHistory.DispatchQty = salesOrderItemDetail.DispatchQty;
-                        salesOrderHistory.ShopOrderQty = salesOrderItemDetail.ShopOrderQty;
+                        salesOrderHistory.PartType = salesOrderItemDetail.PartType;
+                        salesOrderHistory.StatusEnum = salesOrderItemDetail.StatusEnum;
                         salesOrderHistory.UOM = salesOrderItemDetail.UOM;
                         salesOrderHistory.Currency = salesOrderItemDetail.Currency;
                         salesOrderHistory.TotalAmount = salesOrderItemDetail.TotalAmount;
                         salesOrderHistory.BasicAmount = salesOrderItemDetail.BasicAmount;
                         salesOrderHistory.Discount = salesOrderItemDetail.Discount;
+                        salesOrderHistory.RoomName = salesOrderItemDetail.RoomName;
+                        salesOrderHistory.DiscountType = salesOrderItemDetail.DiscountType;
                         salesOrderHistory.UnitPrice = salesOrderItemDetail.UnitPrice;
                         salesOrderHistory.OrderQty = salesOrderItemDetail.OrderQty;
+                        salesOrderHistory.BalanceQty = salesOrderItemDetail.BalanceQty;
+                        salesOrderHistory.DispatchQty = salesOrderItemDetail.DispatchQty;
+                        salesOrderHistory.ShopOrderQty = salesOrderItemDetail.ShopOrderQty;
                         salesOrderHistory.SGST = salesOrderItemDetail.SGST;
                         salesOrderHistory.UTGST = salesOrderItemDetail.UTGST;
                         salesOrderHistory.CGST = salesOrderItemDetail.CGST;
                         salesOrderHistory.IGST = salesOrderItemDetail.IGST;
                         salesOrderHistory.ReceivedDate = salesOrderItemDetail.RequestedDate;
                         salesOrderHistory.Remarks = salesOrderItemDetail.Remarks;
+                        salesOrderHistory.SalesOrderId = salesOrderItemDetail.SalesOrderId;
 
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
                         await _salesOrderHistory.CreateSalesOrderHistory(salesOrderHistories);
@@ -953,9 +975,10 @@ namespace Tips.SalesService.Api.Controllers
                         SalesOrderAdditionalChargesHistory.IGST = soAdditionalCharges.IGST;
                         SalesOrderAdditionalChargesHistory.CGST = soAdditionalCharges.CGST;
                         SalesOrderAdditionalChargesHistory.UTGST = soAdditionalCharges.UTGST;
-                        SalesOrderAdditionalChargesHistory.UTGST = soAdditionalCharges.UTGST;
+                        SalesOrderAdditionalChargesHistory.SGST = soAdditionalCharges.SGST;
                         SalesOrderAdditionalChargesHistory.TotalValue = soAdditionalCharges.TotalValue;
                         SalesOrderAdditionalChargesHistory.InvoicedValue = soAdditionalCharges.InvoicedValue;
+                        SalesOrderAdditionalChargesHistory.SOAdditionalStatus = soAdditionalCharges.SOAdditionalStatus;
                         SalesOrderAdditionalChargesHistory.SalesOrderNumber = salesOrderDetailBeforeUpdate.SalesOrderNumber;
                         SalesOrderAdditionalChargesHistory.RevisionNumber = salesOrderDetailBeforeUpdate.RevisionNumber;
 

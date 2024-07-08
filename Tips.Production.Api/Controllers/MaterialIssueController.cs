@@ -868,8 +868,8 @@ namespace Tips.Production.Api.Controllers
 
                         if (existingItem != null)
                         {
-                            MaterialIssueLocation materialIssueLocations  = _mapper.Map<MaterialIssueLocation>(updatedItem.MaterialIssueLocationDto);
-                            materialIssueLocationList.Add(materialIssueLocations);
+                            List<MaterialIssueLocation> materialIssueLocations  = _mapper.Map<List<MaterialIssueLocation>>(updatedItem.MaterialIssueLocationDto);
+                           // materialIssueLocationList.Add(materialIssueLocations);
 
                             existingItem.IssuedQty += updatedItem.NewIssueQty;
                             existingItem.MaterialIssueLocations = materialIssueLocationList;
@@ -899,7 +899,7 @@ namespace Tips.Production.Api.Controllers
                                 var token1 = HttpContext.Request.Headers["Authorization"].ToString();
 
                                 var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
-                                "UpdateInventoryOnMaterialIssue"))
+                                "UpdateInventoryOnMaterialIssueLocation"))
                                 {
                                     Content = data
                                 };

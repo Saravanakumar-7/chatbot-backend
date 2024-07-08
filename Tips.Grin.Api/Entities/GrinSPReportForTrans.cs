@@ -11,7 +11,7 @@ namespace Tips.Grin.Api.Entities
         public string? InvoiceNumber { get; set; }
         public DateTime? InvoiceDate { get; set; }
         public string? PONumber { get; set; }
-        public string? KPN { get; set; }
+        public string? ItemNumber { get; set; }
         public string? MPN { get; set; }
         public string? ItemDescription { get; set; }
         public string? ManufactureBatchNumber { get; set; }

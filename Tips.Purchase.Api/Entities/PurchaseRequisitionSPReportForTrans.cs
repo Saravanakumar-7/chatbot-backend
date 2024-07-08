@@ -2,7 +2,7 @@
 {
     public class PurchaseRequisitionSPReportForTrans
     {
-        public int? PrNumber { get; set; }
+        public string? PrNumber { get; set; }
         public int? RevisionNumber { get; set; }
         public string? ProcurementType { get; set; }
         public DateTime? Prdate { get; set; }

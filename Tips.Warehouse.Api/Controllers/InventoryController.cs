@@ -2245,7 +2245,7 @@ namespace Tips.Warehouse.Api.Controllers
                                         inventoryTranction1.Issued_Quantity = inventoryPost.Balance_Quantity;
                                         inventoryTranction1.UOM = inventoryPost.UOM;
                                         inventoryTranction1.Issued_DateTime = DateTime.Now;
-                                        inventoryTranction1.Issued_By = "";
+                                        inventoryTranction1.Issued_By = inventoryPost.LastModifiedBy;
                                         inventoryTranction1.ShopOrderId = "";
                                         inventoryTranction1.IsStockAvailable = inventoryPost.IsStockAvailable;
                                         inventoryTranction1.shopOrderNo = inventoryPost.shopOrderNo;

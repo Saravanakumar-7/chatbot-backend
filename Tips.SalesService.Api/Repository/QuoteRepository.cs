@@ -355,6 +355,34 @@ namespace Tips.SalesService.Api.Repository
                         ImageURL = itemobject.Where(x => x.itemnumber == rfqItem.ItemNumber).Select(x => x.downloadUrl).FirstOrDefault()
                     };
                     postdata.Add(itemDetails);
+
+                }
+                else
+                {
+                    var itemDetails = new CsItemDetailsForQuoteDto
+                    {
+                        LeadId = rfqDetail.LeadId,
+                        RFQNumber = rfqItem.RfqNumber,
+                        CustomerName = rfqDetail.CustomerName,
+                        CustomerAliasName = rfqDetail.CustomerAliasName,
+                        RoomName = rfqItem.RoomName,
+                        CustomerId = rfqDetail.CustomerId,
+                        ItemNumber = rfqItem.ItemNumber,
+                        Description = rfqItem.Description,
+                        CustomFields = rfqItem.CustomFields,
+                       // PriceListName = itemPriceList.PriceListName,
+                        Qty = rfqItem.Qty,
+                        //UnitPrice = itemPriceList.LeastCost,
+                        //LeastCostPlus = itemPriceList.LeastCostPlus,
+                        //LeastCostminus = itemPriceList.LeastCostminus,
+                        //DiscountMinus = itemPriceList.DiscountMinus,
+                        //DiscountPlus = itemPriceList.DiscountPlus,
+                        //Markup = itemPriceList.Markup,
+                        //CreatedOn = itemPriceList.CreatedOn,
+                        //IsDiscountApplicable = itemPriceList.IsDiscountApplicable,
+                        ImageURL = itemobject.Where(x => x.itemnumber == rfqItem.ItemNumber).Select(x => x.downloadUrl).FirstOrDefault()
+                    };
+                    postdata.Add(itemDetails);
                 }
             }
 
