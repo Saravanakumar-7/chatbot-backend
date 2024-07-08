@@ -868,8 +868,7 @@ namespace Tips.Production.Api.Controllers
 
                         if (existingItem != null)
                         {
-                            List<MaterialIssueLocation> materialIssueLocations  = _mapper.Map<List<MaterialIssueLocation>>(updatedItem.MaterialIssueLocationDto);
-                           // materialIssueLocationList.Add(materialIssueLocations);
+                            List<MaterialIssueLocation> invoiceAdditionalChargesDetails = _mapper.Map<List<MaterialIssueLocation>>(updatedItem.MaterialIssueLocationDto.ToList());
 
                             existingItem.IssuedQty += updatedItem.NewIssueQty;
                             existingItem.MaterialIssueLocations = materialIssueLocationList;

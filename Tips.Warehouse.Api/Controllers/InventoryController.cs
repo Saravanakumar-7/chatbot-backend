@@ -1511,7 +1511,7 @@ namespace Tips.Warehouse.Api.Controllers
                         .GetInventoryDetailsByItemNoandProjectNoandWarehouseandLocation(dtoForMaterialIssue.PartNumber, dtoForMaterialIssue.ProjectNumber, dtoForMaterialIssue.Warehouse,
                                                                                                         dtoForMaterialIssue.Location);
 
-                if (inventoryDetails == null || inventoryDetails.Count() > 0)
+                if (inventoryDetails.Count() == 0)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"Inventory Details hasn't been found";
