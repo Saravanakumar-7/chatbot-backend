@@ -115,6 +115,13 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? KPN { get; set; }
         public string? ShopOrderNumber { get; set; }
     }
+    public class MaterialRequestReportWithParamDtoForTrans
+    {
+        public string? MRNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? Itemnumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
+    }
     public class MaterialIssueAgainstMaterialRequestReportWithParamDto
     {
         public string? MRNumber { get; set; }
@@ -123,7 +130,24 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? KPN { get; set; }
         public string? ShopOrderNumber { get; set; }
     }
+    public class MaterialRequestSpReportForTrans
+    {
+        public string? MRNumber { get; set; }
+        public string? ProjectType { get; set; }
+        public int? Itemtype { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        public decimal? RequestQty { get; set; }
+        public string? Itemnumber { get; set; }
+        public string? MPN { get; set; }
+        public string? Description { get; set; }
+        public decimal? IssuedQty { get; set; }
+        public string? Uom { get; set; }
+        public DateTime? MRDate { get; set; }
+        public int? MrStatus { get; set; }
+    }
+
 
 }
-    
+
 

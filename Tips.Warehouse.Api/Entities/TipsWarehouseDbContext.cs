@@ -90,6 +90,11 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<StockMovementLatestSPReport>().HasNoKey();
             modelBuilder.Entity<TrascationKPNWSPReport>().HasNoKey();
             modelBuilder.Entity<StockMovementHistorySPReport>().HasNoKey();
+            modelBuilder.Entity<MRNSPReportForTrans>().HasNoKey();
+            modelBuilder.Entity<OpenDeliveryOrderSPReportForTrans>().HasNoKey();
+            modelBuilder.Entity<DeliveryOrderSPReportForTrans>().HasNoKey();
+            modelBuilder.Entity<InvoiceSPReportForTrans>().HasNoKey();
+            
             base.OnModelCreating(modelBuilder);
         }
         

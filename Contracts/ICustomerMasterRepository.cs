@@ -23,7 +23,7 @@ namespace Contracts
         Task<string> GenerateCustomerNumberAvision();
         Task<int?> GetCustomerbyCustomerNumber(string customerNumber);
 
-        Task<IEnumerable<CustomerMasterLeadIdSPReport>> GetCustomerLeadIdDataOnDailyBasis();
+        Task<IEnumerable<CustomerMasterLeadIdSPReport>> GetCustomerLeadIdDataOnDailyBasis(DateTime? FromDate, DateTime? ToDate);
         Task<CustomerMaster> GetCustomerMasterByCustomerNo(string customerNumber);
 
     }

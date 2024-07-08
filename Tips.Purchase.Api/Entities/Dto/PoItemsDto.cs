@@ -16,6 +16,8 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? UOM { get; set; }
         [Precision(18, 3)]
         public decimal UnitPrice { get; set; }
+        public decimal? Allowance { get; set; }
+
         [Precision(13, 3)]
         public decimal Qty { get; set; }
         public decimal BalanceQty { get; set; }
@@ -61,7 +63,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         [Precision(13, 3)]
         public decimal Qty { get; set; }
         public PoPartType? PartType { get; set; }
-
+        public decimal? Allowance { get; set; }
         public string? SpecialInstruction { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
         [Precision(13, 3)]
@@ -95,7 +97,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? Description { get; set; }
         public string? UOM { get; set; }
         public PoPartType? PartType { get; set; }
-
+        public decimal? Allowance { get; set; }
         [Precision(18, 3)]
         public decimal UnitPrice { get; set; }
         [Precision(13, 3)]
@@ -152,7 +154,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal IGST { get; set; }
         [Precision(13, 3)]
         public decimal UTGST { get; set; }
-
+        public decimal? Allowance { get; set; }
         [Precision(13, 3)]
         public decimal? SubTotal { get; set; }
         [Precision(13, 3)]

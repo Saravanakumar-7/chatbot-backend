@@ -236,8 +236,32 @@ namespace Tips.Purchase.Api.Entities.DTOs
     {
         public string? PrNumber { get; set; }
         public string? ProcurementType { get; set; }
-        public string? ShippingMode { get; set; }
         public string? PrStatus { get; set; }
         public string? ProjectNumber { get; set; }
     }
+    public class PurchaseRequisitionSPReportWithParamForAviDTO
+    {
+        public string? PrNumber { get; set; }
+        public string? ProcurementType { get; set; }
+        public string? PrStatus { get; set; }
+    }
+    public class PurchaseRequisitionSPReportForAvision
+    {
+        public string? PrNumber { get; set; }
+        public DateTime? PrDate { get; set; }
+        public int? RevisionNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? ProcurementType { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? MftrItemNumber { get; set; }
+        public string? Description { get; set; }
+        public string? DrawingRevisionNumber { get; set; }
+        public decimal? Qty { get; set; }
+        public string? UOM { get; set; }
+        public string? PrCreatedBy { get; set; }
+        public string? PrApprovedIBy { get; set; }
+        public string? PrApprovedIIBy { get; set; }
+        public int? PrStatus { get; set; }
+    }
+
 }

@@ -728,14 +728,14 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpGet] // Adjust your route as needed
-        public async Task<IActionResult> GetQuoteSPReport()
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetQuoteSPReport(QuoteSpReportDto quoteSpReportDto)
 
         {
             ServiceResponse<IEnumerable<QuoteSPReport>> serviceResponse = new ServiceResponse<IEnumerable<QuoteSPReport>>();
             try
             {
-                var products = await _repository.GetQuoteSPReport();
+                var products = await _repository.GetQuoteSPReport(quoteSpReportDto.CustomerName,quoteSpReportDto.CustomerId,quoteSpReportDto.RfqNumber);
 
                 if (products == null)
                 {

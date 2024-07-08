@@ -112,4 +112,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string RfqNumber { get; set; }
         public string? SalesPerson { get; set; }
     }
+    public class RfqSpReportDto
+    {
+        public string? CustomerName { get; set; }
+        public string? CustomerId { get; set; }
+        public string? RfqNumber { get; set; }
+    }
 }

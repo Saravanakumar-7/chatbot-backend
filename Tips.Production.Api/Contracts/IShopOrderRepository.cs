@@ -3,6 +3,7 @@ using Entities.DTOs;
 using Entities.Enums;
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 
@@ -35,9 +36,13 @@ namespace Tips.Production.Api.Contracts
         Task<string> GenerateSONumber();
         Task<string> GenerateSONumberForKeus();
         Task<IEnumerable<ShopOrderNumberSPReport>> ShopOrderNumberSPReport();
+        Task<PagedList<ShopOrderSPReportForTrans>> GetShopOrderNumberSPReportForTrans(PagingParameter pagingParameter);
         Task<IEnumerable<ShopOrderNumberSPReport>> GetShopOrderSPReportWithParam(string? shopOrderNo, string? projectType,
                                                                                                   string? projectNo, string? salesOrderNo, string? KPN, string? MPN);
+        Task<IEnumerable<ShopOrderSPReportForTrans>> GetShopOrderSPReportWithParamForTrans(string? WorkOrderNumber, string? projectType,
+                                                                                                 string? projectNo, string? salesOrderNo, string? KPN, string? MPN);
         Task<IEnumerable<ShopOrderNumberSPReport>> GetShopOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<ShopOrderSPReportForTrans>> GetShopOrderSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
         public void SaveAsync();
     }
 }

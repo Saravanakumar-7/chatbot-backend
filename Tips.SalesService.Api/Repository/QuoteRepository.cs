@@ -48,11 +48,11 @@ namespace Tips.SalesService.Api.Repository
             var result = await Create(quote);
             return result.Id;
         }
-        public async Task<IEnumerable<QuoteSPReport>> GetQuoteSPReport()
+        public async Task<IEnumerable<QuoteSPReport>> GetQuoteSPReport(string CustomerName, string CustomerId, string RfqNumber)
         {
             var result = _tipsSalesServiceDbContext
             .Set<QuoteSPReport>()
-            .FromSqlInterpolated($"CALL Quotes_Report")
+            .FromSqlInterpolated($"CALL Quotes_Report({CustomerName},{CustomerId},{RfqNumber})")
             .ToList();
 
             return result;
@@ -355,6 +355,34 @@ namespace Tips.SalesService.Api.Repository
                         Markup = itemPriceList.Markup,
                         CreatedOn = itemPriceList.CreatedOn,
                         IsDiscountApplicable = itemPriceList.IsDiscountApplicable,
+                        ImageURL = itemobject.Where(x => x.itemnumber == rfqItem.ItemNumber).Select(x => x.downloadUrl).FirstOrDefault()
+                    };
+                    postdata.Add(itemDetails);
+
+                }
+                else
+                {
+                    var itemDetails = new CsItemDetailsForQuoteDto
+                    {
+                        LeadId = rfqDetail.LeadId,
+                        RFQNumber = rfqItem.RfqNumber,
+                        CustomerName = rfqDetail.CustomerName,
+                        CustomerAliasName = rfqDetail.CustomerAliasName,
+                        RoomName = rfqItem.RoomName,
+                        CustomerId = rfqDetail.CustomerId,
+                        ItemNumber = rfqItem.ItemNumber,
+                        Description = rfqItem.Description,
+                        CustomFields = rfqItem.CustomFields,
+                       // PriceListName = itemPriceList.PriceListName,
+                        Qty = rfqItem.Qty,
+                        //UnitPrice = itemPriceList.LeastCost,
+                        //LeastCostPlus = itemPriceList.LeastCostPlus,
+                        //LeastCostminus = itemPriceList.LeastCostminus,
+                        //DiscountMinus = itemPriceList.DiscountMinus,
+                        //DiscountPlus = itemPriceList.DiscountPlus,
+                        //Markup = itemPriceList.Markup,
+                        //CreatedOn = itemPriceList.CreatedOn,
+                        //IsDiscountApplicable = itemPriceList.IsDiscountApplicable,
                         ImageURL = itemobject.Where(x => x.itemnumber == rfqItem.ItemNumber).Select(x => x.downloadUrl).FirstOrDefault()
                     };
                     postdata.Add(itemDetails);

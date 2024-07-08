@@ -29,7 +29,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
         public IssuedStatus MaterialIssuedStatus { get; set; } 
         public int MaterialIssueId { get; set; }
-        public List<MaterialIssueLocationDto> MaterialIssueLocationDto { get; set; }
+        public List<MaterialIssueLocationDto>? MaterialIssueLocationDto { get; set; }
 
     }
 
@@ -43,7 +43,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? UOM { get; set; }
         [Precision(13, 3)]
         public decimal RequiredQty { get; set; }
-        public List<MaterialIssueLocationPostDto> MaterialIssueLocationDto { get; set; }
+        public List<MaterialIssueLocationPostDto>? MaterialIssueLocationDto { get; set; }
 
     }
 
@@ -67,7 +67,30 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? Unit { get; set; }
         public IssuedStatus MaterialIssuedStatus { get; set; }
         public int MaterialIssueId { get; set; }
-        public List<MaterialIssueLocationUpdateDto> MaterialIssueLocationDto { get; set; }
+        public List<MaterialIssueLocationUpdateDto>? MaterialIssueLocationDto { get; set; }
+
+    }
+    public class IssueMaterialIssueItemUpdateDto
+    {
+        public int Id { get; set; }
+        public string? PartNumber { get; set; }
+        [MaxLength(500)]
+        public string? Description { get; set; }
+        public PartType PartType { get; set; }
+        public string? UOM { get; set; }
+        [Precision(13, 3)]
+        public decimal RequiredQty { get; set; }
+        [Precision(13, 3)]
+        public decimal IssuedQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal NewIssueQty { get; set; }
+
+        [Precision(13, 3)]
+        public string? Unit { get; set; }
+        public IssuedStatus MaterialIssuedStatus { get; set; }
+        public int MaterialIssueId { get; set; }
+        public List<IssueMaterialIssueLocationUpdateDto> MaterialIssueLocationDto { get; set; }
 
     }
     public class MaterialIssueItemReportDto

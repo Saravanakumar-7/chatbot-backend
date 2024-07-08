@@ -44,6 +44,14 @@ namespace Tips.Production.Api.Repository
 
             return results;
         }
+        public async Task<PagedList<MaterialIssueSPReportForTrans>> GetMaterialIssueSPReportForTrans(PagingParameter pagingParameter)
+        {
+            var results = _tipsProductionDbContext.Set<MaterialIssueSPReportForTrans>()
+                        .FromSqlInterpolated($"CALL Material_Issue_Report_tras")
+                        .ToList();
+
+            return PagedList<MaterialIssueSPReportForTrans>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
         public async Task<IEnumerable<MaterialIssueSPReport>> GetMaterialIssueSPReportWithParam(string? shopOrderNo, string? FGitemnumber, string? projectNo,
                                                                                                    string? salesOrderNo)
         {
@@ -54,10 +62,28 @@ namespace Tips.Production.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<MaterialIssueSPReportForTrans>> GetMaterialIssueSPReportWithParamForTrans(string? WorkorderNo, string? ItemNumber, string? projectNo,
+                                                                                                  string? salesOrderNo)
+        {
+            var result = _tipsProductionDbContext
+            .Set<MaterialIssueSPReportForTrans>()
+            .FromSqlInterpolated($"Material_Issue_Report_withparameter_tras({WorkorderNo},{ItemNumber},{projectNo},{salesOrderNo})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<MaterialIssueSPReport>> GetMaterialIssueSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsProductionDbContext.Set<MaterialIssueSPReport>()
                       .FromSqlInterpolated($"Material_Issue_Report_withparameter_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<MaterialIssueSPReportForTrans>> GetMaterialIssueSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsProductionDbContext.Set<MaterialIssueSPReportForTrans>()
+                      .FromSqlInterpolated($"Material_Issue_Report_withparameter_withdate_tras({FromDate},{ToDate})")
                       .ToList();
 
             return results;

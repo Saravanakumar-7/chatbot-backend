@@ -35,10 +35,12 @@ namespace Tips.Grin.Api.Contracts
         Task<string> GenerateGrinNumberForAvision();
         Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string? GrinNumber, string? VendorName, string? PONumber, string? KPN, string? MPN, 
                                                                                                                             string? Warehouse, string? Location);
-        Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParamForTrans(string? GrinNumber, string? VendorName, string? PONumber,
-                                                                                                    string? KPN, string? MPN, string? Warehouse, string? Location,
+        Task<IEnumerable<GrinSPReportForTrans>> GetGrinSPReportWithParamForTrans(string? GrinNumber, string? VendorName, string? PONumber,
+                                                                                                    string? ItemNumber, string? MPN, string? Warehouse, string? Location,
                                                                                                     string? ProjectNumber);
         Task<PagedList<Grin_ReportSP>> GetGrinSPReport(PagingParameter pagingParameter);
+        Task<PagedList<GrinSPReportForTrans>> GetGrinSPReportForTrans(PagingParameter pagingParameter);
         Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<GrinSPReportForTrans>> GetGrinSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
     }
 }

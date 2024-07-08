@@ -125,6 +125,55 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetOpenGrinSPReportForTrans([FromQuery] PagingParameter pagingParameter)
+        {
+            ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>>();
+            try
+            {
+                var products = await _openGrinRepository.GetOpenGrinSPReportForTrans(pagingParameter);
+
+                var metadata = new
+                {
+                    products.TotalCount,
+                    products.PageSize,
+                    products.CurrentPage,
+                    products.HasNext,
+                    products.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                _logger.LogInfo("Returned all GetGrinSPReport");
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Grin hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Grin hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Grin Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetOpenGrinSPReport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> GetOpenGrinSPReportWithParam([FromBody] OpenGrinReportWithParamDto openGrinReportWithParamDto)
         {
@@ -166,11 +215,11 @@ namespace Tips.Grin.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetOpenGrinSPReportWithParamForTrans([FromBody] OpenGrinReportWithParamForTransDto openGrinReportWithParamDto)
         {
-            ServiceResponse<IEnumerable<OpenGrin_SPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrin_SPReport>>();
+            ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>>();
             try
             {
                 var products = await _openGrinRepository.GetOpenGrinSPReportWithParamForTrans(openGrinReportWithParamDto.OpenGrinNumber, openGrinReportWithParamDto.SenderName,
-                                                                                          openGrinReportWithParamDto.ReceiptRefNo, openGrinReportWithParamDto.ReferenceSONumber);
+                                                                                          openGrinReportWithParamDto.ReceiptRefNo, openGrinReportWithParamDto.ProjectNumber);
 
                 if (products == null)
                 {
@@ -185,7 +234,7 @@ namespace Tips.Grin.Api.Controllers
                 {
 
                     serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned Grin Details";
+                    serviceResponse.Message = "Returned OpenGrinSPReportWithParamForTrans Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -195,7 +244,44 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithParam action";
+                serviceResponse.Message = $"Something went wrong inside GetOpenGrinSPReportWithParamForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetOpenGrinSPReportWithDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>>();
+            try
+            {
+                var products = await _openGrinRepository.GetOpenGrinSPReportWithDateForTrans(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OpenGrin hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OpenGrin hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OpenGrinSPReportWithDateForTrans Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetOpenGrinSPReportWithDateForTrans action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -486,7 +572,7 @@ namespace Tips.Grin.Api.Controllers
                 //}
 
 
-                //Create OpenGrin To Inventory
+                //Create OpenGrin To Inventory And InventoryTransaction
 
                 if (openGrinPartsDtoList != null)
                 {
@@ -555,58 +641,58 @@ namespace Tips.Grin.Api.Controllers
                                 if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
 
 
+                                OGInventoryTranctionDto inventoryTranction = new OGInventoryTranctionDto();
+
+                                inventoryTranction.PartNumber = openGrinParts.ItemNumber;
+                                inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                inventoryTranction.Description = openGrinParts.Description;
+                                inventoryTranction.ProjectNumber = openGrinParts.ReferenceSONumber;
+                                inventoryTranction.Issued_Quantity = openGrinParts.Qty;
+                                inventoryTranction.IsStockAvailable = true;
+                                inventoryTranction.UOM = openGrinParts.UOM;
+                                inventoryTranction.Warehouse = openGrinDetail.Warehouse;
+                                inventoryTranction.From_Location = openGrinDetail.Location;
+                                inventoryTranction.TO_Location = openGrinDetail.Location;
+                                inventoryTranction.GrinNo = openGrinDetails.OpenGrinNumber;
+                                inventoryTranction.GrinPartId = 0;
+                                inventoryTranction.PartType = openGrinParts.ItemType; // we have to take parttype from grinparts model;
+                                inventoryTranction.GrinMaterialType = "";
+                                inventoryTranction.ReferenceID = Convert.ToString(openGrinParts.Id);
+                                inventoryTranction.ReferenceIDFrom = "OpenGrin";
+                                inventoryTranction.ShopOrderNo = "";
+
+
+                                var jsons = JsonConvert.SerializeObject(inventoryTranction);
+                                var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                                // var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datas);
+
+                                var client2 = _clientFactory.CreateClient();
+                                var token2 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                                var request2 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                                "CreateInventoryTranction"))
+                                {
+                                    Content = datas
+                                };
+                                request2.Headers.Add("Authorization", token2);
+
+                                var responses = await client1.SendAsync(request2);
+                                if (responses.StatusCode != HttpStatusCode.OK) createInvTrans = responses.StatusCode;
+
                             }
                         }
-                    }
-                }
-                //Create OpenGrin To InventoryTranction
-
-                if (openGrinPartsDtoList != null)
-                {
-                    foreach (var openGrinParts in openGrinPartsDtoList)
-                    {
-                        foreach (var openGrinDetail in openGrinParts.OpenGrinDetails)
+                        else
                         {
-                            OGInventoryTranctionDto inventoryTranction = new OGInventoryTranctionDto();
-
-                            inventoryTranction.PartNumber = openGrinParts.ItemNumber;
-                            inventoryTranction.MftrPartNumber = openGrinParts.ItemNumber;
-                            inventoryTranction.Description = openGrinParts.Description;
-                            inventoryTranction.ProjectNumber = openGrinParts.ReferenceSONumber;
-                            inventoryTranction.Issued_Quantity = openGrinParts.Qty;
-                            inventoryTranction.IsStockAvailable = true;
-                            inventoryTranction.UOM = openGrinParts.UOM;
-                            inventoryTranction.Warehouse = openGrinDetail.Warehouse;
-                            inventoryTranction.From_Location = openGrinDetail.Location;
-                            inventoryTranction.TO_Location = openGrinDetail.Location;
-                            inventoryTranction.GrinNo = openGrinDetails.OpenGrinNumber;
-                            inventoryTranction.GrinPartId = 0;
-                            inventoryTranction.PartType = openGrinParts.ItemType; // we have to take parttype from grinparts model;
-                            inventoryTranction.GrinMaterialType = "";
-                            inventoryTranction.ReferenceID = Convert.ToString(openGrinParts.Id);
-                            inventoryTranction.ReferenceIDFrom = "OpenGrin";
-                            inventoryTranction.ShopOrderNo = "";
-
-
-                            var jsons = JsonConvert.SerializeObject(inventoryTranction);
-                            var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                           // var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datas);
-
-                            var client1 = _clientFactory.CreateClient();
-                            var token1 = HttpContext.Request.Headers["Authorization"].ToString();
-
-                            var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
-                            "CreateInventoryTranction"))
-                            {
-                                Content = datas
-                            };
-                            request1.Headers.Add("Authorization", token1);
-
-                            var responses = await client1.SendAsync(request1);
-                            if (responses.StatusCode != HttpStatusCode.OK) createInvTrans = responses.StatusCode;
+                            _logger.LogError($"Something went wrong inside Create OpenGrin action: ItemMasterAlternates is not available for the ItemNumber Other Service Calling");
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "Saving Failed";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                            return StatusCode(500, serviceResponse);
                         }
                     }
                 }
+               
 
                 if ( createInv == HttpStatusCode.OK && createInvTrans == HttpStatusCode.OK && getItemmResp == HttpStatusCode.OK)
                 {

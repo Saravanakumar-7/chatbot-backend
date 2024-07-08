@@ -20,10 +20,14 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<MaterialIssue>> SearchMaterialIssue([FromQuery] SearchParamess searchParammes);
         Task<IEnumerable<MaterialIssue>> SearchMaterialIssueDate([FromQuery] SearchDateparames searchDatesParams);
         Task<IEnumerable<MaterialIssueSPReport>> MaterialIssueSPReport();
+        Task<PagedList<MaterialIssueSPReportForTrans>> GetMaterialIssueSPReportForTrans(PagingParameter pagingParameter);
         Task<IEnumerable<PickList>> PickListProductionSPReport(string? ShopOrderNumber);
         Task<IEnumerable<MaterialIssueSPReport>> GetMaterialIssueSPReportWithParam(string? shopOrderNo, string? FGitemnumber, string? projectNo,
                                                                                                    string? salesOrderNo);
+        Task<IEnumerable<MaterialIssueSPReportForTrans>> GetMaterialIssueSPReportWithParamForTrans(string? WorkorderNo, string? ItemNumber, string? projectNo,
+                                                                                                  string? salesOrderNo);
         Task<IEnumerable<MaterialIssueSPReport>> GetMaterialIssueSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<MaterialIssueSPReportForTrans>> GetMaterialIssueSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
 
     }
 }

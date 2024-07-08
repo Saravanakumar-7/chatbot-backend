@@ -223,12 +223,11 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> InvoiceSPReportWithParameterForTrans([FromBody] InvoiceSPReportWithParamForTransDTO invoiceSPReport)
         {
-            ServiceResponse<IEnumerable<InvoiceForTransSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceForTransSPReport>>();
+            ServiceResponse<IEnumerable<InvoiceSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSPReportForTrans>>();
             try
             {
                 var products = await _invoiceRepository.InvoiceSPReportWithParameterForTrans(invoiceSPReport.InvoiceNumber, invoiceSPReport.DONumber, 
-                                                                                    invoiceSPReport.CustomerId, invoiceSPReport.CustomerName, 
-                                                                                    invoiceSPReport.CustomerAliasName, invoiceSPReport.SalesOrderNumber, 
+                                                                                    invoiceSPReport.CustomerId, invoiceSPReport.CustomerName, invoiceSPReport.SalesOrderNumber, 
                                                                                     invoiceSPReport.Location, invoiceSPReport.Warehouse, invoiceSPReport.KPN, 
                                                                                     invoiceSPReport.MPN, invoiceSPReport.IssuedTo, invoiceSPReport.ProjectNumber);
                 if (products == null)
@@ -592,6 +591,42 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside Invoice action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> InvoiceSPReportDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<InvoiceSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSPReportForTrans>>();
+            try
+            {
+                var products = await _invoiceRepository.InvoiceSPReportDateForTrans(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Invoice hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Invoice hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Invoice Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside InvoiceSPReportDateForTrans action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

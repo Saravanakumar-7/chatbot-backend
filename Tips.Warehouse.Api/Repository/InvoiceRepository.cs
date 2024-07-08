@@ -112,6 +112,14 @@ namespace Tips.Warehouse.Api.Repository
 
             return results;
         }
+        public async Task<IEnumerable<InvoiceSPReportForTrans>> InvoiceSPReportDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<InvoiceSPReportForTrans>()
+                         .FromSqlInterpolated($"CALL Invoice_Report_withparameter_invoicedate_tras({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
 
         public async Task<PagedList<InvoiceSPReport>> InvoiceSPReport(PagingParameter pagingParameter)
         {
@@ -130,10 +138,12 @@ namespace Tips.Warehouse.Api.Repository
             return result;
 
         }
-        public async Task<IEnumerable<InvoiceForTransSPReport>> InvoiceSPReportWithParameterForTrans(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName, string? CustomerAliasName, string? SalesOrderNumber, string? Location, string? Warehouse, string? KPN, string? MPN, string? IssuedTo, string? ProjectNumber)
+        public async Task<IEnumerable<InvoiceSPReportForTrans>> InvoiceSPReportWithParameterForTrans(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName,
+                                                                                                        string? SalesOrderNumber, string? Location,
+                                                                                                            string? Warehouse, string? KPN, string? MPN, string? IssuedTo, string? ProjectNumber)
         {
-            var result = _tipsWarehouseDbContext.Set<InvoiceForTransSPReport>()
-                            .FromSqlInterpolated($"CALL Invoice_Report_withparameter_tras({InvoiceNumber},{DONumber},{CustomerId},{CustomerName},{CustomerAliasName},{SalesOrderNumber},{Location},{Warehouse},{KPN},{MPN},{IssuedTo},{ProjectNumber})")
+            var result = _tipsWarehouseDbContext.Set<InvoiceSPReportForTrans>()
+                            .FromSqlInterpolated($"CALL Invoice_Report_withparameter_tras({InvoiceNumber},{DONumber},{CustomerId},{CustomerName},{SalesOrderNumber},{Location},{Warehouse},{KPN},{MPN},{IssuedTo},{ProjectNumber})")
                             .ToList();
 
             return result;
