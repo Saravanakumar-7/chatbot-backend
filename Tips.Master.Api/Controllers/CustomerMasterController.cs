@@ -797,12 +797,12 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet] // Adjust your route as needed
-        public async Task<IActionResult> GetCustomerLeadIdSPReportOnDailyBasis()
+        public async Task<IActionResult> GetCustomerLeadIdSPReportOnDailyBasis([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
             ServiceResponse<IEnumerable<CustomerMasterLeadIdSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CustomerMasterLeadIdSPReport>>();
             try
             {
-                var products = await _repository.CustomerMasterRepository.GetCustomerLeadIdDataOnDailyBasis();
+                var products = await _repository.CustomerMasterRepository.GetCustomerLeadIdDataOnDailyBasis(FromDate, ToDate);
 
                 if (products == null)
                 {

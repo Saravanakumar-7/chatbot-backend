@@ -596,11 +596,11 @@ namespace Tips.SalesService.Api.Repository
               .Where(x => x.Id == rfqId).FirstOrDefaultAsync();
             return rfqDetailsByRfqNumber;
         }
-        public async Task<IEnumerable<RfqSPReport>> GetRfqSPReport()
+        public async Task<IEnumerable<RfqSPReport>> GetRfqSPReport(string CustomerName,string CustomerId,string RfqNumber)
         {
             var result = _tipsSalesServiceDbContext
             .Set<RfqSPReport>()
-            .FromSqlInterpolated($"CALL RFQ_Report")
+            .FromSqlInterpolated($"CALL RFQ_Report({CustomerName},{CustomerId},{RfqNumber})")
             .ToList();
 
             return result;

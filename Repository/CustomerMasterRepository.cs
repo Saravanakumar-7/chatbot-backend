@@ -203,11 +203,11 @@ namespace Repository
 
             return getCustomerMasterById;
         }
-        public async Task<IEnumerable<CustomerMasterLeadIdSPReport>> GetCustomerLeadIdDataOnDailyBasis()
+        public async Task<IEnumerable<CustomerMasterLeadIdSPReport>> GetCustomerLeadIdDataOnDailyBasis(DateTime? FromDate, DateTime? ToDate)
         {
             var result = TipsMasterDbContext
             .Set<CustomerMasterLeadIdSPReport>()
-            .FromSqlInterpolated($"CALL customerlead_data_ondaily_basis()")
+            .FromSqlInterpolated($"CALL customerlead_data_ondaily_basis({FromDate},{ToDate})")
             .ToList();
 
             return result;

@@ -27,7 +27,7 @@ namespace Tips.SalesService.Api.Contracts
          Task<string> UpdateQuote(Quote quote);
         Task<string> DeleteQuote(Quote quote);
         Task<Quote> GetQuoteByQuoteNumber(string quoteNumber);
-        Task<IEnumerable<QuoteSPReport>> GetQuoteSPReport();
+        Task<IEnumerable<QuoteSPReport>> GetQuoteSPReport(string CustomerName, string CustomerId, string RfqNumber);
         Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithParam(string CustomerId);
         Task<IEnumerable<SoSummaryQuotationDto>> GetSoSummaryQuotationSPReportWithParam(string FirstQuotenumber, string SOlatestSalesorder);
         Task<IEnumerable<SoSummaryQuotationDto>> GetSoSummaryQuotationSPReportWithDate(DateTime? FromDate, DateTime? ToDate);

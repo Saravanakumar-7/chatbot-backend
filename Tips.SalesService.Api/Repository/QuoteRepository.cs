@@ -48,11 +48,11 @@ namespace Tips.SalesService.Api.Repository
             var result = await Create(quote);
             return result.Id;
         }
-        public async Task<IEnumerable<QuoteSPReport>> GetQuoteSPReport()
+        public async Task<IEnumerable<QuoteSPReport>> GetQuoteSPReport(string CustomerName, string CustomerId, string RfqNumber)
         {
             var result = _tipsSalesServiceDbContext
             .Set<QuoteSPReport>()
-            .FromSqlInterpolated($"CALL Quotes_Report")
+            .FromSqlInterpolated($"CALL Quotes_Report({CustomerName},{CustomerId},{RfqNumber})")
             .ToList();
 
             return result;

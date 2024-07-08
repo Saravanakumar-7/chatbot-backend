@@ -3955,14 +3955,14 @@ namespace Tips.SalesService.Api.Controllers
                     }
                 }
 
-        [HttpGet] // Adjust your route as needed
-        public async Task<IActionResult> GetRfqSPReport()
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetRfqSPReport(RfqSpReportDto rfqSpReportDto)
 
         {
             ServiceResponse<IEnumerable<RfqSPReport>> serviceResponse = new ServiceResponse<IEnumerable<RfqSPReport>>();
             try
             {
-                var products = await _rfqRepository.GetRfqSPReport();
+                var products = await _rfqRepository.GetRfqSPReport(rfqSpReportDto.CustomerName,rfqSpReportDto.CustomerId,rfqSpReportDto.RfqNumber);
 
                 if (products == null)
                 {
