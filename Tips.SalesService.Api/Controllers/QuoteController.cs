@@ -31,6 +31,8 @@ using SalesEmailIDsDto = Tips.SalesService.Api.Entities.DTOs.SalesEmailIDsDto;
 using EmailTemplateDto = Tips.SalesService.Api.Entities.DTOs.EmailTemplateDto;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
+using System.Text;
+using System.Net.Http.Headers;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -110,7 +112,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     TotalCount,
                     pagingParameter.PageSize,
-                    CurrentPage=pagingParameter.PageNumber
+                    CurrentPage = pagingParameter.PageNumber
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
@@ -240,13 +242,13 @@ namespace Tips.SalesService.Api.Controllers
                         }
                         else
                         {
-                                _logger.LogError($"Something went wrong inside Create GetQuoteById action: ItemMaster PartType is not avaivable");
-                                serviceResponse.Data = null;
-                                serviceResponse.Message = "ItemMaster Details is null";
-                                serviceResponse.Success = false;
-                                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                                return StatusCode(500, serviceResponse);
-                            
+                            _logger.LogError($"Something went wrong inside Create GetQuoteById action: ItemMaster PartType is not avaivable");
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "ItemMaster Details is null";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                            return StatusCode(500, serviceResponse);
+
                         }
                     }
 
@@ -921,29 +923,7 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpPost]
-        public async Task<IActionResult> SendWhatsAppforQuote()
-        {
-            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
-            try
-            {
-               
-                serviceResponse.Data = null;
-                serviceResponse.Message = "WhatsApp Message sent Successfully";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside SendWhatsAppforQuote action";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
+
 
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetQuotationSPReportWithParam([FromBody] QuoteSPResportParamDTO quoteSPReportDto)
@@ -1067,7 +1047,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 // Populate data rows
                 int rowIndex = 1;
-                foreach (var item in  quotationSPReportDetails)
+                foreach (var item in quotationSPReportDetails)
                 {
                     var row = sheet.CreateRow(rowIndex++);
                     row.CreateCell(0).SetCellValue(item.QuoteNumber ?? "");
@@ -1251,6 +1231,65 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetAllQuoteNumberList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> SendWhatsAppforQuote()
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                //var client = _clientFactory.CreateClient();
+                //var json = "{\r\n \"messages\": [\r\n {\r\n \"sender\": \"919885500300\",\r\n \"to\": \"918151814797\",\r\n \"channel\": \"wa\",\r\n \"type\": \"template\",\r\n \"template\": {\r\n \"body\": [],\r\n \"templateId\": \"keus_text_1\",\r\n \"langCode\": \"en\"\r\n }\r\n }\r\n ],\r\n \"responseType\": \"json\"\r\n}";
+                //var data = new StringContent(json, Encoding.UTF8, "application/json");
+                //var request = new HttpRequestMessage(HttpMethod.Post, "https://push.aclwhatsapp.com/pull-platform-receiver/wa/messages")
+                //{
+                //    Content = data
+                //};
+                //var inventoryQtyResponse = await client.SendAsync(request);
+
+                using (var client = new HttpClient())
+                {
+                    // Set the base address and headers
+                    client.BaseAddress = new Uri("https://auth.aclwhatsapp.com/");
+                    client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
+                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
+
+                    // Prepare the form data
+                    var formData = new MultipartFormDataContent();
+                    formData.Add(new StringContent("password"), "grant_type");
+                    formData.Add(new StringContent("ipmessaging-client"), "client_id");
+                    formData.Add(new StringContent("vamsi.e@keus.in"), "username");
+                    formData.Add(new StringContent("Keus@140284"), "password");
+
+                    // Send the POST request
+                    var response = await client.PostAsync("realms/ipmessaging/protocol/openid-connect/token", formData);
+
+                    if (response.IsSuccessStatusCode)
+                    {
+                        // Read and display the response
+                        var responseContent = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine(responseContent);
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Error: {response.StatusCode}");
+                    }
+                }
+                serviceResponse.Data = null;
+                serviceResponse.Message = "WhatsApp Message sent Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside SendWhatsAppforQuote action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

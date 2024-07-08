@@ -1,0 +1,138 @@
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using Tips.Purchase.Api.Entities;
+namespace Tips.Grin.Api.Entities.DTOs
+{
+    public class GrinsForServiceItemsDto
+    {
+        [Key]
+        public int Id { get; set; }
+        public string? GrinsForServiceItemsNumber { get; set; }
+        [Required]
+        public string VendorName { get; set; }
+        [Required]
+        public string VendorId { get; set; }
+        public string? VendorNumber { get; set; }
+        [Required]
+        public string InvoiceNumber { get; set; }
+        [Precision(13, 3)]
+        public decimal? InvoiceValue { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public string? AWBNumber1 { get; set; }
+        public DateTime? AWBDate1 { get; set; }
+        public string? AWBNumber2 { get; set; }
+        public DateTime? AWBDate2 { get; set; }
+        public string? BENumber { get; set; }
+        public DateTime? BEDate { get; set; }
+        [Precision(13, 3)]
+        public decimal? TotalInvoiceValue { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Insurance { get; set; }
+        [Precision(13, 3)]
+        public decimal? LoadingorUnLoading { get; set; }
+        public DateTime? GateEntryDate { get; set; }
+        public string? GateEntryNo { get; set; }
+        [Precision(13, 3)]
+        public decimal? CurrencyConversion { get; set; }
+        [Precision(13, 3)]
+        public decimal? Transport { get; set; }
+        [Precision(13, 3)]
+        public decimal? BECurrencyValue { get; set; }
+        [DefaultValue(0)]
+        public Status Status { get; set; }
+        public bool IsGrinsForServiceItemsCompleted { get; set; }
+        public bool IsIqcForServiceItemsCompleted { get; set; }
+        public string? GrinsForServiceItemsDocuments { get; set; }
+        public string Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public List<GrinsForServiceItemsPartsDto>? GrinsForServiceItemsParts { get; set; }
+        public List<GrinsForServiceItemsOtherChargesDto>? GrinsForServiceItemsOtherCharges { get; set; }
+    }
+    public class GrinsForServiceItemsPostDto
+    {
+        [Required(ErrorMessage = "VendorName is required")]
+        [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
+        public string VendorName { get; set; }
+        [Required(ErrorMessage = "VendorId is required")]
+        [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
+        public string VendorId { get; set; }
+        public string? VendorNumber { get; set; }
+        [Required(ErrorMessage = "InvoiceNumber is required")]
+        [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
+        public string InvoiceNumber { get; set; }
+        public decimal? InvoiceValue { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public string? AWBNumber1 { get; set; }
+        public DateTime? AWBDate1 { get; set; }
+        public string? AWBNumber2 { get; set; }
+        public DateTime? AWBDate2 { get; set; }
+        public string? BENumber { get; set; }
+        public DateTime? BEDate { get; set; }
+        public decimal? TotalInvoiceValue { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Insurance { get; set; }
+        [Precision(13, 3)]
+        public decimal? LoadingorUnLoading { get; set; }
+        public DateTime? GateEntryDate { get; set; }
+        [Precision(13, 3)]
+        public decimal? CurrencyConversion { get; set; }
+        [Precision(13, 3)]
+        public decimal? Transport { get; set; }
+        [Precision(13, 3)]
+        public decimal? BECurrencyValue { get; set; }
+        public string? GateEntryNo { get; set; }
+        public string? GrinsForServiceItemsDocuments { get; set; }
+        public List<GrinsForServiceItemsPartsPostDto>? GrinsForServiceItemsParts { get; set; }
+        public List<GrinsForServiceItemsOtherChargesPostDto>? GrinsForServiceItemsOtherCharges { get; set; }
+    }
+    public class GrinsForServiceItemsUpdateDto
+    {
+        public int Id { get; set; }
+        [Required(ErrorMessage = "VendorName is required")]
+        public string VendorName { get; set; }
+        [Required(ErrorMessage = "VendorId is required")]
+        public string VendorId { get; set; }
+        public string? VendorNumber { get; set; }
+        [Required(ErrorMessage = "InvoiceNumber is required")]
+        public string InvoiceNumber { get; set; }
+        public decimal? InvoiceValue { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public string? AWBNumber1 { get; set; }
+        public DateTime? AWBDate1 { get; set; }
+        public string? AWBNumber2 { get; set; }
+        public DateTime? AWBDate2 { get; set; }
+        public string? BENumber { get; set; }
+        public DateTime? BEDate { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Insurance { get; set; }
+        [Precision(13, 3)]
+        public decimal? LoadingorUnLoading { get; set; }
+        public DateTime? GateEntryDate { get; set; }
+        [Precision(13, 3)]
+        public decimal? CurrencyConversion { get; set; }
+        [Precision(13, 3)]
+        public decimal? Transport { get; set; }
+        [Precision(13, 3)]
+        public decimal? BECurrencyValue { get; set; }
+        public string? GrinsForServiceItemsDocuments { get; set; }
+        public string? GateEntryNo { get; set; }
+        public decimal? TotalInvoiceValue { get; set; }
+        public string Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public List<GrinsForServiceItemsPartsUpdateDto>? GrinsForServiceItemsParts { get; set; }
+        public List<GrinsForServiceItemsOtherChargesUpdateDto>? GrinsForServiceItemsOtherCharges { get; set; }
+    }
+}

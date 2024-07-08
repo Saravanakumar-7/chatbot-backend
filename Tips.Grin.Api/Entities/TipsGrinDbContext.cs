@@ -11,6 +11,10 @@ namespace Tips.Grin.Api.Entities
         {
 
         }
+        public DbSet<GrinsForServiceItems> GrinsForServiceItems { get; set; }
+        public DbSet<GrinsForServiceItemsParts> GrinsForServiceItemsParts { get; set; }
+        public DbSet<GrinsForServiceItemsOtherCharges> GrinsForServiceItemsOtherCharges { get; set; }
+        public DbSet<GrinsForServiceItemsProjectNumbers> GrinsForServiceItemsProjectNumbers { get; set; }
         public DbSet<Grins> Grins { get; set; }
         public DbSet<WeightedAvgCost> WeightedAvgCosts { get; set; }
         public DbSet<GrinParts> GrinParts { get; set; }

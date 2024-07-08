@@ -17,6 +17,22 @@ namespace Tips.Grin.Api
 
             CreateMap<ProjectNumbersDtoPost, GrinUpdateProjectBalQtyDetailsDto>().ReverseMap();
 
+            CreateMap<GrinsForServiceItems, GrinsForServiceItemsDto>().ReverseMap();
+            CreateMap<GrinsForServiceItems, GrinsForServiceItemsPostDto>().ReverseMap();
+            CreateMap<GrinsForServiceItems, GrinsForServiceItemsUpdateDto>().ReverseMap();
+
+            CreateMap<GrinsForServiceItemsParts, GrinsForServiceItemsPartsDto>().ReverseMap();
+            CreateMap<GrinsForServiceItemsParts, GrinsForServiceItemsPartsPostDto>().ReverseMap();
+            CreateMap<GrinsForServiceItemsParts, GrinsForServiceItemsPartsUpdateDto>().ReverseMap();
+
+            CreateMap<GrinsForServiceItemsProjectNumbers, GrinsForServiceItemsProjectNumbersDto>().ReverseMap();
+            CreateMap<GrinsForServiceItemsProjectNumbers, GrinsForServiceItemsProjectNumbersPostDto>().ReverseMap();
+            CreateMap<GrinsForServiceItemsProjectNumbers, GrinsForServiceItemsProjectNumbersUpdateDto>().ReverseMap();
+
+            CreateMap<GrinsForServiceItemsOtherCharges, GrinsForServiceItemsOtherChargesDto>().ReverseMap();
+            CreateMap<GrinsForServiceItemsOtherCharges, GrinsForServiceItemsOtherChargesPostDto>().ReverseMap();
+            CreateMap<GrinsForServiceItemsOtherCharges, GrinsForServiceItemsOtherChargesUpdateDto>().ReverseMap();
+
             CreateMap<Grins, GrinDto>().ReverseMap();
             CreateMap<Grins, GrinPostDto>().ReverseMap();
             CreateMap<Grins, GrinUpdateDto>().ReverseMap();
