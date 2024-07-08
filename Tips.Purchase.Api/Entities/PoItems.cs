@@ -27,6 +27,7 @@ namespace Tips.Purchase.Api.Entities
 
         public PoPartType? PartType { get; set; }
         public string? SpecialInstruction { get; set; }
+        public decimal? Allowance { get; set; }
         public bool IsTechnicalDocsRequired { get; set; }
         public bool PoPartsStatus { get; set; }
 
