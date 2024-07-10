@@ -163,4 +163,148 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? SerialNo { get; set; }
         public List<GrinsForServiceItemsProjectNumbersUpdateDto>? GrinsForServiceItemsProjectNumbers { get; set; }
     }
+    public class GrinsForServiceItemsPartsItemMasterEnggDto
+    {
+        public int Id { get; set; }
+        [Required]
+        public string? ItemNumber { get; set; }
+        public string? LotNumber { get; set; }
+        [Required]
+        [Precision(18, 3)]
+        public decimal? Qty { get; set; }
+        [Required]
+        public string ItemDescription { get; set; }
+        public string? PONumber { get; set; }
+        [Required]
+        public string MftrItemNumber { get; set; }
+        [Required]
+        public string ManufactureBatchNumber { get; set; }
+        public string? Remarks { get; set; }
+        [Required]
+        [Precision(18, 3)]
+        public decimal UnitPrice { get; set; }
+        [Required]
+        [Precision(13, 3)]
+        public decimal POOrderQty { get; set; }
+        [Required]
+        [Precision(13, 3)]
+        public decimal POBalancedQty { get; set; }
+        [Required]
+        [Precision(18, 3)]
+        public decimal POUnitPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal AcceptedQty { get; set; }
+        [Precision(13, 3)]
+        public decimal RejectedQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? AverageCost { get; set; }
+        [Required]
+        public string UOM { get; set; }
+        public string? UOC { get; set; }
+        public DateTime? ExpiryDate { get; set; }
+        public DateTime? ManufactureDate { get; set; }
+        public string? SerialNo { get; set; }
+        public string? COCUpload { get; set; }
+        public bool IsIqcForServiceItemsCompleted { get; set; }
+        [Precision(13, 3)]
+        public decimal? SGST { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? IGST { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? CGST { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? UTGST { get; set; }
+        public decimal? Duties { get; set; }
+        public string? DrawingNo { get; set; }
+        [NotMapped]
+        public string? DocRet { get; set; }
+        [NotMapped]
+        public string? RevNo { get; set; }
+        [NotMapped]
+        [DefaultValue(false)]
+        public bool IsCocRequired { get; set; }
+        [NotMapped]
+        [DefaultValue(false)]
+        public bool IsRohsItem { get; set; }
+        [NotMapped]
+        [DefaultValue(false)]
+        public bool IsShelfLife { get; set; }
+        [NotMapped]
+        [DefaultValue(false)]
+        public bool IsReachItem { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public List<GrinsForServiceItemsProjectNumbersDto>? GrinsForServiceItemsProjectNumbers { get; set; }
+    }
+    public class GrinsForServiceItemsPartscalculationofAvgcost
+    {
+        public int Id { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? LotNumber { get; set; }
+        public PartType ItemType { get; set; }
+        public decimal? Qty { get; set; }
+        public string ItemDescription { get; set; }
+        public string? PONumber { get; set; }
+        public string MftrItemNumber { get; set; }
+        public string ManufactureBatchNumber { get; set; }
+        public bool IsIqcForServiceItemsCompleted { get; set; }       
+        public decimal UnitPrice { get; set; }
+        public decimal POOrderQty { get; set; }
+        public decimal POBalancedQty { get; set; }
+        public decimal POUnitPrice { get; set; }
+        public decimal AcceptedQty { get; set; }
+        public decimal RejectedQty { get; set; }
+        [NotMapped]
+        public decimal? EPwithTax { get; set; }
+        [NotMapped]
+        public decimal? EPforSingleQty { get; set; }
+        public decimal? AverageCost { get; set; }
+        public string UOM { get; set; }
+        public string? UOC { get; set; }
+        public string? Remarks { get; set; }
+        public GrinStatus Status { get; set; }
+        public DateTime? ExpiryDate { get; set; }
+        public DateTime? ManufactureDate { get; set; }
+        public bool IsCOCUploaded { get; set; } = false;
+        public string? CoCUpload { get; set; }
+        public decimal? SGST { get; set; }
+        public decimal? IGST { get; set; }
+        public decimal? CGST { get; set; }
+        public decimal? UTGST { get; set; }
+        public decimal? Duties { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public GrinsForServiceItems? GrinsForServiceItems { get; set; }
+        public string? SerialNo { get; set; }
+        public List<GrinsForServiceItemsProjectNumberscalculationofAvgcostDto>? GrinsForServiceItemsProjectNumbers { get; set; }
+    }
+    public class GrinsForServiceItemsUpdateQtyDetailsDto
+    {
+        public string? ItemNumber { get; set; }
+        public decimal? Qty { get; set; }
+        public string? PONumber { get; set; }
+    }
+    public class GrinsForServiceItemsQtyPoStatusUpdateDto
+    {
+        public string? ItemNumber { get; set; }
+        public decimal? Qty { get; set; }
+        public string? PONumber { get; set; }
+        public int PoItemId { get; set; }
+    }
+    public class GrinsForServiceItemsIQCForServiceItems_ItemsSaveDto
+    {
+        public string? ItemNumber { get; set; }
+        public int GrinsForServiceItemsPartId { get; set; }
+        public decimal? ReceivedQty { get; set; }
+        public decimal? AcceptedQty { get; set; }
+        public decimal RejectedQty { get; set; }
+
+    }
 }

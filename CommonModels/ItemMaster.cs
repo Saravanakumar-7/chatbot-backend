@@ -72,7 +72,7 @@ namespace Entities
         public string? NetUom { get; set; }
         public decimal GrossWeight { get; set; }
         public string? GrossUom { get; set; }
-        public bool Tolerance { get; set; }
+        public bool Tolerance { get; set; } = false;
         public decimal Volume { get; set; }
         public string? VolumeUom { get; set; }
         public decimal Size { get; set; }

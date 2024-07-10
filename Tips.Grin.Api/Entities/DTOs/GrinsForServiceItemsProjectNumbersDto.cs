@@ -7,7 +7,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public int Id { get; set; }
         public string? ProjectNumber { get; set; }
         [Precision(18, 3)]
-        public decimal? ProjectQty { get; set; }        
+        public decimal? ProjectQty { get; set; }
     }
     public class GrinsForServiceItemsProjectNumbersPostDto
     {
@@ -21,4 +21,18 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? ProjectQty { get; set; }
     }
+    public class GrinsForServiceItemsProjectNumberscalculationofAvgcostDto
+    {
+        public string? ProjectNumber { get; set; }
+        [Precision(18, 3)]
+        public decimal? ProjectQty { get; set; }
     }
+    public class GrinsForServiceItemsUpdateProjectBalQtyDetailsDto
+    {
+        public string ItemNumber { get; set; }
+        public string ProjectNumber { get; set; }
+        public decimal ProjectQty { get; set; }
+        public int PoItemId { get; set; }
+
+    }
+}
