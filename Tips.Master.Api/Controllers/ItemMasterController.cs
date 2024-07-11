@@ -205,6 +205,58 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetAllOnlyServiceItemsPurchasePartItemNoList()
+        {
+            ServiceResponse<IEnumerable<ItemNoListDtos>> serviceResponse = new ServiceResponse<IEnumerable<ItemNoListDtos>>();
+
+            try
+            {
+                var purchasePartItemNo = await _repository.ItemMasterRepository.GetAllOnlyServiceItemsPurchasePartItemNoList();
+                _logger.LogInfo("Returned all ServiceItem Item Number with PurchasePart");
+                var result = _mapper.Map<IEnumerable<ItemNoListDtos>>(purchasePartItemNo);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ItemNumberList Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllPurchasePartItemNoListExcludingServiceItems()
+        {
+            ServiceResponse<IEnumerable<ItemNoListDtos>> serviceResponse = new ServiceResponse<IEnumerable<ItemNoListDtos>>();
+
+            try
+            {
+                var purchasePartItemNo = await _repository.ItemMasterRepository.GetAllPurchasePartItemNoListExcludingServiceItems();
+                _logger.LogInfo("Returned all Excluding ServiceItem Item Number with PurchasePart");
+                var result = _mapper.Map<IEnumerable<ItemNoListDtos>>(purchasePartItemNo);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ItemNumberList Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
         public async Task<IActionResult> GetAllPurchasePartItemNoList()
         {
             ServiceResponse<IEnumerable<ItemNoListDtos>> serviceResponse = new ServiceResponse<IEnumerable<ItemNoListDtos>>();

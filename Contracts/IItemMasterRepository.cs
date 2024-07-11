@@ -34,6 +34,8 @@ namespace Contracts
         Task<IEnumerable<FileUpload>> GetAllItemMasterFileUploadList(string itemNumber);
         Task<IEnumerable<ItemMasterIdNoListDto>> GetAllFgTgItemMasterItemNoList();
         Task<IEnumerable<ItemNoListDtos>> GetAllPurchasePartItemNoList();
+        Task<IEnumerable<ItemNoListDtos>> GetAllOnlyServiceItemsPurchasePartItemNoList();
+        Task<IEnumerable<ItemNoListDtos>> GetAllPurchasePartItemNoListExcludingServiceItems();
         Task<IEnumerable<ItemNoListDtos>> GetAllIsPRRequiredStatusTruePPItemNoList();
         Task<IEnumerable<ItemMasterIdNoListDto>> GetAllOpenGrinStatusTrueItemMasterIdNoList();
         Task<string> GetClosedIqcItemMasterItemNo(string ItemNumber);

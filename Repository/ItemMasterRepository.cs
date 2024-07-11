@@ -240,6 +240,32 @@ namespace Repository
             }
 
         }
+        public async Task<IEnumerable<ItemNoListDtos>> GetAllOnlyServiceItemsPurchasePartItemNoList()
+        {
+            IEnumerable<ItemNoListDtos> itemNumberListDto = await TipsMasterDbContext.ItemMasters
+                               .Where(x => (x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG) && x.IsActive == true && x.PoMaterialType== "ServiceItem")
+                               .Select(c => new ItemNoListDtos()
+                               {
+                                   ItemNumber = c.ItemNumber,
+                                   Description = c.Description,
+                               })
+                             .ToListAsync();
+
+            return itemNumberListDto;
+        }
+        public async Task<IEnumerable<ItemNoListDtos>> GetAllPurchasePartItemNoListExcludingServiceItems()
+        {
+            IEnumerable<ItemNoListDtos> itemNumberListDto = await TipsMasterDbContext.ItemMasters
+                               .Where(x => (x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG) && x.IsActive == true && x.PoMaterialType != "ServiceItem")
+                               .Select(c => new ItemNoListDtos()
+                               {
+                                   ItemNumber = c.ItemNumber,
+                                   Description = c.Description,
+                               })
+                             .ToListAsync();
+
+            return itemNumberListDto;
+        }
         public async Task<IEnumerable<ItemNoListDtos>> GetAllPurchasePartItemNoList()
         {
             IEnumerable<ItemNoListDtos> itemNumberListDto = await TipsMasterDbContext.ItemMasters

@@ -1245,8 +1245,102 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
-
+        [HttpGet("{vendorId}")]
+        public async Task<IActionResult> GetAllServicePoNumberListByVendorId(string vendorId)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pONumberDetailsbyVendorId = await _repository.GetAllServicePoNumberListByVendorId(vendorId);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ServicePONumberListId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllServicePONumberListByVendorId action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("{vendorId}")]
+        public async Task<IActionResult> GetAllNonServicePoNumberListByVendorId(string vendorId)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pONumberDetailsbyVendorId = await _repository.GetAllNonServicePoNumberListByVendorId(vendorId);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all NonServicePONumberListId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllNonServicePONumberListByVendorId action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("{vendorId}")]
+        public async Task<IActionResult> GetAllServicePoNumberListByVendorIdForAvision(string vendorId)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pONumberDetailsbyVendorId = await _repository.GetAllServicePoNumberListByVendorIdForAvision(vendorId);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ServicePONumberListId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllServicePoNumberListByVendorIdForAvision action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("{vendorId}")]
+        public async Task<IActionResult> GetAllNonServicePoNumberListByVendorIdForAvision(string vendorId)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pONumberDetailsbyVendorId = await _repository.GetAllNonServicePoNumberListByVendorIdForAvision(vendorId);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all NonServicePONumberListId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllNonServicePoNumberListByVendorIdForAvision action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet("{vendorId}")]
         public async Task<IActionResult> GetAllPoNumberListByVendorIdForAvision(string vendorId)
         {
@@ -1271,7 +1365,6 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
         //amount in words
         private string GetTotalValueInWords(decimal totalValue)
         {
