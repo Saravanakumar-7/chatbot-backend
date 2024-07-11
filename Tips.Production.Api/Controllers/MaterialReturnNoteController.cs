@@ -496,11 +496,11 @@ namespace Tips.Production.Api.Controllers
                         materialReturnNoteItem.ProjectNumber = materialReturnNoteUpdateDto.ProjectNumber;
                         materialReturnNoteItem.ShopOrderNumber = materialReturnNoteUpdateDto.ShopOrderNumber;
                         materialReturnNoteItem.MRNWarehouseList = _mapper.Map<List<MRNWarehouseDetails>>(materialReturnNotesItemDto[i].MRNWarehouseList);
-
                         materialReturnNoteItemList.Add(materialReturnNoteItem);
 
                     }
                 }
+
 
                 var mapperConfiguration = new MapperConfiguration(cfg =>
                 {
@@ -514,6 +514,7 @@ namespace Tips.Production.Api.Controllers
                             Location = detail.Location,
                             Qty = detail.Qty,
                             LocationStock = detail.LocationStock,
+                            IsMRNIssueDone = detail.IsMRNIssueDone,
                         }).ToList()));
                 });  
 
@@ -540,8 +541,22 @@ namespace Tips.Production.Api.Controllers
                     updateMaterialReturnNoteResp = response.StatusCode;
                 }
 
-                materialReturnNoteDetail.MaterialReturnNoteItems = materialReturnNoteItemList;
+                //materialReturnNoteDetail.MaterialReturnNoteItems = materialReturnNoteItemList;
                 var updateMaterialReturnNoteItem = _mapper.Map(materialReturnNoteUpdateDto, materialReturnNoteDetail);
+
+                foreach (var materialReturnNoteItem in materialReturnNoteItemList)
+                {
+                    if (materialReturnNoteItem.MRNWarehouseList != null)
+                    {
+                        foreach (var mrnWarehouseDetail in materialReturnNoteItem.MRNWarehouseList)
+                        {
+                            mrnWarehouseDetail.IsMRNIssueDone = true;
+                        }
+                    }
+                }
+
+                updateMaterialReturnNoteItem.MaterialReturnNoteItems = materialReturnNoteItemList;
+
                 int? totalitems = updateMaterialReturnNoteItem.MaterialReturnNoteItems.Count();
                 if (totalitems > 0)
                 {
@@ -566,14 +581,14 @@ namespace Tips.Production.Api.Controllers
                     return StatusCode(500, serviceResponse);
                 }
                 serviceResponse.Data = null;
-                serviceResponse.Message = "MaterialReturnNote Updated Successfully";
+                serviceResponse.Message = "MaterialReturnNote Returned Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateMaterialReturnNote action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside ReturnMaterialReturnNote action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;

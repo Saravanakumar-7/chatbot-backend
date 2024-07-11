@@ -2882,8 +2882,10 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(28).SetCellValue("Order Qty");
                 headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
                 headerRow.CreateCell(30).SetCellValue("Balance Qty");
-                headerRow.CreateCell(31).SetCellValue("RequestedDate");
-
+                headerRow.CreateCell(31).SetCellValue("Indent Qnty");
+                headerRow.CreateCell(32).SetCellValue("RequestedDate");
+                headerRow.CreateCell(33).SetCellValue("MSL");
+                headerRow.CreateCell(34).SetCellValue("StdCost");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -2921,7 +2923,10 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
                     row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
                     row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
-                    row.CreateCell(31).SetCellValue(item.RequestedDate.HasValue ? item.RequestedDate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(31).SetCellValue(Convert.ToDouble(item.indent_qnty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(32).SetCellValue(item.RequestedDate.HasValue ? item.RequestedDate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(33).SetCellValue(Convert.ToDouble(item.MSL)); // Assuming BalanceQty is decimal
+                    row.CreateCell(34).SetCellValue(Convert.ToDouble(item.StdCost)); // Assuming BalanceQty is decimal
                 }
 
 
@@ -2984,7 +2989,7 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(26).SetCellValue("Order Qty");
                 headerRow.CreateCell(27).SetCellValue("Dispatch Qty");
                 headerRow.CreateCell(28).SetCellValue("Balance Qty");
-
+                headerRow.CreateCell(29).SetCellValue("Indent Qnty");
 
 
                 // Populate data rows
@@ -3021,6 +3026,7 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(26).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
                     row.CreateCell(27).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
                     row.CreateCell(28).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.indent_qnty)); // Assuming BalanceQty is decimal
                 }
 
 

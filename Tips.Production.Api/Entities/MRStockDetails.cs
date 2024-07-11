@@ -13,6 +13,7 @@ namespace Tips.Production.Api.Entities
 
         [Precision(13, 3)]
         public decimal LocationStock { get; set; }
+        public bool IsMRIssueDone { get; set; } 
         public int? MaterialRequestItemsId { get; set; }
         public MaterialRequestItems? MaterialRequestItems { get; set; }
     }
