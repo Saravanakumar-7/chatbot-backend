@@ -108,19 +108,22 @@ namespace Tips.SalesService.Api.Repository
         }
         public async Task<IEnumerable<QuoteNoDto>> GetAllQuoteNumberList()
         {
-            IEnumerable<QuoteNoDto> quoteNoList = await _tipsSalesServiceDbContext.Quotes
-                                .GroupBy(x => x.QuoteNumber)
-                                .Select(g => g.First())
-                                .Select(x => new QuoteNoDto()
-                                {
-                                    Id = x.Id,
-                                    QuoteNumber = x.QuoteNumber,
-                                })
-                              .ToListAsync();
+            var quoteGroups = await _tipsSalesServiceDbContext.Quotes
+                .GroupBy(q => q.QuoteNumber)
+                .Select(g => new QuoteNoDto
+                {
+                    QuoteNumber = g.Key,
+                    RevisionNumber = g.Select(q => q.RevisionNumber).ToList()
+                })
+                .ToListAsync();
 
-
-            return quoteNoList;
+            return quoteGroups;
         }
+
+
+
+
+
         public async Task<string> GenerateQuoteNumber()
         {
             using var transaction = await _tipsSalesServiceDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);

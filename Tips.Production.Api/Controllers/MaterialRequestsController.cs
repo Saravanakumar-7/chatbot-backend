@@ -823,7 +823,6 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                var updateMaterialReqquest = _mapper.Map<MaterialRequests>(getMaterialRequest);
 
                 var materialReqItemDto = materialRequestUpdateDto.MaterialRequestItems;
 
@@ -832,8 +831,6 @@ namespace Tips.Production.Api.Controllers
                 var projectNo = materialRequestUpdateDto.ProjectNumber;
                 var mRNumber = materialRequestUpdateDto.MRNumber;
                 HttpStatusCode updateMaterialRequestResp = HttpStatusCode.OK;
-
-                List<InventoryDtoForMaterialRequest> inventoryDtos = new List<InventoryDtoForMaterialRequest>();
 
                 
                 for (int i = 0; i < materialReqItemDto.Count; i++)
@@ -844,32 +841,9 @@ namespace Tips.Production.Api.Controllers
                     var issuestock = mrStockDetails.Select(x => x.Qty).ToArray();
                     materialItemDetail.IssuedQty = issuestock.Sum();
                     materialReqItemList.Add(materialItemDetail);
-                    foreach (var item in mrStockDetails)
-                    {
-                        //add material request data to somaterialissue tracker
-                        InventoryDtoForMaterialRequest inventoryDtoForMaterialRequest = new InventoryDtoForMaterialRequest
-                        {
-                            PartNumber = materialItemDetail.PartNumber,
-                            ProjectNumber = projectNo,
-                            DataFrom = "MR",
-                            IssueQty = materialItemDetail.IssuedQty,
-                            ShopOrderNumber = shopOrderNumber,
-                            MftrPartNumber = materialItemDetail.MftrPartNumber,
-                            Description = materialItemDetail.PartDescription,
-                            PartType = materialItemDetail.PartType,
-                            MRNumber = materialRequestUpdateDto.MRNumber,
-                            Warehouse = item.Warehouse,
-                            Location = item.Location,
-                            UOM = materialItemDetail.UOM,
-                            Unit = materialRequestUpdateDto.Unit,
-
-                        };
-                        inventoryDtos.Add(inventoryDtoForMaterialRequest);                     
-
-                    }
-
-
                 } 
+
+
                 var mapperConfiguration = new MapperConfiguration(cfg =>
                 {
                     cfg.CreateMap<MaterialRequests, UpdateInventoryBalanceQty>()
@@ -884,8 +858,10 @@ namespace Tips.Production.Api.Controllers
                             Location = detail.Location,
                             LocationStock = detail.LocationStock,
                             Qty = detail.Qty,
+                            IsMRIssueDone = detail.IsMRIssueDone
                         }).ToList()));
                 });
+
 
                 var mapper = mapperConfiguration.CreateMapper();
 
@@ -899,6 +875,7 @@ namespace Tips.Production.Api.Controllers
                         return updateInventoryBalanceQty;
                     })
                     .ToList();
+
 
                 var json = JsonConvert.SerializeObject(materialRequestDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
@@ -920,11 +897,23 @@ namespace Tips.Production.Api.Controllers
                 {
                     updateMaterialRequestResp = response.StatusCode;
                 }
-                
 
-                updateMaterialReqquest.MaterialRequestItems = materialReqItemList;
-                var updateMaterialReq = _mapper.Map(materialRequestUpdateDto, updateMaterialReqquest);
-                // updateMaterialReq.MaterialRequestItems = materialReqItemList;
+
+               // getMaterialRequest.MaterialRequestItems = materialReqItemList;
+                var updateMaterialReq = _mapper.Map( materialRequestUpdateDto, getMaterialRequest);
+
+                foreach (var materialReqItem in materialReqItemList)
+                {
+                    if (materialReqItem.MRStockDetails != null)
+                    {
+                        foreach (var mrStockDetail in materialReqItem.MRStockDetails)
+                        {
+                            mrStockDetail.IsMRIssueDone = true;
+                        }
+                    }
+                }
+                updateMaterialReq.MaterialRequestItems = materialReqItemList;
+                
                 int? totalitems = updateMaterialReq.MaterialRequestItems.Count();
                 if (totalitems > 0)
                 {
@@ -942,7 +931,7 @@ namespace Tips.Production.Api.Controllers
                 }
                 else
                 {
-                    _logger.LogError($"Something went wrong inside UpdateMaterialRequest action. Inventory update action MaterialInventoryBalanceQty failed! ");
+                    _logger.LogError($"Something went wrong inside IssueMaterialRequest action. Inventory update action MaterialInventoryBalanceQty failed! ");
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Internal server error";
                     serviceResponse.Success = false;
@@ -952,14 +941,14 @@ namespace Tips.Production.Api.Controllers
                
 
                 serviceResponse.Data = null;
-                serviceResponse.Message = "materialReq Updated Successfully";
+                serviceResponse.Message = "materialRequest Issued Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateMaterialRequest action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside IssueMaterialRequest action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;

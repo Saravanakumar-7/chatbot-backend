@@ -450,22 +450,22 @@ namespace Tips.SalesService.Api.Repository
         }
         public async Task<List<SalesOrderforKeusDto>> GetAllSalesOrderforKeus([FromQuery] string? SearchTerm, [FromQuery] int Offset, [FromQuery] int Limit)
         {
-            var result = _tipsSalesServiceDbContext
+            var result = await _tipsSalesServiceDbContext
            .Set<SalesOrderforKeusDto>()
            .FromSqlInterpolated($"CALL GetAllSalesDetailsSPforKeus({SearchTerm},{Offset},{Limit})")
-           .ToList();
+           .ToListAsync();
 
             return result;
         }
         public async Task<int> GetAllSalesOrderCountforKeus(string? SearchTerm)
         {
             var result = await FindAll()
-            .Where(inv => (string.IsNullOrWhiteSpace(SearchTerm)
+            .Where(inv => string.IsNullOrWhiteSpace(SearchTerm)
             || inv.SalesOrderNumber==SearchTerm
             || inv.ProjectNumber==SearchTerm
             || inv.CustomerName==SearchTerm
             || inv.CustomerId==SearchTerm
-            )).CountAsync();
+            ).CountAsync();
 
             return result;
         }

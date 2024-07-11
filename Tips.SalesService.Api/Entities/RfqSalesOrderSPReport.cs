@@ -33,6 +33,7 @@
         public decimal? OrderQty { get; set; }
         public decimal? DispatchQty { get; set; }
         public decimal? BalanceQty { get; set; }
+        public decimal? indent_qnty { get; set; }
         public DateTime? RequestedDate { get; set; }
         public decimal? MSL { get; set; }
         public decimal? StdCost { get; set; }

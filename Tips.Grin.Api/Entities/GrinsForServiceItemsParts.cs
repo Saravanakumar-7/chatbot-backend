@@ -67,7 +67,7 @@ namespace Tips.Grin.Api.Entities
         public DateTime? LastModifiedOn { get; set; }
         public string? SerialNo { get; set; }
         public int GrinsForServiceItemsId { get; set; }
-        public Grins? GrinsForServiceItems { get; set; }
+        public GrinsForServiceItems? GrinsForServiceItems { get; set; }
         public List<GrinsForServiceItemsProjectNumbers>? GrinsForServiceItemsProjectNumbers { get; set; }
     }
 }

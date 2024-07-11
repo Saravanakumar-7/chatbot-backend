@@ -242,6 +242,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal LocationStock { get; set; }
+       public bool IsMRIssueDone { get; set; }
     }
 
     public class MRNUpdateInventoryBalanceQty
@@ -269,6 +270,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal LocationStock { get; set; }
+        public bool IsMRNIssueDone { get; set; }
     }
     public class InventoryDetailsLocationStock
     {

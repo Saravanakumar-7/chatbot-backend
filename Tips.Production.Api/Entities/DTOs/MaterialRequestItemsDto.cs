@@ -102,6 +102,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal LocationStock { get; set; }
+        public bool IsMRIssueDone { get; set; }
     }
 
     public class InventoryDtoForMaterialRequest

@@ -375,7 +375,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class SoSummaryQuotePostDto
     {
         public string? FirstQuotenumber { get; set; }
-        public string? SOlatestSalesorder { get; set; }
+        public string? FirstSOSalesOrderNumber { get; set; }
     }
     public class SoSummaryQuotationDto
     {
@@ -386,26 +386,30 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? FirstRevisionnumber { get; set; }
         public DateTime? FirstCreatedOn { get; set; }
         public decimal? FirstGeneralDiscount { get; set; }
-        public decimal? FirstDiscountValue { get; set; }
         public string? FirstgeneralDiscountType { get; set; }
-        public decimal? FirstUntaxedamount { get; set; }
         public decimal? FirstTaxedvalue { get; set; }
+        public decimal? QuoteUntaxedValue { get; set; }
         public string? LatestQuotenumber { get; set; }
         public decimal? LatestRevisionnumber { get; set; }
         public DateTime? LatestCreatedOn { get; set; }
         public decimal? LatestGeneralDiscount { get; set; }
-        public decimal? LatestDiscountValue { get; set; }
         public string? LatestgeneralDiscountType { get; set; }
-        public decimal? LatestUntaxedvalue { get; set; }
         public decimal? LatestTaxedvalue { get; set; }
-        public string? SOlatestSalesorder { get; set; }
-        public int? SOlatestRevisionnumber { get; set; }
-        public DateTime? SOlatestCreatedOn { get; set; }
-        public string? SOlatestDiscount { get; set; }
-        public double? SOlatestDiscountValue { get; set; }
-        public string? SODiscountType { get; set; }
-        public decimal? SOlatestUntaxedvalue { get; set; }
-        public decimal? SOlatestTaxedvalue { get; set; }
+        public decimal? LatestQuoteUntaxedValue { get; set; }
+        public string? FirstSOSalesOrderNumber { get; set; }
+        public decimal? FirstSORevisionNumber { get; set; }
+        public DateTime? FirstSOCreatedOn { get; set; }
+        public decimal? FirstSODiscount { get; set; }
+        public string? FirstSODiscountType { get; set; }
+        public decimal? FirstSOTaxedamount { get; set; }
+        public decimal? FirstSOUntaxedvalue { get; set; }
+        public string? SOLatestSalesOrderNumber { get; set; }
+        public int? SOLatestRevisionnumber { get; set; }
+        public DateTime? SOLatestCreatedOn { get; set; }
+        public decimal? SOLatestDiscount { get; set; }
+        public string? SOLatestDiscountType { get; set; }
+        public decimal? SOLatestUntaxedvalue { get; set; }
+        public decimal? SOLatestTaxedValue { get; set; }
     }
     public class QuoteItemMasterDetails
     {
@@ -503,8 +507,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class QuoteNoDto
     {
-        public int Id { get; set; }
         public string? QuoteNumber { get; set; }
+        public List<decimal?> RevisionNumber { get; set; }
     }
     public class QuoteSpReportDto
     {
