@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tips.Purchase.Api.Entities;
 namespace Tips.Grin.Api.Entities.DTOs
 {
@@ -134,5 +135,62 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
         public List<GrinsForServiceItemsPartsUpdateDto>? GrinsForServiceItemsParts { get; set; }
         public List<GrinsForServiceItemsOtherChargesUpdateDto>? GrinsForServiceItemsOtherCharges { get; set; }
+    }
+    public class GrinsForServiceItemsItemMasterEnggDto
+    {
+        public int Id { get; set; }
+        public string? GrinsForServiceItemsNumber { get; set; }
+        [Required]
+        public string VendorName { get; set; }
+        [Required]
+        public string VendorId { get; set; }
+        public string? VendorNumber { get; set; }
+        [Required]
+        public string InvoiceNumber { get; set; }
+        public decimal? InvoiceValue { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public string? AWBNumber1 { get; set; }
+        public DateTime? AWBDate1 { get; set; }
+        public string? AWBNumber2 { get; set; }
+        public DateTime? AWBDate2 { get; set; }
+        public string? BENumber { get; set; }
+        public DateTime? BEDate { get; set; }
+        public decimal? TotalInvoiceValue { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Insurance { get; set; }
+        [Precision(13, 3)]
+        public decimal? LoadingorUnLoading { get; set; }
+        public DateTime? GateEntryDate { get; set; }
+        [Precision(13, 3)]
+        public decimal? CurrencyConversion { get; set; }
+        [Precision(13, 3)]
+        public decimal? Transport { get; set; }
+        [Precision(13, 3)]
+        public decimal? BECurrencyValue { get; set; }
+        public string? GateEntryNo { get; set; }
+        public string? GrinsForServiceItemsDocuments { get; set; }
+        public string Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public List<GrinsForServiceItemsPartsItemMasterEnggDto>? GrinsForServiceItemsParts { get; set; }
+        public List<GrinsForServiceItemsOtherChargesDto>? GrinsForServiceItemsOtherCharges { get; set; }
+    }
+    public class GrinsForServiceItemsIQCForServiceItemsSaveDto
+    {
+        public string? GrinsForServiceItemsNumber { get; set; }
+        public int GrinsForServiceItemsId { get; set; }
+
+        public GrinsForServiceItemsIQCForServiceItems_ItemsSaveDto GrinsForServiceItemsIQCForServiceItems_ItemsSaveDto { get; set; }
+
+    }
+    public class GrinForServiceItemsNoForIqcForServiceItems
+    {
+        public string? GrinsForServiceItemsNumber { get; set; }
+        public int GrinsForServiceItemsId { get; set; }
+
     }
 }

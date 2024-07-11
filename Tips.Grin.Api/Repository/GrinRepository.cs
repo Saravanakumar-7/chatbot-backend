@@ -40,7 +40,7 @@ namespace Tips.Grin.Api.Repository
             grins.CreatedOn = date.Date;
             //Guid grinId = Guid.NewGuid();
             //grins.GrinNumber = "GR-" + grinId.ToString();
-            grins.Unit = _unitname;       
+            grins.Unit = _unitname;
 
             var result = await Create(grins);
             return result.Id;
@@ -130,15 +130,15 @@ namespace Tips.Grin.Api.Repository
 
             return PagedList<GrinSPReportForTrans>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-        public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string? GrinNumber, string? VendorName, string? PONumber, 
+        public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string? GrinNumber, string? VendorName, string? PONumber,
                                                                                                     string? KPN, string? MPN, string? Warehouse, string? Location)
         {
-                var result = _tipsGrinDbContext
-                .Set<Grin_ReportSP>()
-                .FromSqlInterpolated($"CALL Grin_Report_withparameter({GrinNumber},{VendorName},{PONumber},{KPN},{MPN},{Warehouse},{Location})")
-                .ToList();
+            var result = _tipsGrinDbContext
+            .Set<Grin_ReportSP>()
+            .FromSqlInterpolated($"CALL Grin_Report_withparameter({GrinNumber},{VendorName},{PONumber},{KPN},{MPN},{Warehouse},{Location})")
+            .ToList();
 
-                return result;
+            return result;
         }
         public async Task<IEnumerable<GrinSPReportForTrans>> GetGrinSPReportWithParamForTrans(string? GrinNumber, string? VendorName, string? PONumber,
                                                                                                     string? ItemNumber, string? MPN, string? Warehouse, string? Location,
@@ -222,7 +222,7 @@ namespace Tips.Grin.Api.Repository
 
             return getDownloadDetails;
         }
-       
+
         public async Task<string> DeleteGrin(Grins grins)
         {
             Delete(grins);
@@ -262,12 +262,12 @@ namespace Tips.Grin.Api.Repository
 
         public async Task<IEnumerable<GrinNumberListDto>> GetAllActiveGrinNoList()
         {
-            IEnumerable<GrinNumberListDto> allActiveGrinNoList= await _tipsGrinDbContext.Grins
+            IEnumerable<GrinNumberListDto> allActiveGrinNoList = await _tipsGrinDbContext.Grins
                                 .Select(x => new GrinNumberListDto()
-                                {                                  
+                                {
 
-                                    Id= x.Id,
-                                    GrinNumber=x.GrinNumber,
+                                    Id = x.Id,
+                                    GrinNumber = x.GrinNumber,
                                     InvoiceNumber = x.InvoiceNumber
                                 })
                               .ToListAsync();
@@ -305,9 +305,9 @@ namespace Tips.Grin.Api.Repository
             //                        GrinId = x.Id
             //                    })
             //                  .ToListAsync();
-            var grinparts = await _tipsGrinDbContext.GrinParts.Where(x => x.IsIqcCompleted == true && x.IsBinningCompleted==false).Select(x => x.GrinsId).ToListAsync();
+            var grinparts = await _tipsGrinDbContext.GrinParts.Where(x => x.IsIqcCompleted == true && x.IsBinningCompleted == false).Select(x => x.GrinsId).ToListAsync();
             var gId = grinparts.Distinct().ToList();
-            List<GrinNoForIqcAndBinning> grinNoForBinning = await _tipsGrinDbContext.Grins.Where(x=> gId.Contains(x.Id)).Select(x => new GrinNoForIqcAndBinning()
+            List<GrinNoForIqcAndBinning> grinNoForBinning = await _tipsGrinDbContext.Grins.Where(x => gId.Contains(x.Id)).Select(x => new GrinNoForIqcAndBinning()
             {
                 GrinNumber = x.GrinNumber,
                 GrinId = x.Id
@@ -348,7 +348,7 @@ namespace Tips.Grin.Api.Repository
             .ThenInclude(pr => pr.ProjectNumbers)
             .Include(item => item.GrinParts)
                     .Include(o => o.OtherCharges)
-                     //.Include(item => item.GrinDocuments)
+            //.Include(item => item.GrinDocuments)
             .ToList();
             return grinDetails;
         }
@@ -406,7 +406,7 @@ namespace Tips.Grin.Api.Repository
         public async Task<Grins> GetGrinById(int id)
         {
             var grinDetailsbyId = await _tipsGrinDbContext.Grins.Where(x => x.Id == id)
-                                   // .Include(t => t.GrinDocuments)
+              // .Include(t => t.GrinDocuments)
               .Include(t => t.GrinParts)
               //.ThenInclude(c => c.CoCUpload)
               .Include(t => t.GrinParts)
@@ -443,7 +443,7 @@ namespace Tips.Grin.Api.Repository
             return result;
         }
 
-       
+
 
     }
     public class UploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository
@@ -475,23 +475,23 @@ namespace Tips.Grin.Api.Repository
             return result;
         }
 
-       
+
 
         public async Task<int?> CreateUploadDocumentGrin(DocumentUpload documentUpload)
         {
             documentUpload.CreatedBy = _createdBy;
-            documentUpload.CreatedOn = DateTime.Now;        
+            documentUpload.CreatedOn = DateTime.Now;
 
             var result = await Create(documentUpload);
             return result.Id;
         }
- 
+
 
         public async Task<IEnumerable<GetDownloadUrlDto>> GetGrinDownloadUrlDetails(string grinNumber)
-        { 
+        {
 
             IEnumerable<GetDownloadUrlDto> getDownloadDetails = await _tipsGrinDbContext.DocumentUploads
-                                .Where(x =>x.ParentId == grinNumber)
+                                .Where(x => x.ParentId == grinNumber)
                                 .Select(x => new GetDownloadUrlDto()
                                 {
                                     Id = x.Id,
@@ -530,7 +530,7 @@ namespace Tips.Grin.Api.Repository
         }
         public async Task<int?> GetDocumentDetailsByGrinNo(string grinnumber)
         {
-            var grinUploadDocFileNameById =  _tipsGrinDbContext.DocumentUploads
+            var grinUploadDocFileNameById = _tipsGrinDbContext.DocumentUploads
                .Where(x => x.ParentId == grinnumber).Count();
 
             return grinUploadDocFileNameById;
@@ -554,11 +554,11 @@ namespace Tips.Grin.Api.Repository
                                     FilePath = x.FilePath
                                 }).FirstOrDefaultAsync();
                     if (getDownloadDetails != null)
-                    fileUploads.Add(getDownloadDetails);
+                        fileUploads.Add(getDownloadDetails);
                 }
             }
             return fileUploads;
         }
     }
-    
+
 }

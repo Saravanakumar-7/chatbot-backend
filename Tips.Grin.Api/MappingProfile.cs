@@ -9,6 +9,7 @@ namespace Tips.Grin.Api
     {
         public MappingProfile()
         {
+           
             CreateMap<Grins, GrinIQCConfirmationSaveDto>().ReverseMap();
             CreateMap<GrinParts, GrinIQCConfirmationItemsSaveDto>().ReverseMap();
 
@@ -58,6 +59,14 @@ namespace Tips.Grin.Api
             CreateMap<IQCConfirmation, IQCConfirmationPostDto>().ReverseMap();
             CreateMap<IQCConfirmation, IQCConfirmationUpdateDto>().ReverseMap();
             CreateMap<IQCConfirmation, IQCConfirmationSaveDto>().ReverseMap();
+
+            CreateMap<IQCForServiceItems, IQCForServiceItemsDto>().ReverseMap();
+            CreateMap<IQCForServiceItems, IQCForServiceItemsPostDto>().ReverseMap();
+            CreateMap<IQCForServiceItems, IQCForServiceItemsSaveDto>().ReverseMap();
+
+            CreateMap<IQCForServiceItems_Items, IQCForServiceItems_ItemsDto>().ReverseMap();
+            CreateMap<IQCForServiceItems_Items, IQCForServiceItems_ItemsPostDto>().ReverseMap();
+            CreateMap<IQCForServiceItems_Items, IQCForServiceItems_ItemsSaveDto>().ReverseMap();
 
             CreateMap<IQCConfirmationItems, IQCConfirmationItemsDto>().ReverseMap();
             CreateMap<IQCConfirmationItems, IQCConfirmationItemsPostDto>().ReverseMap();

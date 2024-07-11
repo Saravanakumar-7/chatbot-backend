@@ -11,6 +11,9 @@ namespace Tips.Grin.Api.Entities
         {
 
         }
+        public DbSet<IQCForServiceItems_Items> IQCForServiceItems_Items { get; set; }
+        public DbSet<IQCForServiceItems> IQCForServiceItems { get; set; }
+        public DbSet<GrinsForServiceItemsNumber> GrinsForServiceItemsNumber { get; set; }
         public DbSet<GrinsForServiceItems> GrinsForServiceItems { get; set; }
         public DbSet<GrinsForServiceItemsParts> GrinsForServiceItemsParts { get; set; }
         public DbSet<GrinsForServiceItemsOtherCharges> GrinsForServiceItemsOtherCharges { get; set; }

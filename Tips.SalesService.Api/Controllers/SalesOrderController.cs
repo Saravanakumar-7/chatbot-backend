@@ -4459,26 +4459,7 @@ namespace Tips.SalesService.Api.Controllers
                 string? emaildetails;
                 var client = _clientFactory.CreateClient();
                 var token = HttpContext.Request.Headers["Authorization"].ToString();
-                //if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation" || salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
-                //{
-                //    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=SalesOrderAutomationEmail"));
-                //    request.Headers.Add("Authorization", token);
-                //    var response = await client.SendAsync(request);
-
-                //    var EmailTempString = await response.Content.ReadAsStringAsync();
-                //    emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
-                //    FileName = "SalesOrder_Automation_Book";
-                //}
-                //else
-                //{
-                //    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=SalesOrderLightEmail"));
-                //    request.Headers.Add("Authorization", token);
-                //    var response = await client.SendAsync(request);
-
-                //    var EmailTempString = await response.Content.ReadAsStringAsync();
-                //    emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
-                //    FileName = "SalesOrder_Lights_Book";
-                //}
+                
                 if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation")
                 {
                     emaildetails = $"Your Confirmed Keus Automation Sales Order - {salesorderDetails.SalesOrderNumber}: Version - {salesorderDetails.RevisionNumber}";

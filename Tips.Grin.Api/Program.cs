@@ -101,6 +101,10 @@ builder.Services.AddScoped<IBinningLocationRepository, BinningLocationRepository
 builder.Services.AddScoped<IWeightedAvgCostRepository, WeightedAvgCostRepository>();
 builder.Services.AddScoped<IIQCConfirmationItemsRepository, IQCConfirmationItemsRepository>();
 builder.Services.AddScoped<IDocumentUploadRepository, UploadDocumentRepository>();
+builder.Services.AddScoped<IGrinsForServiceItemsRepository, GrinsForServiceItemsRepository>();
+builder.Services.AddScoped<IGrinsForServiceItemsPartsRepository, GrinsForServiceItemsPartsRepository>();
+builder.Services.AddScoped<IIQCForServiceItemsRepository, IQCForServiceItemsRepository>();
+builder.Services.AddScoped<IIQCForServiceItems_ItemsRepository, IQCForServiceItems_ItemsRepository>();
 
 var app = builder.Build();
 app.UseSwagger();
