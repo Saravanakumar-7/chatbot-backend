@@ -48,7 +48,15 @@ namespace Tips.Grin.Api.Controllers
             try
             {
                 var getAllIQCDetails = await _iQCForServiceItemsRepository.GetAllIQCForServiceItemsDetails(pagingParameter, searchParams);
-
+                if (getAllIQCDetails == null || getAllIQCDetails.Count() == 0)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"IQCForServiceItems data not found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"IQCForServiceItems data not found in db");
+                    return NotFound(serviceResponse);
+                }
                 var metadata = new
                 {
                     getAllIQCDetails.TotalCount,

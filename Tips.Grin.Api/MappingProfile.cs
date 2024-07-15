@@ -21,14 +21,26 @@ namespace Tips.Grin.Api
             CreateMap<GrinsForServiceItems, GrinsForServiceItemsDto>().ReverseMap();
             CreateMap<GrinsForServiceItems, GrinsForServiceItemsPostDto>().ReverseMap();
             CreateMap<GrinsForServiceItems, GrinsForServiceItemsUpdateDto>().ReverseMap();
+            CreateMap<GrinsForServiceItems, GrinsForServiceItemsIQCForServiceItemsSaveDto>().ReverseMap();
 
             CreateMap<GrinsForServiceItemsParts, GrinsForServiceItemsPartsDto>().ReverseMap();
+            CreateMap<GrinsForServiceItemsParts, GrinsForServiceItemsIQCForServiceItems_ItemsSaveDto>().ReverseMap();
             CreateMap<GrinsForServiceItemsParts, GrinsForServiceItemsPartsPostDto>().ReverseMap();
             CreateMap<GrinsForServiceItemsParts, GrinsForServiceItemsPartsUpdateDto>().ReverseMap();
-
+            CreateMap<GrinsForServiceItemsParts, GrinsForServiceItemsPartscalculationofAvgcost>().ReverseMap();
+            CreateMap<GrinsForServiceItemsParts, GrinsForServiceItemsUpdateQtyDetailsDto>().ReverseMap();
+            CreateMap<GrinsForServiceItemsPartsPostDto, GrinsForServiceItemsPartscalculationofAvgcost>().ReverseMap();
+            CreateMap<GrinsForServiceItemsPartsPostDto, GrinsForServiceItemsUpdateQtyDetailsDto>().ReverseMap();
+            CreateMap<GrinsForServiceItemsPartsPostDto, GrinsForServiceItemsQtyPoStatusUpdateDto>().ReverseMap();
+            CreateMap<GrinsForServiceItemsPartsUpdateDto, GrinsForServiceItemsPartscalculationofAvgcost>().ReverseMap();
+            
             CreateMap<GrinsForServiceItemsProjectNumbers, GrinsForServiceItemsProjectNumbersDto>().ReverseMap();
             CreateMap<GrinsForServiceItemsProjectNumbers, GrinsForServiceItemsProjectNumbersPostDto>().ReverseMap();
             CreateMap<GrinsForServiceItemsProjectNumbers, GrinsForServiceItemsProjectNumbersUpdateDto>().ReverseMap();
+            CreateMap<GrinsForServiceItemsProjectNumbers, GrinsForServiceItemsProjectNumberscalculationofAvgcostDto>().ReverseMap();
+            CreateMap<GrinsForServiceItemsProjectNumbersPostDto, GrinsForServiceItemsProjectNumberscalculationofAvgcostDto>().ReverseMap();
+            CreateMap<GrinsForServiceItemsProjectNumbersPostDto, GrinsForServiceItemsUpdateProjectBalQtyDetailsDto>().ReverseMap();
+            CreateMap<GrinsForServiceItemsProjectNumbersUpdateDto, GrinsForServiceItemsProjectNumberscalculationofAvgcostDto>().ReverseMap();
 
             CreateMap<GrinsForServiceItemsOtherCharges, GrinsForServiceItemsOtherChargesDto>().ReverseMap();
             CreateMap<GrinsForServiceItemsOtherCharges, GrinsForServiceItemsOtherChargesPostDto>().ReverseMap();
@@ -63,10 +75,12 @@ namespace Tips.Grin.Api
             CreateMap<IQCForServiceItems, IQCForServiceItemsDto>().ReverseMap();
             CreateMap<IQCForServiceItems, IQCForServiceItemsPostDto>().ReverseMap();
             CreateMap<IQCForServiceItems, IQCForServiceItemsSaveDto>().ReverseMap();
+            CreateMap<IQCForServiceItems, GrinsForServiceItemsIQCForServiceItemsSaveDto>().ReverseMap();
 
             CreateMap<IQCForServiceItems_Items, IQCForServiceItems_ItemsDto>().ReverseMap();
             CreateMap<IQCForServiceItems_Items, IQCForServiceItems_ItemsPostDto>().ReverseMap();
             CreateMap<IQCForServiceItems_Items, IQCForServiceItems_ItemsSaveDto>().ReverseMap();
+            CreateMap<IQCForServiceItems_Items, GrinsForServiceItemsIQCForServiceItems_ItemsSaveDto>().ReverseMap();
 
             CreateMap<IQCConfirmationItems, IQCConfirmationItemsDto>().ReverseMap();
             CreateMap<IQCConfirmationItems, IQCConfirmationItemsPostDto>().ReverseMap();
