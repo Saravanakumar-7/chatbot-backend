@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Tips.SalesService.Api.Entities.DTOs
 {
@@ -365,6 +366,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CusEmail { get; set; }
         public string jasperfileUrl { get; set; }
         public int Quoteid { get; set; }
+        public string WhatsAppPhoneNos { get; set; }
     }
     public class QuoteSPResportParamDTO
     {
@@ -517,4 +519,117 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? RfqNumber { get; set; }
     }
 
+    public class WhatsAppMessagePayload
+    {
+        [JsonProperty("recipient_type")]
+        public string RecipientType { get; set; }
+
+        [JsonProperty("to")]
+        public string To { get; set; }
+
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        [JsonProperty("template")]
+        public Template Template { get; set; }
+
+        [JsonProperty("metadata")]
+        public Metadata Metadata { get; set; }
+    }
+
+    public class Template
+    {
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("language")]
+        public Language Language { get; set; }
+
+        [JsonProperty("components")]
+        public List<Component> Components { get; set; }
+    }
+
+    public class Language
+    {
+        [JsonProperty("policy")]
+        public string Policy { get; set; }
+
+        [JsonProperty("code")]
+        public string Code { get; set; }
+    }
+
+    public class Component
+    {
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        [JsonProperty("parameters")]
+        public List<Parameter> Parameters { get; set; }
+    }
+
+    public class Parameter
+    {
+        [JsonProperty("type")]
+        public string Type { get; set; }
+
+        [JsonProperty("document")]
+        public Document Document { get; set; }
+    }
+
+    public class Document
+    {
+        [JsonProperty("filename")]
+        public string Filename { get; set; }
+    }
+
+    public class Metadata
+    {
+        [JsonProperty("messageId")]
+        public string MessageId { get; set; }
+
+        [JsonProperty("media")]
+        public Media Media { get; set; }
+    }
+
+    public class Media
+    {
+        [JsonProperty("mimeType")]
+        public string MimeType { get; set; }
+
+        [JsonProperty("content")]
+        public string Content { get; set; }
+    }
+
+
+    public class WhatsAppCreateTokenResponse
+    {
+        [JsonProperty("access_token")]
+        public string AccessToken { get; set; }
+
+        [JsonProperty("expires_in")]
+        public int ExpiresIn { get; set; }
+
+        [JsonProperty("refresh_expires_in")]
+        public int RefreshExpiresIn { get; set; }
+
+        [JsonProperty("refresh_token")]
+        public string RefreshToken { get; set; }
+
+        [JsonProperty("token_type")]
+        public string TokenType { get; set; }
+
+        [JsonProperty("not-before-policy")]
+        public int NotBeforePolicy { get; set; }
+
+        [JsonProperty("session_state")]
+        public string SessionState { get; set; }
+
+        [JsonProperty("scope")]
+        public string Scope { get; set; }
+    }
+    public class MsisdnListRequest
+    {
+        [JsonProperty("msisdnList")]
+        public List<string> MsisdnList { get; set; }
+    }
 }

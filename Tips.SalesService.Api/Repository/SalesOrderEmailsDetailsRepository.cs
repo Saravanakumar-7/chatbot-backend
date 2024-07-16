@@ -26,8 +26,6 @@ namespace Tips.SalesService.Api.Repository
         }
         public async Task<int> CreateSalesOrderEmailsDetails(SalesOrderEmailsDetails salesOrderEmailsDetails)
         {
-            //salesOrderEmailsDetails.SentBy = _createdBy;
-            //salesOrderEmailsDetails.SentOn = DateTime.Now;
             var result = await Create(salesOrderEmailsDetails);
             return result.Id;
         }

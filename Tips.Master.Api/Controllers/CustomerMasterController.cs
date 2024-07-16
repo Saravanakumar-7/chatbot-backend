@@ -18,20 +18,20 @@ namespace Tips.Master.Api.Controllers
     [Authorize]
     public class CustomerMasterController : ControllerBase
     {
-            private IRepositoryWrapperForMaster _repository;
-            private ILoggerManager _logger;
-            private IMapper _mapper;
+        private IRepositoryWrapperForMaster _repository;
+        private ILoggerManager _logger;
+        private IMapper _mapper;
         private readonly IConfiguration _config;
         private IFileUploadRepository _fileUploadRepository;
-        public CustomerMasterController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper, IConfiguration config,IFileUploadRepository fileUploadRepository)
-            {
-                _repository = repository;
-                _logger = logger;
-                _mapper = mapper;
+        public CustomerMasterController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper, IConfiguration config, IFileUploadRepository fileUploadRepository)
+        {
+            _repository = repository;
+            _logger = logger;
+            _mapper = mapper;
             _config = config;
             _fileUploadRepository = fileUploadRepository;
         }
- 
+
         [HttpGet]
         public async Task<IActionResult> GetAllCustomerMaster([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
@@ -78,9 +78,9 @@ namespace Tips.Master.Api.Controllers
 
                 if (getCustomerMasterById == null)
                 {
-                    serviceResponse.Data= null;
+                    serviceResponse.Data = null;
                     serviceResponse.Message = $"CustomerMaster with id hasn't been found in db.";
-                    serviceResponse.Success=false;
+                    serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"CustomerMaster with id: {id}, hasn't been found in db.");
                     return NotFound(serviceResponse);
@@ -190,11 +190,11 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest("Invalid model object");
                 }
 
-                
+
                 var contacts = _mapper.Map<IEnumerable<CustomerContacts>>(customerMasterDtoPost.CustomerContacts);
                 var shippingAddresses = _mapper.Map<IEnumerable<CustomerShippingAddresses>>(customerMasterDtoPost.CustomerShippingAddresses);
                 var addresses = _mapper.Map<IEnumerable<CustomerAddresses>>(customerMasterDtoPost.CustomerAddress);
-                var related= _mapper.Map<IEnumerable<CustomerRelatedCustomer>>(customerMasterDtoPost.RelatedCustomers);
+                var related = _mapper.Map<IEnumerable<CustomerRelatedCustomer>>(customerMasterDtoPost.RelatedCustomers);
                 var banking = _mapper.Map<IEnumerable<CustomerBanking>>(customerMasterDtoPost.CustomerBankings);
                 var headcount = _mapper.Map<IEnumerable<CustomerMasterHeadCounting>>(customerMasterDtoPost.CustomerMasterHeadCountings);
 
@@ -203,10 +203,10 @@ namespace Tips.Master.Api.Controllers
                 customerMaster.CustomerAddresses = addresses.ToList();
                 customerMaster.CustomerContacts = contacts.ToList();
                 customerMaster.CustomerShippingAddresses = shippingAddresses.ToList();
-                customerMaster.RelatedCustomers= related.ToList();
+                customerMaster.RelatedCustomers = related.ToList();
                 customerMaster.CustomerBanking = banking.ToList();
-                customerMaster.CustomerMasterHeadCountings= headcount.ToList();
-               
+                customerMaster.CustomerMasterHeadCountings = headcount.ToList();
+
                 if (serverKey == "trasccon")
                 {
                     var customerNumber = await _repository.CustomerMasterRepository.GenerateCustomerNumberAvision();
@@ -219,7 +219,7 @@ namespace Tips.Master.Api.Controllers
                 }
                 //if (serverKey != "keus")
                 //{
-                else 
+                else
                 {
                     //var customerDetails = await _repository.CustomerMasterRepository.GetCSNumberAutoIncrementCount();
                     // var newcount = customerDetails?.Id;
@@ -237,14 +237,14 @@ namespace Tips.Master.Api.Controllers
                     // }
                     var customerex = await _repository.CustomerMasterRepository.GetCustomerbyCustomerNumber(customerMaster.CustomerNumber);
 
-                    if (customerex==1)
+                    if (customerex == 1)
                     {
                         serviceResponse.Data = null;
                         serviceResponse.Message = "CustomerNumber Already Exists";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
                         return StatusCode(406, serviceResponse);
-                    }                   
+                    }
 
                 }
                 await _repository.CustomerMasterRepository.CreateCustomerMaster(customerMaster);
@@ -595,7 +595,7 @@ namespace Tips.Master.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-               
+
                 var addresses = _mapper.Map<IEnumerable<CustomerAddresses>>(customerMasterDtoUpdate.CustomerAddress);
                 var related = _mapper.Map<IEnumerable<CustomerRelatedCustomer>>(customerMasterDtoUpdate.RelatedCustomers);
                 var contacts = _mapper.Map<IEnumerable<CustomerContacts>>(customerMasterDtoUpdate.CustomerContacts);
@@ -605,11 +605,11 @@ namespace Tips.Master.Api.Controllers
 
                 var customerMasters = _mapper.Map(customerMasterDtoUpdate, updateCustomerMaster);
 
-                customerMasters.CustomerAddresses= addresses.ToList();
-                customerMasters.CustomerContacts= contacts.ToList();
+                customerMasters.CustomerAddresses = addresses.ToList();
+                customerMasters.CustomerContacts = contacts.ToList();
                 customerMasters.RelatedCustomers = related.ToList();
-                customerMasters.CustomerShippingAddresses= shippingAddresses.ToList();
-                customerMasters.CustomerBanking= banking.ToList();
+                customerMasters.CustomerShippingAddresses = shippingAddresses.ToList();
+                customerMasters.CustomerBanking = banking.ToList();
                 customerMasters.CustomerMasterHeadCountings = HeadcountDetails.ToList();
                 string result = await _repository.CustomerMasterRepository.UpdateCustomerMaster(customerMasters);
                 _logger.LogInfo(result);
@@ -631,7 +631,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-         [HttpDelete("{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteCustomerMaster(int id)
         {
             ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();
@@ -651,7 +651,7 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = " CustomerMaster Successfully Deleted"; 
+                serviceResponse.Message = " CustomerMaster Successfully Deleted";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

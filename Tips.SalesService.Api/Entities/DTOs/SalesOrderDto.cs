@@ -468,5 +468,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CusEmail { get; set; }
         public string jasperfileUrl { get; set; }
         public int SalesOrderid { get; set; }
+        public string WhatsAppPhoneNos { get; set; }
     }
 }

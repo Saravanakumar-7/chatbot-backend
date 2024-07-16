@@ -33,6 +33,7 @@ using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System.Text;
 using System.Net.Http.Headers;
+using System.Collections;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -735,7 +736,7 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<QuoteSPReport>> serviceResponse = new ServiceResponse<IEnumerable<QuoteSPReport>>();
             try
             {
-                var products = await _repository.GetQuoteSPReport(quoteSpReportDto.CustomerName,quoteSpReportDto.CustomerId,quoteSpReportDto.RfqNumber);
+                var products = await _repository.GetQuoteSPReport(quoteSpReportDto.CustomerName, quoteSpReportDto.CustomerId, quoteSpReportDto.RfqNumber);
 
                 if (products == null)
                 {
@@ -768,47 +769,58 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SendEmailforQuote([FromBody] QuoteEmailPostDto quoteEmailPostDto)
+        public async Task<IActionResult> SendEmailandWhatsAppMessageforQuote([FromBody] QuoteEmailPostDto quoteEmailPostDto)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
             try
             {
+                if (quoteEmailPostDto.WhatsAppPhoneNos.IsNullOrEmpty())
+                {
+                    _logger.LogError($"The WhatsApp Numbers is Empty these are required");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Something went wrong ,try again";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(400, serviceResponse);
+                }
+                var whatsappNumbers = quoteEmailPostDto.WhatsAppPhoneNos.Split(',').ToList();
+
                 var quoteDetails = await _repository.GetQuoteById(quoteEmailPostDto.Quoteid);
-                //EmailTemplateDto? emaildetails = new EmailTemplateDto();
                 string? emaildetails;
+                string? whatsapptemplate;
                 string? FileName;
                 var client = _clientFactory.CreateClient();
                 var token = HttpContext.Request.Headers["Authorization"].ToString();
                 if (quoteDetails.TypeOfSolution == "Automation" || quoteDetails.TypeOfSolution == "Upsell - Automation")
                 {
-                    //var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=QuoteAutomationEmail"));
-                    //request.Headers.Add("Authorization", token);
-                    //var response = await client.SendAsync(request);
-
-                    //var EmailTempString = await response.Content.ReadAsStringAsync();
-                    //emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
                     emaildetails = "Your Keus Automation Quotation";
                     FileName = "Quote_Automation_Book";
+                    whatsapptemplate = "advait_quote_automaiton";
                 }
                 else if (quoteDetails.TypeOfSolution == "Accessories" || quoteDetails.TypeOfSolution == "Lock")
                 {
                     emaildetails = "Your Keus Accessories Quotation";
                     FileName = "Quote_Accessories_Book";
+                    whatsapptemplate = "quotation_sent";
                 }
                 else
                 {
-                    //var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=QuoteLightEmail"));
-                    //request.Headers.Add("Authorization", token);
-                    //var response = await client.SendAsync(request);
-
-                    //var EmailTempString = await response.Content.ReadAsStringAsync();
-                    //emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
                     emaildetails = "Your Keus Lights Quotation";
                     FileName = "Quote_Lights_Book";
+                    whatsapptemplate = "advait_quote_light";
                 }
                 if (emaildetails.IsNullOrEmpty())
                 {
                     _logger.LogError($"The Subject of the Email is Empty as the Type of Solution has not matched any Type Of Solution");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Something went wrong ,try again";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+                if (whatsapptemplate.IsNullOrEmpty())
+                {
+                    _logger.LogError($"The Template for Whatsapp is Empty as the Type of Solution has not matched any Type Of Solution");
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"Something went wrong ,try again";
                     serviceResponse.Success = false;
@@ -835,14 +847,6 @@ namespace Tips.SalesService.Api.Controllers
                 email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
                 email.Subject = emaildetails;
                 string? body;
-                //body = body.Replace("{{Quote Number}}", quoteDetails.QuoteNumber);
-                //body = body.Replace("{{RFQ Number}}", quoteDetails.RFQNumber);
-                //body = body.Replace("{{Revision Number}}", quoteDetails.RevisionNumber.ToString());
-                //body = body.Replace("{{Created On Date}}", quoteDetails.CreatedOn.ToString());
-                //body = body.Replace("{{Created By}}", quoteDetails.CreatedBy);
-                //body = body.Replace("{{Total Final Amount Value}}", quoteDetails.TotalFinalAmount.ToString());
-                //body = body.Replace("{{Customer Name}}", quoteDetails.CustomerName);
-                //body = body.Replace("{{Sales Person}}", quoteDetails.SalesPerson);
                 if (quoteDetails.TypeOfSolution == "Automation" || quoteDetails.TypeOfSolution == "Upsell - Automation" || quoteDetails.TypeOfSolution == "Accessories" || quoteDetails.TypeOfSolution == "Lock")
                 {
                     string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-automation-quotation.html");
@@ -858,14 +862,11 @@ namespace Tips.SalesService.Api.Controllers
                     body = System.IO.File.ReadAllText(htmlFilePath);
                     body = body.Replace("{{Customer Name}}", quoteDetails.CustomerName);
                 }
-
+                string base64;
                 var builder = new BodyBuilder();
                 builder.HtmlBody = body;
                 using (HttpClient client1 = new HttpClient())
                 {
-                    //HttpResponseMessage response2 = await client1.GetAsync(jasperfileUrl);
-                    //response2.EnsureSuccessStatusCode();
-
                     client1.Timeout = TimeSpan.FromMinutes(5);
                     var request2 = new HttpRequestMessage(HttpMethod.Get, quoteEmailPostDto.jasperfileUrl);
 
@@ -875,12 +876,10 @@ namespace Tips.SalesService.Api.Controllers
                     response2.EnsureSuccessStatusCode();
 
                     byte[] fileBytes = await response2.Content.ReadAsByteArrayAsync();
-                    //Uri uri = new Uri(jasperfileUrl);
-                    //var filename= Path.GetFileName(uri.LocalPath);
                     builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
+                    base64 = Convert.ToBase64String(fileBytes);
                 }
 
-                //email.Body = new TextPart(TextFormat.Html) { Text = body };
                 email.Body = builder.ToMessageBody();
 
                 using var smtp = new MailKit.Net.Smtp.SmtpClient();
@@ -890,6 +889,77 @@ namespace Tips.SalesService.Api.Controllers
 
                 smtp.Send(email);
                 smtp.Disconnect(true);
+
+                var jsonpayload = "{\r\n  \"recipient_type\": \"individual\",\r\n  \"to\": \"\",\r\n  \"type\": \"template\",\r\n  \"template\": {\r\n    \"name\": \"\",\r\n    \"language\": {\r\n      \"policy\": \"deterministic\",\r\n      \"code\": \"en\"\r\n    },\r\n    \"components\": [\r\n      {\r\n        \"type\": \"header\",\r\n        \"parameters\": [\r\n          {\r\n            \"type\": \"document\",\r\n            \"document\": {\r\n              \"filename\": \"\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  },\r\n  \"metadata\": {\r\n    \"messageId\": \"\",\r\n    \"media\": {\r\n      \"mimeType\": \"application/pdf\",\r\n      \"content\": \"\"\r\n    }\r\n  }\r\n}";
+                WhatsAppMessagePayload whatsAppMessagePayload = JsonConvert.DeserializeObject<WhatsAppMessagePayload>(jsonpayload);
+                whatsAppMessagePayload.Template.Name = whatsapptemplate;
+                whatsAppMessagePayload.Template.Components[0].Parameters[0].Document.Filename = FileName;
+                whatsAppMessagePayload.Metadata.Media.Content = base64;
+                WhatsAppCreateTokenResponse whatsAppCreateTokenResponse;
+
+                
+                var request = new HttpRequestMessage(HttpMethod.Post, "https://auth.aclwhatsapp.com/realms/ipmessaging/protocol/openid-connect/token");
+                request.Headers.Add("cache-control", "no-cache");
+                var content = new StringContent($"grant_type=password&client_id=ipmessaging-client&username=keuspd&password=keuspd30", Encoding.UTF8, "application/x-www-form-urlencoded");
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+                request.Content = content;
+                var response = await client.SendAsync(request);
+
+                whatsAppCreateTokenResponse = JsonConvert.DeserializeObject<WhatsAppCreateTokenResponse>(await response.Content.ReadAsStringAsync());
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogError($"Unable to Generate Token for Whatsapp Message");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Something went wrong ,try again";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+
+                MsisdnListRequest msisdnListRequest = new MsisdnListRequest
+                {
+                    MsisdnList = whatsappNumbers
+                };
+                var No_s = JsonConvert.SerializeObject(msisdnListRequest);
+                var data = new StringContent(No_s, Encoding.UTF8, "application/json");
+                var request3 = new HttpRequestMessage(HttpMethod.Post, "https://optin.aclwhatsapp.com/api/v1/optin/bulk")
+                {
+                    Content = data
+                };
+                request3.Headers.Add("Authorization", "Bearer "+whatsAppCreateTokenResponse.AccessToken);
+                var response3 = await client.SendAsync(request3);
+                if (!response3.IsSuccessStatusCode)
+                {
+                    _logger.LogError($"Unable to OptinNumbers for Whatsapp Message");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Something went wrong ,try again";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+
+                foreach (var number in whatsappNumbers)
+                {
+                    whatsAppMessagePayload.To = number;
+                    var whatsappCreate = JsonConvert.SerializeObject(whatsAppMessagePayload);
+                    var data4 = new StringContent(whatsappCreate, Encoding.UTF8, "application/json");
+                    var request4 = new HttpRequestMessage(HttpMethod.Post, "https://api.aclwhatsapp.com/pull-platform-receiver/v2/wa/messages")
+                    {
+                        Content = data4
+                    };
+                    request4.Headers.Add("Authorization", "Bearer " + whatsAppCreateTokenResponse.AccessToken);
+                    var response4 = await client.SendAsync(request4);
+                    if (!response4.IsSuccessStatusCode)
+                    {
+                        _logger.LogError($"Unable to Create a Whatsapp Message");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"Something went wrong ,try again";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
+                }
+
 
                 QuoteEmailsDetails quoteEmailsDetails = new QuoteEmailsDetails()
                 {
@@ -902,7 +972,8 @@ namespace Tips.SalesService.Api.Controllers
                     CustomerName = quoteDetails.CustomerName,
                     QuoteValue = quoteDetails.TotalFinalAmount,
                     QuoteId = quoteDetails.Id,
-                    TypeOfSolution = quoteDetails.TypeOfSolution
+                    TypeOfSolution = quoteDetails.TypeOfSolution,
+                    WhatsAppPhoneNos = quoteEmailPostDto.WhatsAppPhoneNos
                 };
                 await _quoteEmailsDetailsRepository.CreateQuoteEmailsDetails(quoteEmailsDetails);
                 _quoteEmailsDetailsRepository.SaveAsync();
@@ -1236,65 +1307,7 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpPost]
-        public async Task<IActionResult> SendWhatsAppforQuote()
-        {
-            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
-            try
-            {
-                //var client = _clientFactory.CreateClient();
-                //var json = "{\r\n \"messages\": [\r\n {\r\n \"sender\": \"919885500300\",\r\n \"to\": \"918151814797\",\r\n \"channel\": \"wa\",\r\n \"type\": \"template\",\r\n \"template\": {\r\n \"body\": [],\r\n \"templateId\": \"keus_text_1\",\r\n \"langCode\": \"en\"\r\n }\r\n }\r\n ],\r\n \"responseType\": \"json\"\r\n}";
-                //var data = new StringContent(json, Encoding.UTF8, "application/json");
-                //var request = new HttpRequestMessage(HttpMethod.Post, "https://push.aclwhatsapp.com/pull-platform-receiver/wa/messages")
-                //{
-                //    Content = data
-                //};
-                //var inventoryQtyResponse = await client.SendAsync(request);
-
-                using (var client = new HttpClient())
-                {
-                    // Set the base address and headers
-                    client.BaseAddress = new Uri("https://auth.aclwhatsapp.com/");
-                    client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
-                    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/x-www-form-urlencoded"));
-
-                    // Prepare the form data
-                    var formData = new MultipartFormDataContent();
-                    formData.Add(new StringContent("password"), "grant_type");
-                    formData.Add(new StringContent("ipmessaging-client"), "client_id");
-                    formData.Add(new StringContent("vamsi.e@keus.in"), "username");
-                    formData.Add(new StringContent("Keus@140284"), "password");
-
-                    // Send the POST request
-                    var response = await client.PostAsync("realms/ipmessaging/protocol/openid-connect/token", formData);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        // Read and display the response
-                        var responseContent = await response.Content.ReadAsStringAsync();
-                        Console.WriteLine(responseContent);
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Error: {response.StatusCode}");
-                    }
-                }
-                serviceResponse.Data = null;
-                serviceResponse.Message = "WhatsApp Message sent Successfully";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside SendWhatsAppforQuote action";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
+       
     }
 }
 

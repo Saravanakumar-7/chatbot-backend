@@ -15,5 +15,7 @@
         public DateTime? SentOn { get; set; }
         public string? SentTo { get; set; }
         public string? CustomerEmailId { get; set; }
+        public string WhatsAppPhoneNos { get; set; }
+
     }
 }
