@@ -1407,7 +1407,6 @@ namespace Tips.Purchase.Api.Controllers
                 var prDetailsPostDto = poItemDto[0].PrDetails;
                 var poFile = purchaseOrderPostDto.POFiles;
                 var poItemDtoList = new List<PoItem>();
-                //var poDocumentUploadDtoList = new List<DocumentUpload>();
                 var poIncoTermList = _mapper.Map<IEnumerable<PoIncoTerm>>(purchaseOrderPostDto.POIncoTerms);
 
                 var date = DateTime.Now;
@@ -1415,21 +1414,6 @@ namespace Tips.Purchase.Api.Controllers
                 var days = Convert.ToString(date.Day.ToString("D2"));
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
-
-                //var newcount = await _repository.GetPONumberAutoIncrementCount(date);
-
-                //if (newcount > 0)
-                //{
-                //    var number = newcount + 1;
-                //    string e = String.Format("{0:D4}", number);
-                //    purchaseOrderDetails.PONumber = days + months + years + "PO" + (e);
-                //}
-                //else
-                //{
-                //    var count = 1;
-                //    var e = count.ToString("D4");
-                //    purchaseOrderDetails.PONumber = days + months + years + "PO" + (e);
-                //}
                 if (serverKey == "avision")
                 {
                     var poNum = await _repository.GeneratePONumberForAvision();
@@ -1441,49 +1425,6 @@ namespace Tips.Purchase.Api.Controllers
                     var poNumber = await _repository.GeneratePONumber();
                     purchaseOrderDetails.PONumber = dateFormat + poNumber;
                 }
-                //// Po Upload
-
-                //var poUploadDetails = purchaseOrderPostDto.POFiles;
-
-                //foreach (var poUploadDetail in poUploadDetails)
-                //{
-                //    Guid guid = Guid.NewGuid();
-                //    var fileContent = poUploadDetail.FileByte;
-                //    byte[] imageContent = Convert.FromBase64String(poUploadDetail.FileByte);
-                //    var poNumbers = purchaseOrderDetails.PONumber;
-                //    string fileName = guid.ToString() + "_" + poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
-                //    string FileExt = Path.GetExtension(fileName).ToUpper();
-
-
-                //    //string filename_1 = guid.ToString() + "_" + fileName;
-                //    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", fileName);
-                //    using (MemoryStream ms = new MemoryStream(imageContent))
-                //    {
-                //        ms.Position = 0;
-                //        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                //        {
-                //            ms.WriteTo(fileStream);
-                //        }
-                //        var uploadedFile = new DocumentUpload
-                //        {
-                //            FileName = fileName,
-                //            FileExtension = FileExt,
-                //            FilePath = filePath,
-                //            ParentNumber = poNumbers,
-                //            DocumentFrom = "PODocument",
-                //        };
-                //        _documentUploadRepository.CreateUploadDocumentPO(uploadedFile);                        
-
-                //        if (uploadedFile != null)
-                //        {
-                //            DocumentUpload poFileDetails = _mapper.Map<DocumentUpload>(uploadedFile);
-                //            poDocumentUploadDtoList.Add(poFileDetails);
-                //        }
-
-                //    }
-
-                //}
-
                 if (poItemDto != null)
                 {
                     for (int i = 0; i < poItemDto.Count; i++)
@@ -1512,43 +1453,7 @@ namespace Tips.Purchase.Api.Controllers
                 purchaseOrderDetails.POIncoTerms = poIncoTermList.ToList();
                 await _repository.CreatePurchaseOrder(purchaseOrderDetails);
 
-
-                //Adding data in PoConfirmationDateHistory
-                //foreach (var poItems in poItemDtoList)
-                //{
-                //    if (poItems.POConfirmationDates != null)
-                //    {
-                //        foreach (var poConfirmationDate in poItems.POConfirmationDates)
-                //        {
-                //            PoConfirmationDateHistory poConfirmationDateHistory = new PoConfirmationDateHistory();
-                //            poConfirmationDateHistory.ConfirmationDate = poConfirmationDate.ConfirmationDate;
-                //            poConfirmationDateHistory.Qty = poConfirmationDate.Qty;
-
-                //            var poConfirmationDateHistoryDetails = _mapper.Map<PoConfirmationDateHistory>(poConfirmationDateHistory);
-
-                //            await _poConfirmationDateHistoryRepository.CreatePoConfirmationDateHistory(poConfirmationDateHistoryDetails);
-                //            _poConfirmationDateHistoryRepository.SaveAsync();
-                //        }
-                //    }
-                //}
-
-                //Update PrUploadDocu
-                //if (prDetailsPostDto.Count > 0 && prDetailsPostDto[0].PrDetailDocumentUploadPostDtos !=null)
-                //{
-
-                //        foreach (var prDetailsDto in prDetailsPostDto[0].PrDetailDocumentUploadPostDtos)
-                //        {
-                //            var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
-                //            if (prUploadDocument != null)
-                //            {
-                //                prUploadDocument.Checked = true;
-                //                await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
-                //            }
-                //            _pRItemsDocumentUploadRepository.SaveAsync();
-
-                //        }
-
-                //}
+              
                 if (purchaseOrderPostDto.POItems != null)
                 {
                     foreach (var pritem in purchaseOrderPostDto.POItems)
@@ -1574,31 +1479,7 @@ namespace Tips.Purchase.Api.Controllers
                         }
                     }
                 }
-                //Changing Status in Pr and PrItems 
-                //foreach (var poItems in poItemDtoList)
-                //{
-                //    foreach (var prDetails in poItems.PrDetails)
-                //    {
-                //        var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, prDetails.Qty);
-                //        if (prItemDetail != null)
-                //        {
-                //            prItemDetail.PrStatus = PrStatus.Closed;
-                //            await _purchaseRequisitionItemRepository.UpdatePrItem(prItemDetail);
-                //            _purchaseRequisitionItemRepository.SaveAsync();
-                //        }
-
-                //        var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber, prDetails.Qty);
-                //        if (prItemClosedStatusCount == 0)
-                //        {
-                //            var prDetail = await _repository.GetPrDetailsByPrNumber(prDetails.PRNumber);
-                //            prDetail.PrStatus = PrStatus.Closed;
-                //            await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
-                //            _purchaseRequisitionRepository.SaveAsync();
-                //        }
-                //    }
-
-
-                //}
+                
 
                 foreach (var poItems in poItemDtoList)
                 {

@@ -1542,6 +1542,64 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetIQCForServiceItemsDetailsbyId(int id)
+        {
+            ServiceResponse<IQCForServiceItemsDto> serviceResponse = new ServiceResponse<IQCForServiceItemsDto>();
 
+            try
+            {
+                var iQCDetailsbyId = await _iQCForServiceItemsRepository.GetIQCForServiceItemsDetailsbyId(id);
+                if (iQCDetailsbyId == null)
+                {
+                    _logger.LogError($"IQCForServiceItems details with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"IQCForServiceItems details with id hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned IQCForServiceItems details with id: {id}");
+                    List<IQCForServiceItems_ItemsDto> iQCConfirmationItemsList = new List<IQCForServiceItems_ItemsDto>();
+                    var iQcGrinNo = iQCDetailsbyId.GrinsForServiceItemsNumber;
+                    var grinDetailsbyGrinNo = await _grinsForServiceItemsRepository.GetGrinForServiceItemsByGrinForServiceItemsNo(iQcGrinNo);
+
+                    var iQCConformationDetailsDto = _mapper.Map<IQCForServiceItemsDto>(grinDetailsbyGrinNo);
+                    iQCConformationDetailsDto.Id = id;
+                    iQCConformationDetailsDto.GrinsForServiceItemsId = iQCConformationDetailsDto.Id;
+                    var grinParts = grinDetailsbyGrinNo.GrinsForServiceItemsParts.Where(x => x.RejectedQty != 0 || x.AcceptedQty != 0).ToList();
+                    if (grinParts.Count() != 0)
+                    {
+                        foreach (var grinDetails in grinParts)
+                        {
+                            IQCForServiceItems_ItemsDto iQCConfirmationItemsDtos = _mapper.Map<IQCForServiceItems_ItemsDto>(grinDetails);
+                            iQCConfirmationItemsDtos.GrinsForServiceItemsProjectNumbersDto = _mapper.Map<List<GrinsForServiceItemsProjectNumbersDto>>(grinDetails.GrinsForServiceItemsProjectNumbers);
+                            iQCConfirmationItemsDtos.Id = iQCConfirmationItemsDtos.Id;
+                            iQCConfirmationItemsDtos.ReceivedQty = grinDetails.Qty;
+                            iQCConfirmationItemsDtos.GrinsForServiceItemsPartsId = grinDetails.Id;
+                            iQCConfirmationItemsDtos.ExpiryDate = grinDetails.ExpiryDate;
+                            iQCConfirmationItemsList.Add(iQCConfirmationItemsDtos);
+                        }
+                    }
+                    iQCConformationDetailsDto.IQCForServiceItems_Items = iQCConfirmationItemsList;
+                    serviceResponse.Data = iQCConformationDetailsDto;
+                    serviceResponse.Message = "IQCForServiceItemsById Successfully Returned";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside IQCForServiceItemsById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }

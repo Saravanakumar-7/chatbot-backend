@@ -28,7 +28,7 @@ namespace Tips.Grin.Api.Controllers
         private IIQCForServiceItems_ItemsRepository _iQCForServiceItems_ItemsRepository;
         private IDocumentUploadRepository _documentUploadRepository;
 
-        public GrinsForServiceItemsController(IMapper mapper, ILoggerManager logger,IGrinsForServiceItemsRepository repository, IDocumentUploadRepository documentUploadRepository, IIQCForServiceItems_ItemsRepository iQCForServiceItems_ItemsRepository, IIQCForServiceItemsRepository iQCForServiceItemsRepository, IHttpClientFactory clientFactory, IConfiguration config, IGrinsForServiceItemsPartsRepository grinPartsRepository)
+        public GrinsForServiceItemsController(IMapper mapper, ILoggerManager logger, IGrinsForServiceItemsRepository repository, IDocumentUploadRepository documentUploadRepository, IIQCForServiceItems_ItemsRepository iQCForServiceItems_ItemsRepository, IIQCForServiceItemsRepository iQCForServiceItemsRepository, IHttpClientFactory clientFactory, IConfiguration config, IGrinsForServiceItemsPartsRepository grinPartsRepository)
         {
             _repository = repository;
             _mapper = mapper;
@@ -189,34 +189,6 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 var grinsForServiceItems = _mapper.Map<GrinsForServiceItems>(grinsForServiceItemsPostDto);
-                //var grinsForServiceItems = new GrinsForServiceItems();
-
-                //grinsForServiceItems.VendorName = grinsForServiceItemsPostDto.VendorName;
-                //grinsForServiceItems.VendorId = grinsForServiceItemsPostDto.VendorId;
-                //grinsForServiceItems.VendorNumber = grinsForServiceItemsPostDto.VendorNumber;
-                //grinsForServiceItems.InvoiceNumber = grinsForServiceItemsPostDto.InvoiceNumber;
-                //grinsForServiceItems.InvoiceValue = grinsForServiceItemsPostDto.InvoiceValue;
-                //grinsForServiceItems.InvoiceDate = grinsForServiceItemsPostDto.InvoiceDate;
-                //grinsForServiceItems.AWBNumber1 = grinsForServiceItemsPostDto.AWBNumber1;
-                //grinsForServiceItems.AWBDate1 = grinsForServiceItemsPostDto.AWBDate1;
-                //grinsForServiceItems.AWBNumber2 = grinsForServiceItemsPostDto.AWBNumber2;
-                //grinsForServiceItems.AWBDate2 = grinsForServiceItemsPostDto.AWBDate2;
-                //grinsForServiceItems.BENumber = grinsForServiceItemsPostDto.BENumber;
-                //grinsForServiceItems.BEDate = grinsForServiceItemsPostDto.BEDate;
-                //grinsForServiceItems.TotalInvoiceValue = grinsForServiceItemsPostDto.TotalInvoiceValue;
-                //grinsForServiceItems.Freight = grinsForServiceItemsPostDto.Freight;
-                //grinsForServiceItems.Insurance = grinsForServiceItemsPostDto.Insurance;
-                //grinsForServiceItems.LoadingorUnLoading = grinsForServiceItemsPostDto.LoadingorUnLoading;
-                //grinsForServiceItems.GateEntryDate = grinsForServiceItemsPostDto.GateEntryDate;
-                //grinsForServiceItems.GateEntryNo = grinsForServiceItemsPostDto.GateEntryNo;
-                //grinsForServiceItems.CurrencyConversion = grinsForServiceItemsPostDto.CurrencyConversion;
-                //grinsForServiceItems.Transport = grinsForServiceItemsPostDto.Transport;
-                //grinsForServiceItems.BECurrencyValue = grinsForServiceItemsPostDto.BECurrencyValue;
-                //grinsForServiceItems.GrinsForServiceItemsDocuments = grinsForServiceItemsPostDto.GrinsForServiceItemsDocuments;
-                //grinsForServiceItems.GrinsForServiceItemsParts = grinsForServiceItemsPostDto.GrinsForServiceItemsParts;
-                //grinsForServiceItems.GrinsForServiceItemsOtherCharges = grinsForServiceItemsPostDto.GrinsForServiceItemsOtherCharges;
-
-
 
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));

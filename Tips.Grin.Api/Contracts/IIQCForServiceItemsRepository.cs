@@ -12,5 +12,6 @@ namespace Tips.Grin.Api.Contracts
         Task<PagedList<IQCForServiceItems>> GetAllIQCForServiceItemsDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams);
         Task<IQCForServiceItems> GetIQCForServiceItemsDetailsbyGrinForServiceItemsNo(string grinsForServiceItemsNumber);
         Task<string> UpdateIQCForServiceItems(IQCForServiceItems iQCForServiceItems);
+        Task<IQCForServiceItems> GetIQCForServiceItemsDetailsbyId(int id);
     }
 }

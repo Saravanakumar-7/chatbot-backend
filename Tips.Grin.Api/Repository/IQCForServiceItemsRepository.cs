@@ -57,6 +57,12 @@ namespace Tips.Grin.Api.Repository
             string result = $"IQCForServiceItems details of {iQCForServiceItems.Id} is updated successfully!";
             return result;
         }
-
+        public async Task<IQCForServiceItems> GetIQCForServiceItemsDetailsbyId(int id)
+        {
+            var iQCDetailsbyId = await _tipsGrinDbContext.IQCForServiceItems.Where(x => x.Id == id)
+                                .Include(x => x.IQCForServiceItems_Items)
+                                .FirstOrDefaultAsync();
+            return iQCDetailsbyId;
+        }
     }
 }

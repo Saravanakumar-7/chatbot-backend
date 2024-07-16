@@ -22,8 +22,10 @@ namespace Tips.Grin.Api
             CreateMap<GrinsForServiceItems, GrinsForServiceItemsPostDto>().ReverseMap();
             CreateMap<GrinsForServiceItems, GrinsForServiceItemsUpdateDto>().ReverseMap();
             CreateMap<GrinsForServiceItems, GrinsForServiceItemsIQCForServiceItemsSaveDto>().ReverseMap();
+            CreateMap<GrinsForServiceItems, GrinsForServiceItemsItemMasterEnggDto>().ReverseMap();
 
             CreateMap<GrinsForServiceItemsParts, GrinsForServiceItemsPartsDto>().ReverseMap();
+            CreateMap<GrinsForServiceItemsParts, GrinsForServiceItemsPartsItemMasterEnggDto>().ReverseMap();
             CreateMap<GrinsForServiceItemsParts, GrinsForServiceItemsIQCForServiceItems_ItemsSaveDto>().ReverseMap();
             CreateMap<GrinsForServiceItemsParts, GrinsForServiceItemsPartsPostDto>().ReverseMap();
             CreateMap<GrinsForServiceItemsParts, GrinsForServiceItemsPartsUpdateDto>().ReverseMap();
