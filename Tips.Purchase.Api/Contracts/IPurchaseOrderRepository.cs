@@ -70,6 +70,10 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<Tras_POSPReport>> Get_Tras_PurchaseOrderSPReportWithParam(string VendorName, string PONumber, string PartNumber);
         Task<PurchaseOrder> GetPurchaseOrderItemsByPONumber(string poNumber);
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPoNumberListByVendorIdForAvision(string vendorId);
+        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllServicePoNumberListByVendorId(string vendorId);
+        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllNonServicePoNumberListByVendorId(string vendorId);
+        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllServicePoNumberListByVendorIdForAvision(string vendorId);
+        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllNonServicePoNumberListByVendorIdForAvision(string vendorId);
         Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIIListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams);
         Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIVListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams);
         Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIIIListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams);

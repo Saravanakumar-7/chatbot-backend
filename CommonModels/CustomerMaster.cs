@@ -28,6 +28,7 @@ namespace Entities
         public string? Country { get; set; }
         public string? PinZipCode { get; set; }
         public string? Segment { get; set; }
+        public string? ArchitectName { get; set; }
         public string? BoardNumber { get; set; }
         public string? Website { get; set; }
         public string? GeneralEmail { get; set; }

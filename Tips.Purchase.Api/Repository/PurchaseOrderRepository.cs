@@ -1001,8 +1001,8 @@ namespace Tips.Purchase.Api.Repository
             x.VendorId.Equals(searchParams.SearchValue) || x.VendorAddress.Equals(searchParams.SearchValue) || x.POApprovedIBy.Equals(searchParams.SearchValue)
             || x.POApprovedIIBy.Equals(searchParams.SearchValue) || x.POApprovedIIIBy.Equals(searchParams.SearchValue)
             || x.ProcurementType.Equals(searchParams.SearchValue))
-            && ((x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == false && x.ApprovalCount == 4 && x.IsDeleted == false && x.IsModified == false 
-            && x.PoStatus != PoStatus.ShortClosed) 
+            && ((x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == false && x.ApprovalCount == 4 && x.IsDeleted == false && x.IsModified == false
+            && x.PoStatus != PoStatus.ShortClosed)
             && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))))
                 .OrderByDescending(x => x.Id);
 
@@ -1016,8 +1016,8 @@ namespace Tips.Purchase.Api.Repository
             x.VendorName.Contains(searchParams.SearchValue) || x.PONumber.Contains(searchParams.SearchValue) ||
             x.VendorId.Equals(searchParams.SearchValue) || x.VendorAddress.Equals(searchParams.SearchValue) || x.POApprovedIBy.Equals(searchParams.SearchValue)
             || x.POApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue))
-            && ((x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == false && x.ApprovalCount == 4 && x.IsDeleted == false 
-            && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed) 
+            && ((x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == false && x.ApprovalCount == 4 && x.IsDeleted == false
+            && x.IsModified == false && x.PoStatus != PoStatus.ShortClosed)
             && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))))
                 .OrderByDescending(x => x.Id);
 
@@ -1428,7 +1428,37 @@ namespace Tips.Purchase.Api.Repository
 
             return pONameListbyVendorId;
         }
+        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllServicePoNumberListByVendorId(string vendorId)
+        {
+            PoStatus[] status = { PoStatus.Open, PoStatus.PartiallyClosed };
 
+            IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
+                           .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.POApprovalII == true && x.ProcurementType == "Service")
+                           .Select(x => new PurchaseOrderIdNameListDto()
+                           {
+                               Id = x.Id,
+                               PONumber = x.PONumber
+                           }).ToListAsync();
+
+
+            return pONameListbyVendorId;
+        }
+
+        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllNonServicePoNumberListByVendorId(string vendorId)
+        {
+            PoStatus[] status = { PoStatus.Open, PoStatus.PartiallyClosed };
+
+            IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
+                           .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.POApprovalII == true && x.ProcurementType != "Service")
+                           .Select(x => new PurchaseOrderIdNameListDto()
+                           {
+                               Id = x.Id,
+                               PONumber = x.PONumber
+                           }).ToListAsync();
+
+
+            return pONameListbyVendorId;
+        }
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPoNumberListByVendorIdForAvision(string vendorId)
         {
             PoStatus[] status = { PoStatus.Open, PoStatus.PartiallyClosed };
@@ -1442,44 +1472,53 @@ namespace Tips.Purchase.Api.Repository
                                 )
                                     .Select(x => new PurchaseOrderIdNameListDto()
                                     {
-                                             Id = x.Id,
-                                             PONumber = x.PONumber
+                                        Id = x.Id,
+                                        PONumber = x.PONumber
                                     }).ToListAsync();
 
             return pONameListbyVendorId;
 
-            //var poDetails = await _tipsPurchaseDbContext.PurchaseOrders
-            //                                   .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus))
-            //                                   .ToListAsync();
+        }
+        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllServicePoNumberListByVendorIdForAvision(string vendorId)
+        {
+            PoStatus[] status = { PoStatus.Open, PoStatus.PartiallyClosed };
 
-            //IEnumerable < PurchaseOrderIdNameListDto> pONameListbyVendorId = null;
-            //foreach (var poCount in poDetails)
-            //{
-            //    if (poCount.ApprovalCount == 4)
-            //    {
-            //        pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
-            //                      .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.POApprovalIV == true)
-            //                      .Select(x => new PurchaseOrderIdNameListDto()
-            //                      {
-            //                          Id = x.Id,
-            //                          PONumber = x.PONumber
-            //                      }).ToListAsync();
-            //    }
-            //    else if (poCount.ApprovalCount == 2)
-            //    {
-            //        pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
-            //                       .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.POApprovalII == true)
-            //                       .Select(x => new PurchaseOrderIdNameListDto()
-            //                       {
-            //                           Id = x.Id,
-            //                           PONumber = x.PONumber
-            //                       }).ToListAsync();
-            //    }
-            //}
-            //return pONameListbyVendorId;
+            IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
+                                     .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.ProcurementType == "Service"&&
+                                     (
+                                        (x.ApprovalCount == 4 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == true) ||
+                                        (x.ApprovalCount == 2 && x.POApprovalI == true && x.POApprovalII == true)
+                                     )
+                                )
+                                    .Select(x => new PurchaseOrderIdNameListDto()
+                                    {
+                                        Id = x.Id,
+                                        PONumber = x.PONumber
+                                    }).ToListAsync();
+
+            return pONameListbyVendorId;
 
         }
+        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllNonServicePoNumberListByVendorIdForAvision(string vendorId)
+        {
+            PoStatus[] status = { PoStatus.Open, PoStatus.PartiallyClosed };
 
+            IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
+                                     .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.ProcurementType != "Service" &&
+                                     (
+                                        (x.ApprovalCount == 4 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == true) ||
+                                        (x.ApprovalCount == 2 && x.POApprovalI == true && x.POApprovalII == true)
+                                     )
+                                )
+                                    .Select(x => new PurchaseOrderIdNameListDto()
+                                    {
+                                        Id = x.Id,
+                                        PONumber = x.PONumber
+                                    }).ToListAsync();
+
+            return pONameListbyVendorId;
+
+        }
         public async Task<decimal> GetOpenPoQuantityByItemNumber(string itemNumber)
         {
             return await _tipsPurchaseDbContext.PoItems
@@ -1848,8 +1887,8 @@ namespace Tips.Purchase.Api.Repository
             List<OpenPoQuantityDto> openPoQtyList = await _tipsPurchaseDbContext.PoItems
                 .Include(x => x.PurchaseOrder)
                 .Where(x => poStatus.Contains(x.PurchaseOrder.PoStatus)
-                && poStatus.Contains(x.PoStatus) && itemNumberList.Contains(x.ItemNumber) 
-                && (x.PurchaseOrder.ApprovalCount == 4 && x.PurchaseOrder.POApprovalI == true && x.PurchaseOrder.POApprovalII == true && x.PurchaseOrder.POApprovalIII == true 
+                && poStatus.Contains(x.PoStatus) && itemNumberList.Contains(x.ItemNumber)
+                && (x.PurchaseOrder.ApprovalCount == 4 && x.PurchaseOrder.POApprovalI == true && x.PurchaseOrder.POApprovalII == true && x.PurchaseOrder.POApprovalIII == true
                 && x.PurchaseOrder.POApprovalIV == true) ||
                 (x.PurchaseOrder.ApprovalCount == 2 && x.PurchaseOrder.POApprovalI == true && x.PurchaseOrder.POApprovalII == true)
                 && x.PurchaseOrder.IsDeleted == false
@@ -1918,7 +1957,7 @@ namespace Tips.Purchase.Api.Repository
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
-        public async Task<IEnumerable<PoAddProject>> GetPOProjectNoDetailsByProjectNo(string itemNumber, string projectNo,int poItemId)
+        public async Task<IEnumerable<PoAddProject>> GetPOProjectNoDetailsByProjectNo(string itemNumber, string projectNo, int poItemId)
         {
             var poItemDetailId = await _tipsPurchaseDbContexts.PoItems
                  .Where(x => x.ItemNumber == itemNumber && x.Id == poItemId)

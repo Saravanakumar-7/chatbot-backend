@@ -31,7 +31,7 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<int?> CreatePOCollectionTracker(POCollectionTracker pocollectionTracker)
         {
-            pocollectionTracker.CreatedBy =_createdBy;
+            pocollectionTracker.CreatedBy = _createdBy;
             pocollectionTracker.CreatedOn = DateTime.Now;
             pocollectionTracker.Unit = _unitname;
             var result = await Create(pocollectionTracker);
@@ -105,10 +105,18 @@ namespace Tips.Purchase.Api.Repository
 
             var purchaseOrderTotalValue = _tipsPurchaseDbContext.PurchaseOrders.Where(x => x.VendorNumber == vendorId).Sum(s => s.TotalAmount);
 
-            var poBreakDownDetails = _tipsPurchaseDbContext.POBreakDowns.Where(x => x.VendorId ==vendorId).Select(x => x.AmountAgainstPO).Count();
+            var poBreakDownDetails = _tipsPurchaseDbContext.POBreakDowns.Where(x => x.VendorId == vendorId).Select(x => x.AmountAgainstPO).Count();
+            var maxRevisions = from e in _tipsPurchaseDbContext.PurchaseOrders
+                               group e by e.PONumber into g
+                               select new
+                               {
+                                   PONumber = g.Key,
+                                   MaxRevisionNumber = g.Max(x => x.RevisionNumber)
+                               };
             if (poBreakDownDetails != 0)
             {
                 var PODetails = from e in _tipsPurchaseDbContext.PurchaseOrders
+                                join maxRev in maxRevisions on new { e.PONumber, e.RevisionNumber } equals new { PONumber = maxRev.PONumber, RevisionNumber = maxRev.MaxRevisionNumber }
                                 where e.VendorNumber == vendorId
                                 join d in _tipsPurchaseDbContext.POBreakDowns on e.PONumber equals d.PONumber into dept
                                 from POBreakDown in dept.DefaultIfEmpty()
@@ -131,6 +139,7 @@ namespace Tips.Purchase.Api.Repository
             else
             {
                 var PODetails = from e in _tipsPurchaseDbContext.PurchaseOrders
+                                join maxRev in maxRevisions on new { e.PONumber, e.RevisionNumber } equals new { PONumber = maxRev.PONumber, RevisionNumber = maxRev.MaxRevisionNumber }
                                 where e.VendorNumber == vendorId
                                 join d in _tipsPurchaseDbContext.POBreakDowns on e.VendorId equals d.VendorId into dept
                                 from POBreakDown in dept.DefaultIfEmpty()
@@ -166,7 +175,7 @@ namespace Tips.Purchase.Api.Repository
             var purchaseOrderTotalValue = _tipsPurchaseDbContext.PurchaseOrders
                         .Where(x => x.VendorNumber == vendorId)
                         .OrderByDescending(x => x.CreatedOn)
-                        .Sum(x=>x.TotalAmount);
+                        .Sum(x => x.TotalAmount);
 
             var pocollectionDetails = _tipsPurchaseDbContext.POCollectionTrackers
                 .Where(x => x.VendorId == vendorId)

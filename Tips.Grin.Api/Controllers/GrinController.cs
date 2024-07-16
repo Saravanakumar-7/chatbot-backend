@@ -25,7 +25,6 @@ using System.Dynamic;
 using Azure.Core;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.Authorization;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Headers;
@@ -34,6 +33,11 @@ using Azure;
 using Mysqlx.Crud;
 using Org.BouncyCastle.Asn1.Anssi;
 using MySqlX.XDevAPI.Common;
+using Microsoft.IdentityModel.Tokens;
+using MimeKit;
+using MimeKit.Text;
+using EmailTemplateDto = Tips.Grin.Api.Entities.DTOs.EmailTemplateDto;
+using MailKit.Security;
 
 //Test
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -885,6 +889,67 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(500, serviceResponse);
                 }
+                if (serverKey == "avision")
+                {
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreateGRIN"));
+                    request.Headers.Add("Authorization", token);
+                    var response = await client.SendAsync(request);
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,CreateGRIN";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<Tips.Grin.Api.Entities.Dto.EmailIDsDto>(EmailTempString1);
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    var mails = (emaildetails1.data.Where(x => x.operation == "CreateGRIN").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
+                    email.Subject = emaildetails.data.subject;
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{GRIN Numbers}}", grins.GrinNumber);
+                    body = body.Replace("{{Vendor Id}}", grins.VendorId);
+                    body = body.Replace("{{Vendor Name}}", grins.VendorName);
+                    body = body.Replace("{{Created By}}", grins.CreatedBy);
+                    body = body.Replace("{{Created Dated}}", grins.CreatedOn.ToString());
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PONos = null;
+                    foreach (var item in grins.GrinParts)
+                    {
+                        if (item.ProjectNumbers.Count > 0)
+                            foreach (var project in item.ProjectNumbers)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                            }
+
+                        if (PONos.IsNullOrEmpty()) { PONos = item.PONumber; tempPRno.Add(item.PONumber); }
+                        else if (!tempPRno.Contains(item.PONumber)) { PONos = PONos + ", " + item.PONumber; tempPRno.Add(item.PONumber); }
+                    }
+                    body = body.Replace("{{Project Ref No}}", ProjectNos);
+                    body = body.Replace("{{PurchaseOrder Number}}", PONos);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+
+                }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Grin Successfully Created";
                 serviceResponse.Success = true;
@@ -1084,7 +1149,6 @@ namespace Tips.Grin.Api.Controllers
                             request5.Headers.Add("Authorization", token5);
 
                             var response = await client5.SendAsync(request5);
-
                             if (response.StatusCode != HttpStatusCode.OK) updateInv = response.StatusCode;
 
                             if (iqcConfirmationItemsDto.RejectedQty != 0 && acceptedQty == 0 && (flag1 == 1 || flag2 == 1))

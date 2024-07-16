@@ -28,9 +28,11 @@ namespace Tips.Grin.Api.Controllers
         private IIQCForServiceItems_ItemsRepository _iQCForServiceItems_ItemsRepository;
         private IDocumentUploadRepository _documentUploadRepository;
 
-        public GrinsForServiceItemsController(IGrinsForServiceItemsRepository repository, IDocumentUploadRepository documentUploadRepository, IIQCForServiceItems_ItemsRepository iQCForServiceItems_ItemsRepository, IIQCForServiceItemsRepository iQCForServiceItemsRepository, IHttpClientFactory clientFactory, IConfiguration config, IGrinsForServiceItemsPartsRepository grinPartsRepository)
+        public GrinsForServiceItemsController(IMapper mapper, ILoggerManager logger, IGrinsForServiceItemsRepository repository, IDocumentUploadRepository documentUploadRepository, IIQCForServiceItems_ItemsRepository iQCForServiceItems_ItemsRepository, IIQCForServiceItemsRepository iQCForServiceItemsRepository, IHttpClientFactory clientFactory, IConfiguration config, IGrinsForServiceItemsPartsRepository grinPartsRepository)
         {
             _repository = repository;
+            _mapper = mapper;
+            _logger = logger;
             _config = config;
             _clientFactory = clientFactory;
             _grinPartsRepository = grinPartsRepository;
@@ -48,7 +50,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 var GrinsForServiceItemsForServiceItems = await _repository.GrinsForServiceItemsForServiceItems(pagingParameter, searchParams);
 
-                if (GrinsForServiceItemsForServiceItems == null)
+                if (GrinsForServiceItemsForServiceItems == null || GrinsForServiceItemsForServiceItems.Count() == 0)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"GrinsForServiceItems data not found in db.";
@@ -187,6 +189,7 @@ namespace Tips.Grin.Api.Controllers
                 }
 
                 var grinsForServiceItems = _mapper.Map<GrinsForServiceItems>(grinsForServiceItemsPostDto);
+
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
                 var months = Convert.ToString(date.Month.ToString("D2"));
