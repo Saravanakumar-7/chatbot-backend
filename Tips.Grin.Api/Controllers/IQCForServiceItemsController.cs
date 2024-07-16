@@ -867,7 +867,12 @@ namespace Tips.Grin.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var iqcConfirmation = _mapper.Map<IQCForServiceItems>(iQCForServiceItemsSaveDto);
+                //var iqcConfirmation = _mapper.Map<IQCForServiceItems>(iQCForServiceItemsSaveDto);
+                var iqcConfirmation = new IQCForServiceItems()
+                {
+                    GrinsForServiceItemsId= iQCForServiceItemsSaveDto.GrinsForServiceItemsId,
+                    GrinsForServiceItemsNumber= iQCForServiceItemsSaveDto.GrinsForServiceItemsNumber
+                };
                 var iqcConfirmationItemsDto = iQCForServiceItemsSaveDto.IQCForServiceItems_Items;
                 var iqcConfirmationItems = _mapper.Map<IQCForServiceItems_Items>(iqcConfirmationItemsDto);
                 var grinNumber = iqcConfirmation.GrinsForServiceItemsNumber;
