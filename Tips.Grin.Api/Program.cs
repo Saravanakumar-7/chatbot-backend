@@ -105,6 +105,12 @@ builder.Services.AddScoped<IGrinsForServiceItemsRepository, GrinsForServiceItems
 builder.Services.AddScoped<IGrinsForServiceItemsPartsRepository, GrinsForServiceItemsPartsRepository>();
 builder.Services.AddScoped<IIQCForServiceItemsRepository, IQCForServiceItemsRepository>();
 builder.Services.AddScoped<IIQCForServiceItems_ItemsRepository, IQCForServiceItems_ItemsRepository>();
+builder.Services.AddScoped<IOpenGrinForGrinRepository, OpenGrinForGrinRepository>();
+builder.Services.AddScoped<IOpenGrinForGrinItemRepository, OpenGrinForGrinItemRepository>();
+builder.Services.AddScoped<IOpenGrinForIQCRepository, OpenGrinForIQCRepository>();
+builder.Services.AddScoped<IOpenGrinForIQCItemRepository, OpenGrinForIQCItemRepository>();
+builder.Services.AddScoped<IOpenGrinForBinningRepository, OpenGrinForBinningRepository>();
+builder.Services.AddScoped<IOpenGrinForBinningItemsRepository, OpenGrinForBinningItemsRepository>();
 
 var app = builder.Build();
 app.UseSwagger();

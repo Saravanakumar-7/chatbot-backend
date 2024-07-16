@@ -18,6 +18,7 @@ namespace Contracts
         Task<EnggBom> GetLatestEnggBomVersionDetailByItemNumber(string fgPartNumber, decimal revisionNo);
         Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom);
         Task<IEnumerable<EnggBom>> GetAllActiveEnggBom();
+        Task<IEnumerable<FGCostingSPReport>> GetFGCostingSPReportWithParam(string FGItemnumber);
         Task<int?> CreateEnggBom(EnggBom enggBom);
         Task<string> UpdateEnggBom(EnggBom enggBom);
         Task<string> DeleteEnggBom(EnggBom enggBom); 

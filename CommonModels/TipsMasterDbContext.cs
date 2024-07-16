@@ -1,4 +1,5 @@
 using Entities;
+using Entities.DTOs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System.Runtime.InteropServices;
@@ -168,6 +169,7 @@ namespace Entities
         {
             modelBuilder.Entity<EnggBomSPReport>().HasNoKey();
             modelBuilder.Entity<CustomerMasterLeadIdSPReport>().HasNoKey();
+            modelBuilder.Entity<FGCostingSPReport>().HasNoKey();
         }
 
 

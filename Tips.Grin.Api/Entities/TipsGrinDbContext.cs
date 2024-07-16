@@ -45,6 +45,15 @@ namespace Tips.Grin.Api.Entities
         public DbSet<GrinSPReportForTrans> GrinSPReportForTrans { get; set; }
         public DbSet<OpenGrinSpReportForTrans> OpenGrinSpReports { get; set; }
         public DbSet<IQCConfirmationSPReportForTrans> IQCConfirmationSPReportForTrans { get; set; }
+        public DbSet<OpenGrinForGrin> OpenGrinForGrins { get; set; }
+        public DbSet<OpenGrinForGrinItems> OpenGrinForGrinItems { get; set; }
+        public DbSet<OpenGrinForGrinProjectNumber> OpenGrinForGrinProjectNumbers { get; set; }
+        public DbSet<OpenGrinForGrinNumber> OpenGrinForGrinNumbers { get; set; }
+        public DbSet<OpenGrinForIQC> OpenGrinForIQCs { get; set; }
+        public DbSet<OpenGrinForIQCItems> OpenGrinForIQCItems { get; set; }
+        public DbSet<OpenGrinForBinning> OpenGrinForBinnings { get; set; }
+        public DbSet<OpenGrinForBinningItems> OpenGrinForBinningItems { get; set; }
+        public DbSet<OpenGrinForBinningLocations> OpenGrinForBinningLocations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

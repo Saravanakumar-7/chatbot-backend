@@ -12,6 +12,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<Quote> GetQuoteById(int id);
         Task<string> GenerateQuoteNumber();
         Task<IEnumerable<QuoteNoDto>> GetAllQuoteNumberList();
+        Task<IEnumerable<QuoteNumberDto>> GetAllQuoteNoList();
         Task<List<QuoteforKeusDto>> GetAllQuoteforKeus([FromQuery] string? SearchTerm, [FromQuery] int Offset, [FromQuery] int Limit);
         Task<int> GetAllQuoteCountforKeus(string? SearchTerm);
         Task CreateShortClosed(ShortClosedDto shortClosedDto);

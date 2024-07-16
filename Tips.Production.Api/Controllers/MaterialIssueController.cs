@@ -858,7 +858,7 @@ namespace Tips.Production.Api.Controllers
                 decimal bomRevNo = shopOrderDetail.BomRevisionNo;
                 HttpStatusCode updateMaterialIssueResp = HttpStatusCode.OK;
                 List<IssueMaterialIssueItemUpdateDto> materialIssueItemDtos = materialIssueUpdateDto.MaterialIssueItems;
-                var materialIssueLocationList =new List<MaterialIssueLocation>();
+
                 foreach (var updatedItem in materialIssueItemDtos)
                 {
                     if (updatedItem.NewIssueQty > 0)
@@ -868,10 +868,10 @@ namespace Tips.Production.Api.Controllers
 
                         if (existingItem != null)
                         {
-                            List<MaterialIssueLocation> invoiceAdditionalChargesDetails = _mapper.Map<List<MaterialIssueLocation>>(updatedItem.MaterialIssueLocationDto.ToList());
+                            List<MaterialIssueLocation> materialIssueLocationDetails = _mapper.Map<List<MaterialIssueLocation>>(updatedItem.MaterialIssueLocationDto.ToList());
 
                             existingItem.IssuedQty += updatedItem.NewIssueQty;
-                            existingItem.MaterialIssueLocations = materialIssueLocationList;
+                            existingItem.MaterialIssueLocations = materialIssueLocationDetails;
 
                             var projectNo = existingItem.ProjectNumber;
                             decimal newIssuedQty = updatedItem.NewIssueQty;

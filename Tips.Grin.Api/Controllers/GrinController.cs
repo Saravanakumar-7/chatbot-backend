@@ -544,7 +544,7 @@ namespace Tips.Grin.Api.Controllers
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
                 HttpStatusCode invStatusCode = HttpStatusCode.OK;
-               
+
                 if (serverKey == "avision")
                 {
                     var grinNum = await _repository.GenerateGrinNumberForAvision();
@@ -580,7 +580,7 @@ namespace Tips.Grin.Api.Controllers
                     GrinParts grinParts = _mapper.Map<GrinParts>(gPart);
                     grinPartsList.Add(grinParts);
                 }
-              
+
                 grins.GrinParts = grinPartsList;
                 grins.IsGrinCompleted = true;
 
@@ -599,7 +599,7 @@ namespace Tips.Grin.Api.Controllers
 
                     }
                 }
-               // HttpStatusCode createinvforServiceItemsResp = HttpStatusCode.OK;
+                // HttpStatusCode createinvforServiceItemsResp = HttpStatusCode.OK;
                 HttpStatusCode createinvResp = HttpStatusCode.OK;
                 HttpStatusCode createinvTrancResp = HttpStatusCode.OK;
                 HttpStatusCode getItemmResp = HttpStatusCode.OK;
@@ -645,7 +645,7 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryDto.Location = "GRIN";
                             grinInventoryDto.GrinNo = grins.GrinNumber;
                             grinInventoryDto.GrinPartId = parts.Id;
-                            grinInventoryDto.PartType = parts.ItemType; 
+                            grinInventoryDto.PartType = parts.ItemType;
                             grinInventoryDto.ReferenceID = Convert.ToString(parts.Id);
                             grinInventoryDto.ReferenceIDFrom = "GRIN";
                             grinInventoryDto.GrinMaterialType = "";
@@ -672,23 +672,23 @@ namespace Tips.Grin.Api.Controllers
                             //}
                             //else
                             //{
-                                var json = JsonConvert.SerializeObject(grinInventoryDto);
-                                var data = new StringContent(json, Encoding.UTF8, "application/json");
-                                var client1 = _clientFactory.CreateClient();
-                                var token1 = HttpContext.Request.Headers["Authorization"].ToString();
-                                var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
-                                "CreateInventoryFromGrin"))
-                                {
-                                    Content = data
-                                };
-                                request1.Headers.Add("Authorization", token1);
+                            var json = JsonConvert.SerializeObject(grinInventoryDto);
+                            var data = new StringContent(json, Encoding.UTF8, "application/json");
+                            var client1 = _clientFactory.CreateClient();
+                            var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+                            var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                            "CreateInventoryFromGrin"))
+                            {
+                                Content = data
+                            };
+                            request1.Headers.Add("Authorization", token1);
 
-                                var response = await client1.SendAsync(request1);
-                                if (response.StatusCode != HttpStatusCode.OK)
-                                {
-                                    createinvResp = response.StatusCode;
-                                }
-                           // }
+                            var response = await client1.SendAsync(request1);
+                            if (response.StatusCode != HttpStatusCode.OK)
+                            {
+                                createinvResp = response.StatusCode;
+                            }
+                            // }
                         }
                     }
                 }
@@ -712,7 +712,7 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryTranctionDto.TO_Location = "GRIN";
                             grinInventoryTranctionDto.GrinNo = grins.GrinNumber;
                             grinInventoryTranctionDto.GrinPartId = parts.Id;
-                            grinInventoryTranctionDto.PartType = parts.ItemType;  
+                            grinInventoryTranctionDto.PartType = parts.ItemType;
                             grinInventoryTranctionDto.ReferenceID = Convert.ToString(parts.Id);
                             grinInventoryTranctionDto.ReferenceIDFrom = "GRIN";
                             grinInventoryTranctionDto.GrinMaterialType = "";
@@ -787,10 +787,10 @@ namespace Tips.Grin.Api.Controllers
                         }
                     }
                 }
-               
+
                 var grinPartsDetails = _mapper.Map<List<GrinQtyPoStatusUpdateDto>>(grinPartsDto);
                 var jsonCon = JsonConvert.SerializeObject(grinPartsDetails);
-                var data3 = new StringContent(jsonCon, Encoding.UTF8, "application/json");                
+                var data3 = new StringContent(jsonCon, Encoding.UTF8, "application/json");
                 var client4 = _clientFactory.CreateClient();
                 var token4 = HttpContext.Request.Headers["Authorization"].ToString();
                 var request4 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
@@ -805,8 +805,8 @@ namespace Tips.Grin.Api.Controllers
                 {
                     UpdatePoStatus = result.StatusCode;
                 }
-               // createinvforServiceItemsResp == HttpStatusCode.OK &&
-                if ( getItemmResp == HttpStatusCode.OK && UpdatePoStatus == HttpStatusCode.OK && UpdatePoQty == HttpStatusCode.OK
+                // createinvforServiceItemsResp == HttpStatusCode.OK &&
+                if (getItemmResp == HttpStatusCode.OK && UpdatePoStatus == HttpStatusCode.OK && UpdatePoQty == HttpStatusCode.OK
                     && UpdatePoProjQty == HttpStatusCode.OK && createinvTrancResp == HttpStatusCode.OK && createinvResp == HttpStatusCode.OK)
                 {
                     _repository.SaveAsync();
@@ -936,6 +936,14 @@ namespace Tips.Grin.Api.Controllers
                 var iqcConfirmationItems = _mapper.Map<IQCConfirmationItems>(iqcConfirmationItemsDto);
                 var grinNumber = iqcConfirmation.GrinNumber;
                 var GrinId = iqcConfirmation.GrinId;
+
+                HttpStatusCode getInvGrinId = HttpStatusCode.OK;
+                HttpStatusCode updateInv = HttpStatusCode.OK;
+                HttpStatusCode updateInvTranc = HttpStatusCode.OK;
+                HttpStatusCode createInv = HttpStatusCode.OK;
+                HttpStatusCode createInvTranc = HttpStatusCode.OK;
+                HttpStatusCode getItemmResp = HttpStatusCode.OK;
+
                 var existingIqcConfirmation = await _iQCConfirmationRepository.GetIqcDetailsbyGrinNo(grinNumber);
 
                 if (existingIqcConfirmation != null)
@@ -954,13 +962,19 @@ namespace Tips.Grin.Api.Controllers
                         return BadRequest(serviceResponse);
                     }
 
+                    //Updating IQC Status in IQCItem
                     iqcConfirmationItems.IsIqcCompleted = true;
                     await _iQCConfirmationItemsRepository.CreateIqcItem(iqcConfirmationItems);
+                    _iQCConfirmationItemsRepository.SaveAsync();
 
-                    grinPartsDetails.IsIqcCompleted = true;
-                    await _grinPartsRepository.UpdateGrinQty(grinPartsDetails);
+                    //Updating AcceptedQty, RejectedQty and IQC Status in GrinParts
+                    var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iqcConfirmationItems.GrinPartId, iqcConfirmationItems.AcceptedQty.ToString(), iqcConfirmationItems.ToString());
+                    var grinParts = _mapper.Map<GrinParts>(updatedGrinPartsQty);
+                    grinParts.IsIqcCompleted = true;
+                    await _grinPartsRepository.UpdateGrinQty(grinParts);
                     _grinPartsRepository.SaveAsync();
 
+                    //Updating IQC Status in Grin And Iqc MainLevel
                     var grinPartsCount = await _grinPartsRepository.GetGrinPartsCount(GrinId);
                     var iqcConfomationCount = await _iQCConfirmationItemsRepository.GetIQCConformationItemsCount(existingIqcConfirmation.Id);
 
@@ -968,17 +982,13 @@ namespace Tips.Grin.Api.Controllers
                     {
                         var iqcDetails = await _iQCConfirmationRepository.GetIqcDetailsbyGrinNo(grinNumber);
                         iqcDetails.IsIqcCompleted = true;
-                        _iQCConfirmationRepository.SaveAsync();
+                        await _iQCConfirmationRepository.UpdateIqc(iqcDetails);
 
                         var grinDetails = await _repository.GetGrinByGrinNo(grinNumber);
                         grinDetails.IsIqcCompleted = true;
-                        _repository.SaveAsync();
+                        await _repository.UpdateGrin(grinDetails);
                     }
-                    HttpStatusCode getInvGrinId = HttpStatusCode.OK;
-                    HttpStatusCode updateInv = HttpStatusCode.OK;
-                    HttpStatusCode getInvTrancGrinId = HttpStatusCode.OK;
-                    HttpStatusCode updateInvTranc = HttpStatusCode.OK;
-                    HttpStatusCode createInvTranc = HttpStatusCode.OK;
+
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
 
@@ -990,6 +1000,9 @@ namespace Tips.Grin.Api.Controllers
                     request.Headers.Add("Authorization", token);
 
                     var itemMasterObjectResult = await client.SendAsync(request);
+                    if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                        getItemmResp = itemMasterObjectResult.StatusCode;
+
                     var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
                     dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                     dynamic itemMasterObject = itemMasterObjectData.data;
@@ -1010,238 +1023,132 @@ namespace Tips.Grin.Api.Controllers
                         var grinPartsIds = projectNo.GrinPartsId;
                         var projectNos = projectNo.ProjectNumber;
                         var encodedprojectNos = Uri.EscapeDataString(projectNos);
-                        //if (itemMasterObject.poMaterialType == "ServiceItem")
-                        //{
-                        //    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryForServiceItemsAPI"],
-                        //        $"GetInventoryForServiceDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
-                        //    request1.Headers.Add("Authorization", token1);
 
-                        //    var inventoryObjectResult = await client1.SendAsync(request1);
-                        //    if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
-                        //    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                        //    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        //    dynamic inventoryObject = inventoryObjectData.data;
-                        //    if (inventoryObject != null)
-                        //    {
-                        //        decimal balanceQty = inventoryObject.balance_Quantity;
-                        //        int flag1 = 0;
-                        //        int flag2 = 0;
-                        //        decimal bal = 0;
-                        //        if (inventoryObject.balance_Quantity <= acceptedQty && inventoryObject.balance_Quantity != 0)
-                        //        {
-                        //            inventoryObject.warehouse = "IQC";
-                        //            inventoryObject.location = "IQC";
-                        //            inventoryObject.referenceIDFrom = "GRIN";
-                        //            acceptedQty -= balanceQty;
+                        var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                            $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
+                        request1.Headers.Add("Authorization", token1);
 
-                        //        }
-                        //        else if (inventoryObject.balance_Quantity > acceptedQty)
-                        //        {
-                        //            if (acceptedQty == 0)
-                        //            {
-                        //                inventoryObject.balance_Quantity = acceptedQty;
-                        //                inventoryObject.warehouse = "IQC";
-                        //                inventoryObject.location = "IQC";
-                        //                inventoryObject.referenceIDFrom = "GRIN";
-                        //                flag1 = 1;
-                        //            }
-                        //            else
-                        //            {
-                        //                bal = inventoryObject.balance_Quantity - acceptedQty;
-                        //                if (bal != 0)
-                        //                {
-                        //                    flag2 = 1;
-                        //                }
-                        //                inventoryObject.balance_Quantity = acceptedQty;
-                        //                inventoryObject.warehouse = "IQC";
-                        //                inventoryObject.location = "IQC";
-                        //                inventoryObject.referenceIDFrom = "GRIN";
-                        //                acceptedQty = 0;
-                        //            }
-                        //        }
-
-                        //        var json = JsonConvert.SerializeObject(inventoryObject);
-                        //        var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        //        var client5 = _clientFactory.CreateClient();
-                        //        var token5 = HttpContext.Request.Headers["Authorization"].ToString();
-                        //        var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryForServiceItemsAPI"],
-                        //        "UpdateInventoryForServiceDetails?id=", inventoryObject.id))
-                        //        {
-                        //            Content = data
-                        //        };
-                        //        request5.Headers.Add("Authorization", token5);
-
-                        //        var response = await client5.SendAsync(request5);
-                        //        if (response.StatusCode != HttpStatusCode.OK) updateInv = response.StatusCode;
-
-                        //        if (iqcConfirmationItemsDto.RejectedQty != 0 && acceptedQty == 0 && (flag1 == 1 || flag2 == 1))
-                        //        {
-                        //            IQCInventoryDto grinInventoryDto = new IQCInventoryDto();
-                        //            grinInventoryDto.PartNumber = iqcConfirmationItemsDto.ItemNumber;
-                        //            grinInventoryDto.LotNumber = grinPartsDetails.LotNumber;
-                        //            grinInventoryDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
-                        //            grinInventoryDto.Description = grinPartsDetails.ItemDescription;
-                        //            grinInventoryDto.ProjectNumber = projectNos;
-                        //            grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iqcConfirmationItemsDto.RejectedQty);
-                        //            grinInventoryDto.Max = itemMasterObject.max;
-                        //            grinInventoryDto.Min = itemMasterObject.min;
-                        //            grinInventoryDto.UOM = grinPartsDetails.UOM;
-                        //            grinInventoryDto.Warehouse = "Reject";
-                        //            grinInventoryDto.Location = "Reject";
-                        //            grinInventoryDto.GrinNo = iqcConfirmation.GrinNumber;
-                        //            grinInventoryDto.GrinPartId = iqcConfirmationItemsDto.GrinPartId;
-                        //            grinInventoryDto.PartType = itemMasterObject.itemType;  
-                        //            grinInventoryDto.ReferenceID = "GRIN";
-                        //            grinInventoryDto.ReferenceIDFrom = "GRIN";
-                        //            grinInventoryDto.GrinMaterialType = "GRIN";
-                        //            grinInventoryDto.ShopOrderNo = "";
-                        //            if (flag1 == 1)
-                        //            {
-                        //                grinInventoryDto.Balance_Quantity = rejectedQty;
-                        //            }
-                        //            else if (flag2 == 1)
-                        //            {
-                        //                grinInventoryDto.Balance_Quantity = bal;
-                        //                rejectedQty -= bal;
-                        //            }
-                        //            string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(grinInventoryDto);
-                        //            var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
-                        //            var client6 = _clientFactory.CreateClient();
-                        //            var token6 = HttpContext.Request.Headers["Authorization"].ToString();
-                        //            var request6 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryForServiceItemsAPI"],
-                        //            "CreateInventoryForServiceItemsFromGrin"))
-                        //            {
-                        //                Content = content
-                        //            };
-                        //            request6.Headers.Add("Authorization", token6);
-
-                        //            var rfqCustomerIdResponse = await client6.SendAsync(request6);
-                        //            //if (rfqCustomerIdResponse.StatusCode != HttpStatusCode.OK) createInvfromGrin = rfqCustomerIdResponse.StatusCode;
-                        //        }
-                        //    }
-                        //}
-                        //else
-                        //{
-                            var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
-                            request1.Headers.Add("Authorization", token1);
-
-                            var inventoryObjectResult = await client1.SendAsync(request1);
-                            if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
-                            var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                            dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                            dynamic inventoryObject = inventoryObjectData.data;
-                            if (inventoryObject != null)
+                        var inventoryObjectResult = await client1.SendAsync(request1);
+                        if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
+                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        dynamic inventoryObject = inventoryObjectData.data;
+                        if (inventoryObject != null)
+                        {
+                            decimal balanceQty = inventoryObject.balance_Quantity;
+                            int flag1 = 0;
+                            int flag2 = 0;
+                            decimal bal = 0;
+                            if (inventoryObject.balance_Quantity <= acceptedQty && inventoryObject.balance_Quantity != 0)
                             {
-                                decimal balanceQty = inventoryObject.balance_Quantity;
-                                int flag1 = 0;
-                                int flag2 = 0;
-                                decimal bal = 0;
-                                if (inventoryObject.balance_Quantity <= acceptedQty && inventoryObject.balance_Quantity != 0)
+                                inventoryObject.warehouse = "IQC";
+                                inventoryObject.location = "IQC";
+                                inventoryObject.referenceIDFrom = "GRIN";
+                                acceptedQty -= balanceQty;
+
+                            }
+                            else if (inventoryObject.balance_Quantity > acceptedQty)
+                            {
+                                if (acceptedQty == 0)
                                 {
+                                    inventoryObject.balance_Quantity = acceptedQty;
                                     inventoryObject.warehouse = "IQC";
                                     inventoryObject.location = "IQC";
                                     inventoryObject.referenceIDFrom = "GRIN";
-                                    acceptedQty -= balanceQty;
-
+                                    flag1 = 1;
                                 }
-                                else if (inventoryObject.balance_Quantity > acceptedQty)
+                                else
                                 {
-                                    if (acceptedQty == 0)
+                                    bal = inventoryObject.balance_Quantity - acceptedQty;
+                                    if (bal != 0)
                                     {
-                                        inventoryObject.balance_Quantity = acceptedQty;
-                                        inventoryObject.warehouse = "IQC";
-                                        inventoryObject.location = "IQC";
-                                        inventoryObject.referenceIDFrom = "GRIN";
-                                        flag1 = 1;
+                                        flag2 = 1;
                                     }
-                                    else
-                                    {
-                                        bal = inventoryObject.balance_Quantity - acceptedQty;
-                                        if (bal != 0)
-                                        {
-                                            flag2 = 1;
-                                        }
-                                        inventoryObject.balance_Quantity = acceptedQty;
-                                        inventoryObject.warehouse = "IQC";
-                                        inventoryObject.location = "IQC";
-                                        inventoryObject.referenceIDFrom = "GRIN";
-                                        acceptedQty = 0;
-                                    }
-                                }
-
-                                var json = JsonConvert.SerializeObject(inventoryObject);
-                                var data = new StringContent(json, Encoding.UTF8, "application/json");
-                                var client5 = _clientFactory.CreateClient();
-                                var token5 = HttpContext.Request.Headers["Authorization"].ToString();
-                                var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryAPI"],
-                                "UpdateInventory?id=", inventoryObject.id))
-                                {
-                                    Content = data
-                                };
-                                request5.Headers.Add("Authorization", token5);
-
-                                var response = await client5.SendAsync(request5);
-                                if (response.StatusCode != HttpStatusCode.OK) updateInv = response.StatusCode;
-
-                                if (iqcConfirmationItemsDto.RejectedQty != 0 && acceptedQty == 0 && (flag1 == 1 || flag2 == 1))
-                                {
-                                    IQCInventoryDto grinInventoryDto = new IQCInventoryDto();
-                                    grinInventoryDto.PartNumber = iqcConfirmationItemsDto.ItemNumber;
-                                    grinInventoryDto.LotNumber = grinPartsDetails.LotNumber;
-                                    grinInventoryDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
-                                    grinInventoryDto.Description = grinPartsDetails.ItemDescription;
-                                    grinInventoryDto.ProjectNumber = projectNos;
-                                    grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iqcConfirmationItemsDto.RejectedQty);
-                                    grinInventoryDto.Max = itemMasterObject.max;
-                                    grinInventoryDto.Min = itemMasterObject.min;
-                                    grinInventoryDto.UOM = grinPartsDetails.UOM;
-                                    grinInventoryDto.Warehouse = "Reject";
-                                    grinInventoryDto.Location = "Reject";
-                                    grinInventoryDto.GrinNo = iqcConfirmation.GrinNumber;
-                                    grinInventoryDto.GrinPartId = iqcConfirmationItemsDto.GrinPartId;
-                                    grinInventoryDto.PartType = itemMasterObject.itemType;
-                                    grinInventoryDto.ReferenceID = "GRIN";
-                                    grinInventoryDto.ReferenceIDFrom = "GRIN";
-                                    grinInventoryDto.GrinMaterialType = "GRIN";
-                                    grinInventoryDto.ShopOrderNo = "";
-                                    if (flag1 == 1)
-                                    {
-                                        grinInventoryDto.Balance_Quantity = rejectedQty;
-                                    }
-                                    else if (flag2 == 1)
-                                    {
-                                        grinInventoryDto.Balance_Quantity = bal;
-                                        rejectedQty -= bal;
-                                    }
-                                    
-                                    string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(grinInventoryDto);
-                                    var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
-                                    var client6 = _clientFactory.CreateClient();
-                                    var token6 = HttpContext.Request.Headers["Authorization"].ToString();
-                                    var request6 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
-                                    "CreateInventoryFromGrin"))
-                                    {
-                                        Content = content
-                                    };
-                                    request6.Headers.Add("Authorization", token6);
-
-                                    var rfqCustomerIdResponse = await client6.SendAsync(request6);
+                                    inventoryObject.balance_Quantity = acceptedQty;
+                                    inventoryObject.warehouse = "IQC";
+                                    inventoryObject.location = "IQC";
+                                    inventoryObject.referenceIDFrom = "GRIN";
+                                    acceptedQty = 0;
                                 }
                             }
-                       // }
+
+                            var json = JsonConvert.SerializeObject(inventoryObject);
+                            var data = new StringContent(json, Encoding.UTF8, "application/json");
+                            var client5 = _clientFactory.CreateClient();
+                            var token5 = HttpContext.Request.Headers["Authorization"].ToString();
+                            var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryAPI"],
+                            "UpdateInventory?id=", inventoryObject.id))
+                            {
+                                Content = data
+                            };
+                            request5.Headers.Add("Authorization", token5);
+
+                            var response = await client5.SendAsync(request5);
+
+                            if (response.StatusCode != HttpStatusCode.OK) updateInv = response.StatusCode;
+
+                            if (iqcConfirmationItemsDto.RejectedQty != 0 && acceptedQty == 0 && (flag1 == 1 || flag2 == 1))
+                            {
+                                IQCInventoryDto grinInventoryDto = new IQCInventoryDto();
+                                grinInventoryDto.PartNumber = iqcConfirmationItemsDto.ItemNumber;
+                                grinInventoryDto.LotNumber = grinPartsDetails.LotNumber;
+                                grinInventoryDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
+                                grinInventoryDto.Description = grinPartsDetails.ItemDescription;
+                                grinInventoryDto.ProjectNumber = projectNos;
+                                grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iqcConfirmationItemsDto.RejectedQty);
+                                grinInventoryDto.Max = itemMasterObject.max;
+                                grinInventoryDto.Min = itemMasterObject.min;
+                                grinInventoryDto.UOM = grinPartsDetails.UOM;
+                                grinInventoryDto.Warehouse = "Reject";
+                                grinInventoryDto.Location = "Reject";
+                                grinInventoryDto.GrinNo = iqcConfirmation.GrinNumber;
+                                grinInventoryDto.GrinPartId = iqcConfirmationItemsDto.GrinPartId;
+                                grinInventoryDto.PartType = itemMasterObject.itemType;
+                                grinInventoryDto.ReferenceID = "GRIN";
+                                grinInventoryDto.ReferenceIDFrom = "GRIN";
+                                grinInventoryDto.GrinMaterialType = "GRIN";
+                                grinInventoryDto.ShopOrderNo = "";
+                                if (flag1 == 1)
+                                {
+                                    grinInventoryDto.Balance_Quantity = rejectedQty;
+                                }
+                                else if (flag2 == 1)
+                                {
+                                    grinInventoryDto.Balance_Quantity = bal;
+                                    rejectedQty -= bal;
+                                }
+
+                                string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(grinInventoryDto);
+                                var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
+                                var client6 = _clientFactory.CreateClient();
+                                var token6 = HttpContext.Request.Headers["Authorization"].ToString();
+                                var request6 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                                "CreateInventoryFromGrin"))
+                                {
+                                    Content = content
+                                };
+                                request6.Headers.Add("Authorization", token6);
+
+                                var response1 = await client6.SendAsync(request6);
+                                if (response1.StatusCode != HttpStatusCode.OK) createInv = response1.StatusCode;
+                            }
+                        }
                     }
 
-                    var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iqcConfirmationItems.GrinPartId, iqcConfirmationItems.AcceptedQty.ToString(), iqcConfirmationItems.RejectedQty.ToString());
 
-                    var grinParts = _mapper.Map<GrinParts>(updatedGrinPartsQty);
-                    string result = await _grinPartsRepository.UpdateGrinQty(grinParts);
-                    if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && getInvTrancGrinId == HttpStatusCode.OK && updateInvTranc == HttpStatusCode.OK && createInvTranc == HttpStatusCode.OK)
+                    if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && updateInvTranc == HttpStatusCode.OK && createInv == HttpStatusCode.OK && createInvTranc == HttpStatusCode.OK && getItemmResp == HttpStatusCode.OK)
                     {
-                        _grinPartsRepository.SaveAsync();
                         _iQCConfirmationRepository.SaveAsync();
                         _repository.SaveAsync();
-                        _iQCConfirmationItemsRepository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside Create IQCConfirmationWithitems action: Other Service Calling");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
                     }
                     serviceResponse.Data = null;
                     serviceResponse.Message = "IQCConfirmationItems Created Successfully";
@@ -1273,16 +1180,19 @@ namespace Tips.Grin.Api.Controllers
                         return BadRequest(serviceResponse);
                     }
 
+                    //Updating IQC Status in IqcItem
                     iqcConfirmationItems.IsIqcCompleted = true;
                     iqcConfirmationItems.IQCConfirmationId = iqcConfirmation.Id;
                     iqcConfirmation.IQCConfirmationItems = new List<IQCConfirmationItems> { iqcConfirmationItems };
                     await _iQCConfirmationRepository.CreateIqc(iqcConfirmation);
                     _iQCConfirmationRepository.SaveAsync();
 
-                    //Updating IQC Status in GrinParts
+                    ////update accepted qty ,rejected qty and IQC Status in grin model
 
-                    grinPartsDetails.IsIqcCompleted = true;
-                    await _grinPartsRepository.UpdateGrinQty(grinPartsDetails);
+                    var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iqcConfirmationItems.GrinPartId, iqcConfirmationItems.AcceptedQty.ToString(), iqcConfirmationItems.RejectedQty.ToString());
+                    var grinParts = _mapper.Map<GrinParts>(updatedGrinPartsQty);
+                    grinParts.IsIqcCompleted = true;
+                    await _grinPartsRepository.UpdateGrinQty(grinParts);
                     _grinPartsRepository.SaveAsync();
 
                     //Updating IQC and Grin Main Level Status
@@ -1293,11 +1203,12 @@ namespace Tips.Grin.Api.Controllers
                     {
                         var iqcDetails = await _iQCConfirmationRepository.GetIqcDetailsbyGrinNo(grinNumber);
                         iqcDetails.IsIqcCompleted = true;
-                        _iQCConfirmationRepository.SaveAsync();
+                        await _iQCConfirmationRepository.UpdateIqc(iqcDetails);
 
                         var grinDetails = await _repository.GetGrinByGrinNo(grinNumber);
                         grinDetails.IsIqcCompleted = true;
-                        _repository.SaveAsync();
+                        await _repository.UpdateGrin(grinDetails);
+
                     }
 
                     var client = _clientFactory.CreateClient();
@@ -1311,9 +1222,13 @@ namespace Tips.Grin.Api.Controllers
                     request.Headers.Add("Authorization", token);
 
                     var itemMasterObjectResult = await client.SendAsync(request);
+                    if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                        getItemmResp = itemMasterObjectResult.StatusCode;
+
                     var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
                     dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                     dynamic itemMasterObject = itemMasterObjectData.data;
+
                     //Inventory Update Code
                     decimal? acceptedQty = iqcConfirmationItemsDto.AcceptedQty;
                     var grinPartsId = iqcConfirmationItemsDto.GrinPartId;
@@ -1330,217 +1245,122 @@ namespace Tips.Grin.Api.Controllers
                         var grinPartsIds = projectNo.GrinPartsId;
                         var projectNos = projectNo.ProjectNumber;
                         var encodedprojectNos = Uri.EscapeDataString(projectNos);
-                        //if (itemMasterObject.poMaterialType == "ServiceItem")
-                        //{
-                        //    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryForServiceItemsAPI"],
-                        //       $"GetInventoryForServiceDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
-                        //    request1.Headers.Add("Authorization", token1);
 
-                        //    var inventoryObjectResult = await client1.SendAsync(request1);
-                        //    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                        //    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        //    dynamic inventoryObject = inventoryObjectData.data;
-                        //    if (inventoryObject != null)
-                        //    {
-                        //        decimal balanceQty = inventoryObject.balance_Quantity;
+                        var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                            $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
+                        request1.Headers.Add("Authorization", token1);
 
-                        //        if (inventoryObject.balance_Quantity <= acceptedQty && inventoryObject.balance_Quantity != 0)
-                        //        {
-                        //            inventoryObject.warehouse = "IQC";
-                        //            inventoryObject.location = "IQC";
-                        //            inventoryObject.referenceIDFrom = "GRIN";
-                        //            acceptedQty -= balanceQty;
+                        var inventoryObjectResult = await client1.SendAsync(request1);
+                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        dynamic inventoryObject = inventoryObjectData.data;
+                        if (inventoryObject != null)
+                        {
+                            decimal balanceQty = inventoryObject.balance_Quantity;
 
-                        //        }
-                        //        else if (inventoryObject.balance_Quantity > acceptedQty)
-                        //        {
-                        //            if (acceptedQty == 0)
-                        //            {
-                        //                inventoryObject.balance_Quantity = acceptedQty;
-                        //                inventoryObject.warehouse = "IQC";
-                        //                inventoryObject.location = "IQC";
-                        //                inventoryObject.referenceIDFrom = "GRIN";
-                        //                inventoryObject.isStockAvailable = false;
-                        //            }
-                        //            else
-                        //            {
-                        //                inventoryObject.balance_Quantity = acceptedQty;
-                        //                inventoryObject.warehouse = "IQC";
-                        //                inventoryObject.location = "IQC";
-                        //                inventoryObject.referenceIDFrom = "GRIN";
-                        //                acceptedQty = 0;
-                        //            }
-                        //        }
-
-                        //        var json = JsonConvert.SerializeObject(inventoryObject);
-                        //        var data = new StringContent(json, Encoding.UTF8, "application/json");
-                        //        var client5 = _clientFactory.CreateClient();
-                        //        var token5 = HttpContext.Request.Headers["Authorization"].ToString();
-                        //        var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryForServiceItemsAPI"],
-                        //        "UpdateInventoryForServiceDetails?id=", inventoryObject.id))
-                        //        {
-                        //            Content = data
-                        //        };
-                        //        request5.Headers.Add("Authorization", token5);
-
-                        //        var response = await client5.SendAsync(request5);
-                        //        if (iqcConfirmationItemsDto.RejectedQty != 0 && acceptedQty == 0)
-                        //        {
-                        //            IQCInventoryDto grinInventoryDto = new IQCInventoryDto();
-                        //            grinInventoryDto.PartNumber = iqcConfirmationItemsDto.ItemNumber;
-                        //            grinInventoryDto.LotNumber = grinPartsDetails.LotNumber;
-                        //            grinInventoryDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
-                        //            grinInventoryDto.Description = grinPartsDetails.ItemDescription;
-                        //            grinInventoryDto.ProjectNumber = projectNos;
-                        //            grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iqcConfirmationItemsDto.RejectedQty);
-                        //            grinInventoryDto.Max = itemMasterObject.max;
-                        //            grinInventoryDto.Min = itemMasterObject.min;
-                        //            grinInventoryDto.UOM = grinPartsDetails.UOM;
-                        //            grinInventoryDto.Warehouse = "Reject";
-                        //            grinInventoryDto.Location = "Reject";
-                        //            grinInventoryDto.GrinNo = iqcConfirmation.GrinNumber;
-                        //            grinInventoryDto.GrinPartId = iqcConfirmationItemsDto.GrinPartId;
-                        //            grinInventoryDto.PartType = itemMasterObject.itemType;
-                        //            grinInventoryDto.ReferenceID = "GRIN"; 
-                        //            grinInventoryDto.ReferenceIDFrom = "GRIN";
-                        //            grinInventoryDto.GrinMaterialType = "GRIN";
-                        //            grinInventoryDto.ShopOrderNo = "";
-
-                                  
-                        //            string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(grinInventoryDto);                                   
-                        //            var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
-                        //            var client6 = _clientFactory.CreateClient();
-                        //            var token6 = HttpContext.Request.Headers["Authorization"].ToString();
-                        //            var request6 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryForServiceItemsAPI"],
-                        //            "CreateInventoryForServiceItemsFromGrin"))
-                        //            {
-                        //                Content = content
-                        //            };
-                        //            request6.Headers.Add("Authorization", token6);
-
-                        //            var responses = await client6.SendAsync(request6);
-                                   
-                        //        }
-                        //    }
-                        //}
-                        //else
-                        //{
-                            var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
-                            request1.Headers.Add("Authorization", token1);
-
-                            var inventoryObjectResult = await client1.SendAsync(request1);
-                            var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                            dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                            dynamic inventoryObject = inventoryObjectData.data;
-                            if (inventoryObject != null)
+                            if (inventoryObject.balance_Quantity <= acceptedQty && inventoryObject.balance_Quantity != 0)
                             {
-                                decimal balanceQty = inventoryObject.balance_Quantity;
+                                inventoryObject.warehouse = "IQC";
+                                inventoryObject.location = "IQC";
+                                inventoryObject.referenceIDFrom = "GRIN";
+                                acceptedQty -= balanceQty;
 
-                                if (inventoryObject.balance_Quantity <= acceptedQty && inventoryObject.balance_Quantity != 0)
+                            }
+                            else if (inventoryObject.balance_Quantity > acceptedQty)
+                            {
+                                if (acceptedQty == 0)
                                 {
+                                    inventoryObject.balance_Quantity = acceptedQty;
                                     inventoryObject.warehouse = "IQC";
                                     inventoryObject.location = "IQC";
                                     inventoryObject.referenceIDFrom = "GRIN";
-                                    acceptedQty -= balanceQty;
-
+                                    inventoryObject.isStockAvailable = false;
                                 }
-                                else if (inventoryObject.balance_Quantity > acceptedQty)
+                                else
                                 {
-                                    if (acceptedQty == 0)
-                                    {
-                                        inventoryObject.balance_Quantity = acceptedQty;
-                                        inventoryObject.warehouse = "IQC";
-                                        inventoryObject.location = "IQC";
-                                        inventoryObject.referenceIDFrom = "GRIN";
-                                        inventoryObject.isStockAvailable = false;
-                                    }
-                                    else
-                                    {
-                                        inventoryObject.balance_Quantity = acceptedQty;
-                                        inventoryObject.warehouse = "IQC";
-                                        inventoryObject.location = "IQC";
-                                        inventoryObject.referenceIDFrom = "GRIN";
-                                        acceptedQty = 0;
-                                    }
-                                }
-
-                                var json = JsonConvert.SerializeObject(inventoryObject);
-                                var data = new StringContent(json, Encoding.UTF8, "application/json");
-                                //var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
-                                //    "UpdateInventory?id=", inventoryObject.id), data);
-                                var client5 = _clientFactory.CreateClient();
-                                var token5 = HttpContext.Request.Headers["Authorization"].ToString();
-                                var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryAPI"],
-                                "UpdateInventory?id=", inventoryObject.id))
-                                {
-                                    Content = data
-                                };
-                                request5.Headers.Add("Authorization", token5);
-
-                                var response = await client5.SendAsync(request5);
-                                if (iqcConfirmationItemsDto.RejectedQty != 0 && acceptedQty == 0)
-                                {
-                                    IQCInventoryDto grinInventoryDto = new IQCInventoryDto();
-                                    grinInventoryDto.PartNumber = iqcConfirmationItemsDto.ItemNumber;
-                                    grinInventoryDto.LotNumber = grinPartsDetails.LotNumber;
-                                    grinInventoryDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
-                                    grinInventoryDto.Description = grinPartsDetails.ItemDescription;
-                                    grinInventoryDto.ProjectNumber = projectNos;
-                                    grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iqcConfirmationItemsDto.RejectedQty);
-                                    grinInventoryDto.Max = itemMasterObject.max;
-                                    grinInventoryDto.Min = itemMasterObject.min;
-                                    grinInventoryDto.UOM = grinPartsDetails.UOM;
-                                    grinInventoryDto.Warehouse = "Reject";
-                                    grinInventoryDto.Location = "Reject";
-                                    grinInventoryDto.GrinNo = iqcConfirmation.GrinNumber;
-                                    grinInventoryDto.GrinPartId = iqcConfirmationItemsDto.GrinPartId;
-                                    grinInventoryDto.PartType = itemMasterObject.itemType;  //We need to check this
-                                    grinInventoryDto.ReferenceID = "GRIN"; // Convert.ToString(iQCConfirmationItems.Id) //;
-                                    grinInventoryDto.ReferenceIDFrom = "GRIN";
-                                    grinInventoryDto.GrinMaterialType = "GRIN";
-                                    grinInventoryDto.ShopOrderNo = "";
-
-                                    //var httpClientHandler = new HttpClientHandler();
-                                    //httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-                                    //var httpClient = new HttpClient(httpClientHandler);
-                                    string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(grinInventoryDto);
-                                    //var rfqApiUrl = _config["InventoryAPI"];
-                                    var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
-                                    //var rfqCustomerIdResponse = await _httpClient.PostAsync($"{rfqApiUrl}CreateInventoryFromGrin", content);
-                                    var client6 = _clientFactory.CreateClient();
-                                    var token6 = HttpContext.Request.Headers["Authorization"].ToString();
-                                    var request6 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
-                                    "CreateInventoryFromGrin"))
-                                    {
-                                        Content = content
-                                    };
-                                    request6.Headers.Add("Authorization", token6);
-
-                                    var responses = await client6.SendAsync(request6);
-                                    //if (rfqCustomerIdResponse.StatusCode != HttpStatusCode.OK) createInvfromGrin = rfqCustomerIdResponse.StatusCode;
+                                    inventoryObject.balance_Quantity = acceptedQty;
+                                    inventoryObject.warehouse = "IQC";
+                                    inventoryObject.location = "IQC";
+                                    inventoryObject.referenceIDFrom = "GRIN";
+                                    acceptedQty = 0;
                                 }
                             }
-                       // }
+
+                            var json = JsonConvert.SerializeObject(inventoryObject);
+                            var data = new StringContent(json, Encoding.UTF8, "application/json");
+                            var client5 = _clientFactory.CreateClient();
+                            var token5 = HttpContext.Request.Headers["Authorization"].ToString();
+                            var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryAPI"],
+                            "UpdateInventory?id=", inventoryObject.id))
+                            {
+                                Content = data
+                            };
+                            request5.Headers.Add("Authorization", token5);
+
+                            var response = await client5.SendAsync(request5);
+                            if (response.StatusCode != HttpStatusCode.OK) updateInv = response.StatusCode;
+
+                            if (iqcConfirmationItemsDto.RejectedQty != 0 && acceptedQty == 0)
+                            {
+                                IQCInventoryDto grinInventoryDto = new IQCInventoryDto();
+                                grinInventoryDto.PartNumber = iqcConfirmationItemsDto.ItemNumber;
+                                grinInventoryDto.LotNumber = grinPartsDetails.LotNumber;
+                                grinInventoryDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
+                                grinInventoryDto.Description = grinPartsDetails.ItemDescription;
+                                grinInventoryDto.ProjectNumber = projectNos;
+                                grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iqcConfirmationItemsDto.RejectedQty);
+                                grinInventoryDto.Max = itemMasterObject.max;
+                                grinInventoryDto.Min = itemMasterObject.min;
+                                grinInventoryDto.UOM = grinPartsDetails.UOM;
+                                grinInventoryDto.Warehouse = "Reject";
+                                grinInventoryDto.Location = "Reject";
+                                grinInventoryDto.GrinNo = iqcConfirmation.GrinNumber;
+                                grinInventoryDto.GrinPartId = iqcConfirmationItemsDto.GrinPartId;
+                                grinInventoryDto.PartType = itemMasterObject.itemType;  //We need to check this
+                                grinInventoryDto.ReferenceID = "GRIN"; // Convert.ToString(iQCConfirmationItems.Id) //;
+                                grinInventoryDto.ReferenceIDFrom = "GRIN";
+                                grinInventoryDto.GrinMaterialType = "GRIN";
+                                grinInventoryDto.ShopOrderNo = "";
+
+                                string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(grinInventoryDto);
+                                var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
+                                //var rfqCustomerIdResponse = await _httpClient.PostAsync($"{rfqApiUrl}CreateInventoryFromGrin", content);
+                                var client6 = _clientFactory.CreateClient();
+                                var token6 = HttpContext.Request.Headers["Authorization"].ToString();
+                                var request6 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                                "CreateInventoryFromGrin"))
+                                {
+                                    Content = content
+                                };
+                                request6.Headers.Add("Authorization", token6);
+
+                                var responses = await client6.SendAsync(request6);
+                                if (responses.StatusCode != HttpStatusCode.OK) createInv = responses.StatusCode;
+                            }
+                        }
+
                     }
 
-                    ////update accepted qty and rejected qty in grin model
-
-                    var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iqcConfirmationItems.GrinPartId, iqcConfirmationItems.AcceptedQty.ToString(), iqcConfirmationItems.RejectedQty.ToString());
-
-                    var grinParts = _mapper.Map<GrinParts>(updatedGrinPartsQty);
-                    string result = await _grinPartsRepository.UpdateGrinQty(grinParts);
-
-                    _grinPartsRepository.SaveAsync();
-
+                    if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && updateInvTranc == HttpStatusCode.OK && createInv == HttpStatusCode.OK && createInvTranc == HttpStatusCode.OK && getItemmResp == HttpStatusCode.OK)
+                    {
+                        _iQCConfirmationRepository.SaveAsync();
+                        _repository.SaveAsync();
+                    }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside Create IQCConfirmationWithitems action: Inv and InvTrans Service Calling");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
                     serviceResponse.Data = null;
                     serviceResponse.Message = "IQCConfirmation and IQCConfirmationItems Created Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-
-
 
             }
             catch (Exception ex)

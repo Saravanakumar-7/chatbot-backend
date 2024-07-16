@@ -1236,6 +1236,32 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllQuoteNoList()
+        {
+            ServiceResponse<IEnumerable<QuoteNumberDto>> serviceResponse = new ServiceResponse<IEnumerable<QuoteNumberDto>>();
+            try
+            {
+                var quoteNoList = await _repository.GetAllQuoteNoList();
+                var result = _mapper.Map<IEnumerable<QuoteNumberDto>>(quoteNoList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all QuoteNumberList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllQuoteNoList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> SendWhatsAppforQuote()
         {

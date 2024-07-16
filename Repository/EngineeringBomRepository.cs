@@ -168,6 +168,17 @@ namespace Repository
             return result;
         }
 
+        public async Task<IEnumerable<FGCostingSPReport>> GetFGCostingSPReportWithParam(string FGItemnumber)
+        {
+            var result = _tipsMasterDbContext
+            .Set<FGCostingSPReport>()
+            .FromSqlInterpolated($"CALL FG_Costing_Report_with_parameter({FGItemnumber})")
+            .ToList();
+
+            return result;
+
+        }
+
         public async Task<int?> CreateEnggBom(EnggBom enggBom)
         {
             enggBom.CreatedBy = _createdBy;

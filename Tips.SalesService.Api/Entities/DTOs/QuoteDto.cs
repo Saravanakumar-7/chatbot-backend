@@ -510,6 +510,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? QuoteNumber { get; set; }
         public List<decimal?> RevisionNumber { get; set; }
     }
+    public class QuoteNumberDto
+    {
+        public int Id {  get; set; }
+        public string? QuoteNumber { get; set; }
+    }
     public class QuoteSpReportDto
     {
         public string? CustomerName { get; set; }

@@ -120,7 +120,18 @@ namespace Tips.SalesService.Api.Repository
             return quoteGroups;
         }
 
+        public async Task<IEnumerable<QuoteNumberDto>> GetAllQuoteNoList()
+        {
+            var quoteNos = await _tipsSalesServiceDbContext.Quotes
+                .Select(g => new QuoteNumberDto
+                {
+                    Id = g.Id,
+                    QuoteNumber = g.QuoteNumber,
+                })
+                .ToListAsync();
 
+            return quoteNos;
+        }
 
 
 

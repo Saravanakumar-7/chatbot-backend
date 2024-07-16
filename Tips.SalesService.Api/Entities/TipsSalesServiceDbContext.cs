@@ -11,7 +11,7 @@ namespace Tips.SalesService.Api.Entities
         {
 
         }
-
+       
         public DbSet<Rfq> Rfqs { get; set; }
         public DbSet<QuoteEmailsDetails> QuoteEmailsDetails { get; set; }
         public DbSet<SalesOrderEmailsDetails> SalesOrderEmailsDetails { get; set; }

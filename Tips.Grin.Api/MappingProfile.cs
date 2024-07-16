@@ -13,8 +13,14 @@ namespace Tips.Grin.Api
             CreateMap<Grins, GrinIQCConfirmationSaveDto>().ReverseMap();
             CreateMap<GrinParts, GrinIQCConfirmationItemsSaveDto>().ReverseMap();
 
+            CreateMap<OpenGrinForGrin, OpenGrinForIQCConfirmationSaveDto>().ReverseMap();
+            CreateMap<OpenGrinForGrinItems, OpenGrinForIQCConfirmationItemsSaveDto>().ReverseMap();
+
             CreateMap<IQCConfirmation, GrinIQCConfirmationSaveDto>().ReverseMap();
             CreateMap<IQCConfirmationItems, GrinIQCConfirmationItemsSaveDto>().ReverseMap();
+
+            CreateMap<OpenGrinForIQC, OpenGrinForIQCConfirmationSaveDto>().ReverseMap();
+            CreateMap<OpenGrinForIQCItems, OpenGrinForIQCConfirmationItemsSaveDto>().ReverseMap();
 
             CreateMap<ProjectNumbersDtoPost, GrinUpdateProjectBalQtyDetailsDto>().ReverseMap();
 
@@ -33,6 +39,18 @@ namespace Tips.Grin.Api
             CreateMap<GrinsForServiceItemsOtherCharges, GrinsForServiceItemsOtherChargesDto>().ReverseMap();
             CreateMap<GrinsForServiceItemsOtherCharges, GrinsForServiceItemsOtherChargesPostDto>().ReverseMap();
             CreateMap<GrinsForServiceItemsOtherCharges, GrinsForServiceItemsOtherChargesUpdateDto>().ReverseMap();
+
+            CreateMap<OpenGrinForGrin, OpenGrinForGrinDto>().ReverseMap();
+            CreateMap<OpenGrinForGrin, OpenGrinForGrinPostDto>().ReverseMap();
+            CreateMap<OpenGrinForGrin, OpenGrinForGrinUpdateDto>().ReverseMap();
+
+            CreateMap<OpenGrinForGrinItems, OpenGrinForGrinItemsDto>().ReverseMap();
+            CreateMap<OpenGrinForGrinItems, OpenGrinForGrinItemsPostDto>().ReverseMap();
+            CreateMap<OpenGrinForGrinItems, OpenGrinForGrinItemsUpdateDto>().ReverseMap();
+
+            CreateMap<OpenGrinForGrinProjectNumber, OpenGrinForGrinProjectNumberDto>().ReverseMap();
+            CreateMap<OpenGrinForGrinProjectNumber, OpenGrinForGrinProjectNumberPostDto>().ReverseMap();
+            CreateMap<OpenGrinForGrinProjectNumber, OpenGrinForGrinProjectNumberUpdateDto>().ReverseMap();
 
             CreateMap<Grins, GrinDto>().ReverseMap();
             CreateMap<Grins, GrinPostDto>().ReverseMap();
@@ -54,7 +72,12 @@ namespace Tips.Grin.Api
             CreateMap<ProjectNumbers, ProjectNumberscalculationofAvgcostDto>().ReverseMap();
             CreateMap<ProjectNumbersDtoPost, ProjectNumberscalculationofAvgcostDto>().ReverseMap();
             CreateMap<ProjectNumbersDtoUpdate, ProjectNumberscalculationofAvgcostDto>().ReverseMap();
-            
+
+            CreateMap<OpenGrinForIQC, OpenGrinForIQCDto>().ReverseMap();
+            CreateMap<OpenGrinForIQC, OpenGrinForIQCPostDto>().ReverseMap();
+            CreateMap<OpenGrinForIQC, OpenGrinForIQCUpdateDto>().ReverseMap();
+            CreateMap<OpenGrinForIQC, OpenGrinForIQCSaveDto>().ReverseMap();
+
             CreateMap<IQCConfirmation, IQCConfirmationDto>().ReverseMap();
             CreateMap<IQCConfirmation, IQCConfirmationPostDto>().ReverseMap();
             CreateMap<IQCConfirmation, IQCConfirmationUpdateDto>().ReverseMap();
@@ -68,20 +91,40 @@ namespace Tips.Grin.Api
             CreateMap<IQCForServiceItems_Items, IQCForServiceItems_ItemsPostDto>().ReverseMap();
             CreateMap<IQCForServiceItems_Items, IQCForServiceItems_ItemsSaveDto>().ReverseMap();
 
+            CreateMap<OpenGrinForIQCItems, OpenGrinForIQCItemsDto>().ReverseMap();
+            CreateMap<OpenGrinForIQCItems, OpenGrinForIQCItemsPostDto>().ReverseMap();
+            CreateMap<OpenGrinForIQCItems, OpenGrinForIQCItemsUpdateDto>().ReverseMap();
+            CreateMap<OpenGrinForIQCItems, OpenGrinForIQCItemsSaveDto>().ReverseMap();
+
             CreateMap<IQCConfirmationItems, IQCConfirmationItemsDto>().ReverseMap();
             CreateMap<IQCConfirmationItems, IQCConfirmationItemsPostDto>().ReverseMap();
             CreateMap<IQCConfirmationItems, IQCConfirmationItemsUpdateDto>().ReverseMap();
             CreateMap<IQCConfirmationItems, IQCConfirmationItemsSaveDto>().ReverseMap();
+
+            CreateMap<OpenGrinForBinning, OpenGrinForBinningDto>().ReverseMap();
+            CreateMap<OpenGrinForBinning, OpenGrinForBinningPostDto>().ReverseMap();
+            CreateMap<OpenGrinForBinning, OpenGrinForBinningUpdateDto>().ReverseMap();
+            CreateMap<OpenGrinForBinning, OpenGrinForBinningSaveDto>().ReverseMap();
 
             CreateMap<Binning, BinningDto>().ReverseMap();
             CreateMap<Binning, BinningPostDto>().ReverseMap();
             CreateMap<Binning, BinningUpdateDto>().ReverseMap();
             CreateMap<Binning, BinningSaveDto>().ReverseMap();
 
+            CreateMap<OpenGrinForBinningLocations, OpenGrinForBinningLocationsDto>().ReverseMap();
+            CreateMap<OpenGrinForBinningLocations, OpenGrinForBinningLocationsPostDto>().ReverseMap();
+            CreateMap<OpenGrinForBinningLocations, OpenGrinForBinningLocationsUpdateDto>().ReverseMap();
+            CreateMap<OpenGrinForBinningLocations, OpenGrinForBinningLocationsSaveDto>().ReverseMap();
+
             CreateMap<BinningLocation, BinningLocationDto>().ReverseMap();
             CreateMap<BinningLocation, BinningLocationPostDto>().ReverseMap();
             CreateMap<BinningLocation, BinningLocationUpdateDto>().ReverseMap();
             CreateMap<BinningLocation, BinningLocationSaveDto>().ReverseMap();
+
+            CreateMap<OpenGrinForBinningItems, OpenGrinForBinningItemsDto>().ReverseMap();
+            CreateMap<OpenGrinForBinningItems, OpenGrinForBinningItemsPostDto>().ReverseMap();
+            CreateMap<OpenGrinForBinningItems, OpenGrinForBinningItemsUpdateDto>().ReverseMap();
+            CreateMap<OpenGrinForBinningItems, OpenGrinForBinningItemsSaveDto>().ReverseMap();
 
             CreateMap<BinningItems, BinningItemsDto>().ReverseMap();
             CreateMap<BinningItems, BinningItemsPostDto>().ReverseMap();
@@ -109,9 +152,16 @@ namespace Tips.Grin.Api
             CreateMap<Grins, IQCConfirmationDto>().ReverseMap();
             CreateMap<GrinParts, IQCConfirmationItemsDto>().ReverseMap();
 
+            CreateMap<OpenGrinForGrin, OpenGrinForIQCDto>().ReverseMap();
+            CreateMap<OpenGrinForGrinItems, OpenGrinForIQCItemsDto>().ReverseMap();
+
             CreateMap<Grins, BinningDto>().ReverseMap();
             CreateMap<GrinParts, BinningItemsDto>().ReverseMap();
             CreateMap<GrinParts, BinningLocationDto>().ReverseMap();
+
+            CreateMap<OpenGrinForGrin, OpenGrinForBinningDto>().ReverseMap();
+            CreateMap<OpenGrinForGrinItems, OpenGrinForBinningItemsDto>().ReverseMap();
+            CreateMap<OpenGrinForGrinItems, OpenGrinForBinningLocationsDto>().ReverseMap();
 
             CreateMap<OpenGrin, OpenGrinDto>().ReverseMap();
             CreateMap<OpenGrin, OpenGrinPostDto>().ReverseMap();

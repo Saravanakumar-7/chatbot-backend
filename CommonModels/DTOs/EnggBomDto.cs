@@ -21,7 +21,7 @@ namespace Entities.DTOs
 
         public PartType ItemType { get; set; }
 
-        [Precision(5,2)]
+        [Precision(5, 2)]
         public decimal? RevisionNumber { get; set; }
         public string? Remarks { get; set; }
 
@@ -54,7 +54,7 @@ namespace Entities.DTOs
         [DefaultValue(true)]
         public bool IsActive { get; set; }
 
-    
+
 
         public List<EnggChildItemPostDto>? EnggChildItemPosts { get; set; }
 
@@ -64,7 +64,7 @@ namespace Entities.DTOs
 
     }
     public class EnggBomUpdateDto
-    { 
+    {
 
         [Required(ErrorMessage = "ItemNumber is required")]
         public string ItemNumber { get; set; }
@@ -96,7 +96,7 @@ namespace Entities.DTOs
     {
         public int BOMId { get; set; }
 
- 
+
     }
     public enum RevisionType
     {
@@ -104,8 +104,8 @@ namespace Entities.DTOs
         major
     }
 
-    
- public class EnggBomItemRevisionList
+
+    public class EnggBomItemRevisionList
     {
         public string ItemNumber { set; get; }
         public decimal[] RevisionNumber { get; set; }
@@ -184,7 +184,7 @@ namespace Entities.DTOs
         public decimal? SAFinalMoqcost { get; set; }
     }
     public class RfqEnggitemSourcingDto
-    { 
+    {
         public string? ItemNumber { get; set; }
         [Precision(13, 3)]
         public decimal Qty { get; set; }
@@ -209,5 +209,22 @@ namespace Entities.DTOs
         public bool IsActive { get; set; }
 
     }
+    public class FGCostingSPReport
+    {
+        public string? FGItemnumber { get; set; }
+        public string? FGChildItemNumber { get; set; }
+        public string? DrawingRevNo { get; set; }
+        public string? Description { get; set; }
+        public string? MftrItemNumbers { get; set; }
+        public decimal? Qntyper { get; set; }
+        public string? UOM { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public decimal? Totalamount { get; set; }
+    }
+    public class FGCostingSPReportDto
+    {
+        public string? FGItemnumber { get; set; }
+    }
+
 
 }
