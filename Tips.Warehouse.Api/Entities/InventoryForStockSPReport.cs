@@ -8,5 +8,6 @@
         public string? Location { get; set; }
         public string? ProjectNumber { get; set; }
         public decimal? qnty { get; set; }
+        public string? LotNumber { get; set; }
     }
 }

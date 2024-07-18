@@ -133,6 +133,7 @@ namespace Tips.Production.Api.Entities.DTOs
     public class InventoryDtoForMaterialIssueLocation
     {
         public string PartNumber { get; set; }
+        public string LotNumber { get; set; }
         public string ProjectNumber { get; set; }
         public string? DataFrom { get; set; }
         public string ShopOrderNumber { get; set; }

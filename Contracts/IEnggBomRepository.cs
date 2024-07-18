@@ -18,7 +18,7 @@ namespace Contracts
         Task<EnggBom> GetLatestEnggBomVersionDetailByItemNumber(string fgPartNumber, decimal revisionNo);
         Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom);
         Task<IEnumerable<EnggBom>> GetAllActiveEnggBom();
-        Task<IEnumerable<FGCostingSPReport>> GetFGCostingSPReportWithParam(string FGItemnumber);
+        Task<IEnumerable<FGCostingSPReport>> GetFGCostingSPReportWithParam(string fgItemnumber, string shopOrderNumber);
         Task<int?> CreateEnggBom(EnggBom enggBom);
         Task<string> UpdateEnggBom(EnggBom enggBom);
         Task<string> DeleteEnggBom(EnggBom enggBom); 
@@ -46,6 +46,6 @@ namespace Contracts
         Task<FGFinalLandedandMoqPrice> GetEngganditsPP(string FGItemNumber, decimal FGRevno, List<RfqSourcingPPdetailsforEngg> rfqSourcingPPdetails);
         Task<SAFinalLandedandMoqPrice> GetEnggFGSA(string SAItemNumber, decimal SAQty, List<RfqSourcingPPdetailsforEngg> rfqSourcingPPdetails);
         Task<List<EnggChildItem>> GetChildItemsLists();
-        Task<IEnumerable<EnggBomSPReport>> GetEnggBomSPReportWithParam(string? bomId);
+        Task<IEnumerable<EnggBomSPReport>> GetEnggBomSPReportWithParam(int? bomId);
     }
 }

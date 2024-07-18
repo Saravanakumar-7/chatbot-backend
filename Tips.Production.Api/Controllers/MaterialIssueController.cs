@@ -835,14 +835,6 @@ namespace Tips.Production.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                 var allMaterialIssueItems = await _materialIssueItemRepository.GetMaterialIssueItemById(id);
-                //List<InventoryDtoForMaterialIssue> inventoryDtoForIssue = new List<InventoryDtoForMaterialIssue>();
-
-                // get latest production bom version by passing fgnumber
-                //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["EngineeringBomAPI"], 
-                //                        "GetLatestEnggProductionBomVersionDetailByItemNumber?","&fgPartNumber=", materialIssueDetailsById.ItemNumber));
-                //var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                //dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                //dynamic itemMasterObject = itemMasterObjectData.data;
 
                 if (allMaterialIssueItems == null)
                 {
@@ -889,10 +881,10 @@ namespace Tips.Production.Api.Controllers
                                 inventoryDtoForIssue.Warehouse = materialIssueLocation.Warehouse;
                                 inventoryDtoForIssue.Location = materialIssueLocation.Location;
                                 inventoryDtoForIssue.DistributingQty = materialIssueLocation.DistributingQty;
+                                inventoryDtoForIssue.LotNumber = materialIssueLocation.LotNumber;
 
                                 var json = JsonConvert.SerializeObject(inventoryDtoForIssue);
                                 var data = new StringContent(json, Encoding.UTF8, "application/json");
-                                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnMaterialIssue"), data);
 
                                 var client1 = _clientFactory.CreateClient();
                                 var token1 = HttpContext.Request.Headers["Authorization"].ToString();
@@ -930,10 +922,7 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(500, serviceResponse);
                 }
-                //string result = await _materialIssueRepository.UpdateMaterialIssue(materialIssueDetailsById);
 
-                //_logger.LogInfo(result);
-                //_materialIssueRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "MaterialIssue Updated Successfully";
                 serviceResponse.Success = true;
