@@ -43,7 +43,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<List<InventoryBalanceQtyMaterialIssue>> GetInventoryStockByItemAndProjectNo(string itemNumber, string projectNumber);
         Task<Inventory> GetInventoryDetailsByItemAndProjectNo(string itemNumber, string projectNumber);
         Task<List<Inventory>> GetInventoryDetailsByItemNoandProjectNo(string ItemNumber, string ProjectNo);
-        Task<List<Inventory>> GetInventoryDetailsByItemNoandProjectNoandWarehouseandLocation(string ItemNumber, string ProjectNo, string Warehouse, string Location);
+        Task<List<Inventory>> GetInventoryDetailsByItemNoandProjectNoandWarehouseandLocation(string ItemNumber, string ProjectNo,
+                                                                                                            string Warehouse, string Location, string lotNumber);
         Task<List<Inventory>> GetInventoryByItemNo(string itemNumber); 
         Task<ConsumptionInventoryDto> GetConsumptionInventoryByItemNo(string itemNumber);
         //aravind
@@ -94,6 +95,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<StockMovementSPReport>> GetStockMovementSPReports();
         Task<IEnumerable<Inventory>> GetInventoryWarehouseReport(string PartNumber, string Description, string Warehouse, string Location, string ProjectNumber);
         Task<IEnumerable<InventorySPReport>> InventorySPReportdate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<GetInventorySPReportForAvi>> GetInventorySPReportForAvision(DateTime? FromDate, DateTime? ToDate, string partNumber, string projectNumber);
         Task<IEnumerable<Inventory>> GetInventoryWIPReport(string PartNumber, string Description, string ProjectNumber);
         Task<IEnumerable<Inventory>> GetInventoryGrinAndIqcReport(string PartNumber, string Description, string ProjectNumber, string Warehouse, string Location);
         Task<IEnumerable<Inventory>> GetInventoryNotUseableReport(string PartNumber, string Description, string ProjectNumber, string Warehouse, string Location);

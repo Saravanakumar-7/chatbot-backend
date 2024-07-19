@@ -3233,6 +3233,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetFGCostingSPReportWithParam([FromBody] FGCostingSPReportDto fgCostingSPReportDto)
 
@@ -3240,7 +3241,8 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<IEnumerable<FGCostingSPReport>> serviceResponse = new ServiceResponse<IEnumerable<FGCostingSPReport>>();
             try
             {
-                var products = await _repository.EnggBomRepository.GetFGCostingSPReportWithParam(fgCostingSPReportDto.FGItemnumber);
+                var products = await _repository.EnggBomRepository.GetFGCostingSPReportWithParam(fgCostingSPReportDto.FGItemnumber,
+                                                                                                    fgCostingSPReportDto.ShopOrderNumber);
 
                 if (products == null)
                 {
@@ -3271,6 +3273,5 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        //]
     }
 }

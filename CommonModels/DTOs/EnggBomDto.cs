@@ -199,7 +199,7 @@ namespace Entities.DTOs
     }
     public class EnggBomSPReportDto
     {
-        public string? BOMId { get; set; }
+        public int? BOMId { get; set; }
     }
     public class EnggBomDetailsDto
     {
@@ -224,6 +224,8 @@ namespace Entities.DTOs
     public class FGCostingSPReportDto
     {
         public string? FGItemnumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        
     }
 
 

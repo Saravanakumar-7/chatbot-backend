@@ -601,7 +601,8 @@ namespace Tips.Warehouse.Api.Repository
             {
                 Warehouse = x.Warehouse,
                 Location = x.Location,
-                BalanceQty = x.Balance_Quantity
+                BalanceQty = x.Balance_Quantity,
+                LotNumber = x.LotNumber
             }
             ).ToListAsync();
 
@@ -620,7 +621,7 @@ namespace Tips.Warehouse.Api.Repository
                         InventoryQtyforDOLocation locations = new InventoryQtyforDOLocation();
                         foreach (var exloco in ex.inventoryQtyforDOLocations)
                         {
-                            if (getitem.Location == exloco.Location)
+                            if (getitem.Location == exloco.Location && getitem.LotNumber == exloco.LotNumber)
                             {
                                 locflag = 1;
                                 exloco.BalanceQty = exloco.BalanceQty + getitem.BalanceQty;
@@ -630,6 +631,7 @@ namespace Tips.Warehouse.Api.Repository
                         {
                             locations.Location = getitem.Location;
                             locations.BalanceQty = getitem.BalanceQty;
+                            locations.LotNumber = getitem.LotNumber;
                             ex.inventoryQtyforDOLocations.Add(locations);
                         }
                     }
@@ -640,6 +642,7 @@ namespace Tips.Warehouse.Api.Repository
                     newly.Warehouse = getitem.Warehouse;
                     newlylocations.Location = getitem.Location;
                     newlylocations.BalanceQty = getitem.BalanceQty;
+                    newlylocations.LotNumber = getitem.LotNumber;
                     newlocations.Add(newlylocations);
                     newly.inventoryQtyforDOLocations = newlocations;
                     exists.Add(newly);
@@ -652,12 +655,15 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<List<InventoryQtyforDO>> GetInventorybyItem(string itemNumber)
         {
             string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
-            var invdetails = await FindAll().Where(x => x.PartNumber == itemNumber && !skipWareHouse.Contains(x.Warehouse)).Select(x => new GetInventoryQtyforDO()
+
+            var invdetails = await FindAll().Where(x => x.PartNumber == itemNumber && !skipWareHouse.Contains(x.Warehouse))
+                .Select(x => new GetInventoryQtyforDO()
             {
                 Warehouse = x.Warehouse,
                 Location = x.Location,
-                BalanceQty = x.Balance_Quantity
-            }
+                BalanceQty = x.Balance_Quantity,
+                LotNumber = x.LotNumber
+                }
             ).ToListAsync();
 
             List<InventoryQtyforDO> exists = new List<InventoryQtyforDO>();
@@ -675,7 +681,7 @@ namespace Tips.Warehouse.Api.Repository
                         InventoryQtyforDOLocation locations = new InventoryQtyforDOLocation();
                         foreach (var exloco in ex.inventoryQtyforDOLocations)
                         {
-                            if (getitem.Location == exloco.Location)
+                            if (getitem.Location == exloco.Location && getitem.LotNumber == exloco.LotNumber)
                             {
                                 locflag = 1;
                                 exloco.BalanceQty = exloco.BalanceQty + getitem.BalanceQty;
@@ -685,6 +691,7 @@ namespace Tips.Warehouse.Api.Repository
                         {
                             locations.Location = getitem.Location;
                             locations.BalanceQty = getitem.BalanceQty;
+                            locations.LotNumber = getitem.LotNumber;
                             ex.inventoryQtyforDOLocations.Add(locations);
                         }
                     }
@@ -695,6 +702,7 @@ namespace Tips.Warehouse.Api.Repository
                     newly.Warehouse = getitem.Warehouse;
                     newlylocations.Location = getitem.Location;
                     newlylocations.BalanceQty = getitem.BalanceQty;
+                    newlylocations.LotNumber = getitem.LotNumber;
                     newlocations.Add(newlylocations);
                     newly.inventoryQtyforDOLocations = newlocations;
                     exists.Add(newly);
@@ -1048,7 +1056,14 @@ namespace Tips.Warehouse.Api.Repository
 
             return results;
         }
+        public async Task<IEnumerable<GetInventorySPReportForAvi>> GetInventorySPReportForAvision(DateTime? FromDate, DateTime? ToDate, string partNumber,string projectNumber)
+        {
+            var results = _tipsWarehouseDbContext.Set<GetInventorySPReportForAvi>()
+                         .FromSqlInterpolated($"CALL GetInventoryReport({FromDate},{ToDate},{partNumber},{projectNumber})")
+                         .ToList();
 
+            return results;
+        }
         public async Task<Inventory> GetInventoryDetailsByItemNoandProjectNoandShopOrderNo(string ItemNumber, string ProjectNumber, string shopOrderNo)
         {
             var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber && x.ProjectNumber == ProjectNumber && x.shopOrderNo == shopOrderNo)
@@ -1155,11 +1170,13 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryDetail;
         }
-        public async Task<List<Inventory>> GetInventoryDetailsByItemNoandProjectNoandWarehouseandLocation(string ItemNumber, string ProjectNo, string Warehouse, string Location)
+        public async Task<List<Inventory>> GetInventoryDetailsByItemNoandProjectNoandWarehouseandLocation(string ItemNumber, string ProjectNo, 
+                                                                                                            string Warehouse, string Location, string lotNumber)
         {
             string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
             var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber
-            && x.IsStockAvailable == true && x.ProjectNumber == ProjectNo && !skipWareHouse.Contains(x.Warehouse) && x.Warehouse == Warehouse && x.Location == Location)
+            && x.IsStockAvailable == true && x.ProjectNumber == ProjectNo && !skipWareHouse.Contains(x.Warehouse) && x.Warehouse == Warehouse 
+            && x.Location == Location && x.LotNumber == lotNumber)
                           .ToListAsync();
 
             return inventoryDetail;

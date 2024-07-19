@@ -334,6 +334,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class InventoryDtoForMaterialIssueLocation
     {
         public string PartNumber { get; set; }
+        public string LotNumber { get; set; }
         public string ProjectNumber { get; set; }
         public decimal DistributingQty { get; set; }
         public string ShopOrderNumber { get; set; }
@@ -389,6 +390,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     }
     public class InventoryQtyforDOLocation
     {
+        public string LotNumber { get; set; }
         public string Location { get; set; }
         public decimal BalanceQty { get; set; }
     }
@@ -397,6 +399,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string Warehouse { get; set; }
         public string Location { get; set; }
         public decimal BalanceQty { get; set; }
+        public string LotNumber { get; set; }
     }
     public class GetInventoryItemNoAndDescriptionList
     {
@@ -421,6 +424,26 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? Location { get; set; }
         public string? ProjectNumber { get; set; }
     }
+    public class GetInventorySPReportForAviDto
+    {
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+        public string? PartNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
+    public class GetInventorySPReportForAvi
+    {
+        public string? PartNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? Description { get; set; }
+        public int? PartType { get; set; }
+        public string? UOM { get; set; }
+        public decimal? Opening_Stock { get; set; }
+        public decimal? TotalInwords { get; set; }
+        public decimal? Totaloutwords { get; set; }
+        public decimal? Closing_stock { get; set; }
+    }
+
     public class TrascationKPNWSPReportsDto
     {
         public string? KPN { get; set; }

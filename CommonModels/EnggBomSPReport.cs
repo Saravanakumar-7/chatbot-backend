@@ -9,7 +9,7 @@ namespace Entities
 {
     public class EnggBomSPReport
     {
-        public PartType? PartType { get; set; }
+        public string? PartType { get; set; }
         public string? MaterialGroup { get; set; }
         public string? ItemNumber { get; set; }
         public string? ItemDescription { get; set; }

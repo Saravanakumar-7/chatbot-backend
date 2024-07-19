@@ -158,7 +158,7 @@ namespace Repository
             return result;
 
         }
-        public async Task<IEnumerable<EnggBomSPReport>> GetEnggBomSPReportWithParam(string? bomId)
+        public async Task<IEnumerable<EnggBomSPReport>> GetEnggBomSPReportWithParam(int? bomId)
         {
             var result = _tipsMasterDbContext
             .Set<EnggBomSPReport>()
@@ -168,11 +168,11 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<FGCostingSPReport>> GetFGCostingSPReportWithParam(string FGItemnumber)
+        public async Task<IEnumerable<FGCostingSPReport>> GetFGCostingSPReportWithParam(string fgItemnumber, string shopOrderNumber)
         {
             var result = _tipsMasterDbContext
             .Set<FGCostingSPReport>()
-            .FromSqlInterpolated($"CALL FG_Costing_Report_with_parameter({FGItemnumber})")
+            .FromSqlInterpolated($"CALL FG_Costing_Report_with_parameter({fgItemnumber},{shopOrderNumber})")
             .ToList();
 
             return result;
