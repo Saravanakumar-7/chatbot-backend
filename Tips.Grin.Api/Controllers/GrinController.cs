@@ -1033,7 +1033,7 @@ namespace Tips.Grin.Api.Controllers
                     _iQCConfirmationItemsRepository.SaveAsync();
 
                     //Updating AcceptedQty, RejectedQty and IQC Status in GrinParts
-                    var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iqcConfirmationItems.GrinPartId, iqcConfirmationItems.AcceptedQty.ToString(), iqcConfirmationItems.ToString());
+                    var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinPartsQty(iqcConfirmationItems.GrinPartId, iqcConfirmationItems.AcceptedQty.ToString(), iqcConfirmationItems.RejectedQty.ToString());
                     var grinParts = _mapper.Map<GrinParts>(updatedGrinPartsQty);
                     grinParts.IsIqcCompleted = true;
                     await _grinPartsRepository.UpdateGrinQty(grinParts);

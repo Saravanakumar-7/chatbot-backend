@@ -638,7 +638,7 @@ namespace Tips.Grin.Api.Controllers
                         var encodedprojectNos = Uri.EscapeDataString(projectNos);
 
                         var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryForServiceItemsAPI"],
-                            $"GetInventoryForServiceDetailsByGrinNoandGrinsForServiceItemsId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
+                            $"GetInventoryForServiceDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
                         request1.Headers.Add("Authorization", token1);
 
                         var inventoryObjectResult = await client1.SendAsync(request1);
@@ -845,7 +845,7 @@ namespace Tips.Grin.Api.Controllers
                         var encodedprojectNos = Uri.EscapeDataString(projectNos);
 
                         var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryForServiceItemsAPI"],
-                           $"GetInventoryForServiceDetailsByGrinNoandGrinsForServiceItemsId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
+                           $"GetInventoryForServiceDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
                         request1.Headers.Add("Authorization", token1);
 
                         var inventoryObjectResult = await client1.SendAsync(request1);

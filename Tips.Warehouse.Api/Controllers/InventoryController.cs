@@ -678,28 +678,7 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 // Get Work Order (Shop Order) number list by passing Sales OrderNumber
 
-                var client = _clientFactory.CreateClient();
-                var token = HttpContext.Request.Headers["Authorization"].ToString();
-                //var shopOrderNumberListResponse = await _httpClient.GetAsync(string.Concat(_config["ProductionAPI"],
-                //         "GetShopOrderNoListBySalesOrderNo?", "SalesOrderNO=", salesOrderNo, "&itemNumber=", itemNo));
-
-                var encodedSalesOrderNumber = Uri.EscapeDataString(salesOrderNo);
-                var encodedItemNumber = Uri.EscapeDataString(itemNo);
-
-                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ProductionAPI"],
-                            $"GetShopOrderNoListBySalesOrderNo?SalesOrderNO={encodedSalesOrderNumber}&itemNumber={encodedItemNumber}"));
-                request.Headers.Add("Authorization", token);
-
-                var shopOrderNumberListResponse = await client.SendAsync(request);
-
-                var shopOrderNumberListString = await shopOrderNumberListResponse.Content.ReadAsStringAsync();
-                dynamic shopOrderNumberListData = JsonConvert.DeserializeObject(shopOrderNumberListString);
-
-                List<string> shopOrderNumberList = new List<string>();
-                foreach (var item in shopOrderNumberListData)
-                {
-                    shopOrderNumberList.Add(item.ToString());
-                }
+                
 
                 //List<string> shopOrderNumberList = (List<string>)shopOrderNumberListData.data;
                 if (salesOrderStatus == 0) // Retail SO
@@ -709,6 +688,26 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 else if (salesOrderStatus == 1) // Built to Print SO
                 {
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                    var encodedSalesOrderNumber = Uri.EscapeDataString(salesOrderNo);
+                    var encodedItemNumber = Uri.EscapeDataString(itemNo);
+
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ProductionAPI"],
+                                $"GetShopOrderNoListBySalesOrderNo?SalesOrderNO={encodedSalesOrderNumber}&itemNumber={encodedItemNumber}"));
+                    request.Headers.Add("Authorization", token);
+
+                    var shopOrderNumberListResponse = await client.SendAsync(request);
+
+                    var shopOrderNumberListString = await shopOrderNumberListResponse.Content.ReadAsStringAsync();
+                    dynamic shopOrderNumberListData = JsonConvert.DeserializeObject(shopOrderNumberListString);
+
+                    List<string> shopOrderNumberList = new List<string>();
+                    foreach (var item in shopOrderNumberListData)
+                    {
+                        shopOrderNumberList.Add(item.ToString());
+                    }
                     decimal itemQty = await _inventoryRepository.GetStockQtyForBtpSalesOrderItem(itemNo, shopOrderNumberList);
                     ItemNoWithQtyDict.Add(itemNo, itemQty);
                 }

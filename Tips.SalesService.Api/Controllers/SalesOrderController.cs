@@ -274,19 +274,10 @@ namespace Tips.SalesService.Api.Controllers
                     List<SalesOrderItemsDto> salesOrderItemsDtoList = new List<SalesOrderItemsDto>();
                     var salesAdditionalChargesDto = salesOrderDto.SalesOrderAdditionalCharges;
 
-                    var salesAdditionalChargesList = new List<SalesOrderAdditionalChargesDto>();
-                    if (salesAdditionalChargesDto != null)
-                    {
-                        for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
-                        {
-                            SalesOrderAdditionalChargesDto additionalChargesDetails = _mapper.Map<SalesOrderAdditionalChargesDto>(salesAdditionalChargesDto[i]);
-
-                            salesAdditionalChargesList.Add(additionalChargesDetails);
-                        }
-                    }
+                    var salesAdditionalChargesList = _mapper.Map<List<SalesOrderAdditionalChargesDto>>(salesAdditionalChargesDto);
+                    
                     string salesOrderNo = salesOrderDto.SalesOrderNumber;
                     SalesOrderStatus salesOrderStatus1 = salesOrderDto.SalesOrderStatus;
-                    //int salesOrderStatus = 1;
                     int salesOrderStatus = (int)salesOrderStatus1;
                     if (serverKey == "keus")
                     {
@@ -295,7 +286,6 @@ namespace Tips.SalesService.Api.Controllers
                         {
                             var json = JsonConvert.SerializeObject(itemNumberList);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
-                            // var inventoryQtyResponse = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetAvailableStockQtyForSalesOrderItems?", "salesOrderNo=", salesOrderNo, "&salesOrderStatus=", salesOrderStatus), data);
                             var client = _clientFactory.CreateClient();
                             var token = HttpContext.Request.Headers["Authorization"].ToString();
                             var encodedSONumber = Uri.EscapeDataString(salesOrderNo);
@@ -352,18 +342,12 @@ namespace Tips.SalesService.Api.Controllers
                             var encodedItemNumber = Uri.EscapeDataString(itemNumber);
                             var projectNo = salesOrderItemsDtos.ProjectNumber;
                             var encodedProjectNo = Uri.EscapeDataString(projectNo);
-                            //var encodedProjectNo=Uri.EscapeDataString(itemNumberList.Where(x => x.Item1 == itemNumber).Select(x => x.Item2).ToString());
-                            //var encodedProjectNo = Uri.EscapeDataString(
-                            //                         string.Join(",", itemNumberList
-                            //                        .Where(x => x.Item1 == itemNumber)
-                            //                        .Select(x => x.Item2)));
 
                             var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
                             $"GetInventoryDetailsByItemNo?itemNumber={encodedItemNumber}&projectNo={encodedProjectNo}"));
                             request.Headers.Add("Authorization", token);
 
                             var inventoryQtyResponse = await client.SendAsync(request);
-                            //var inventoryQtyResponse = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"], "GetInventoryDetailsByItemNo?", "itemNumber=", itemNumber, "&projectNo=", itemNumberList.Where(x=>x.Item1==itemNumber).Select(x=>x.Item2)));
                             var inventoryItemQtyDetails = await inventoryQtyResponse.Content.ReadAsStringAsync();
                             var inventoryItemWithStockDetails = JsonConvert.DeserializeObject<InventoryItemdetailsDto>(inventoryItemQtyDetails);
                             if (inventoryItemWithStockDetails != null)
