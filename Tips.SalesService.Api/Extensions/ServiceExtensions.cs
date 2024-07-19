@@ -44,11 +44,23 @@ namespace Tips.SalesService.Api.Extensions
             services.AddDbContext<TipsSalesServiceDbContext>(o => o.UseSqlServer(connectionString));
         }
 
+        //public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
+        //{
+
+        //    var connectionString = config["MySqlconnection:connectionString"];
+        //    services.AddDbContext<TipsSalesServiceDbContext>(o => o.UseMySQL(connectionString));
+        //}
         public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
         {
-
             var connectionString = config["MySqlconnection:connectionString"];
-            services.AddDbContext<TipsSalesServiceDbContext>(o => o.UseMySQL(connectionString));
+
+            services.AddDbContext<TipsSalesServiceDbContext>(options =>
+            {
+                options.UseMySQL(connectionString, mysqlOptions =>
+                {
+                    mysqlOptions.CommandTimeout(3600); // Set command timeout to 600 seconds (10 minutes)
+                });
+            });
         }
 
         public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices

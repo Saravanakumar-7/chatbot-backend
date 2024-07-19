@@ -15,7 +15,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal Qty { get; set; }
         public string? SerialNo { get; set; }
-        public string? ReferenceSONumber { get; set; }
         [Precision(13, 3)]
         public decimal AcceptedQty { get; set; }
 
@@ -36,7 +35,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal Qty { get; set; }
         public string? SerialNo { get; set; }
-        public string? ReferenceSONumber { get; set; }
         public string? Remarks { get; set; }
         public List<OpenGrinForGrinProjectNumberPostDto>? OGNProjectNumberDto { get; set; }
     }
@@ -50,7 +48,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal Qty { get; set; }
         public string? SerialNo { get; set; }
-        public string? ReferenceSONumber { get; set; }
         public string? Remarks { get; set; }
         public List<OpenGrinForGrinProjectNumberUpdateDto>? OGNProjectNumberDto { get; set; }
     }

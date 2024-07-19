@@ -38,5 +38,6 @@ namespace Tips.SalesService.Api.Contracts
         Task<Rfq> RfqDetailsById(int rfqId);
         Task<string> GenerateRFQNumberForTransccon();
         Task<IEnumerable<RfqSPReport>> GetRfqSPReport(string CustomerName, string CustomerId, string RfqNumber);
+        Task<IEnumerable<RfqSPReport>> GetRfqSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
     }
 }

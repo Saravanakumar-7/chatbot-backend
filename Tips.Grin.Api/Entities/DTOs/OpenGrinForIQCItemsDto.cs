@@ -16,6 +16,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal RejectedQty { get; set; }
         public string? Remarks { get; set; }
+        public bool IsOpenGrinForIqcCompleted { get; set; }
+        public bool IsOpenGrinForBinningCompleted { get; set; }
         public List<OpenGrinForGrinProjectNumberDto>? ReferenceSONumbers { get; set; }
     }
     public class OpenGrinForIQCItemsPostDto

@@ -225,6 +225,7 @@ namespace Tips.Grin.Api.Controllers
                 foreach (var openGrinForGrinItem in openGrinForGrinItemsDto)
                 {
                     OpenGrinForGrinItems grinParts = _mapper.Map<OpenGrinForGrinItems>(openGrinForGrinItem);
+                    grinParts.OGNProjectNumber = _mapper.Map<List<OpenGrinForGrinProjectNumber>>(openGrinForGrinItem.OGNProjectNumberDto);
                     openGrinForGrinItemsList.Add(grinParts);
                 }
 
@@ -818,7 +819,7 @@ namespace Tips.Grin.Api.Controllers
                         var openGrinNum = openGrinForIQC.OpenGrinNumber;
                         if (openGrinNum != null)
                         {
-                            var openGrinForIqcNum = openGrinNum.Replace("OPGNG", "OPGNIQC");
+                            var openGrinForIqcNum = openGrinNum.Replace("OPGN", "OPGNIQC");
                             openGrinForIQC.OpenGrinForIQCNumber = openGrinForIqcNum;
                         }
 

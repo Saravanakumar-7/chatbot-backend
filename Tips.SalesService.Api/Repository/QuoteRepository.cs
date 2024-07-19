@@ -89,19 +89,19 @@ namespace Tips.SalesService.Api.Repository
         }
         public async Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithParam(string? CustomerId,string? QuoteNumber,string? QuotationVersionNo)
         {
-            var result = _tipsSalesServiceDbContext
+            var result = await _tipsSalesServiceDbContext
             .Set<QuotationSPReport>()
             .FromSqlInterpolated($"CALL quotation_report_with_parameter({CustomerId},{QuoteNumber},{QuotationVersionNo})")
-            .ToList();
+            .ToListAsync();
 
             return result;
 
         }
         public async Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
-            var results = _tipsSalesServiceDbContext.Set<QuotationSPReport>()
+            var results = await _tipsSalesServiceDbContext.Set<QuotationSPReport>()
                         .FromSqlInterpolated($"CALL quotation_report_with_date({FromDate},{ToDate})")
-                        .ToList();
+                        .ToListAsync();
 
             return results;
 
