@@ -8,6 +8,10 @@ namespace Tips.Grin.Api.Entities
         [Key]
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
+        public decimal ReceivedQty { get; set; }
+        public decimal AcceptedQty { get; set; }
+        public decimal RejectedQty { get; set; }
+        public string? Remarks { get; set; }
         public int OpenGrinForGrinItemId { get; set; }
         public bool IsOpenGrinForBinningCompleted { get; set; }
         public PartType ItemType { get; set; }
