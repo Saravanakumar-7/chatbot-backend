@@ -155,6 +155,7 @@ namespace Tips.Grin.Api.Repository
             var openGrinForGrinDetails = await _tipsGrinDbContext.OpenGrinForGrins.Where(x => x.OpenGrinNumber == openGrinNumber)
 
         .Include(t => t.OpenGrinForGrinItems)
+        .ThenInclude(p=>p.OGNProjectNumber)
 
         .FirstOrDefaultAsync();
 

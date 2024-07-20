@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Grin.Api.Entities.DTOs
 {
@@ -6,6 +7,8 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public int? Id { get; set; }
         public string? ItemNumber { get; set; }
+        public PartType ItemType { get; set; }
+        public string? UOM { get; set; }
         public int OpenGrinForGrinItemId { get; set; }
         [Precision(13, 3)]
         public decimal ReceivedQty { get; set; }
@@ -23,6 +26,8 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class OpenGrinForIQCItemsPostDto
     {
         public string? ItemNumber { get; set; }
+        public PartType ItemType { get; set; }
+        public string? UOM { get; set; }
         public int OpenGrinForGrinItemId { get; set; }
         public decimal ReceivedQty { get; set; }
         public decimal AcceptedQty { get; set; }
@@ -42,6 +47,8 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class OpenGrinForIQCItemsSaveDto
     {
         public string? ItemNumber { get; set; }
+        public PartType ItemType { get; set; }
+        public string? UOM { get; set; }
         public int OpenGrinForGrinItemId { get; set; }
         public decimal ReceivedQty { get; set; }
         public decimal AcceptedQty { get; set; }
