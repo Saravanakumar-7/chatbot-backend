@@ -1085,11 +1085,11 @@ namespace Tips.Purchase.Api.Controllers
                         foreach (var poItemDetails in purchaseOrderDetailbyId.POItems)
                         {
                             PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
-                            
+
                             var poItemHistoryReceivedQty = await _poItemHistoryRepository.GetPoItemHistoryDetailsByPoItemId(poItemDtos.PONumber, poItemDtos.ItemNumber);
                             if (poItemHistoryReceivedQty != null)
-                            { 
-                                poItemDtos.ShortClosedQty = poItemHistoryReceivedQty.Sum(x => x.ShortClosedQty); 
+                            {
+                                poItemDtos.ShortClosedQty = poItemHistoryReceivedQty.Sum(x => x.ShortClosedQty);
                             }
                             poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
                             poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
@@ -1453,7 +1453,7 @@ namespace Tips.Purchase.Api.Controllers
                 purchaseOrderDetails.POIncoTerms = poIncoTermList.ToList();
                 await _repository.CreatePurchaseOrder(purchaseOrderDetails);
 
-              
+
                 if (purchaseOrderPostDto.POItems != null)
                 {
                     foreach (var pritem in purchaseOrderPostDto.POItems)
@@ -1479,7 +1479,7 @@ namespace Tips.Purchase.Api.Controllers
                         }
                     }
                 }
-                
+
 
                 foreach (var poItems in poItemDtoList)
                 {
@@ -1499,7 +1499,7 @@ namespace Tips.Purchase.Api.Controllers
                         await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
                     }
                 }
-                _documentUploadRepository.SaveAsync();               
+                _documentUploadRepository.SaveAsync();
                 _pRItemsDocumentUploadRepository.SaveAsync();
                 _purchaseRequisitionRepository.SaveAsync();
                 _repository.SaveAsync();
@@ -2492,7 +2492,7 @@ namespace Tips.Purchase.Api.Controllers
                             poItemHistory.SpecialTermsAndConditions = poDetailBeforeUpdate.SpecialTermsAndConditions;
                             poItemHistory.IsDeleted = poDetailBeforeUpdate.IsDeleted;
                             poItemHistory.IsShortClosed = purchaseOrderDetails.IsShortClosed;
-                            poItemHistory.ShortClosedBy = poItemDetails.ShortClosedBy; 
+                            poItemHistory.ShortClosedBy = poItemDetails.ShortClosedBy;
                             poItemHistory.ShortClosedOn = poItemDetails.ShortClosedOn;
                             poItemHistory.TotalAmount = poDetailBeforeUpdate.TotalAmount;
                             poItemHistory.POApprovalI = poDetailBeforeUpdate.POApprovalI;
@@ -2557,7 +2557,7 @@ namespace Tips.Purchase.Api.Controllers
                         poItemDtoList.Add(poItemDetails);
                     }
                 }
-                
+
                 if (purchaseOrderUpdateDto.POItems != null)
                 {
                     foreach (var pritem in purchaseOrderUpdateDto.POItems)
@@ -2703,20 +2703,20 @@ namespace Tips.Purchase.Api.Controllers
             {
                 var poItem = await _poItemsRepository.GetPoItemDetailsByPONumberandItemNo(item.ItemNumber, item.PONumber, item.PoItemId);
 
-                    if (poItem.BalanceQty == poItem.Qty)
-                    {
-                        poItem.PoStatus = PoStatus.Open;
-                    }
-                    else if (poItem.BalanceQty < poItem.Qty && poItem.BalanceQty > 0)
-                    {
-                        poItem.PoStatus = PoStatus.PartiallyClosed;
-                    }
-                    else
-                    {
-                        poItem.PoStatus = PoStatus.Closed;
-                    }
+                if (poItem.BalanceQty == poItem.Qty)
+                {
+                    poItem.PoStatus = PoStatus.Open;
+                }
+                else if (poItem.BalanceQty < poItem.Qty && poItem.BalanceQty > 0)
+                {
+                    poItem.PoStatus = PoStatus.PartiallyClosed;
+                }
+                else
+                {
+                    poItem.PoStatus = PoStatus.Closed;
+                }
 
-               await  _poItemsRepository.UpdatePOOrderItem(poItem);
+                await _poItemsRepository.UpdatePOOrderItem(poItem);
 
             }
             _poItemsRepository.SaveAsync();
