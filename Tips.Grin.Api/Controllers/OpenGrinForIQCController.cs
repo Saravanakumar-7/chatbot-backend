@@ -267,8 +267,10 @@ namespace Tips.Grin.Api.Controllers
                             getItemmResp = itemMasterObjectResult.StatusCode;
 
                         var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                        dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                        dynamic itemMasterObject = itemMasterObjectData.data;
+                        //dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                        //dynamic itemMasterObject = itemMasterObjectData.data;
+                        var itemMasterObjectData = JsonConvert.DeserializeObject<OpenGrinForBinningItemMasterDetails>(itemMasterObjectString);
+                        var itemMasterObject = itemMasterObjectData.data;
 
                         decimal acceptedQty = openGrinForIQCItemsDto[i].AcceptedQty;
                         decimal rejectedQty = openGrinForIQCItemsDto[i].RejectedQty;
@@ -395,8 +397,8 @@ namespace Tips.Grin.Api.Controllers
                                     IQCInventoryDto grinInventoryDto = new IQCInventoryDto();
                                     grinInventoryDto.PartNumber = openGrinForIQCItems.ItemNumber;
                                     grinInventoryDto.LotNumber = openGrinForGrinItemDetails.LotNumber;
-                                    grinInventoryDto.MftrPartNumber = itemMasterObject.mftrItemNumber;
-                                    grinInventoryDto.Description = itemMasterObject.itemDescription;
+                                    grinInventoryDto.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); 
+                                    grinInventoryDto.Description = itemMasterObject.description;
                                     grinInventoryDto.ProjectNumber = referenceSONumber;
                                     //grinInventoryDto.Balance_Quantity = Convert.ToDecimal(openGrinForIQCItems.RejectedQty);
                                     grinInventoryDto.Max = itemMasterObject.max;
@@ -406,7 +408,7 @@ namespace Tips.Grin.Api.Controllers
                                     grinInventoryDto.Location = "Reject";
                                     grinInventoryDto.GrinNo = openGrinForIQC.OpenGrinNumber;
                                     grinInventoryDto.GrinPartId = openGrinForIQCItems.OpenGrinForGrinItemId;
-                                    grinInventoryDto.PartType = itemMasterObject.itemType;
+                                    grinInventoryDto.PartType = openGrinForIQCItems.ItemType;
                                     grinInventoryDto.ReferenceID = openGrinForIQC.OpenGrinForIQCNumber; // Convert.ToString(openGrinForIQCItems.Id) //;
                                     grinInventoryDto.ReferenceIDFrom = "OPGIQC";
                                     grinInventoryDto.GrinMaterialType = "OPGGRIN";
@@ -619,8 +621,10 @@ namespace Tips.Grin.Api.Controllers
                             getItemmResp = itemMasterObjectResult.StatusCode;
 
                         var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                        dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                        dynamic itemMasterObject = itemMasterObjectData.data;
+                        //dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                        //dynamic itemMasterObject = itemMasterObjectData.data;
+                        var itemMasterObjectData = JsonConvert.DeserializeObject<OpenGrinForBinningItemMasterDetails>(itemMasterObjectString);
+                        var itemMasterObject = itemMasterObjectData.data;
 
                         decimal acceptedQty = openGrinForIQCItemsDto[i].AcceptedQty;
                         decimal rejectedQty = openGrinForIQCItemsDto[i].RejectedQty;
@@ -748,8 +752,8 @@ namespace Tips.Grin.Api.Controllers
                                     IQCInventoryDto grinInventoryDto = new IQCInventoryDto();
                                     grinInventoryDto.PartNumber = openGrinForIQCItems.ItemNumber;
                                     grinInventoryDto.LotNumber = openGrinForGrinItemDetails.LotNumber;
-                                    grinInventoryDto.MftrPartNumber = itemMasterObject.mftrItemNumber;
-                                    grinInventoryDto.Description = itemMasterObject.itemDescription;
+                                    grinInventoryDto.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); 
+                                    grinInventoryDto.Description = itemMasterObject.description;
                                     grinInventoryDto.ProjectNumber = referenceSONumber;
                                     //grinInventoryDto.Balance_Quantity = Convert.ToDecimal(openGrinForIQCItems.RejectedQty);
                                     grinInventoryDto.Max = itemMasterObject.max;
@@ -759,7 +763,7 @@ namespace Tips.Grin.Api.Controllers
                                     grinInventoryDto.Location = "Reject";
                                     grinInventoryDto.GrinNo = openGrinForIQC.OpenGrinNumber;
                                     grinInventoryDto.GrinPartId = openGrinForIQCItems.OpenGrinForGrinItemId;
-                                    grinInventoryDto.PartType = itemMasterObject.itemType;
+                                    grinInventoryDto.PartType = openGrinForIQCItems.ItemType;
                                     grinInventoryDto.ReferenceID = openGrinForIQC.OpenGrinForIQCNumber; // Convert.ToString(openGrinForIQCItems.Id) //;
                                     grinInventoryDto.ReferenceIDFrom = "OPGIQC";
                                     grinInventoryDto.GrinMaterialType = "OPGGRIN";
@@ -1060,8 +1064,11 @@ namespace Tips.Grin.Api.Controllers
                         getItemmResp = itemMasterObjectResult.StatusCode;
 
                     var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                    dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                    dynamic itemMasterObject = itemMasterObjectData.data;
+                    //dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                    //dynamic itemMasterObject = itemMasterObjectData.data;
+                    var itemMasterObjectData = JsonConvert.DeserializeObject<OpenGrinForBinningItemMasterDetails>(itemMasterObjectString);
+                    var itemMasterObject = itemMasterObjectData.data;
+
                     //Inventory Update Code
                     decimal acceptedQty = openGrinForIQCItemsDto.AcceptedQty;
                     decimal rejectedQty = openGrinForIQCItemsDto.RejectedQty;
@@ -1189,8 +1196,8 @@ namespace Tips.Grin.Api.Controllers
                                 IQCInventoryDto grinInventoryDto = new IQCInventoryDto();
                                 grinInventoryDto.PartNumber = openGrinForIQCItems.ItemNumber;
                                 grinInventoryDto.LotNumber = openGrinForGrinItemDetails.LotNumber;
-                                grinInventoryDto.MftrPartNumber = itemMasterObject.mftrItemNumber;
-                                grinInventoryDto.Description = itemMasterObject.itemDescription;
+                                grinInventoryDto.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                grinInventoryDto.Description = itemMasterObject.description;
                                 grinInventoryDto.ProjectNumber = referenceSONumber;
                                 //grinInventoryDto.Balance_Quantity = Convert.ToDecimal(openGrinForIQCItems.RejectedQty);
                                 grinInventoryDto.Max = itemMasterObject.max;
@@ -1200,7 +1207,7 @@ namespace Tips.Grin.Api.Controllers
                                 grinInventoryDto.Location = "Reject";
                                 grinInventoryDto.GrinNo = openGrinForIQC.OpenGrinNumber;
                                 grinInventoryDto.GrinPartId = openGrinForIQCItems.OpenGrinForGrinItemId;
-                                grinInventoryDto.PartType = itemMasterObject.itemType;
+                                grinInventoryDto.PartType = openGrinForIQCItems.ItemType;
                                 grinInventoryDto.ReferenceID = openGrinForIQC.OpenGrinForIQCNumber; // Convert.ToString(openGrinForIQCItems.Id) //;
                                 grinInventoryDto.ReferenceIDFrom = "OPGIQC";
                                 grinInventoryDto.GrinMaterialType = "OPGGRIN";
@@ -1413,9 +1420,10 @@ namespace Tips.Grin.Api.Controllers
                         getItemmResp = itemMasterObjectResult.StatusCode;
 
                     var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                    dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                    dynamic itemMasterObject = itemMasterObjectData.data;
-
+                    //dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                    //dynamic itemMasterObject = itemMasterObjectData.data;
+                    var itemMasterObjectData = JsonConvert.DeserializeObject<OpenGrinForBinningItemMasterDetails>(itemMasterObjectString);
+                    var itemMasterObject = itemMasterObjectData.data;
                     //Inventory Update Code
                     decimal acceptedQty = openGrinForIQCItemsDto.AcceptedQty;
                     var openGrinForGrinPartsId = openGrinForIQCItemsDto.OpenGrinForGrinItemId;
@@ -1533,10 +1541,10 @@ namespace Tips.Grin.Api.Controllers
                                 IQCInventoryDto grinInventoryDto = new IQCInventoryDto();
                                 grinInventoryDto.PartNumber = openGrinForIQCItems.ItemNumber;
                                 grinInventoryDto.LotNumber = openGrinForGrinItemDetails.LotNumber;
-                                grinInventoryDto.MftrPartNumber = itemMasterObject.mftrItemNumber;
-                                grinInventoryDto.Description = itemMasterObject.itemDescription;
+                                grinInventoryDto.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                grinInventoryDto.Description = itemMasterObject.description;
                                 grinInventoryDto.ProjectNumber = referenceSONumber;
-                                //grinInventoryDto.Balance_Quantity = Convert.ToDecimal(openGrinForIQCItems.RejectedQty);
+                                grinInventoryDto.Balance_Quantity = Convert.ToDecimal(openGrinForIQCItems.RejectedQty);
                                 grinInventoryDto.Max = itemMasterObject.max;
                                 grinInventoryDto.Min = itemMasterObject.min;
                                 grinInventoryDto.UOM = openGrinForGrinItemDetails.UOM;
@@ -1544,7 +1552,7 @@ namespace Tips.Grin.Api.Controllers
                                 grinInventoryDto.Location = "Reject";
                                 grinInventoryDto.GrinNo = openGrinForIQC.OpenGrinNumber;
                                 grinInventoryDto.GrinPartId = openGrinForIQCItems.OpenGrinForGrinItemId;
-                                grinInventoryDto.PartType = itemMasterObject.itemType;
+                                grinInventoryDto.PartType = openGrinForIQCItems.ItemType;
                                 grinInventoryDto.ReferenceID = openGrinForIQC.OpenGrinForIQCNumber; // Convert.ToString(openGrinForIQCItems.Id) //;
                                 grinInventoryDto.ReferenceIDFrom = "OPGIQC";
                                 grinInventoryDto.GrinMaterialType = "OPGGRIN";

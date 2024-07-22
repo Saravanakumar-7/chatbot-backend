@@ -3138,6 +3138,43 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetInventoryBySumOfFilteringDatesSPReportsWithParam([FromBody] TrascationKPNWSPReportsDto trascationKPNWSPReportsDto)
+        {
+            ServiceResponse<IEnumerable<InventoryBySumOfFilteringDatesSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventoryBySumOfFilteringDatesSPReport>>();
+            try
+            {
+                var products = await _inventoryRepository.GetTrascationKPNWSPReportsWithParam(trascationKPNWSPReportsDto.KPN);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"TrascationKPNWSPReports hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"TrascationKPNWSPReports hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned TrascationKPNWSPReports Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetTrascationKPNWSPReportsWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetInventorySPReportsWithParam([FromBody] InventorySPReportDto inventorySPReportDto)
         {
             ServiceResponse<IEnumerable<InventorySPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventorySPReport>>();

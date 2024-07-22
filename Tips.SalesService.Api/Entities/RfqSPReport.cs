@@ -11,5 +11,9 @@
         public string? ProductType { get; set; }
         public DateTime CreatedOn { get; set; }
         public string? CreatedBy { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
+        public decimal? Qty { get; set; }
+        public string? RoomName { get; set; }
     }
 }

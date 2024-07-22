@@ -273,8 +273,8 @@ namespace Tips.Grin.Api.Controllers
                             var itemMasterObjectResult = await client.SendAsync(request);
                             if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK) getItemMas = itemMasterObjectResult.StatusCode;
                             var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                            dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                            dynamic itemMasterObject = itemMasterObjectData.data;
+                            var itemMasterObjectData = JsonConvert.DeserializeObject<OpenGrinForBinningItemMasterDetails>(itemMasterObjectString);
+                            var itemMasterObject = itemMasterObjectData.data;
 
                             var openGrinForBinningLocations = openGrinForBinningsItem.OpenGrinForBinningLocations;
 
@@ -370,7 +370,7 @@ namespace Tips.Grin.Api.Controllers
                                     var openGrinForGrinItemsDetails = await _openGrinForGrinItemRepository.GetOpenGrinForGrinItemDetailsbyOpenGrinForGrinItemId(OpenGrinForGrinItemId);
                                     BinningInventoryDtoPost inventoryObjectNew = new BinningInventoryDtoPost();
                                     inventoryObjectNew.PartNumber = openGrinForBinningsItem.ItemNumber;
-                                    inventoryObjectNew.MftrPartNumber = itemMasterObject.mftrItemNumber;
+                                    inventoryObjectNew.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                                     inventoryObjectNew.Description = itemMasterObject.description;
                                     inventoryObjectNew.ProjectNumber = location.ReferenceSONumber;
                                     inventoryObjectNew.Balance_Quantity = location.Qty;
@@ -518,8 +518,8 @@ namespace Tips.Grin.Api.Controllers
 
                             if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK) getItemMas = itemMasterObjectResult.StatusCode;
                             var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                            dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                            dynamic itemMasterObject = itemMasterObjectData.data;
+                            var itemMasterObjectData = JsonConvert.DeserializeObject<OpenGrinForBinningItemMasterDetails>(itemMasterObjectString);
+                            var itemMasterObject = itemMasterObjectData.data;
 
                             var openGrinForBinningLocations = openGrinForBinningsItem.OpenGrinForBinningLocations;
 
@@ -614,7 +614,7 @@ namespace Tips.Grin.Api.Controllers
                                     var openGrinForGrinItemsDetails = await _openGrinForGrinItemRepository.GetOpenGrinForGrinItemDetailsbyOpenGrinForGrinItemId(OpenGrinForGrinItemId);
                                     BinningInventoryDtoPost inventoryObjectNew = new BinningInventoryDtoPost();
                                     inventoryObjectNew.PartNumber = openGrinForBinningsItem.ItemNumber;
-                                    inventoryObjectNew.MftrPartNumber = itemMasterObject.mftrItemNumber;
+                                    inventoryObjectNew.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); 
                                     inventoryObjectNew.Description = itemMasterObject.description;
                                     inventoryObjectNew.ProjectNumber = location.ReferenceSONumber;
                                     inventoryObjectNew.Balance_Quantity = location.Qty;
@@ -864,8 +864,8 @@ namespace Tips.Grin.Api.Controllers
                         var itemMasterObjectResult = await client.SendAsync(request);
                         if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK) getItemMas = itemMasterObjectResult.StatusCode;
                         var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                        dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                        dynamic itemMasterObject = itemMasterObjectData.data;
+                        var itemMasterObjectData = JsonConvert.DeserializeObject<OpenGrinForBinningItemMasterDetails>(itemMasterObjectString);
+                        var itemMasterObject = itemMasterObjectData.data;
 
                         var openGrinForBinningLocations = openGrinForBinningItemsDto.OpenGrinForBinningLocations;
                         int j = 0;
@@ -959,7 +959,7 @@ namespace Tips.Grin.Api.Controllers
                                 var openGrinForGrinItemsDetails = await _openGrinForGrinItemRepository.GetOpenGrinForGrinItemDetailsbyOpenGrinForGrinItemId(OpenGrinForGrinItemId);
                                 BinningInventoryDtoPost inventoryObjectNew = new BinningInventoryDtoPost();
                                 inventoryObjectNew.PartNumber = openGrinForBinningItemsDto.ItemNumber;
-                                inventoryObjectNew.MftrPartNumber = itemMasterObject.mftrItemNumber;
+                                inventoryObjectNew.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); 
                                 inventoryObjectNew.Description = itemMasterObject.description;
                                 inventoryObjectNew.ProjectNumber = location.ReferenceSONumber;
                                 inventoryObjectNew.Balance_Quantity = location.Qty;
@@ -1132,8 +1132,8 @@ namespace Tips.Grin.Api.Controllers
                         var itemMasterObjectResult = await client.SendAsync(request);
                         if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK) getItemMas = itemMasterObjectResult.StatusCode;
                         var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                        dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                        dynamic itemMasterObject = itemMasterObjectData.data;
+                        var itemMasterObjectData = JsonConvert.DeserializeObject<OpenGrinForBinningItemMasterDetails>(itemMasterObjectString);
+                        var itemMasterObject = itemMasterObjectData.data;
 
                         var openGrinForBinningLocations = openGrinForBinningItemsDto.OpenGrinForBinningLocations;
                         int j = 0;
@@ -1228,7 +1228,7 @@ namespace Tips.Grin.Api.Controllers
                             {
                                 BinningInventoryDtoPost inventoryObjectNew = new BinningInventoryDtoPost();
                                 inventoryObjectNew.PartNumber = openGrinForBinningItemsDto.ItemNumber;
-                                inventoryObjectNew.MftrPartNumber = itemMasterObject.mftrItemNumber;
+                                inventoryObjectNew.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); 
                                 inventoryObjectNew.Description = itemMasterObject.description;
                                 inventoryObjectNew.ProjectNumber = location.ReferenceSONumber;
                                 inventoryObjectNew.Balance_Quantity = location.Qty;
