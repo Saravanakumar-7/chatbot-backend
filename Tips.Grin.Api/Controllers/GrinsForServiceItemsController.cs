@@ -803,10 +803,16 @@ namespace Tips.Grin.Api.Controllers
 
                     //Updating IQC Status in GrinParts
 
-                    grinPartsDetails.IsIqcForServiceItemsCompleted = true;
-                    await _grinPartsRepository.UpdateGrinsForServiceItemsParts(grinPartsDetails);
+                    //grinPartsDetails.IsIqcForServiceItemsCompleted = true;
+                    //await _grinPartsRepository.UpdateGrinsForServiceItemsParts(grinPartsDetails);
+                    //_grinPartsRepository.SaveAsync();
+                    var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinsForServiceItemsPartsQty(iqcforserviceitems_items.GrinsForServiceItemsPartsId, iqcforserviceitems_items.AcceptedQty.ToString(), iqcforserviceitems_items.RejectedQty.ToString());
+                    var grinParts = _mapper.Map<GrinsForServiceItemsParts>(updatedGrinPartsQty);
+                    grinParts.RejectedQty = grinsForServiceItemsIQCForServiceItemsSaveDto.GrinsForServiceItemsIQCForServiceItems_ItemsSaveDto.RejectedQty;
+                    grinParts.AcceptedQty = grinsForServiceItemsIQCForServiceItemsSaveDto.GrinsForServiceItemsIQCForServiceItems_ItemsSaveDto.AcceptedQty ?? 0m;
+                    grinParts.IsIqcForServiceItemsCompleted = true;
+                    await _grinPartsRepository.UpdateGrinsForServiceItemsParts(grinParts);
                     _grinPartsRepository.SaveAsync();
-
                     //Updating IQC and Grin Main Level Status
                     var grinPartsCount = await _grinPartsRepository.GetGrinsForServiceItemsPartsCount(GrinsForServiceItemsId);
                     var iqcConfomationCount = await _iQCForServiceItems_ItemsRepository.GetIQCForServiceItems_ItemsCount(iqcForServiceItems.Id);
@@ -947,12 +953,12 @@ namespace Tips.Grin.Api.Controllers
 
                     ////update accepted qty and rejected qty in grin model
 
-                    var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinsForServiceItemsPartsQty(iqcforserviceitems_items.GrinsForServiceItemsPartsId, iqcforserviceitems_items.AcceptedQty.ToString(), iqcforserviceitems_items.RejectedQty.ToString());
+                    //var updatedGrinPartsQty = await _grinPartsRepository.UpdateGrinsForServiceItemsPartsQty(iqcforserviceitems_items.GrinsForServiceItemsPartsId, iqcforserviceitems_items.AcceptedQty.ToString(), iqcforserviceitems_items.RejectedQty.ToString());
 
-                    var grinParts = _mapper.Map<GrinsForServiceItemsParts>(updatedGrinPartsQty);
-                    string result = await _grinPartsRepository.UpdateGrinsForServiceItemsParts(grinParts);
+                    //var grinParts = _mapper.Map<GrinsForServiceItemsParts>(updatedGrinPartsQty);
+                    //string result = await _grinPartsRepository.UpdateGrinsForServiceItemsParts(grinParts);
 
-                    _grinPartsRepository.SaveAsync();
+                   // _grinPartsRepository.SaveAsync();
 
                     serviceResponse.Data = null;
                     serviceResponse.Message = "IQCForServiceItems and IQCForServiceItems_Items Created Successfully";
