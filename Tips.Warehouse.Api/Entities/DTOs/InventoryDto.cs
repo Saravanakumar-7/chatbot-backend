@@ -502,4 +502,29 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? SerialNo { get; set; }
 
     }
+    public class InventoryBySumOfFilteringDatesSPReport
+    {
+        public string? PartNumber { get; set; }
+        public decimal? Opening_Stock { get; set; }
+        public decimal? BinningQty { get; set; }
+        public decimal? OpenGrinQty { get; set; }
+        public decimal? MaterialReturnQty { get; set; }
+        public decimal? ReturnInvoiceQty { get; set; }
+        public decimal? ReturnOpenDeliveryQty { get; set; }
+        public decimal? ReturnBtoDeliveryQty { get; set; }
+        public decimal? MaterialIssueQty { get; set; }
+        public decimal? MaterialRequestQty { get; set; }
+        public decimal? OpenDeliveryOrderQty { get; set; }
+        public decimal? BtoDeliveryOrderQty { get; set; }
+        public decimal? TotalInwords { get; set; }
+        public decimal? Totaloutwords { get; set; }
+        public decimal? Closing_stock { get; set; }
+    }
+    public class InventoryBySumOfFilteringDatesSPReportDto
+    {
+        public DateTime FromDate { get; set; }
+        public DateTime ToDate { get; set; }
+        public string? ItemNumber { get; set; }
+    }
+
 }

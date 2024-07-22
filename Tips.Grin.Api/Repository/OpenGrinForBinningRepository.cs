@@ -47,7 +47,11 @@ namespace Tips.Grin.Api.Repository
                 SenderId = openGrinNumber.SenderId,
                 SenderName = openGrinNumber.SenderName,
                 ReceiptRefNo = openGrinNumber.ReceiptRefNo,
-            }).OrderByDescending(x => x.Id).ToList();
+                CreatedBy = openGrinNumber.CreatedBy,
+                CreatedOn = openGrinNumber.CreatedOn,
+                LastModifiedBy = openGrinNumber.LastModifiedBy,
+                LastModifiedOn = openGrinNumber.LastModifiedOn
+                }).OrderByDescending(x => x.Id).ToList();
 
             if (!string.IsNullOrWhiteSpace(searchParams.SearchValue))
             {
