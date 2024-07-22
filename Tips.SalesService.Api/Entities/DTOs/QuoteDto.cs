@@ -381,6 +381,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class SoSummaryQuotationDto
     {
+        public string? Leadid { get; set; }
         public string? CustomerName { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }

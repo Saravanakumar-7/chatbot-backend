@@ -606,6 +606,15 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
+        public async Task<IEnumerable<RfqSPReport>> GetRfqSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<RfqSPReport>()
+                        .FromSqlInterpolated($"CALL RFQ_Report_With_Date({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
         public async Task<Rfq> RfqSourcingByRfqNumbers(string RfqNumber)
         {
             var SourcingByRfqNumber = await _tipsSalesServiceDbContext.Rfqs

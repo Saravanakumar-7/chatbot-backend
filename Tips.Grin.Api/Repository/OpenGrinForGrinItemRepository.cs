@@ -45,6 +45,7 @@ namespace Tips.Grin.Api.Repository
         public async Task<OpenGrinForGrinItems> GetOpenGrinForGrinItemDetailsbyOpenGrinForGrinItemId(int openGrinForGrinItemId)
         {
             var openGrinForGrinItemDetails = await _tipsGrinDbContext.OpenGrinForGrinItems.Where(x => x.Id == openGrinForGrinItemId)
+                .Include(p=>p.OGNProjectNumber)
                 .FirstOrDefaultAsync();
 
             return openGrinForGrinItemDetails;

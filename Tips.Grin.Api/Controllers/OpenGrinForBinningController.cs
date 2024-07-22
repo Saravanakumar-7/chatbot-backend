@@ -40,6 +40,7 @@ namespace Tips.Grin.Api.Controllers
             _mapper = mapper;
             _httpClient = httpClient;
             _config = config;
+            _clientFactory = clientFactory;
         }
 
         [HttpGet]
@@ -116,7 +117,7 @@ namespace Tips.Grin.Api.Controllers
                                 if (openGrinForBinningItem.OpenGrinForGrinItemId == openGrinForGrinItem.Id)
                                 {
                                     OpenGrinForBinningItemsDto openGrinForBinningItemsDtos = _mapper.Map<OpenGrinForBinningItemsDto>(openGrinForGrinItem);
-                                    var openGrinForBinningLocationDetails = _mapper.Map<List<OpenGrinForBinningLocations>>(openGrinForBinningItem.OpenGrinForBinningLocations);
+                                    var openGrinForBinningLocationDetails = _mapper.Map<List<OpenGrinForBinningLocationsDto>>(openGrinForBinningItem.OpenGrinForBinningLocations);
                                     openGrinForBinningItemsDtos.OpenGrinForBinningLocations = openGrinForBinningLocationDetails;
                                     openGrinForBinningItemsDtos.ReceivedQty = openGrinForGrinItem.Qty;
                                     openGrinForBinningItemsDtos.AcceptedQty = openGrinForGrinItem.AcceptedQty;
@@ -296,7 +297,7 @@ namespace Tips.Grin.Api.Controllers
                                     var encodedReferenceSONumbers = Uri.EscapeDataString(referenceSONumbers);
 
                                     var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                        $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&OpenGrinForGrinItemsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
+                                        $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
                                     request1.Headers.Add("Authorization", token1);
 
                                     var inventoryObjectResult = await client1.SendAsync(request1);
@@ -337,9 +338,9 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDto.Warehouse = inventoryObject.warehouse;
                                     iqcInventoryTranctionDto.From_Location = inventoryObject.location;
                                     iqcInventoryTranctionDto.TO_Location = inventoryObject.location;
-                                    iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; ;
+                                    iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; 
                                     iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
-                                    iqcInventoryTranctionDto.PartType = itemMasterObject.partType;
+                                    iqcInventoryTranctionDto.PartType = inventoryObject.partType;
                                     iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                     iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                                     iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
@@ -541,7 +542,7 @@ namespace Tips.Grin.Api.Controllers
                                     var encodedReferenceSONumbers = Uri.EscapeDataString(referenceSONumbers);
 
                                     var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                        $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&OpenGrinForGrinItemsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
+                                        $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
                                     request1.Headers.Add("Authorization", token1);
 
                                     var inventoryObjectResult = await client1.SendAsync(request1);
@@ -582,9 +583,9 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDto.Warehouse = inventoryObject.warehouse;
                                     iqcInventoryTranctionDto.From_Location = inventoryObject.location;
                                     iqcInventoryTranctionDto.TO_Location = inventoryObject.location;
-                                    iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; ;
+                                    iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; 
                                     iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
-                                    iqcInventoryTranctionDto.PartType = itemMasterObject.partType;
+                                    iqcInventoryTranctionDto.PartType = inventoryObject.partType;
                                     iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                     iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                                     iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
@@ -770,9 +771,9 @@ namespace Tips.Grin.Api.Controllers
 
                 List<OpenGrinForBinningItems>? binningItemsEntityList = new List<OpenGrinForBinningItems>();
                 OpenGrinForBinningItems openGrinForBinningItemsEntity = new OpenGrinForBinningItems();
-                openGrinForBinningItemsEntity.ItemNumber = openGrinForBinningSaveDto.OpenGrinForBinningItemsSaveDto.ItemNumber;
-                openGrinForBinningItemsEntity.OpenGrinForGrinItemId = openGrinForBinningSaveDto.OpenGrinForBinningItemsSaveDto.OpenGrinForGrinItemId;
-                openGrinForBinningItemsEntity.OpenGrinForBinningLocations = _mapper.Map<List<OpenGrinForBinningLocations>>(openGrinForBinningSaveDto.OpenGrinForBinningItemsSaveDto.OpenGrinForBinningLocationsSaveDto);
+                openGrinForBinningItemsEntity.ItemNumber = openGrinForBinningSaveDto.OpenGrinForBinningItems.ItemNumber;
+                openGrinForBinningItemsEntity.OpenGrinForGrinItemId = openGrinForBinningSaveDto.OpenGrinForBinningItems.OpenGrinForGrinItemId;
+                openGrinForBinningItemsEntity.OpenGrinForBinningLocations = _mapper.Map<List<OpenGrinForBinningLocations>>(openGrinForBinningSaveDto.OpenGrinForBinningItems.OpenGrinForBinningLocations);
                 binningItemsEntityList.Add(openGrinForBinningItemsEntity);
                 openGrinForBinningDetail.OpenGrinForBinningItems = binningItemsEntityList;
 
@@ -782,7 +783,7 @@ namespace Tips.Grin.Api.Controllers
                 HttpStatusCode getItemMas = HttpStatusCode.OK;
                 HttpStatusCode createInvTrans = HttpStatusCode.OK;
 
-                var openGrinForBinningItemsDto = openGrinForBinningSaveDto.OpenGrinForBinningItemsSaveDto;
+                var openGrinForBinningItemsDto = openGrinForBinningSaveDto.OpenGrinForBinningItems;
                 var openGrinForBinningItems = openGrinForBinningDetail.OpenGrinForBinningItems[0];
                 var openGrinNumber = openGrinForBinningDetail.OpenGrinNumber;
                 var existingBinningDetails = await _openGrinForBinningRepository.GetExistingOpenGrinForBinningDetailsByOpenGrinNo(openGrinNumber);
@@ -866,7 +867,7 @@ namespace Tips.Grin.Api.Controllers
                         dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                         dynamic itemMasterObject = itemMasterObjectData.data;
 
-                        var openGrinForBinningLocations = openGrinForBinningItemsDto.OpenGrinForBinningLocationsSaveDto;
+                        var openGrinForBinningLocations = openGrinForBinningItemsDto.OpenGrinForBinningLocations;
                         int j = 0;
                         int k = 0;
                         foreach (var location in openGrinForBinningLocations)
@@ -929,7 +930,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.TO_Location = inventoryObject.location;
                                 iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; ;
                                 iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
-                                iqcInventoryTranctionDto.PartType = itemMasterObject.partType;
+                                iqcInventoryTranctionDto.PartType = inventoryObject.partType;
                                 iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                 iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                                 iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
@@ -1134,7 +1135,7 @@ namespace Tips.Grin.Api.Controllers
                         dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                         dynamic itemMasterObject = itemMasterObjectData.data;
 
-                        var openGrinForBinningLocations = openGrinForBinningItemsDto.OpenGrinForBinningLocationsSaveDto;
+                        var openGrinForBinningLocations = openGrinForBinningItemsDto.OpenGrinForBinningLocations;
                         int j = 0;
                         int k = 0;
                         foreach (var location in openGrinForBinningLocations)
@@ -1199,7 +1200,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.TO_Location = inventoryObject.location;
                                 iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; ;
                                 iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
-                                iqcInventoryTranctionDto.PartType = itemMasterObject.partType;
+                                iqcInventoryTranctionDto.PartType = inventoryObject.partType;
                                 iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                 iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                                 iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";

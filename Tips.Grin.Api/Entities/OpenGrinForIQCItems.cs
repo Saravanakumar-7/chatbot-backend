@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Grin.Api.Entities
 {
@@ -15,6 +16,8 @@ namespace Tips.Grin.Api.Entities
 
         [Precision(13, 3)]
         public decimal RejectedQty { get; set; }
+        public PartType ItemType { get; set; }
+        public string? UOM { get; set;}
         public string? Remarks { get; set; }
         public bool IsOpenGrinForIqcCompleted { get; set; }
         public bool IsOpenGrinForBinningCompleted { get; set; }

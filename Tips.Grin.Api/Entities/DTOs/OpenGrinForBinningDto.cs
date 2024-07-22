@@ -7,6 +7,11 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Key]
         public int Id { get; set; }
         public string? OpenGrinNumber { get; set; }
+        public string? SenderName { get; set; }
+        public string? SenderId { get; set; }
+        public string? Remarks { get; set; }
+        public string? ReceiptRefNo { get; set; }
+        public bool CustomerSupplied { get; set; }
         public bool IsOpenGrinForBinningCompleted { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
@@ -34,6 +39,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? OpenGrinNumber { get; set; }
 
 
-        public OpenGrinForBinningItemsSaveDto? OpenGrinForBinningItemsSaveDto { get; set; }
+        public OpenGrinForBinningItemsSaveDto? OpenGrinForBinningItems { get; set; }
     }
 }

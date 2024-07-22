@@ -107,7 +107,7 @@ namespace Tips.Grin.Api.Repository
                 _tipsGrinDbContext.Update(openGrinForGrinNumberEntity);
                 await _tipsGrinDbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-                return $"OpenGrinForGRIN-{openGrinForGrinNumberEntity.CurrentValue:D5}";
+                return $"OpenGrin-{openGrinForGrinNumberEntity.CurrentValue:D5}";
             }
             catch (Exception ex)
             {
@@ -142,7 +142,7 @@ namespace Tips.Grin.Api.Repository
                 int currentYear = financeYearStart.Year % 100;
                 int nextYear = (financeYearStart.Year + 1) % 100; 
 
-                return $"ASPL|OPGNG|{currentYear:D2}-{nextYear:D2}|{openGrinForGrinNumberEntity.CurrentValue:D3}";
+                return $"ASPL|OPGN|{currentYear:D2}-{nextYear:D2}|{openGrinForGrinNumberEntity.CurrentValue:D3}";
             }
             catch (Exception ex)
             {
@@ -155,6 +155,7 @@ namespace Tips.Grin.Api.Repository
             var openGrinForGrinDetails = await _tipsGrinDbContext.OpenGrinForGrins.Where(x => x.OpenGrinNumber == openGrinNumber)
 
         .Include(t => t.OpenGrinForGrinItems)
+        .ThenInclude(p=>p.OGNProjectNumber)
 
         .FirstOrDefaultAsync();
 

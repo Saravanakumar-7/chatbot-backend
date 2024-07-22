@@ -366,9 +366,9 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.Warehouse = "OPGIQC";
                                 iqcInventoryTranctionDto.From_Location = "OPGGRIN";
                                 iqcInventoryTranctionDto.TO_Location = "OPGIQC";
-                                iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; ;
+                                iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; 
                                 iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
-                                iqcInventoryTranctionDto.PartType = itemMasterObject.partType;
+                                iqcInventoryTranctionDto.PartType = inventoryObject.partType;
                                 iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                 iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                                 iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
@@ -563,7 +563,7 @@ namespace Tips.Grin.Api.Controllers
                         var openGrinNum = openGrinForIQC.OpenGrinNumber;
                         if (openGrinNum != null)
                         {
-                            var openGrinForIqcNum = openGrinNum.Replace("OPGNG", "OPGNIQC");
+                            var openGrinForIqcNum = openGrinNum.Replace("OPGN", "OPGNIQC");
                             openGrinForIQC.OpenGrinForIQCNumber = openGrinForIqcNum;
                         }
 
@@ -721,7 +721,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.TO_Location = "OPGIQC";
                                 iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; ;
                                 iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
-                                iqcInventoryTranctionDto.PartType = itemMasterObject.partType;
+                                iqcInventoryTranctionDto.PartType = inventoryObject.partType;
                                 iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                 iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                                 iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
@@ -940,7 +940,12 @@ namespace Tips.Grin.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var openGrinForIQC = _mapper.Map<OpenGrinForIQC>(openGrinForIQCSaveDto);
+               // var openGrinForIQC = _mapper.Map<OpenGrinForIQC>(openGrinForIQCSaveDto);
+                var openGrinForIQC = new OpenGrinForIQC()
+                {
+                    OpenGrinForGrinId = openGrinForIQCSaveDto.OpenGrinForGrinId,
+                    OpenGrinNumber = openGrinForIQCSaveDto.OpenGrinNumber
+                };
                 var openGrinForIQCItemsDto = openGrinForIQCSaveDto.OpenGrinForIQCItems;
                 var openGrinForIQCItems = _mapper.Map<OpenGrinForIQCItems>(openGrinForIQCItemsDto);
                 var openGrinNumber = openGrinForIQC.OpenGrinNumber;
@@ -1157,7 +1162,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.TO_Location = "OPGIQC";
                             iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; ;
                             iqcInventoryTranctionDto.GrinPartId = inventoryObject.openGrinForGrinItemId;
-                            iqcInventoryTranctionDto.PartType = itemMasterObject.partType;
+                            iqcInventoryTranctionDto.PartType = inventoryObject.partType;
                             iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                             iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                             iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
@@ -1304,7 +1309,7 @@ namespace Tips.Grin.Api.Controllers
                         var openGrinNum = openGrinForIQC.OpenGrinNumber;
                         if (openGrinNum != null)
                         {
-                            var openGrinForIqcNum = openGrinNum.Replace("OPGNG", "OPGNIQC");
+                            var openGrinForIqcNum = openGrinNum.Replace("OPGN", "OPGNIQC");
                             openGrinForIQC.OpenGrinForIQCNumber = openGrinForIqcNum;
                         }
 
@@ -1502,7 +1507,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.TO_Location = "OPGIQC";
                             iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; ;
                             iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
-                            iqcInventoryTranctionDto.PartType = itemMasterObject.partType;
+                            iqcInventoryTranctionDto.PartType = inventoryObject.partType;
                             iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                             iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                             iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";

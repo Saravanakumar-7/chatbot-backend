@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
+using Tips.Grin.Api.Entities.DTOs;
 
 namespace Tips.Grin.Api.Repository
 {
@@ -24,15 +25,43 @@ namespace Tips.Grin.Api.Repository
 
         }
 
-        public async Task<PagedList<OpenGrinForBinning>> GetAllOpenGrinForBinningDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        public async Task<PagedList<OpenGrinForBinningDto>> GetAllOpenGrinForBinningDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var openGrinForBinningDetails = FindAll()
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || (inv.OpenGrinNumber != null && inv.OpenGrinNumber.Contains(searchParams.SearchValue)) ||
-                   (inv.Id != null && inv.Id.ToString().Contains(searchParams.SearchValue))
-                ))).OrderByDescending(x => x.Id);
+            List<string> openGrinNumberList = _tipsGrinDbContext.OpenGrinForGrins.Select(x => x.OpenGrinNumber).ToList();
+
+            var openGrinForBinningOpenGrinNoList = await _tipsGrinDbContext.OpenGrinForBinnings
+                                    .Where(x => openGrinNumberList.Contains(x.OpenGrinNumber))
+                                    .Select(x => new { x.OpenGrinNumber, x.Id })
+                                    .Distinct().OrderByDescending(x => x.Id) // Ensure unique pairs of GrinNumber-Id
+                                    .ToListAsync();
+
+            var openGrinNumbers = openGrinForBinningOpenGrinNoList.Select(b => b.OpenGrinNumber).ToList();
 
 
-            return PagedList<OpenGrinForBinning>.ToPagedList(openGrinForBinningDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            var openGrinForGrinDetails_1 = await _tipsGrinDbContext.OpenGrinForGrins.Where(x => openGrinNumbers.Contains(x.OpenGrinNumber)).ToListAsync();
+            var openGrinForGrinDetails = openGrinForGrinDetails_1
+                .Select(openGrinNumber => new OpenGrinForBinningDto
+                {
+                Id = openGrinForBinningOpenGrinNoList.Where(b => b.OpenGrinNumber == openGrinNumber.OpenGrinNumber).Select(x => x.Id).FirstOrDefault(),
+                OpenGrinNumber = openGrinNumber.OpenGrinNumber,
+                SenderId = openGrinNumber.SenderId,
+                SenderName = openGrinNumber.SenderName,
+                ReceiptRefNo = openGrinNumber.ReceiptRefNo,
+            }).OrderByDescending(x => x.Id).ToList();
+
+            if (!string.IsNullOrWhiteSpace(searchParams.SearchValue))
+            {
+                string searchTerm = searchParams.SearchValue.Trim();
+
+                openGrinForGrinDetails = openGrinForGrinDetails
+                              .Where(dto =>
+                                  dto.OpenGrinNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                  dto.SenderName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                  dto.ReceiptRefNo.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).OrderByDescending(x => x.Id).ToList();
+            }
+
+
+            return PagedList<OpenGrinForBinningDto>.ToPagedList(openGrinForGrinDetails.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
 
