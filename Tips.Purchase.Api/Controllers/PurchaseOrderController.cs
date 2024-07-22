@@ -1499,10 +1499,10 @@ namespace Tips.Purchase.Api.Controllers
                         await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
                     }
                 }
-                _documentUploadRepository.SaveAsync();
-                _repository.SaveAsync();
+                _documentUploadRepository.SaveAsync();               
                 _pRItemsDocumentUploadRepository.SaveAsync();
                 _purchaseRequisitionRepository.SaveAsync();
+                _repository.SaveAsync();
                 if (serverKey == "avision")
                 {
                     var client = _clientFactory.CreateClient();
