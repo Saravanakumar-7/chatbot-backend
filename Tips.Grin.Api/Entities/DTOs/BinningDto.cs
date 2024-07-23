@@ -40,8 +40,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
-
+        public string? GateEntryNo { get; set; }
+        public DateTime? GateEntryDate { get; set; }
         public List<BinningItemsDto>? BinningItems { get; set; }
 
     }
