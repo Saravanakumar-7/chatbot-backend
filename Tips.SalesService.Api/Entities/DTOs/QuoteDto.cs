@@ -385,6 +385,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
+        public string? QuoteNumber { get; set; }
+        public string? RevisionNumber { get; set; }
+        public string? CreatedOn { get; set; }
+        public decimal? TotalFinalAmount { get; set; }
         public string? FirstQuotenumber { get; set; }
         public decimal? FirstRevisionnumber { get; set; }
         public DateTime? FirstCreatedOn { get; set; }
