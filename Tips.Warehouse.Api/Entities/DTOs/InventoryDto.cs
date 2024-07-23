@@ -524,7 +524,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
-        public string? ItemNumber { get; set; }
+        public string? PartNumber { get; set; }
     }
 
 }
