@@ -8,5 +8,6 @@
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
         public decimal? Quantity { get; set; }
+        public string? MaterialGroup { get; set; }
     }
 }

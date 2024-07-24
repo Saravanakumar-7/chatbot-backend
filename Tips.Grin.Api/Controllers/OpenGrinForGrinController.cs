@@ -858,7 +858,7 @@ namespace Tips.Grin.Api.Controllers
                     //Updating IQC Status in OpenGrinForGrin And OpenGrinForIqc MainLevel
 
                     var openGrinForGrinItemsCount = await _openGrinForGrinItemRepository.GetOpenGrinForGrinItemsCount(openGrinForGrinId);
-                    var openGrinForIQCItemsCount = await _openGrinForIQCItemRepository.GetOpenGrinForIQCItemsCount(existingOpenGrinForIQCDetails.Id);
+                    var openGrinForIQCItemsCount = await _openGrinForIQCItemRepository.GetOpenGrinForIQCItemsCount(openGrinForIQC.Id);
 
                     if (openGrinForGrinItemsCount == openGrinForIQCItemsCount)
                     {
