@@ -2297,6 +2297,11 @@ namespace Tips.Purchase.Api.Controllers
                         }
                     }
                 }
+
+                _repository.SaveAsync();
+                _pRItemsDocumentUploadRepository.SaveAsync();
+                _purchaseRequisitionRepository.SaveAsync();
+
                 if (serverKey == "avision")
                 {
                     var client = _clientFactory.CreateClient();
@@ -2379,9 +2384,7 @@ namespace Tips.Purchase.Api.Controllers
                     smtp.Disconnect(true);
 
                 }
-                _repository.SaveAsync();
-                _pRItemsDocumentUploadRepository.SaveAsync();
-                _purchaseRequisitionRepository.SaveAsync();
+                
                 serviceResponse.Data = null;
                 serviceResponse.Message = " PurchaseOrder Successfully Updated";
                 serviceResponse.Success = true;
