@@ -3521,6 +3521,44 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
         [HttpPost]
+        public async Task<IActionResult> GetInventoryOpenGrinForGrinAndOpenGrinForIQCReport([FromBody] InventorySPReportDto inventoryWarehouseReportDto)
+        {
+            ServiceResponse<IEnumerable<InventorySPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventorySPReport>>();
+            try
+            {
+                var inv = await _inventoryRepository.GetInventoryOpenGrinForGrinAndOpenGrinForIQCReport(inventoryWarehouseReportDto.PartNumber, inventoryWarehouseReportDto.Description,
+                                                                                    inventoryWarehouseReportDto.ProjectNumber, inventoryWarehouseReportDto.Warehouse,
+                                                                                    inventoryWarehouseReportDto.Location);
+                var products = _mapper.Map<List<InventorySPReport>>(inv);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventoryOpenGrinForGrinAndOpenGrinForIQCReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"InventoryOpenGrinForGrinAndOpenGrinForIQCReport hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InventoryOpenGrinForGrinAndOpenGrinForIQCReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetInventoryOpenGrinForGrinAndOpenGrinForIQCReport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
         public async Task<IActionResult> GetInventoryNotUseableReport([FromBody] InventorySPReportDto inventoryWarehouseReportDto)
         {
             ServiceResponse<IEnumerable<InventorySPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventorySPReport>>();

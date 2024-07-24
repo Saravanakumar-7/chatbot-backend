@@ -301,7 +301,7 @@ namespace Tips.Grin.Api.Controllers
                                     request1.Headers.Add("Authorization", token1);
 
                                     var inventoryObjectResult = await client1.SendAsync(request1);
-                                    if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
+                                    //if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
 
                                     var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                     dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
@@ -549,7 +549,7 @@ namespace Tips.Grin.Api.Controllers
 
                                     var inventoryObjectResult = await client1.SendAsync(request1);
 
-                                    if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
+                                    //if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
 
                                     var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                     dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
@@ -895,7 +895,7 @@ namespace Tips.Grin.Api.Controllers
                                 request1.Headers.Add("Authorization", token1);
 
                                 var inventoryObjectResult = await client1.SendAsync(request1);
-                                if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
+                                //if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
                                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                 dynamic inventoryObject = inventoryObjectData.data;
@@ -1166,7 +1166,7 @@ namespace Tips.Grin.Api.Controllers
                                 request1.Headers.Add("Authorization", token1);
 
                                 var inventoryObjectResult = await client1.SendAsync(request1);
-                                if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
+                                //if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
                                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                 dynamic inventoryObject = inventoryObjectData.data;
