@@ -278,12 +278,12 @@ namespace Tips.Grin.Api.Controllers
 
                             var openGrinForBinningLocations = openGrinForBinningsItem.OpenGrinForBinningLocations;
 
-                            int j = 0;
-                            int k = 0;
+                            //int j = 0;
+                            //int k = 0;
                             foreach (var location in openGrinForBinningLocations)
                             {
-                                if (j == 0)
-                                {
+                                //if (j == 0)
+                                //{
 
                                     var client1 = _clientFactory.CreateClient();
                                     var token1 = HttpContext.Request.Headers["Authorization"].ToString();
@@ -297,7 +297,7 @@ namespace Tips.Grin.Api.Controllers
                                     var encodedReferenceSONumbers = Uri.EscapeDataString(referenceSONumbers);
 
                                     var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                        $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
+                                        $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
                                     request1.Headers.Add("Authorization", token1);
 
                                     var inventoryObjectResult = await client1.SendAsync(request1);
@@ -307,6 +307,8 @@ namespace Tips.Grin.Api.Controllers
                                     dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                     dynamic inventoryObject = inventoryObjectData.data;
 
+                                if (inventoryObjectResult.StatusCode == HttpStatusCode.OK)
+                                {
                                     inventoryObject.balance_Quantity = location.Qty;
                                     inventoryObject.warehouse = location.Warehouse;
                                     inventoryObject.location = location.Location;
@@ -362,7 +364,7 @@ namespace Tips.Grin.Api.Controllers
 
                                     if (responses1.StatusCode != HttpStatusCode.OK) createInvTrans = responses1.StatusCode;
 
-                                    j++;
+                                    //j++;
                                 }
                                 else
                                 {
@@ -523,12 +525,12 @@ namespace Tips.Grin.Api.Controllers
 
                             var openGrinForBinningLocations = openGrinForBinningsItem.OpenGrinForBinningLocations;
 
-                            int j = 0;
-                            int k = 0;
+                            //int j = 0;
+                            //int k = 0;
                             foreach (var location in openGrinForBinningLocations)
                             {
-                                if (j == 0)
-                                {
+                                //if (j == 0)
+                                //{
 
                                     var client1 = _clientFactory.CreateClient();
                                     var token1 = HttpContext.Request.Headers["Authorization"].ToString();
@@ -542,7 +544,7 @@ namespace Tips.Grin.Api.Controllers
                                     var encodedReferenceSONumbers = Uri.EscapeDataString(referenceSONumbers);
 
                                     var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                        $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
+                                        $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
                                     request1.Headers.Add("Authorization", token1);
 
                                     var inventoryObjectResult = await client1.SendAsync(request1);
@@ -553,6 +555,8 @@ namespace Tips.Grin.Api.Controllers
                                     dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                     dynamic inventoryObject = inventoryObjectData.data;
 
+                                if (inventoryObjectResult.StatusCode == HttpStatusCode.OK)
+                                {
                                     inventoryObject.balance_Quantity = location.Qty;
                                     inventoryObject.warehouse = location.Warehouse;
                                     inventoryObject.location = location.Location;
@@ -607,7 +611,7 @@ namespace Tips.Grin.Api.Controllers
 
                                     if (responses1.StatusCode != HttpStatusCode.OK) createInvTrans = responses1.StatusCode;
 
-                                    j++;
+                                    //j++;
                                 }
                                 else
                                 {
@@ -868,12 +872,12 @@ namespace Tips.Grin.Api.Controllers
                         var itemMasterObject = itemMasterObjectData.data;
 
                         var openGrinForBinningLocations = openGrinForBinningItemsDto.OpenGrinForBinningLocations;
-                        int j = 0;
-                        int k = 0;
+                        //int j = 0;
+                        //int k = 0;
                         foreach (var location in openGrinForBinningLocations)
                         {
-                            if (j == 0)
-                            {
+                            //if (j == 0)
+                            //{
 
                                 var client1 = _clientFactory.CreateClient();
                                 var token1 = HttpContext.Request.Headers["Authorization"].ToString();
@@ -887,7 +891,7 @@ namespace Tips.Grin.Api.Controllers
                                 var encodedReferenceSONumbers = Uri.EscapeDataString(referenceSONumbers);
 
                                 var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                    $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
+                                    $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
                                 request1.Headers.Add("Authorization", token1);
 
                                 var inventoryObjectResult = await client1.SendAsync(request1);
@@ -896,6 +900,8 @@ namespace Tips.Grin.Api.Controllers
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                 dynamic inventoryObject = inventoryObjectData.data;
 
+                            if (inventoryObjectResult.StatusCode == HttpStatusCode.OK)
+                            {
                                 inventoryObject.balance_Quantity = location.Qty;
                                 inventoryObject.warehouse = location.Warehouse;
                                 inventoryObject.location = location.Location;
@@ -951,7 +957,7 @@ namespace Tips.Grin.Api.Controllers
                                 var responses1 = await client10.SendAsync(request10);
 
                                 if (responses1.StatusCode != HttpStatusCode.OK) createInvTrans = responses1.StatusCode;
-                                j++;
+                                //j++;
                             }
                             else
                             {
@@ -1136,14 +1142,13 @@ namespace Tips.Grin.Api.Controllers
                         var itemMasterObject = itemMasterObjectData.data;
 
                         var openGrinForBinningLocations = openGrinForBinningItemsDto.OpenGrinForBinningLocations;
-                        int j = 0;
-                        int k = 0;
+                        //int j = 0;
+                        //int k = 0;
                         foreach (var location in openGrinForBinningLocations)
                         {
 
-
-                            if (j == 0)
-                            {
+                            //if (j == 0)
+                            //{
 
                                 var client1 = _clientFactory.CreateClient();
                                 var token1 = HttpContext.Request.Headers["Authorization"].ToString();
@@ -1157,7 +1162,7 @@ namespace Tips.Grin.Api.Controllers
                                 var encodedReferenceSONumbers = Uri.EscapeDataString(referenceSONumbers);
 
                                 var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                    $"GetInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
+                                    $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
                                 request1.Headers.Add("Authorization", token1);
 
                                 var inventoryObjectResult = await client1.SendAsync(request1);
@@ -1166,6 +1171,8 @@ namespace Tips.Grin.Api.Controllers
                                 dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                 dynamic inventoryObject = inventoryObjectData.data;
 
+                            if (inventoryObjectResult.StatusCode == HttpStatusCode.OK)
+                            {
                                 inventoryObject.balance_Quantity = location.Qty;
                                 inventoryObject.warehouse = location.Warehouse;
                                 inventoryObject.location = location.Location;
@@ -1222,7 +1229,7 @@ namespace Tips.Grin.Api.Controllers
 
                                 if (responses1.StatusCode != HttpStatusCode.OK) createInvTrans = responses1.StatusCode;
 
-                                j++;
+                                //j++;
                             }
                             else
                             {
