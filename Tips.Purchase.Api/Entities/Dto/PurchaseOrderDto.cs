@@ -36,7 +36,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? BillTo { get; set; }
         //public List<DocumentUploadPostDto>? POFiles { get; set; }
         public string? POFiles { get; set; }
-
+        public bool TallyStatus { get; set; } = false;
         //Terms
         public string? RetentionPeriod { get; set; }
         public string? SpecialTermsAndConditions { get; set; }
@@ -92,8 +92,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? QuotationReferenceNumber { get; set; }
         public DateTime? QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
-
-        //Billing&ShippingDetails
+        public bool TallyStatus { get; set; } = false;
         public string? DeliveryTerms { get; set; }
         public string? PaymentTerms { get; set; }
         public string? ShippingMode { get; set; }
@@ -133,8 +132,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
         public string? CompanyAliasName { get; set; }
-
-        //Billing&ShippingDetails
+        public bool TallyStatus { get; set; } = false;
         public string? DeliveryTerms { get; set; }
         public string? PaymentTerms { get; set; }
         public string? ShippingMode { get; set; }
@@ -216,7 +214,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+        public bool TallyStatus { get; set; } = false;
         public List<PoItemsShortCloseDto>? POItems { get; set; }
         public List<PoIncoTermUpdateDto>? POIncoTerms { get; set; }
 
@@ -250,7 +248,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? BillTo { get; set; }
         //public List<DocumentUploadPostDto>? POFiles { get; set; }
         public string? POFiles { get; set; }
-
+        public bool TallyStatus { get; set; } = false;
         //Terms
         public string? RetentionPeriod { get; set; }
         public string? Transport { get; set; }

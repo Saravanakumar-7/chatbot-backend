@@ -4329,5 +4329,32 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPut]
+        public async Task<IActionResult> UpdatePurchaseOrderTallyStatus(int Id, bool TallyStatus)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                var getPOdetails = await _repository.GetPurchaseOrderById(Id);
+                getPOdetails.TallyStatus = TallyStatus;
+                await _repository.UpdatePurchaseOrder_ForApproval(getPOdetails);
+                _repository.SaveAsync();
+                _logger.LogInfo($"Successfully Updated the TallyStatus of PO Id {Id} and is set to {TallyStatus} from the UpdatePurchaseOrderTallyStatus API");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Successfully Updated the TallyStatus of PO Id {Id} and is set to {TallyStatus}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return StatusCode(200, serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside UpdatePurchaseOrderTallyStatus action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }
