@@ -680,9 +680,9 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.Warehouse = "OPGIQC";
                             iqcInventoryTranctionDto.From_Location = "OPGGRIN";
                             iqcInventoryTranctionDto.TO_Location = "OPGIQC";
-                            iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; ;
+                            iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; 
                             iqcInventoryTranctionDto.GrinPartId = inventoryObject.openGrinForGrinItemId;
-                            iqcInventoryTranctionDto.PartType = itemMasterObject.partType;
+                            iqcInventoryTranctionDto.PartType = inventoryObject.partType;
                             iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                             iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                             iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
@@ -977,9 +977,9 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.Warehouse = "OPGIQC";
                             iqcInventoryTranctionDto.From_Location = "OPGGRIN";
                             iqcInventoryTranctionDto.TO_Location = "OPGIQC";
-                            iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; ;
+                            iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; 
                             iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
-                            iqcInventoryTranctionDto.PartType = itemMasterObject.partType;
+                            iqcInventoryTranctionDto.PartType = inventoryObject.partType;
                             iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                             iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                             iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
