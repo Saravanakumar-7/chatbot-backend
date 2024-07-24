@@ -59,6 +59,7 @@ namespace Tips.Purchase.Api.Entities
         public string? POApprovedIVBy { get; set; }
         public DateTime? POApprovedIVDate { get; set; }
         public bool IsDeleted { get; set; } = false;
+        public bool TallyStatus { get; set; } = false;
 
         [DefaultValue(0)]
         public Status Status { get; set; }

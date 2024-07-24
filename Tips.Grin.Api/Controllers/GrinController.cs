@@ -455,24 +455,6 @@ namespace Tips.Grin.Api.Controllers
                         var client = _clientFactory.CreateClient();
                         var token = HttpContext.Request.Headers["Authorization"].ToString();
 
-                        //// Include the token in the Authorization header
-                        //var tokenValue = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-                        //if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
-                        //{
-                        //    var token = tokenValue.Substring(7);
-                        //    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                        //}
-
-                        //Add ItemMasterEnggDetails in GrinParts
-                        //// Include the token in the Authorization header
-                        //var tokenValue = _httpContextAccessor.HttpContext.Request.Headers["Authorization"].FirstOrDefault();
-                        //if (!string.IsNullOrEmpty(tokenValue) && tokenValue.StartsWith("Bearer "))
-                        //{
-                        //    var token = tokenValue.Substring(7);
-                        //    httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                        //}
-
-                        //Add ItemMasterEnggDetails in GrinParts
                         var ItemNumber = grinPartsItemMasterEnggDto.ItemNumber;
                         var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
 
@@ -655,27 +637,7 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryDto.GrinMaterialType = "";
                             grinInventoryDto.ShopOrderNo = "";
 
-                            //if (itemMasterObject.poMaterialType == "ServiceItem")
-                            //{
-                            //    var json = JsonConvert.SerializeObject(grinInventoryDto);
-                            //    var data = new StringContent(json, Encoding.UTF8, "application/json");
-                            //    var client1 = _clientFactory.CreateClient();
-                            //    var token1 = HttpContext.Request.Headers["Authorization"].ToString();
-                            //    var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryForServiceItemsAPI"],
-                            //    "CreateInventoryForServiceItemsFromGrin"))
-                            //    {
-                            //        Content = data
-                            //    };
-                            //    request1.Headers.Add("Authorization", token1);
-
-                            //    var response = await client1.SendAsync(request1);
-                            //    if (response.StatusCode != HttpStatusCode.OK)
-                            //    {
-                            //        createinvforServiceItemsResp = response.StatusCode;
-                            //    }
-                            //}
-                            //else
-                            //{
+                            
                             var json = JsonConvert.SerializeObject(grinInventoryDto);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
                             var client1 = _clientFactory.CreateClient();
@@ -692,7 +654,6 @@ namespace Tips.Grin.Api.Controllers
                             {
                                 createinvResp = response.StatusCode;
                             }
-                            // }
                         }
                     }
                 }
@@ -1634,16 +1595,6 @@ namespace Tips.Grin.Api.Controllers
                 var grinPartsDto = updategrin.GrinParts;
                 var grinCal = _mapper.Map<List<GrinPartscalculationofAvgcost>>(grinPartsDto);
                 var GrinpartsList = new List<GrinParts>();
-                //for (int i = 0; i < grinPartsDto.Count; i++)
-                //{
-                //    GrinParts grinPartsDetail = _mapper.Map<GrinParts>(grinPartsDto[i]);
-                //    grinPartsDetail.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(grinPartsDto[i].ProjectNumbers);
-
-                //    GrinpartsList.Add(grinPartsDetail);
-                //    //
-
-                //}
-
                 var othercosttotal = grinList.Freight + grinList.Insurance + grinList.LoadingorUnLoading + grinList.Transport;
                 decimal? conversionrate = 1;
                 if (grinList.CurrencyConversion > 1) conversionrate = grinList.CurrencyConversion;
@@ -1769,42 +1720,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-        //[HttpGet()]
-        //public async Task<IActionResult> GetGrinSPReportWithParam([FromQuery] string? GrinNumber,[FromQuery] string? VendorName,[FromQuery] string? PONumber,[FromQuery] string? KPN,[FromQuery] string? MPN,[FromQuery] string? Warehouse,[FromQuery] string? Location)
-        //{
-        //    ServiceResponse<IEnumerable<Grin_ReportSP>> serviceResponse = new ServiceResponse<IEnumerable<Grin_ReportSP>>();
-        //    try
-        //    {
-        //        var products = await _repository.GetGrinSPReportWithParam(GrinNumber, VendorName, PONumber, KPN, MPN, Warehouse, Location);
-        //        if (products == null)
-        //        {
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = $"Grin hasn't been found.";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
-        //            _logger.LogError($"Grin hasn't been found in db.");
-        //            return NotFound(serviceResponse);
-        //        }
-        //        else
-        //        {
-        //            serviceResponse.Data = products;
-        //            serviceResponse.Message = "Returned Grin Details";
-        //            serviceResponse.Success = true;
-        //            serviceResponse.StatusCode = HttpStatusCode.OK;
-        //            return Ok(serviceResponse);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex.Message);
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = $"Something went wrong inside Grin action";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    } 
-        //}
-
+      
         [HttpGet]
         public async Task<IActionResult> GetGrinSPReport([FromQuery] PagingParameter pagingParameter)
         {
@@ -2072,8 +1988,6 @@ namespace Tips.Grin.Api.Controllers
                 foreach (var getDownloadUrlByFilename in getDownloadDetailByGrinNumber)
                 {
                     getDownloadUrlByFilename.DownloadUrl = Url.Action("DownloadFile", "Grin", new { Filename = getDownloadUrlByFilename.FileName }, protocol: HttpContext.Request.Scheme);
-                    //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
-
                 }
                 if (getDownloadDetailByGrinNumber == null)
                 {
@@ -2122,8 +2036,6 @@ namespace Tips.Grin.Api.Controllers
                 foreach (var getDownloadUrlByFilename in getDownloadDetailByGrinNumber)
                 {
                     getDownloadUrlByFilename.DownloadUrl = Url.Action("DownloadFile", "Grin", new { Filename = getDownloadUrlByFilename.FileName }, protocol: HttpContext.Request.Scheme);
-                    //getDownloadUrlByFilename.DownloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={getDownloadUrlByFilename.FileName}";
-
                 }
                 if (getDownloadDetailByGrinNumber == null)
                 {
