@@ -297,7 +297,7 @@ namespace Tips.Grin.Api.Controllers
                                     var encodedReferenceSONumbers = Uri.EscapeDataString(referenceSONumbers);
 
                                     var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                        $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
+                                        $"GetOPGIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
                                     request1.Headers.Add("Authorization", token1);
 
                                     var inventoryObjectResult = await client1.SendAsync(request1);
@@ -544,7 +544,7 @@ namespace Tips.Grin.Api.Controllers
                                     var encodedReferenceSONumbers = Uri.EscapeDataString(referenceSONumbers);
 
                                     var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                        $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
+                                        $"GetOPGIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
                                     request1.Headers.Add("Authorization", token1);
 
                                     var inventoryObjectResult = await client1.SendAsync(request1);
@@ -891,7 +891,7 @@ namespace Tips.Grin.Api.Controllers
                                 var encodedReferenceSONumbers = Uri.EscapeDataString(referenceSONumbers);
 
                                 var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                    $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
+                                    $"GetOPGIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
                                 request1.Headers.Add("Authorization", token1);
 
                                 var inventoryObjectResult = await client1.SendAsync(request1);
@@ -1162,7 +1162,7 @@ namespace Tips.Grin.Api.Controllers
                                 var encodedReferenceSONumbers = Uri.EscapeDataString(referenceSONumbers);
 
                                 var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                    $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
+                                    $"GetOPGIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedopenGrinNo}&GrinPartsId={openGrinForGrinItemId}&ItemNumber={encodedItemNo}&ProjectNumber={encodedReferenceSONumbers}"));
                                 request1.Headers.Add("Authorization", token1);
 
                                 var inventoryObjectResult = await client1.SendAsync(request1);

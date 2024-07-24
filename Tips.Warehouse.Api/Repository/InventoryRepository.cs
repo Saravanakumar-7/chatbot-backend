@@ -1112,6 +1112,15 @@ namespace Tips.Warehouse.Api.Repository
 
             return getInventoryDetailsById;
         }
+        public async Task<Inventory> GetOPGIQCInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber)
+        {
+            var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventories.Where(x => x.GrinNo == GrinNo && x.Warehouse == "OPGIQC" && x.Location == "OPGIQC" &&
+                                        x.GrinPartId == GrinPartsId && x.PartNumber == ItemNumber &&
+                                        x.ProjectNumber == ProjectNumber && x.IsStockAvailable == true)
+                          .FirstOrDefaultAsync();
+
+            return getInventoryDetailsById;
+        }
         public async Task<IEnumerable<GetInventoryItemNoAndDescriptionList>> GetInventoryItemNoAndDescriptionByProjectNo(string projectNumber)
         {
             string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN" };
