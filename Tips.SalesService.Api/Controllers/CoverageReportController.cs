@@ -827,17 +827,30 @@ namespace Tips.SalesService.Api.Controllers
                                     RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
                                     Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
                                     WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
-                                    OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
+                                    //OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
                                 };
 
                                 //test
+                                //Open Binning Qty 
+                                List<BinningQuantityDto> binningQtyList = await GetBinningQtyForChildItemsByProjectNo(item.ItemNumber, projectNumber);
 
+                                var OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault();
+                                var binningQty = binningQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.BinningQty).FirstOrDefault();
 
+                                if (binningQtyList != null && binningQtyList.Count()>0)
+                                {
+
+                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
+                                }
+                                else
+                                {
+                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty ; 
+                                }
 
                                 decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
                                    + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
 
-                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero); ;
+                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero); 
 
                                 coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
                             }
@@ -1183,6 +1196,30 @@ namespace Tips.SalesService.Api.Controllers
             foreach (var item in openPoQtyData.data)
             {
                 OpenPoQuantityDto dto = JsonConvert.DeserializeObject<OpenPoQuantityDto>(item.ToString());
+                openPoQtyList.Add(dto);
+            }
+
+            return openPoQtyList;
+        }
+
+        private async Task<List<BinningQuantityDto>> GetBinningQtyForChildItemsByProjectNo(string itemNumber, string projectNo)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var encodedProjectNo = Uri.EscapeDataString(projectNo);
+            var encodedItemNo = Uri.EscapeDataString(itemNumber);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["BinningAPI"], $"GetListOfBinningQtyByItemNoListByProjectNo?ProjectNo={encodedProjectNo}&ItemNumber={encodedItemNo}"));
+            
+            request.Headers.Add("Authorization", token);
+
+            var openPoQtyResponse = await client.SendAsync(request);
+            var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
+            dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
+            List<BinningQuantityDto> openPoQtyList = new List<BinningQuantityDto>();
+
+            foreach (var item in openPoQtyData.data)
+            {
+                BinningQuantityDto dto = JsonConvert.DeserializeObject<BinningQuantityDto>(item.ToString());
                 openPoQtyList.Add(dto);
             }
 

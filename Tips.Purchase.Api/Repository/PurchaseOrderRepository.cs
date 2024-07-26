@@ -1898,7 +1898,7 @@ namespace Tips.Purchase.Api.Repository
                 .Select(gr => new OpenPoQuantityDto
                 {
                     ItemNumber = gr.Key.ItemNumber,
-                    OpenPoQty = gr.Sum(x => x.BalanceQty)
+                    OpenPoQty = gr.Sum(x => x.Qty)
                 }).ToListAsync();
             return openPoQtyList;
 

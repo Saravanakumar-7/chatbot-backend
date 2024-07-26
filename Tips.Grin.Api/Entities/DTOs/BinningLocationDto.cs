@@ -70,4 +70,10 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal Qty { get; set; }
 
     }
+    public class BinningQuantityDto
+    {
+        public string? ItemNumber { get; set; }
+        public decimal BinningQty { get; set; }
+
+    }
 }

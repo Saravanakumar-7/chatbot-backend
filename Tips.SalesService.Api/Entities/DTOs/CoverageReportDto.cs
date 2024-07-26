@@ -57,7 +57,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public decimal OpenPoQty { get; set; }
     }
+    public class BinningQuantityDto
+    {
+        public string? ItemNumber { get; set; }
+        public decimal BinningQty { get; set; }
 
+    }
     public class CoverageReportDtoForChildItem
     {
         public string? ItemNumber { get; set; }

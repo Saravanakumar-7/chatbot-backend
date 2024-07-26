@@ -31,7 +31,7 @@ namespace Tips.Grin.Api.Repository
 
             var openGrinForBinningOpenGrinNoList = await _tipsGrinDbContext.OpenGrinForBinnings
                                     .Where(x => openGrinNumberList.Contains(x.OpenGrinNumber))
-                                    .Select(x => new { x.OpenGrinNumber, x.Id })
+                                    .Select(x => new { x.OpenGrinNumber, x.Id ,x.CreatedOn, x.CreatedBy, x.LastModifiedOn, x.LastModifiedBy })
                                     .Distinct().OrderByDescending(x => x.Id) // Ensure unique pairs of GrinNumber-Id
                                     .ToListAsync();
 
@@ -47,10 +47,10 @@ namespace Tips.Grin.Api.Repository
                 SenderId = openGrinNumber.SenderId,
                 SenderName = openGrinNumber.SenderName,
                 ReceiptRefNo = openGrinNumber.ReceiptRefNo,
-                CreatedBy = openGrinNumber.CreatedBy,
-                CreatedOn = openGrinNumber.CreatedOn,
-                LastModifiedBy = openGrinNumber.LastModifiedBy,
-                LastModifiedOn = openGrinNumber.LastModifiedOn
+                CreatedBy = openGrinForBinningOpenGrinNoList.Where(b => b.OpenGrinNumber == openGrinNumber.OpenGrinNumber).Select(x => x.CreatedBy).FirstOrDefault(),
+                CreatedOn = openGrinForBinningOpenGrinNoList.Where(b => b.OpenGrinNumber == openGrinNumber.OpenGrinNumber).Select(x => x.CreatedOn).FirstOrDefault(),
+                LastModifiedBy = openGrinForBinningOpenGrinNoList.Where(b => b.OpenGrinNumber == openGrinNumber.OpenGrinNumber).Select(x => x.LastModifiedBy).FirstOrDefault(),
+                LastModifiedOn = openGrinForBinningOpenGrinNoList.Where(b => b.OpenGrinNumber == openGrinNumber.OpenGrinNumber).Select(x => x.LastModifiedOn).FirstOrDefault(),
                 }).OrderByDescending(x => x.Id).ToList();
 
             if (!string.IsNullOrWhiteSpace(searchParams.SearchValue))
