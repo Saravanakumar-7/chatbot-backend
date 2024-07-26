@@ -102,7 +102,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GenerateCoverageFGLevelReportByProjectNumberAndItemNo(string projectNumber ,string ItemNumber)
+        public async Task<IActionResult> GenerateCoverageFGLevelReportByProjectNumberAndItemNo(string projectNumber, string ItemNumber)
         {
 
             ServiceResponse<List<OpenSalesCoverageReportByProjectNumber>> serviceResponse = new ServiceResponse<List<OpenSalesCoverageReportByProjectNumber>>();
@@ -830,27 +830,26 @@ namespace Tips.SalesService.Api.Controllers
                                     //OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
                                 };
 
-                                //test
-                                //Open Binning Qty 
+                                //Binning Qty 
                                 List<BinningQuantityDto> binningQtyList = await GetBinningQtyForChildItemsByProjectNo(item.ItemNumber, projectNumber);
-
+                                
                                 var OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault();
                                 var binningQty = binningQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.BinningQty).FirstOrDefault();
 
-                                if (binningQtyList != null && binningQtyList.Count()>0)
+                                //Open PoQty Calculate
+                                if (binningQtyList != null && binningQtyList.Count() > 0)
                                 {
-
                                     coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
                                 }
                                 else
                                 {
-                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty ; 
+                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
                                 }
 
                                 decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
                                    + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
 
-                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero); 
+                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
 
                                 coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
                             }
@@ -878,7 +877,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GenerateCoverageReportForFgChildItByProjectNumberAndItemNo(string projectNumber ,string itemNumber)
+        public async Task<IActionResult> GenerateCoverageReportForFgChildItByProjectNumberAndItemNo(string projectNumber, string itemNumber)
         {
             ServiceResponse<List<CoverageReportByProjectNumberDtoForChildItem>> serviceResponse = new ServiceResponse<List<CoverageReportByProjectNumberDtoForChildItem>>();
 
@@ -1179,7 +1178,7 @@ namespace Tips.SalesService.Api.Controllers
             var client = _clientFactory.CreateClient();
             var token = HttpContext.Request.Headers["Authorization"].ToString();
             var encodedProjectNo = Uri.EscapeDataString(projectNo);
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],$"GetListOfOpenPOQtyByItemNoListByProjectNo?ProjectNo={encodedProjectNo}"))
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"], $"GetListOfOpenPOQtyByItemNoListByProjectNo?ProjectNo={encodedProjectNo}"))
             {
                 Content = itemNoListString
             };
@@ -1209,7 +1208,7 @@ namespace Tips.SalesService.Api.Controllers
             var encodedProjectNo = Uri.EscapeDataString(projectNo);
             var encodedItemNo = Uri.EscapeDataString(itemNumber);
             var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["BinningAPI"], $"GetListOfBinningQtyByItemNoListByProjectNo?ProjectNo={encodedProjectNo}&ItemNumber={encodedItemNo}"));
-            
+
             request.Headers.Add("Authorization", token);
 
             var openPoQtyResponse = await client.SendAsync(request);
