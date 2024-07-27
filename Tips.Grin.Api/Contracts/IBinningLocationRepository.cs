@@ -1,4 +1,5 @@
 ﻿using Tips.Grin.Api.Entities;
+using Tips.Grin.Api.Entities.DTOs;
 
 namespace Tips.Grin.Api.Contracts
 {
@@ -6,5 +7,6 @@ namespace Tips.Grin.Api.Contracts
     {
         Task<string> UpdateBinning(BinningLocation binningLocation);
         Task<IEnumerable<BinningLocation>> GetBinningLocationDetailsbyGrinPartId(int id);
+        Task<List<BinningQuantityDto>> GetListOfBinningQtyByItemNoListByProjectNo(string projectNo, string itemNumber);
     }
 }

@@ -1720,5 +1720,32 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetListOfBinningQtyByItemNoListByProjectNo(string projectNo, string itemNumber)
+        {
+            ServiceResponse<IEnumerable<BinningQuantityDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningQuantityDto>>();
+            try
+            {
+                var revNumberDetailsbyPONumber = await _binningLocationRepository.GetListOfBinningQtyByItemNoListByProjectNo(projectNo, itemNumber);
+
+            
+                var result = _mapper.Map<IEnumerable<BinningQuantityDto>>(revNumberDetailsbyPONumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned  BinningQty  By ProjectNo and ItemNo List";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetListOfBinningQtyByItemNoListByProjectNo action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 }

@@ -8,6 +8,7 @@ using Tips.Grin.Api.Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using System.Linq;
+using Microsoft.Extensions.FileSystemGlobbing.Internal.PathSegments;
 
 namespace Tips.Grin.Api.Repository
 {
@@ -97,7 +98,7 @@ namespace Tips.Grin.Api.Repository
 
             var binningGrinNoList = await _tipsGrinDbContext.Binnings
                                     .Where(x => grinNumberList.Contains(x.GrinNumber))
-                                    .Select(x => new { x.GrinNumber, x.Id })
+                                    .Select(x => new { x.GrinNumber, x.Id,x.CreatedOn,x.CreatedBy,x.LastModifiedOn,x.LastModifiedBy })
                                     .Distinct().OrderByDescending(x => x.Id) // Ensure unique pairs of GrinNumber-Id
                                     .ToListAsync();
 
@@ -122,10 +123,10 @@ namespace Tips.Grin.Api.Repository
                 GrinNumber = grinNumber.GrinNumber,
                 InvoiceNumber = grinNumber.InvoiceNumber,
                 VendorName = grinNumber.VendorName,
-                CreatedBy = grinNumber.CreatedBy,
-                CreatedOn = grinNumber.CreatedOn,
-                LastModifiedBy = grinNumber.LastModifiedBy,
-                LastModifiedOn = grinNumber.LastModifiedOn
+                CreatedBy = binningGrinNoList.Where(b => b.GrinNumber == grinNumber.GrinNumber).Select(x => x.CreatedBy).FirstOrDefault(),
+                CreatedOn = binningGrinNoList.Where(b => b.GrinNumber == grinNumber.GrinNumber).Select(x => x.CreatedOn).FirstOrDefault(),
+                LastModifiedBy = binningGrinNoList.Where(b => b.GrinNumber == grinNumber.GrinNumber).Select(x => x.LastModifiedBy).FirstOrDefault(),
+                LastModifiedOn = binningGrinNoList.Where(b => b.GrinNumber == grinNumber.GrinNumber).Select(x => x.LastModifiedOn).FirstOrDefault()
             }).OrderByDescending(x => x.Id).ToList();
 
             if (!string.IsNullOrWhiteSpace(searchParams.SearchValue))
@@ -334,5 +335,44 @@ namespace Tips.Grin.Api.Repository
             string result = $"binningLocation details of {binningLocation.Id} is updated successfully!";
             return result;
         }
+        //public async Task<BinningQuantityDto> GetListOfBinningQtyByItemNoListByProjectNo(string projectNo, List<string> itemNumberList)
+        //{
+        //    var binningItemDetails = await _tipsGrinDbContext.BinningItem.Where(x => itemNumberList.Contains( x.ItemNumber))
+        //                                     .Select(x => new { x.ItemNumber, x.Id })
+        //                                    .ToListAsync();
+
+        //    var binningItemIds = binningItemDetails.Select(b => b.Id).ToList();
+
+        //    var binningQuantityList = await _tipsGrinDbContext.BinningLocations
+        //        .Where(x => x.ProjectNumber == projectNo && binningItemIds.Contains(x.BinningItemsId))
+        //         .GroupBy(i => new { i.BinningItemsId })
+        //        .Select(gr => new BinningQuantityDto
+        //        {
+        //            ItemNumber = binningItemDetails.Where(b => b.Id == gr.First().BinningItemsId).Select(x => x.ItemNumber).FirstOrDefault(),
+        //            BinningQty = gr.Sum(x => x.Qty)
+        //        }).FirstOrDefaultAsync();
+
+        //    return binningQuantityList;
+
+        //}
+        public async Task<List<BinningQuantityDto>> GetListOfBinningQtyByItemNoListByProjectNo(string projectNo, string itemNumber)
+        {
+            var binningItemIds = await _tipsGrinDbContext.BinningItem.Where(x => x.ItemNumber == itemNumber)
+                                             .Select(x => x.Id )
+                                            .ToListAsync();
+
+            List<BinningQuantityDto> binningQuantityList = await _tipsGrinDbContext.BinningLocations
+                .Where(x => x.ProjectNumber == projectNo && binningItemIds.Contains(x.BinningItemsId))
+                .GroupBy(x => new { x.ProjectNumber })
+                .Select(gr => new BinningQuantityDto
+                {
+                    ItemNumber = itemNumber,
+                    BinningQty = gr.Sum(x => x.Qty)
+                })
+                .ToListAsync();
+
+            return binningQuantityList;
+        }
+
     }
 }

@@ -378,7 +378,8 @@ namespace Tips.Warehouse.Api.Repository
 
                                    BTONumber = x.BTONumber,
 
-                                   IssuedTo = x.IssuedTo
+                                   IssuedTo = x.IssuedTo,
+                                   IssuedBy = x.CreatedBy
 
                                })
                                .OrderByDescending(x => x.Id)

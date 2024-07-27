@@ -1882,7 +1882,7 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<List<OpenPoQuantityDto>> GetListOfOpenPOQtyByItemNoListByProjectNo(string projectNo, List<string> itemNumberList)
         {
-            var poStatus = new List<PoStatus> { PoStatus.Open, PoStatus.PartiallyClosed };
+            var poStatus = new List<PoStatus> { PoStatus.Open, PoStatus.PartiallyClosed ,PoStatus.Closed};
 
             List<OpenPoQuantityDto> openPoQtyList = await _tipsPurchaseDbContext.PoItems
                 .Include(x => x.PurchaseOrder)
@@ -1898,7 +1898,7 @@ namespace Tips.Purchase.Api.Repository
                 .Select(gr => new OpenPoQuantityDto
                 {
                     ItemNumber = gr.Key.ItemNumber,
-                    OpenPoQty = gr.Sum(x => x.BalanceQty)
+                    OpenPoQty = gr.Sum(x => x.Qty)
                 }).ToListAsync();
             return openPoQtyList;
 

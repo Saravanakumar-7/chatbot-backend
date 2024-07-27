@@ -38,6 +38,26 @@ namespace Tips.Grin.Api.Repository
 
             return grinDetailsbyId;
         }
+        public async Task<IEnumerable<GrinForServiceItemsSPReport>> GetGrinsForServiceItemsSPReportWithParam(string? GrinsForServiceItemsNumber, string? VendorName, string? PONumber,
+                                                                                                   string? KPN, string? MPN, string? Warehouse, string? Location)
+        {
+            var result = _tipsGrinDbContext
+            .Set<GrinForServiceItemsSPReport>()
+            .FromSqlInterpolated($"CALL GrinsForService_Report_withparameter({GrinsForServiceItemsNumber},{VendorName},{PONumber},{KPN},{MPN},{Warehouse},{Location})")
+            .ToList();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<GrinForServiceItemsSPReport>> GetGrinsForServiceItemsSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<GrinForServiceItemsSPReport>()
+                      .FromSqlInterpolated($"CALL GrinsForService_Report_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+
         public async Task<string> GenerateGrinsForServiceItemsNumberForAvision()
         {
             using var transaction = await _tipsGrinDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);

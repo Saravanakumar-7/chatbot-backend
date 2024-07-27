@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using Tips.Grin.Api.Controllers;
+using Tips.Grin.Api.Entities.DTOs;
 
 namespace Tips.Grin.Api.Entities
 {
@@ -54,7 +55,7 @@ namespace Tips.Grin.Api.Entities
         public DbSet<OpenGrinForBinning> OpenGrinForBinnings { get; set; }
         public DbSet<OpenGrinForBinningItems> OpenGrinForBinningItems { get; set; }
         public DbSet<OpenGrinForBinningLocations> OpenGrinForBinningLocations { get; set; }
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Grin_ReportSP>().HasNoKey();
@@ -63,6 +64,8 @@ namespace Tips.Grin.Api.Entities
             modelBuilder.Entity<GrinSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<OpenGrinSpReportForTrans>().HasNoKey();
             modelBuilder.Entity<IQCConfirmationSPReportForTrans>().HasNoKey();
+            modelBuilder.Entity<GrinForServiceItemsSPReport>().HasNoKey();
+            
         }
 
 

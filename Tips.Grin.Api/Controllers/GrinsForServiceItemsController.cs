@@ -89,6 +89,86 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GetGrinsForServiceItemsSPReportWithParam([FromBody] GrinForServiceItemsReportWithParamDto grinForServiceItemsReportWithParamDto)
+        {
+            ServiceResponse<IEnumerable<GrinForServiceItemsSPReport>> serviceResponse = new ServiceResponse<IEnumerable<GrinForServiceItemsSPReport>>();
+            try
+            {
+                var products = await _repository.GetGrinsForServiceItemsSPReportWithParam(grinForServiceItemsReportWithParamDto.GrinsForServiceItemsNumber, grinForServiceItemsReportWithParamDto.VendorName,
+                                                                            grinForServiceItemsReportWithParamDto.PONumber, grinForServiceItemsReportWithParamDto.KPN,
+                                                                            grinForServiceItemsReportWithParamDto.MPN, grinForServiceItemsReportWithParamDto.Warehouse,
+                                                                            grinForServiceItemsReportWithParamDto.Location);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"GrinsForServiceItems hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"GrinsForServiceItems hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned GrinsForServiceItems Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetGrinsForServiceItemsSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetGrinsForServiceItemsSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<GrinForServiceItemsSPReport>> serviceResponse = new ServiceResponse<IEnumerable<GrinForServiceItemsSPReport>>();
+            try
+            {
+                var products = await _repository.GetGrinsForServiceItemsSPReportWithDate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"GrinsForServiceItems hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"GrinsForServiceItems hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned GrinsForServiceItems Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetGrinsForServiceItemsSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetGrinsForServiceItemsById(int id)
         {
