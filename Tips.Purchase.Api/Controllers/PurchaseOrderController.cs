@@ -1569,10 +1569,16 @@ namespace Tips.Purchase.Api.Controllers
 
                     using var smtp = new MailKit.Net.Smtp.SmtpClient();
                     int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    _logger.LogInfo($"SMTP Details:Host: {(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault())} |Port:{port} |From:{(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault())} |Password:{(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault())}");
+
                     smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    _logger.LogInfo("Connection Successful");
                     smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+                    _logger.LogInfo("Authenticate Successful");
 
                     smtp.Send(email);
+                    _logger.LogInfo("Send Successful");
+
                     smtp.Disconnect(true);
 
                 }
@@ -1585,7 +1591,7 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreatePurchaseOrder action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreatePurchaseOrder action: {ex.Message} {ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong ,try again";
                 serviceResponse.Success = false;

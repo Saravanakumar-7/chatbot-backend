@@ -637,7 +637,7 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryDto.GrinMaterialType = "";
                             grinInventoryDto.ShopOrderNo = "";
 
-                            
+
                             var json = JsonConvert.SerializeObject(grinInventoryDto);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
                             var client1 = _clientFactory.CreateClient();
@@ -1720,7 +1720,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-      
+
         [HttpGet]
         public async Task<IActionResult> GetGrinSPReport([FromQuery] PagingParameter pagingParameter)
         {
