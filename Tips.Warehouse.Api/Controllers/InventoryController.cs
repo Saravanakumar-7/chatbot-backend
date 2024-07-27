@@ -2270,7 +2270,7 @@ namespace Tips.Warehouse.Api.Controllers
                                         if (wipQtyInventoryQty > wipQtyInIssueTracker)
                                         {
                                             inventoryDetail.Balance_Quantity -= wipQtyInIssueTracker;
-                                            _inventoryRepository.Update(inventoryDetail);
+                                            await _inventoryRepository.UpdateInventory(inventoryDetail);
 
                                             InventoryTranction inventoryTranction = new InventoryTranction();
                                             inventoryTranction.PartNumber = inventoryDetail.PartNumber;
@@ -2293,7 +2293,7 @@ namespace Tips.Warehouse.Api.Controllers
                                             inventoryTranction.TO_Location = inventoryDetail.Location;
                                             inventoryTranction.Warehouse = inventoryDetail.Warehouse;
                                             inventoryTranction.Remarks = "Open Material Return Note";
-                                            await _inventoryTranctionRepository.Create(inventoryTranction);
+                                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
 
                                             Inventory inventoryPost = new Inventory();
                                             inventoryPost.PartNumber = itemNumber;
@@ -2340,7 +2340,7 @@ namespace Tips.Warehouse.Api.Controllers
                                             inventoryTranction1.TO_Location = inventoryPost.Location;
                                             inventoryTranction1.Warehouse = inventoryPost.Warehouse;
 
-                                            await _inventoryTranctionRepository.Create(inventoryTranction1);
+                                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction1);
 
                                             wipQtyInIssueTracker = 0;
                                         }
@@ -2349,7 +2349,7 @@ namespace Tips.Warehouse.Api.Controllers
                                             inventoryDetail.Location = Location.Location;
                                             inventoryDetail.Warehouse = Location.Warehouse;
                                             inventoryDetail.ReferenceIDFrom = "Material Return Note";
-                                            _inventoryRepository.Update(inventoryDetail);
+                                            await _inventoryRepository.UpdateInventory(inventoryDetail);
 
                                             InventoryTranction inventoryTranction = new InventoryTranction();
                                             inventoryTranction.PartNumber = inventoryDetail.PartNumber;
@@ -2392,7 +2392,7 @@ namespace Tips.Warehouse.Api.Controllers
                 }
 
                 _inventoryRepository.SaveAsync();
-                _inventoryTranctionRepository.SaveAsync();
+               _inventoryTranctionRepository.SaveAsync();
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Updated Successfully";

@@ -335,7 +335,7 @@ namespace Tips.SalesService.Api.Controllers
                             salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
                             salesOrderItemsDtos.SoConfirmationDates = _mapper.Map<List<SoConfirmationDateDto>>(salesOrderItemDetails.SoConfirmationDates);
                             var ItemHistory = await _salesOrderHistory.GetSalesOrderHistoryBySONoAndItemNumberifShortCLosed(salesOrderNo, salesOrderItemsDtos.ItemNumber);
-                            if (ItemHistory != null) salesOrderItemsDtos.ShortClosedQty = ItemHistory.Sum(x => x.ShortClosedQty);
+                            if (ItemHistory != null && ItemHistory.Count()>0) salesOrderItemsDtos.ShortClosedQty = ItemHistory.Sum(x => x.ShortClosedQty);
                             var client = _clientFactory.CreateClient();
                             var token = HttpContext.Request.Headers["Authorization"].ToString();
                             var itemNumber = salesOrderItemsDtos.ItemNumber;
@@ -350,7 +350,7 @@ namespace Tips.SalesService.Api.Controllers
                             var inventoryQtyResponse = await client.SendAsync(request);
                             var inventoryItemQtyDetails = await inventoryQtyResponse.Content.ReadAsStringAsync();
                             var inventoryItemWithStockDetails = JsonConvert.DeserializeObject<InventoryItemdetailsDto>(inventoryItemQtyDetails);
-                            if (inventoryItemWithStockDetails != null)
+                            if (inventoryItemWithStockDetails.data != null)
                             {
                                 salesOrderItemsDtos.AvailableStock = inventoryItemWithStockDetails.data.Sum(x => x.balance_Quantity);
                             }
