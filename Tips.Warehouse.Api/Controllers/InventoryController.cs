@@ -1868,6 +1868,8 @@ namespace Tips.Warehouse.Api.Controllers
             wipInventory.Location = "WIP";
             wipInventory.IsStockAvailable = true;
             wipInventory.shopOrderNo = shopOrderNumber;
+            wipInventory.Min = inventoryDetail.Min;
+            wipInventory.Max = inventoryDetail.Max;
             return wipInventory;
         }
 
@@ -2296,16 +2298,16 @@ namespace Tips.Warehouse.Api.Controllers
                                             await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
 
                                             Inventory inventoryPost = new Inventory();
-                                            inventoryPost.PartNumber = itemNumber;
+                                            inventoryPost.PartNumber = inventoryDetail.PartNumber;
                                             inventoryPost.MftrPartNumber = inventoryDetail.MftrPartNumber;
-                                            inventoryPost.ProjectNumber = projectNumber;
+                                            inventoryPost.ProjectNumber = inventoryDetail.ProjectNumber;
                                             inventoryPost.Description = inventoryDetail.Description;
                                             inventoryPost.Balance_Quantity = wipQtyInIssueTracker;
                                             inventoryPost.UOM = inventoryDetail.UOM;
-                                            inventoryPost.Max = itemMasterTranctionObject.max;
-                                            inventoryPost.Min = itemMasterTranctionObject.min;
+                                            inventoryPost.Max = inventoryDetail.Max;
+                                            inventoryPost.Min = inventoryDetail.Min;
                                             inventoryPost.GrinMaterialType = inventoryDetail.GrinMaterialType;
-                                            inventoryPost.shopOrderNo = materialReturnQty.ShopOrderNumber;
+                                            inventoryPost.shopOrderNo = inventoryDetail.shopOrderNo;
                                             inventoryPost.Unit = inventoryDetail.Unit;
                                             inventoryPost.GrinNo = inventoryDetail.GrinNo;
                                             inventoryPost.GrinPartId = inventoryDetail.GrinPartId;
@@ -2314,7 +2316,7 @@ namespace Tips.Warehouse.Api.Controllers
                                             inventoryPost.Location = Location.Location;
                                             inventoryPost.PartType = inventoryDetail.PartType;
                                             inventoryPost.ReferenceID = inventoryDetail.ReferenceID;
-                                            inventoryPost.LotNumber = itemWithLotNo.LotNumber;
+                                            inventoryPost.LotNumber = inventoryDetail.LotNumber;
                                             inventoryPost.ReferenceIDFrom = "Material Return Note";
                                             await _inventoryRepository.CreateInventory(inventoryPost);
 
