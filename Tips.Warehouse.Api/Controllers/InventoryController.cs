@@ -1838,6 +1838,9 @@ namespace Tips.Warehouse.Api.Controllers
             wipInventory.Location = "WIP";
             wipInventory.IsStockAvailable = true;
             wipInventory.shopOrderNo = shopOrderNumber;
+            wipInventory.Min = inventoryDetail.Min;
+            wipInventory.Max = inventoryDetail.Max;
+
             return wipInventory;
         }
 
@@ -1870,6 +1873,7 @@ namespace Tips.Warehouse.Api.Controllers
             wipInventory.shopOrderNo = shopOrderNumber;
             wipInventory.Min = inventoryDetail.Min;
             wipInventory.Max = inventoryDetail.Max;
+
             return wipInventory;
         }
 
@@ -1944,12 +1948,13 @@ namespace Tips.Warehouse.Api.Controllers
                                     issuedQty -= stock;
                                     lotNoWiseIssuedQty = stock;
                                     /** Dont Change the Position of IssuedQty and BalanceQty Code in this Method .it should be always last ***********************/
-                                    //create inventory transaction
+                                    
 
                                     Inventory wipInventory = MRInsertWipDetailsInInventoryWhenIssuedQtyIsMore(invItem, lotNoWiseIssuedQty, shopOrderNumber);
                                     wipInventory.ReferenceID = mrNumber;
                                     await _inventoryRepository.CreateInventory(wipInventory);
 
+                                    //create inventory transaction
                                     InventoryTranction inventoryTransaction1 = new InventoryTranction();
                                     inventoryTransaction1.PartNumber = wipInventory.PartNumber;
                                     inventoryTransaction1.MftrPartNumber = wipInventory.MftrPartNumber;
@@ -2240,18 +2245,18 @@ namespace Tips.Warehouse.Api.Controllers
                     var projectNumber = materialReturnQty.ProjectNumber;
                     //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
                     //    "GetItemMasterByItemNumber?", "&ItemNumber=", itemNumber));
-                    var client = _clientFactory.CreateClient();
-                    var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    var encodedItemNumber = Uri.EscapeDataString(itemNumber);
+                    //var client = _clientFactory.CreateClient();
+                    //var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    //var encodedItemNumber = Uri.EscapeDataString(itemNumber);
 
-                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
-                        $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
-                    request.Headers.Add("Authorization", token);
+                    //var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
+                    //    $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+                    //request.Headers.Add("Authorization", token);
 
-                    var itemMasterObjectResult = await client.SendAsync(request);
-                    var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                    dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                    dynamic itemMasterTranctionObject = itemMasterObjectData.data;
+                    //var itemMasterObjectResult = await client.SendAsync(request);
+                    //var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                    //dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                    //dynamic itemMasterTranctionObject = itemMasterObjectData.data;
                     foreach (var Location in materialReturnQty.MRNDetails)
                     {
                         if (Location.IsMRNIssueDone != true)
@@ -2404,7 +2409,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Invalid inventory action: {ex.Message},{ex.InnerException}");
+                _logger.LogError($"Something went wrong inside MaterialReturnNoteInventoryBalanceQty action: {ex.Message},{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
