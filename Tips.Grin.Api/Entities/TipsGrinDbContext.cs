@@ -65,7 +65,10 @@ namespace Tips.Grin.Api.Entities
             modelBuilder.Entity<OpenGrinSpReportForTrans>().HasNoKey();
             modelBuilder.Entity<IQCConfirmationSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<GrinForServiceItemsSPReport>().HasNoKey();
-            
+            modelBuilder.Entity<IQCForServiceItemsSPReport>().HasNoKey();
+            modelBuilder.Entity<OpenGrinForGrinSPReport>().HasNoKey();
+            modelBuilder.Entity<OpenGrinForIQCSPReport>().HasNoKey();
+
         }
 
 

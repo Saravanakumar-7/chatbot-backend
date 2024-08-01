@@ -993,7 +993,13 @@ namespace Tips.Purchase.Api.Repository
 
             PrStatus status = PrStatus.Open;
             var prCount = _tipsPurchaseDbContexts.PrItems.Where(x => x.PurchaseRequistionId == prId).Count();
-            var prStatusCount = _tipsPurchaseDbContexts.PrItems.Where(x => x.PurchaseRequistionId == prId && (x.PrStatus != PrStatus.Closed || x.PrStatus != PrStatus.ShortClosed)).Count();
+            //var prStatusCount = _tipsPurchaseDbContexts.PrItems.Where(x => x.PurchaseRequistionId == prId && (x.PrStatus != PrStatus.Closed || x.PrStatus != PrStatus.ShortClosed)).Count();
+            var prStatusCount = _tipsPurchaseDbContexts.PrItems
+                .Where(x => x.PurchaseRequistionId == prId &&
+                x.PrStatus != PrStatus.Closed &&
+                x.PrStatus != PrStatus.ShortClosed)
+                .Count();
+
             if (prStatusCount == 0) status = PrStatus.Closed;
             else if (prCount > prStatusCount) status = PrStatus.PartiallyClosed;
             return status;

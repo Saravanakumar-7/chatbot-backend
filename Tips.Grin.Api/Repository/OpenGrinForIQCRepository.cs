@@ -36,7 +36,23 @@ namespace Tips.Grin.Api.Repository
             return PagedList<OpenGrinForIQC>.ToPagedList(openGrinForIQCDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
+        public async Task<IEnumerable<OpenGrinForIQCSPReport>> GetOpenGrinForIQCSPReportWithParam(string? openGrinForIQCNumber, string? itemNumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<OpenGrinForIQCSPReport>()
+            .FromSqlInterpolated($"CALL Opengrinforiqc_with_parameter({openGrinForIQCNumber},{itemNumber})")
+            .ToList();
 
+            return result;
+        }
+        public async Task<IEnumerable<OpenGrinForIQCSPReport>> GetOpenGrinForIQCSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<OpenGrinForIQCSPReport>()
+                      .FromSqlInterpolated($"CALL Opengrinforiqc_with_date({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
         public async Task<OpenGrinForIQC> GetOpenGrinForIQCDetailsbyId(int id)
         {
             var openForGrinIQCDetails= await _tipsGrinDbContext.OpenGrinForIQCs.Where(x => x.Id == id)

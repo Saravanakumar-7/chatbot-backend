@@ -2243,6 +2243,7 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     var itemNumber = materialReturnQty.PartNumber;
                     var projectNumber = materialReturnQty.ProjectNumber;
+                    var shopOrderNumber = materialReturnQty.ShopOrderNumber;
                     //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
                     //    "GetItemMasterByItemNumber?", "&ItemNumber=", itemNumber));
                     //var client = _clientFactory.CreateClient();
@@ -2267,7 +2268,7 @@ namespace Tips.Warehouse.Api.Controllers
                             {
                                 var lotNumber = itemWithLotNo.LotNumber;
                                 var wipQtyInIssueTracker = itemWithLotNo.WipQty;
-                                var inventories = await _inventoryRepository.GetWipInventoryDetailsByLotNumber(itemNumber, lotNumber);
+                                var inventories = await _inventoryRepository.GetWipInventoryDetailsByLotNumber(itemNumber, lotNumber, shopOrderNumber);
 
                                 if (inventories != null || inventories.Count() > 0)
                                 {
@@ -2278,6 +2279,7 @@ namespace Tips.Warehouse.Api.Controllers
                                         {
                                             inventoryDetail.Balance_Quantity -= wipQtyInIssueTracker;
                                             await _inventoryRepository.UpdateInventory(inventoryDetail);
+                                            _inventoryRepository.SaveAsync();
 
                                             InventoryTranction inventoryTranction = new InventoryTranction();
                                             inventoryTranction.PartNumber = inventoryDetail.PartNumber;
@@ -2324,6 +2326,7 @@ namespace Tips.Warehouse.Api.Controllers
                                             inventoryPost.LotNumber = inventoryDetail.LotNumber;
                                             inventoryPost.ReferenceIDFrom = "Material Return Note";
                                             await _inventoryRepository.CreateInventory(inventoryPost);
+                                            _inventoryRepository.SaveAsync();
 
 
                                             InventoryTranction inventoryTranction1 = new InventoryTranction();
@@ -2357,6 +2360,7 @@ namespace Tips.Warehouse.Api.Controllers
                                             inventoryDetail.Warehouse = Location.Warehouse;
                                             inventoryDetail.ReferenceIDFrom = "Material Return Note";
                                             await _inventoryRepository.UpdateInventory(inventoryDetail);
+                                            _inventoryRepository.SaveAsync();
 
                                             InventoryTranction inventoryTranction = new InventoryTranction();
                                             inventoryTranction.PartNumber = inventoryDetail.PartNumber;
@@ -2393,12 +2397,13 @@ namespace Tips.Warehouse.Api.Controllers
                                     }
 
                                 }
+
                             }
                         }
                     }
                 }
 
-                _inventoryRepository.SaveAsync();
+                //_inventoryRepository.SaveAsync();
                _inventoryTranctionRepository.SaveAsync();
 
                 serviceResponse.Data = null;

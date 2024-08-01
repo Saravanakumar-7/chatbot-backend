@@ -2,6 +2,7 @@
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using Tips.Grin.Api.Entities;
+using Tips.Grin.Api.Entities.DTOs;
 
 namespace Tips.Grin.Api.Contracts
 {
@@ -12,5 +13,7 @@ namespace Tips.Grin.Api.Contracts
         Task<OpenGrinForIQC> GetOpenGrinForIQCDetailsbyId(int id);
         Task<OpenGrinForIQC> GetOpenGrinForIQCDetailsbyOpenGrinNo(string openGrinNumber);
         Task<string> UpdateOpenGrinForIQC(OpenGrinForIQC openGrinForIQC);
+        Task<IEnumerable<OpenGrinForIQCSPReport>> GetOpenGrinForIQCSPReportWithParam(string? openGrinForIQCNumber, string? itemNumber);
+        Task<IEnumerable<OpenGrinForIQCSPReport>> GetOpenGrinForIQCSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
     }
 }

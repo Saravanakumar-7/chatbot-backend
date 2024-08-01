@@ -85,6 +85,83 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GetIQCForServiceItemsSPReportWithParam([FromBody] IQCForServiceItemsReportWithParamDto iQCForServiceItemsReportWithParamDto)
+        {
+            ServiceResponse<IEnumerable<IQCForServiceItemsSPReport>> serviceResponse = new ServiceResponse<IEnumerable<IQCForServiceItemsSPReport>>();
+            try
+            {
+                var products = await _iQCForServiceItemsRepository.GetIQCForServiceItemsSPReportWithParam(iQCForServiceItemsReportWithParamDto.GrinsForServiceItemsNumber,
+                                                                                                                    iQCForServiceItemsReportWithParamDto.ItemNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"IQCForServiceItems hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"IQCForServiceItems hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned IQCForServiceItems Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetIQCForServiceItemsSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetIQCForServiceItemsSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<IQCForServiceItemsSPReport>> serviceResponse = new ServiceResponse<IEnumerable<IQCForServiceItemsSPReport>>();
+            try
+            {
+                var products = await _iQCForServiceItemsRepository.GetIQCForServiceItemsSPReportWithDate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"IQCForServiceItems hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"IQCForServiceItems hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned IQCForServiceItems Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetIQCForServiceItemsSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         private string GetServerKey()
         {
             var serverName = Environment.MachineName;

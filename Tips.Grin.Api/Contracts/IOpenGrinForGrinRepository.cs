@@ -10,6 +10,8 @@ namespace Tips.Grin.Api.Contracts
     {
         Task<PagedList<OpenGrinForGrin>> GetAllOpenGrinForGrin(PagingParameter pagingParameter,SearchParams searchParams);
         Task<int?> CreateOpenGrinForGrin(OpenGrinForGrin openGrinForGrins);
+        Task<IEnumerable<OpenGrinForGrinSPReport>> GetOpenGrinForGrinSPReportWithParam(string? openGrinNumber, string? senderName, string? receiptRefNo);
+        Task<IEnumerable<OpenGrinForGrinSPReport>> GetOpenGrinForGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<OpenGrinForGrin> GetOpenGrinForGrinDetailsbyId(int id);
         Task<string> GenerateOpenGrinForGrinNumber();
         Task<string> GenerateOpenGrinForGrinNumberForAvision();

@@ -88,6 +88,83 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> GetOpenGrinForIQCSPReportWithParam([FromBody] OpenGrinForIQCSPReportWithParamDto openGrinForIQCSPReportWithParamDto)
+        {
+            ServiceResponse<IEnumerable<OpenGrinForIQCSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinForIQCSPReport>>();
+            try
+            {
+                var products = await _repository.GetOpenGrinForIQCSPReportWithParam(openGrinForIQCSPReportWithParamDto.OpenGrinForIQCNumber,
+                                                                                                                    openGrinForIQCSPReportWithParamDto.ItemNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OpenGrinForIQC hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OpenGrinForIQC hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OpenGrinForIQC Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetOpenGrinForIQCSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetOpenGrinForIQCSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<OpenGrinForIQCSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinForIQCSPReport>>();
+            try
+            {
+                var products = await _repository.GetOpenGrinForIQCSPReportWithDate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OpenGrinForIQC hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OpenGrinForIQC hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OpenGrinForIQC Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetOpenGrinForIQCSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetOpenGrinForIQCDetailsbyId(int id)
         {

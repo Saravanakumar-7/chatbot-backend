@@ -42,7 +42,23 @@ namespace Tips.Grin.Api.Repository
             var result = await Create(openGrinForGrins);
             return result.Id;
         }
+        public async Task<IEnumerable<OpenGrinForGrinSPReport>> GetOpenGrinForGrinSPReportWithParam(string? openGrinNumber, string? senderName, string? receiptRefNo)
+        {
+            var result = _tipsGrinDbContext
+            .Set<OpenGrinForGrinSPReport>()
+            .FromSqlInterpolated($"CALL OpenGrinforgrins_Report_withparameter({openGrinNumber},{senderName},{receiptRefNo})")
+            .ToList();
 
+            return result;
+        }
+        public async Task<IEnumerable<OpenGrinForGrinSPReport>> GetOpenGrinForGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<OpenGrinForGrinSPReport>()
+                      .FromSqlInterpolated($"CALL OpenGrinforgrins_Report_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
         public async Task<OpenGrinForGrin> GetOpenGrinForGrinDetailsbyId(int id)
         {
             var openGrinForGrinDetailsById = await _tipsGrinDbContext.OpenGrinForGrins.Where(x => x.Id == id)

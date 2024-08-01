@@ -81,7 +81,8 @@ namespace Tips.Warehouse.Api.Repository
         {
             List<MRNIssueTrackerDto> mRNIssueTrackerDtos = new List<MRNIssueTrackerDto>();
             var shopOrderMaterialIssueTracker = await _tipsWarehouseDbContext.ShopOrderMaterialIssueTrackers
-                .Where(x => x.PartNumber == partNumber && x.ShopOrderNumber == shopOrderNo && (x.IssuedQty-x.ConvertedToFgQty) > 0).ToListAsync();
+                .Where(x => x.PartNumber == partNumber && x.ShopOrderNumber == shopOrderNo && x.Location == "WIP" && x.Warehouse == "WIP" 
+                && (x.IssuedQty-x.ConvertedToFgQty) > 0).ToListAsync();
             // Sort the records by CreatedOn date in descending order (LIFO).
             shopOrderMaterialIssueTracker.Sort((x, y) => y.CreatedOn?.CompareTo(x.CreatedOn) ?? 1);
 

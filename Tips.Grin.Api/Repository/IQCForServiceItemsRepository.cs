@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
+using Tips.Grin.Api.Entities.DTOs;
 
 namespace Tips.Grin.Api.Repository
 {
@@ -42,6 +43,23 @@ namespace Tips.Grin.Api.Repository
                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || (inv.GrinsForServiceItemsNumber != null && inv.GrinsForServiceItemsNumber.Contains(searchParams.SearchValue)) ||
                    (inv.Id != null && inv.Id.ToString().Contains(searchParams.SearchValue))))).OrderByDescending(x => x.Id);
             return PagedList<IQCForServiceItems>.ToPagedList(getallIQCList, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+        public async Task<IEnumerable<IQCForServiceItemsSPReport>> GetIQCForServiceItemsSPReportWithParam(string? grinsForServiceItemsNumber, string? itemNo)
+        {
+            var result = _tipsGrinDbContext
+            .Set<IQCForServiceItemsSPReport>()
+            .FromSqlInterpolated($"CALL Iqcforserviceitems_with_parameter({grinsForServiceItemsNumber},{itemNo})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<IQCForServiceItemsSPReport>> GetIQCForServiceItemsSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<IQCForServiceItemsSPReport>()
+                      .FromSqlInterpolated($"CALL iqc_confirmation_with_parameter_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
         }
         public async Task<IQCForServiceItems> GetIQCForServiceItemsDetailsbyGrinForServiceItemsNo(string grinsForServiceItemsNumber)
         {

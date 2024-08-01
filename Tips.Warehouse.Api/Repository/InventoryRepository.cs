@@ -1683,10 +1683,10 @@ namespace Tips.Warehouse.Api.Repository
         .SumAsync(i => i.Balance_Quantity);
         }
 
-        public async Task<List<Inventory>> GetWipInventoryDetailsByLotNumber(string itemNumber, string lotNumber)
+        public async Task<List<Inventory>> GetWipInventoryDetailsByLotNumber(string itemNumber, string lotNumber,string shopNo)
         {
             var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber
-            && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.LotNumber == lotNumber)
+            && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.LotNumber == lotNumber && x.shopOrderNo == shopNo)
                           .ToListAsync();
             return inventoryDetail;
         }
