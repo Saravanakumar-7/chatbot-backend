@@ -3409,22 +3409,23 @@ namespace Tips.Purchase.Api.Controllers
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
 
-                    var Operations = "From,Approval2";
-                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
-                    request1.Headers.Add("Authorization", token);
-                    var response1 = await client.SendAsync(request1);
-                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
-                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
-
-                    var httpclientHandler = new HttpClientHandler();
-                    var httpClient = new HttpClient(httpclientHandler);
-                    var email = new MimeMessage();
-                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
-
-                    // email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
-                    var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
+                   
                     if (purchaseOrderDetailByPONumber.ApprovalCount > 2)
                     {
+                        var Operations = "From,Approval2";
+                        var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                        request1.Headers.Add("Authorization", token);
+                        var response1 = await client.SendAsync(request1);
+                        var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                        var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
+                        var httpclientHandler = new HttpClientHandler();
+                        var httpClient = new HttpClient(httpclientHandler);
+                        var email = new MimeMessage();
+                        email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                        // email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                        var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
                         //var mails = "venkat.k@avisionsystems.com";
                         var mails = (emaildetails1.data.Where(x => x.operation == "Approval2").Select(x => x.emailIds).FirstOrDefault()).Split(',');
                         email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
@@ -3479,6 +3480,20 @@ namespace Tips.Purchase.Api.Controllers
                     }
                     else
                     {
+                        var Operations = "From,Approval2count2";
+                        var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                        request1.Headers.Add("Authorization", token);
+                        var response1 = await client.SendAsync(request1);
+                        var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                        var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
+                        var httpclientHandler = new HttpClientHandler();
+                        var httpClient = new HttpClient(httpclientHandler);
+                        var email = new MimeMessage();
+                        email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                        // email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                        var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
                         //var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com" };
                         //email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
                         var mails = (emaildetails1.data.Where(x => x.operation == "Approval2count2").Select(x => x.emailIds).FirstOrDefault()).Split(',');

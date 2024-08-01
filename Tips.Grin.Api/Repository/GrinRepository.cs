@@ -37,7 +37,7 @@ namespace Tips.Grin.Api.Repository
         {
             var date = DateTime.Now;
             grins.CreatedBy = _createdBy;
-            grins.CreatedOn = date.Date;
+            grins.CreatedOn = date;
             //Guid grinId = Guid.NewGuid();
             //grins.GrinNumber = "GR-" + grinId.ToString();
             grins.Unit = _unitname;
