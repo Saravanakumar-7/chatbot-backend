@@ -1803,8 +1803,8 @@ namespace Tips.Warehouse.Api.Controllers
                 IssuedQty = lotNoWiseIssuedQty,
                 ConvertedToFgQty = 0,
                 UOM = inventoryDetail.UOM,
-                Warehouse = "WIP",
-                Location = "WIP",
+                Warehouse = inventoryDetail.Warehouse,
+                Location = inventoryDetail.Location,
                 Unit = inventoryDetail.Unit,
                 PartType = inventoryDetail.PartType,
                 DataFrom = "Material Request",
@@ -2244,20 +2244,7 @@ namespace Tips.Warehouse.Api.Controllers
                     var itemNumber = materialReturnQty.PartNumber;
                     var projectNumber = materialReturnQty.ProjectNumber;
                     var shopOrderNumber = materialReturnQty.ShopOrderNumber;
-                    //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
-                    //    "GetItemMasterByItemNumber?", "&ItemNumber=", itemNumber));
-                    //var client = _clientFactory.CreateClient();
-                    //var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    //var encodedItemNumber = Uri.EscapeDataString(itemNumber);
 
-                    //var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
-                    //    $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
-                    //request.Headers.Add("Authorization", token);
-
-                    //var itemMasterObjectResult = await client.SendAsync(request);
-                    //var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                    //dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                    //dynamic itemMasterTranctionObject = itemMasterObjectData.data;
                     foreach (var Location in materialReturnQty.MRNDetails)
                     {
                         if (Location.IsMRNIssueDone != true)
@@ -2403,7 +2390,7 @@ namespace Tips.Warehouse.Api.Controllers
                     }
                 }
 
-                //_inventoryRepository.SaveAsync();
+                _inventoryRepository.SaveAsync();
                _inventoryTranctionRepository.SaveAsync();
 
                 serviceResponse.Data = null;

@@ -1884,9 +1884,15 @@ namespace Tips.Purchase.Api.Repository
         {
             var poStatus = new List<PoStatus> { PoStatus.Open, PoStatus.PartiallyClosed ,PoStatus.Closed};
 
+            var poItemIds = await _tipsPurchaseDbContext.PoAddProjects
+                .Where(x => x.ProjectNumber == projectNo)
+                .Select(x=>x.POItemDetailId)
+                 .ToListAsync();
+
             List<OpenPoQuantityDto> openPoQtyList = await _tipsPurchaseDbContext.PoItems
                 .Include(x => x.PurchaseOrder)
                 .Where(x => poStatus.Contains(x.PurchaseOrder.PoStatus)
+                && poItemIds.Contains(x.Id)
                 && poStatus.Contains(x.PoStatus) && itemNumberList.Contains(x.ItemNumber)
                 && (x.PurchaseOrder.ApprovalCount == 4 && x.PurchaseOrder.POApprovalI == true && x.PurchaseOrder.POApprovalII == true && x.PurchaseOrder.POApprovalIII == true
                 && x.PurchaseOrder.POApprovalIV == true) ||

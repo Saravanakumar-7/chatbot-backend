@@ -24,7 +24,7 @@ namespace Tips.Purchase.Api.Repository
         private readonly String _unitname;
         public PurchaseRequisitionRepository(TipsPurchaseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
-            _tipsPurchaseDbContext= repositoryContext;
+            _tipsPurchaseDbContext = repositoryContext;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
@@ -33,9 +33,10 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string prNumber, string prItemNumber)
         {
-            var PRid = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PrNumber == prNumber).Select(x=>x.Id).FirstOrDefaultAsync();
+            var PRid = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PrNumber == prNumber).Select(x => x.Id).FirstOrDefaultAsync();
             var FileIds = await _tipsPurchaseDbContext.PrItems.Where(x => x.PurchaseRequistionId == PRid && x.ItemNumber == prItemNumber).Select(x => x.PRFileIds).FirstOrDefaultAsync();
-            if (FileIds != null) {
+            if (FileIds != null)
+            {
                 string[]? ids = FileIds.Split(',');
                 List<GetDownloadUrlDto> getDownloadDetails = new List<GetDownloadUrlDto>();
                 for (int i = 0; i < ids.Count(); i++)
@@ -90,8 +91,8 @@ namespace Tips.Purchase.Api.Repository
             var date = DateTime.Now;
             purchaseRequisitions.CreatedBy = _createdBy;
             purchaseRequisitions.CreatedOn = date;
-           // Guid purchaseRequisitionsNumber = Guid.NewGuid();
-           // purchaseRequisitions.PRNumber = "PR-" + purchaseRequisitionsNumber.ToString();
+            // Guid purchaseRequisitionsNumber = Guid.NewGuid();
+            // purchaseRequisitions.PRNumber = "PR-" + purchaseRequisitionsNumber.ToString();
             purchaseRequisitions.Unit = _unitname;
             purchaseRequisitions.RevisionNumber = 1;
             var result = await Create(purchaseRequisitions);
@@ -127,7 +128,7 @@ namespace Tips.Purchase.Api.Repository
 
             return PagedList<PurchaseRequisitionSPReportForAvision>.ToPagedList(result.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-        public async Task<IEnumerable<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportWithParamForTrans(string PrNumber, string ProcurementType,string PrStatus, string ProjectNumber)
+        public async Task<IEnumerable<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportWithParamForTrans(string PrNumber, string ProcurementType, string PrStatus, string ProjectNumber)
         {
 
             var result = _tipsPurchaseDbContext
@@ -308,7 +309,7 @@ namespace Tips.Purchase.Api.Repository
         {
             var purchaseRequisitionDetail = await _tipsPurchaseDbContext.PurchaseRequisitions
             .Where(x => x.PrNumber == prNumber && x.RevisionNumber == revisionNumber && x.IsDeleted == false)
-           // .Include(o => o.PrFiles)
+            // .Include(o => o.PrFiles)
             .Include(t => t.PrItemsDtoList)
             .ThenInclude(x => x.prAddprojectsDtoList)
             .Include(m => m.PrItemsDtoList)
@@ -322,7 +323,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<PurchaseRequisition> GetPurchaseRequisitionByPRNo(string prNumber)
         {
             var purchaseRequisitionDetail = await _tipsPurchaseDbContext.PurchaseRequisitions
-            .Where(x => x.PrNumber == prNumber).OrderByDescending(x=>x.RevisionNumber)            
+            .Where(x => x.PrNumber == prNumber).OrderByDescending(x => x.RevisionNumber)
             .Include(t => t.PrItemsDtoList)
             .ThenInclude(x => x.prAddprojectsDtoList)
             .Include(m => m.PrItemsDtoList)
@@ -332,7 +333,7 @@ namespace Tips.Purchase.Api.Repository
             .FirstOrDefaultAsync();
 
             return purchaseRequisitionDetail;
-        }        
+        }
         public async Task<IEnumerable<PurchaseRequisition>> SearchPurchaseRequisitionDate([FromQuery] SearchDatesParams searchDatesParams)
         {
             var purchaseRequsisitionDetails = _tipsPurchaseDbContext.PurchaseRequisitions
@@ -360,7 +361,7 @@ namespace Tips.Purchase.Api.Repository
             //    .OrderByDescending(x => x.Id)
             //    .Select(x => x.RevisionNumber)
             //    .FirstOrDefault();
-          
+
             //var increaseVersionNumber = 1;
             //var convertversionnumber = (increaseVersionNumber);
             //var version = getOldRevisionNumber + convertversionnumber;
@@ -396,7 +397,7 @@ namespace Tips.Purchase.Api.Repository
 
         }
 
-        public  async Task<string> DeletePurchaseRequisition(PurchaseRequisition purchaseRequisitions)
+        public async Task<string> DeletePurchaseRequisition(PurchaseRequisition purchaseRequisitions)
         {
             Delete(purchaseRequisitions);
             string result = $"PurchaseRequistion details of {purchaseRequisitions.Id} is deleted successfully!";
@@ -419,7 +420,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<IEnumerable<PurchaseRequisition>> GetAllActivePurchaseRequisitions()
         {
             var activePurchaseRequsitionDetails = FindAll()
-                                .Where(x=>x.Status != Status.Closed)
+                                .Where(x => x.Status != Status.Closed)
                                 //.Include(o => o.PrFiles)
                                 .Include(t => t.PrItemsDtoList)
                                 .ThenInclude(x => x.prAddprojectsDtoList)
@@ -449,12 +450,19 @@ namespace Tips.Purchase.Api.Repository
 
         {
             IEnumerable<PurchaseRequisitionIdNameListDto> prNumberList = await _tipsPurchaseDbContext.PurchaseRequisitions
-                                .Select(x => new PurchaseRequisitionIdNameListDto()
+                              //  .Select(x => new PurchaseRequisitionIdNameListDto()
+                              //  {
+                              //      Id = x.Id,
+                              //      PrNumber = x.PrNumber,
+                              //  })
+                              //.ToListAsync();
+                              .GroupBy(x => x.PrNumber)
+                                .Select(pr => new PurchaseRequisitionIdNameListDto()
                                 {
-                                    Id = x.Id,
-                                    PrNumber = x.PrNumber,
+                                    Id = pr.OrderByDescending(x => x.RevisionNumber).FirstOrDefault().Id,
+                                    PrNumber = pr.Key
                                 })
-                              .ToListAsync();
+           .ToListAsync();
 
             return prNumberList;
         }
@@ -481,8 +489,8 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
-            IQueryable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIList =  _tipsPurchaseDbContext.PurchaseRequisitions
-           .Where(x => x.PrApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed).OrderByDescending(x=>x.Id)
+            IQueryable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIList = _tipsPurchaseDbContext.PurchaseRequisitions
+           .Where(x => x.PrApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed).OrderByDescending(x => x.Id)
            .Select(pr => new PurchaseRequisitionIdNameListDto()
            {
                Id = pr.Id,
@@ -522,7 +530,7 @@ namespace Tips.Purchase.Api.Repository
                         item.PrApprovedIBy.ToLower().Contains(searchValue) ||
                         item.PrApprovedIIBy.ToLower().Contains(searchValue) ||
                         item.ProcurementType.ToLower().Contains(searchValue)
-                    ).OrderByDescending(x=>x.Id);
+                    ).OrderByDescending(x => x.Id);
             }
 
             int totalCount = await pendingPRApprovalIList.CountAsync();
@@ -541,7 +549,7 @@ namespace Tips.Purchase.Api.Repository
                .Where(x => (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
             x.PrNumber.Contains(searchParams.SearchValue) || x.Purpose.Contains(searchParams.SearchValue) ||
             x.DeliveryTerms.Equals(searchParams.SearchValue) || x.ShippingMode.Equals(searchParams.SearchValue) || x.PrApprovedIBy.Equals(searchParams.SearchValue)
-            || x.PrApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue))&&((x.PrApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseRequisitions.Where(r => r.PrNumber == x.PrNumber).Max(r => r.RevisionNumber))))
+            || x.PrApprovedIIBy.Equals(searchParams.SearchValue) || x.ProcurementType.Equals(searchParams.SearchValue)) && ((x.PrApprovalI == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed) && (x.RevisionNumber == _tipsPurchaseDbContext.PurchaseRequisitions.Where(r => r.PrNumber == x.PrNumber).Max(r => r.RevisionNumber))))
                .OrderByDescending(x => x.Id);
 
             return PagedList<PurchaseRequisition>.ToPagedList(lastestPendingPRApprovalIList, pagingParameter.PageNumber, pagingParameter.PageSize);
@@ -602,8 +610,8 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<PagedList<PurchaseRequisitionIdNameListDto>> GetAllPendingPRApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
-            IQueryable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIIList =  _tipsPurchaseDbContext.PurchaseRequisitions
-           .Where(x => x.PrApprovalI == true && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed).OrderByDescending(x=>x.Id)
+            IQueryable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIIList = _tipsPurchaseDbContext.PurchaseRequisitions
+           .Where(x => x.PrApprovalI == true && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false && x.PrStatus != PrStatus.ShortClosed).OrderByDescending(x => x.Id)
            .Select(pr => new PurchaseRequisitionIdNameListDto()
            {
                Id = pr.Id,
@@ -643,7 +651,7 @@ namespace Tips.Purchase.Api.Repository
                         item.PrApprovedIBy.ToLower().Contains(searchValue) ||
                         item.PrApprovedIIBy.ToLower().Contains(searchValue) ||
                         item.ProcurementType.ToLower().Contains(searchValue)
-                    ).OrderByDescending(x=>x.Id);
+                    ).OrderByDescending(x => x.Id);
             }
 
             int totalCount = await pendingPRApprovalIIList.CountAsync();
@@ -730,7 +738,7 @@ namespace Tips.Purchase.Api.Repository
             //                    PrNumber = x.PrNumber,
             //                }).ToListAsync();
             IEnumerable<PurchaseRequisitionIdNameListDto> pendingPRApprovalIINameList = await _tipsPurchaseDbContext.PurchaseRequisitions
-            .Where(x => x.PrApprovalI == true  && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false)
+            .Where(x => x.PrApprovalI == true && x.PrApprovalII == false && x.IsDeleted == false && x.IsModified == false)
             .GroupBy(x => x.PrNumber)
             .Select(pr => new PurchaseRequisitionIdNameListDto()
             {
@@ -812,9 +820,9 @@ namespace Tips.Purchase.Api.Repository
                 searchDate = null;
             }
 
-            var purchaseRequisitionDetails = FindAll().OrderByDescending(on => on.Id).Where(inv =>(string.IsNullOrWhiteSpace(searchParams.SearchValue)
+            var purchaseRequisitionDetails = FindAll().OrderByDescending(on => on.Id).Where(inv => (string.IsNullOrWhiteSpace(searchParams.SearchValue)
                     || inv.PrNumber.Contains(searchParams.SearchValue) || (searchrev.HasValue && inv.RevisionNumber == searchrev)
-                    || (searchDate.HasValue && inv.PrDate == searchDate)) 
+                    || (searchDate.HasValue && inv.PrDate == searchDate))
                     && (inv.RevisionNumber == _tipsPurchaseDbContext.PurchaseRequisitions.Where(r => r.PrNumber == inv.PrNumber).Max(r => r.RevisionNumber)))
                 .Include(t => t.PrItemsDtoList).ThenInclude(x => x.prAddprojectsDtoList)
                     .Include(m => m.PrItemsDtoList).ThenInclude(i => i.prAddDeliverySchedulesDtoList).Include(itm => itm.PrItemsDtoList)
@@ -845,7 +853,7 @@ namespace Tips.Purchase.Api.Repository
         {
             var purchaseRequistionByPRNumber = await _tipsPurchaseDbContext.PurchaseRequisitions.
                 Where(x => x.PrNumber == prNumber && x.RevisionNumber == RevNo)
-                                 // .Include(o => o.PrFiles)
+                                  // .Include(o => o.PrFiles)
                                   .Include(t => t.PrItemsDtoList)
                                 .ThenInclude(x => x.prAddprojectsDtoList)
                                 .Include(m => m.PrItemsDtoList)
@@ -867,14 +875,14 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<string> UpdatePurchaseRequisition_ForApproval(PurchaseRequisition purchaseRequisitions)
         {
-           // purchaseRequisitions.LastModifiedBy = _createdBy;
-           // purchaseRequisitions.LastModifiedOn = DateTime.Now;
+            // purchaseRequisitions.LastModifiedBy = _createdBy;
+            // purchaseRequisitions.LastModifiedOn = DateTime.Now;
             Update(purchaseRequisitions);
             string result = $"PurchaseRequisitions of Detail {purchaseRequisitions.Id} is updated successfully!";
             return result;
         }
         public async Task<IEnumerable<GetPRDownloadUrlDto>> GetDownloadUrlDetail(string prNumber)
-        { 
+        {
             IEnumerable<GetPRDownloadUrlDto> getDownloadDetails = await _tipsPurchaseDbContext.DocumentUploads
                                 .Where(b => b.ParentNumber == prNumber)
                                 .Select(x => new GetPRDownloadUrlDto()
