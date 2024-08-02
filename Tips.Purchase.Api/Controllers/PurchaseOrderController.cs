@@ -1607,15 +1607,18 @@ namespace Tips.Purchase.Api.Controllers
         {
             ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
 
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", Filename);
+            var filename = Uri.UnescapeDataString(Filename);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", filename);
             var provider = new FileExtensionContentTypeProvider();
             if (!provider.TryGetContentType(filePath, out var ContentType))
             {
                 ContentType = "application/octet-stream";
             }
             var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+            var DownloadFilename = filename.Split('_');
+            var downloadFilename = string.IsNullOrWhiteSpace(DownloadFilename[1]) ? Path.GetFileName(filePath) : DownloadFilename[1];
 
-            return File(bytes, ContentType, Path.GetFileName(filePath));
+            return File(bytes, ContentType, downloadFilename);
         }
 
         private string GetServerKey()
