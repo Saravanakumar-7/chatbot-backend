@@ -1926,14 +1926,32 @@ namespace Tips.Purchase.Api.Controllers
                         if (item.prAddprojectsDtoList.Count > 0)
                             foreach (var project in item.prAddprojectsDtoList)
                             {
-                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
-                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                if (ProjectNos.IsNullOrEmpty()) 
+                                {
+                                    ProjectNos = project.ProjectNumber; 
+                                    tempProj.Add(project.ProjectNumber); 
+                                }
+                                else if (!tempProj.Contains(project.ProjectNumber)) 
+                                {
+                                    ProjectNos = ProjectNos + ", " + project.ProjectNumber; 
+                                    tempProj.Add(project.ProjectNumber);
+                                }
                             }
                         if (item.prAddDeliverySchedulesDtoList.Count > 0)
                             foreach (var pr in item.prAddDeliverySchedulesDtoList)
                             {
-                                if (PRDeliveryDate.IsNullOrEmpty()) { PRDeliveryDate = pr.PrDeliveryDate.ToString(); tempPRno.Add(pr.PrDeliveryDate.ToString()); }
-                                else if (!tempPRno.Contains(pr.PrDeliveryDate.ToString())) { PRDeliveryDate = PRDeliveryDate + ", " + pr.PrDeliveryDate.ToString(); tempPRno.Add(pr.PrDeliveryDate.ToString()); }
+                                if (PRDeliveryDate.IsNullOrEmpty()) 
+                                {
+                                    var temp= pr.PrDeliveryDate.ToString().Split(" ");
+                                    PRDeliveryDate = temp[0];
+                                    tempPRno.Add(pr.PrDeliveryDate.ToString()); 
+                                }
+                                else if (!tempPRno.Contains(pr.PrDeliveryDate.ToString())) 
+                                {
+                                    var temp = pr.PrDeliveryDate.ToString().Split(" ");
+                                    PRDeliveryDate = PRDeliveryDate + ", " + temp[0];
+                                    tempPRno.Add(temp[0]); 
+                                }
                             }
 
                     }
@@ -2044,10 +2062,19 @@ namespace Tips.Purchase.Api.Controllers
                         if (item.prAddDeliverySchedulesDtoList.Count > 0)
                             foreach (var pr in item.prAddDeliverySchedulesDtoList)
                             {
-                                if (PRDeliveryDate.IsNullOrEmpty()) { PRDeliveryDate = pr.PrDeliveryDate.ToString(); tempPRno.Add(pr.PrDeliveryDate.ToString()); }
-                                else if (!tempPRno.Contains(pr.PrDeliveryDate.ToString())) { PRDeliveryDate = PRDeliveryDate + ", " + pr.PrDeliveryDate.ToString(); tempPRno.Add(pr.PrDeliveryDate.ToString()); }
+                                if (PRDeliveryDate.IsNullOrEmpty())
+                                {
+                                    var temp = pr.PrDeliveryDate.ToString().Split(" ");
+                                    PRDeliveryDate = temp[0];
+                                    tempPRno.Add(pr.PrDeliveryDate.ToString());
+                                }
+                                else if (!tempPRno.Contains(pr.PrDeliveryDate.ToString()))
+                                {
+                                    var temp = pr.PrDeliveryDate.ToString().Split(" ");
+                                    PRDeliveryDate = PRDeliveryDate + ", " + temp[0];
+                                    tempPRno.Add(temp[0]);
+                                }
                             }
-
                     }
                     body = body.Replace("{{Project Ref No}}", ProjectNos);
                     body = body.Replace("{{PR Delivery Dates}}", PRDeliveryDate);
