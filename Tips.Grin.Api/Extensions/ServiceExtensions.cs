@@ -22,7 +22,7 @@ namespace Tips.Grin.Api.Extensions
                     builder => builder.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .WithExposedHeaders("X-Pagination"));
+                    .WithExposedHeaders("X-Pagination", "Content-Disposition"));
             });
         }
 
