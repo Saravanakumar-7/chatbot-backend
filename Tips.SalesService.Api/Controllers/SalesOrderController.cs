@@ -275,7 +275,7 @@ namespace Tips.SalesService.Api.Controllers
                     var salesAdditionalChargesDto = salesOrderDto.SalesOrderAdditionalCharges;
 
                     var salesAdditionalChargesList = _mapper.Map<List<SalesOrderAdditionalChargesDto>>(salesAdditionalChargesDto);
-                    
+
                     string salesOrderNo = salesOrderDto.SalesOrderNumber;
                     SalesOrderStatus salesOrderStatus1 = salesOrderDto.SalesOrderStatus;
                     int salesOrderStatus = (int)salesOrderStatus1;
@@ -335,7 +335,7 @@ namespace Tips.SalesService.Api.Controllers
                             salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
                             salesOrderItemsDtos.SoConfirmationDates = _mapper.Map<List<SoConfirmationDateDto>>(salesOrderItemDetails.SoConfirmationDates);
                             var ItemHistory = await _salesOrderHistory.GetSalesOrderHistoryBySONoAndItemNumberifShortCLosed(salesOrderNo, salesOrderItemsDtos.ItemNumber);
-                            if (ItemHistory != null && ItemHistory.Count()>0) salesOrderItemsDtos.ShortClosedQty = ItemHistory.Sum(x => x.ShortClosedQty);
+                            if (ItemHistory != null && ItemHistory.Count() > 0) salesOrderItemsDtos.ShortClosedQty = ItemHistory.Sum(x => x.ShortClosedQty);
                             var client = _clientFactory.CreateClient();
                             var token = HttpContext.Request.Headers["Authorization"].ToString();
                             var itemNumber = salesOrderItemsDtos.ItemNumber;
@@ -4186,6 +4186,8 @@ namespace Tips.SalesService.Api.Controllers
                 for (int i = 0; i < salesOrderItemsDto.Count; i++)
                 {
                     SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
+                    salesOrderItemsDetail.ScheduleDates = null;
+                    salesOrderItemsDetail.SoConfirmationDates = null;
                     if (salesOrderItemsDto[i].NowShortClosed == true)
                     {
                         salesOrderItemsDetail.ShortClosedBy = _createdBy;
@@ -4239,6 +4241,22 @@ namespace Tips.SalesService.Api.Controllers
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
                         await _salesOrderHistory.CreateSalesOrderHistory(salesOrderHistories);
                     }
+                    List<ScheduleDate>? listSch=new List<ScheduleDate>();
+                    if (salesOrderItemsDto[i].ScheduleDates.Count() > 0)
+                        foreach (var secd in salesOrderItemsDto[i].ScheduleDates)
+                        {
+                            ScheduleDate secd1 = _mapper.Map<ScheduleDate>(secd);
+                            listSch.Add(secd1);
+                        }
+                    List<SoConfirmationDate>? listCon=new List<SoConfirmationDate>();
+                    if (salesOrderItemsDto[i].ScheduleDates.Count() > 0)
+                        foreach (var Con in salesOrderItemsDto[i].SoConfirmationDates)
+                        {
+                            SoConfirmationDate Con1 = _mapper.Map<SoConfirmationDate>(Con);
+                            listCon.Add(Con1);
+                        }
+                    salesOrderItemsDetail.ScheduleDates = listSch;
+                    salesOrderItemsDetail.SoConfirmationDates = listCon;
                     salesOrderItemsList.Add(salesOrderItemsDetail);
                 }
                 var salesAdditionalChargesList = new List<SalesOrderAdditionalCharges>();
@@ -4251,6 +4269,8 @@ namespace Tips.SalesService.Api.Controllers
                     }
                 }
                 var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetailBeforeUpdate);
+                updateData.SalesOrdersItems = null;
+                updateData.SalesOrderAdditionalCharges = null;
                 updateData.SalesOrdersItems = salesOrderItemsList;
                 updateData.SalesOrderAdditionalCharges = salesAdditionalChargesList;
                 string result = await _repository.UpdateSalesOrderShortClose(updateData);
@@ -4454,7 +4474,7 @@ namespace Tips.SalesService.Api.Controllers
                 string? emaildetails;
                 var client = _clientFactory.CreateClient();
                 var token = HttpContext.Request.Headers["Authorization"].ToString();
-                
+
                 if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation")
                 {
                     emaildetails = $"Your Confirmed Keus Automation Sales Order - {salesorderDetails.SalesOrderNumber}: Version - {salesorderDetails.RevisionNumber}";
@@ -4511,7 +4531,7 @@ namespace Tips.SalesService.Api.Controllers
                 email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
                 email.Subject = emaildetails;
                 string? body;
-                
+
                 if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation" || salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
                 {
                     string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-automation-salesorder.html");
@@ -4529,7 +4549,7 @@ namespace Tips.SalesService.Api.Controllers
                 var builder = new BodyBuilder();
                 builder.HtmlBody = body;
                 using (HttpClient client1 = new HttpClient())
-                {                    
+                {
                     client1.Timeout = TimeSpan.FromMinutes(5);
                     var request2 = new HttpRequestMessage(HttpMethod.Get, salesOrderEmailPostDto.jasperfileUrl);
 

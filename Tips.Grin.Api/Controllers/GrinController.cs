@@ -632,7 +632,7 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryDto.GrinNo = grins.GrinNumber;
                             grinInventoryDto.GrinPartId = parts.Id;
                             grinInventoryDto.PartType = parts.ItemType;
-                            grinInventoryDto.ReferenceID = Convert.ToString(parts.Id);
+                            grinInventoryDto.ReferenceID = grins.GrinNumber;
                             grinInventoryDto.ReferenceIDFrom = "GRIN";
                             grinInventoryDto.GrinMaterialType = "";
                             grinInventoryDto.ShopOrderNo = "";
@@ -678,7 +678,7 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryTranctionDto.GrinNo = grins.GrinNumber;
                             grinInventoryTranctionDto.GrinPartId = parts.Id;
                             grinInventoryTranctionDto.PartType = parts.ItemType;
-                            grinInventoryTranctionDto.ReferenceID = Convert.ToString(parts.Id);
+                            grinInventoryTranctionDto.ReferenceID = grins.GrinNumber;
                             grinInventoryTranctionDto.ReferenceIDFrom = "GRIN";
                             grinInventoryTranctionDto.GrinMaterialType = "";
                             grinInventoryTranctionDto.ShopOrderNo = "";
@@ -1129,7 +1129,7 @@ namespace Tips.Grin.Api.Controllers
                                 grinInventoryDto.GrinNo = iqcConfirmation.GrinNumber;
                                 grinInventoryDto.GrinPartId = iqcConfirmationItemsDto.GrinPartId;
                                 grinInventoryDto.PartType = itemMasterObject.itemType;
-                                grinInventoryDto.ReferenceID = "GRIN";
+                                grinInventoryDto.ReferenceID = iqcConfirmation.GrinNumber;
                                 grinInventoryDto.ReferenceIDFrom = "GRIN";
                                 grinInventoryDto.GrinMaterialType = "GRIN";
                                 grinInventoryDto.ShopOrderNo = "";
@@ -1342,7 +1342,7 @@ namespace Tips.Grin.Api.Controllers
                                 grinInventoryDto.GrinNo = iqcConfirmation.GrinNumber;
                                 grinInventoryDto.GrinPartId = iqcConfirmationItemsDto.GrinPartId;
                                 grinInventoryDto.PartType = itemMasterObject.itemType;  //We need to check this
-                                grinInventoryDto.ReferenceID = "GRIN"; // Convert.ToString(iQCConfirmationItems.Id) //;
+                                grinInventoryDto.ReferenceID = iqcConfirmation.GrinNumber; // Convert.ToString(iQCConfirmationItems.Id) //;
                                 grinInventoryDto.ReferenceIDFrom = "GRIN";
                                 grinInventoryDto.GrinMaterialType = "GRIN";
                                 grinInventoryDto.ShopOrderNo = "";
