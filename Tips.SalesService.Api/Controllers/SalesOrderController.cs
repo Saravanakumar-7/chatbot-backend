@@ -2878,7 +2878,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     var row = sheet.CreateRow(rowIndex++);
                     row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
-                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? item.SOStatus.Value.ToString() : ""); // Assuming SOStatus is nullable int
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? Enum.GetName(typeof(OrderStatus), item.SOStatus) : ""); // Assuming SOStatus is nullable int
                     row.CreateCell(2).SetCellValue(item.ProjectNumber ?? ""); // Assuming ProjectNumber is nullable string
                     row.CreateCell(3).SetCellValue(item.CustomerId);
                     row.CreateCell(4).SetCellValue(item.CustomerName);
@@ -3086,7 +3086,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     var row = sheet.CreateRow(rowIndex++);
                     row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
-                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? item.SOStatus.Value.ToString() : ""); // Assuming SOStatus is nullable int
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? Enum.GetName(typeof(OrderStatus), item.SOStatus) : ""); // Assuming SOStatus is nullable int//
                     row.CreateCell(2).SetCellValue(item.ProjectNumber ?? ""); // Assuming ProjectNumber is nullable string
                     row.CreateCell(3).SetCellValue(item.CustomerId);
                     row.CreateCell(4).SetCellValue(item.CustomerName);
@@ -3296,7 +3296,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     var row = sheet.CreateRow(rowIndex++);
                     row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
-                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? item.SOStatus.Value.ToString() : ""); // Adding SOStatus
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? Enum.GetName(typeof(OrderStatus), item.SOStatus) : ""); // Adding SOStatus
                     row.CreateCell(2).SetCellValue(item.ProjectNumber ?? ""); // Adding ProjectNumber
                     row.CreateCell(3).SetCellValue(item.CustomerId);
                     row.CreateCell(4).SetCellValue(item.CustomerName);
@@ -4241,14 +4241,14 @@ namespace Tips.SalesService.Api.Controllers
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
                         await _salesOrderHistory.CreateSalesOrderHistory(salesOrderHistories);
                     }
-                    List<ScheduleDate>? listSch=new List<ScheduleDate>();
+                    List<ScheduleDate>? listSch = new List<ScheduleDate>();
                     if (salesOrderItemsDto[i].ScheduleDates.Count() > 0)
                         foreach (var secd in salesOrderItemsDto[i].ScheduleDates)
                         {
                             ScheduleDate secd1 = _mapper.Map<ScheduleDate>(secd);
                             listSch.Add(secd1);
                         }
-                    List<SoConfirmationDate>? listCon=new List<SoConfirmationDate>();
+                    List<SoConfirmationDate>? listCon = new List<SoConfirmationDate>();
                     if (salesOrderItemsDto[i].ScheduleDates.Count() > 0)
                         foreach (var Con in salesOrderItemsDto[i].SoConfirmationDates)
                         {

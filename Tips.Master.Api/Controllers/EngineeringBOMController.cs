@@ -1307,7 +1307,7 @@ namespace Tips.Master.Api.Controllers
         public async Task<IActionResult> GetFGCostingDetailsByItemNumber(List<string> fgItemNumberList)
         {
             ServiceResponse<List<EnggBomFGCostItemNumberWithQtyDto>> serviceResponse = new ServiceResponse<List<EnggBomFGCostItemNumberWithQtyDto>>();
-            
+
             try
             {
                 List<EnggBomFGCostItemNumberWithQtyDto> fgBomDetails = await GetFgChildsWightedAvgCost(fgItemNumberList);
