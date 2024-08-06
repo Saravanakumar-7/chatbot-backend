@@ -13,6 +13,7 @@ namespace Tips.Grin.Api.Contracts
         Task<PagedList<IQCForServiceItems>> GetAllIQCForServiceItemsDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams);
 
         Task<IEnumerable<IQCForServiceItemsSPReport>> GetIQCForServiceItemsSPReportWithParam(string? grinsForServiceItemsNumber, string? itemNo);
+        Task<IEnumerable<IQCForServiceItemsSPReport>> GetIQCForServiceItemsSPReportWithParamForTrans(string? grinsForServiceItemsNumber, string? itemNo, string? projectNumber);
         Task<IEnumerable<IQCForServiceItemsSPReport>> GetIQCForServiceItemsSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IQCForServiceItems> GetIQCForServiceItemsDetailsbyGrinForServiceItemsNo(string grinsForServiceItemsNumber);
         Task<string> UpdateIQCForServiceItems(IQCForServiceItems iQCForServiceItems);

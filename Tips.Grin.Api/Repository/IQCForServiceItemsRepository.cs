@@ -53,6 +53,17 @@ namespace Tips.Grin.Api.Repository
 
             return result;
         }
+
+        public async Task<IEnumerable<IQCForServiceItemsSPReport>> GetIQCForServiceItemsSPReportWithParamForTrans(string? grinsForServiceItemsNumber, string? itemNo, string? projectNumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<IQCForServiceItemsSPReport>()
+            .FromSqlInterpolated($"CALL Iqcforserviceitems_with_parameter_tras({grinsForServiceItemsNumber},{itemNo},{projectNumber})")
+            .ToList();
+
+            return result;
+        }
+
         public async Task<IEnumerable<IQCForServiceItemsSPReport>> GetIQCForServiceItemsSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsGrinDbContext.Set<IQCForServiceItemsSPReport>()

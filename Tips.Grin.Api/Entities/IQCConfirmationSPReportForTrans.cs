@@ -26,5 +26,9 @@
         public decimal? TotalInvoiceValue { get; set; }
         public string? AWBNumber1 { get; set; }
         public DateTime? AWBDate1 { get; set; }
+        public decimal? ReceivedQty { get; set; }
+        
+
+
     }
 }

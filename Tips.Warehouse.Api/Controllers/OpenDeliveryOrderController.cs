@@ -1123,8 +1123,7 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<IEnumerable<OpenDeliveryOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReportForTrans>>();
             try
             {
-                var products = await _repository.OpenDeliveryOrderSPReportWithParamForTrans(openDeliveryOrderSPReport.OpenDoNumber, openDeliveryOrderSPReport.CustomerName,
-                                                                                            openDeliveryOrderSPReport.LeadId,openDeliveryOrderSPReport.IssuedTo, 
+                var products = await _repository.OpenDeliveryOrderSPReportWithParamForTrans(openDeliveryOrderSPReport.OpenDoNumber, openDeliveryOrderSPReport.CustomerName,openDeliveryOrderSPReport.IssuedTo, 
                                                                                             openDeliveryOrderSPReport.ItemNumber, openDeliveryOrderSPReport.MPN,
                                                                                             openDeliveryOrderSPReport.Warehouse, openDeliveryOrderSPReport.Location,
                                                                                             openDeliveryOrderSPReport.ODOtype, openDeliveryOrderSPReport.ProjectNumber);

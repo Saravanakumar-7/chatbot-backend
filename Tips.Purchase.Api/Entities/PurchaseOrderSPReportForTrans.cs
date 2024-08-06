@@ -10,6 +10,9 @@
         public string? Currency { get; set; }
         public string? ProjectNumber { get; set; }
         public decimal? ProjectQty { get; set; }
+        public string? PaymentTerms { get; set; }
+        public string? Transports { get; set; }
+        public string? Other { get; set; }
         public string? ItemNumber { get; set; }
         public string? MftrItemNumber { get; set; }
         public string? ItemDescription { get; set; }

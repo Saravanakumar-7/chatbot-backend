@@ -29,7 +29,7 @@ namespace Tips.Warehouse.Api.Contracts
  
         Task<PagedList<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReport(PagingParameter pagingParameter);
         Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReportWithParam(string OpenDONumber, string CustomerName, string CustomerAliasName, string LeadId, string IssuedTo, string KPN, string MPN, string Warehouse, string Location, string ODOType);
-        Task<IEnumerable<OpenDeliveryOrderSPReportForTrans>> OpenDeliveryOrderSPReportWithParamForTrans(string OpenDONumber, string CustomerName, string LeadId,
+        Task<IEnumerable<OpenDeliveryOrderSPReportForTrans>> OpenDeliveryOrderSPReportWithParamForTrans(string OpenDONumber, string CustomerName,
                                                                                                                  string IssuedTo, string ItemNumber, string MPN, string Warehouse,
                                                                                                                  string Location, string ODOType, string ProjectNumber);
         Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReportDates(DateTime? FromDate, DateTime? ToDate);

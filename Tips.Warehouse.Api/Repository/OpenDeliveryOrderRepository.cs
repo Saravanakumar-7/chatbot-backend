@@ -123,14 +123,14 @@ namespace Tips.Warehouse.Api.Repository
 
         }
 
-        public async Task<IEnumerable<OpenDeliveryOrderSPReportForTrans>> OpenDeliveryOrderSPReportWithParamForTrans(string OpenDONumber, string CustomerName, string LeadId,
+        public async Task<IEnumerable<OpenDeliveryOrderSPReportForTrans>> OpenDeliveryOrderSPReportWithParamForTrans(string OpenDONumber, string CustomerName,
                                                                                                                  string IssuedTo, string ItemNumber, string MPN, string Warehouse, 
                                                                                                                  string Location, string ODOType, string ProjectNumber)
         {
 
             var result = _tipsWarehouseDbContext
             .Set<OpenDeliveryOrderSPReportForTrans>()
-            .FromSqlInterpolated($"CALL Open_Delivery_Order_Report_withparameter_tras({OpenDONumber},{CustomerName},{LeadId},{IssuedTo},{ItemNumber},{MPN},{Warehouse},{Location},{ODOType},{ProjectNumber})")
+            .FromSqlInterpolated($"CALL Open_Delivery_Order_Report_withparameter_tras({OpenDONumber},{CustomerName},{IssuedTo},{ItemNumber},{MPN},{Warehouse},{Location},{ODOType},{ProjectNumber})")
             .ToList();
 
             return result;

@@ -52,6 +52,12 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? GrinsForServiceItemsNumber { get; set; }
         public string? ItemNumber { get; set; }
     }
+    public class IQCForServiceItemsReportWithParamForTransDto
+    {
+        public string? GrinsForServiceItemsNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
     public class IQCForServiceItemsSPReport
     {
         public string? GrinsForServiceItemsNumber { get; set; }

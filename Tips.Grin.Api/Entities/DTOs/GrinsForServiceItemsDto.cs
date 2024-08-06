@@ -203,6 +203,17 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string Warehouse { get; set; }
         public string Location { get; set; }
     }
+    public class GrinForServiceItemsReportWithParamForTransDto
+    {
+        public string GrinsForServiceItemsNumber { get; set; }
+        public string VendorName { get; set; }
+        public string PONumber { get; set; }
+        public string KPN { get; set; }
+        public string MPN { get; set; }
+        public string Warehouse { get; set; }
+        public string Location { get; set; }
+        public string ProjectNumber { get; set; }
+    }
     public class GrinForServiceItemsSPReport
     {
         public string? GrinsForServiceItemsNumber { get; set; }

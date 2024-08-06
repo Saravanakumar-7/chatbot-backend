@@ -6,6 +6,7 @@ using System.Security.Claims;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
 using Tips.Grin.Api.Entities.DTOs;
+using static Tips.Grin.Api.Entities.DTOs.OpenGrinForGrinReportWithParamForTransDto;
 
 namespace Tips.Grin.Api.Repository
 {
@@ -47,6 +48,15 @@ namespace Tips.Grin.Api.Repository
             var result = _tipsGrinDbContext
             .Set<OpenGrinForGrinSPReport>()
             .FromSqlInterpolated($"CALL OpenGrinforgrins_Report_withparameter({openGrinNumber},{senderName},{receiptRefNo})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<OpenGrinForGrinSPReport>> GetOpenGrinForGrinSPReportWithParamForTrans(string? openGrinNumber, string? senderName, string? receiptRefNo, string? projectNumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<OpenGrinForGrinSPReport>()
+            .FromSqlInterpolated($"CALL OpenGrinforgrins_Report_withparameter_tras({openGrinNumber},{senderName},{receiptRefNo},{projectNumber})")
             .ToList();
 
             return result;
