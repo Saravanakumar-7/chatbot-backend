@@ -953,6 +953,7 @@ namespace Tips.SalesService.Api.Controllers
                 foreach (var item in rfqEnggDetails.RfqEnggItems)
                 {
                     var itemProcessList = itemsRoutingDetailsDynamic.Where(i => i.ItemNumber == item.ItemNumber).ToList();
+                    
                     List<RfqLPCostingProcess> processStepsList = _mapper.Map<List<RfqLPCostingProcess>>(itemProcessList);
                     RfqLPCostingItem rfqLPCostingItem = new RfqLPCostingItem
                     {
@@ -966,8 +967,29 @@ namespace Tips.SalesService.Api.Controllers
                         MarkUpForMaterial = 0,
                         RfqLPCostingProcesses = processStepsList,
                         RfqLPCostingNREConsumables = null,
-                        RfqLPCostingOtherCharges = null 
+                        RfqLPCostingOtherCharges = null
                     };
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"], $"GetEnggBomByItemNoAndRevNo?itemNumber={item.ItemNumber}&revisionNumber={item.CostingBomVersionNo}"));
+                    request.Headers.Add("Authorization", token);
+
+                    var BomDetails = await client.SendAsync(request);
+                    var BomDetailsJsonString = await BomDetails.Content.ReadAsStringAsync();
+                    dynamic BomDetailsJson = JsonConvert.DeserializeObject(BomDetailsJsonString);
+                    var data1 = BomDetailsJson.data.bomNREConsumableDto;
+                    List<RfqLPCostingNREConsumable> nREConsumables = new List<RfqLPCostingNREConsumable>();
+                    foreach (var nre in data1)
+                    {
+                        RfqLPCostingNREConsumable nREConsumable = new RfqLPCostingNREConsumable
+                        {
+                            NREQty = nre.nreQuantity,
+                            NRECost = nre.nreCost,
+                            RfqLPCostingItemId = rfqLPCostingItem.Id,
+                        };
+                        nREConsumables.Add(nREConsumable);
+                    }
+                    rfqLPCostingItem.RfqLPCostingNREConsumables = nREConsumables;
                     rfqLPCostingItems.Add(rfqLPCostingItem);
                 }
 
