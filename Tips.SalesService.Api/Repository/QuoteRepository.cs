@@ -68,11 +68,12 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
-        public async Task<IEnumerable<SoSummaryQuotationDto>> GetSoSummaryQuotationSPReportWithParam(string FirstQuotenumber, string SOlatestSalesorder)
+        public async Task<IEnumerable<SoSummaryQuotationDto>> GetSoSummaryQuotationSPReportWithParam(string FirstQuotenumber, string SOLatestSalesOrderSentNumber, string Leadid,
+                                                                                                          string CustomerName, string TypeOfSolution, string ProductType)
         {
             var result = _tipsSalesServiceDbContext
             .Set<SoSummaryQuotationDto>()
-            .FromSqlInterpolated($"CALL so_summary_with_quotation_data_withparameter({FirstQuotenumber},{SOlatestSalesorder})")
+            .FromSqlInterpolated($"CALL so_summary_with_quotation_data_withparameter({FirstQuotenumber},{SOLatestSalesOrderSentNumber},{Leadid},{CustomerName},{TypeOfSolution},{ProductType})")
             .ToList();
 
             return result;

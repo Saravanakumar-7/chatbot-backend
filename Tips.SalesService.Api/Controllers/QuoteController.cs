@@ -1214,7 +1214,9 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<SoSummaryQuotationDto>> serviceResponse = new ServiceResponse<IEnumerable<SoSummaryQuotationDto>>();
             try
             {
-                var products = await _repository.GetSoSummaryQuotationSPReportWithParam(quoteSPReportDto.FirstQuotenumber, quoteSPReportDto.FirstSOSalesOrderNumber);
+                var products = await _repository.GetSoSummaryQuotationSPReportWithParam(quoteSPReportDto.FirstQuotenumber, quoteSPReportDto.SOLatestSalesOrderSentNumber,
+                                                                                                                    quoteSPReportDto.Leadid,quoteSPReportDto.CustomerName
+                                                                                                                    ,quoteSPReportDto.TypeOfSolution,quoteSPReportDto.ProductType);
 
                 if (products == null)
                 {
