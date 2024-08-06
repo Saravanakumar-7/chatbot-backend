@@ -140,7 +140,6 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public string? OpenDoNumber { get; set; }
         public string? CustomerName { get; set; }
-        public string? LeadId { get; set; }
         public string? IssuedTo { get; set; }
         public string? ItemNumber { get; set; }
         public string? MPN { get; set; }

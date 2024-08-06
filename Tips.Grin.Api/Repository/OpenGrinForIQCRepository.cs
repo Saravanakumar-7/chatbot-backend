@@ -45,6 +45,15 @@ namespace Tips.Grin.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<OpenGrinForIQCSPReport>> GetOpenGrinForIQCSPReportWithParamForTrans(string? openGrinForIQCNumber, string? itemNumber, string? projectNumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<OpenGrinForIQCSPReport>()
+            .FromSqlInterpolated($"CALL Opengrinforiqc_with_parameter_tras({openGrinForIQCNumber},{itemNumber},{projectNumber})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<OpenGrinForIQCSPReport>> GetOpenGrinForIQCSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsGrinDbContext.Set<OpenGrinForIQCSPReport>()

@@ -12,6 +12,7 @@ using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
 using Tips.Grin.Api.Entities.DTOs;
 using Tips.Grin.Api.Repository;
+using static Tips.Grin.Api.Entities.DTOs.OpenGrinForGrinReportWithParamForTransDto;
 
 namespace Tips.Grin.Api.Controllers
 {
@@ -132,6 +133,44 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetOpenGrinForGrinSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetOpenGrinForGrinSPReportWithParamForTrans([FromBody] OpenGrinForGrinReportWithParamForTransDto openGrinReportWithParamDto)
+        {
+            ServiceResponse<IEnumerable<OpenGrinForGrinSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinForGrinSPReport>>();
+            try
+            {
+                var products = await _repository.GetOpenGrinForGrinSPReportWithParamForTrans(openGrinReportWithParamDto.OpenGrinNumber, openGrinReportWithParamDto.SenderName,
+                                                                                                  openGrinReportWithParamDto.ReceiptRefNo,openGrinReportWithParamDto.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OpenGrinForGrin hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OpenGrinForGrin hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OpenGrinForGrin Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetOpenGrinForGrinSPReportWithParamForTrans action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

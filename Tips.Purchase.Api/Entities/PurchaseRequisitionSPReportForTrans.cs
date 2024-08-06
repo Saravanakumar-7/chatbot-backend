@@ -20,5 +20,8 @@
         public string? PrApprovedIIBy { get; set; }
         public DateTime? PrApprovedIIDate { get; set; }
         public int? PrStatus { get; set; }
+        public string? PrCreatedBy { get; set; }
+        public string? DrawingRevisionNumber { get; set; }
+
     }
 }

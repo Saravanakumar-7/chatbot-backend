@@ -12,6 +12,8 @@ namespace Tips.Grin.Api.Contracts
         Task<GrinsForServiceItems> GetGrinsForServiceItemsById(int id);
         Task<IEnumerable<GrinForServiceItemsSPReport>> GetGrinsForServiceItemsSPReportWithParam(string? GrinsForServiceItemsNumber, string? VendorName, string? PONumber,
                                                                                                    string? KPN, string? MPN, string? Warehouse, string? Location);
+        Task<IEnumerable<GrinForServiceItemsSPReport>> GetGrinsForServiceItemsSPReportWithParamForTrans(string? GrinsForServiceItemsNumber, string? VendorName, string? PONumber,
+                                                                                                  string? KPN, string? MPN, string? Warehouse, string? Location, string? ProjectNumber);
         Task<IEnumerable<GrinForServiceItemsSPReport>> GetGrinsForServiceItemsSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<string> GenerateGrinsForServiceItemsNumberForAvision();
         Task<string> GenerateGrinsForServiceItemsNumber();
