@@ -22,6 +22,7 @@
         public int? PrStatus { get; set; }
         public string? PrCreatedBy { get; set; }
         public string? DrawingRevisionNumber { get; set; }
+        public decimal? Qty { get; set; }
 
     }
 }

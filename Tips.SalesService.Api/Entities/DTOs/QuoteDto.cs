@@ -389,12 +389,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
-
-        // First Quote
         public string? FirstQuoteNumber { get; set; }
-        public decimal? FirstRevisionNumber { get; set; }
-        public DateTime? FirstCreatedOn { get; set; }
-        public decimal? FirstTotalFinalAmount { get; set; }
+        public decimal? FirstQuoteRevisionNumber { get; set; }
+        public DateTime? FirstQuoteCreatedOn { get; set; }
+        public decimal? FirstQuoteTotalFinalAmount { get; set; }
         public string? FirstQuoteSentNumber { get; set; }
         public decimal? FirstQuoteSentRevisionNumber { get; set; }
         public DateTime? FirstQuoteSentCreatedOn { get; set; }
@@ -402,8 +400,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? FirstQuoteSentGeneralDiscountType { get; set; }
         public decimal? FirstQuoteSentTaxedValue { get; set; }
         public decimal? FirstQuoteSentUntaxedValue { get; set; }
-
-        // Latest Quote
         public string? LatestQuoteSentNumber { get; set; }
         public decimal? LatestQuoteSentRevisionNumber { get; set; }
         public DateTime? LatestQuoteSentCreatedOn { get; set; }
@@ -411,23 +407,20 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? LatestQuoteSentGeneralDiscountType { get; set; }
         public decimal? LatestQuoteSentTaxedValue { get; set; }
         public decimal? LatestQuoteSentUntaxedValue { get; set; }
-
-        // Sales Orders
-        public string? SOFirstSalesOrderSentNumber { get; set; }
-        public int? SOFirstSentRevisionNumber { get; set; }
-        public DateTime? SOFirstSentCreatedOn { get; set; }
+        public string? FirstSalesOrderSentNumber { get; set; }
+        public int? FirstSOSentRevisionNumber { get; set; }
+        public DateTime? FirstSOSentCreatedOn { get; set; }
         public decimal? FirstSOSentDiscount { get; set; }
         public string? FirstSOSentDiscountType { get; set; }
-        public decimal? SOFirstSentTaxedValue { get; set; }
-        public decimal? SOFirstSentUntaxedValue { get; set; }
-
-        public string? SOLatestSalesOrderSentNumber { get; set; }
-        public int? SOLatestSentRevisionNumber { get; set; }
-        public DateTime? SOLatestSentCreatedOn { get; set; }
-        public decimal? SOLatestSentDiscount { get; set; }
-        public string? SOLatestSentDiscountType { get; set; }
-        public decimal? SOLatestSentTaxedValue { get; set; }
-        public decimal? SOLatestSentUntaxedValue { get; set; }
+        public decimal? FirstSOSentTaxedValue { get; set; }
+        public decimal? FirstSOSentUntaxedValue { get; set; }
+        public string? LatestSalesOrderSentNumber { get; set; }
+        public int? LatestSOSentRevisionNumber { get; set; }
+        public DateTime? LatestSOSentCreatedOn { get; set; }
+        public decimal? LatestSOSentDiscount { get; set; }
+        public string? LatestSOSentDiscountType { get; set; }
+        public decimal? LatestSOSentTaxedValue { get; set; }
+        public decimal? LatestSOSentUntaxedValue { get; set; }
     }
     public class QuoteItemMasterDetails
     {
