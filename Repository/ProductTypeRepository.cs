@@ -55,6 +55,12 @@ namespace Repository
 
             return getAllproductType;
         }
+        public async Task<IEnumerable<ProductType>> GetAllActiveProductType()
+        {
+            var getAllActiveproductType = await FindAll().Where(x=>x.IsActive==true).OrderByDescending(x => x.Id).ToListAsync();
+
+            return getAllActiveproductType;
+        }
 
         public async Task<ProductType> GetProductTypeById(int id)
         {
