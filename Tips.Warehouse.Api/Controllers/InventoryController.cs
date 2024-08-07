@@ -782,13 +782,13 @@ namespace Tips.Warehouse.Api.Controllers
                     var shopOrderNumberListResponse = await client.SendAsync(request);
 
                     var shopOrderNumberListString = await shopOrderNumberListResponse.Content.ReadAsStringAsync();
-                    dynamic shopOrderNumberListData = JsonConvert.DeserializeObject(shopOrderNumberListString);
+                    var shopOrderNumberList = JsonConvert.DeserializeObject<List<string>>(shopOrderNumberListString);
 
-                    List<string> shopOrderNumberList = new List<string>();
-                    foreach (var item in shopOrderNumberListData)
-                    {
-                        shopOrderNumberList.Add(item.ToString());
-                    }
+                    //List<string> shopOrderNumberList = new List<string>();
+                    //foreach (var item in shopOrderNumberListData)
+                    //{
+                    //    shopOrderNumberList.Add(item.ToString());
+                    //}
                     decimal itemQty = await _inventoryRepository.GetStockQtyForBtpSalesOrderItem(itemNo, shopOrderNumberList);
                     ItemNoWithQtyDict.Add(itemNo, itemQty);
                 }

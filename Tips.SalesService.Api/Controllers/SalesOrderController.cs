@@ -272,9 +272,9 @@ namespace Tips.SalesService.Api.Controllers
                     }
 
                     List<SalesOrderItemsDto> salesOrderItemsDtoList = new List<SalesOrderItemsDto>();
-                    var salesAdditionalChargesDto = salesOrderDto.SalesOrderAdditionalCharges;
+                    var salesAdditionalChargesList = salesOrderDto.SalesOrderAdditionalCharges;
 
-                    var salesAdditionalChargesList = _mapper.Map<List<SalesOrderAdditionalChargesDto>>(salesAdditionalChargesDto);
+                    //var salesAdditionalChargesList = _mapper.Map<List<SalesOrderAdditionalChargesDto>>(salesAdditionalChargesDto);
 
                     string salesOrderNo = salesOrderDto.SalesOrderNumber;
                     SalesOrderStatus salesOrderStatus1 = salesOrderDto.SalesOrderStatus;
