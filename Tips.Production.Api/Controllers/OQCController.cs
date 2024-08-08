@@ -332,6 +332,7 @@ namespace Tips.Production.Api.Controllers
                     inventory.ReferenceID = oQCCreate.Id.ToString();
                     inventory.ReferenceIDFrom = "Final OQC";
                     inventory.ShopOrderNo = oQCCreate.ShopOrderNumber;
+                    inventory.LotNumber= oQCCreate.ShopOrderNumber;
 
                     _logger.LogInfo("getitemmasterdata" + Convert.ToString(inventory));
                     var json = JsonConvert.SerializeObject(inventory);
@@ -373,6 +374,7 @@ namespace Tips.Production.Api.Controllers
                     inventory1.ReferenceID = oQCCreate.Id.ToString() + "-R";
                     inventory1.ReferenceIDFrom = "Final OQC";
                     inventory1.ShopOrderNo = oQCCreate.ShopOrderNumber;
+                    inventory1.LotNumber= oQCCreate.ShopOrderNumber;
 
                     _logger.LogInfo("getitemmasterdata" + Convert.ToString(inventory1));
                     var json1 = JsonConvert.SerializeObject(inventory1);
@@ -412,7 +414,7 @@ namespace Tips.Production.Api.Controllers
                     inventoryTranction.From_Location = "SA";
                     inventoryTranction.TO_Location = "SA";
                     inventoryTranction.Warehouse = "SA";
-
+                    inventoryTranction.LotNumber= oQCCreate.ShopOrderNumber;
                     var json2 = JsonConvert.SerializeObject(inventoryTranction);
                     var data2 = new StringContent(json2, Encoding.UTF8, "application/json");
                    // var response2 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data2);
@@ -451,7 +453,7 @@ namespace Tips.Production.Api.Controllers
                     inventoryTranction1.From_Location = "Reject";
                     inventoryTranction1.TO_Location = "Reject";
                     inventoryTranction1.Warehouse = "Reject";
-
+                    inventoryTranction1.LotNumber = oQCCreate.ShopOrderNumber;
                     var json4 = JsonConvert.SerializeObject(inventoryTranction1);
                     var data4 = new StringContent(json4, Encoding.UTF8, "application/json");
                     //var response4 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data4);
@@ -519,6 +521,7 @@ namespace Tips.Production.Api.Controllers
                     inventory.ReferenceID = oQCCreate.Id.ToString();
                     inventory.ReferenceIDFrom = "Final OQC";
                     inventory.ShopOrderNo = oQCCreate.ShopOrderNumber;
+                    inventory.LotNumber = oQCCreate.ShopOrderNumber;
 
                     var json = JsonConvert.SerializeObject(inventory);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
@@ -560,6 +563,7 @@ namespace Tips.Production.Api.Controllers
                     inventory1.ReferenceID = oQCCreate.Id.ToString() + "-R";
                     inventory1.ReferenceIDFrom = "Final OQC";
                     inventory1.ShopOrderNo = oQCCreate.ShopOrderNumber;
+                    inventory1.LotNumber = oQCCreate.ShopOrderNumber;
 
                     _logger.LogInfo("getitemmasterdata" + Convert.ToString(inventory1));
                     var json1 = JsonConvert.SerializeObject(inventory1);
@@ -594,6 +598,7 @@ namespace Tips.Production.Api.Controllers
                     inventoryTranction.BOM_Version_No = 0;
                     inventoryTranction.Issued_DateTime = DateTime.Now;
                     inventoryTranction.shopOrderNo = oQCCreate.ShopOrderNumber;
+                    inventoryTranction.LotNumber = oQCCreate.ShopOrderNumber;
                     inventoryTranction.ReferenceID = oQCCreate.Id.ToString();
                     inventoryTranction.GrinPartId = oQCCreate.Id;
                     inventoryTranction.GrinMaterialType = "Issue";
@@ -635,6 +640,7 @@ namespace Tips.Production.Api.Controllers
                     inventoryTranction1.BOM_Version_No = 0;
                     inventoryTranction1.Issued_DateTime = DateTime.Now;
                     inventoryTranction1.shopOrderNo = oQCCreate.ShopOrderNumber;
+                    inventoryTranction1.LotNumber = oQCCreate.ShopOrderNumber;
                     inventoryTranction1.GrinPartId = oQCCreate.Id;
                     inventoryTranction1.ReferenceID = oQCCreate.Id.ToString() + "-R";
                     inventoryTranction1.ReferenceIDFrom = "Final OQC"; ;
