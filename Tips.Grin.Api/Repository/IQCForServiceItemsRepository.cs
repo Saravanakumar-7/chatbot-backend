@@ -67,7 +67,7 @@ namespace Tips.Grin.Api.Repository
         public async Task<IEnumerable<IQCForServiceItemsSPReport>> GetIQCForServiceItemsSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsGrinDbContext.Set<IQCForServiceItemsSPReport>()
-                      .FromSqlInterpolated($"CALL iqc_confirmation_with_parameter_withdate({FromDate},{ToDate})")
+                      .FromSqlInterpolated($"CALL Iqcforserviceitems_with_date({FromDate},{ToDate})")
                       .ToList();
 
             return results;
