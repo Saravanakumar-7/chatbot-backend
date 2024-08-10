@@ -52,7 +52,32 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveProductTypes()
+        {
+            ServiceResponse<IEnumerable<ProductTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<ProductTypeDto>>();
+            try
+            {
 
+                var getAllProductType = await _repository.ProductTypeRepository.GetAllActiveProductType();
+                _logger.LogInfo("Returned all productTypes");
+                var result = _mapper.Map<IEnumerable<ProductTypeDto>>(getAllProductType);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all productType Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductTypeById(int id)

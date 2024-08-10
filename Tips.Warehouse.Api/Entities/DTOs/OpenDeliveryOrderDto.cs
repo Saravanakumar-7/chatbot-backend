@@ -24,6 +24,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public bool AllowReturnODO { get; set; }
         public List<OpenDeliveryOrderPartsDto>? OpenDeliveryOrderParts { get; set; }
     }
     public class OpenDeliveryOrderDtoPost

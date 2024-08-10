@@ -125,6 +125,7 @@ namespace Tips.Production.Api.Entities.DTOs
         [Required]
         public string? ReferenceIDFrom { get; set; }
         public string? ShopOrderNo { get; set; }
+        public string? LotNumber { get; set; }
 
     }
     public class InventoryTranctionDto

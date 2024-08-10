@@ -72,6 +72,11 @@ namespace Tips.Warehouse.Api.Controllers
 
                 _logger.LogInfo("Returned all OpenDeliveryOrders");
                 var result = _mapper.Map<IEnumerable<OpenDeliveryOrderDto>>(getAllOpenDeliveryOrderDetails);
+                foreach (var ODOdetails in result)
+                {
+                    if(ODOdetails.DOType!= "returnable") ODOdetails.AllowReturnODO= false;
+                    else ODOdetails.AllowReturnODO=(ODOdetails.OpenDeliveryOrderParts.Sum(x=>x.DispatchQty)>0) ? true : false;
+                }
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all OpenDeliveryOrders Successfully";
                 serviceResponse.Success = true;
