@@ -771,7 +771,7 @@ namespace Tips.SalesService.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> SendEmailandWhatsAppMessageforQuote([FromBody] QuoteEmailPostDto quoteEmailPostDto)
         {
-            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            ServiceResponse<QuoteEmailMessageSuccessMessage> serviceResponse = new ServiceResponse<QuoteEmailMessageSuccessMessage>();
             try
             {
                 if (quoteEmailPostDto.WhatsAppPhoneNos.IsNullOrEmpty())
@@ -978,7 +978,12 @@ namespace Tips.SalesService.Api.Controllers
                 await _quoteEmailsDetailsRepository.CreateQuoteEmailsDetails(quoteEmailsDetails);
                 _quoteEmailsDetailsRepository.SaveAsync();
 
-                serviceResponse.Data = "Email sent successfully.";
+                QuoteEmailMessageSuccessMessage emailMessageSuccessMessage = new QuoteEmailMessageSuccessMessage()
+                {
+                    QuoteNumber = quoteDetails.QuoteNumber,
+                    RevisionNumber = quoteDetails.RevisionNumber ?? 0
+                };
+                serviceResponse.Data = emailMessageSuccessMessage;
                 serviceResponse.Message = $"Email sent successfully.";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;

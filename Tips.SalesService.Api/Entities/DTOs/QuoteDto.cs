@@ -646,4 +646,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [JsonProperty("msisdnList")]
         public List<string> MsisdnList { get; set; }
     }
+    public class QuoteEmailMessageSuccessMessage
+    {
+        public string QuoteNumber { get; set; }
+        public decimal RevisionNumber { get; set; }
+    }
 }

@@ -472,4 +472,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int SalesOrderid { get; set; }
         public string WhatsAppPhoneNos { get; set; }
     }
+    public class SOEmailMessageSuccessMessage
+    {
+        public string SalesOrderNumber { get; set; }
+        public int RevisionNumber { get; set; }
+    }
 }

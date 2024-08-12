@@ -4188,6 +4188,7 @@ namespace Tips.SalesService.Api.Controllers
                     SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
                     salesOrderItemsDetail.ScheduleDates = null;
                     salesOrderItemsDetail.SoConfirmationDates = null;
+                    var oldSOItem = salesOrderDetailBeforeUpdate.SalesOrdersItems[i];
                     if (salesOrderItemsDto[i].NowShortClosed == true)
                     {
                         salesOrderItemsDetail.ShortClosedBy = _createdBy;
@@ -4219,23 +4220,23 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderHistory.CreatedOn = DateTime.Now;
                         salesOrderHistory.LastModifiedBy = salesOrderDetailBeforeUpdate.LastModifiedBy;
                         salesOrderHistory.LastModifiedOn = salesOrderDetailBeforeUpdate.LastModifiedOn;
-                        salesOrderHistory.ItemNumber = salesOrderItemsDetail.ItemNumber;
-                        salesOrderHistory.Description = salesOrderItemsDetail.Description;
-                        salesOrderHistory.BalanceQty = salesOrderItemsDetail.BalanceQty;
-                        salesOrderHistory.DispatchQty = salesOrderItemsDetail.DispatchQty;
-                        salesOrderHistory.ShopOrderQty = salesOrderItemsDetail.ShopOrderQty;
-                        salesOrderHistory.UOM = salesOrderItemsDetail.UOM;
-                        salesOrderHistory.Currency = salesOrderItemsDetail.Currency;
-                        salesOrderHistory.TotalAmount = salesOrderItemsDetail.TotalAmount;
-                        salesOrderHistory.BasicAmount = salesOrderItemsDetail.BasicAmount;
-                        salesOrderHistory.Discount = salesOrderItemsDetail.Discount;
-                        salesOrderHistory.UnitPrice = salesOrderItemsDetail.UnitPrice;
-                        salesOrderHistory.OrderQty = salesOrderItemsDetail.OrderQty;
-                        salesOrderHistory.SGST = salesOrderItemsDetail.SGST;
-                        salesOrderHistory.UTGST = salesOrderItemsDetail.UTGST;
-                        salesOrderHistory.CGST = salesOrderItemsDetail.CGST;
-                        salesOrderHistory.IGST = salesOrderItemsDetail.IGST;
-                        salesOrderHistory.ReceivedDate = salesOrderItemsDetail.RequestedDate;
+                        salesOrderHistory.ItemNumber = oldSOItem.ItemNumber;
+                        salesOrderHistory.Description = oldSOItem.Description;
+                        salesOrderHistory.BalanceQty = oldSOItem.BalanceQty;
+                        salesOrderHistory.DispatchQty = oldSOItem.DispatchQty;
+                        salesOrderHistory.ShopOrderQty = oldSOItem.ShopOrderQty;
+                        salesOrderHistory.UOM = oldSOItem.UOM;
+                        salesOrderHistory.Currency = oldSOItem.Currency;
+                        salesOrderHistory.TotalAmount = oldSOItem.TotalAmount;
+                        salesOrderHistory.BasicAmount = oldSOItem.BasicAmount;
+                        salesOrderHistory.Discount = oldSOItem.Discount;
+                        salesOrderHistory.UnitPrice = oldSOItem.UnitPrice;
+                        salesOrderHistory.OrderQty = oldSOItem.OrderQty;
+                        salesOrderHistory.SGST = oldSOItem.SGST;
+                        salesOrderHistory.UTGST = oldSOItem.UTGST;
+                        salesOrderHistory.CGST = oldSOItem.CGST;
+                        salesOrderHistory.IGST = oldSOItem.IGST;
+                        salesOrderHistory.ReceivedDate = oldSOItem.RequestedDate;
                         salesOrderHistory.ShortClosedQty = salesOrderItemsDto[i].ShortClosedQty;
                         salesOrderHistory.Remarks = "Item ShortClosed";
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
@@ -4275,8 +4276,8 @@ namespace Tips.SalesService.Api.Controllers
                 updateData.SalesOrderAdditionalCharges = salesAdditionalChargesList;
                 string result = await _repository.UpdateSalesOrderShortClose(updateData);
                 _logger.LogInfo(result);
-                _repository.SaveAsync();
-                _salesOrderHistory.SaveAsync();
+                 _repository.SaveAsync();
+                 _salesOrderHistory.SaveAsync();
 
 
                 serviceResponse.Data = null;
@@ -4454,7 +4455,7 @@ namespace Tips.SalesService.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> SendEmailandWhatsAppMessageforSalesOrder([FromBody] SalesOrderEmailPostDto salesOrderEmailPostDto)
         {
-            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            ServiceResponse<SOEmailMessageSuccessMessage> serviceResponse = new ServiceResponse<SOEmailMessageSuccessMessage>();
             try
             {
                 if (salesOrderEmailPostDto.WhatsAppPhoneNos.IsNullOrEmpty())
@@ -4658,7 +4659,13 @@ namespace Tips.SalesService.Api.Controllers
                 await _salesOrderEmailsDetailsRepository.CreateSalesOrderEmailsDetails(salesOrderEmailsDetails);
                 _salesOrderEmailsDetailsRepository.SaveAsync();
 
-                serviceResponse.Data = "Email sent successfully.";
+                SOEmailMessageSuccessMessage emailMessageSuccessMessage = new SOEmailMessageSuccessMessage()
+                {
+                    SalesOrderNumber = salesorderDetails.SalesOrderNumber,
+                    RevisionNumber = salesorderDetails.RevisionNumber ?? 0
+                };
+
+                serviceResponse.Data = emailMessageSuccessMessage;
                 serviceResponse.Message = $"Email sent successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
