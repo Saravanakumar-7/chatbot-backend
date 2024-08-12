@@ -507,6 +507,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? PartNumber { get; set; }
         public decimal? Opening_Stock { get; set; }
         public decimal? BinningQty { get; set; }
+        public decimal? OQCBinningQty { get; set; }
         public decimal? OpenGrinQty { get; set; }
         public decimal? MaterialReturnQty { get; set; }
         public decimal? ReturnInvoiceQty { get; set; }
