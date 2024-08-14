@@ -58,6 +58,8 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PurchaseOrderSPReport>> GetPurchaseOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<PurchaseOrderSPReportForTrans>> GetPurchaseOrderApprovalSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate, string RecordType
                                                                                                                   , string Approval);
+        Task<IEnumerable<PurchaseOrderApprovalSPReport>> GetPurchaseOrderApprovalSPReportWithDate(DateTime? FromDate, DateTime? ToDate, string RecordType
+                                                                                                                 , string Approval);
         Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIList(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIList(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIList(PagingParameter pagingParameter, SearchParamess searchParams);
@@ -65,8 +67,6 @@ namespace Tips.Purchase.Api.Contracts
         Task<PagedList<Tras_POSPReport>> Get_Tras_PurchaseOrderSPResport(PagingParameter pagingParameter);
         Task<PagedList<Tras_PO_ConfirmationDate>> Get_Tras_POReport_ConfirmationDate(PagingParameter pagingParameter);
         Task<IEnumerable<Tras_POSPReport>> Get_Tras_PurchaseOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
-        Task<PurchaseOrder_ReportDto> GetPurchaseOrderReportswithDate(DateTime? FromDate, DateTime? ToDate);
-        Task<PurchaseOrder_ReportDto> GetPurchaseOrderReportswithPara(string? ItemNumber, string? PONumber, string? VendorName, int? POStatus);
         Task<IEnumerable<Tras_POSPReport>> Get_Tras_PurchaseOrderSPReportWithParam(string VendorName, string PONumber, string PartNumber);
         Task<PurchaseOrder> GetPurchaseOrderItemsByPONumber(string poNumber);
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPoNumberListByVendorIdForAvision(string vendorId);
@@ -79,5 +79,14 @@ namespace Tips.Purchase.Api.Contracts
         Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIIIListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams);
         Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIVListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams);
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllLatestRevNoPurchaseOrderNameList();
+        Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliveryScheduleSPReportwithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<poproject_report_Dto>> GetPoProjectSPReportwithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, int? POStatus
+                                                                                                       , string? Approval);
+        Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliverySchedulewithParam(string? ItemNumber, string? PONumber, string? VendorName, int? POStatus
+                                                                                                      , string? Approval);
+        Task<IEnumerable<poproject_report_Dto>> GetPoProjectSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, int? POStatus
+                                                                                                       , string? Approval);
     }
 }

@@ -289,17 +289,12 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
-    public class PurchaseOrder_ReportDto
-    {
-        public List<poconfirmation_report_Dto>? poconfirmation_Report_Dtos { get; set; }
-        public List<podeliveryschedule_report_Dto>? podeliveryschedule_Report_Dtos { get; set; }
-        public List<poproject_report_Dto>? poproject_Report_Dtos { get; set; }
-    }
     public class PurchaseOrder_ReportGetDto
     {
         public string? ItemNumber { get; set; }
-        public string? PONumber { get; set; } 
+        public string? PONumbers { get; set; } 
         public string? VendorName { get; set; }
         public int? POStatus { get; set; }
+        public string? Approval { get; set; }
     }
 }
