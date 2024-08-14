@@ -481,6 +481,42 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderApprovalSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate, [FromQuery] string RecordType, [FromQuery] string Approval)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderApprovalSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderApprovalSPReport>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderApprovalSPReportWithDate(FromDate, ToDate, RecordType, Approval);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderApprovalSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet()] // Adjust your route as needed
         public async Task<IActionResult> GetPurchaseOrderApprovalSPReportWithDateForAvision([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate, [FromQuery] string RecordType, [FromQuery] string Approval)
         {
@@ -4284,62 +4320,27 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpGet]
-        public async Task<IActionResult> PurchaseOrderReportswithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
-        {
-            ServiceResponse<PurchaseOrder_ReportDto> serviceResponse = new ServiceResponse<PurchaseOrder_ReportDto>();
-            try
-            {
-                var result = await _repository.GetPurchaseOrderReportswithDate(FromDate, ToDate);
-                if (result == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $" PurchaseOrderReportswithDate hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"DeliveryOrder hasn't been found in db.");
-                    return NotFound(serviceResponse);
-                }
-                else
-                {
-                    serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned  PurchaseOrderReportswithDate Details";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
 
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside PurchaseOrderReportswithDate action";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
         [HttpPost]
-        public async Task<IActionResult> PurchaseOrderReportswithPara([FromBody] PurchaseOrder_ReportGetDto paramsforPurchase)
+        public async Task<IActionResult> GetPoConfirmationSPReportwithParam([FromBody] PurchaseOrder_ReportGetDto paramsforPurchase)
         {
-            ServiceResponse<PurchaseOrder_ReportDto> serviceResponse = new ServiceResponse<PurchaseOrder_ReportDto>();
+            ServiceResponse<IEnumerable<poconfirmation_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_Dto>>();
             try
             {
-                var result = await _repository.GetPurchaseOrderReportswithPara(paramsforPurchase.ItemNumber, paramsforPurchase.PONumber, paramsforPurchase.VendorName, paramsforPurchase.POStatus);
+                var result = await _repository.GetPoConfirmationSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, paramsforPurchase.POStatus, paramsforPurchase.Approval);
                 if (result == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $" PurchaseOrderReportswithPara hasn't been found.";
+                    serviceResponse.Message = $" PoConfirmationSPReportwithParam hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"DeliveryOrder hasn't been found in db.");
+                    _logger.LogError($"PoConfirmationSPReportwithParam hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned  PurchaseOrderReportswithPara Details";
+                    serviceResponse.Message = "Returned  PoConfirmationSPReportwithParam Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -4356,6 +4357,193 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPoConfirmationSPReportwithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<poconfirmation_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_Dto>>();
+            try
+            {
+                var result = await _repository.GetPoConfirmationSPReportwithDate(FromDate, ToDate);
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $" PoConfirmationSPReportswithDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PoConfirmationSPReportswithDate hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned  PoConfirmationSPReportswithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPoConfirmationSPReportwithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetPoDeliverySchedulewithParam([FromBody] PurchaseOrder_ReportGetDto paramsforPurchase)
+        {
+            ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>>();
+            try
+            {
+                var result = await _repository.GetPoDeliverySchedulewithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, paramsforPurchase.POStatus, paramsforPurchase.Approval);
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $" PoDeliveryScheduleSPReportwithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PoDeliveryScheduleSPReportwithParam hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned  PoDeliveryScheduleSPReportwithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPoDeliverySchedulewithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPoDeliveryScheduleSPReportwithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>>();
+            try
+            {
+                var result = await _repository.GetPoDeliveryScheduleSPReportwithDate(FromDate, ToDate);
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $" PoDeliveryScheduleSPReportswithDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PoDeliveryScheduleSPReportswithDate hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned  PoDeliveryScheduleSPReportswithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPoDeliveryScheduleSPReportwithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> GetPoProjectSPReportwithParam([FromBody] PurchaseOrder_ReportGetDto paramsforPurchase)
+        {
+            ServiceResponse<IEnumerable<poproject_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poproject_report_Dto>>();
+            try
+            {
+                var result = await _repository.GetPoProjectSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, paramsforPurchase.POStatus, paramsforPurchase.Approval);
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $" PoProjectSPReportwithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PoProjectSPReportwithParam hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned  GetPoProjectSPReportwithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPoProjectSPReportwithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPoProjectSPReportwithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<poproject_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poproject_report_Dto>>();
+            try
+            {
+                var result = await _repository.GetPoProjectSPReportwithDate(FromDate, ToDate);
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $" PoProjectSPReportswithDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PoProjectSPReportswithDate hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned  PoProjectSPReportwithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPoProjectSPReportwithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPut]
         public async Task<IActionResult> UpdatePurchaseOrderTallyStatus(int Id, bool TallyStatus)
         {

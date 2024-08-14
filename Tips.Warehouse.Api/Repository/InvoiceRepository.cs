@@ -76,7 +76,7 @@ namespace Tips.Warehouse.Api.Repository
                 int currentYear = financeYearStart.Year % 100; // Get the last two digits of the current finance year
                 int nextYear = (financeYearStart.Year + 1) % 100; // Get the last two digits of the next finance year
 
-                return $"ASPL|EXP|{currentYear:D2}-{nextYear:D2}|{invoiceNumberEntity.CurrentValue:D3}";
+                return $"ASPL|INV|{currentYear:D2}-{nextYear:D2}|{invoiceNumberEntity.CurrentValue:D3}";
             }
             catch (Exception ex)
             {

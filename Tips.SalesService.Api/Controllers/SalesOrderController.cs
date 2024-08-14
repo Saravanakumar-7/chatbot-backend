@@ -385,6 +385,65 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet("{id}")]
+        public async Task<IActionResult> GetSalesOrderDetialsById(int id)
+        {
+            ServiceResponse<SalesOrderDto> serviceResponse = new ServiceResponse<SalesOrderDto>();
+            try
+            {
+                var salesOrderById = await _repository.GetSalesOrderById(id);
+                string serverKey = GetServerKey();
+                if (salesOrderById == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrder  hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesOrder with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {id}");
+                    SalesOrderDto salesOrderDto = _mapper.Map<SalesOrderDto>(salesOrderById);
+
+
+                    List<SalesOrderItemsDto> salesOrderItemsDtoList = new List<SalesOrderItemsDto>();
+
+                    var salesAdditionalCharges = salesOrderById.SalesOrderAdditionalCharges;
+
+                    //var salesAdditionalChargesList = _mapper.Map<List<SalesOrderAdditionalChargesDto>>(salesAdditionalCharges);
+                    List<SalesOrderAdditionalChargesDto> salesAdditionalChargesList = _mapper.Map<List<SalesOrderAdditionalChargesDto>>(salesAdditionalCharges.ToList());
+
+                    foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems)
+                    {
+                        SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
+                        salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
+                        salesOrderItemsDtos.SoConfirmationDates = _mapper.Map<List<SoConfirmationDateDto>>(salesOrderItemDetails.SoConfirmationDates);
+
+                        salesOrderItemsDtoList.Add(salesOrderItemsDtos);
+                    }
+
+                    salesOrderDto.SalesOrdersItems = salesOrderItemsDtoList;
+                    salesOrderDto.SalesOrderAdditionalCharges = salesAdditionalChargesList;
+                    serviceResponse.Data = salesOrderDto;
+                    serviceResponse.Message = $"Returned SalesOrderDetails with id: {id}";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetSalesOrderDetialsById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetSalesOrderDetailsWithOutClosedAdditionalChargesById(int id)
         {
             ServiceResponse<SalesOrderDto> serviceResponse = new ServiceResponse<SalesOrderDto>();

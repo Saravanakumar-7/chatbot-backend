@@ -734,7 +734,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryTranctionObjectNew.GrinPartId = grinId;
                                 inventoryTranctionObjectNew.PartType = grinPartDetails.ItemType; // we have to take parttype from grinparts model;
                                 inventoryTranctionObjectNew.ReferenceID = binningDetail.GrinNumber;
-                                inventoryTranctionObjectNew.ReferenceIDFrom = "GRIN";
+                                inventoryTranctionObjectNew.ReferenceIDFrom = "Binning";
 
                                 var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
                                 var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
@@ -938,7 +938,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryTranctionObjectNew.GrinPartId = grinId;
                                 inventoryTranctionObjectNew.PartType = grinPartDetails.ItemType; // we have to take parttype from grinparts model;
                                 inventoryTranctionObjectNew.ReferenceID = binningDetail.GrinNumber;
-                                inventoryTranctionObjectNew.ReferenceIDFrom = "GRIN";
+                                inventoryTranctionObjectNew.ReferenceIDFrom = "Binning";
 
                                 var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
                                 var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
@@ -1438,7 +1438,7 @@ namespace Tips.Grin.Api.Controllers
                             inventoryTranctionObjectNew.GrinPartId = grinId;
                             inventoryTranctionObjectNew.PartType = grinPartDetails.ItemType; // we have to take parttype from grinparts model;
                             inventoryTranctionObjectNew.ReferenceID = binningDetail.GrinNumber;
-                            inventoryTranctionObjectNew.ReferenceIDFrom = "GRIN";
+                            inventoryTranctionObjectNew.ReferenceIDFrom = "Binning";
 
                             var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
                             var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
@@ -1664,7 +1664,7 @@ namespace Tips.Grin.Api.Controllers
                             inventoryTranctionObjectNew.GrinPartId = grinId;
                             inventoryTranctionObjectNew.PartType = grinPartDetails.ItemType; // we have to take parttype from grinparts model;
                             inventoryTranctionObjectNew.ReferenceID = Convert.ToString(grinId);
-                            inventoryTranctionObjectNew.ReferenceIDFrom = "GRIN";
+                            inventoryTranctionObjectNew.ReferenceIDFrom = "Binning";
 
                             var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
                             var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
