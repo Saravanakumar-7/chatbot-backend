@@ -89,6 +89,7 @@ namespace Tips.Warehouse.Api.Repository
                     inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
                     inv.CustomerAliasName.Contains(searchParams.SearchValue) ||
                     inv.CustomerName.Contains(searchParams.SearchValue) ||
+                    inv.CustomerId.Contains(searchParams.SearchValue) ||
                     inv.CompanyName.Contains(searchParams.SearchValue) ||
                     inv.ReturnInvoiceItems.Any(item => item.DONumber.Contains(searchParams.SearchValue)))) // Include searching by DoNumber in ReturnInvoiceItems
                 .Include(k => k.ReturnInvoiceItems);

@@ -209,10 +209,10 @@ namespace Tips.Warehouse.Api.Controllers
                 if (getInventoryDetailsByGrinNoandGrinId == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Inventory with id: {GrinNo}, hasn't been found in db.";
+                    serviceResponse.Message = $"Inventory with GRIN: {GrinNo},PartID:{GrinPartsId}, PartNo:{ItemNumber}, ProjNo:{ProjectNumber} hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"Inventory with id: {GrinNo}, hasn't been found in db.");
+                    _logger.LogError($"Inventory with GRIN: {GrinNo},PartID:{GrinPartsId}, PartNo:{ItemNumber}, ProjNo:{ProjectNumber} hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
