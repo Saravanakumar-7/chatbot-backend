@@ -1620,7 +1620,7 @@ namespace Tips.Grin.Api.Controllers
                         var grindetails = await _grinRepository.GetGrinByGrinNo(grinNumber);
                         body = body.Replace("{{IQC Numbers}}", iQCCreate.IQCNumber);
                         body = body.Replace("{{GRIN Numbers}}", grinNumber);
-                        body = body.Replace("{{Vendor Id}}", grindetails.VendorId);
+                        body = body.Replace("{{Vendor Id}}", grindetails.VendorNumber);
                         body = body.Replace("{{Vendor Name}}", grindetails.VendorName);
                         body = body.Replace("{{Created By}}", iQCCreate.CreatedBy);
                         body = body.Replace("{{Created Dated}}", iQCCreate.CreatedOn.ToString());

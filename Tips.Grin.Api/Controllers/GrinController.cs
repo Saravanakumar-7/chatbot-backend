@@ -877,7 +877,7 @@ namespace Tips.Grin.Api.Controllers
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
                     body = body.Replace("{{GRIN Numbers}}", grins.GrinNumber);
-                    body = body.Replace("{{Vendor Id}}", grins.VendorId);
+                    body = body.Replace("{{Vendor Id}}", grins.VendorNumber);
                     body = body.Replace("{{Vendor Name}}", grins.VendorName);
                     body = body.Replace("{{Created By}}", grins.CreatedBy);
                     body = body.Replace("{{Created Dated}}", grins.CreatedOn.ToString());
