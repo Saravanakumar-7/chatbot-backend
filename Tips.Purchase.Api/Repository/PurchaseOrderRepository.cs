@@ -1149,8 +1149,8 @@ namespace Tips.Purchase.Api.Repository
 
             return results;
         }
-        public async Task<IEnumerable<PurchaseOrderApprovalSPReport>> GetPurchaseOrderApprovalSPReportWithDate(DateTime? FromDate, DateTime? ToDate, string RecordType
-                                                                                                                 , string Approval)
+        public async Task<IEnumerable<PurchaseOrderApprovalSPReport>> GetPurchaseOrderApprovalSPReportWithDate(DateTime? FromDate, DateTime? ToDate, string? RecordType
+                                                                                                                 , string? Approval)
         {
             var results = _tipsPurchaseDbContext.Set<PurchaseOrderApprovalSPReport>()
                         .FromSqlInterpolated($"CALL Purchase_Order_With_ApprovalStatus_withdate({FromDate},{ToDate},{RecordType},{Approval})")
