@@ -4318,6 +4318,8 @@ namespace Tips.SalesService.Api.Controllers
                     salesOrderItemsDetail.ScheduleDates = listSch;
                     salesOrderItemsDetail.SoConfirmationDates = listCon;
                     salesOrderItemsList.Add(salesOrderItemsDetail);
+                    await _salesOrderItemsRepository.UpdateSalesOrderItem(salesOrderItemsDetail);
+                    _salesOrderItemsRepository.SaveAsync();
                 }
                 var salesAdditionalChargesList = new List<SalesOrderAdditionalCharges>();
                 if (salesAdditionalChargesDto != null)
@@ -4331,7 +4333,7 @@ namespace Tips.SalesService.Api.Controllers
                 var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetailBeforeUpdate);
                 updateData.SalesOrdersItems = null;
                 updateData.SalesOrderAdditionalCharges = null;
-                updateData.SalesOrdersItems = salesOrderItemsList;
+                //updateData.SalesOrdersItems = salesOrderItemsList;
                 updateData.SalesOrderAdditionalCharges = salesAdditionalChargesList;
                 string result = await _repository.UpdateSalesOrderShortClose(updateData);
                 _logger.LogInfo(result);
