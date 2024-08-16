@@ -5,7 +5,7 @@
         public string? VendorId { get; set; }
         public string? VendorName { get; set; }
         public string? PONumber { get; set; }
-        public int? PoStatus { get; set; }  
+        
         public DateTime? PODate { get; set; }
         public string? RevisionNumber { get; set; }
         public string? Currency { get; set; }
@@ -24,7 +24,7 @@
         public decimal? UTGST { get; set; }
 
         public decimal? TotalAmount { get; set; }
-
+        public int? PoStatus { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? PRNumber { get; set; }

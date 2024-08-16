@@ -481,13 +481,14 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpGet] // Adjust your route as needed
-        public async Task<IActionResult> GetPurchaseOrderApprovalSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate, [FromQuery] string RecordType, [FromQuery] string Approval)
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderApprovalSPReportWithDate(PurchaseOrderApprovalSPReportWithDateDTO purchaseOrderApprovalSPReportWithDateDTO)
         {
             ServiceResponse<IEnumerable<PurchaseOrderApprovalSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderApprovalSPReport>>();
             try
             {
-                var products = await _repository.GetPurchaseOrderApprovalSPReportWithDate(FromDate, ToDate, RecordType, Approval);
+                var products = await _repository.GetPurchaseOrderApprovalSPReportWithDate(purchaseOrderApprovalSPReportWithDateDTO.FromDate, purchaseOrderApprovalSPReportWithDateDTO.ToDate,
+                                                                                            purchaseOrderApprovalSPReportWithDateDTO.RecordType, purchaseOrderApprovalSPReportWithDateDTO.Approval);
 
                 if (products == null)
                 {
@@ -1532,7 +1533,7 @@ namespace Tips.Purchase.Api.Controllers
                         var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
                         var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
                         prDetail.PrStatus = prItemClosedStatusCount;
-                        await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
+                        await _purchaseRequisitionRepository.UpdatePurchaseRequisition_ForApproval(prDetail);
                     }
                 }
                 _documentUploadRepository.SaveAsync();
@@ -2636,7 +2637,7 @@ namespace Tips.Purchase.Api.Controllers
                 var updateData = _mapper.Map(purchaseOrderUpdateDto, poDetailBeforeUpdate);
                 updateData.POItems = poItemDtoList;
                 updateData.POIncoTerms = poIncoTermsList;
-                await _repository.UpdatePurchaseOrder(updateData);
+                await _repository.UpdatePurchaseOrder_ForApproval(updateData);
                 _repository.SaveAsync();
                 _poItemHistoryRepository.SaveAsync();
                 _pRItemsDocumentUploadRepository.SaveAsync();
@@ -2775,14 +2776,14 @@ namespace Tips.Purchase.Api.Controllers
             {
                 var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
                 purchaseOrderDetails.PoStatus = PoStatus.PartiallyClosed;
-                await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
+                await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetails);
 
             }
             else
             {
                 var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
                 purchaseOrderDetails.PoStatus = PoStatus.Closed;
-                await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
+                await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetails);
             }
             _repository.SaveAsync();
 
@@ -3904,7 +3905,7 @@ namespace Tips.Purchase.Api.Controllers
                 purchaseOrderDetailById.IsShortClosed = true;
                 purchaseOrderDetailById.ShortClosedBy = _createdBy;
                 purchaseOrderDetailById.ShortClosedOn = DateTime.Now;
-                string result = await _repository.UpdatePurchaseOrder(purchaseOrderDetailById);
+                string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailById);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "PurchaseOrder have been closed";
@@ -4045,7 +4046,7 @@ namespace Tips.Purchase.Api.Controllers
 
                     //Update PoConfirmationStatus in PurchaseOrder Table
                     purchaseOrderDetailById.PoConfirmationStatus = true;
-                    string result = await _repository.UpdatePurchaseOrder(purchaseOrderDetailById);
+                    string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailById);
                     _repository.SaveAsync();
                 } // If the loop completes without returning a response, it means all sets were processed successfully
                 if (serverKey == "avision")
@@ -4173,14 +4174,14 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var poDetails = await _repository.GetPurchaseOrderById(poItemDetailByPoItemId.PurchaseOrderId);
                     poDetails.PoStatus = PoStatus.ShortClosed;
-                    await _repository.UpdatePurchaseOrder(poDetails);
+                    await _repository.UpdatePurchaseOrder_ForApproval(poDetails);
                     _repository.SaveAsync();
                 }
                 else
                 {
                     var poDetails = await _repository.GetPurchaseOrderById(poItemDetailByPoItemId.PurchaseOrderId);
                     poDetails.PoStatus = PoStatus.PartiallyClosed;
-                    await _repository.UpdatePurchaseOrder(poDetails);
+                    await _repository.UpdatePurchaseOrder_ForApproval(poDetails);
                     _repository.SaveAsync();
                 }
 

@@ -2344,14 +2344,14 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var prDetails = await _repository.GetPurchaseRequisitionById(prItemDetailByPrItemId.PurchaseRequistionId);
                     prDetails.PrStatus = PrStatus.ShortClosed;
-                    await _repository.UpdatePurchaseRequisition(prDetails);
+                    await _repository.UpdatePurchaseRequisition_ForApproval(prDetails);
                     _repository.SaveAsync();
                 }
                 else
                 {
                     var prDetails = await _repository.GetPurchaseRequisitionById(prItemDetailByPrItemId.PurchaseRequistionId);
                     prDetails.PrStatus = PrStatus.PartiallyClosed;
-                    await _repository.UpdatePurchaseRequisition(prDetails);
+                    await _repository.UpdatePurchaseRequisition_ForApproval(prDetails);
                     _repository.SaveAsync();
                 }
 
