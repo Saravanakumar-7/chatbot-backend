@@ -4245,8 +4245,7 @@ namespace Tips.SalesService.Api.Controllers
                 for (int i = 0; i < salesOrderItemsDto.Count; i++)
                 {
                     SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
-                    salesOrderItemsDetail.ScheduleDates = null;
-                    salesOrderItemsDetail.SoConfirmationDates = null;
+                   
                     var oldSOItem = salesOrderDetailBeforeUpdate.SalesOrdersItems[i];
                     if (salesOrderItemsDto[i].NowShortClosed == true)
                     {
@@ -4261,7 +4260,6 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderHistory.CustomerName = salesOrderDetailBeforeUpdate.CustomerName;
                         salesOrderHistory.CustomerId = salesOrderDetailBeforeUpdate.CustomerId;
                         salesOrderHistory.RevisionNumber = salesOrderDetailBeforeUpdate.RevisionNumber;
-                        //salesOrderHistory.SOStatus = salesOrderDetailBeforeUpdate.SOStatus;
                         salesOrderHistory.PONumber = salesOrderDetailBeforeUpdate.PONumber;
                         salesOrderHistory.PODate = salesOrderDetailBeforeUpdate.PODate;
                         salesOrderHistory.ReceivedDate = salesOrderDetailBeforeUpdate.ReceivedDate;
@@ -4301,39 +4299,18 @@ namespace Tips.SalesService.Api.Controllers
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
                         await _salesOrderHistory.CreateSalesOrderHistory(salesOrderHistories);
                     }
-                    List<ScheduleDate>? listSch = new List<ScheduleDate>();
-                    if (salesOrderItemsDto[i].ScheduleDates.Count() > 0)
-                        foreach (var secd in salesOrderItemsDto[i].ScheduleDates)
-                        {
-                            ScheduleDate secd1 = _mapper.Map<ScheduleDate>(secd);
-                            listSch.Add(secd1);
-                        }
-                    List<SoConfirmationDate>? listCon = new List<SoConfirmationDate>();
-                    if (salesOrderItemsDto[i].ScheduleDates.Count() > 0)
-                        foreach (var Con in salesOrderItemsDto[i].SoConfirmationDates)
-                        {
-                            SoConfirmationDate Con1 = _mapper.Map<SoConfirmationDate>(Con);
-                            listCon.Add(Con1);
-                        }
+                    List<ScheduleDate>? listSch = _mapper.Map<List<ScheduleDate>>(salesOrderItemsDto[i].ScheduleDates);
+                   List<SoConfirmationDate>? listCon = _mapper.Map<List<SoConfirmationDate>>(salesOrderItemsDto[i].SoConfirmationDates);
+                    
                     salesOrderItemsDetail.ScheduleDates = listSch;
                     salesOrderItemsDetail.SoConfirmationDates = listCon;
                     salesOrderItemsList.Add(salesOrderItemsDetail);
-                    await _salesOrderItemsRepository.UpdateSalesOrderItem(salesOrderItemsDetail);
-                    _salesOrderItemsRepository.SaveAsync();
                 }
-                var salesAdditionalChargesList = new List<SalesOrderAdditionalCharges>();
-                if (salesAdditionalChargesDto != null)
-                {
-                    for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
-                    {
-                        SalesOrderAdditionalCharges additionalChargesDetails = _mapper.Map<SalesOrderAdditionalCharges>(salesAdditionalChargesDto[i]);
-                        salesAdditionalChargesList.Add(additionalChargesDetails);
-                    }
-                }
+                var salesAdditionalChargesList = _mapper.Map<List<SalesOrderAdditionalCharges>>(salesAdditionalChargesDto);
+               
                 var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetailBeforeUpdate);
-                updateData.SalesOrdersItems = null;
-                updateData.SalesOrderAdditionalCharges = null;
-                //updateData.SalesOrdersItems = salesOrderItemsList;
+                
+                updateData.SalesOrdersItems = salesOrderItemsList;
                 updateData.SalesOrderAdditionalCharges = salesAdditionalChargesList;
                 string result = await _repository.UpdateSalesOrderShortClose(updateData);
                 _logger.LogInfo(result);
