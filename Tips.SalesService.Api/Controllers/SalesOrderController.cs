@@ -10,6 +10,7 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Enums;
 using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -2843,7 +2844,7 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(5).SetCellValue(item.TypeOfSolution);
                     row.CreateCell(6).SetCellValue(item.ProductType);
                     row.CreateCell(7).SetCellValue(item.MaterialGroup);
-                    row.CreateCell(8).SetCellValue(item.ItemType.HasValue ? item.ItemType.Value.ToString() : ""); // Assuming ItemType is nullable int
+                    row.CreateCell(8).SetCellValue(item.ItemType.HasValue ? Enum.GetName(typeof(PartType), item.ItemType) : ""); // Assuming ItemType is nullable int
                     row.CreateCell(9).SetCellValue(item.SalesPerson);
                     row.CreateCell(10).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : ""); // Assuming sodate is nullable DateTime
                     row.CreateCell(11).SetCellValue(item.KPN);
@@ -3251,7 +3252,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     var row = sheet.CreateRow(rowIndex++);
                     row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
-                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? item.SOStatus.Value.ToString() : ""); // Assuming SOStatus is nullable int
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? Enum.GetName(typeof(OrderStatus), item.SOStatus) : ""); // Assuming SOStatus is nullable int
                     row.CreateCell(2).SetCellValue(item.ProjectNumber ?? ""); // Assuming ProjectNumber is nullable string
                     row.CreateCell(3).SetCellValue(item.CustomerId);
                     row.CreateCell(4).SetCellValue(item.CustomerName);
