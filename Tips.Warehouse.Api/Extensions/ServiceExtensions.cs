@@ -48,7 +48,13 @@ namespace Tips.Warehouse.Api.Extensions
         {
 
             var connectionString = config["MySqlconnection:connectionString"];
-            services.AddDbContext<TipsWarehouseDbContext>(o => o.UseMySQL(connectionString));
+            services.AddDbContext<TipsWarehouseDbContext>(options =>
+            {
+                options.UseMySQL(connectionString, mysqlOptions =>
+                {
+                    mysqlOptions.CommandTimeout(3600); // Set command timeout to 600 seconds (10 minutes)
+                });
+            });
         }
 
         public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices

@@ -49,7 +49,13 @@ namespace Tips.Grin.Api.Extensions
         {
 
             var connectionString = config["MySqlconnection:connectionString"];
-            services.AddDbContext<TipsGrinDbContext>(o => o.UseMySQL(connectionString));
+            services.AddDbContext<TipsGrinDbContext>(options =>
+            {
+                options.UseMySQL(connectionString, mysqlOptions =>
+                {
+                    mysqlOptions.CommandTimeout(3600); // Set command timeout to 600 seconds (10 minutes)
+                });
+            });
         }
 
         public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices

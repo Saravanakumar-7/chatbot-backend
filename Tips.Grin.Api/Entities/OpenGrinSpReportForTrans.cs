@@ -13,7 +13,7 @@
         public string? Description { get; set; }
         public string? UOM { get; set; }
         public decimal? Qty { get; set; }
-        public string? LotNumber { get; set; }
+        public string? lotNumber { get; set; }
         public int? ItemType { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
