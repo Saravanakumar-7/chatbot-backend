@@ -3566,7 +3566,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     var row = sheet.CreateRow(rowIndex++);
                     row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
-                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? item.SOStatus.Value.ToString() : ""); // Adding SOStatus
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? Enum.GetName(typeof(OrderStatus), item.SOStatus) : "");  // Adding SOStatus
                     row.CreateCell(2).SetCellValue(item.ProjectNumber ?? ""); // Adding ProjectNumber
                     row.CreateCell(3).SetCellValue(item.CustomerId);
                     row.CreateCell(4).SetCellValue(item.CustomerName);
