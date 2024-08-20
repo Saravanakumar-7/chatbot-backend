@@ -9,5 +9,8 @@
         public string? Description { get; set; }
         public decimal? Quantity { get; set; }
         public string? MaterialGroup { get; set; }
+        public string? LocationTransfer { get; set; }
+        
+
     }
 }
