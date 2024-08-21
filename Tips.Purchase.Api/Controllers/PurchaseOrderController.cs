@@ -4323,12 +4323,13 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoConfirmationSPReportwithParam([FromBody] PurchaseOrder_ReportGetDto paramsforPurchase)
+        public async Task<IActionResult> GetPoConfirmationSPReportwithParam([FromBody] PurchaseOrderConfor_ReportGetDto paramsforPurchase)
         {
             ServiceResponse<IEnumerable<poconfirmation_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_Dto>>();
             try
             {
-                var result = await _repository.GetPoConfirmationSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, paramsforPurchase.POStatus, paramsforPurchase.Approval);
+                var result = await _repository.GetPoConfirmationSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
+                                                                                    paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.RecordType);
                 if (result == null)
                 {
                     serviceResponse.Data = null;
@@ -4397,12 +4398,13 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoDeliverySchedulewithParam([FromBody] PurchaseOrder_ReportGetDto paramsforPurchase)
+        public async Task<IActionResult> GetPoDeliverySchedulewithParam([FromBody] PurchaseOrderConfor_ReportGetDto paramsforPurchase)
         {
             ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>>();
             try
             {
-                var result = await _repository.GetPoDeliverySchedulewithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, paramsforPurchase.POStatus, paramsforPurchase.Approval);
+                var result = await _repository.GetPoDeliverySchedulewithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
+                                                                                                paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.RecordType);
                 if (result == null)
                 {
                     serviceResponse.Data = null;
@@ -4477,7 +4479,9 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<poproject_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poproject_report_Dto>>();
             try
             {
-                var result = await _repository.GetPoProjectSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, paramsforPurchase.POStatus, paramsforPurchase.Approval);
+                var result = await _repository.GetPoProjectSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
+                                                                                        paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.ProjectNumber,
+                                                                                        paramsforPurchase.RecordType);
                 if (result == null)
                 {
                     serviceResponse.Data = null;

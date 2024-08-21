@@ -1603,29 +1603,29 @@ namespace Tips.Purchase.Api.Repository
             return poproject;
         }
 
-        public async Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, int? POStatus
-                                                                                                       , string? Approval)
+        public async Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
+                                                                                                       , string? Approval, string? RecordType)
         {
             var poconfirmmation = await _tipsPurchaseDbContext.Set<poconfirmation_report_Dto>()
-                    .FromSqlInterpolated($"CALL poconfirmation_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval})")
+                    .FromSqlInterpolated($"CALL poconfirmation_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval},{RecordType})")
                     .ToListAsync();
 
             return poconfirmmation;
         }
-        public async Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliverySchedulewithParam(string? ItemNumber, string? PONumber, string? VendorName, int? POStatus
-                                                                                                       , string? Approval)
+        public async Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliverySchedulewithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
+                                                                                                       , string? Approval, string? RecordType)
         {
             var podeliveryschedule = await _tipsPurchaseDbContext.Set<podeliveryschedule_report_Dto>()
-                    .FromSqlInterpolated($"CALL podeliveryschedule_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval})")
+                    .FromSqlInterpolated($"CALL podeliveryschedule_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval},{RecordType})")
                     .ToListAsync();
 
             return podeliveryschedule;
         }
-        public async Task<IEnumerable<poproject_report_Dto>> GetPoProjectSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, int? POStatus
-                                                                                                       , string? Approval)
+        public async Task<IEnumerable<poproject_report_Dto>> GetPoProjectSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
+                                                                                                       , string? Approval, string? ProjectNumber, string? RecordType)
         {
             var poproject = await  _tipsPurchaseDbContext.Set<poproject_report_Dto>()
-                    .FromSqlInterpolated($"CALL poproject_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval})")
+                    .FromSqlInterpolated($"CALL poproject_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval},{ProjectNumber},{RecordType})")
                     .ToListAsync();
 
             return poproject;
