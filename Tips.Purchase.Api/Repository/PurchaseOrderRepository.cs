@@ -41,7 +41,7 @@ namespace Tips.Purchase.Api.Repository
         {
             var date = DateTime.Now;
             purchaseOrder.CreatedBy = _createdBy;
-            purchaseOrder.CreatedOn = date.Date;
+            purchaseOrder.CreatedOn = date;
             // purchaseOrder.LastModifiedBy = _createdBy;
             //purchaseOrder.LastModifiedOn = DateTime.Now;
             //Guid purchaseOrderNumber = Guid.NewGuid();
