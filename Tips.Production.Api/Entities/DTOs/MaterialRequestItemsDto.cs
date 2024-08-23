@@ -21,6 +21,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? RequiredQty { get; set; }
+        public int? MaterialRequestId {  get; set; }
 
         public List<MRStockDetailsDto> MRStockDetails { get; set; }
 
@@ -49,7 +50,7 @@ namespace Tips.Production.Api.Entities.DTOs
     }
     public class MaterialRequestItemUpdateDto
     {
-
+        public int Id { get; set; }
         public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
 

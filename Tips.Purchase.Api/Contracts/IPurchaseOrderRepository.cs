@@ -79,14 +79,15 @@ namespace Tips.Purchase.Api.Contracts
         Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIIIListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams);
         Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIVListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams);
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllLatestRevNoPurchaseOrderNameList();
-        Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithDate(DateTime? FromDate, DateTime? ToDate);
-        Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliveryScheduleSPReportwithDate(DateTime? FromDate, DateTime? ToDate);
-        Task<IEnumerable<poproject_report_Dto>> GetPoProjectSPReportwithDate(DateTime? FromDate, DateTime? ToDate);
-        Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, int? POStatus
-                                                                                                       , string? Approval);
-        Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliverySchedulewithParam(string? ItemNumber, string? PONumber, string? VendorName, int? POStatus
-                                                                                                      , string? Approval);
-        Task<IEnumerable<poproject_report_Dto>> GetPoProjectSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, int? POStatus
-                                                                                                       , string? Approval);
+        Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType);
+        Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliveryScheduleSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType);
+        Task<IEnumerable<poproject_report_Dto>> GetPoProjectSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType);
+        Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
+                                                                                                       , string? Approval, string? RecordType);
+        Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliverySchedulewithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
+                                                                                                      , string? Approval, string? RecordType);
+        Task<IEnumerable<poproject_report_Dto>> GetPoProjectSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
+                                                                                                       , string? Approval, string? ProjectNumber, string? RecordType);
+      
     }
 }

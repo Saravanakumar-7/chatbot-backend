@@ -15,7 +15,7 @@ namespace Entities
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
         public string? ItemDescription { get; set; }
-
+        public string? ItemType { get; set; }
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; }
         [DefaultValue(false)]

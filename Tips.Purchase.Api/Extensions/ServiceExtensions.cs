@@ -51,7 +51,13 @@ namespace Tips.Purchase.Api.Extensions
         {
 
             var connectionString = config["MySqlconnection:connectionString"];
-            services.AddDbContext<TipsPurchaseDbContext>(o => o.UseMySQL(connectionString));
+            services.AddDbContext<TipsPurchaseDbContext>(options =>
+            {
+                options.UseMySQL(connectionString, mysqlOptions =>
+                {
+                    mysqlOptions.CommandTimeout(3600); // Set command timeout to 600 seconds (10 minutes)
+                });
+            });
         }
 
         public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices
