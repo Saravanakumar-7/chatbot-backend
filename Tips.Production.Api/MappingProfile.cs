@@ -103,6 +103,9 @@ namespace Tips.Production.Api
             CreateMap<MRStockDetails, MRStockDetailsPostDto>().ReverseMap();
             CreateMap<MRStockDetails, MRStockDetailsUpdateDto>().ReverseMap();
 
+            CreateMap<MRStockDetailsUpdateDto, InventoryUpdateDtoForMRWarehouse>().ReverseMap();
+            CreateMap<MRStockDetails, InventoryUpdateDtoForMRWarehouse>().ReverseMap();
+
             CreateMap<MaterialRequestItems, UpdateInventoryBalanceQty>().ReverseMap();
             CreateMap<MRStockDetails, UpdateInventoryBalanceQty>().ReverseMap();
 

@@ -417,17 +417,19 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class CustomerWiseTransactionSPReport
     {
         public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+        public int? ReportType { get; set; }
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
         public string? MaterialGroup { get; set; }
-        public decimal? ODOQTY { get; set; }
-        public decimal? RODOQTY { get; set; }
+        public decimal? SOOrderQty { get; set; }
         public decimal? DoQty { get; set; }
         public decimal? RDoQty { get; set; }
-        public decimal? OpenGrinQty { get; set; }
         public decimal? InvoicedQty { get; set; }
         public decimal? ReturnInvQty { get; set; }
-        public decimal? SOOrderQty { get; set; }
+        public decimal? RODOQTY { get; set; }
+        public decimal? ODOQTY { get; set; }
+        public decimal? OpenGrinQty { get; set; }
     }
 
     public class RfqSalesOrderSPResportDTO

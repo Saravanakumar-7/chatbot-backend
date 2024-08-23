@@ -1578,26 +1578,26 @@ namespace Tips.Purchase.Api.Repository
             return PagedList<Tras_PO_ConfirmationDate>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithDate(DateTime? FromDate, DateTime? ToDate)
+        public async Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType)
         {
             var poconfirmmation = await _tipsPurchaseDbContext.Set<poconfirmation_report_Dto>()
-                    .FromSqlInterpolated($"CALL poconfirmation_report_withdate({FromDate},{ToDate})")
+                    .FromSqlInterpolated($"CALL poconfirmation_report_withdate({FromDate},{ToDate},{Approval},{RecordType})")
                     .ToListAsync();
 
             return poconfirmmation;
         }
-        public async Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliveryScheduleSPReportwithDate(DateTime? FromDate, DateTime? ToDate)
+        public async Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliveryScheduleSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType)
         {
             var podeliveryschedule = await _tipsPurchaseDbContext.Set<podeliveryschedule_report_Dto>()
-                    .FromSqlInterpolated($"CALL podeliveryschedule_report_withdate({FromDate},{ToDate})")
+                    .FromSqlInterpolated($"CALL podeliveryschedule_report_withdate({FromDate},{ToDate},{Approval},{RecordType})")
                     .ToListAsync();
 
             return podeliveryschedule;
         }
-        public async Task<IEnumerable<poproject_report_Dto>> GetPoProjectSPReportwithDate(DateTime? FromDate, DateTime? ToDate)
+        public async Task<IEnumerable<poproject_report_Dto>> GetPoProjectSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType)
         {
             var poproject = await _tipsPurchaseDbContext.Set<poproject_report_Dto>()
-                    .FromSqlInterpolated($"CALL poproject_report_withdate({FromDate},{ToDate})")
+                    .FromSqlInterpolated($"CALL poproject_report_withdate({FromDate},{ToDate},{Approval},{RecordType})")
                     .ToListAsync();
 
             return poproject;

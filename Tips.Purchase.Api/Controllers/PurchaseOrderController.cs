@@ -4360,13 +4360,14 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetPoConfirmationSPReportwithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        [HttpPost]
+        public async Task<IActionResult> GetPoConfirmationSPReportwithDate(PurchaseOrderDate_ReportGetDto purchaseOrderDate_ReportGetDto)
         {
             ServiceResponse<IEnumerable<poconfirmation_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_Dto>>();
             try
             {
-                var result = await _repository.GetPoConfirmationSPReportwithDate(FromDate, ToDate);
+                var result = await _repository.GetPoConfirmationSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
+                                                                                                purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType);
                 if (result == null)
                 {
                     serviceResponse.Data = null;
@@ -4435,13 +4436,14 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetPoDeliveryScheduleSPReportwithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        [HttpPost]
+        public async Task<IActionResult> GetPoDeliveryScheduleSPReportwithDate(PurchaseOrderDate_ReportGetDto purchaseOrderDate_ReportGetDto)
         {
             ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>>();
             try
             {
-                var result = await _repository.GetPoDeliveryScheduleSPReportwithDate(FromDate, ToDate);
+                var result = await _repository.GetPoDeliveryScheduleSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
+                                                                                                purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType);
                 if (result == null)
                 {
                     serviceResponse.Data = null;
@@ -4512,13 +4514,14 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetPoProjectSPReportwithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        [HttpPost]
+        public async Task<IActionResult> GetPoProjectSPReportwithDate(PurchaseOrderDate_ReportGetDto purchaseOrderDate_ReportGetDto)
         {
             ServiceResponse<IEnumerable<poproject_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poproject_report_Dto>>();
             try
             {
-                var result = await _repository.GetPoProjectSPReportwithDate(FromDate, ToDate);
+                var result = await _repository.GetPoProjectSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
+                                                                                                purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType);
                 if (result == null)
                 {
                     serviceResponse.Data = null;
