@@ -11,6 +11,7 @@ using Entities.Helper;
 using Org.BouncyCastle.Ocsp;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -80,6 +81,33 @@ namespace Tips.SalesService.Api.Repository
                            .FirstOrDefaultAsync();
 
             return rfqSourcingByRfqNo;
+        }
+        public async Task<RfqSourcingVendorDetailsDto> GetRfqSourcingVendorDetails(string ProjectNumber, string ItemNumber, string VendorId)
+        {
+            var rfqSourcingByRfqNo = await _tipsSalesServiceDbContext.RfqSourcings.Where(x => x.RFQNumber == ProjectNumber)
+                              .Select(x=>x.Id)
+                           .FirstOrDefaultAsync();
+
+            var rfqSourcingItemByItemNo= await _tipsSalesServiceDbContext.RfqSourcingItems.Where(x => x.ItemNumber == ItemNumber
+                                && x.RfqSourcingId == rfqSourcingByRfqNo)
+                             .Select(x => x.Id)
+                          .FirstOrDefaultAsync();
+
+            var rfqSourcingVendorDetails = await _tipsSalesServiceDbContext.RfqSourcingVendors.Where(x => x.VendorId == VendorId
+                                && x.RfqSourcingItemsId == rfqSourcingItemByItemNo)
+                             .Select(x => new RfqSourcingVendorDetailsDto
+                             {
+                                 ProjectNumber = ProjectNumber,
+                                 ItemNumber = ItemNumber,
+                                 VendorId = VendorId,
+                                 VendorName = x.Vendor,
+                                 LandingPrice = x.LandingPrice,
+                                 MoqCost = x.MoqCost
+
+                             }).FirstOrDefaultAsync();  
+
+
+            return rfqSourcingVendorDetails;
         }
 
         public async Task<string> UpdateRfqSourcing(RfqSourcing rfqSourcing)

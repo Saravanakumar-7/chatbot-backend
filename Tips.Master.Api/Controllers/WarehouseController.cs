@@ -51,6 +51,35 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveWarehouse([FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<WarehouseDto>> serviceResponse = new ServiceResponse<IEnumerable<WarehouseDto>>();
+
+            try
+            {
+                var locations = await _repository.WarehouseRepository.GetAllActiveWarehouse(searchParams);
+                _logger.LogInfo("Returned all Warehouse");
+                var result = _mapper.Map<IEnumerable<WarehouseDto>>(locations);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active Warehouse Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+
+            }
+        }
+
         // GET api/<WarehouseController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetWarehouseById(int id)

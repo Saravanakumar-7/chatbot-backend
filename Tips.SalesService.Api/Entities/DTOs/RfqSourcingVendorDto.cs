@@ -13,6 +13,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? Vendor { get; set; }
+        public string? VendorId { get; set; }
 
         [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
@@ -40,6 +41,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         [StringLength(500, ErrorMessage = "Vendor can't be longer than 500 characters")]
         public string? Vendor { get; set; }
+        public string? VendorId { get; set; }
 
         [Required(ErrorMessage = "UnitPrice is required")]
         [Precision(13, 3)]
@@ -75,7 +77,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int? Id { get; set; }
         [StringLength(500, ErrorMessage = "Vendor can't be longer than 500 characters")]
         public string? Vendor { get; set; }
-
+        public string? VendorId { get; set; }
         [Required(ErrorMessage = "UnitPrice is required")]
         [Precision(13, 3)]
         public decimal? UnitPrice { get; set; }
@@ -124,5 +126,16 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+    }
+    public class RfqSourcingVendorDetailsDto
+    {
+        public string? ProjectNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? VendorId { get; set; }
+        public string? VendorName { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandingPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MoqCost { get; set; }
     }
 }

@@ -47,7 +47,7 @@ namespace Tips.Production.Api.Repository
 
         public void SaveAsync()
         {
-            _tipsProductionDbContext.SaveChanges();
+            _tipsProductionDbContext.SaveChangesAsync();
         }
     }
 }

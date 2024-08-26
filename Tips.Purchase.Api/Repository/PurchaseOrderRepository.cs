@@ -1080,7 +1080,16 @@ namespace Tips.Purchase.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<PurchaseOrderUnitListSPReportWithParamForTrans>> GetPurchaseOrderUnitListSPReportWithParamForTrans(string itemNumber)
+        {
 
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseOrderUnitListSPReportWithParamForTrans>()
+            .FromSqlInterpolated($"CALL getunitlistbyitem({itemNumber})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<PurchaseOrderApprovalSPReport>> GetPurchaseOrderApprovalSPReportWithParam(string VendorName, string PONumber, string itemNumber,
                                                                                                      string RecordType, string Postatus, string Approval)
         {

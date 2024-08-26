@@ -60,6 +60,7 @@ namespace Tips.Purchase.Api.Entities
             modelBuilder.Entity<PurchaseRequisitionSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<PurchaseOrderSPReportForAvision>().HasNoKey();
             modelBuilder.Entity<PurchaseRequisitionSPReportForAvision>().HasNoKey();
+            modelBuilder.Entity<PurchaseOrderUnitListSPReportWithParamForTrans>().HasNoKey();
         }
     }
 }

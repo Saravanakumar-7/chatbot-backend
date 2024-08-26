@@ -62,10 +62,10 @@ namespace Tips.Master.Api.Controllers
             try
             {
                 var locations = await _repository.LocationsRepository.GetAllActiveLocations(searchParams);
-                _logger.LogInfo("Returned all departments");
+                _logger.LogInfo("Returned all Warehouse");
                 var result = _mapper.Map<IEnumerable<LocationsDto>>(locations);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all Active departments Successfully";
+                serviceResponse.Message = "Returned all Active Locations Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

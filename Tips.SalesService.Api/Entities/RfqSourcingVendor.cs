@@ -14,7 +14,7 @@ namespace Tips.SalesService.Api.Entities
         [Key]
         public int Id { get; set; }
         public string? Vendor { get; set; }
-
+        public string? VendorId { get; set; }
         [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
         public string? UnitPricePer { get; set; }

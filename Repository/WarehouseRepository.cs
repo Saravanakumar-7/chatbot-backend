@@ -48,7 +48,8 @@ namespace Repository
         {
             var warehouseDetails = FindAll()
                                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.WarehouseName.Contains(searchParams.SearchValue) ||
-                                inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+                                inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue)))
+                                && inv.ActiveStatus == true);
             return warehouseDetails;
         }
 

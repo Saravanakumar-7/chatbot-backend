@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,6 +14,7 @@ namespace Entities.DTOs
         public int Id { get; set; }
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
+        public PartType ItemType { get; set; }
 
         [Precision(13, 3)]
         public decimal ReleaseVersion { get; set; }
@@ -27,6 +29,7 @@ namespace Entities.DTOs
     { 
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
+        public PartType ItemType { get; set; }
 
         [Precision(13, 3)]
         public decimal ReleaseVersion { get; set; }
