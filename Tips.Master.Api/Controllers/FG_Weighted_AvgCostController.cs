@@ -58,10 +58,10 @@ namespace Tips.Master.Api.Controllers
  
         private async Task<decimal> Weighted_Calculation(string itemNumber, decimal version, Dictionary<string, decimal> productionBOMList)
         {
-            var existingSAWeight = await _repository.SA_Weighted_AvgCostRepository.GetSA_Weighted_AvgCost(itemNumber);
+            var existingFGWeight = await _repository.FG_Weighted_AvgCostRepository.GetFG_Weighted_AvgCost(itemNumber);
             decimal ppQtyAndWeight = 0;
 
-            if (existingSAWeight == null)
+            if (existingFGWeight == null)
             {
                 var bomDetails = await _repository.EnggBomRepository.GetEnggBomByItemNoAndRevNo(itemNumber, version);
 
@@ -71,7 +71,7 @@ namespace Tips.Master.Api.Controllers
                     {
                         if (bomItem.PartType == PartType.PurchasePart)
                         {
-                            var ppWeight = await _repository.SA_Weighted_AvgCostRepository.GetPPWeightedAvgCost(bomItem.ItemNumber);
+                            var ppWeight = await _repository.FG_Weighted_AvgCostRepository.GetPPWeightedAvgCost(bomItem.ItemNumber);
                             if (ppWeight != null)
                             {
                                 ppQtyAndWeight += (ppWeight.Avg_cost * bomItem.Quantity);
@@ -79,7 +79,7 @@ namespace Tips.Master.Api.Controllers
                         }
                         else
                         {
-                            var saValue = await Weighted_Calculation(bomItem.ItemNumber, productionBOMList[bomItem.ItemNumber], productionBOMList);
+                            var saValue = await SAWeighted_Calculation(bomItem.ItemNumber, productionBOMList[bomItem.ItemNumber], productionBOMList);
                             ppQtyAndWeight += (saValue * bomItem.Quantity);
                         }
                     }
@@ -98,39 +98,49 @@ namespace Tips.Master.Api.Controllers
             }
             else
             {
-                ppQtyAndWeight += existingSAWeight.Avg_cost;
+                ppQtyAndWeight += existingFGWeight.Avg_cost;
             }
 
             return ppQtyAndWeight;
         }
-
-        [HttpPost]
-        private async Task<IActionResult> Calculate_SA_Weighted_AvgCost()
+        private async Task<decimal> SAWeighted_Calculation(string ItemNumber, decimal Version, Dictionary<string, decimal> ProductionBOMList)
         {
-            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
-            try
+            var ExistingSAWeight = await _repository.SA_Weighted_AvgCostRepository.GetSA_Weighted_AvgCost(ItemNumber);
+            decimal ppQtyandWeight = 0;
+            if (ExistingSAWeight == null)
             {
-                TransferCurrent_SA_Weighted_AvgCost_TO_SA_Weighted_AvgCost_History();
-                var production_SAs = await _repository.ReleaseProductBomRepository.GetSAsAndLatestVersion();
-                foreach (var productinSA in production_SAs.Keys)
+                var getBomDetais = await _repository.EnggBomRepository.GetEnggBomByItemNoAndRevNo(ItemNumber, Version);
+                foreach (var bomitems in getBomDetais.EnggChildItems)
                 {
-                    var SAValue = Weighted_Calculation(productinSA, production_SAs[productinSA], production_SAs);
+                    if (bomitems.PartType == PartType.PurchasePart)
+                    {
+                        var PPWeight = await _repository.SA_Weighted_AvgCostRepository.GetPPWeightedAvgCost(bomitems.ItemNumber);
+                        if (PPWeight != null) ppQtyandWeight += (PPWeight.Avg_cost * bomitems.Quantity);
+                    }
+                    else
+                    {
+                        decimal saValue = await Weighted_Calculation(bomitems.ItemNumber, ProductionBOMList[bomitems.ItemNumber], ProductionBOMList);
+                        ppQtyandWeight += (saValue * bomitems.Quantity);
+                    }
+
                 }
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Calculation of SA_Weighted_AvgCost Successfull";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
+
+                SA_Weighted_AvgCost sA_Weighted_AvgCost = new SA_Weighted_AvgCost()
+                {
+                    Itemnumber = ItemNumber,
+                    Version = Version,
+                    Avg_cost = ppQtyandWeight,
+                    update_date_time = DateTime.Now
+                };
+
+                await _repository.SA_Weighted_AvgCostRepository.CreateSA_Weighted_AvgCost(sA_Weighted_AvgCost);
+                _repository.SaveAsync();
             }
-            catch (Exception ex)
+            else
             {
-                _logger.LogError(ex.Message);
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
+                ppQtyandWeight += ExistingSAWeight.Avg_cost;
             }
+            return ppQtyandWeight;
         }
         private async void TransferCurrent_FG_Weighted_AvgCost_TO_FG_Weighted_AvgCost_History()
         {
@@ -141,13 +151,5 @@ namespace Tips.Master.Api.Controllers
             _repository.SaveAsync();
         }
 
-        private async void TransferCurrent_SA_Weighted_AvgCost_TO_SA_Weighted_AvgCost_History()
-        {
-            var SA_Weighted = await _repository.SA_Weighted_AvgCostRepository.GetAllSA_Weighted_AvgCost();
-            var ToSAHistory = _mapper.Map<List<SA_Weighted_AvgCost_History>>(SA_Weighted);
-            await _repository.SA_Weighted_AvgCost_History_Repository.TranferToSAWeightedHistory(ToSAHistory);
-            await _repository.SA_Weighted_AvgCostRepository.DeleteExistingData();
-            _repository.SaveAsync();
-        }
     }
 }
