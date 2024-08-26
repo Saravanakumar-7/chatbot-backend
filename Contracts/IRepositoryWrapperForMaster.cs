@@ -11,7 +11,8 @@ namespace Contracts
     {
 
         ILeadTimeRepository leadTimeRepository { get; }
-
+        I_SA_Weighted_AvgCostRepository SA_Weighted_AvgCostRepository { get; }
+        I_SA_Weighted_AvgCost_History_Repository SA_Weighted_AvgCost_History_Repository { get; } 
         IFileUploadRepository FileUploadRepository { get; }
         IEmailTemplateRepository EmailTemplateRepository { get; }
         IUnitRepository unitRepository { get; }

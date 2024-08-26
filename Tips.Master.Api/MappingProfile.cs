@@ -13,6 +13,8 @@ namespace Tips.Master.Api
             CreateMap<CustomerType, CustomerTypeDtoPost>().ReverseMap();
             CreateMap<CustomerType, CustomerTypeDtoUpdate>().ReverseMap();
 
+            CreateMap<SA_Weighted_AvgCost_History, SA_Weighted_AvgCost>().ReverseMap();
+
             CreateMap<ShipmentInstructions, ShipmentInstructionsDto>().ReverseMap();
             CreateMap<ShipmentInstructions, ShipmentInstructionsDtoPost>().ReverseMap();
             CreateMap<ShipmentInstructions, ShipmentInstructionsDtoUpdate>().ReverseMap();

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Entities.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -15,7 +16,7 @@ namespace Entities
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
         public string? ItemDescription { get; set; }
-        public string? ItemType { get; set; }
+        public PartType ItemType { get; set; }
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; }
         [DefaultValue(false)]

@@ -15,6 +15,7 @@ namespace Contracts
         Task<ProductionBom> GetProductionBomById(int id);
         Task<int?> CreateReleaseProductBom(ProductionBom releaseProductBom);
         //Task<int> GetLatestProBomCountByItemNumber(string itemNumber);
+        Task<Dictionary<string, decimal>> GetSAsAndLatestVersion();
         Task<List<ProductionBom>?> GetLatestProBomCountByItemNumber(string itemNumber);
         //Task<int> GetLatestProBomCountByItemNumber(string itemNumber); 
         Task<decimal> GetLatestProductionBomByItemNumber(string itemNumber);

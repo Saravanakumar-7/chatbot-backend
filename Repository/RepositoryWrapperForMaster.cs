@@ -13,6 +13,8 @@ namespace Repository
     public class RepositoryWrapperForMaster : IRepositoryWrapperForMaster
     {
         private TipsMasterDbContext _tipsMasterDbContext;
+        private I_SA_Weighted_AvgCostRepository _SA_Weighted_AvgCostRepository;
+        private I_SA_Weighted_AvgCost_History_Repository _SA_Weighted_AvgCost_History_Repository;
         private ILeadTimeRepository _leadTimeRepo;
         private IImageUploadRepository _imageUploadRepository;
         private ICustomerTypeRepository _customerTypeRepo;
@@ -131,6 +133,28 @@ namespace Repository
             _httpContextAccessor = httpContextAccessor;
         }
 
+        public I_SA_Weighted_AvgCostRepository SA_Weighted_AvgCostRepository
+        {
+            get
+            {
+                if (_SA_Weighted_AvgCostRepository == null)
+                {
+                    _SA_Weighted_AvgCostRepository = new SA_Weighted_AvgCostRepository(_tipsMasterDbContext,_httpContextAccessor);
+                }
+                return _SA_Weighted_AvgCostRepository;
+            }
+        }
+        public I_SA_Weighted_AvgCost_History_Repository SA_Weighted_AvgCost_History_Repository
+        {
+            get
+            {
+                if (_SA_Weighted_AvgCost_History_Repository == null)
+                {
+                    _SA_Weighted_AvgCost_History_Repository = new SA_Weighted_AvgCost_History_Repository(_tipsMasterDbContext,_httpContextAccessor);
+                }
+                return _SA_Weighted_AvgCost_History_Repository;
+            }
+        }
         public IWeightedAvgRateRepository WeightedAvgRateRepository
         {
             get
@@ -1377,7 +1401,7 @@ namespace Repository
 
         public void SaveAsync()
         {
-            _tipsMasterDbContext.SaveChanges();
+            _tipsMasterDbContext.SaveChangesAsync();
         }
 
     }

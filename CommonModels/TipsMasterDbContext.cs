@@ -165,6 +165,9 @@ namespace Entities
         public DbSet<EmailTemplate> emailtemplate { get; set; }
         public DbSet<EmailIDs> EmailIDs { get; set; }
         public DbSet<CustomerMasterLeadIdSPReport> CustomerMasterLeadIdSPReports { get; set; }
+        public DbSet<SA_Weighted_AvgCost> SA_Weighted_AvgCost { get; set; }
+        public DbSet<SA_Weighted_AvgCost_History> SA_Weighted_AvgCost_History { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EnggBomSPReport>().HasNoKey();

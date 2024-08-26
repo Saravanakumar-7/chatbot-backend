@@ -1092,6 +1092,15 @@ namespace Repository
 
         //    return latestReleaseVersionsCount;
         //}
+        public async Task<Dictionary<string,decimal>> GetSAsAndLatestVersion()
+        {
+            return await _tipsMasterDbContext.ProductionBoms.Where(x=>x.ItemType==PartType.SA).GroupBy(p => p.ItemNumber).Select(g => new
+        {
+            ItemNumber = g.Key,
+            LatestVersion = g.Max(p => p.ReleaseVersion) 
+        })
+        .ToDictionaryAsync(x => x.ItemNumber, x => x.LatestVersion);
+        }
         public async Task<List<ProductionBom>?> GetLatestProBomCountByItemNumber(string itemNumber)
         {
             List<ProductionBom>? latestReleaseVersionsCount = await _tipsMasterDbContext.ProductionBoms
