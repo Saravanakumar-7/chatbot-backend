@@ -55,7 +55,6 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
- 
         private async Task<decimal> Weighted_Calculation(string itemNumber, decimal version, Dictionary<string, decimal> productionBOMList)
         {
             var existingFGWeight = await _repository.FG_Weighted_AvgCostRepository.GetFG_Weighted_AvgCost(itemNumber);
@@ -79,8 +78,7 @@ namespace Tips.Master.Api.Controllers
                         }
                         else
                         {
-                            var saValue = await SAWeighted_Calculation(bomItem.ItemNumber, productionBOMList[bomItem.ItemNumber], productionBOMList);
-                            ppQtyAndWeight += (saValue * bomItem.Quantity);
+                            await Calculate_SA_Weighted_AvgCost();
                         }
                     }
 
@@ -103,7 +101,35 @@ namespace Tips.Master.Api.Controllers
 
             return ppQtyAndWeight;
         }
-        private async Task<decimal> SAWeighted_Calculation(string ItemNumber, decimal Version, Dictionary<string, decimal> ProductionBOMList)
+        [HttpPost]
+        private async Task<IActionResult> Calculate_SA_Weighted_AvgCost()
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                TransferCurrent_SA_Weighted_AvgCost_TO_SA_Weighted_AvgCost_History();
+                var production_SAs = await _repository.ReleaseProductBomRepository.GetSAsAndLatestVersion();
+                foreach (var productinSA in production_SAs.Keys)
+                {
+                    var SAValue = SA_Weighted_Calculation(productinSA, production_SAs[productinSA], production_SAs);
+                }
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Calculation of SA_Weighted_AvgCost Successfull";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        private async Task<decimal> SA_Weighted_Calculation(string ItemNumber, decimal Version, Dictionary<string, decimal> ProductionBOMList)
         {
             var ExistingSAWeight = await _repository.SA_Weighted_AvgCostRepository.GetSA_Weighted_AvgCost(ItemNumber);
             decimal ppQtyandWeight = 0;
@@ -119,7 +145,7 @@ namespace Tips.Master.Api.Controllers
                     }
                     else
                     {
-                        decimal saValue = await Weighted_Calculation(bomitems.ItemNumber, ProductionBOMList[bomitems.ItemNumber], ProductionBOMList);
+                        decimal saValue = await SA_Weighted_Calculation(bomitems.ItemNumber, ProductionBOMList[bomitems.ItemNumber], ProductionBOMList);
                         ppQtyandWeight += (saValue * bomitems.Quantity);
                     }
 
@@ -148,6 +174,14 @@ namespace Tips.Master.Api.Controllers
             var ToFGHistory = _mapper.Map<List<FG_Weighted_AvgCost_History>>(FG_Weighted);
             await _repository.FG_Weighted_AvgCost_History_Repository.TranferToFGWeightedHistory(ToFGHistory);
             await _repository.FG_Weighted_AvgCostRepository.DeleteExistingData();
+            _repository.SaveAsync();
+        }
+        private async void TransferCurrent_SA_Weighted_AvgCost_TO_SA_Weighted_AvgCost_History()
+        {
+            var SA_Weighted = await _repository.SA_Weighted_AvgCostRepository.GetAllSA_Weighted_AvgCost();
+            var ToSAHistory = _mapper.Map<List<SA_Weighted_AvgCost_History>>(SA_Weighted);
+            await _repository.SA_Weighted_AvgCost_History_Repository.TranferToSAWeightedHistory(ToSAHistory);
+            await _repository.SA_Weighted_AvgCostRepository.DeleteExistingData();
             _repository.SaveAsync();
         }
 
