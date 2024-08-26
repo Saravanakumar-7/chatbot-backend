@@ -60,7 +60,6 @@ namespace Tips.Master.Api.Controllers
             await _repository.SA_Weighted_AvgCostRepository.DeleteExistingData();
             _repository.SaveAsync();
         }
-
         private async Task<decimal> Weighted_Calculation(string ItemNumber, decimal Version, Dictionary<string,decimal> ProductionBOMList)
         {
             var ExistingSAWeight = await _repository.SA_Weighted_AvgCostRepository.GetSA_Weighted_AvgCost(ItemNumber);
@@ -81,7 +80,7 @@ namespace Tips.Master.Api.Controllers
                         ppQtyandWeight += (saValue * bomitems.Quantity);
                     }
 
-                }
+                 }
 
                 SA_Weighted_AvgCost sA_Weighted_AvgCost = new SA_Weighted_AvgCost()
                 {

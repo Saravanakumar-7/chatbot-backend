@@ -167,6 +167,8 @@ namespace Entities
         public DbSet<CustomerMasterLeadIdSPReport> CustomerMasterLeadIdSPReports { get; set; }
         public DbSet<SA_Weighted_AvgCost> SA_Weighted_AvgCost { get; set; }
         public DbSet<SA_Weighted_AvgCost_History> SA_Weighted_AvgCost_History { get; set; }
+        public DbSet<FG_Weighted_AvgCost> FG_Weighted_AvgCost { get; set; }
+        public DbSet<FG_Weighted_AvgCost_History> FG_Weighted_AvgCost_History { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

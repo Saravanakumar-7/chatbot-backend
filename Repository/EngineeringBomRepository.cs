@@ -1105,6 +1105,25 @@ namespace Repository
         })
         .ToDictionaryAsync(x => x.ItemNumber, x => x.LatestVersion);
         }
+
+        public async Task<Dictionary<string, decimal>> GetFGsAndLatestVersion()
+        {
+            return await _tipsMasterDbContext.ProductionBoms.Where(x => x.ItemType == PartType.FG).GroupBy(p => p.ItemNumber).Select(g => new
+            {
+                ItemNumber = g.Key,
+                LatestVersion = g.Max(p => p.ReleaseVersion)
+            })
+        .ToDictionaryAsync(x => x.ItemNumber, x => x.LatestVersion);
+        }
+        public async Task<Dictionary<string, decimal>> GetSAsAndLatestVersionbyItemNo(string itemNumber)
+        {
+            return await _tipsMasterDbContext.ProductionBoms.Where(x => x.ItemType == PartType.SA && x.ItemNumber == itemNumber).GroupBy(p => p.ItemNumber).Select(g => new
+            {
+                ItemNumber = g.Key,
+                LatestVersion = g.Max(p => p.ReleaseVersion)
+            })
+        .ToDictionaryAsync(x => x.ItemNumber, x => x.LatestVersion);
+        }
         public async Task<List<ProductionBom>?> GetLatestProBomCountByItemNumber(string itemNumber)
         {
             List<ProductionBom>? latestReleaseVersionsCount = await _tipsMasterDbContext.ProductionBoms

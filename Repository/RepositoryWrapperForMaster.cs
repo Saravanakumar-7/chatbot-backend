@@ -15,6 +15,8 @@ namespace Repository
         private TipsMasterDbContext _tipsMasterDbContext;
         private I_SA_Weighted_AvgCostRepository _SA_Weighted_AvgCostRepository;
         private I_SA_Weighted_AvgCost_History_Repository _SA_Weighted_AvgCost_History_Repository;
+        private I_FG_Weighted_AvgCostRepository _FG_Weighted_AvgCostRepository;
+        private I_FG_Weighted_AvgCost_History_Repository _FG_Weighted_AvgCost_History_Repository;
         private ILeadTimeRepository _leadTimeRepo;
         private IImageUploadRepository _imageUploadRepository;
         private ICustomerTypeRepository _customerTypeRepo;
@@ -132,7 +134,28 @@ namespace Repository
             _tipsMasterDbContext = tipsMasterDbContext;
             _httpContextAccessor = httpContextAccessor;
         }
-
+        public I_FG_Weighted_AvgCostRepository FG_Weighted_AvgCostRepository
+        {
+            get
+            {
+                if (_FG_Weighted_AvgCostRepository == null)
+                {
+                    _FG_Weighted_AvgCostRepository = new FG_Weighted_AvgCostRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _FG_Weighted_AvgCostRepository;
+            }
+        }
+        public I_FG_Weighted_AvgCost_History_Repository FG_Weighted_AvgCost_History_Repository
+        {
+            get
+            {
+                if (_FG_Weighted_AvgCost_History_Repository == null)
+                {
+                    _FG_Weighted_AvgCost_History_Repository = new FG_Weighted_AvgCost_History_Repository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _FG_Weighted_AvgCost_History_Repository;
+            }
+        }
         public I_SA_Weighted_AvgCostRepository SA_Weighted_AvgCostRepository
         {
             get
