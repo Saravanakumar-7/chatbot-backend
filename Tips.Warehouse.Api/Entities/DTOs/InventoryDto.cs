@@ -442,6 +442,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? TotalInwords { get; set; }
         public decimal? Totaloutwords { get; set; }
         public decimal? Closing_stock { get; set; }
+        public decimal? Price { get; set; }
+        public decimal? ClosingStockValue { get; set; }
     }
 
     public class TrascationKPNWSPReportsDto

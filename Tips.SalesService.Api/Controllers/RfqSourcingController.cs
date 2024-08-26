@@ -625,5 +625,46 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRfqSourcingVendorDetails(string ProjectNumber,string ItemNumber, string VendorId)
+        {
+            ServiceResponse<RfqSourcingVendorDetailsDto> serviceResponse = new ServiceResponse<RfqSourcingVendorDetailsDto>();
+            try
+            {
+                var rfqSourcingVendorDetails = await _repository.GetRfqSourcingVendorDetails(ProjectNumber, ItemNumber, VendorId);
+
+                if (rfqSourcingVendorDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"VendorName  hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"VendorName with id: {VendorId}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned VendorName with id: {VendorId}");
+
+                    serviceResponse.Data = rfqSourcingVendorDetails;
+                    serviceResponse.Message = "Returned RfqSourcingVendorDetail Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetRfqSourcingVendorDetails action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+
+        }
     }
 }

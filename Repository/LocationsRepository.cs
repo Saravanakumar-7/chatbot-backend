@@ -51,7 +51,8 @@ namespace Repository
         {
             var LocationsDetails = FindAll()
            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LocationName.Contains(searchParams.SearchValue) ||
-          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))) 
+          && inv.ActiveStatus == true);
             
             return LocationsDetails;
         }

@@ -827,7 +827,8 @@ namespace Repository
             {
                 ItemNumber = group.Key,
                 ItemDescription = group.Select(bom => bom.ItemDescription).FirstOrDefault(),
-                RevisionNumbers = group.Select(bom => bom.RevisionNumber).ToArray()
+                RevisionNumbers = group.Select(bom => bom.RevisionNumber).ToArray(),
+                ItemType = group.Select(bom => bom.ItemType).FirstOrDefault()
             })
             .ToList();
 
@@ -836,7 +837,8 @@ namespace Repository
            {
                ItemNumber = bom.ItemNumber,
                RevisionNumber = bom.RevisionNumbers,
-               ItemDescription = bom.ItemDescription
+               ItemDescription = bom.ItemDescription,
+               ItemType = bom.ItemType
            }).ToList();
 
             return enggBomItemNumberList;
@@ -1017,7 +1019,8 @@ namespace Repository
             {
                 ItemNumber = group.Key,
                 ItemDescription = group.Select(bom => bom.ItemDescription).FirstOrDefault(),
-                RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
+                RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray(),
+                ItemType = group.Select(bom => bom.ItemType).FirstOrDefault(),
             })
             .ToList();
 
@@ -1026,7 +1029,8 @@ namespace Repository
            {
                ItemNumber = bom.ItemNumber,
                ItemDescription = bom.ItemDescription,
-               ReleaseVersion = bom.RevisionNumbers
+               ReleaseVersion = bom.RevisionNumbers,
+               ItemType = bom.ItemType
            }).ToList();
 
             return releaseCostBomItemNumberList;
@@ -1118,7 +1122,8 @@ namespace Repository
             {
                 ItemNumber = group.Key,
                 ItemDescription = group.Select(bom => bom.ItemDescription).FirstOrDefault(),
-                RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray()
+                RevisionNumbers = group.Select(bom => bom.ReleaseVersion).ToArray(),
+                ItemType = group.Select(bom => bom.ItemType).FirstOrDefault(),
             })
             .ToList();
 
@@ -1127,7 +1132,8 @@ namespace Repository
            {
                ItemNumber = bom.ItemNumber,
                ItemDescription = bom.ItemDescription,
-               ReleaseVersion = bom.RevisionNumbers
+               ReleaseVersion = bom.RevisionNumbers,
+               ItemType = bom.ItemType
            }).ToList();
 
             return releaseProductBomItemNumberList;

@@ -401,6 +401,20 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public string? ProjectNumber { get; set; }
     }
+    public class PurchaseOrderUnitListSPReportWithParamForTransDTO
+    {
+        public string? ItemNumber { get; set; }
+    }
+    public class PurchaseOrderUnitListSPReportWithParamForTrans
+    {
+        public string? ItemNumber { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public string? Uoc { get; set; }
+        public string? VendorName { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public int? PoNumberCount { get; set; }
+        public string? RecordType { get; set; }
+    }
 
     public class PurchaseOrderApprovalSPReportWithParamDTO
         {

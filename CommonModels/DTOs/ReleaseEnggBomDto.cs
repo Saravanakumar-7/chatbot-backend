@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Entities.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace Entities.DTOs
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
         public string? ItemDescription { get; set; }
-
+        public PartType ItemType { get; set; }
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; }
         [DefaultValue(false)]
@@ -33,7 +34,7 @@ namespace Entities.DTOs
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
         public string? ItemDescription { get; set; }
-
+        public PartType ItemType { get; set; }
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; }
 
@@ -44,7 +45,7 @@ namespace Entities.DTOs
         public string ReleaseFor { get; set; }
         public string ItemNumber { get; set; }
         public string? ItemDescription { get; set; }
-
+        public PartType ItemType { get; set; }
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; }
         public string? CreatedBy { get; set; }
