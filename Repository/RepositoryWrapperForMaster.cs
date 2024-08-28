@@ -1426,6 +1426,9 @@ namespace Repository
         {
             _tipsMasterDbContext.SaveChangesAsync();
         }
-
+        public void Save()
+        {
+            _tipsMasterDbContext.SaveChanges();
+        }
     }
 }

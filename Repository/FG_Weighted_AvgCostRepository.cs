@@ -29,7 +29,7 @@ namespace Repository
 
         public async Task<List<FG_Weighted_AvgCost>> GetAllFG_Weighted_AvgCost()
         {
-            var FG_Weighted_AvgCost = await _tipsMasterDbContext.FG_Weighted_AvgCost.ToListAsync();
+            var FG_Weighted_AvgCost = await _tipsMasterDbContext.FG_Weighted_AvgCost.AsNoTracking().ToListAsync();
             return FG_Weighted_AvgCost;
         }
         public async Task<FG_Weighted_AvgCost?> GetFG_Weighted_AvgCost(string Itemnumber)

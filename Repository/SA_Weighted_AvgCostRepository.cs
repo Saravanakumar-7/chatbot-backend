@@ -29,12 +29,12 @@ namespace Repository
 
         public async Task<List<SA_Weighted_AvgCost>> GetAllSA_Weighted_AvgCost()
         {
-            var SA_Weighted_AvgCost = await _tipsMasterDbContext.SA_Weighted_AvgCost.ToListAsync();
+            var SA_Weighted_AvgCost = await _tipsMasterDbContext.SA_Weighted_AvgCost.AsNoTracking().ToListAsync();
             return SA_Weighted_AvgCost;
         } 
         public async Task<SA_Weighted_AvgCost?> GetSA_Weighted_AvgCost(string Itemnumber)
         {
-            var SA_Weighted_AvgCost = await _tipsMasterDbContext.SA_Weighted_AvgCost.Where(x=>x.Itemnumber==Itemnumber).FirstOrDefaultAsync();
+            var SA_Weighted_AvgCost = await _tipsMasterDbContext.SA_Weighted_AvgCost.Where(x=>x.Itemnumber==Itemnumber).AsNoTracking().FirstOrDefaultAsync();
             return SA_Weighted_AvgCost;
         }
         public async Task DeleteExistingData()
@@ -46,9 +46,9 @@ namespace Repository
             var WeightedAvgRate = await _tipsMasterDbContext.weighted_avg_rate.Where(x => x.Itemnumber == Itemnumber).FirstOrDefaultAsync();
             return WeightedAvgRate;
         }
-        public async Task CreateSA_Weighted_AvgCost(SA_Weighted_AvgCost sA_Weighted_AvgCost)
+        public void CreateSA_Weighted_AvgCost(SA_Weighted_AvgCost sA_Weighted_AvgCost)
         {
-            await Create(sA_Weighted_AvgCost);
+           Create(sA_Weighted_AvgCost);
         }
     }
 }
