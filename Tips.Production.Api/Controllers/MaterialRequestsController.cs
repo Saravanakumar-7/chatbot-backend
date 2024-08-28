@@ -826,71 +826,30 @@ namespace Tips.Production.Api.Controllers
 
                 var materialReqItemDto = materialRequestUpdateDto.MaterialRequestItems;
 
-               // var materialReqItemList = new List<MaterialRequestItems>();
+                var materialReqItemList = new List<MaterialRequestItems>();
                 var shopOrderNumber = materialRequestUpdateDto.ShopOrderNumber;
                 var projectNo = materialRequestUpdateDto.ProjectNumber;
                 var mRNumber = materialRequestUpdateDto.MRNumber;
+
                 HttpStatusCode updateMaterialRequestResp = HttpStatusCode.OK;
-                var updateMaterialReq = _mapper.Map(materialRequestUpdateDto, getMaterialRequest);
+               
                 var materialRequestDetails = new List<UpdateInventoryBalanceQty>();
-                for (int i = 0; i < updateMaterialReq.MaterialRequestItems.Count; i++)
+                for (int i = 0; i < materialReqItemDto.Count; i++)
                 {
-                    if (updateMaterialReq.MaterialRequestItems[i].Id > 0)
-                    {
-                        //MaterialRequestItems materialItemDetail = _mapper.Map<MaterialRequestItems>(updateMaterialReq.MaterialRequestItems[i]);
-                        List<MRStockDetails> mrStockDetails = _mapper.Map<List<MRStockDetails>>(updateMaterialReq.MaterialRequestItems[i].MRStockDetails);
-                        updateMaterialReq.MaterialRequestItems[i].MRStockDetails = mrStockDetails;
-                        var issuestock = updateMaterialReq.MaterialRequestItems[i].MRStockDetails.Select(x => x.Qty).ToArray();
-                        updateMaterialReq.MaterialRequestItems[i].IssuedQty = issuestock.Sum();
+                        MaterialRequestItems materialItemDetail = _mapper.Map<MaterialRequestItems>(materialReqItemDto[i]);
+                        List<MRStockDetails> mrStockDetails = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
+                        materialItemDetail.MRStockDetails = mrStockDetails;
+                        var issuestock = materialItemDetail.MRStockDetails.Select(x => x.Qty).ToArray();
+                        materialItemDetail.IssuedQty = issuestock.Sum();
                         var materialRequestDetails_1 = new UpdateInventoryBalanceQty();
                         materialRequestDetails_1.MRNumber = mRNumber;
                         materialRequestDetails_1.ShopOrderNumber = shopOrderNumber;
                         materialRequestDetails_1.ProjectNumber = projectNo;
-                        materialRequestDetails_1.PartNumber = updateMaterialReq.MaterialRequestItems[i].PartNumber;
-                        materialRequestDetails_1.MRNWarehouseList = _mapper.Map<List<InventoryUpdateDtoForMRWarehouse>>(updateMaterialReq.MaterialRequestItems[i].MRStockDetails);
+                        materialRequestDetails_1.PartNumber = materialItemDetail.PartNumber;
+                        materialRequestDetails_1.MRNWarehouseList = _mapper.Map<List<InventoryUpdateDtoForMRWarehouse>>(materialItemDetail.MRStockDetails);
                         materialRequestDetails.Add(materialRequestDetails_1);
-                    }
-                    else
-                    {
-                        updateMaterialReq.MaterialRequestItems.Remove(updateMaterialReq.MaterialRequestItems[i]);
-                    }
-                    // materialReqItemList.Add(materialItemDetail);
+                        materialReqItemList.Add(materialItemDetail);
                 }
-
-
-                //var mapperConfiguration = new MapperConfiguration(cfg =>
-                //{
-                //    cfg.CreateMap<MaterialRequests, UpdateInventoryBalanceQty>()
-                //    .ForMember(dest => dest.ProjectNumber, opt => opt.MapFrom(src => src.ProjectNumber));
-                //    cfg.CreateMap<MaterialRequests, UpdateInventoryBalanceQty>()
-                //    .ForMember(dest => dest.MRNumber, opt => opt.MapFrom(src => src.MRNumber));
-                //    cfg.CreateMap<MaterialRequestItems, UpdateInventoryBalanceQty>()
-                //        .ForMember(dest => dest.PartNumber, opt => opt.MapFrom(src => src.PartNumber))
-                //        .ForMember(dest => dest.MRNWarehouseList, opt => opt.MapFrom(src => src.MRStockDetails.
-                //        Select(detail => new InventoryUpdateDtoForMRWarehouse
-                //        {
-                //            Warehouse = detail.Warehouse,
-                //            Location = detail.Location,
-                //            LocationStock = detail.LocationStock,
-                //            Qty = detail.Qty,
-                //            IsMRIssueDone = detail.IsMRIssueDone
-                //        }).ToList()));
-                //});
-
-
-                //var mapper = mapperConfiguration.CreateMapper();
-
-
-                //    .Select(item =>
-                //    {
-                //        var updateInventoryBalanceQty = mapper.Map<UpdateInventoryBalanceQty>(item);
-                //        updateInventoryBalanceQty.ProjectNumber = projectNo;
-                //        updateInventoryBalanceQty.MRNumber = mRNumber;
-                //        updateInventoryBalanceQty.ShopOrderNumber = shopOrderNumber;
-                //        return updateInventoryBalanceQty;
-                //    })
-                //    .ToList();
-
 
                 var json = JsonConvert.SerializeObject(materialRequestDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
@@ -913,11 +872,7 @@ namespace Tips.Production.Api.Controllers
                     updateMaterialRequestResp = response.StatusCode;
                 }
 
-
-               // getMaterialRequest.MaterialRequestItems = materialReqItemList;
-                
-
-                foreach (var materialReqItem in updateMaterialReq.MaterialRequestItems)
+                foreach (var materialReqItem in materialReqItemList)
                 {
                     if (materialReqItem.MRStockDetails != null)
                     {
@@ -927,8 +882,10 @@ namespace Tips.Production.Api.Controllers
                         }
                     }
                 }
-                //updateMaterialReq.MaterialRequestItems = materialReqItemList;
-                
+
+                var updateMaterialReq = _mapper.Map(materialRequestUpdateDto, getMaterialRequest);
+                updateMaterialReq.MaterialRequestItems = materialReqItemList;
+
                 int? totalitems = updateMaterialReq.MaterialRequestItems.Count();
                 if (totalitems > 0)
                 {
