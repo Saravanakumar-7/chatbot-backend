@@ -4616,7 +4616,7 @@ namespace Tips.Purchase.Api.Controllers
                 _logger.LogInfo($"Successfully Updated the TallyStatus of PO Id {Id} and is set to {TallyStatus} from the UpdatePurchaseOrderTallyStatus API");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Successfully Updated the TallyStatus of PO Id {Id} and is set to {TallyStatus}";
-                serviceResponse.Success = false;
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(200, serviceResponse);
             }
