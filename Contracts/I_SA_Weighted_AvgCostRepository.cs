@@ -13,6 +13,6 @@ namespace Contracts
         Task DeleteExistingData();
         Task<SA_Weighted_AvgCost?> GetSA_Weighted_AvgCost(string Itemnumber);
         Task<WeightedAvgRate> GetPPWeightedAvgCost(string Itemnumber);
-        Task CreateSA_Weighted_AvgCost(SA_Weighted_AvgCost sA_Weighted_AvgCost);
+        void CreateSA_Weighted_AvgCost(SA_Weighted_AvgCost sA_Weighted_AvgCost);
     }
 }

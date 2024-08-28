@@ -34,7 +34,7 @@ namespace Tips.Master.Api.Controllers
                 var production_SAs = await _repository.ReleaseProductBomRepository.GetSAsAndLatestVersion();
                 foreach (var productinSA in production_SAs.Keys)
                 {
-                   var SAValue= Weighted_Calculation(productinSA, production_SAs[productinSA],production_SAs);
+                   var SAValue= await Weighted_Calculation(productinSA, production_SAs[productinSA],production_SAs);
                 }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Calculation of SA_Weighted_AvgCost Successfull";
@@ -58,7 +58,7 @@ namespace Tips.Master.Api.Controllers
             var ToSAHistory = _mapper.Map<List<SA_Weighted_AvgCost_History>>(SA_Weighted);
             await _repository.SA_Weighted_AvgCost_History_Repository.TranferToSAWeightedHistory(ToSAHistory);
             await _repository.SA_Weighted_AvgCostRepository.DeleteExistingData();
-            _repository.SaveAsync();
+            _repository.Save();
         }
         private async Task<decimal> Weighted_Calculation(string ItemNumber, decimal Version, Dictionary<string,decimal> ProductionBOMList)
         {
@@ -76,8 +76,11 @@ namespace Tips.Master.Api.Controllers
                     }
                     else
                     {
-                        decimal saValue = await Weighted_Calculation(bomitems.ItemNumber, ProductionBOMList[bomitems.ItemNumber], ProductionBOMList);
-                        ppQtyandWeight += (saValue * bomitems.Quantity);
+                        if (ProductionBOMList.ContainsKey(bomitems.ItemNumber))
+                        {
+                            decimal saValue = await Weighted_Calculation(bomitems.ItemNumber, ProductionBOMList[bomitems.ItemNumber], ProductionBOMList);
+                            ppQtyandWeight += (saValue * bomitems.Quantity);
+                        }
                     }
 
                  }
@@ -90,8 +93,8 @@ namespace Tips.Master.Api.Controllers
                     update_date_time=DateTime.Now
                 };
 
-                await _repository.SA_Weighted_AvgCostRepository.CreateSA_Weighted_AvgCost(sA_Weighted_AvgCost);
-                _repository.SaveAsync();
+                _repository.SA_Weighted_AvgCostRepository.CreateSA_Weighted_AvgCost(sA_Weighted_AvgCost);
+                _repository.Save();
             }
             else
             {
