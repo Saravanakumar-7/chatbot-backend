@@ -24,6 +24,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? Description { get; set; }
         public decimal? Discount { get; set; }
         public decimal? TotalAmount { get; set; }
+        public decimal? DOvalue { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
         public decimal? FGOrderQty { get; set; }

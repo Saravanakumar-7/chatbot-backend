@@ -34,9 +34,9 @@ namespace Tips.Production.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
+        private TipsProductionDbContext _tipsProductionDbContext;
 
-
-        public MaterialRequestsController(IHttpClientFactory clientFactory, IConfiguration config, HttpClient httpClient,IMaterialRequestsRepository materialRequestRepository, IMapper mapper, ILoggerManager logger)
+        public MaterialRequestsController(IHttpClientFactory clientFactory, TipsProductionDbContext repositoryContext, IConfiguration config, HttpClient httpClient,IMaterialRequestsRepository materialRequestRepository, IMapper mapper, ILoggerManager logger)
         {
             _materialRequestRepository = materialRequestRepository;
             _mapper = mapper;
@@ -44,6 +44,7 @@ namespace Tips.Production.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _clientFactory = clientFactory;
+            _tipsProductionDbContext = repositoryContext;
         }
 
 
@@ -784,7 +785,138 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        
+
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> IssueMaterialRequest(int id, [FromBody] MaterialRequestUpdateDto materialRequestUpdateDto)
+        //{
+        //    ServiceResponse<MaterialRequestUpdateDto> serviceResponse = new ServiceResponse<MaterialRequestUpdateDto>();
+
+        //    try
+        //    {
+        //        if (materialRequestUpdateDto == null)
+        //        {
+        //            _logger.LogError("MaterialRequest object sent from client is null.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Update MaterialRequest object is null";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _logger.LogError("Invalid MaterialRequest object sent from client.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid Update MaterialRequest object sent from client.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+
+        //        var existingMaterialRequest = await _materialRequestRepository.GetMaterialRequestById(id);
+        //        if (existingMaterialRequest == null)
+        //        {
+        //            _logger.LogError($"Material request with id: {id} hasn't been found in the database.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"Update material request with id: {id} hasn't been found.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            return NotFound(serviceResponse);
+        //        }
+
+        //        // Detach existing tracked entities if necessary
+        //        foreach (var item in existingMaterialRequest.MaterialRequestItems)
+        //        {
+        //            var local = _tipsProductionDbContext.MaterialRequestItems.Local
+        //                .FirstOrDefault(e => e.Id == item.Id);
+        //            if (local != null)
+        //            {
+        //                _tipsProductionDbContext.Entry(local).State = EntityState.Detached;
+        //            }
+        //        }
+
+        //        // Map updates to the existing entity
+        //        _mapper.Map(materialRequestUpdateDto, existingMaterialRequest);
+
+        //        // Update item states if necessary
+        //        foreach (var item in existingMaterialRequest.MaterialRequestItems)
+        //        {
+        //            _tipsProductionDbContext.Entry(item).State = EntityState.Modified;
+        //        }
+
+        //        // Set MaterialRequest status
+        //        int totalItems = existingMaterialRequest.MaterialRequestItems.Count;
+        //        if (totalItems > 0)
+        //        {
+        //            if (existingMaterialRequest.MaterialRequestItems.All(x => x.IssueStatus == IssuedStatus.Open))
+        //                existingMaterialRequest.MrStatus = MaterialStatus.Open;
+        //            else if (existingMaterialRequest.MaterialRequestItems.All(x => x.IssueStatus == IssuedStatus.FullyIssued))
+        //                existingMaterialRequest.MrStatus = MaterialStatus.Closed;
+        //            else if (existingMaterialRequest.MaterialRequestItems.Any(x => x.IssueStatus == IssuedStatus.PartiallyIssued) ||
+        //                     existingMaterialRequest.MaterialRequestItems.Any(x => x.IssueStatus == IssuedStatus.Open))
+        //                existingMaterialRequest.MrStatus = MaterialStatus.PartiallyClosed;
+        //        }
+
+        //        // Save changes
+        //        await _materialRequestRepository.UpdateMaterialRequest(existingMaterialRequest);
+        //        await _materialRequestRepository.taskSaveAsync();
+
+        //        // Prepare for external API call
+        //        var materialRequestDetails = existingMaterialRequest.MaterialRequestItems.Select(item =>
+        //        {
+        //            var materialRequestDetailsItem = new UpdateInventoryBalanceQty
+        //            {
+        //                MRNumber = materialRequestUpdateDto.MRNumber,
+        //                ShopOrderNumber = materialRequestUpdateDto.ShopOrderNumber,
+        //                ProjectNumber = materialRequestUpdateDto.ProjectNumber,
+        //                PartNumber = item.PartNumber,
+        //                MRNWarehouseList = _mapper.Map<List<InventoryUpdateDtoForMRWarehouse>>(item.MRStockDetails)
+        //            };
+
+        //            item.MRStockDetails?.ToList().ForEach(mrStockDetail => mrStockDetail.IsMRIssueDone = true);
+
+        //            return materialRequestDetailsItem;
+        //        }).ToList();
+
+        //        var json = JsonConvert.SerializeObject(materialRequestDetails);
+        //        var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+        //        // External API call
+        //        var client = _clientFactory.CreateClient();
+        //        var token = HttpContext.Request.Headers["Authorization"].ToString();
+        //        var request = new HttpRequestMessage(HttpMethod.Post, $"{_config["InventoryAPI"]}MaterialInventoryBalanceQty")
+        //        {
+        //            Content = data
+        //        };
+        //        request.Headers.Add("Authorization", token);
+
+        //        var response = await client.SendAsync(request);
+        //        if (response.StatusCode != HttpStatusCode.OK)
+        //        {
+        //            _logger.LogError($"Inventory update action MaterialInventoryBalanceQty failed!");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Internal server error";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //            return StatusCode(500, serviceResponse);
+        //        }
+
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Material request issued successfully";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside IssueMaterialRequest action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
 
 
         [HttpPut("{id}")]
@@ -826,30 +958,72 @@ namespace Tips.Production.Api.Controllers
 
                 var materialReqItemDto = materialRequestUpdateDto.MaterialRequestItems;
 
-                var materialReqItemList = new List<MaterialRequestItems>();
+                // var materialReqItemList = new List<MaterialRequestItems>();
+
                 var shopOrderNumber = materialRequestUpdateDto.ShopOrderNumber;
                 var projectNo = materialRequestUpdateDto.ProjectNumber;
                 var mRNumber = materialRequestUpdateDto.MRNumber;
 
                 HttpStatusCode updateMaterialRequestResp = HttpStatusCode.OK;
-               
-                var materialRequestDetails = new List<UpdateInventoryBalanceQty>();
-                for (int i = 0; i < materialReqItemDto.Count; i++)
+                foreach (var item in getMaterialRequest.MaterialRequestItems)
                 {
-                        MaterialRequestItems materialItemDetail = _mapper.Map<MaterialRequestItems>(materialReqItemDto[i]);
-                        List<MRStockDetails> mrStockDetails = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
-                        materialItemDetail.MRStockDetails = mrStockDetails;
-                        var issuestock = materialItemDetail.MRStockDetails.Select(x => x.Qty).ToArray();
-                        materialItemDetail.IssuedQty = issuestock.Sum();
-                        var materialRequestDetails_1 = new UpdateInventoryBalanceQty();
-                        materialRequestDetails_1.MRNumber = mRNumber;
-                        materialRequestDetails_1.ShopOrderNumber = shopOrderNumber;
-                        materialRequestDetails_1.ProjectNumber = projectNo;
-                        materialRequestDetails_1.PartNumber = materialItemDetail.PartNumber;
-                        materialRequestDetails_1.MRNWarehouseList = _mapper.Map<List<InventoryUpdateDtoForMRWarehouse>>(materialItemDetail.MRStockDetails);
-                        materialRequestDetails.Add(materialRequestDetails_1);
-                        materialReqItemList.Add(materialItemDetail);
+                    var local = _tipsProductionDbContext.MaterialRequestItems.Local
+                        .FirstOrDefault(e => e.Id == item.Id);
+                    if (local != null)
+                    {
+                        _tipsProductionDbContext.Entry(local).State = EntityState.Detached;
+                    }
                 }
+
+                // Map updates to the existing entity
+                _mapper.Map(materialRequestUpdateDto, getMaterialRequest);
+
+                // Update item states if necessary
+                foreach (var item in getMaterialRequest.MaterialRequestItems)
+                {
+                    _tipsProductionDbContext.Entry(item).State = EntityState.Modified;
+                }
+
+
+                //updateMaterialReq.MaterialRequestItems = materialReqItemList;
+                var materialRequestDetails = new List<UpdateInventoryBalanceQty>();
+
+                for (int i = 0; i < getMaterialRequest.MaterialRequestItems.Count; i++)
+                {
+                    // MaterialRequestItems materialItemDetail = _mapper.Map<MaterialRequestItems>(materialReqItemDto[i]);
+
+                    //    List<MRStockDetails> mrStockDetails = _mapper.Map<List<MRStockDetails>>(updateMaterialReq.MaterialRequestItems[i].MRStockDetails);
+                    //updateMaterialReq.MaterialRequestItems[i].MRStockDetails = mrStockDetails;
+                   
+                    var issuestock = getMaterialRequest.MaterialRequestItems[i].MRStockDetails.Select(x => x.Qty).ToArray();
+                    getMaterialRequest.MaterialRequestItems[i].IssuedQty = issuestock.Sum();
+
+                    var materialRequestDetails_1 = new UpdateInventoryBalanceQty();
+                    materialRequestDetails_1.MRNumber = mRNumber;
+                    materialRequestDetails_1.ShopOrderNumber = shopOrderNumber;
+                    materialRequestDetails_1.ProjectNumber = projectNo;
+                    materialRequestDetails_1.PartNumber = getMaterialRequest.MaterialRequestItems[i].PartNumber;
+                    materialRequestDetails_1.MRNWarehouseList = _mapper.Map<List<InventoryUpdateDtoForMRWarehouse>>(getMaterialRequest.MaterialRequestItems[i].MRStockDetails);
+
+                    materialRequestDetails.Add(materialRequestDetails_1);
+                    if (getMaterialRequest.MaterialRequestItems[i].MRStockDetails != null)
+                    {
+                        getMaterialRequest.MaterialRequestItems[i].MRStockDetails.ForEach(x => x.IsMRIssueDone = true);
+                            //mrStockDetail.IsMRIssueDone = true;
+                        
+                    }
+                    //materialReqItemList.Add(materialItemDetail);
+                }
+                int? totalitems = getMaterialRequest.MaterialRequestItems.Count();
+                if (totalitems > 0)
+                {
+                    if ((getMaterialRequest.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.Open).Count()) == totalitems) getMaterialRequest.MrStatus = MaterialStatus.Open;
+                    else if ((getMaterialRequest.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.FullyIssued).Count()) == totalitems) getMaterialRequest.MrStatus = MaterialStatus.Closed;
+                    else if (((getMaterialRequest.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.PartiallyIssued).Count()) > 0) || (getMaterialRequest.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.Open).Count() > 0)) getMaterialRequest.MrStatus = MaterialStatus.PartiallyClosed;
+
+                }
+                string result = await _materialRequestRepository.UpdateMaterialRequest(getMaterialRequest);
+                await _materialRequestRepository.taskSaveAsync();
 
                 var json = JsonConvert.SerializeObject(materialRequestDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
@@ -866,42 +1040,15 @@ namespace Tips.Production.Api.Controllers
                 request1.Headers.Add("Authorization", token1);
 
                 var response = await client1.SendAsync(request1);
-                
+
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     updateMaterialRequestResp = response.StatusCode;
                 }
 
-                foreach (var materialReqItem in materialReqItemList)
-                {
-                    if (materialReqItem.MRStockDetails != null)
-                    {
-                        foreach (var mrStockDetail in materialReqItem.MRStockDetails)
-                        {
-                            mrStockDetail.IsMRIssueDone = true;
-                        }
-                    }
-                }
 
-                var updateMaterialReq = _mapper.Map(materialRequestUpdateDto, getMaterialRequest);
-                updateMaterialReq.MaterialRequestItems = materialReqItemList;
 
-                int? totalitems = updateMaterialReq.MaterialRequestItems.Count();
-                if (totalitems > 0)
-                {
-                    if ((updateMaterialReq.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.Open).Count()) == totalitems) updateMaterialReq.MrStatus = MaterialStatus.Open;
-                    else if ((updateMaterialReq.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.FullyIssued).Count()) == totalitems) updateMaterialReq.MrStatus = MaterialStatus.Closed;
-                    else if (((updateMaterialReq.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.PartiallyIssued).Count()) > 0) || (updateMaterialReq.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.Open).Count() > 0)) updateMaterialReq.MrStatus = MaterialStatus.PartiallyClosed;
-
-                }
-                string result = await _materialRequestRepository.UpdateMaterialRequest(updateMaterialReq);
-
-                if (updateMaterialRequestResp == HttpStatusCode.OK)
-                {
-                    _materialRequestRepository.SaveAsync();
-
-                }
-                else
+                if (updateMaterialRequestResp != HttpStatusCode.OK)
                 {
                     _logger.LogError($"Something went wrong inside IssueMaterialRequest action. Inventory update action MaterialInventoryBalanceQty failed! ");
                     serviceResponse.Data = null;
@@ -910,7 +1057,7 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(500, serviceResponse);
                 }
-               
+
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "materialRequest Issued Successfully";
