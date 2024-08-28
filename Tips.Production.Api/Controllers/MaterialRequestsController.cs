@@ -919,6 +919,7 @@ namespace Tips.Production.Api.Controllers
         //}
 
 
+
         [HttpPut("{id}")]
         public async Task<IActionResult> IssueMaterialRequest(int id, [FromBody] MaterialRequestUpdateDto materialRequestUpdateDto)
         {
@@ -958,72 +959,56 @@ namespace Tips.Production.Api.Controllers
 
                 var materialReqItemDto = materialRequestUpdateDto.MaterialRequestItems;
 
-                // var materialReqItemList = new List<MaterialRequestItems>();
-
+                var materialReqItemList = new List<MaterialRequestItems>();
                 var shopOrderNumber = materialRequestUpdateDto.ShopOrderNumber;
                 var projectNo = materialRequestUpdateDto.ProjectNumber;
                 var mRNumber = materialRequestUpdateDto.MRNumber;
-
                 HttpStatusCode updateMaterialRequestResp = HttpStatusCode.OK;
-                foreach (var item in getMaterialRequest.MaterialRequestItems)
+
+
+                for (int i = 0; i < materialReqItemDto.Count; i++)
                 {
-                    var local = _tipsProductionDbContext.MaterialRequestItems.Local
-                        .FirstOrDefault(e => e.Id == item.Id);
-                    if (local != null)
+                    MaterialRequestItems materialItemDetail = _mapper.Map<MaterialRequestItems>(materialReqItemDto[i]);
+                    List<MRStockDetails> mrStockDetails = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
+                    materialItemDetail.MRStockDetails = mrStockDetails;
+                    var issuestock = mrStockDetails.Select(x => x.Qty).ToArray();
+                    materialItemDetail.IssuedQty = issuestock.Sum();
+                    materialReqItemList.Add(materialItemDetail);
+                }
+
+
+                var mapperConfiguration = new MapperConfiguration(cfg =>
+                {
+                    cfg.CreateMap<MaterialRequests, UpdateInventoryBalanceQty>()
+                    .ForMember(dest => dest.ProjectNumber, opt => opt.MapFrom(src => src.ProjectNumber));
+                    cfg.CreateMap<MaterialRequests, UpdateInventoryBalanceQty>()
+                    .ForMember(dest => dest.MRNumber, opt => opt.MapFrom(src => src.MRNumber));
+                    cfg.CreateMap<MaterialRequestItems, UpdateInventoryBalanceQty>()
+                        .ForMember(dest => dest.PartNumber, opt => opt.MapFrom(src => src.PartNumber))
+                        .ForMember(dest => dest.MRNWarehouseList, opt => opt.MapFrom(src => src.MRStockDetails.Select(detail => new InventoryUpdateDtoForMRWarehouse
+                        {
+                            Warehouse = detail.Warehouse,
+                            Location = detail.Location,
+                            LocationStock = detail.LocationStock,
+                            Qty = detail.Qty,
+                            IsMRIssueDone = detail.IsMRIssueDone
+                        }).ToList()));
+                });
+
+
+                var mapper = mapperConfiguration.CreateMapper();
+
+                var materialRequestDetails = materialReqItemList
+                    .Select(item =>
                     {
-                        _tipsProductionDbContext.Entry(local).State = EntityState.Detached;
-                    }
-                }
+                        var updateInventoryBalanceQty = mapper.Map<UpdateInventoryBalanceQty>(item);
+                        updateInventoryBalanceQty.ProjectNumber = projectNo;
+                        updateInventoryBalanceQty.MRNumber = mRNumber;
+                        updateInventoryBalanceQty.ShopOrderNumber = shopOrderNumber;
+                        return updateInventoryBalanceQty;
+                    })
+                    .ToList();
 
-                // Map updates to the existing entity
-                _mapper.Map(materialRequestUpdateDto, getMaterialRequest);
-
-                // Update item states if necessary
-                foreach (var item in getMaterialRequest.MaterialRequestItems)
-                {
-                    _tipsProductionDbContext.Entry(item).State = EntityState.Modified;
-                }
-
-
-                //updateMaterialReq.MaterialRequestItems = materialReqItemList;
-                var materialRequestDetails = new List<UpdateInventoryBalanceQty>();
-
-                for (int i = 0; i < getMaterialRequest.MaterialRequestItems.Count; i++)
-                {
-                    // MaterialRequestItems materialItemDetail = _mapper.Map<MaterialRequestItems>(materialReqItemDto[i]);
-
-                    //    List<MRStockDetails> mrStockDetails = _mapper.Map<List<MRStockDetails>>(updateMaterialReq.MaterialRequestItems[i].MRStockDetails);
-                    //updateMaterialReq.MaterialRequestItems[i].MRStockDetails = mrStockDetails;
-                   
-                    var issuestock = getMaterialRequest.MaterialRequestItems[i].MRStockDetails.Select(x => x.Qty).ToArray();
-                    getMaterialRequest.MaterialRequestItems[i].IssuedQty = issuestock.Sum();
-
-                    var materialRequestDetails_1 = new UpdateInventoryBalanceQty();
-                    materialRequestDetails_1.MRNumber = mRNumber;
-                    materialRequestDetails_1.ShopOrderNumber = shopOrderNumber;
-                    materialRequestDetails_1.ProjectNumber = projectNo;
-                    materialRequestDetails_1.PartNumber = getMaterialRequest.MaterialRequestItems[i].PartNumber;
-                    materialRequestDetails_1.MRNWarehouseList = _mapper.Map<List<InventoryUpdateDtoForMRWarehouse>>(getMaterialRequest.MaterialRequestItems[i].MRStockDetails);
-
-                    materialRequestDetails.Add(materialRequestDetails_1);
-                    if (getMaterialRequest.MaterialRequestItems[i].MRStockDetails != null)
-                    {
-                        getMaterialRequest.MaterialRequestItems[i].MRStockDetails.ForEach(x => x.IsMRIssueDone = true);
-                            //mrStockDetail.IsMRIssueDone = true;
-                        
-                    }
-                    //materialReqItemList.Add(materialItemDetail);
-                }
-                int? totalitems = getMaterialRequest.MaterialRequestItems.Count();
-                if (totalitems > 0)
-                {
-                    if ((getMaterialRequest.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.Open).Count()) == totalitems) getMaterialRequest.MrStatus = MaterialStatus.Open;
-                    else if ((getMaterialRequest.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.FullyIssued).Count()) == totalitems) getMaterialRequest.MrStatus = MaterialStatus.Closed;
-                    else if (((getMaterialRequest.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.PartiallyIssued).Count()) > 0) || (getMaterialRequest.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.Open).Count() > 0)) getMaterialRequest.MrStatus = MaterialStatus.PartiallyClosed;
-
-                }
-                string result = await _materialRequestRepository.UpdateMaterialRequest(getMaterialRequest);
-                await _materialRequestRepository.taskSaveAsync();
 
                 var json = JsonConvert.SerializeObject(materialRequestDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
@@ -1047,8 +1032,37 @@ namespace Tips.Production.Api.Controllers
                 }
 
 
+                // getMaterialRequest.MaterialRequestItems = materialReqItemList;
+                var updateMaterialReq = _mapper.Map(materialRequestUpdateDto, getMaterialRequest);
 
-                if (updateMaterialRequestResp != HttpStatusCode.OK)
+                foreach (var materialReqItem in materialReqItemList)
+                {
+                    if (materialReqItem.MRStockDetails != null)
+                    {
+                        foreach (var mrStockDetail in materialReqItem.MRStockDetails)
+                        {
+                            mrStockDetail.IsMRIssueDone = true;
+                        }
+                    }
+                }
+                updateMaterialReq.MaterialRequestItems = materialReqItemList;
+
+                int? totalitems = updateMaterialReq.MaterialRequestItems.Count();
+                if (totalitems > 0)
+                {
+                    if ((updateMaterialReq.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.Open).Count()) == totalitems) updateMaterialReq.MrStatus = MaterialStatus.Open;
+                    else if ((updateMaterialReq.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.FullyIssued).Count()) == totalitems) updateMaterialReq.MrStatus = MaterialStatus.Closed;
+                    else if (((updateMaterialReq.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.PartiallyIssued).Count()) > 0) || (updateMaterialReq.MaterialRequestItems.Where(x => x.IssueStatus == IssuedStatus.Open).Count() > 0)) updateMaterialReq.MrStatus = MaterialStatus.PartiallyClosed;
+
+                }
+                string result = await _materialRequestRepository.UpdateMaterialRequest(updateMaterialReq);
+
+                if (updateMaterialRequestResp == HttpStatusCode.OK)
+                {
+                    _materialRequestRepository.SaveAsync();
+
+                }
+                else
                 {
                     _logger.LogError($"Something went wrong inside IssueMaterialRequest action. Inventory update action MaterialInventoryBalanceQty failed! ");
                     serviceResponse.Data = null;
