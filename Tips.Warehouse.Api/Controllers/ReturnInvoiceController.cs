@@ -533,10 +533,10 @@ namespace Tips.Warehouse.Api.Controllers
                             {
                                 unitafterDiscount = doitem.UnitPrice - doitem.Discount;
                             }
-                            decimal? NewBasicAmt = unitafterDiscount * doitem.DispatchQty;
+                            decimal? NewBasicAmt = Math.Round(unitafterDiscount.GetValueOrDefault(), 2) * doitem.DispatchQty;
                             decimal? TaxPercentage = (NewBasicAmt * ((doitem.CGST + doitem.SGST + doitem.IGST + doitem.UTGST) / 100));
                             decimal? ItemDispatchvalue = NewBasicAmt + TaxPercentage;
-                            bTODeliveryOrderDetails.TotalValue += ItemDispatchvalue;
+                            bTODeliveryOrderDetails.TotalValue = Math.Round(bTODeliveryOrderDetails.TotalValue.GetValueOrDefault()) + ItemDispatchvalue;
                         }
                         await _bTODeliveryOrderRepository.UpdateBTODeliveryOrderFromReturnDO(bTODeliveryOrderDetails);
                         _bTODeliveryOrderRepository.SaveAsync();

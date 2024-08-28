@@ -782,10 +782,10 @@ namespace Tips.Warehouse.Api.Controllers
                                 {
                                     unitafterDiscount = doitem.UnitPrice - doitem.Discount;
                                 }
-                                decimal? NewBasicAmt = unitafterDiscount * doitem.DispatchQty;
+                                decimal? NewBasicAmt = Math.Round(unitafterDiscount.GetValueOrDefault(), 2) * doitem.DispatchQty;
                                 decimal? TaxPercentage = (NewBasicAmt * ((doitem.CGST + doitem.SGST + doitem.IGST + doitem.UTGST) / 100));
                                 decimal? ItemDispatchvalue = NewBasicAmt + TaxPercentage;
-                                Dodetails.TotalValue += ItemDispatchvalue;
+                                Dodetails.TotalValue = Math.Round(Dodetails.TotalValue.GetValueOrDefault()) + ItemDispatchvalue;
                             }
                             var mainDostatus = Dodetails.bTODeliveryOrderItems.Where(x => x.DoStatus == Status.Closed).Count();
                             if (Dodetails.bTODeliveryOrderItems.Count() == Dodetails.bTODeliveryOrderItems.Where(x => x.DoStatus == Status.Closed).Count()) Dodetails.DoStatus = Status.Closed;
