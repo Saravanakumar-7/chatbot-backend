@@ -385,6 +385,15 @@ namespace Tips.SalesService.Api.Controllers
                                     //var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={ppvendor.Currency}");
                                     var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
                                     var vendorUOC = JsonConvert.DeserializeObject<RfqSourcingConvertionrateDto>(rfqCustomerIdString);
+                                    if (vendorUOC.Data == null || vendorUOC.Data.ConvertionRate == 0)
+                                    {
+                                        _logger.LogError($"Currency was not present for {ppvendor.Currency} for the Vendor {ppvendor.Vendor} for the ItemNumber{ppinsource.ItemNumber}");
+                                        serviceResponse.Data = null;
+                                        serviceResponse.Message = $"Currency was not present for {ppvendor.Currency} for the Vendor {ppvendor.Vendor} for the ItemNumber{ppinsource.ItemNumber}";
+                                        serviceResponse.Success = false;
+                                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                                        return NotFound(serviceResponse);
+                                    }
                                     ppvendor.LandingPrice = ppvendor.LandingPrice * vendorUOC.Data.ConvertionRate;
                                     ppvendor.MoqCost = ppvendor.MoqCost * vendorUOC.Data.ConvertionRate;
                                 }
@@ -528,6 +537,15 @@ namespace Tips.SalesService.Api.Controllers
                                     //var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={ppvendor.Currency}");
                                     var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
                                     var vendorUOC = JsonConvert.DeserializeObject<RfqSourcingConvertionrateDto>(rfqCustomerIdString);
+                                    if(vendorUOC.Data==null || vendorUOC.Data.ConvertionRate == 0)
+                                    {
+                                        _logger.LogError($"Currency was not present for {ppvendor.Currency} for the Vendor {ppvendor.Vendor} for the ItemNumber{ppinsource.ItemNumber}");
+                                        serviceResponse.Data = null;
+                                        serviceResponse.Message = $"Currency was not present for {ppvendor.Currency} for the Vendor {ppvendor.Vendor} for the ItemNumber{ppinsource.ItemNumber}";
+                                        serviceResponse.Success = false;
+                                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                                        return NotFound(serviceResponse);
+                                    }
                                     ppvendor.LandingPrice = ppvendor.LandingPrice * vendorUOC.Data.ConvertionRate;
                                     ppvendor.MoqCost = ppvendor.MoqCost * vendorUOC.Data.ConvertionRate;
                                 }
