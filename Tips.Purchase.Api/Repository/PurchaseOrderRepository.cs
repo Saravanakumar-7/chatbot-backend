@@ -39,9 +39,9 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<long> CreatePurchaseOrder(PurchaseOrder purchaseOrder)
         {
-            var date = DateTime.Now;
+            //var date = DateTime.Now;
             purchaseOrder.CreatedBy = _createdBy;
-            purchaseOrder.CreatedOn = date;
+            purchaseOrder.CreatedOn = DateTime.Now;
             // purchaseOrder.LastModifiedBy = _createdBy;
             //purchaseOrder.LastModifiedOn = DateTime.Now;
             //Guid purchaseOrderNumber = Guid.NewGuid();

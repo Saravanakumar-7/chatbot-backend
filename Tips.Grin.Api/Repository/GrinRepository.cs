@@ -35,9 +35,9 @@ namespace Tips.Grin.Api.Repository
         }
         public async Task<int?> CreateGrin(Grins grins)
         {
-            var date = DateTime.Now;
+            //var date = DateTime.Now;
             grins.CreatedBy = _createdBy;
-            grins.CreatedOn = date;
+            grins.CreatedOn = DateTime.Now;
             //Guid grinId = Guid.NewGuid();
             //grins.GrinNumber = "GR-" + grinId.ToString();
             grins.Unit = _unitname;

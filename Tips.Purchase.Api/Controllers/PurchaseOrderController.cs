@@ -1682,19 +1682,31 @@ namespace Tips.Purchase.Api.Controllers
         public async Task<ActionResult> DownloadFile(string Filename)
         {
             ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
-
-            var filename = Uri.UnescapeDataString(Filename);
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", filename);
-            var provider = new FileExtensionContentTypeProvider();
-            if (!provider.TryGetContentType(filePath, out var ContentType))
+            try
             {
-                ContentType = "application/octet-stream";
-            }
-            var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
-            var DownloadFilename = filename.Split('_');
-            var downloadFilename = string.IsNullOrWhiteSpace(DownloadFilename[1]) ? Path.GetFileName(filePath) : DownloadFilename[1];
 
-            return File(bytes, ContentType, downloadFilename);
+                var filename = Uri.UnescapeDataString(Filename);
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", filename);
+                var provider = new FileExtensionContentTypeProvider();
+                if (!provider.TryGetContentType(filePath, out var ContentType))
+                {
+                    ContentType = "application/octet-stream";
+                }
+                var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+                var DownloadFilename = filename.Split('_');
+                var downloadFilename = string.IsNullOrWhiteSpace(DownloadFilename[1]) ? Path.GetFileName(filePath) : DownloadFilename[1];
+
+                return File(bytes, ContentType, downloadFilename);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DownloadFile action: {ex.Message} {ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
         }
 
         private string GetServerKey()
@@ -2229,12 +2241,12 @@ namespace Tips.Purchase.Api.Controllers
                         if (serverKey == "avision")
                         {
                             var baseUrl = $"{_config["PurchaseBaseUrl"]}";
-                            downloadUrlDto.DownloadUrl = $"{baseUrl}/apigateway/tips/PurchaseOrder/DownloadFile?Filename={downloadUrlDto.FileName}";
+                            downloadUrlDto.DownloadUrl = $"{baseUrl}/apigateway/tips/PurchaseOrder/DownloadFile?Filename={Uri.EscapeDataString(downloadUrlDto.FileName)}";
                         }
                         else
                         {
                             var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
-                            downloadUrlDto.DownloadUrl = $"{baseUrl}/api/PurchaseOrder/DownloadFile?Filename={downloadUrlDto.FileName}";
+                            downloadUrlDto.DownloadUrl = $"{baseUrl}/api/PurchaseOrder/DownloadFile?Filename={Uri.EscapeDataString(downloadUrlDto.FileName)}";
                         }
                         downloadUrls.Add(downloadUrlDto);
                     }
@@ -4604,7 +4616,7 @@ namespace Tips.Purchase.Api.Controllers
                 _logger.LogInfo($"Successfully Updated the TallyStatus of PO Id {Id} and is set to {TallyStatus} from the UpdatePurchaseOrderTallyStatus API");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Successfully Updated the TallyStatus of PO Id {Id} and is set to {TallyStatus}";
-                serviceResponse.Success = false;
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(200, serviceResponse);
             }
