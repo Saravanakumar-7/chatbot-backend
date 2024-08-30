@@ -442,7 +442,7 @@ namespace Tips.Warehouse.Api.Controllers
                         openDeliveryOrderItemsDtoList.Add(OpenDeliveryOrderItemsDetails);
 
                         //Update Inventory balanced Quantity 
-                        await _inventoryRepository.UpdateInventoryforODO(OpenDeliveryOrderItemsDetails.QtyDistribution);
+                        await _inventoryRepository.UpdateInventoryforODO(openDeliveryOrderitemsList[i].QtyDistribution);
 
 
                         //Old Code [

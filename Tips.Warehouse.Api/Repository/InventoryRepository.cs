@@ -792,7 +792,7 @@ namespace Tips.Warehouse.Api.Repository
                 }
             }
         }
-        public async Task UpdateInventoryforODO(List<OpenDeliveryOrderPartsQtyDistribution> ODOItemsLocationWiseList)
+        public async Task UpdateInventoryforODO(List<OpenDeliveryOrderPartsQtyDistributionPostDto> ODOItemsLocationWiseList)
         {
             var itemNumber = ODOItemsLocationWiseList.Select(x => x.PartNumber).FirstOrDefault();
             var projectNumber = ODOItemsLocationWiseList.Select(x => x.ProjectNumber).FirstOrDefault();
