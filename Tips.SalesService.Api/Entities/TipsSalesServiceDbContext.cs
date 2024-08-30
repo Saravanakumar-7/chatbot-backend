@@ -143,6 +143,7 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<RfqSalesOrderRoomWiseSPReport>().HasNoKey();
             modelBuilder.Entity<SoSummaryQuotationDto>().HasNoKey();
             modelBuilder.Entity<CustomerWiseTransactionSPReport>().HasNoKey();
+            modelBuilder.Entity<SalesOrderId_SP>().HasNoKey();
         }
 
     }

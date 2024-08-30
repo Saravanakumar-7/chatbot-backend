@@ -280,6 +280,15 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
+        public async Task<SalesOrderId_SP> GetSalesOrderDetialsById_SP(int id)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SalesOrderId_SP>()
+            .FromSqlInterpolated($"CALL Salesorder_GetBy_Id({id})").ToList();
+
+            return result[0];
+
+        }
 
         public async Task<IEnumerable<SOMonthlyConsumptionSPReport>> GetSOMonthlyConsumptionSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {

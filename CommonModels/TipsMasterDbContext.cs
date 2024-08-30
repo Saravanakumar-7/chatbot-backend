@@ -175,6 +175,9 @@ namespace Entities
             modelBuilder.Entity<EnggBomSPReport>().HasNoKey();
             modelBuilder.Entity<CustomerMasterLeadIdSPReport>().HasNoKey();
             modelBuilder.Entity<FGCostingSPReport>().HasNoKey();
+            modelBuilder.Entity<FG_Weighted_AvgCost_Report>().HasNoKey();
+            modelBuilder.Entity<FG_Weighted_AvgCost_Report_withDate>().HasNoKey();
+            modelBuilder.Entity<Weighted_AvgCost_Report>().HasNoKey();
         }
 
 

@@ -39,6 +39,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<decimal> GetOpenSalesOrderQuantityByItemNumber(string salesOrderNumber);
         Task<List<SalesOrderQtyForSADto>> GetSASalesOrderQtyDetailsByItemNo(string fgItemNumber, string projectNo, decimal BomQty);
         Task<string> GenerateSONumberForAvision();
+        Task<SalesOrderId_SP> GetSalesOrderDetialsById_SP(int id);
         Task<PagedList<SalesOrderSPReport>> GetSalesOrderSPReport(PagingParameter pagingParameter);
         Task<IEnumerable<RecievableCustomer>> GetRecievableCustomersWithCustomerID(string CustomerId);
         Task<IEnumerable<SalesOrderSPReport>> GetSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN);
