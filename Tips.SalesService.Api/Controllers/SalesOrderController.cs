@@ -4388,7 +4388,7 @@ namespace Tips.SalesService.Api.Controllers
                     int salesOrderStatus = (int)salesOrderStatus1;
                     if (serverKey == "keus")
                     {
-                        List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.ShortClosed || x.StatusEnum != OrderStatus.Closed).Select(x => x.ItemNumber).Distinct().ToList();
+                        List<string> itemNumberList = salesOrderById?.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.ShortClosed && x.StatusEnum != OrderStatus.Closed).Select(x => x.ItemNumber).Distinct().ToList();
                         if (itemNumberList != null)
                         {
                             var json = JsonConvert.SerializeObject(itemNumberList);
@@ -4409,7 +4409,7 @@ namespace Tips.SalesService.Api.Controllers
                             Dictionary<string, decimal> inventoryItemWithStockDetails = JsonConvert.DeserializeObject<Dictionary<string, decimal>>(inventoryItemQtyDetails);
 
 
-                            foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.ShortClosed || x.StatusEnum != OrderStatus.Closed))
+                            foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.ShortClosed && x.StatusEnum != OrderStatus.Closed))
                             {
                                 SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
                                 salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);
@@ -4431,9 +4431,9 @@ namespace Tips.SalesService.Api.Controllers
                     }
                     else
                     {
-                        List<(string, string)> itemNumberList = salesOrderById?.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.ShortClosed || x.StatusEnum != OrderStatus.Closed).Select(x => (x.ItemNumber, x.ProjectNumber)).Distinct().ToList();
+                        //List<(string, string)> itemNumberList = salesOrderById?.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.ShortClosed || x.StatusEnum != OrderStatus.Closed).Select(x => (x.ItemNumber, x.ProjectNumber)).Distinct().ToList();
 
-                        foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.ShortClosed || x.StatusEnum != OrderStatus.Closed))
+                        foreach (var salesOrderItemDetails in salesOrderById.SalesOrdersItems.Where(x => x.StatusEnum != OrderStatus.ShortClosed && x.StatusEnum != OrderStatus.Closed))
                         {
                             SalesOrderItemsDto salesOrderItemsDtos = _mapper.Map<SalesOrderItemsDto>(salesOrderItemDetails);
                             salesOrderItemsDtos.ScheduleDates = _mapper.Map<List<ScheduleDateDto>>(salesOrderItemDetails.ScheduleDates);

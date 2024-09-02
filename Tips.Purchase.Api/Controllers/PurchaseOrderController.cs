@@ -4374,13 +4374,14 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoConfirmationSPReportwithParam([FromBody] PurchaseOrderConfor_ReportGetDto paramsforPurchase)
+        public async Task<IActionResult> GetPoConfirmationSPReportwithParam([FromBody] PurchaseOrderConfor_ReportGetDto paramsforPurchase, [FromQuery] int Offset, [FromQuery] int Limit)
         {
             ServiceResponse<IEnumerable<poconfirmation_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_Dto>>();
             try
             {
                 var result = await _repository.GetPoConfirmationSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
-                                                                                    paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.RecordType);
+                                                                                    paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.RecordType
+                                                                                        , Offset, Limit);
                 if (result == null)
                 {
                     serviceResponse.Data = null;
@@ -4529,7 +4530,7 @@ namespace Tips.Purchase.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetPoProjectSPReportwithParam([FromBody] PurchaseOrder_ReportGetDto paramsforPurchase)
         {
-            ServiceResponse<IEnumerable<poproject_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poproject_report_Dto>>();
+            ServiceResponse<IEnumerable<PoProjectSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PoProjectSPReport>>();
             try
             {
                 var result = await _repository.GetPoProjectSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
@@ -4568,7 +4569,7 @@ namespace Tips.Purchase.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetPoProjectSPReportwithDate(PurchaseOrderDate_ReportGetDto purchaseOrderDate_ReportGetDto)
         {
-            ServiceResponse<IEnumerable<poproject_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poproject_report_Dto>>();
+            ServiceResponse<IEnumerable<PoProjectSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PoProjectSPReport>>();
             try
             {
                 var result = await _repository.GetPoProjectSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
