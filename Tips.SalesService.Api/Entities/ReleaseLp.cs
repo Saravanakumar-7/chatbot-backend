@@ -15,7 +15,7 @@ namespace Tips.SalesService.Api.Entities
         public string? ItemNo { get; set; }
         public string? RLpItemNo { get; set; }
         public string? Description { get; set; }
-
+        public decimal? RevisionNumber { get; set; }
         [Precision(18, 3)]
         public decimal? Qty { get; set; }
         public string? UOC { get; set; }

@@ -19,7 +19,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public List<RfqLPCostingItemDto>? RfqLPCostingItems { get; set; }
-
+        public decimal? RevisionNumber { get; set; }
 
     }
     public class RfqLPCostingDtoPost
@@ -27,7 +27,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         
         public string? RfqNumber { get; set; }
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
-
+        public decimal? RevisionNumber { get; set; }
         public string? CustomerName { get; set; }
        
         public List<RfqLPCostingItemDtoPost>? RfqLPCostingItems { get; set; }

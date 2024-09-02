@@ -203,7 +203,7 @@ namespace Tips.Master.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside FG_Weighted_AvgCost_Report_withParameter action";
+                serviceResponse.Message = $"Something went wrong inside Weighted_AvgCost_Report_withParameter action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

@@ -31,7 +31,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<int> GetLastestRfqRevNoByRfqNumber(string rfqNumber);
         Task<Rfq> GetCustomerIdByRfqNumber(string rfqnumber);
         Task<IEnumerable<Rfq>> GetRevNumberByRfqNumberList(string rfqnumber);
-        Task<Rfq> RfqLpcostingByRfqNumbers(string id);
+        Task<Rfq> RfqLpcostingByRfqNumbers(string RfqNumber, decimal? RevisionNumber);
         Task<Rfq> RfqLpCostingReleaseByRfqNumbers(string id);
         Task<Rfq> GetRfqDeatailsByRfqNoAndRevNo(string rfqNumber, int revisionNumber);
         Task<Rfq> UpdateRfqRevNo(Rfq rfq, string serverKey);

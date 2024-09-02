@@ -773,7 +773,7 @@ namespace Tips.Master.Api.Controllers
                     var revRound = Math.Round(enggBomList.RevisionNumber);
                     enggBomList.RevisionNumber = revRound + Convert.ToDecimal(1.0);
                 }
-                //_logger.LogInfo(result);
+                _logger.LogInfo("Engineering BOM Updated successfully");
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Update Successfully";

@@ -793,10 +793,10 @@ namespace Tips.SalesService.Api.Repository
                         .FirstOrDefaultAsync();
             return lpcostingByRfqNumber;
         }
-        public async Task<Rfq> RfqLpcostingByRfqNumbers(string RfqNumber)
+        public async Task<Rfq> RfqLpcostingByRfqNumbers(string RfqNumber,decimal? RevisionNumber)
         {
             var lpcostingReleaseByRfqNumber = await _tipsSalesServiceDbContext.Rfqs
-              .Where(x => x.RfqNumber == RfqNumber)
+              .Where(x => x.RfqNumber == RfqNumber && x.RevisionNumber==RevisionNumber)
                         .FirstOrDefaultAsync();
             return lpcostingReleaseByRfqNumber;
         }

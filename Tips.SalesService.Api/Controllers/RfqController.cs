@@ -997,7 +997,7 @@ namespace Tips.SalesService.Api.Controllers
                 rfqLPCostingDetail.RfqNumber = rfqEnggDetails.RFQNumber;
                 rfqLPCostingDetail.CustomerName = rfqEnggDetails.CustomerName;
                 rfqLPCostingDetail.RfqLPCostingItems = rfqLPCostingItems;
-
+                rfqLPCostingDetail.RevisionNumber= rfqEnggDetails.RevisionNumber;
                 RfqLPCostingDto rfqLPCostingDto = _mapper.Map<RfqLPCostingDto>(rfqLPCostingDetail);
                 
                 serviceResponse.Data = rfqLPCostingDto;
@@ -2129,7 +2129,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 var createRfqLPCosting = _mapper.Map<RfqLPCosting>(rfqLPCostingDtoPost);
                 var rfqUpdate = createRfqLPCosting.RfqNumber;
-                var updateRfqIsLpCosting = await _rfqRepository.RfqLpcostingByRfqNumbers(rfqUpdate);
+                var updateRfqIsLpCosting = await _rfqRepository.RfqLpcostingByRfqNumbers(rfqUpdate, createRfqLPCosting.RevisionNumber);
                 updateRfqIsLpCosting.IsLpCosting = true;
                 var rfqLPCostingDto = rfqLPCostingDtoPost.RfqLPCostingItems;
 
