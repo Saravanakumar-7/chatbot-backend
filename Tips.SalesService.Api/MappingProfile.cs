@@ -106,6 +106,7 @@ namespace Tips.SalesService.Api
             CreateMap<RfqLPCostingOtherCharges, RfqLPCostingOtherChargesDtoPost>().ReverseMap();
             CreateMap<RfqLPCostingOtherCharges, RfqLPCostingOtherChargesDtoUpdate>().ReverseMap();
 
+            CreateMap<SalesOrderId_SP, SalesOrderDto>().ReverseMap();
             CreateMap<SalesOrder, SalesOrderDto>().ReverseMap();
             CreateMap<SalesOrder, SalesOrderPostDto>().ReverseMap();
             CreateMap<SalesOrder, SalesOrderUpdateDto>().ReverseMap();

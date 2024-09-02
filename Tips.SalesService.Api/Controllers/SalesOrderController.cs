@@ -204,7 +204,7 @@ namespace Tips.SalesService.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetSalesOrderSPReport([FromQuery] PagingParameter pagingParameter)
         {
-            //var products = await _repository.GetSalesOrderSPResport(pagingParameter);
+            //var result = await _repository.GetSalesOrderSPResport(pagingParameter);
 
             ServiceResponse<IEnumerable<SalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPReport>>();
 
@@ -2057,9 +2057,9 @@ namespace Tips.SalesService.Api.Controllers
         //            ServiceResponse<IEnumerable<SalesOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPResport>>();
         //            try
         //            {
-        //                var products = await _repository.GetSalesorderReportWithParam(CustomerName, SalesOrderNumber, PartNumber);
+        //                var result = await _repository.GetSalesorderReportWithParam(CustomerName, SalesOrderNumber, PartNumber);
 
-        //                if (products == null)
+        //                if (result == null)
         //                {
         //                    serviceResponse.Data = null;
         //                    serviceResponse.Message = $"SalesOrder hasn't been found.";
@@ -2070,7 +2070,7 @@ namespace Tips.SalesService.Api.Controllers
         //                }
         //                else
         //                {
-        //                    serviceResponse.Data = products;
+        //                    serviceResponse.Data = result;
         //                    serviceResponse.Message = "Returned SalesOrder Details";
         //                    serviceResponse.Success = true;
         //                    serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -2236,6 +2236,46 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetSOMonthlyConsumptionSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetSalesOrderDetialsById_SP(int id)
+        {
+            ServiceResponse<SalesOrderDto> serviceResponse = new ServiceResponse<SalesOrderDto>();
+            try
+            {
+                var product = await _repository.GetSalesOrderDetialsById_SP(id);
+                var result = _mapper.Map<SalesOrderDto>(product);
+                result.SalesOrdersItems = JsonConvert.DeserializeObject<List<SalesOrderItemsDto>>(product.SalesOrdersItems);
+                result.SalesOrderAdditionalCharges = JsonConvert.DeserializeObject<List<SalesOrderAdditionalChargesDto>>(product.SalesOrderAdditionalCharges);
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"GetSalesOrderDetialsById_SP hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesOrderMonthlyConsumptionSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned GetSalesOrderDetialsById_SP Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetSalesOrderDetialsById_SP action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -4246,7 +4286,7 @@ namespace Tips.SalesService.Api.Controllers
                 for (int i = 0; i < salesOrderItemsDto.Count; i++)
                 {
                     SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
-                   
+
                     var oldSOItem = salesOrderDetailBeforeUpdate.SalesOrdersItems[i];
                     if (salesOrderItemsDto[i].NowShortClosed == true)
                     {
@@ -4301,22 +4341,22 @@ namespace Tips.SalesService.Api.Controllers
                         await _salesOrderHistory.CreateSalesOrderHistory(salesOrderHistories);
                     }
                     List<ScheduleDate>? listSch = _mapper.Map<List<ScheduleDate>>(salesOrderItemsDto[i].ScheduleDates);
-                   List<SoConfirmationDate>? listCon = _mapper.Map<List<SoConfirmationDate>>(salesOrderItemsDto[i].SoConfirmationDates);
-                    
+                    List<SoConfirmationDate>? listCon = _mapper.Map<List<SoConfirmationDate>>(salesOrderItemsDto[i].SoConfirmationDates);
+
                     salesOrderItemsDetail.ScheduleDates = listSch;
                     salesOrderItemsDetail.SoConfirmationDates = listCon;
                     salesOrderItemsList.Add(salesOrderItemsDetail);
                 }
                 var salesAdditionalChargesList = _mapper.Map<List<SalesOrderAdditionalCharges>>(salesAdditionalChargesDto);
-               
+
                 var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetailBeforeUpdate);
-                
+
                 updateData.SalesOrdersItems = salesOrderItemsList;
                 updateData.SalesOrderAdditionalCharges = salesAdditionalChargesList;
                 string result = await _repository.UpdateSalesOrderShortClose(updateData);
                 _logger.LogInfo(result);
-                 _repository.SaveAsync();
-                 _salesOrderHistory.SaveAsync();
+                _repository.SaveAsync();
+                _salesOrderHistory.SaveAsync();
 
 
                 serviceResponse.Data = null;

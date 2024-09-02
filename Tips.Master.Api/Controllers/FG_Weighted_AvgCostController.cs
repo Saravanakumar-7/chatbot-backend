@@ -87,7 +87,7 @@ namespace Tips.Master.Api.Controllers
 
                 await _repository.FG_Weighted_AvgCostRepository.CreateFG_Weighted_AvgCost(fgWeightedAvgCost);
                 _repository.Save();
-            }           
+            }
         }
         [HttpPost]
         private async void TransferCurrent_FG_Weighted_AvgCost_TO_FG_Weighted_AvgCost_History()
@@ -99,6 +99,115 @@ namespace Tips.Master.Api.Controllers
             _repository.Save();
         }
 
+        [HttpGet]
+        public async Task<IActionResult> FG_Weighted_AvgCost_Report_withParameter(string FGItemNumber)
+        {
+            ServiceResponse<List<FG_Weighted_AvgCost_Report>> serviceResponse = new ServiceResponse<List<FG_Weighted_AvgCost_Report>>();
+            try
+            {
+                var data = await _repository.FG_Weighted_AvgCostRepository.FG_Weighted_AvgCost_Report_withParameter(FGItemNumber);
 
+                if (data == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"FG_Weighted_AvgCost_Report_withParameter hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"FG_Weighted_AvgCost_Report_withParameter hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = data;
+                    serviceResponse.Message = "Returned FG_Weighted_AvgCost_Report_withParameter Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside FG_Weighted_AvgCost_Report_withParameter action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> FG_Weighted_AvgCost_Report_withDate(string FromDate, string ToDate)
+        {
+            ServiceResponse<List<FG_Weighted_AvgCost_Report_withDate>> serviceResponse = new ServiceResponse<List<FG_Weighted_AvgCost_Report_withDate>>();
+            try
+            {
+                var data = await _repository.FG_Weighted_AvgCostRepository.FG_Weighted_AvgCost_Report_withDate(FromDate, ToDate);
+
+                if (data == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"FG_Weighted_AvgCost_Report_withDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"FG_Weighted_AvgCost_Report_withDate hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = data;
+                    serviceResponse.Message = "Returned FG_Weighted_AvgCost_Report_withDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside FG_Weighted_AvgCost_Report_withDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> Weighted_AvgCost_Report_withParameter(string? FGItemNumber)
+        {
+            ServiceResponse<List<Weighted_AvgCost_Report>> serviceResponse = new ServiceResponse<List<Weighted_AvgCost_Report>>();
+            try
+            {
+                var data = await _repository.FG_Weighted_AvgCostRepository.Weighted_AvgCost_Report_withParameter(FGItemNumber);
+
+                if (data == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Weighted_AvgCost_Report_withParameter hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Weighted_AvgCost_Report_withParameter hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = data;
+                    serviceResponse.Message = "Returned Weighted_AvgCost_Report_withParameter Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside FG_Weighted_AvgCost_Report_withParameter action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities;
+using Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -49,6 +50,33 @@ namespace Repository
         public async Task CreateFG_Weighted_AvgCost(FG_Weighted_AvgCost fG_Weighted_AvgCost)
         {
             await Create(fG_Weighted_AvgCost);
+        }
+        public async Task<List<FG_Weighted_AvgCost_Report>> FG_Weighted_AvgCost_Report_withParameter(string FGItemNumber)
+        {
+            var result = _tipsMasterDbContext
+            .Set<FG_Weighted_AvgCost_Report>()
+            .FromSqlInterpolated($"CALL FG_Costing_with_Parameter({FGItemNumber})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<List<Weighted_AvgCost_Report>> Weighted_AvgCost_Report_withParameter(string? FGItemNumber)
+        {
+            var result = _tipsMasterDbContext
+            .Set<Weighted_AvgCost_Report>()
+            .FromSqlInterpolated($"CALL Weighted_Avg_Report({FGItemNumber})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<List<FG_Weighted_AvgCost_Report_withDate>> FG_Weighted_AvgCost_Report_withDate(string FromDate, string ToDate)
+        {
+            var result = _tipsMasterDbContext
+            .Set<FG_Weighted_AvgCost_Report_withDate>()
+            .FromSqlInterpolated($"CALL FG_Costing_with_Date({FromDate},{ToDate})")
+            .ToList();
+
+            return result;
         }
     }
 }
