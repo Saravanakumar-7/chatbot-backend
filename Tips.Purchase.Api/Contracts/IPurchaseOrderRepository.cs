@@ -82,12 +82,14 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllLatestRevNoPurchaseOrderNameList();
         Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType);
         Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliveryScheduleSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType);
-        Task<IEnumerable<poproject_report_Dto>> GetPoProjectSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType);
+        Task<IEnumerable<PoProjectSPReport>> GetPoProjectSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType);
+        //Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
+        //                                                                                               , string? Approval, string? RecordType);
         Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
-                                                                                                       , string? Approval, string? RecordType);
+                                                                                                       , string? Approval, string? RecordType, int Offset, int Limit);
         Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliverySchedulewithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
                                                                                                       , string? Approval, string? RecordType);
-        Task<IEnumerable<poproject_report_Dto>> GetPoProjectSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
+        Task<IEnumerable<PoProjectSPReport>> GetPoProjectSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
                                                                                                        , string? Approval, string? ProjectNumber, string? RecordType);
       
     }

@@ -32,5 +32,6 @@
         public decimal? DispatchQty { get; set; }
         public decimal? BalanceQty { get; set; }
         public decimal? indent_qnty { get; set; }
+        public decimal? InstallationCharges { get; set; }
     }
 }
