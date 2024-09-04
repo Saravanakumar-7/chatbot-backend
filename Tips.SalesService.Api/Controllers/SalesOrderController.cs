@@ -2249,9 +2249,20 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var product = await _repository.GetSalesOrderDetialsById_SP(id);
+                string items, addit;
+                items = product.SalesOrdersItems;
+                addit = product.SalesOrderAdditionalCharges;
+                product.SalesOrdersItems = null;
+                product.SalesOrderAdditionalCharges = null;
                 var result = _mapper.Map<SalesOrderDto>(product);
-                result.SalesOrdersItems = JsonConvert.DeserializeObject<List<SalesOrderItemsDto>>(product.SalesOrdersItems);
-                result.SalesOrderAdditionalCharges = JsonConvert.DeserializeObject<List<SalesOrderAdditionalChargesDto>>(product.SalesOrderAdditionalCharges);
+                if (items != null)
+                {
+                    result.SalesOrdersItems = JsonConvert.DeserializeObject<List<SalesOrderItemsDto>>(items);
+                }
+                if (addit != null)
+                {
+                    result.SalesOrderAdditionalCharges = JsonConvert.DeserializeObject<List<SalesOrderAdditionalChargesDto>>(addit);
+                }
                 if (result == null)
                 {
                     serviceResponse.Data = null;
