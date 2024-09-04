@@ -1633,6 +1633,7 @@ namespace Tips.Purchase.Api.Repository
         {
             var poconfirmmation = await _tipsPurchaseDbContext.Set<poconfirmation_report_Dto>()
                     .FromSqlInterpolated($"CALL poconfirmation_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval},{RecordType})")
+                    .AsNoTracking()
                     .ToListAsync();
 
             return poconfirmmation;
