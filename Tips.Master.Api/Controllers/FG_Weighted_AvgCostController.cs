@@ -99,8 +99,8 @@ namespace Tips.Master.Api.Controllers
             _repository.Save();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> FG_Weighted_AvgCost_Report_withParameter(string FGItemNumber)
+        [HttpPost]
+        public async Task<IActionResult> FG_Weighted_AvgCost_Report_withParameter([FromBody]string FGItemNumber)
         {
             ServiceResponse<List<FG_Weighted_AvgCost_Report>> serviceResponse = new ServiceResponse<List<FG_Weighted_AvgCost_Report>>();
             try
@@ -173,8 +173,8 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpGet]
-        public async Task<IActionResult> Weighted_AvgCost_Report_withParameter(string? FGItemNumber)
+        [HttpPost]
+        public async Task<IActionResult> Weighted_AvgCost_Report_withParameter([FromBody]string? FGItemNumber)
         {
             ServiceResponse<List<Weighted_AvgCost_Report>> serviceResponse = new ServiceResponse<List<Weighted_AvgCost_Report>>();
             try

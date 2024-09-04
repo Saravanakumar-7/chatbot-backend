@@ -514,7 +514,7 @@ namespace Repository
         }
         public async Task<Dictionary<string, int?>> GetItemsImageIds(List<string> ItemNumbers)
         {
-            Dictionary<string, int?> imageIds = await FindAll().Where(x => ItemNumbers.Contains(x.ItemNumber) && x.ImageUpload != null).Select(x => new { x.ItemNumber, x.ImageUpload }).ToDictionaryAsync(x => x.ItemNumber, x => x.ImageUpload);
+            Dictionary<string, int?> imageIds = await FindAll().Where(x => ItemNumbers.Contains(x.ItemNumber) &&x.IsActive==true && x.ImageUpload != null).Select(x => new { x.ItemNumber, x.ImageUpload }).ToDictionaryAsync(x => x.ItemNumber, x => x.ImageUpload);
             return imageIds;
         }
         public async Task<string> GetClosedIqcItemMasterItemNo(string ItemNumber)
