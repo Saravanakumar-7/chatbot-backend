@@ -4375,14 +4375,13 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoConfirmationSPReportwithParam([FromBody] PurchaseOrderConfor_ReportGetDto paramsforPurchase, [FromQuery] int Offset, [FromQuery] int Limit)
+        public async Task<IActionResult> GetPoConfirmationSPReportwithParam([FromBody] PurchaseOrderConfor_ReportGetDto paramsforPurchase)
         {
             ServiceResponse<IEnumerable<poconfirmation_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_Dto>>();
             try
             {
                 var result = await _repository.GetPoConfirmationSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
-                                                                                    paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.RecordType
-                                                                                        , Offset, Limit);
+                                                                                    paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.RecordType);
                 if (result == null)
                 {
                     serviceResponse.Data = null;

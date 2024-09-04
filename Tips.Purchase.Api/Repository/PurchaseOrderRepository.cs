@@ -1629,10 +1629,10 @@ namespace Tips.Purchase.Api.Repository
 
 
         public async Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
-                                                                                                       , string? Approval, string? RecordType, int Offset, int Limit)
+                                                                                                       , string? Approval, string? RecordType)
         {
             var poconfirmmation = await _tipsPurchaseDbContext.Set<poconfirmation_report_Dto>()
-                    .FromSqlInterpolated($"CALL poconfirmation_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval},{RecordType},{Offset},{Limit})")
+                    .FromSqlInterpolated($"CALL poconfirmation_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval},{RecordType})")
                     .ToListAsync();
 
             return poconfirmmation;

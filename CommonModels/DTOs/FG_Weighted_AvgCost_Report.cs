@@ -14,7 +14,7 @@ namespace Entities.DTOs
         public string? DrawingRevNo { get; set; }
         public string Description { get; set; }
         public decimal Quantity { get; set; }
-        public string ManufacturerPartNo { get; set; }
+        public string? ManufacturerPartNo { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal TotalAmount { get; set; }
     }
@@ -32,7 +32,7 @@ namespace Entities.DTOs
         public string? DrawingRevNo { get; set; }
         public string Description { get; set; }
         public decimal Quantity { get; set; }
-        public string ManufacturerPartNo { get; set; }
+        public string? ManufacturerPartNo { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal TotalAmount { get; set; }
     }
