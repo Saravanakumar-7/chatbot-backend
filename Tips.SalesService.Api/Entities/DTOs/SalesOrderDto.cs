@@ -463,7 +463,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
     public class SalesOrderId_SP
     {
-        public int SID { get; set; }
+        public int Id { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public string? QuoteNumber { get; set; }

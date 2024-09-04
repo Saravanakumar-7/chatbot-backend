@@ -36,4 +36,8 @@ namespace Entities.DTOs
         public decimal UnitPrice { get; set; }
         public decimal TotalAmount { get; set; }
     }
+    public class FG_Weighted_AvgCost_ReportDto
+    {
+        public string FGItemNumber { get; set; }
+    }
 }

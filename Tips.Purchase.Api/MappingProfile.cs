@@ -11,7 +11,8 @@ namespace Tips.Purchase.Api
         {
             CreateMap<PurchaseOrderSPReport, PurchaseOrderSPReportDTO>().ReverseMap();
             CreateMap<Tras_POSPReport, Tras_POSPReportDTO>().ReverseMap();
-
+            
+            CreateMap<PurchaseOrder, PONameList>().ReverseMap();
             CreateMap<PurchaseOrder, PurchaseOrderDto>().ReverseMap();
             CreateMap<PurchaseOrder, PurchaseOrderPostDto>().ReverseMap();
             CreateMap<PurchaseOrder, PurchaseOrderUpdateDto>().ReverseMap();

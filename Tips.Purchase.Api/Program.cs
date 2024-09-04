@@ -1,6 +1,8 @@
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NLog;
@@ -30,10 +32,14 @@ builder.Services.AddControllers();
 builder.Services.Configure<KestrelServerOptions>(option =>
 {
     option.Limits.MaxRequestBodySize = 1073741824;
+    option.Limits.MaxRequestBufferSize = 1073741824;
+    option.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(10); // Increase Keep-Alive timeout
+    option.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(10);
 });
 builder.Services.Configure<IISServerOptions>(option =>
 {
     option.MaxRequestBodySize = 1073741824;
+    option.MaxRequestBodyBufferSize = 1073741824; 
 });
 builder.Services.AddSwaggerGen(c =>
 {

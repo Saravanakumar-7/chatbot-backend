@@ -100,12 +100,12 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> FG_Weighted_AvgCost_Report_withParameter([FromBody]string FGItemNumber)
+        public async Task<IActionResult> FG_Weighted_AvgCost_Report_withParameter([FromBody] FG_Weighted_AvgCost_ReportDto fg_Weighted_AvgCost_ReportDto)
         {
             ServiceResponse<List<FG_Weighted_AvgCost_Report>> serviceResponse = new ServiceResponse<List<FG_Weighted_AvgCost_Report>>();
             try
             {
-                var data = await _repository.FG_Weighted_AvgCostRepository.FG_Weighted_AvgCost_Report_withParameter(FGItemNumber);
+                var data = await _repository.FG_Weighted_AvgCostRepository.FG_Weighted_AvgCost_Report_withParameter(fg_Weighted_AvgCost_ReportDto.FGItemNumber);
 
                 if (data == null)
                 {
@@ -174,12 +174,12 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> Weighted_AvgCost_Report_withParameter([FromBody]string? FGItemNumber)
+        public async Task<IActionResult> Weighted_AvgCost_Report_withParameter([FromBody] FG_Weighted_AvgCost_ReportDto fg_Weighted_AvgCost_ReportDto)
         {
             ServiceResponse<List<Weighted_AvgCost_Report>> serviceResponse = new ServiceResponse<List<Weighted_AvgCost_Report>>();
             try
             {
-                var data = await _repository.FG_Weighted_AvgCostRepository.Weighted_AvgCost_Report_withParameter(FGItemNumber);
+                var data = await _repository.FG_Weighted_AvgCostRepository.Weighted_AvgCost_Report_withParameter(fg_Weighted_AvgCost_ReportDto.FGItemNumber);
 
                 if (data == null)
                 {

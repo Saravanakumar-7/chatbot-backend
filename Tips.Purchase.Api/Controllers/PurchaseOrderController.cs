@@ -2952,11 +2952,12 @@ namespace Tips.Purchase.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllActivePurchaseOrderNameList()
         {
-            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            ServiceResponse<List<PONameList>> serviceResponse = new ServiceResponse<List<PONameList>>();
             try
             {
                 var activePONameList = await _repository.GetAllActivePurchaseOrderNameList();
-                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(activePONameList);
+
+                var result = _mapper.Map<List<PONameList>>(activePONameList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ActivePurchaseOrderNameList";
                 serviceResponse.Success = true;

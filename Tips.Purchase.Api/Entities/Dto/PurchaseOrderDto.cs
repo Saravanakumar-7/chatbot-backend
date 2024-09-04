@@ -464,4 +464,9 @@ namespace Tips.Purchase.Api.Entities.DTOs
             public bool success { get; set; }
             public int statusCode { get; set; }
         }
+    public class PONameList
+    {
+        public int Id { get; set; }
+        public string? PONumber { get; set; }
+    }
 }

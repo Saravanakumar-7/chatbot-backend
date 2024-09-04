@@ -613,17 +613,24 @@ namespace Tips.Purchase.Api.Repository
             return activePurchaseOrderDetails;
         }
 
-        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllActivePurchaseOrderNameList()
+        public async Task<List<PurchaseOrder>> GetAllActivePurchaseOrderNameList()
         {
-            IEnumerable<PurchaseOrderIdNameListDto> activePurchaseOrderNameList = await _tipsPurchaseDbContext.PurchaseOrders
-                                .Select(x => new PurchaseOrderIdNameListDto()
-                                {
-                                    Id = x.Id,
-                                    PONumber = x.PONumber,
-                                })
-                              .ToListAsync();
+            //List<PONameList> activePurchaseOrderNameList = await FindAll().Where(x=>x.PONumber== "020924PO-03100")
+            ////    Where(x => x.RevisionNumber
+            ////== _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))
+            //                    .Select(x => new PONameList()
+            //                    {
+            //                        Id = x.Id,
+            //                        PONumber = x.PONumber,
+            //                    })
+            //                  .ToListAsync();
+            var purchaseOrderDetails = await FindAll()
+            //    .Where(x => x.RevisionNumber
+            //== _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).OrderByDescending(x => x.Id).Select(x=>x.RevisionNumber).FirstOrDefault())
+            .OrderByDescending(on => on.Id).ToListAsync();
 
-            return activePurchaseOrderNameList;
+
+            return purchaseOrderDetails;
         }
 
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPurchaseOrderNameList()
@@ -1506,7 +1513,7 @@ namespace Tips.Purchase.Api.Repository
             PoStatus[] status = { PoStatus.Open, PoStatus.PartiallyClosed };
 
             IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
-                                     .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.ProcurementType == "Service"&&
+                                     .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.ProcurementType == "Service" &&
                                      (
                                         (x.ApprovalCount == 4 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == true) ||
                                         (x.ApprovalCount == 2 && x.POApprovalI == true && x.POApprovalII == true)
@@ -1619,7 +1626,7 @@ namespace Tips.Purchase.Api.Repository
 
             return poproject;
         }
-       
+
 
         public async Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
                                                                                                        , string? Approval, string? RecordType, int Offset, int Limit)
@@ -1645,7 +1652,7 @@ namespace Tips.Purchase.Api.Repository
         {
             var poproject = await _tipsPurchaseDbContext.Set<PoProjectSPReport>()
                     .FromSqlInterpolated($"CALL poproject_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval},{ProjectNumber},{RecordType})")
-                    //.AsNoTracking()
+                    .AsNoTracking()
                     .ToListAsync();
             //var stopwatch = Stopwatch.StartNew();
             //var poproject = await _tipsPurchaseDbContext.Set<PoProjectSPReport>()
@@ -1936,11 +1943,11 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<List<OpenPoQuantityDto>> GetListOfOpenPOQtyByItemNoListByProjectNo(string projectNo, List<string> itemNumberList)
         {
-            var poStatus = new List<PoStatus> { PoStatus.Open, PoStatus.PartiallyClosed ,PoStatus.Closed};
+            var poStatus = new List<PoStatus> { PoStatus.Open, PoStatus.PartiallyClosed, PoStatus.Closed };
 
             var poItemIds = await _tipsPurchaseDbContext.PoAddProjects
                 .Where(x => x.ProjectNumber == projectNo)
-                .Select(x=>x.POItemDetailId)
+                .Select(x => x.POItemDetailId)
                  .ToListAsync();
 
             List<OpenPoQuantityDto> openPoQtyList = await _tipsPurchaseDbContext.PoItems

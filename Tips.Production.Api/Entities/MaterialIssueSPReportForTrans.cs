@@ -13,14 +13,11 @@
         public string? latestMPN { get; set; }
         public decimal? BOMversion { get; set; }
         public string? SalesOrderNumber { get; set; }
-        public decimal? SalesorderQnty { get; set; }
         public string? Description { get; set; }
         public string? UOM { get; set; }
         public decimal? RequiredQty { get; set; }
-        public decimal? AvailableQnty { get; set; }
         public decimal? IssuedQty { get; set; }
         public decimal? BalanceIssueQnty { get; set; }
         public string? lotnumber { get; set; }
-        public string? Remarks { get; set; }
     }
 }
