@@ -2959,8 +2959,7 @@ namespace Tips.Purchase.Api.Controllers
             {
                 var activePONameList = await _repository.GetAllActivePurchaseOrderNameList();
 
-                var result = _mapper.Map<List<PONameList>>(activePONameList);
-                serviceResponse.Data = result;
+                serviceResponse.Data = activePONameList;
                 serviceResponse.Message = "Returned all ActivePurchaseOrderNameList";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -4377,26 +4376,27 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoConfirmationSPReportwithParam([FromBody] PurchaseOrderConfor_ReportGetDto paramsforPurchase)
+        public async Task<IActionResult> GetPoConfirmationSPReportwithParam([FromBody] PurchaseOrderLimitSPReportDto paramsforPurchase)
         {
             ServiceResponse<IEnumerable<poconfirmation_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_Dto>>();
             try
             {
-                var result = await _repository.GetPoConfirmationSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
-                                                                                    paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.RecordType);
+                var result = await _repository.GetPoConfirmationLimitSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
+                                                                                    paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.RecordType,
+                                                                                    paramsforPurchase.Offset, paramsforPurchase.Limit);
                 if (result == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $" PoConfirmationSPReportwithParam hasn't been found.";
+                    serviceResponse.Message = $" PoConfirmationLimitSPReportwithParam hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"PoConfirmationSPReportwithParam hasn't been found in db.");
+                    _logger.LogError($"PoConfirmationLimitSPReportwithParam hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned  PoConfirmationSPReportwithParam Details";
+                    serviceResponse.Message = "Returned  PoConfirmationLimitSPReportwithParam Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -4407,7 +4407,7 @@ namespace Tips.Purchase.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside PurchaseOrderReportswithPara action";
+                serviceResponse.Message = $"Something went wrong inside GetPoConfirmationSPReportwithParam action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -4415,26 +4415,27 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoConfirmationSPReportwithDate([FromBody] PurchaseOrderDate_ReportGetDto purchaseOrderDate_ReportGetDto)
+        public async Task<IActionResult> GetPoConfirmationSPReportwithDate([FromBody] PurchaseOrderDateLimitSPReportDto purchaseOrderDate_ReportGetDto)
         {
             ServiceResponse<IEnumerable<poconfirmation_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_Dto>>();
             try
             {
-                var result = await _repository.GetPoConfirmationSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
-                                                                                                purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType);
+                var result = await _repository.GetPoConfirmationLimitSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
+                                                                                                purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType,
+                                                                                                purchaseOrderDate_ReportGetDto.Offset, purchaseOrderDate_ReportGetDto.Limit);
                 if (result == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $" PoConfirmationSPReportswithDate hasn't been found.";
+                    serviceResponse.Message = $" PoConfirmationLimitSPReportswithDate hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"PoConfirmationSPReportswithDate hasn't been found in db.");
+                    _logger.LogError($"PoConfirmationLimitSPReportswithDate hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned  PoConfirmationSPReportswithDate Details";
+                    serviceResponse.Message = "Returned  PoConfirmationLimitSPReportswithDate Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -4639,26 +4640,27 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoDeliverySchedulewithParam([FromBody] PurchaseOrderConfor_ReportGetDto paramsforPurchase)
+        public async Task<IActionResult> GetPoDeliverySchedulewithParam([FromBody] PurchaseOrderLimitSPReportDto paramsforPurchase)
         {
             ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>>();
             try
             {
-                var result = await _repository.GetPoDeliverySchedulewithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
-                                                                                                paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.RecordType);
+                var result = await _repository.GetPoDeliveryScheduleLimitwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
+                                                                                                paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.RecordType,
+                                                                                                 paramsforPurchase.Offset, paramsforPurchase.Limit);
                 if (result == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $" PoDeliveryScheduleSPReportwithParam hasn't been found.";
+                    serviceResponse.Message = $" PoDeliveryScheduleLimitSPReportwithParam hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"PoDeliveryScheduleSPReportwithParam hasn't been found in db.");
+                    _logger.LogError($"PoDeliveryScheduleLimitSPReportwithParam hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned  PoDeliveryScheduleSPReportwithParam Details";
+                    serviceResponse.Message = "Returned  PoDeliveryScheduleLimitSPReportwithParam Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -4677,26 +4679,27 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoDeliveryScheduleSPReportwithDate([FromBody] PurchaseOrderDate_ReportGetDto purchaseOrderDate_ReportGetDto)
+        public async Task<IActionResult> GetPoDeliveryScheduleSPReportwithDate([FromBody] PurchaseOrderDateLimitSPReportDto purchaseOrderDate_ReportGetDto)
         {
             ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>>();
             try
             {
-                var result = await _repository.GetPoDeliveryScheduleSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
-                                                                                                purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType);
+                var result = await _repository.GetPoDeliveryScheduleLimitSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
+                                                                                                purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType,
+                                                                                                purchaseOrderDate_ReportGetDto.Offset, purchaseOrderDate_ReportGetDto.Limit);
                 if (result == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $" PoDeliveryScheduleSPReportswithDate hasn't been found.";
+                    serviceResponse.Message = $" PoDeliveryScheduleLimitSPReportswithDate hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"PoDeliveryScheduleSPReportswithDate hasn't been found in db.");
+                    _logger.LogError($"PoDeliveryScheduleLimitSPReportswithDate hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned  PoDeliveryScheduleSPReportswithDate Details";
+                    serviceResponse.Message = "Returned  PoDeliveryScheduleLimitSPReportswithDate Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -4899,27 +4902,34 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoProjectSPReportwithParam([FromBody] PurchaseOrder_ReportGetDto paramsforPurchase)
+        public async Task<IActionResult> GetPoProjectSPReportwithParam([FromQuery] PagingParameter pagingParameter, [FromBody] PurchaseOrderProLimitSPReportDto paramsforPurchase)
         {
             ServiceResponse<IEnumerable<PoProjectSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PoProjectSPReport>>();
             try
             {
-                var result = await _repository.GetPoProjectSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
+                var result = await _repository.GetPoProjectLimitSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
                                                                                         paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.ProjectNumber,
-                                                                                        paramsforPurchase.RecordType);
+                                                                                        paramsforPurchase.RecordType, paramsforPurchase.Offset, paramsforPurchase.Limit);
                 if (result == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $" PoProjectSPReportwithParam hasn't been found.";
+                    serviceResponse.Message = $" PoProjectLimitSPReportwithParam hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"PoProjectSPReportwithParam hasn't been found in db.");
+                    _logger.LogError($"PoProjectLimitSPReportwithParam hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
+                    var metadata = new
+                    {
+                        pagingParameter.PageSize,
+                        CurrentPage = pagingParameter.PageNumber
+                    };
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned  GetPoProjectSPReportwithParam Details";
+                    serviceResponse.Message = "Returned  GetPoProjectLimitSPReportwithParam Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -4938,26 +4948,27 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoProjectSPReportwithDate(PurchaseOrderDate_ReportGetDto purchaseOrderDate_ReportGetDto)
+        public async Task<IActionResult> GetPoProjectSPReportwithDate(PurchaseOrderDateLimitSPReportDto purchaseOrderDate_ReportGetDto)
         {
             ServiceResponse<IEnumerable<PoProjectSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PoProjectSPReport>>();
             try
             {
-                var result = await _repository.GetPoProjectSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
-                                                                                                purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType);
+                var result = await _repository.GetPoProjectLimitSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
+                                                                                                purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType,
+                                                                                                purchaseOrderDate_ReportGetDto.Offset, purchaseOrderDate_ReportGetDto.Limit);
                 if (result == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $" PoProjectSPReportswithDate hasn't been found.";
+                    serviceResponse.Message = $" PoProjectLimitSPReportswithDate hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"PoProjectSPReportswithDate hasn't been found in db.");
+                    _logger.LogError($"PoProjectlimitSPReportswithDate hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned  PoProjectSPReportwithDate Details";
+                    serviceResponse.Message = "Returned  PoProjectLimitSPReportwithDate Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);

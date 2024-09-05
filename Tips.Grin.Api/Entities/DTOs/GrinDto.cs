@@ -58,7 +58,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? BECurrencyValue { get; set; }
         public string? GrinDocuments { get; set; }
-
+        public bool TallyStatus { get; set; } = false;
         //public string? GrinDocuments { get; set; }
         public string? GateEntryNo { get; set; }
         public string Unit { get; set; }
@@ -126,6 +126,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? BECurrencyValue { get; set; }
         public string? GateEntryNo { get; set; }
         public string? GrinDocuments { get; set; }
+        public bool TallyStatus { get; set; } = false;
 
         //public string? GrinDocuments { get; set; }
 
@@ -184,6 +185,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? GrinDocuments { get; set; }
         public string? GateEntryNo { get; set; }
         public decimal? TotalInvoiceValue { get; set; }
+        public bool TallyStatus { get; set; } = false;
 
         //public string? GrinDocuments { get; set; }
 
@@ -211,7 +213,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         public List<string>? VendorId { get; set; }
         public List<string>? InvoiceNumber { get; set; }
     }
-
     public class GrinInventoryDto
     {
         public string PartNumber { get; set; }
@@ -436,7 +437,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string template { get; set; }
         public string subject { get; set; }
     }
-
     public class EmailTemplateDto
     {
         public Data data { get; set; }

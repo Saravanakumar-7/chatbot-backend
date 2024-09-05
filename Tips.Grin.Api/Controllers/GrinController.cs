@@ -2692,6 +2692,33 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPut]
+        public async Task<IActionResult> UpdateGrinTallyStatus(int Id, bool TallyStatus)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                var getGrindetails = await _repository.GetGrinById(Id);
+                getGrindetails.TallyStatus = TallyStatus;
+                await _repository.UpdateGrin_ForTally(getGrindetails);
+                _repository.SaveAsync();
+                _logger.LogInfo($"Successfully Updated the TallyStatus of Grin Id {Id} and is set to {TallyStatus} from the UpdateGrinTallyStatus API");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Successfully Updated the TallyStatus of Grin Id {Id} and is set to {TallyStatus}";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return StatusCode(200, serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside UpdateGrinTallyStatus action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
     }
 }

@@ -21,6 +21,7 @@ namespace Tips.Grin.Api.Contracts
         Task<int?> GetGrinNumberAutoIncrementCount(DateTime date);
         Task<Grins> GetGrinByGrinNo(string grinNumber);
         Task<string> UpdateGrin(Grins grins);
+        Task<string> UpdateGrin_ForTally(Grins grins);
         Task<string> DeleteGrin(Grins grins);
         Task<IEnumerable<Grins>> GetAllGrinsWithItems(GrinSearchDto grinSearchDto);
         Task<IEnumerable<Grins>> SearchGrins([FromQuery] SearchParames searchParames);

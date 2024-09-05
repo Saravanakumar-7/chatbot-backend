@@ -101,6 +101,18 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? ProjectNumber { get; set; }
         public string? RecordType { get; set; }
     }
+    public class PurchaseOrderProLimitSPReportDto
+    {
+        public string? ItemNumber { get; set; }
+        public string? PONumbers { get; set; }
+        public string? VendorName { get; set; }
+        public string? POStatus { get; set; }
+        public string? Approval { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? RecordType { get; set; }
+        public int? Offset { get; set; }
+        public int? Limit { get; set; }
+    }
     public class PurchaseOrderConfor_ReportGetDto
     {
         public string? ItemNumber { get; set; }
@@ -110,11 +122,31 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? Approval { get; set; }
         public string? RecordType { get; set; }
     }
+    public class PurchaseOrderLimitSPReportDto
+    {
+        public string? ItemNumber { get; set; }
+        public string? PONumbers { get; set; }
+        public string? VendorName { get; set; }
+        public string? POStatus { get; set; }
+        public string? Approval { get; set; }
+        public string? RecordType { get; set; }
+        public int? Offset { get; set; }
+        public int? Limit { get; set; }
+    }
     public class PurchaseOrderDate_ReportGetDto
     {
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
         public string? Approval { get; set; }
         public string? RecordType { get; set; }
+    }
+    public class PurchaseOrderDateLimitSPReportDto
+    {
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+        public string? Approval { get; set; }
+        public string? RecordType { get; set; }
+        public int? Offset { get; set; }
+        public int? Limit { get; set; }
     }
 }

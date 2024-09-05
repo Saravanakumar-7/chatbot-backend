@@ -613,24 +613,20 @@ namespace Tips.Purchase.Api.Repository
             return activePurchaseOrderDetails;
         }
 
-        public async Task<List<PurchaseOrder>> GetAllActivePurchaseOrderNameList()
+        public async Task<List<PONameList>> GetAllActivePurchaseOrderNameList()
         {
-            //List<PONameList> activePurchaseOrderNameList = await FindAll().Where(x=>x.PONumber== "020924PO-03100")
-            ////    Where(x => x.RevisionNumber
-            ////== _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).Max(r => r.RevisionNumber))
-            //                    .Select(x => new PONameList()
-            //                    {
-            //                        Id = x.Id,
-            //                        PONumber = x.PONumber,
-            //                    })
-            //                  .ToListAsync();
-            var purchaseOrderDetails = await FindAll()
-            //    .Where(x => x.RevisionNumber
-            //== _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == x.PONumber).OrderByDescending(x => x.Id).Select(x=>x.RevisionNumber).FirstOrDefault())
-            .OrderByDescending(on => on.Id).ToListAsync();
+            List<PONameList> activePurchaseOrderNameList = await _tipsPurchaseDbContext.PurchaseOrders        
+            .GroupBy(x => x.PONumber)
+            .Select(g => new PONameList()
+            {
+                Id = g.OrderByDescending(x => x.RevisionNumber).FirstOrDefault().Id,
+                PONumber = g.Key,
+            })
+            .ToListAsync();
+
+            return activePurchaseOrderNameList;
 
 
-            return purchaseOrderDetails;
         }
 
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPurchaseOrderNameList()
@@ -1598,6 +1594,27 @@ namespace Tips.Purchase.Api.Repository
             return PagedList<Tras_PO_ConfirmationDate>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
+
+        public async Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
+                                                                                                       , string? Approval, string? RecordType)
+        {
+            var poconfirmmation = await _tipsPurchaseDbContext.Set<poconfirmation_report_Dto>()
+                    .FromSqlInterpolated($"CALL poconfirmation_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval},{RecordType})")
+                    .AsNoTracking()
+                    .ToListAsync();
+
+            return poconfirmmation;
+        }
+        public async Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationLimitSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
+                                                                                                      , string? Approval, string? RecordType, int? Offset, int? Limit)
+        {
+            var poconfirmmation = await _tipsPurchaseDbContext.Set<poconfirmation_report_Dto>()
+                    .FromSqlInterpolated($"CALL poconfirmation_report_with_parameters_with_pagination({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval},{RecordType},{Offset},{Limit})")
+                    .AsNoTracking()
+                    .ToListAsync();
+
+            return poconfirmmation;
+        }
         public async Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType)
         {
             var poconfirmmation = await _tipsPurchaseDbContext.Set<poconfirmation_report_Dto>()
@@ -1606,34 +1623,11 @@ namespace Tips.Purchase.Api.Repository
 
             return poconfirmmation;
         }
-        public async Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliveryScheduleSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType)
-        {
-            var podeliveryschedule = await _tipsPurchaseDbContext.Set<podeliveryschedule_report_Dto>()
-                    .FromSqlInterpolated($"CALL podeliveryschedule_report_withdate({FromDate},{ToDate},{Approval},{RecordType})")
-                    .ToListAsync();
-
-            return podeliveryschedule;
-        }
-        public async Task<IEnumerable<PoProjectSPReport>> GetPoProjectSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType)
-        {
-            //var poproject = await _tipsPurchaseDbContext.Set<poproject_report_Dto>()
-            //        .FromSqlInterpolated($"CALL poproject_report_withdate({FromDate},{ToDate},{Approval},{RecordType})")
-            //        .ToListAsync();
-            var poproject = await _tipsPurchaseDbContext.Set<PoProjectSPReport>()
-                            .FromSqlInterpolated($"CALL poproject_report_withdate({FromDate},{ToDate},{Approval},{RecordType})")
-                            .AsNoTracking()
-                            .ToListAsync();
-
-            return poproject;
-        }
-
-
-        public async Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
-                                                                                                       , string? Approval, string? RecordType)
+        public async Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationLimitSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, 
+                                                                                                                            string? RecordType, int? Offset, int? Limit)
         {
             var poconfirmmation = await _tipsPurchaseDbContext.Set<poconfirmation_report_Dto>()
-                    .FromSqlInterpolated($"CALL poconfirmation_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval},{RecordType})")
-                    .AsNoTracking()
+                    .FromSqlInterpolated($"CALL poconfirmation_report_withdate_with_pagination({FromDate},{ToDate},{Approval},{RecordType},{Offset},{Limit})")
                     .ToListAsync();
 
             return poconfirmmation;
@@ -1648,6 +1642,32 @@ namespace Tips.Purchase.Api.Repository
 
             return podeliveryschedule;
         }
+        public async Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliveryScheduleLimitwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
+                                                                                                       , string? Approval, string? RecordType, int? Offset, int? Limit)
+        {
+            var podeliveryschedule = await _tipsPurchaseDbContext.Set<podeliveryschedule_report_Dto>()
+                    .FromSqlInterpolated($"CALL podeliveryschedule_report_with_parameters_with_pagination({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval},{RecordType},{Offset},{Limit})")
+                    .ToListAsync();
+
+            return podeliveryschedule;
+        }
+        public async Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliveryScheduleSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType)
+        {
+            var podeliveryschedule = await _tipsPurchaseDbContext.Set<podeliveryschedule_report_Dto>()
+                    .FromSqlInterpolated($"CALL podeliveryschedule_report_withdate({FromDate},{ToDate},{Approval},{RecordType})")
+                    .ToListAsync();
+
+            return podeliveryschedule;
+        }
+        public async Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliveryScheduleLimitSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, 
+                                                                                                            string? RecordType, int? Offset, int? Limit)
+        {
+            var podeliveryschedule = await _tipsPurchaseDbContext.Set<podeliveryschedule_report_Dto>()
+                    .FromSqlInterpolated($"CALL podeliveryschedule_report_withdate_with_pagination({FromDate},{ToDate},{Approval},{RecordType},{Offset},{Limit})")
+                    .ToListAsync();
+
+            return podeliveryschedule;
+        }
         public async Task<IEnumerable<PoProjectSPReport>> GetPoProjectSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
                                                                                                        , string? Approval, string? ProjectNumber, string? RecordType)
         {
@@ -1655,12 +1675,36 @@ namespace Tips.Purchase.Api.Repository
                     .FromSqlInterpolated($"CALL poproject_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval},{ProjectNumber},{RecordType})")
                     .AsNoTracking()
                     .ToListAsync();
-            //var stopwatch = Stopwatch.StartNew();
-            //var poproject = await _tipsPurchaseDbContext.Set<PoProjectSPReport>()
-            //    .FromSqlInterpolated($"CALL poproject_report_with_parameters({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval},{ProjectNumber},{RecordType})")
-            //    .ToListAsync();
-            //stopwatch.Stop();
-            //_logger.LogError($"Stored Procedure executed in {stopwatch.ElapsedMilliseconds} ms.");
+
+            return poproject;
+        }
+        public async Task<IEnumerable<PoProjectSPReport>> GetPoProjectLimitSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
+                                                                                                       , string? Approval, string? ProjectNumber, string? RecordType
+                                                                                                , int? Offset, int? Limit)
+        {
+            var poproject = await _tipsPurchaseDbContext.Set<PoProjectSPReport>()
+                    .FromSqlInterpolated($"CALL poproject_report_with_parameters_with_pagination({ItemNumber},{PONumber},{VendorName},{POStatus},{Approval},{ProjectNumber},{RecordType},{Offset},{Limit})")
+                    .AsNoTracking()
+                    .ToListAsync();
+
+            return poproject;
+        }
+        public async Task<IEnumerable<PoProjectSPReport>> GetPoProjectSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType)
+        {
+            var poproject = await _tipsPurchaseDbContext.Set<PoProjectSPReport>()
+                    .FromSqlInterpolated($"CALL poproject_report_withdate({FromDate},{ToDate},{Approval},{RecordType})")
+                     .AsNoTracking()
+                    .ToListAsync();
+
+            return poproject;
+        }
+        public async Task<IEnumerable<PoProjectSPReport>> GetPoProjectLimitSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType
+                                                                                                    , int? Offset, int? Limit)
+        {
+            var poproject = await _tipsPurchaseDbContext.Set<PoProjectSPReport>()
+                            .FromSqlInterpolated($"CALL poproject_report_withdate_with_pagination({FromDate},{ToDate},{Approval},{RecordType},{Offset},{Limit})")
+                            .AsNoTracking()
+                            .ToListAsync();
 
             return poproject;
         }

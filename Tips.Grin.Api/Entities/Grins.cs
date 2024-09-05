@@ -70,7 +70,7 @@ namespace Tips.Grin.Api.Entities
 
         public string? GrinDocuments { get; set; }
 
-
+        public bool TallyStatus { get; set; } = false;
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }

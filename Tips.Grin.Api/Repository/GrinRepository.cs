@@ -442,7 +442,12 @@ namespace Tips.Grin.Api.Repository
             string result = $"Grin Detail {grins.Id} is updated successfully!";
             return result;
         }
-
+        public async Task<string> UpdateGrin_ForTally(Grins grins)
+        {
+            Update(grins);
+            string result = $"Grin Detail {grins.Id} is updated successfully!";
+            return result;
+        }
 
 
     }

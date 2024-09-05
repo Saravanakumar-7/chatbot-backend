@@ -1098,27 +1098,20 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(6).SetCellValue("Type Of Solution");
                 headerRow.CreateCell(7).SetCellValue("Product Type");
                 headerRow.CreateCell(8).SetCellValue("Material Group");
-                headerRow.CreateCell(9).SetCellValue("Sales Person");
-                headerRow.CreateCell(10).SetCellValue("Quote Created On");
-                headerRow.CreateCell(11).SetCellValue("Quote Sent On");
-                headerRow.CreateCell(12).SetCellValue("Room Name");
-                headerRow.CreateCell(13).SetCellValue("KPN");
-                headerRow.CreateCell(14).SetCellValue("KPN Description");
-                headerRow.CreateCell(15).SetCellValue("UOC");
-                headerRow.CreateCell(16).SetCellValue("UOM");
-                headerRow.CreateCell(17).SetCellValue("Price List");
-                headerRow.CreateCell(18).SetCellValue("Unit Price");
-                headerRow.CreateCell(19).SetCellValue("Basic Amount");
-                headerRow.CreateCell(20).SetCellValue("Discount Type");
-                headerRow.CreateCell(21).SetCellValue("SGST");
-                headerRow.CreateCell(22).SetCellValue("CGST");
-                headerRow.CreateCell(23).SetCellValue("IGST");
-                headerRow.CreateCell(24).SetCellValue("UTGST");
-                headerRow.CreateCell(25).SetCellValue("Total Final Amount");
-                headerRow.CreateCell(26).SetCellValue("Order Qty");
-                headerRow.CreateCell(27).SetCellValue("Dispatch Qty");
-                headerRow.CreateCell(28).SetCellValue("Balance Qty");
-                headerRow.CreateCell(29).SetCellValue("MSL");
+                headerRow.CreateCell(9).SetCellValue("Quote Created On");
+                headerRow.CreateCell(10).SetCellValue("Quote Sent On");
+                headerRow.CreateCell(11).SetCellValue("Room Name");
+                headerRow.CreateCell(12).SetCellValue("KPN");
+                headerRow.CreateCell(13).SetCellValue("KPN Description");
+                headerRow.CreateCell(14).SetCellValue("UOC");
+                headerRow.CreateCell(15).SetCellValue("UOM");
+                headerRow.CreateCell(16).SetCellValue("Price List");
+                headerRow.CreateCell(17).SetCellValue("Unit Price");
+                headerRow.CreateCell(18).SetCellValue("Basic Amount");
+                headerRow.CreateCell(19).SetCellValue("Discount Type");
+                headerRow.CreateCell(20).SetCellValue("Total Final Amount");
+                headerRow.CreateCell(21).SetCellValue("TotalAdditionalCharges");
+                headerRow.CreateCell(22).SetCellValue("OrderQty");
 
 
                 // Populate data rows
@@ -1135,27 +1128,20 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(6).SetCellValue(item.TypeOfSolution ?? "");
                     row.CreateCell(7).SetCellValue(item.ProductType ?? "");
                     row.CreateCell(8).SetCellValue(item.MaterialGroup ?? "");
-                    row.CreateCell(9).SetCellValue(item.SalesPerson ?? "");
-                    row.CreateCell(10).SetCellValue(item.QuoteCreatedOn.HasValue ? item.QuoteCreatedOn.Value.ToString("MM/dd/yyyy") : "");
-                    row.CreateCell(11).SetCellValue(item.QuoteSentOn.HasValue ? item.QuoteSentOn.Value.ToString("MM/dd/yyyy") : "");
-                    row.CreateCell(12).SetCellValue(item.RoomName ?? "");
-                    row.CreateCell(13).SetCellValue(item.KPN ?? "");
-                    row.CreateCell(14).SetCellValue(item.KPNDescription ?? "");
-                    row.CreateCell(15).SetCellValue(item.UOC ?? "");
-                    row.CreateCell(16).SetCellValue(item.Uom ?? "");
-                    row.CreateCell(17).SetCellValue(item.PriceList ?? "");
-                    row.CreateCell(18).SetCellValue(item.UnitPrice.HasValue ? Convert.ToDouble(item.UnitPrice.Value) : 0);
-                    row.CreateCell(19).SetCellValue(item.BasicAmount.HasValue ? Convert.ToDouble(item.BasicAmount.Value) : 0);
-                    row.CreateCell(20).SetCellValue(item.DiscountType ?? "");
-                    row.CreateCell(21).SetCellValue(item.SGST.HasValue ? Convert.ToDouble(item.SGST.Value) : 0);
-                    row.CreateCell(22).SetCellValue(item.CGST.HasValue ? Convert.ToDouble(item.CGST.Value) : 0);
-                    row.CreateCell(23).SetCellValue(item.IGST.HasValue ? Convert.ToDouble(item.IGST.Value) : 0);
-                    row.CreateCell(24).SetCellValue(item.UTGST.HasValue ? Convert.ToDouble(item.UTGST.Value) : 0);
-                    row.CreateCell(25).SetCellValue(item.TotalFinalAmount.HasValue ? Convert.ToDouble(item.TotalFinalAmount.Value) : 0);
-                    row.CreateCell(26).SetCellValue(item.OrderQty.HasValue ? Convert.ToDouble(item.OrderQty.Value) : 0);
-                    row.CreateCell(27).SetCellValue(item.DispatchQty.HasValue ? Convert.ToDouble(item.DispatchQty.Value) : 0);
-                    row.CreateCell(28).SetCellValue(item.BalanceQty.HasValue ? Convert.ToDouble(item.BalanceQty.Value) : 0);
-                    row.CreateCell(29).SetCellValue(item.MSL.HasValue ? Convert.ToDouble(item.MSL.Value) : 0);
+                    row.CreateCell(9).SetCellValue(item.QuoteCreatedOn.HasValue ? item.QuoteCreatedOn.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(10).SetCellValue(item.QuoteSentOn.HasValue ? item.QuoteSentOn.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(11).SetCellValue(item.RoomName ?? "");
+                    row.CreateCell(12).SetCellValue(item.KPN ?? "");
+                    row.CreateCell(13).SetCellValue(item.KPNDescription ?? "");
+                    row.CreateCell(14).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(15).SetCellValue(item.Uom ?? "");
+                    row.CreateCell(16).SetCellValue(item.PriceList ?? "");
+                    row.CreateCell(17).SetCellValue(item.UnitPrice.HasValue ? Convert.ToDouble(item.UnitPrice.Value) : 0);
+                    row.CreateCell(18).SetCellValue(item.BasicAmount.HasValue ? Convert.ToDouble(item.BasicAmount.Value) : 0);
+                    row.CreateCell(19).SetCellValue(item.DiscountType ?? "");
+                    row.CreateCell(20).SetCellValue(item.TotalFinalAmount.HasValue ? Convert.ToDouble(item.TotalFinalAmount.Value) : 0);
+                    row.CreateCell(21).SetCellValue(item.TotalAdditionalCharges.HasValue ? Convert.ToDouble(item.TotalAdditionalCharges.Value) : 0);
+                    row.CreateCell(22).SetCellValue(item.OrderQty.HasValue ? Convert.ToDouble(item.OrderQty.Value) : 0);
                 }
 
 
