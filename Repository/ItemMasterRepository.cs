@@ -443,6 +443,20 @@ namespace Repository
 
             return getAllActiveItemMasterIdNoListDto;
         }
+        public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllActiveAndInActiveItemMasterIdNoList()
+        {
+            IEnumerable<ItemMasterIdNoListDto> getAllActiveItemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters
+                                .Select(c => new ItemMasterIdNoListDto()
+                                {
+                                    id = c.Id,
+                                    ItemNumber = c.ItemNumber,
+                                    Description = c.Description,
+
+                                })
+                              .ToListAsync();
+
+            return getAllActiveItemMasterIdNoListDto;
+        }
 
         public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllItemMasterIdNoList()
         {

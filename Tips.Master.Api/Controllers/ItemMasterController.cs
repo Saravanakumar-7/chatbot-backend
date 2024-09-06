@@ -1609,6 +1609,34 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetAllActiveAndInActiveItemMasterIdNoList()
+        {
+            ServiceResponse<IEnumerable<ItemMasterIdNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterIdNoListDto>>();
+            try
+            {
+                var getAllActiveItemMasters = await _repository.ItemMasterRepository.GetAllActiveAndInActiveItemMasterIdNoList();
+                //_logger.LogInfo("Returned all CustomerMaster");
+                var result = _mapper.Map<IEnumerable<ItemMasterIdNoListDto>>(getAllActiveItemMasters);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ActiveAndInActive ItemMasterIdNoList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveAndInActiveItemMasterIdNoList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        
+        [HttpGet]
         public async Task<IActionResult> GetAllItemMasterIdNoList()
         {
             ServiceResponse<IEnumerable<ItemMasterIdNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterIdNoListDto>>();
