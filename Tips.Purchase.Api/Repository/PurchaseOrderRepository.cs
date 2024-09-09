@@ -1651,6 +1651,18 @@ namespace Tips.Purchase.Api.Repository
 
             return podeliveryschedule;
         }
+        public async Task<int> GetAllPurchaseOrderCountForTrans(string? SearchTerm)
+        {
+            var result = await FindAll()
+            .Where(inv => string.IsNullOrWhiteSpace(SearchTerm)
+            || inv.PONumber == SearchTerm
+            || inv.VendorName == SearchTerm
+            || inv.VendorId == SearchTerm
+            || inv.VendorNumber == SearchTerm
+            ).CountAsync();
+
+            return result;
+        }
         public async Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliveryScheduleSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType)
         {
             var podeliveryschedule = await _tipsPurchaseDbContext.Set<podeliveryschedule_report_Dto>()

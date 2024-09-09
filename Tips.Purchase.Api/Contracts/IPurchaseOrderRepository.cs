@@ -102,6 +102,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PoProjectSPReport>> GetPoProjectLimitSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
                                                                                                        , string? Approval, string? ProjectNumber, string? RecordType
                                                                                                 , int? Offset, int? Limit);
+        Task<int> GetAllPurchaseOrderCountForTrans(string? SearchTerm);
 
 
     }

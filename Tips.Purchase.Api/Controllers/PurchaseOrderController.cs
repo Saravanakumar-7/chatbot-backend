@@ -4376,7 +4376,7 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoConfirmationSPReportwithParam([FromBody] PurchaseOrderLimitSPReportDto paramsforPurchase)
+        public async Task<IActionResult> GetPoConfirmationSPReportwithParam([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderLimitSPReportDto paramsforPurchase)
         {
             ServiceResponse<IEnumerable<poconfirmation_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_Dto>>();
             try
@@ -4384,6 +4384,9 @@ namespace Tips.Purchase.Api.Controllers
                 var result = await _repository.GetPoConfirmationLimitSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
                                                                                     paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.RecordType,
                                                                                     paramsforPurchase.Offset, paramsforPurchase.Limit);
+
+                var TotalCount = await _repository.GetAllPurchaseOrderCountForTrans(SearchTerm);
+
                 if (result == null)
                 {
                     serviceResponse.Data = null;
@@ -4395,6 +4398,14 @@ namespace Tips.Purchase.Api.Controllers
                 }
                 else
                 {
+                    var metadata = new
+                    {
+                        TotalCount,
+                        pagingParameter.PageSize,
+                        CurrentPage = pagingParameter.PageNumber
+                    };
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned  PoConfirmationLimitSPReportwithParam Details";
                     serviceResponse.Success = true;
@@ -4415,7 +4426,7 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoConfirmationSPReportwithDate([FromBody] PurchaseOrderDateLimitSPReportDto purchaseOrderDate_ReportGetDto)
+        public async Task<IActionResult> GetPoConfirmationSPReportwithDate([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderDateLimitSPReportDto purchaseOrderDate_ReportGetDto)
         {
             ServiceResponse<IEnumerable<poconfirmation_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_Dto>>();
             try
@@ -4423,6 +4434,8 @@ namespace Tips.Purchase.Api.Controllers
                 var result = await _repository.GetPoConfirmationLimitSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
                                                                                                 purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType,
                                                                                                 purchaseOrderDate_ReportGetDto.Offset, purchaseOrderDate_ReportGetDto.Limit);
+
+                var TotalCount = await _repository.GetAllPurchaseOrderCountForTrans(SearchTerm);
                 if (result == null)
                 {
                     serviceResponse.Data = null;
@@ -4434,6 +4447,14 @@ namespace Tips.Purchase.Api.Controllers
                 }
                 else
                 {
+                    var metadata = new
+                    {
+                        TotalCount,
+                        pagingParameter.PageSize,
+                        CurrentPage = pagingParameter.PageNumber
+                    };
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned  PoConfirmationLimitSPReportswithDate Details";
                     serviceResponse.Success = true;
@@ -4640,7 +4661,7 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoDeliverySchedulewithParam([FromBody] PurchaseOrderLimitSPReportDto paramsforPurchase)
+        public async Task<IActionResult> GetPoDeliverySchedulewithParam([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderLimitSPReportDto paramsforPurchase)
         {
             ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>>();
             try
@@ -4648,6 +4669,9 @@ namespace Tips.Purchase.Api.Controllers
                 var result = await _repository.GetPoDeliveryScheduleLimitwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
                                                                                                 paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.RecordType,
                                                                                                  paramsforPurchase.Offset, paramsforPurchase.Limit);
+
+                var TotalCount = await _repository.GetAllPurchaseOrderCountForTrans(SearchTerm);
+
                 if (result == null)
                 {
                     serviceResponse.Data = null;
@@ -4659,6 +4683,14 @@ namespace Tips.Purchase.Api.Controllers
                 }
                 else
                 {
+                    var metadata = new
+                    {
+                        TotalCount,
+                        pagingParameter.PageSize,
+                        CurrentPage = pagingParameter.PageNumber
+                    };
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned  PoDeliveryScheduleLimitSPReportwithParam Details";
                     serviceResponse.Success = true;
@@ -4679,7 +4711,7 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoDeliveryScheduleSPReportwithDate([FromBody] PurchaseOrderDateLimitSPReportDto purchaseOrderDate_ReportGetDto)
+        public async Task<IActionResult> GetPoDeliveryScheduleSPReportwithDate([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderDateLimitSPReportDto purchaseOrderDate_ReportGetDto)
         {
             ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>>();
             try
@@ -4687,6 +4719,9 @@ namespace Tips.Purchase.Api.Controllers
                 var result = await _repository.GetPoDeliveryScheduleLimitSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
                                                                                                 purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType,
                                                                                                 purchaseOrderDate_ReportGetDto.Offset, purchaseOrderDate_ReportGetDto.Limit);
+
+                var TotalCount = await _repository.GetAllPurchaseOrderCountForTrans(SearchTerm);
+
                 if (result == null)
                 {
                     serviceResponse.Data = null;
@@ -4698,6 +4733,14 @@ namespace Tips.Purchase.Api.Controllers
                 }
                 else
                 {
+                    var metadata = new
+                    {
+                        TotalCount,
+                        pagingParameter.PageSize,
+                        CurrentPage = pagingParameter.PageNumber
+                    };
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned  PoDeliveryScheduleLimitSPReportswithDate Details";
                     serviceResponse.Success = true;
@@ -4902,7 +4945,7 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoProjectSPReportwithParam([FromQuery] PagingParameter pagingParameter, [FromBody] PurchaseOrderProLimitSPReportDto paramsforPurchase)
+        public async Task<IActionResult> GetPoProjectSPReportwithParam([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderProLimitSPReportDto paramsforPurchase)
         {
             ServiceResponse<IEnumerable<PoProjectSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PoProjectSPReport>>();
             try
@@ -4910,6 +4953,9 @@ namespace Tips.Purchase.Api.Controllers
                 var result = await _repository.GetPoProjectLimitSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
                                                                                         paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.ProjectNumber,
                                                                                         paramsforPurchase.RecordType, paramsforPurchase.Offset, paramsforPurchase.Limit);
+
+                var TotalCount = await _repository.GetAllPurchaseOrderCountForTrans(SearchTerm);
+
                 if (result == null)
                 {
                     serviceResponse.Data = null;
@@ -4923,6 +4969,7 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     var metadata = new
                     {
+                        TotalCount,
                         pagingParameter.PageSize,
                         CurrentPage = pagingParameter.PageNumber
                     };
@@ -4948,7 +4995,7 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetPoProjectSPReportwithDate(PurchaseOrderDateLimitSPReportDto purchaseOrderDate_ReportGetDto)
+        public async Task<IActionResult> GetPoProjectSPReportwithDate([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderDateLimitSPReportDto purchaseOrderDate_ReportGetDto)
         {
             ServiceResponse<IEnumerable<PoProjectSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PoProjectSPReport>>();
             try
@@ -4956,6 +5003,9 @@ namespace Tips.Purchase.Api.Controllers
                 var result = await _repository.GetPoProjectLimitSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
                                                                                                 purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType,
                                                                                                 purchaseOrderDate_ReportGetDto.Offset, purchaseOrderDate_ReportGetDto.Limit);
+
+                var TotalCount = await _repository.GetAllPurchaseOrderCountForTrans(SearchTerm);
+
                 if (result == null)
                 {
                     serviceResponse.Data = null;
@@ -4967,6 +5017,14 @@ namespace Tips.Purchase.Api.Controllers
                 }
                 else
                 {
+                    var metadata = new
+                    {
+                        TotalCount,
+                        pagingParameter.PageSize,
+                        CurrentPage = pagingParameter.PageNumber
+                    };
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned  PoProjectLimitSPReportwithDate Details";
                     serviceResponse.Success = true;
