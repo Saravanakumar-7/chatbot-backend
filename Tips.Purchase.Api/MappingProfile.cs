@@ -73,9 +73,17 @@ namespace Tips.Purchase.Api
             CreateMap<POCollectionTracker, POCollectionTrackerPostDto>().ReverseMap();
             CreateMap<POCollectionTracker, POCollectionTrackerUpdateDto>().ReverseMap();
 
+            CreateMap<POCollectionTrackerForAvi, POCollectionTrackerForAviDto>().ReverseMap();
+            CreateMap<POCollectionTrackerForAvi, POCollectionTrackerForAviPostDto>().ReverseMap();
+            CreateMap<POCollectionTrackerForAvi, POCollectionTrackerForAviUpdateDto>().ReverseMap();
+
             CreateMap<POBreakDown, POBreakDownDto>().ReverseMap();
             CreateMap<POBreakDown, POBreakDownPostDto>().ReverseMap();
             CreateMap<POBreakDown, POBreakDownUpdateDto>().ReverseMap();
+
+            CreateMap<POBreakDownForAvi, POBreakDownForAviDto>().ReverseMap();
+            CreateMap<POBreakDownForAvi, POBreakDownForAviPostDto>().ReverseMap();
+            CreateMap<POBreakDownForAvi, POBreakDownForAviUpdateDto>().ReverseMap();
 
             CreateMap<PrDetails, PrDetailsDto>().ReverseMap();
             CreateMap<PrDetails, PrDetailsPostDto>().ReverseMap();
