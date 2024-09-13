@@ -15,9 +15,10 @@ namespace Tips.Production.Api.Repository
     public class ShopOrderItemRepository : RepositoryBase<ShopOrderItem>, IShopOrderItemRepository
     {
         private TipsProductionDbContext _tipsProductionDbContext;
-
-        public ShopOrderItemRepository(TipsProductionDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        private AdvitaTipsProductionDbContext _advitaTipsProductionDbContext;
+        public ShopOrderItemRepository(TipsProductionDbContext repositoryContext, AdvitaTipsProductionDbContext advitaTipsProductionDbContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext,advitaTipsProductionDbContext)
         {
+            _advitaTipsProductionDbContext= advitaTipsProductionDbContext;
             _tipsProductionDbContext = repositoryContext;
 
         }

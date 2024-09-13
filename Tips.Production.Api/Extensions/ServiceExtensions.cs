@@ -49,7 +49,9 @@ namespace Tips.Production.Api.Extensions
         {
 
             var connectionString = config["MySqlconnection:connectionString"];
+            var connectionString_1 = config["MySqlconnection:connectionString_1"];
             services.AddDbContext<TipsProductionDbContext>(o => o.UseMySQL(connectionString));
+            services.AddDbContext<AdvitaTipsProductionDbContext>(o => o.UseMySQL(connectionString_1));
         }
 
         public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices

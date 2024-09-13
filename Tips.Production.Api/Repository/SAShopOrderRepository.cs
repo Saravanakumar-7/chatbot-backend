@@ -13,13 +13,14 @@ namespace Tips.Production.Api.Repository
     public class SAShopOrderRepository : RepositoryBase<SAShopOrder>, ISAShopOrderRepository
     {
         private TipsProductionDbContext _tipsProductionDbContext;
-
+        private AdvitaTipsProductionDbContext _advitaTipsProductionDbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
 
-        public SAShopOrderRepository(TipsProductionDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        public SAShopOrderRepository(TipsProductionDbContext repositoryContext, AdvitaTipsProductionDbContext advitaTipsProductionDbContext ,IHttpContextAccessor httpContextAccessor) : base(repositoryContext,advitaTipsProductionDbContext)
         {
+            _advitaTipsProductionDbContext=advitaTipsProductionDbContext;
             _tipsProductionDbContext = repositoryContext;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;

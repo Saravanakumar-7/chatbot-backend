@@ -9,7 +9,8 @@ namespace Tips.Production.Api.Contracts
         Task<T> Create(T entity);
         void Update(T entity);
         void Delete(T entity);
-
+        Task<T> CreateAdvita(T entity);
+        void SaveAdvitaAsync();
         public void SaveAsync();
 
     }

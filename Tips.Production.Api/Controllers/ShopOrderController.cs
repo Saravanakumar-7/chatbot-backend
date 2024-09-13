@@ -10,11 +10,14 @@ using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
+using MySqlX.XDevAPI;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
+using Tips.Production.Api.Repository;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 
 namespace Tips.Production.Api.Controllers
@@ -26,6 +29,7 @@ namespace Tips.Production.Api.Controllers
     {
         private IShopOrderRepository _shopOrderRepository;
         private IShopOrderItemRepository _shopOrderItemRepository;
+        private IAdvitaShopOrderDetailsRepository _advitaShopOrderDetailsRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IMaterialIssueRepository _materialIssueRepository;
@@ -35,10 +39,11 @@ namespace Tips.Production.Api.Controllers
         private readonly String _createdBy;
         private readonly String _unitname;
         private readonly IHttpClientFactory _clientFactory;
-        public ShopOrderController(IShopOrderItemRepository shopOrderItemRepository, IShopOrderRepository shopOrderRepository, IHttpContextAccessor httpContextAccessor,
+        public ShopOrderController(IShopOrderItemRepository shopOrderItemRepository, IAdvitaShopOrderDetailsRepository advitaShopOrderDetailsRepository, IShopOrderRepository shopOrderRepository, IHttpContextAccessor httpContextAccessor,
             IMaterialIssueRepository materialIssueRepository, ILoggerManager logger, IHttpClientFactory clientFactory,
             IMapper mapper, IConfiguration config, HttpClient httpClient)
         {
+            _advitaShopOrderDetailsRepository = advitaShopOrderDetailsRepository;
             _logger = logger;
             _shopOrderRepository = shopOrderRepository;
             _mapper = mapper;
@@ -634,7 +639,7 @@ namespace Tips.Production.Api.Controllers
                         ShopOrderItem shopOrderItemDetail = _mapper.Map<ShopOrderItem>(shopOrderDto[i]);
 
                         //var salesObjectResult = await _httpClient.GetAsync(string.Concat(_config["SalesOrderAPI"],
-                        //     "UpdateShopOrderQty?", "salesOrderNumber=", shopOrderDto[i].SalesOrderNumber,
+                        //     "UpdateShopOrderQty?", "salesOrderNumber=", shopOrderDto[i].CustomerName,
                         //     "projectNumber=", shopOrderDto[i].ProjectNumber,"&itemNumber=",
                         //      shopOrderDto[i].FGItemNumber, "&releaseQty=", shopOrderDto[i].ReleaseQty));
                         if (shopOrder.ItemType == PartType.FG)
@@ -656,7 +661,7 @@ namespace Tips.Production.Api.Controllers
 
                             var responses = await client1.SendAsync(request1);
 
-                            if (responses.StatusCode!=HttpStatusCode.OK)
+                            if (responses.StatusCode != HttpStatusCode.OK)
                             {
                                 _logger.LogError($"Something went wrong inside CreateShopOrder action");
                                 serviceResponse.Data = null;
@@ -711,16 +716,151 @@ namespace Tips.Production.Api.Controllers
 
                 // After Shop Order Creation Material Issue also should be created.
                 await CreateMaterialIssueDetails(shopOrder);
+                _logger.LogInfo($"ShopOrder Created");
+                //if (serverKey == "avision")
+                //{
+                //    List<string>? SalesorderList = new List<string>();
+                //    List<string>? CustomerNumber = new List<string>();
+                //    string? salesorderNos = null, CustomerName = null;
+                //    foreach (var item in shopOrder.ShopOrderItems)
+                //    {
+                //        if (salesorderNos == null)
+                //        {
+                //            salesorderNos = item.SalesOrderNumber;
+                //            SalesorderList.Add(item.SalesOrderNumber);
+                //            var client2 = _clientFactory.CreateClient();
+                //            var token2 = HttpContext.Request.Headers["Authorization"].ToString();
+                //            var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["SalesOrderAPI"],
+                //            $"GetSalesOrderDetialsBySalesOrderNumber?SalesOrderNumber={item.SalesOrderNumber}"));
+                //            request2.Headers.Add("Authorization", token2);
 
+                //            var responses2 = await client2.SendAsync(request2);
+                //            if (responses2.StatusCode != HttpStatusCode.OK) _logger.LogError($"Something went wrong inside GetSalesOrderDetialsBySalesOrderNumber");
+                //            var SalesObjectString = await responses2.Content.ReadAsStringAsync();
+                //            dynamic salesObjectData = JsonConvert.DeserializeObject(SalesObjectString);
+                //            dynamic salesObject = salesObjectData.data;
+                //            CustomerName = salesObject.customerName;
+                //            CustomerNumber.Add(CustomerName);
+                //        }
+                //        else
+                //        {
+                //            if (!SalesorderList.Contains(item.SalesOrderNumber))
+                //            {
+                //                salesorderNos = salesorderNos + "," + item.SalesOrderNumber;
+                //                SalesorderList.Add(item.SalesOrderNumber);
+                //            }
+                //            var client2 = _clientFactory.CreateClient();
+                //            var token2 = HttpContext.Request.Headers["Authorization"].ToString();
+                //            var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["SalesOrderAPI"],
+                //            $"GetSalesOrderDetialsBySalesOrderNumber?SalesOrderNumber={item.SalesOrderNumber}"));
+                //            request2.Headers.Add("Authorization", token2);
+
+                //            var responses2 = await client2.SendAsync(request2);
+                //            if (responses2.StatusCode != HttpStatusCode.OK) _logger.LogError($"Something went wrong inside GetSalesOrderDetialsBySalesOrderNumber");
+                //            var SalesObjectString = await responses2.Content.ReadAsStringAsync();
+                //            dynamic salesObjectData = JsonConvert.DeserializeObject(SalesObjectString);
+                //            dynamic salesObject = salesObjectData.data;
+                //            string Cus = salesObject.customerName;
+                //            if (!CustomerNumber.Contains(Cus))
+                //            {
+                                
+                //                CustomerName = CustomerName + "," + Cus;
+                //                CustomerNumber.Add(Cus);
+                //            }
+                           
+                //        }
+
+                //    }
+                //    AdvitaShopOrderDetails advitaShopOrderDetails = new AdvitaShopOrderDetails()
+                //    {
+                //        Shop_Order_No = shopOrder.ShopOrderNumber,
+                //        Shop_Order_Type = Enum.GetName(typeof(PartType), shopOrder.ItemType),
+                //        Sales_Order_No = salesorderNos,
+                //        Item_Number = shopOrder.ItemNumber,
+                //        Item_Description = shopOrder.Description,
+                //        Shop_Order_Release_Qty = (long)Math.Round(shopOrder.TotalSOReleaseQty),
+                //        Shop_Order_Completion_Date = shopOrder.SOCloseDate.ToString(),
+                //        Customer_Name = CustomerName,
+                //        Remarks = "Getapcs ShopOrder",
+                //        Trans_Uploaded_By_Id = 8
+                //    };
+                //var jsons3 = JsonConvert.SerializeObject(advitaShopOrderDetails);
+                //var datas3 = new StringContent(jsons3, Encoding.UTF8, "application/json");
+                //var client3 = _clientFactory.CreateClient();
+                //var token3 = HttpContext.Request.Headers["Authorization"].ToString();
+                //var request3 = new HttpRequestMessage(HttpMethod.Post, "https://demo_keus.getapcs.com:8028/api/ShopOrder/" +
+                //"CreateAdvitaShopOrderDetails")
+                //{
+                //    Content = datas3
+                //};
+                //request3.Headers.Add("Authorization", token3);
+
+                //var responses3 = await client3.SendAsync(request3);
+
+                //if (responses3.StatusCode != HttpStatusCode.Created)
+                //{
+                //    _logger.LogError($"Something went wrong inside CreateAdvitaShopOrderDetails action");
+                //    serviceResponse.Data = null;
+                //    serviceResponse.Message = $"Something went wrong in CreateAdvitaShopOrderDetails update";
+                //    serviceResponse.Success = false;
+                //    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                //    return StatusCode(500, serviceResponse);
+                //}
+                //}
+                //await _advitaShopOrderDetailsRepository.CreateAdvitaShopOrderDetails(advitaShopOrderDetails);
+                //_advitaShopOrderDetailsRepository.SaveAdvitaAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ShopOrder Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Created("GetShopOrderItemById", serviceResponse);
+                return Created("CreateShopOrder", serviceResponse);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside CreateShopOrder action: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"{ex.Message},{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateAdvitaShopOrderDetails([FromBody] AdvitaShopOrderDetails advitaShopOrderDetails)
+        {
+            ServiceResponse<AdvitaShopOrderDetails> serviceResponse = new ServiceResponse<AdvitaShopOrderDetails>();
+
+            try
+            {
+                if (advitaShopOrderDetails == null)
+                {
+                    _logger.LogError("CreateAdvitaShopOrderDetails object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ShopOrder object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid CreateAdvitaShopOrderDetails object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid CreateAdvitaShopOrderDetails object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                await _advitaShopOrderDetailsRepository.CreateAdvitaShopOrderDetails(advitaShopOrderDetails);
+                _advitaShopOrderDetailsRepository.SaveAdvitaAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "ShopOrder Successfully Created in Advita";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("CreateAdvitaShopOrderDetails:", serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateAdvitaShopOrderDetails action: {ex.Message},{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"{ex.Message},{ex.InnerException}";
                 serviceResponse.Success = false;
@@ -927,6 +1067,7 @@ namespace Tips.Production.Api.Controllers
         //        return StatusCode(500, serviceResponse);
         //    }
         //  }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateShopOrder(int id, [FromBody] ShopOrderUpdateDto ShopOrderDtoUpdate)
         {

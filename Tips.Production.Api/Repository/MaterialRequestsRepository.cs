@@ -13,12 +13,14 @@ namespace Tips.Production.Api.Repository
 {
     public class MaterialRequestsRepository : RepositoryBase<MaterialRequests>, IMaterialRequestsRepository
     {
+        private AdvitaTipsProductionDbContext _advitaTipsProductionDbContext;
         private TipsProductionDbContext _tipsProductionDbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public MaterialRequestsRepository(TipsProductionDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        public MaterialRequestsRepository(TipsProductionDbContext repositoryContext, AdvitaTipsProductionDbContext advitaTipsProductionDbContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext,advitaTipsProductionDbContext)
         {
+            _advitaTipsProductionDbContext=advitaTipsProductionDbContext;
             _tipsProductionDbContext = repositoryContext;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
@@ -117,7 +119,7 @@ namespace Tips.Production.Api.Repository
         {
             var materialRequests = FindAll().OrderByDescending(x => x.Id)
               .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.MRNumber.Contains(searchParammes.SearchValue)
-              || inv.ProjectNumber.Contains(searchParammes.SearchValue))) /*&& inv.MrStatus != MaterialStatus.Closed*/);
+              || inv.ProjectNumber.Contains(searchParammes.SearchValue) || inv.ShopOrderNumber.Contains(searchParammes.SearchValue))) /*&& inv.MrStatus != MaterialStatus.Closed*/);
 
               
             return PagedList<MaterialRequests>.ToPagedList(materialRequests, pagingParameter.PageNumber, pagingParameter.PageSize);
@@ -137,7 +139,7 @@ namespace Tips.Production.Api.Repository
         public async Task<PagedList<MaterialRequests>> GetAllMROpenwithPartialStatus(PagingParameter pagingParameter, SearchParamess searchParammes)
         {
             var materialRequestDetails = FindAll().OrderByDescending(x => x.Id)
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.MRNumber.Contains(searchParammes.SearchValue)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.MRNumber.Contains(searchParammes.SearchValue) || inv.ShopOrderNumber.Contains(searchParammes.SearchValue)
               || inv.ProjectNumber.Contains(searchParammes.SearchValue))) && (inv.MrStatus == MaterialStatus.Open || inv.MrStatus == MaterialStatus.PartiallyClosed))
                 .Include(s => s.MaterialRequestItems)
                 .ThenInclude(m => m.MRStockDetails);
