@@ -994,6 +994,7 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderHistory.ReceivedDate = salesOrderItemDetail.RequestedDate;
                         salesOrderHistory.Remarks = salesOrderItemDetail.Remarks;
                         salesOrderHistory.SalesOrderId = salesOrderItemDetail.SalesOrderId;
+                        salesOrderHistory.PriceList = salesOrderItemDetail.PriceList;
 
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
                         await _salesOrderHistory.CreateSalesOrderHistory(salesOrderHistories);
@@ -4348,6 +4349,7 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderHistory.ReceivedDate = oldSOItem.RequestedDate;
                         salesOrderHistory.ShortClosedQty = salesOrderItemsDto[i].ShortClosedQty;
                         salesOrderHistory.Remarks = "Item ShortClosed";
+                        salesOrderHistory.PriceList = oldSOItem.PriceList;
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
                         await _salesOrderHistory.CreateSalesOrderHistory(salesOrderHistories);
                     }

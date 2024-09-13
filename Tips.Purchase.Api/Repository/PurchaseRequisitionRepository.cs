@@ -128,12 +128,13 @@ namespace Tips.Purchase.Api.Repository
 
             return PagedList<PurchaseRequisitionSPReportForAvision>.ToPagedList(result.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-        public async Task<IEnumerable<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportWithParamForTrans(string PrNumber, string ProcurementType, string PrStatus, string ProjectNumber)
+        public async Task<IEnumerable<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportWithParamForTrans(string PrNumber, string ProcurementType, string PrStatus, string ProjectNumber
+                                                                                                                  , string RecordType, string Approval)
         {
 
             var result = _tipsPurchaseDbContext
             .Set<PurchaseRequisitionSPReportForTrans>()
-            .FromSqlInterpolated($"CALL Purchaserequisition_with_parameters_tras({PrNumber},{ProcurementType},{PrStatus},{ProjectNumber})")
+            .FromSqlInterpolated($"CALL Purchaserequisition_with_parameters_tras({PrNumber},{ProcurementType},{PrStatus},{ProjectNumber},{RecordType},{Approval})")
             .ToList();
 
             return result;
@@ -148,10 +149,10 @@ namespace Tips.Purchase.Api.Repository
 
             return result;
         }
-        public async Task<IEnumerable<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        public async Task<IEnumerable<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate, string RecordType, string Approval)
         {
             var results = _tipsPurchaseDbContext.Set<PurchaseRequisitionSPReportForTrans>()
-                        .FromSqlInterpolated($"CALL Purchaserequisition_with_date_parameters_tras({FromDate},{ToDate})")
+                        .FromSqlInterpolated($"CALL Purchaserequisition_with_date_parameters_tras({FromDate},{ToDate},{RecordType},{Approval})")
                         .ToList();
 
             return results;

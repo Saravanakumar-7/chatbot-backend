@@ -1,9 +1,8 @@
-﻿using System.ComponentModel;
-using Tips.Purchase.Api.Entities.Dto;
+﻿using Tips.Purchase.Api.Entities.DTOs;
 
-namespace Tips.Purchase.Api.Entities.DTOs
+namespace Tips.Purchase.Api.Entities.Dto
 {
-    public class POCollectionTrackerDto
+    public class POCollectionTrackerForAviDto
     {
         public int Id { get; set; }
         public string VendorId { get; set; }
@@ -20,9 +19,9 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<POBreakDownDto>? POBreakDown { get; set; }
+        public List<POBreakDownForAviDto>? POBreakDownForAvi { get; set; }
     }
-    public class POCollectionTrackerPostDto
+    public class POCollectionTrackerForAviPostDto
     {
         public string VendorId { get; set; }
         public string VendorName { get; set; }
@@ -38,9 +37,9 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<POBreakDownPostDto>? POBreakDown { get; set; }
+        public List<POBreakDownForAviPostDto>? POBreakDownForAvi { get; set; }
     }
-    public class POCollectionTrackerUpdateDto
+    public class POCollectionTrackerForAviUpdateDto
     {
         public int Id { get; set; }
         public string VendorId { get; set; }
@@ -57,15 +56,15 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<POBreakDownUpdateDto>? POBreakDown { get; set; }
+        public List<POBreakDownForAviUpdateDto>? POBreakDownForAvi { get; set; }
     }
-    public class POCollectionTrackerDetailsDto
+    public class POCollectionTrackerForAviDetailsDto
     {
         public decimal TotalSumOfPOAmount { get; set; }
         public decimal AlreadyRecieved { get; set; }
-        public List<OpenPurchaseOrderDetailsDto>? OpenPurchaseOrderDetails { get; set; }
+        public List<OpenPurchaseOrderForAviDetailsDto>? OpenPurchaseOrderForAviDetails { get; set; }
     }
-    public class OpenPurchaseOrderDetailsDto
+    public class OpenPurchaseOrderForAviDetailsDto
     {
         public int PurchaseOrderId { get; set; }
         public string PONumber { get; set; }
@@ -73,39 +72,10 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public decimal? PendingValue { get; set; }
         public decimal AmountRecieved { get; set; }
     }
-    public class POCollectionTrackerSearchDto
+    public class POCollectionTrackerForAviSearchDto
     {
         public List<string> VendorId { get; set; }
         public List<string> VendorName { get; set; }
         public List<string>? Remarks { get; set; }
     }
-    public class PayableSPReportWithParamDTO
-    {
-        public string? PONumber { get; set; }
-        public string? VendorName { get; set; }
-        public string? ProjectNumber { get; set; }
-    }
-    public class PayableSPReport
-    {
-        public string? PONumber { get; set; } // TEXT -> string?
-        public DateTime? POCreationDate { get; set; } // DATETIME -> DateTime?
-        public DateTime? PODeliveryDate { get; set; } // DATETIME -> DateTime?
-        public string? VendorNumber { get; set; } // VARCHAR -> string?
-        public string? VendorName { get; set; } // TEXT -> string?
-        public string? ProjectNumber { get; set; } // TEXT -> string?
-        public string? ItemNumber { get; set; } // TEXT -> string?
-        public string? Description { get; set; } // TEXT -> string?
-        public decimal? Qty { get; set; } // DECIMAL -> decimal?
-        public string? UOC { get; set; } // TEXT -> string?
-        public decimal? UnitPrice { get; set; } // DECIMAL -> decimal?
-        public decimal? SumOfAmount { get; set; } // DECIMAL -> decimal?
-        public string? GrinNumber { get; set; } // TEXT -> string?
-        public decimal? GrinQty { get; set; } // DECIMAL -> decimal?
-        public string? IQCNumber { get; set; } // TEXT -> string?
-        public decimal? IqcQty { get; set; } // DECIMAL -> decimal?
-        public decimal? POValue { get; set; } // DECIMAL -> decimal?
-        public decimal? TotalPaidSumofAmount { get; set; } // DECIMAL -> decimal?
-        public decimal? TotalBalancesumofamounttobePaid { get; set; } // DECIMAL -> decimal?
-    }
-
 }

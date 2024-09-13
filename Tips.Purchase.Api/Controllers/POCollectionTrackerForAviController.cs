@@ -16,25 +16,25 @@ namespace Tips.Purchase.Api.Controllers
     [Route("api/[controller]/[action]")]
     [ApiController]
     [Authorize]
-    public class POCollectionTrackerController : ControllerBase
+    public class POCollectionTrackerForAviController : ControllerBase
     {
-        private IPOCollectionTrackerRepository _repository;
+        private IPOCollectionTrackerForAviRepository _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        public POCollectionTrackerController(IPOCollectionTrackerRepository repository, ILoggerManager logger, IMapper mapper)
+        public POCollectionTrackerForAviController(IPOCollectionTrackerForAviRepository repository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllPOCollectionTracker([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
+        public async Task<IActionResult> GetAllPOCollectionTrackerForAvi([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
-            ServiceResponse<IEnumerable<POCollectionTrackerDto>> serviceResponse = new ServiceResponse<IEnumerable<POCollectionTrackerDto>>();
+            ServiceResponse<IEnumerable<POCollectionTrackerForAviDto>> serviceResponse = new ServiceResponse<IEnumerable<POCollectionTrackerForAviDto>>();
 
             try
             {
-                var pocollectionTrackerDetails = await _repository.GetAllPOCollectionTrackers(pagingParameter, searchParamess);
+                var pocollectionTrackerDetails = await _repository.GetAllPOCollectionTrackersForAvi(pagingParameter, searchParamess);
 
                 var metadata = new
                 {
@@ -48,7 +48,7 @@ namespace Tips.Purchase.Api.Controllers
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all CollectionTracker");
-                var result = _mapper.Map<IEnumerable<POCollectionTrackerDto>>(pocollectionTrackerDetails);
+                var result = _mapper.Map<IEnumerable<POCollectionTrackerForAviDto>>(pocollectionTrackerDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all POCollectionTracker Successfully";
                 serviceResponse.Success = true;
@@ -66,12 +66,12 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetPOCollectionTrackerById(int id)
+        public async Task<IActionResult> GetPOCollectionTrackerForAviById(int id)
         {
-            ServiceResponse<POCollectionTrackerDto> serviceResponse = new ServiceResponse<POCollectionTrackerDto>();
+            ServiceResponse<POCollectionTrackerForAviDto> serviceResponse = new ServiceResponse<POCollectionTrackerForAviDto>();
             try
             {
-                var pocollectionTrackerById = await _repository.GetPOCollectionTrackerById(id);
+                var pocollectionTrackerById = await _repository.GetPOCollectionTrackerForAviById(id);
 
                 if (pocollectionTrackerById == null)
                 {
@@ -85,7 +85,7 @@ namespace Tips.Purchase.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned POCollectionTracker with id: {id}");
-                    var result = _mapper.Map<POCollectionTrackerDto>(pocollectionTrackerById);
+                    var result = _mapper.Map<POCollectionTrackerForAviDto>(pocollectionTrackerById);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned POCollectionTrackerById Successfully";
                     serviceResponse.Success = true;
@@ -104,14 +104,14 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetPOCollectionTrackerByVendorId(string vendorId)
+        public async Task<IActionResult> GetPOCollectionTrackerForAviByVendorId(string vendorId)
         {
-            ServiceResponse<POCollectionTrackerDetailsDto> serviceResponse = new ServiceResponse<POCollectionTrackerDetailsDto>();
+            ServiceResponse<POCollectionTrackerForAviDetailsDto> serviceResponse = new ServiceResponse<POCollectionTrackerForAviDetailsDto>();
             try
             {
-                var pocollectionTrackerById = await _repository.GetPOCollectionTrackerByVendorId(vendorId);
-                var openPurchaseOrderDetails = await _repository.GetOpenPODetailsByVendorId(vendorId);
-                pocollectionTrackerById.OpenPurchaseOrderDetails = openPurchaseOrderDetails;
+                var pocollectionTrackerById = await _repository.GetPOCollectionTrackerForAviByVendorId(vendorId);
+                var openPurchaseOrderDetails = await _repository.GetOpenPOForAviDetailsByVendorId(vendorId);
+                pocollectionTrackerById.OpenPurchaseOrderForAviDetails = openPurchaseOrderDetails;
                 if (pocollectionTrackerById == null)
                 {
                     serviceResponse.Data = null;
@@ -124,7 +124,7 @@ namespace Tips.Purchase.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned POCollectionTracker with id: {vendorId}");
-                    var result = _mapper.Map<POCollectionTrackerDetailsDto>(pocollectionTrackerById);
+                    var result = _mapper.Map<POCollectionTrackerForAviDetailsDto>(pocollectionTrackerById);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned POCollectionTrackerById Successfully";
                     serviceResponse.Success = true;
@@ -144,13 +144,13 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SearchPOCollectionTrackerDate([FromQuery] SearchDatesParams searchDatesParams)
+        public async Task<IActionResult> SearchPOCollectionTrackerForAviDate([FromQuery] SearchDatesParams searchDatesParams)
         {
-            ServiceResponse<IEnumerable<POCollectionTrackerDto>> serviceResponse = new ServiceResponse<IEnumerable<POCollectionTrackerDto>>();
+            ServiceResponse<IEnumerable<POCollectionTrackerForAviDto>> serviceResponse = new ServiceResponse<IEnumerable<POCollectionTrackerForAviDto>>();
             try
             {
-                var poCollectionTrackerDetails = await _repository.SearchPOCollectionTrackerDate(searchDatesParams);
-                var result = _mapper.Map<IEnumerable<POCollectionTrackerDto>>(poCollectionTrackerDetails);
+                var poCollectionTrackerDetails = await _repository.SearchPOCollectionTrackerForAviDate(searchDatesParams);
+                var result = _mapper.Map<IEnumerable<POCollectionTrackerForAviDto>>(poCollectionTrackerDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all POCollectionTracker By Date";
                 serviceResponse.Success = true;
@@ -169,21 +169,21 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> SearchPOCollectionTracker([FromQuery] SearchParamess searchParamess)
+        public async Task<IActionResult> SearchPOCollectionTrackerForAvi([FromQuery] SearchParamess searchParamess)
         {
-            ServiceResponse<IEnumerable<POCollectionTrackerDto>> serviceResponse = new ServiceResponse<IEnumerable<POCollectionTrackerDto>>();
+            ServiceResponse<IEnumerable<POCollectionTrackerForAviDto>> serviceResponse = new ServiceResponse<IEnumerable<POCollectionTrackerForAviDto>>();
             try
             {
-                var poCollectionTrackerDetails = await _repository.SearchPOCollectionTracker(searchParamess);
+                var poCollectionTrackerDetails = await _repository.SearchPOCollectionTrackerForAvi(searchParamess);
 
                 _logger.LogInfo("Returned all POCollectionTracker");
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<POCollectionTracker, POCollectionTrackerDto>().ReverseMap();
+                    cfg.CreateMap<POCollectionTrackerForAvi, POCollectionTrackerForAviDto>().ReverseMap();
                 });
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<POCollectionTrackerDto>>(poCollectionTrackerDetails);
+                var result = mapper.Map<IEnumerable<POCollectionTrackerForAviDto>>(poCollectionTrackerDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all POCollectionTrackerDetails";
                 serviceResponse.Success = true;
@@ -202,21 +202,21 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetAllPOCollectionTrackerWithItems([FromBody] POCollectionTrackerSearchDto poCollectionTrackerSearch)
+        public async Task<IActionResult> GetAllPOCollectionTrackerForAviWithItems([FromBody] POCollectionTrackerForAviSearchDto poCollectionTrackerSearch)
         {
-            ServiceResponse<IEnumerable<POCollectionTrackerDto>> serviceResponse = new ServiceResponse<IEnumerable<POCollectionTrackerDto>>();
+            ServiceResponse<IEnumerable<POCollectionTrackerForAviDto>> serviceResponse = new ServiceResponse<IEnumerable<POCollectionTrackerForAviDto>>();
             try
             {
-                var poCollectionTrackerDetails = await _repository.GetAllPOCollectionTrackerWithItems(poCollectionTrackerSearch);
+                var poCollectionTrackerDetails = await _repository.GetAllPOCollectionTrackerForAviWithItems(poCollectionTrackerSearch);
 
                 _logger.LogInfo("Returned all POCollectionTracker");
                 var config = new MapperConfiguration(cfg =>
                 {
                     cfg.AddProfile<MappingProfile>();
-                    cfg.CreateMap<POCollectionTracker, POCollectionTrackerDto>().ReverseMap();
+                    cfg.CreateMap<POCollectionTrackerForAvi, POCollectionTrackerForAviDto>().ReverseMap();
                 });
                 var mapper = config.CreateMapper();
-                var result = mapper.Map<IEnumerable<POCollectionTrackerDto>>(poCollectionTrackerDetails);
+                var result = mapper.Map<IEnumerable<POCollectionTrackerForAviDto>>(poCollectionTrackerDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all POCollectionTrackerDetails";
                 serviceResponse.Success = true;
@@ -235,9 +235,9 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePOCollectionTracker([FromBody] POCollectionTrackerPostDto pocollectionTrackerPostDto)
+        public async Task<IActionResult> CreatePOCollectionTrackerForAvi([FromBody] POCollectionTrackerForAviPostDto pocollectionTrackerPostDto)
         {
-            ServiceResponse<POCollectionTrackerDto> serviceResponse = new ServiceResponse<POCollectionTrackerDto>();
+            ServiceResponse<POCollectionTrackerForAviDto> serviceResponse = new ServiceResponse<POCollectionTrackerForAviDto>();
 
             try
             {
@@ -260,13 +260,13 @@ namespace Tips.Purchase.Api.Controllers
                     return BadRequest("Invalid model object");
                 }
 
-                var pocollectionTrackerItems = _mapper.Map<IEnumerable<POBreakDown>>(pocollectionTrackerPostDto.POBreakDown);
+                var pocollectionTrackerItems = _mapper.Map<IEnumerable<POBreakDownForAvi>>(pocollectionTrackerPostDto.POBreakDownForAvi);
 
-                var pocollectionTracker = _mapper.Map<POCollectionTracker>(pocollectionTrackerPostDto);
+                var pocollectionTracker = _mapper.Map<POCollectionTrackerForAvi>(pocollectionTrackerPostDto);
 
-                pocollectionTracker.POBreakDown = pocollectionTrackerItems.ToList();
+                pocollectionTracker.POBreakDownForAvi = pocollectionTrackerItems.ToList();
 
-                await _repository.CreatePOCollectionTracker(pocollectionTracker);
+                await _repository.CreatePOCollectionTrackerForAvi(pocollectionTracker);
 
                 _repository.SaveAsync();
 
@@ -289,9 +289,9 @@ namespace Tips.Purchase.Api.Controllers
         }
         [HttpPut("{id}")]
 
-        public async Task<IActionResult> UpdatePOCollectionTracker(int id, [FromBody] POCollectionTrackerUpdateDto pocollectionTrackerUpdateDto)
+        public async Task<IActionResult> UpdatePOCollectionTrackerForAvi(int id, [FromBody] POCollectionTrackerForAviUpdateDto pocollectionTrackerUpdateDto)
         {
-            ServiceResponse<POCollectionTrackerUpdateDto> serviceResponse = new ServiceResponse<POCollectionTrackerUpdateDto>();
+            ServiceResponse<POCollectionTrackerForAviUpdateDto> serviceResponse = new ServiceResponse<POCollectionTrackerForAviUpdateDto>();
             try
             {
                 if (pocollectionTrackerUpdateDto is null)
@@ -312,7 +312,7 @@ namespace Tips.Purchase.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest("Invalid model object");
                 }
-                var pocollectionTrackerById = await _repository.GetPOCollectionTrackerById(id);
+                var pocollectionTrackerById = await _repository.GetPOCollectionTrackerForAviById(id);
                 if (pocollectionTrackerById is null)
                 {
                     _logger.LogError($"Update POCollectionTracker with id: {id}, hasn't been found in db.");
@@ -323,13 +323,13 @@ namespace Tips.Purchase.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                var pocollectionTrackerItems = _mapper.Map<IEnumerable<POBreakDown>>(pocollectionTrackerUpdateDto.POBreakDown);
+                var pocollectionTrackerItems = _mapper.Map<IEnumerable<POBreakDownForAvi>>(pocollectionTrackerUpdateDto.POBreakDownForAvi);
 
                 var pocollectionTracker = _mapper.Map(pocollectionTrackerUpdateDto, pocollectionTrackerById);
 
-                pocollectionTracker.POBreakDown = pocollectionTrackerItems.ToList();
+                pocollectionTracker.POBreakDownForAvi = pocollectionTrackerItems.ToList();
 
-                string result = await _repository.UpdatePOCollectionTracker(pocollectionTracker);
+                string result = await _repository.UpdatePOCollectionTrackerForAvi(pocollectionTracker);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -350,12 +350,12 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePOCollectionTracker(int id)
+        public async Task<IActionResult> DeletePOCollectionTrackerForAvi(int id)
         {
-            ServiceResponse<POCollectionTrackerDto> serviceResponse = new ServiceResponse<POCollectionTrackerDto>();
+            ServiceResponse<POCollectionTrackerForAviDto> serviceResponse = new ServiceResponse<POCollectionTrackerForAviDto>();
             try
             {
-                var pocollectionTrackerById = await _repository.GetPOCollectionTrackerById(id);
+                var pocollectionTrackerById = await _repository.GetPOCollectionTrackerForAviById(id);
                 if (pocollectionTrackerById == null)
                 {
                     _logger.LogError($"Delete POCollectionTracker with id: {id}, hasn't been found in db.");
@@ -365,7 +365,7 @@ namespace Tips.Purchase.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.DeletePOCollectionTracker(pocollectionTrackerById);
+                string result = await _repository.DeletePOCollectionTrackerForAvi(pocollectionTrackerById);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -384,80 +384,80 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        //[HttpPost] // Adjust your route as needed
-        //public async Task<IActionResult> GetPayableSPReportWithParam([FromBody] PayableSPReportWithParamDTO purchaseOrderApprovalSPReport)
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPayableSPReportWithParam([FromBody] PayableSPReportWithParamDTO purchaseOrderApprovalSPReport)
 
-        //{
-        //    ServiceResponse<IEnumerable<PayableSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PayableSPReport>>();
-        //    try
-        //    {
-        //        var products = await _repository.GetPayableSPReportWithParam(purchaseOrderApprovalSPReport.PONumber, purchaseOrderApprovalSPReport.VendorName,
-        //                                                                            purchaseOrderApprovalSPReport.ProjectNumber);
+        {
+            ServiceResponse<IEnumerable<PayableSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PayableSPReport>>();
+            try
+            {
+                var products = await _repository.GetPayableSPReportWithParam(purchaseOrderApprovalSPReport.PONumber, purchaseOrderApprovalSPReport.VendorName,
+                                                                                    purchaseOrderApprovalSPReport.ProjectNumber);
 
-        //        if (products == null)
-        //        {
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = $"Payable hasn't been found.";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
-        //            _logger.LogError($"Payable hasn't been found in db.");
-        //            return Ok(serviceResponse);
-        //        }
-        //        else
-        //        {
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Payable hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Payable hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
 
-        //            serviceResponse.Data = products;
-        //            serviceResponse.Message = "Returned PayableSPReport Details";
-        //            serviceResponse.Success = true;
-        //            serviceResponse.StatusCode = HttpStatusCode.OK;
-        //            return Ok(serviceResponse);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex.Message);
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = $"Something went wrong inside GetPayableSPReportWithParam action";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    }
-        //}
-        //[HttpGet] // Adjust your route as needed
-        //public async Task<IActionResult> GetPayableSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
-        //{
-        //    ServiceResponse<IEnumerable<PayableSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PayableSPReport>>();
-        //    try
-        //    {
-        //        var products = await _repository.GetPayableSPReportWithDate(FromDate, ToDate);
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PayableSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPayableSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetPayableSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<PayableSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PayableSPReport>>();
+            try
+            {
+                var products = await _repository.GetPayableSPReportWithDate(FromDate, ToDate);
 
-        //        if (products == null)
-        //        {
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = $"Payable hasn't been found.";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
-        //            _logger.LogError($"Payable hasn't been found in db.");
-        //            return Ok(serviceResponse);
-        //        }
-        //        else
-        //        {
-        //            serviceResponse.Data = products;
-        //            serviceResponse.Message = "Returned PayableSPReport Details";
-        //            serviceResponse.Success = true;
-        //            serviceResponse.StatusCode = HttpStatusCode.OK;
-        //            return Ok(serviceResponse);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex.Message);
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = $"Something went wrong inside GetPayableSPReportWithDate action";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    }
-        //}
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Payable hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Payable hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PayableSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPayableSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

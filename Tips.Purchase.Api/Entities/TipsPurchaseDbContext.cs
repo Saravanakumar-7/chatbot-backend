@@ -28,6 +28,8 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PoSpecialInstruction> PoSpecialInstructions { get; set; }
         public DbSet<POCollectionTracker> POCollectionTrackers { get; set; }
         public DbSet<POBreakDown> POBreakDowns { get; set; }
+        public DbSet<POCollectionTrackerForAvi> POCollectionTrackersForAvi { get; set; }
+        public DbSet<POBreakDownForAvi> POBreakDownsForAvi { get; set; }
         public DbSet<PrDetails> PrDetails { get; set; }
         public DbSet<PoIncoTerm> PoIncoTerms { get; set; }
         public DbSet<PoConfirmationDate> PoConfirmationDates { get; set; }
@@ -63,6 +65,8 @@ namespace Tips.Purchase.Api.Entities
             modelBuilder.Entity<PurchaseOrderSPReportForAvision>().HasNoKey();
             modelBuilder.Entity<PurchaseRequisitionSPReportForAvision>().HasNoKey();
             modelBuilder.Entity<PurchaseOrderUnitListSPReportWithParamForTrans>().HasNoKey();
+            modelBuilder.Entity<PayableSPReport>().HasNoKey();
+
         }
     }
 }

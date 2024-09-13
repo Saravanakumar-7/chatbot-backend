@@ -238,6 +238,15 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? ProcurementType { get; set; }
         public string? PrStatus { get; set; }
         public string? ProjectNumber { get; set; }
+        public string? RecordType { get; set; }
+        public string? Approval { get; set; }
+    }
+    public class PurchaseRequisitionSPReportWithDateForTransDTO
+    {
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+        public string? RecordType { get; set; }
+        public string? Approval { get; set; }
     }
     public class PurchaseRequisitionSPReportWithParamForAviDTO
     {

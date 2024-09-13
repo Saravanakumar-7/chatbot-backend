@@ -235,7 +235,8 @@ namespace Tips.Purchase.Api.Controllers
             try
             {
                 var products = await _repository.GetPurchaseRequisitionsSPReportWithParamForTrans(purchaseRequisitionsSPReport.PrNumber, purchaseRequisitionsSPReport.ProcurementType,
-                                                                                         purchaseRequisitionsSPReport.PrStatus,purchaseRequisitionsSPReport.ProjectNumber);
+                                                                                         purchaseRequisitionsSPReport.PrStatus,purchaseRequisitionsSPReport.ProjectNumber,
+                                                                                         purchaseRequisitionsSPReport.RecordType, purchaseRequisitionsSPReport.Approval);
 
                 if (products == null)
                 {
@@ -267,13 +268,14 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-        [HttpGet] // Adjust your route as needed
-        public async Task<IActionResult> GetPurchaseRequisitionsSPReportWithDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseRequisitionsSPReportWithDateForTrans([FromBody] PurchaseRequisitionSPReportWithDateForTransDTO purchaseRequisitionSPReportWithDateForTransDTO)
         {
             ServiceResponse<IEnumerable<PurchaseRequisitionSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseRequisitionSPReportForTrans>>();
             try
             {
-                var products = await _repository.GetPurchaseRequisitionsSPReportWithDateForTrans(FromDate, ToDate);
+                var products = await _repository.GetPurchaseRequisitionsSPReportWithDateForTrans(purchaseRequisitionSPReportWithDateForTransDTO.FromDate, purchaseRequisitionSPReportWithDateForTransDTO.ToDate,
+                                                                                                    purchaseRequisitionSPReportWithDateForTransDTO.RecordType, purchaseRequisitionSPReportWithDateForTransDTO.Approval);
 
                 if (products == null)
                 {

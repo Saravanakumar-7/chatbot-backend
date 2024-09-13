@@ -87,7 +87,9 @@ builder.Services.AddScoped<IDocumentUploadRepository, UploadDocumentRepository>(
 builder.Services.AddScoped<IPRItemsDocumentUploadRepository, PRItemsUploadDocumentRepository>();
 builder.Services.AddScoped<IPoItemsRepository, PurchaseOrderItemRepository>();
 builder.Services.AddScoped<IPOCollectionTrackerRepository, POCollectionTrackerRepository>();
+builder.Services.AddScoped<IPOCollectionTrackerForAviRepository, POCollectionTrackerForAviRepository>();
 builder.Services.AddScoped<IPOBreakDownRepository, POBreakDownRepository>();
+builder.Services.AddScoped<IPOBreakDownForAviRepository, POBreakDownForAviRepository>();
 builder.Services.AddScoped<IPoConfirmationDateHistoryRepository, PoConfirmationDateHistoryRepository>();
 builder.Services.AddScoped<IPoConfirmationDateRepository, PoConfirmationDateRepository>();
 builder.Services.AddScoped<IPoConfirmationHistoryRepository, PoConfirmationHistoryRepository>();
