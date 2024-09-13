@@ -64,7 +64,20 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public List<MaterialRequestItemUpdateDto>? MaterialRequestItems { get; set; }
     }
+    public class IssueMaterialRequestUpdateDto
+    {
+        public int Id { get; set; }
+        public string? ProjectNumber { get; set; }
+        //public string? FGItemNumber { get; set; }
+        public PartType ShopOrderType { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        public string MRNumber { get; set; }
+        public string? IssuedTo { get; set; }
+        public string Unit { get; set; }
 
+
+        public List<IssueMaterialRequestItemUpdateDto>? MaterialRequestItems { get; set; }
+    }
     public class MaterialRequestIdNoDto
     {
         public int? Id { get; set; }

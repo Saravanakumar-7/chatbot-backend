@@ -921,9 +921,9 @@ namespace Tips.Production.Api.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> IssueMaterialRequest(int id, [FromBody] MaterialRequestUpdateDto materialRequestUpdateDto)
+        public async Task<IActionResult> IssueMaterialRequest(int id, [FromBody] IssueMaterialRequestUpdateDto materialRequestUpdateDto)
         {
-            ServiceResponse<MaterialRequestUpdateDto> serviceResponse = new ServiceResponse<MaterialRequestUpdateDto>();
+            ServiceResponse<IssueMaterialRequestUpdateDto> serviceResponse = new ServiceResponse<IssueMaterialRequestUpdateDto>();
 
 
             try
