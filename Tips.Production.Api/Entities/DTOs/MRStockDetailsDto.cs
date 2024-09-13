@@ -46,6 +46,20 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal LocationStock { get; set; }
         public bool IsMRIssueDone { get; set; } 
     }
+    public class IssueMRStockDetailsUpdateDto
+    {
+
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+
+        [Precision(13, 3)]
+        public decimal Qty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal LocationStock { get; set; }
+        public bool IsMRIssueDone { get; set; }
+        public string? SerialNo { get; set; }
+    }
 
 
 }

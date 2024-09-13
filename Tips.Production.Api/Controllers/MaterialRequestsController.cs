@@ -921,9 +921,9 @@ namespace Tips.Production.Api.Controllers
 
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> IssueMaterialRequest(int id, [FromBody] MaterialRequestUpdateDto materialRequestUpdateDto)
+        public async Task<IActionResult> IssueMaterialRequest(int id, [FromBody] IssueMaterialRequestUpdateDto materialRequestUpdateDto)
         {
-            ServiceResponse<MaterialRequestUpdateDto> serviceResponse = new ServiceResponse<MaterialRequestUpdateDto>();
+            ServiceResponse<IssueMaterialRequestUpdateDto> serviceResponse = new ServiceResponse<IssueMaterialRequestUpdateDto>();
 
 
             try
@@ -969,6 +969,7 @@ namespace Tips.Production.Api.Controllers
                 for (int i = 0; i < materialReqItemDto.Count; i++)
                 {
                     MaterialRequestItems materialItemDetail = _mapper.Map<MaterialRequestItems>(materialReqItemDto[i]);
+                    materialItemDetail.Id = 0;
                     List<MRStockDetails> mrStockDetails = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
                     materialItemDetail.MRStockDetails = mrStockDetails;
                     var issuestock = mrStockDetails.Select(x => x.Qty).ToArray();

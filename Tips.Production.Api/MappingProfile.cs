@@ -95,14 +95,17 @@ namespace Tips.Production.Api
             CreateMap<MaterialRequests, MaterialRequestsDto>().ReverseMap();
             CreateMap<MaterialRequests, MaterialRequestsPostDto>().ReverseMap();
             CreateMap<MaterialRequests, MaterialRequestUpdateDto>().ReverseMap();
+            CreateMap<MaterialRequests, IssueMaterialRequestUpdateDto>().ReverseMap();
 
             CreateMap<MaterialRequestItems, MaterialRequestItemsDto>().ReverseMap();
             CreateMap<MaterialRequestItems, MaterialRequestItemPostDto>().ReverseMap();
             CreateMap<MaterialRequestItems, MaterialRequestItemUpdateDto>().ReverseMap();
+            CreateMap<MaterialRequestItems, IssueMaterialRequestItemUpdateDto>().ReverseMap();
 
             CreateMap<MRStockDetails, MRStockDetailsDto>().ReverseMap();
             CreateMap<MRStockDetails, MRStockDetailsPostDto>().ReverseMap();
             CreateMap<MRStockDetails, MRStockDetailsUpdateDto>().ReverseMap();
+            CreateMap<MRStockDetails, IssueMRStockDetailsUpdateDto>().ReverseMap();
 
             CreateMap<MRStockDetailsUpdateDto, InventoryUpdateDtoForMRWarehouse>().ReverseMap();
             CreateMap<MRStockDetails, InventoryUpdateDtoForMRWarehouse>().ReverseMap();
