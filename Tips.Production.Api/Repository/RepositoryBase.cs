@@ -9,10 +9,14 @@ namespace Tips.Production.Api.Repository
     public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
         protected TipsProductionDbContext _tipsProductionDbContext { get; set; }
-        public RepositoryBase(TipsProductionDbContext repositoryContext)
+        protected AdvitaTipsProductionDbContext _advitaTipsProductionDbContext { get; set; }
+
+        public RepositoryBase(TipsProductionDbContext repositoryContext, AdvitaTipsProductionDbContext repositoryContext_1)
         {
             _tipsProductionDbContext = repositoryContext;
+            _advitaTipsProductionDbContext = repositoryContext_1;
         }
+        
         public IQueryable<T> FindAll()
         {
 
@@ -31,6 +35,13 @@ namespace Tips.Production.Api.Repository
             var result = await _tipsProductionDbContext.Set<T>().AddAsync(entity);
 
             return result.Entity;
+        }       
+        public async Task<T> CreateAdvita(T entity)
+        {
+
+            var result = await _advitaTipsProductionDbContext.Set<T>().AddAsync(entity);
+
+            return result.Entity;
         }
         public void Update(T entity)
         {
@@ -44,7 +55,10 @@ namespace Tips.Production.Api.Repository
             _tipsProductionDbContext.Set<T>().Remove(entity);
 
         }
-
+        public void SaveAdvitaAsync()
+        {
+            _advitaTipsProductionDbContext.SaveChanges();
+        }
         public void SaveAsync()
         {
             _tipsProductionDbContext.SaveChangesAsync();

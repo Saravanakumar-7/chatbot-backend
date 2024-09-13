@@ -11,11 +11,13 @@ namespace Tips.Production.Api.Repository
 {
     public class OQCBinningRepository : RepositoryBase<OQCBinning>, IOQCBinningRepository
     {
+        private AdvitaTipsProductionDbContext _advitaTipsProductionDbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
-        public OQCBinningRepository(TipsProductionDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        public OQCBinningRepository(TipsProductionDbContext repositoryContext, AdvitaTipsProductionDbContext advitaTipsProductionDbContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext,advitaTipsProductionDbContext)
         {
+            _advitaTipsProductionDbContext = advitaTipsProductionDbContext;
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
