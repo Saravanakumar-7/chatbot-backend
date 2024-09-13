@@ -23,6 +23,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MimeKit;
 using MimeKit.Text;
+using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NPOI.SS.UserModel;
@@ -128,7 +129,29 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
+        [HttpGet]
+        public async Task<IActionResult> GetPurchaseOrderTillPoBreakDownByPoNumber(string PONumber)
+        {
+            ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
+            try
+            {
+                var latestPo = await _repository.GetLastestPurchaseOrderByPONumber(PONumber);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Returned all PurchaseOrders";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetPurchaseOrderTillPoBreakDownByPoNumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> GetAllLastestPurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
@@ -1700,7 +1723,7 @@ namespace Tips.Purchase.Api.Controllers
 
                 return File(bytes, ContentType, downloadFilename);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside DownloadFile action: {ex.Message} {ex.InnerException}");
                 serviceResponse.Data = null;
@@ -2483,7 +2506,7 @@ namespace Tips.Purchase.Api.Controllers
                     smtp.Disconnect(true);
 
                 }
-                
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = " PurchaseOrder Successfully Updated";
                 serviceResponse.Success = true;
@@ -3502,7 +3525,7 @@ namespace Tips.Purchase.Api.Controllers
                     var EmailTempString = await response.Content.ReadAsStringAsync();
                     var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
 
-                   
+
                     if (purchaseOrderDetailByPONumber.ApprovalCount > 2)
                     {
                         var Operations = "From,Approval2";
@@ -4381,8 +4404,8 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<poconfirmation_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_Dto>>();
             try
             {
-                var result = await _repository.GetPoConfirmationLimitSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
-                                                                                    paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.RecordType,
+                var result = await _repository.GetPoConfirmationLimitSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName,
+                                                                                    paramsforPurchase.POStatus, paramsforPurchase.Approval, paramsforPurchase.RecordType,
                                                                                     paramsforPurchase.Offset, paramsforPurchase.Limit);
 
                 var TotalCount = await _repository.GetAllPurchaseOrderCountForTrans(SearchTerm);
@@ -4666,8 +4689,8 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>>();
             try
             {
-                var result = await _repository.GetPoDeliveryScheduleLimitwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
-                                                                                                paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.RecordType,
+                var result = await _repository.GetPoDeliveryScheduleLimitwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName,
+                                                                                                paramsforPurchase.POStatus, paramsforPurchase.Approval, paramsforPurchase.RecordType,
                                                                                                  paramsforPurchase.Offset, paramsforPurchase.Limit);
 
                 var TotalCount = await _repository.GetAllPurchaseOrderCountForTrans(SearchTerm);
@@ -4950,8 +4973,8 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<PoProjectSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PoProjectSPReport>>();
             try
             {
-                var result = await _repository.GetPoProjectLimitSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName, 
-                                                                                        paramsforPurchase.POStatus, paramsforPurchase.Approval,paramsforPurchase.ProjectNumber,
+                var result = await _repository.GetPoProjectLimitSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName,
+                                                                                        paramsforPurchase.POStatus, paramsforPurchase.Approval, paramsforPurchase.ProjectNumber,
                                                                                         paramsforPurchase.RecordType, paramsforPurchase.Offset, paramsforPurchase.Limit);
 
                 var TotalCount = await _repository.GetAllPurchaseOrderCountForTrans(SearchTerm);
