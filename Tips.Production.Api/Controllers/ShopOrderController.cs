@@ -833,8 +833,9 @@ namespace Tips.Production.Api.Controllers
                             dynamic itemMasterObject = itemMasterObjectData.data;
                             string uom = itemMasterObject.uom;
                             itemstring = itemstring.Replace("{{UOM}}", uom);
-                            itemstring = itemstring.Replace("{{SOCloseDate}}", shopOrder.SOCloseDate.ToString());
-
+                            string? PRDeliveryDate = null;
+                            var temp = shopOrder.SOCloseDate.ToString("dd/MM/yyyy").Split(" ");
+                            itemstring = itemstring.Replace("{{SOCloseDate}}", temp[0]);
                             ItemData = ItemData + itemstring;
                         }
                     }
