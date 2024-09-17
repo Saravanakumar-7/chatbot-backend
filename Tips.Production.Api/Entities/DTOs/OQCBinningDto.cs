@@ -75,12 +75,12 @@ namespace Tips.Production.Api.Entities.DTOs
     }
     public class OQCBinningInventoryDto
     {
-        public List<Data>? data { get; set; }
+        public List<Data2>? data { get; set; }
         public string message { get; set; }
         public bool success { get; set; }
         public int statusCode { get; set; }
     }
-    public class Data
+    public class Data2
     {
         public int Id { get; set; }
         public string PartNumber { get; set; }

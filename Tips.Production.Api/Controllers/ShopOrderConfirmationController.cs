@@ -1,20 +1,15 @@
 ﻿using System.Net;
-using System.Net.Http;
 using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
-using Entities.DTOs;
-using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Mysqlx.Crud;
 using Newtonsoft.Json;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.Production.Api.Controllers
 {

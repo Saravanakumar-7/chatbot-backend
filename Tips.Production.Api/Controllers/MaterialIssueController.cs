@@ -17,7 +17,7 @@ using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
 using Tips.Production.Api.Repository; 
-using static Org.BouncyCastle.Math.EC.ECCurve;
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 

@@ -1,25 +1,16 @@
-﻿using System.Dynamic;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
+﻿using System.Net;
 using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
-using Entities.DTOs;
 using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
-using Tips.Production.Api.Repository;
-using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
-using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.Production.Api.Controllers
 {

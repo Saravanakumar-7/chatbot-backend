@@ -115,7 +115,7 @@ namespace Tips.Production.Api.Repository
                  {
                     ItemNumber = s.ItemNumber,
                     Description = s.Description
-                })
+                }).Distinct()
                 .ToListAsync();
 
             return shopOrderItmNoList;

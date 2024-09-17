@@ -1015,7 +1015,7 @@ namespace Tips.SalesService.Api.Repository
 
             var updateShopOrderQty = await _tipsSalesServiceDbContexts.SalesOrdersItems
                  .Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNumber && x.SalesOrderNumber == salesOrderNumber
-                 & status.Contains(x.StatusEnum))
+                 && status.Contains(x.StatusEnum))
                           .ToListAsync();
 
             return updateShopOrderQty;

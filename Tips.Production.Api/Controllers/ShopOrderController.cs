@@ -7,9 +7,12 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Entities.Enums;
+using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.VisualBasic;
+using MimeKit;
+using MimeKit.Text;
 using MySqlX.XDevAPI;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -19,6 +22,8 @@ using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
 using Tips.Production.Api.Repository;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
+using EmailIDsDto = Tips.Production.Api.Entities.DTOs.EmailIDsDto;
+using EmailTemplateDto = Tips.Production.Api.Entities.DTOs.EmailTemplateDto;
 
 namespace Tips.Production.Api.Controllers
 {
@@ -717,8 +722,135 @@ namespace Tips.Production.Api.Controllers
                 // After Shop Order Creation Material Issue also should be created.
                 await CreateMaterialIssueDetails(shopOrder);
                 _logger.LogInfo($"ShopOrder Created");
-                //if (serverKey == "avision")
-                //{
+                if (serverKey == "avision")
+                {
+                    _logger.LogInfo($"avision is doing");
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    _logger.LogInfo($"{_config["EmailAPI"]} is doing");
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreateShopOrder"));
+                    request.Headers.Add("Authorization", token);
+                    var response = await client.SendAsync(request);
+                    _logger.LogInfo($"GetEmailTemplatebyProcessType is doing");
+                    if (response.StatusCode != HttpStatusCode.OK)
+                        _logger.LogError($"Something went wrong inside GetEmailTemplatebyProcessType During Email action");
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,CreateShopOrder";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    _logger.LogInfo($"GetEmailIdDetailsbyOperation is doing");
+
+                    if (response1.StatusCode != HttpStatusCode.OK)
+                        _logger.LogError($"Something went wrong inside GetEmailIdDetailsbyOperation During Email action");
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    var mails = (emaildetails1.data.Where(x => x.operation == "CreateShopOrder").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
+                    email.Subject = emaildetails.data.subject;
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{ShopOrderNo}}", shopOrder.ShopOrderNumber);
+                    List<string>? SalesorderList = new List<string>();
+                    string? salesorderNos = null;
+                    foreach (var item in shopOrder.ShopOrderItems)
+                    {
+                        if (salesorderNos == null)
+                        {
+                            salesorderNos = item.SalesOrderNumber;
+                            SalesorderList.Add(item.SalesOrderNumber);
+                        }
+                        else
+                        {
+                            if (!SalesorderList.Contains(item.SalesOrderNumber))
+                            {
+                                salesorderNos = salesorderNos + "," + item.SalesOrderNumber;
+                                SalesorderList.Add(item.SalesOrderNumber);
+                            }
+                        }
+                    }
+
+                    body = body.Replace("{{SalesOrderNo}}", salesorderNos);
+                    body = body.Replace("{{CreatedBy}}", shopOrder.CreatedBy);
+                    body = body.Replace("{{ProjectNo}}", shopOrder.ShopOrderItems[0].ProjectNumber);
+
+                    string ItemsHtml = "<tr><td style=\"text-align: center; border: 1px solid black; padding: 5px;\">{{Sl.No}}</td><td style=\"border: 1px solid black; padding: 5px;\">{{ItemNumbers}}</td><td style=\"border: 1px solid black; padding: 5px;\">{{ItemDesc}}</td><td style=\"border: 1px solid black; padding: 5px;\">{{RevNo}}</td><td style=\"border: 1px solid black; padding: 5px;\">{{Qty}}</td><td style=\"border: 1px solid black; padding: 5px;\">{{UOM}}</td><td style=\"border: 1px solid black; padding: 5px;\">{{SOCloseDate}}</td></tr>\r\n";
+                    string ItemData = null;
+                    for (int i = 0; i < shopOrder.ShopOrderItems.Count(); i++)
+                    {
+                        if (ItemData == null)
+                        {
+                            string itemstring = ItemsHtml;
+                            itemstring = itemstring.Replace("{{Sl.No}}", (i+1).ToString());
+                            itemstring = itemstring.Replace("{{ItemNumbers}}", shopOrder.ShopOrderItems[i].FGItemNumber);
+                            itemstring = itemstring.Replace("{{ItemDesc}}", shopOrder.ShopOrderItems[i].Description);
+                            itemstring = itemstring.Replace("{{RevNo}}", shopOrder.BomRevisionNo.ToString());
+                            itemstring = itemstring.Replace("{{Qty}}", shopOrder.ShopOrderItems[i].ReleaseQty.ToString());
+                            var ItemNumber = shopOrder.ShopOrderItems[i].FGItemNumber;
+                            var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+                            var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
+                                $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+                            request2.Headers.Add("Authorization", token);
+                            var itemMasterObjectResult = await client.SendAsync(request2);
+                            if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                                _logger.LogError($"Something went wrong inside GetItemMasterByItemNumber During Email action");
+                            var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                            dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                            dynamic itemMasterObject = itemMasterObjectData.data;
+                            string uom = itemMasterObject.uom;
+                            itemstring = itemstring.Replace("{{UOM}}", uom);
+                            itemstring = itemstring.Replace("{{SOCloseDate}}", shopOrder.SOCloseDate.ToString());
+
+                            ItemData = itemstring;
+                        }
+                        else
+                        {
+                            string itemstring = ItemsHtml;
+                            itemstring = itemstring.Replace("{{Sl.No}}", (i+1).ToString());
+                            itemstring = itemstring.Replace("{{ItemNumbers}}", shopOrder.ShopOrderItems[i].FGItemNumber);
+                            itemstring = itemstring.Replace("{{ItemDesc}}", shopOrder.ShopOrderItems[i].Description);
+                            itemstring = itemstring.Replace("{{RevNo}}", shopOrder.BomRevisionNo.ToString());
+                            itemstring = itemstring.Replace("{{Qty}}", shopOrder.ShopOrderItems[i].ReleaseQty.ToString());
+                            var ItemNumber = shopOrder.ShopOrderItems[i].FGItemNumber;
+                            var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+                            var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
+                                $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+                            request2.Headers.Add("Authorization", token);
+                            var itemMasterObjectResult = await client.SendAsync(request2);
+                            _logger.LogInfo($"GetItemMasterByItemNumber is doing");
+
+                            if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                                _logger.LogError($"Something went wrong inside GetItemMasterByItemNumber During Email action");
+                            var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                            dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                            dynamic itemMasterObject = itemMasterObjectData.data;
+                            string uom = itemMasterObject.uom;
+                            itemstring = itemstring.Replace("{{UOM}}", uom);
+                            itemstring = itemstring.Replace("{{SOCloseDate}}", shopOrder.SOCloseDate.ToString());
+
+                            ItemData = ItemData + itemstring;
+                        }
+                    }
+                    body = body.Replace("{{ShopOrderItems}}", ItemData);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+                    _logger.LogInfo($"SmtpClient is doing");
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+                }
                 //    List<string>? SalesorderList = new List<string>();
                 //    List<string>? CustomerNumber = new List<string>();
                 //    string? salesorderNos = null, CustomerName = null;
@@ -763,11 +895,11 @@ namespace Tips.Production.Api.Controllers
                 //            string Cus = salesObject.customerName;
                 //            if (!CustomerNumber.Contains(Cus))
                 //            {
-                                
+
                 //                CustomerName = CustomerName + "," + Cus;
                 //                CustomerNumber.Add(Cus);
                 //            }
-                           
+
                 //        }
 
                 //    }
@@ -809,6 +941,7 @@ namespace Tips.Production.Api.Controllers
                 //}
                 //await _advitaShopOrderDetailsRepository.CreateAdvitaShopOrderDetails(advitaShopOrderDetails);
                 //_advitaShopOrderDetailsRepository.SaveAdvitaAsync();
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ShopOrder Successfully Created";
                 serviceResponse.Success = true;
