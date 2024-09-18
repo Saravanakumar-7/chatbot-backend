@@ -44,6 +44,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }
         public string? Remarks { get; set; }
+        public string? drawingRevNo { get; set; }
         public List<PoAddProjectDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleDto>? POAddDeliverySchedules { get; set; }
         public List<PoConfirmationDateDto>? POConfirmationDates { get; set; }
@@ -82,6 +83,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }
         public string? Remarks { get; set; }
+        public string? drawingRevNo { get; set; }
         public List<PoAddProjectPostDto>? POAddprojects { get; set; }
         public List<PoAddDeliverySchedulePostDto>? POAddDeliverySchedules { get; set; }
        // public List<PoConfirmationDatePostDto>? POConfirmationDates { get; set; }
@@ -122,6 +124,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public PoStatus PoStatus { get; set; }
         public DateTime? ShortClosedOn { get; set; }
         public string? Remarks { get; set; }
+        public string? drawingRevNo { get; set; }
         public List<PoAddProjectUpdateDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleUpdateDto>? POAddDeliverySchedules { get; set; }
         public List<PoConfirmationDateUpdateDto>? POConfirmationDates { get; set; }
@@ -165,6 +168,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public DateTime? ShortClosedOn { get; set; }
         public string? ReasonforShortClose { get; set; }
         public string? Remarks { get; set; }
+        public string? drawingRevNo { get; set; }
         public List<PoAddProjectUpdateDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleUpdateDto>? POAddDeliverySchedules { get; set; }
         public List<PoConfirmationDateUpdateDto>? POConfirmationDates { get; set; }

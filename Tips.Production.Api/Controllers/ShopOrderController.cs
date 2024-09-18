@@ -788,7 +788,7 @@ namespace Tips.Production.Api.Controllers
                         if (ItemData == null)
                         {
                             string itemstring = ItemsHtml;
-                            itemstring = itemstring.Replace("{{Sl.No}}", (i+1).ToString());
+                            itemstring = itemstring.Replace("{{Sl.No}}", (i + 1).ToString());
                             itemstring = itemstring.Replace("{{ItemNumbers}}", shopOrder.ShopOrderItems[i].FGItemNumber);
                             itemstring = itemstring.Replace("{{ItemDesc}}", shopOrder.ShopOrderItems[i].Description);
                             itemstring = itemstring.Replace("{{RevNo}}", shopOrder.BomRevisionNo.ToString());
@@ -806,14 +806,16 @@ namespace Tips.Production.Api.Controllers
                             dynamic itemMasterObject = itemMasterObjectData.data;
                             string uom = itemMasterObject.uom;
                             itemstring = itemstring.Replace("{{UOM}}", uom);
-                            itemstring = itemstring.Replace("{{SOCloseDate}}", shopOrder.SOCloseDate.ToString());
+                            string? PRDeliveryDate = null;
+                            var temp = shopOrder.SOCloseDate.ToString("dd/MM/yyyy").Split(" ");
+                            itemstring = itemstring.Replace("{{SOCloseDate}}", temp[0]);
 
                             ItemData = itemstring;
                         }
                         else
                         {
                             string itemstring = ItemsHtml;
-                            itemstring = itemstring.Replace("{{Sl.No}}", (i+1).ToString());
+                            itemstring = itemstring.Replace("{{Sl.No}}", (i + 1).ToString());
                             itemstring = itemstring.Replace("{{ItemNumbers}}", shopOrder.ShopOrderItems[i].FGItemNumber);
                             itemstring = itemstring.Replace("{{ItemDesc}}", shopOrder.ShopOrderItems[i].Description);
                             itemstring = itemstring.Replace("{{RevNo}}", shopOrder.BomRevisionNo.ToString());

@@ -55,6 +55,7 @@ namespace Tips.Purchase.Api.Entities
         public PoStatus PoStatus { get; set; }
         public string? ReasonforShortClose { get; set; }
         public string? Remarks { get; set; }
+        public string? drawingRevNo { get; set; }        
         public int PurchaseOrderId { get; set; }
         public PurchaseOrder? PurchaseOrder { get; set; }
 
