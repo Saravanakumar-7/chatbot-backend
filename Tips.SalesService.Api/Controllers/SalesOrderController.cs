@@ -4415,6 +4415,7 @@ namespace Tips.SalesService.Api.Controllers
                     List<ScheduleDate>? listSch = _mapper.Map<List<ScheduleDate>>(salesOrderItemsDto[i].ScheduleDates);
                     List<SoConfirmationDate>? listCon = _mapper.Map<List<SoConfirmationDate>>(salesOrderItemsDto[i].SoConfirmationDates);
 
+                    salesOrderItemsDetail.SalesOrderNumber = salesOrderNumber;
                     salesOrderItemsDetail.ScheduleDates = listSch;
                     salesOrderItemsDetail.SoConfirmationDates = listCon;
                     salesOrderItemsList.Add(salesOrderItemsDetail);

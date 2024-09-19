@@ -1649,10 +1649,49 @@ namespace Tips.Production.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
+                var shopOrderItemDetails = shortCloseShopOrderById.ShopOrderItems;
+                var shopOrderItemList = new List<ShopOrderItem>();
+
+                for (int i = 0; i < shopOrderItemDetails.Count; i++)
+                {
+                    shopOrderItemDetails[i].Status = OrderStatus.ShortClose;
+                    shopOrderItemList.Add(shopOrderItemDetails[i]);
+
+                    //Update PendingShopOrderConfirmationQty in SalesOrder Table
+
+                    var shopOrderDetails = await _shopOrderRepository.GetShopOrderById(shopOrderItemDetails[i].ShopOrderId);
+                    var pendingSoConfirmationQty = shopOrderDetails.TotalSOReleaseQty - shopOrderDetails.WipQty;
+
+                    UpdateShopOrderQtyDto updateShopOrderQtyDto = new UpdateShopOrderQtyDto();
+                    updateShopOrderQtyDto.FGItemNumber = shopOrderItemDetails[i].FGItemNumber;
+                    updateShopOrderQtyDto.ProjectNumber = shopOrderItemDetails[i].ProjectNumber;
+                    updateShopOrderQtyDto.SalesOrderNumber = shopOrderItemDetails[i].SalesOrderNumber;
+                    updateShopOrderQtyDto.PendingSoConfirmationQty = pendingSoConfirmationQty;
+
+                    var jsons = JsonConvert.SerializeObject(updateShopOrderQtyDto);
+                    var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                    //var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdatePendingShopOrderQty?"), datas);
+
+                    var client1 = _clientFactory.CreateClient();
+                    var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
+                    "UpdatePendingShopOrderQty"))
+                    {
+                        Content = datas
+                    };
+                    request1.Headers.Add("Authorization", token1);
+
+                    var responses = await client1.SendAsync(request1);
+                }
+
                 shortCloseShopOrderById.IsShortClosed = true;
                 shortCloseShopOrderById.ShortClosedBy = _createdBy;
                 shortCloseShopOrderById.ShortClosedOn = DateTime.Now;
+                shortCloseShopOrderById.Status = OrderStatus.ShortClose;
+                shortCloseShopOrderById.ShopOrderItems = shopOrderItemList;
+
                 string result = await _shopOrderRepository.UpdateShopOrder(shortCloseShopOrderById);
+
                 //Get Matterial Issue Details
                 var materialIssue = await _materialIssueRepository.GetMaterialIssueByShopOrderNo(shortCloseShopOrderById.ShopOrderNumber);
                 materialIssue.IsShortClosed = true;
@@ -1660,6 +1699,7 @@ namespace Tips.Production.Api.Controllers
 
                 _materialIssueRepository.SaveAsync();
                 _shopOrderRepository.SaveAsync();
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ShopOrder have been closed";
                 serviceResponse.Success = true;

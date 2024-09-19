@@ -47,4 +47,9 @@ namespace Tips.Grin.Api.Entities.DTOs
             public string? Remarks { get; set; }
             public List<OpenGrinDetailsUpdateDto> OpenGrinDetails { get; set; }
     }
+
+    public class OpenGrinPartSORefDto
+    {
+        public string? ReferenceSONumber { get; set; }
+    }
 }
