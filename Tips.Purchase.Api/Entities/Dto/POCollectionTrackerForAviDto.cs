@@ -78,4 +78,8 @@ namespace Tips.Purchase.Api.Entities.Dto
         public List<string> VendorName { get; set; }
         public List<string>? Remarks { get; set; }
     }
+    public class PO_GRIN_IQC_POBreakDownDetailsDto
+    { 
+        
+    }
 }

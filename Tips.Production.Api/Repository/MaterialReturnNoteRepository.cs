@@ -130,7 +130,7 @@ namespace Tips.Production.Api.Repository
         {
             var materialReturnNoteDetails = FindAll().OrderByDescending(x => x.Id)
                 .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProjectNumber.Contains(searchParams.SearchValue) ||
-                   inv.MRNNumber.Contains(searchParams.SearchValue))));
+                   inv.MRNNumber.Contains(searchParams.SearchValue) || inv.ShopOrderNumber.Contains(searchParams.SearchValue))));
 
             return PagedList<MaterialReturnNote>.ToPagedList(materialReturnNoteDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }

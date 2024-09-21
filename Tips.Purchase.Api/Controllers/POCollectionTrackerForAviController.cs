@@ -6,6 +6,7 @@ using Entities.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
 using Tips.Purchase.Api.Contracts;
 using Tips.Purchase.Api.Entities;
@@ -21,12 +22,59 @@ namespace Tips.Purchase.Api.Controllers
         private IPOCollectionTrackerForAviRepository _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        public POCollectionTrackerForAviController(IPOCollectionTrackerForAviRepository repository, ILoggerManager logger, IMapper mapper)
+        private IPurchaseOrderRepository _PoRepository;
+        public POCollectionTrackerForAviController(IPOCollectionTrackerForAviRepository repository, IPurchaseOrderRepository PoRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _PoRepository=PoRepository;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPO_GRIN_IQC_POBreakDownDetailsBYPONo([FromQuery]string Ponumber)
+        {
+            ServiceResponse<IEnumerable<POCollectionTrackerForAviDto>> serviceResponse = new ServiceResponse<IEnumerable<POCollectionTrackerForAviDto>>();
+
+            try
+            {
+                if (Ponumber is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Ponumber object sent from client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Ponumber object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Ponumber object sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Ponumber object sent from client.");
+                    return BadRequest("Invalid model object");
+                }
+                var podetails = await _PoRepository.GetPurchaseOrderItemsByPONumber(Ponumber);
+
+               // serviceResponse.Data = result;
+                serviceResponse.Message = "Returned GetPO_GRIN_IQC_POBreakDownDetailsBYPONo Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"There was An Issue in GetPO_GRIN_IQC_POBreakDownDetailsBYPONo : {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAllPOCollectionTrackerForAvi([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
