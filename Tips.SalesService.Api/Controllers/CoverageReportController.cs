@@ -820,6 +820,7 @@ namespace Tips.SalesService.Api.Controllers
                                 {
                                     ItemNumber = item.ItemNumber,
                                     MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
+                                    Version = item.Version,
                                     Description = item.Description,
                                     ProjectNumber = projectNumber,
                                     UOM = item.UOM,

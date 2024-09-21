@@ -264,6 +264,20 @@ namespace Tips.Grin.Api.Repository
             return openGrinDataList;
 
         }
+        public async Task<IEnumerable<OpenGrinPartSORefDto>> GetAllOpenGrinSORefDetails()
+        {
+            IEnumerable<OpenGrinPartSORefDto> openGrinDataList = await _tipsGrinDbContext.OpenGrinParts
+                            .GroupBy(p=>p.ReferenceSONumber)
+                           .Select(x => new OpenGrinPartSORefDto()
+                           {
+                               ReferenceSONumber = x.Key,
+
+                           }).ToListAsync();
+
+
+            return openGrinDataList;
+
+        }
         public async Task<string> UpdateOpenGrin(OpenGrin openGrin)
         {
             openGrin.LastModifiedBy = _createdBy;

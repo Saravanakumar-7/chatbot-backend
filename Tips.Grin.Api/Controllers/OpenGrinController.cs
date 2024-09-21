@@ -859,5 +859,33 @@ namespace Tips.Grin.Api.Controllers
             }
 
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllOpenGrinSORefDetails()
+        {
+            ServiceResponse<IEnumerable<OpenGrinPartSORefDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinPartSORefDto>>();
+
+            try
+            {
+                var openGrinNoDetials = await _openGrinRepository.GetAllOpenGrinSORefDetails();
+                _logger.LogInfo("Returned all OpenGrinNumberDetials");
+                var result = _mapper.Map<IEnumerable<OpenGrinPartSORefDto>>(openGrinNoDetials);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all OpenGrinSORefDetails Successfully ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
     }
 }

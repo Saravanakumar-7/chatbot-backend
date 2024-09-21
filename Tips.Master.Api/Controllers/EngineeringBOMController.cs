@@ -2624,6 +2624,7 @@ namespace Tips.Master.Api.Controllers
                         {
                             ItemNumber = group.Key,
                             MftrItemNumber = group.Key,
+                            Version = group.First().Version,
                             Description = group.First().Description,
                             UOM = group.First().UOM,
                             PartType = group.First().PartType,
@@ -2775,6 +2776,7 @@ namespace Tips.Master.Api.Controllers
                                 BomCoverageReportChildItemReqQtyByProjectNoDto bomCoverageReportChildItemReqQty = new BomCoverageReportChildItemReqQtyByProjectNoDto
                                 {
                                     ItemNumber = enggChildItem.ItemNumber,
+                                    Version = enggChildItem.Version,
                                     MftrItemNumber = enggChildItem.MftrItemNumbers,
                                     Description = enggChildItem.Description,
                                     UOM = enggChildItem.UOM,

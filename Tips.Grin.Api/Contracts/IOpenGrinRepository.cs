@@ -28,5 +28,6 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithParamForTrans(string? openGrinNumber, string? senderName, string? receiptRefNo
                                                                                                                                          , string? ProjectNumber);
         Task<IEnumerable<OpenGrin_SPReport>> GetOpenGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<OpenGrinPartSORefDto>> GetAllOpenGrinSORefDetails();
     }
 }

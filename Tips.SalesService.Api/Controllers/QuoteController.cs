@@ -1112,6 +1112,7 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(20).SetCellValue("Total Final Amount");
                 headerRow.CreateCell(21).SetCellValue("TotalAdditionalCharges");
                 headerRow.CreateCell(22).SetCellValue("OrderQty");
+                headerRow.CreateCell(23).SetCellValue("InstallationCharges");
 
 
                 // Populate data rows
@@ -1142,6 +1143,7 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(20).SetCellValue(item.TotalFinalAmount.HasValue ? Convert.ToDouble(item.TotalFinalAmount.Value) : 0);
                     row.CreateCell(21).SetCellValue(item.TotalAdditionalCharges.HasValue ? Convert.ToDouble(item.TotalAdditionalCharges.Value) : 0);
                     row.CreateCell(22).SetCellValue(item.OrderQty.HasValue ? Convert.ToDouble(item.OrderQty.Value) : 0);
+                    row.CreateCell(23).SetCellValue(item.InstallationCharges.HasValue ? Convert.ToDouble(item.InstallationCharges.Value) : 0);
                 }
 
 
