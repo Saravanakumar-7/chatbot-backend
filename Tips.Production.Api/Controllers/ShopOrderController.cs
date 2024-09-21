@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 using AutoMapper;
+using Azure;
 using Contracts;
 using Entities;
 using Entities.DTOs;
@@ -1657,31 +1658,33 @@ namespace Tips.Production.Api.Controllers
                     shopOrderItemDetails[i].Status = OrderStatus.ShortClose;
                     shopOrderItemList.Add(shopOrderItemDetails[i]);
 
-                    //Update PendingShopOrderConfirmationQty in SalesOrder Table
-
-                    var shopOrderDetails = await _shopOrderRepository.GetShopOrderById(shopOrderItemDetails[i].ShopOrderId);
-                    var pendingSoConfirmationQty = shopOrderDetails.TotalSOReleaseQty - shopOrderDetails.WipQty;
-
-                    UpdateShopOrderQtyDto updateShopOrderQtyDto = new UpdateShopOrderQtyDto();
-                    updateShopOrderQtyDto.FGItemNumber = shopOrderItemDetails[i].FGItemNumber;
-                    updateShopOrderQtyDto.ProjectNumber = shopOrderItemDetails[i].ProjectNumber;
-                    updateShopOrderQtyDto.SalesOrderNumber = shopOrderItemDetails[i].SalesOrderNumber;
-                    updateShopOrderQtyDto.PendingSoConfirmationQty = pendingSoConfirmationQty;
-
-                    var jsons = JsonConvert.SerializeObject(updateShopOrderQtyDto);
-                    var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                    //var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdatePendingShopOrderQty?"), datas);
-
-                    var client1 = _clientFactory.CreateClient();
-                    var token1 = HttpContext.Request.Headers["Authorization"].ToString();
-                    var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
-                    "UpdatePendingShopOrderQty"))
+                    if (shortCloseShopOrderById.ItemType == PartType.FG)
                     {
-                        Content = datas
-                    };
-                    request1.Headers.Add("Authorization", token1);
+                        //Update PendingShopOrderConfirmationQty in SalesOrder Table
 
-                    var responses = await client1.SendAsync(request1);
+                        var pendingSoConfirmationQty = shortCloseShopOrderById.TotalSOReleaseQty - shortCloseShopOrderById.WipQty;
+
+                        UpdateShopOrderQtyDto updateShopOrderQtyDto = new UpdateShopOrderQtyDto();
+                        updateShopOrderQtyDto.FGItemNumber = shopOrderItemDetails[i].FGItemNumber;
+                        updateShopOrderQtyDto.ProjectNumber = shopOrderItemDetails[i].ProjectNumber;
+                        updateShopOrderQtyDto.SalesOrderNumber = shopOrderItemDetails[i].SalesOrderNumber;
+                        updateShopOrderQtyDto.PendingSoConfirmationQty = pendingSoConfirmationQty;
+
+                        var jsons = JsonConvert.SerializeObject(updateShopOrderQtyDto);
+                        var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                        //var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdatePendingShopOrderQty?"), datas);
+
+                        var client1 = _clientFactory.CreateClient();
+                        var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+                        var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
+                        "UpdatePendingShopOrderQty"))
+                        {
+                            Content = datas
+                        };
+                        request1.Headers.Add("Authorization", token1);
+
+                        var responses = await client1.SendAsync(request1);
+                    }
                 }
 
                 shortCloseShopOrderById.IsShortClosed = true;
@@ -1734,14 +1737,16 @@ namespace Tips.Production.Api.Controllers
                     return Ok(serviceResponse);
                 }
 
+                HttpStatusCode UpdateShopOrder = HttpStatusCode.OK;
+
                 soItemDetailBySOItemId.Status = OrderStatus.ShortClose;
                 string result = await _shopOrderItemRepository.UpdateShopOrderItem(soItemDetailBySOItemId);
                 _shopOrderItemRepository.SaveAsync();
 
                 //Update ShopOrder Table Status
-                var shopOrderItemOpenStatuscount = await _shopOrderItemRepository.GetShopOrderItemOpenStatusCount(soItemDetailBySOItemId.ShopOrderId);
+                var shopOrderItemShortCloseCount = await _shopOrderItemRepository.GetShopOrderItemShortCloseCount(soItemDetailBySOItemId.ShopOrderId);
 
-                if (shopOrderItemOpenStatuscount == 0)
+                if (shopOrderItemShortCloseCount == 0)
                 {
                     var shopOrderDetails = await _shopOrderRepository.GetShopOrderById(soItemDetailBySOItemId.ShopOrderId);
                     shopOrderDetails.Status = OrderStatus.ShortClose;
@@ -1759,28 +1764,45 @@ namespace Tips.Production.Api.Controllers
                 //Update PendingShopOrderConfirmationQty in SalesOrder Table
 
                 var ShopOrderDetails = await _shopOrderRepository.GetShopOrderById(soItemDetailBySOItemId.ShopOrderId);
-                var pendingSoConfirmationQty = ShopOrderDetails.TotalSOReleaseQty - ShopOrderDetails.WipQty;
 
-                UpdateShopOrderQtyDto updateShopOrderQtyDto = new UpdateShopOrderQtyDto();
-                updateShopOrderQtyDto.FGItemNumber = soItemDetailBySOItemId.FGItemNumber;
-                updateShopOrderQtyDto.ProjectNumber = soItemDetailBySOItemId.ProjectNumber;
-                updateShopOrderQtyDto.SalesOrderNumber = soItemDetailBySOItemId.SalesOrderNumber;
-                updateShopOrderQtyDto.PendingSoConfirmationQty = pendingSoConfirmationQty;
-
-                var jsons = JsonConvert.SerializeObject(updateShopOrderQtyDto);
-                var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                //var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdatePendingShopOrderQty?"), datas);
-
-                var client1 = _clientFactory.CreateClient();
-                var token1 = HttpContext.Request.Headers["Authorization"].ToString();
-                var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
-                "UpdatePendingShopOrderQty"))
+                if (ShopOrderDetails.ItemType == PartType.FG)
                 {
-                    Content = datas
-                };
-                request1.Headers.Add("Authorization", token1);
+                    var pendingSoConfirmationQty = ShopOrderDetails.TotalSOReleaseQty - ShopOrderDetails.WipQty;
 
-                var responses = await client1.SendAsync(request1);
+                    UpdateShopOrderQtyDto updateShopOrderQtyDto = new UpdateShopOrderQtyDto();
+                    updateShopOrderQtyDto.FGItemNumber = soItemDetailBySOItemId.FGItemNumber;
+                    updateShopOrderQtyDto.ProjectNumber = soItemDetailBySOItemId.ProjectNumber;
+                    updateShopOrderQtyDto.SalesOrderNumber = soItemDetailBySOItemId.SalesOrderNumber;
+                    updateShopOrderQtyDto.PendingSoConfirmationQty = pendingSoConfirmationQty;
+
+                    var jsons = JsonConvert.SerializeObject(updateShopOrderQtyDto);
+                    var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                    //var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdatePendingShopOrderQty?"), datas);
+
+                    var client1 = _clientFactory.CreateClient();
+                    var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
+                    "UpdatePendingShopOrderQty"))
+                    {
+                        Content = datas
+                    };
+                    request1.Headers.Add("Authorization", token1);
+
+                    var responses = await client1.SendAsync(request1);
+                    if (responses.StatusCode != HttpStatusCode.OK)
+                    {
+                        UpdateShopOrder = responses.StatusCode;
+                    }
+                    else
+                    {
+                        _logger.LogError($"Something went wrong inside Create CreateGrin action: Other Service Calling");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
+                    }
+                }
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ShopOrderItems Status have been closed";

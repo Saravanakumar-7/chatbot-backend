@@ -79,6 +79,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public string? ItemNumber { get; set; }
         public string? MftrItemNumber { get; set; }
+        public string? Version { get; set; }
         public string? Description { get; set; }
         public string? ProjectNumber { get; set; }
         public string? UOM { get; set; }

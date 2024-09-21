@@ -25,5 +25,6 @@
         public decimal? TotalFinalAmount { get; set; }
         public decimal? TotalAdditionalCharges { get; set; }
         public decimal? OrderQty { get; set; }
+        public decimal? InstallationCharges { get; set; }
     }
 }

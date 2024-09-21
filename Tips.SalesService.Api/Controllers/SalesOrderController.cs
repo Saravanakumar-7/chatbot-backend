@@ -1805,14 +1805,35 @@ namespace Tips.SalesService.Api.Controllers
         public async Task<IActionResult> UpdatePendingShopOrderQty([FromBody] UpdatePendingShopOrderConfirmationQtyDto updatePendingShopOrderConfirmationQtyDto)
         {
 
-            IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderBySalesOrderNoandItemNo(updatePendingShopOrderConfirmationQtyDto.SalesOrderNumber, updatePendingShopOrderConfirmationQtyDto.FGItemNumber, updatePendingShopOrderConfirmationQtyDto.ProjectNumber);
+            IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderBySalesOrderNoandItemNo(updatePendingShopOrderConfirmationQtyDto.SalesOrderNumber,
+                                                                                                       updatePendingShopOrderConfirmationQtyDto.FGItemNumber, updatePendingShopOrderConfirmationQtyDto.ProjectNumber);
 
-            var orderItem = salesOrderItems.FirstOrDefault();
+            var pendingSOConfQty = updatePendingShopOrderConfirmationQtyDto.PendingSoConfirmationQty;
 
-            orderItem.ShopOrderQty -= updatePendingShopOrderConfirmationQtyDto.PendingSoConfirmationQty;
-            await _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
+            if (salesOrderItems.Count() > 0)
+            {
+                foreach (var item in salesOrderItems)
+                {
+                    if (item.ShopOrderQty >= pendingSOConfQty)
+                    {
+                        item.ShopOrderQty -= pendingSOConfQty;
+                        pendingSOConfQty = 0;
+                    }
+                    else
+                    {
+                        pendingSOConfQty -= item.ShopOrderQty;
+                        item.ShopOrderQty = 0;
+                    }
 
-            _salesOrderItemsRepository.SaveAsync();
+                    await _salesOrderItemsRepository.UpdateSalesOrderItem(item);
+
+                    if (pendingSOConfQty <= 0)
+                    {
+                        break;
+                    }
+                }
+                _salesOrderItemsRepository.SaveAsync();
+            }
             return Ok();
         }
 

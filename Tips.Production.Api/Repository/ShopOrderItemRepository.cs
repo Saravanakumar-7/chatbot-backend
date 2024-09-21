@@ -68,10 +68,10 @@ namespace Tips.Production.Api.Repository
             string result = $"ShopOrderItem details of {shopOrderItem.Id} is updated successfully!";
             return result;
         }
-        public async Task<int?> GetShopOrderItemOpenStatusCount(int shopOrderId)
+        public async Task<int?> GetShopOrderItemShortCloseCount(int shopOrderId)
         {
             var shopOrderItemOpenStatusCount = _tipsProductionDbContext.ShopOrderItems
-                                        .Where(x => x.ShopOrderId == shopOrderId && x.Status == OrderStatus.Open).Count();
+                                        .Where(x => x.ShopOrderId == shopOrderId && x.Status != OrderStatus.ShortClose).Count();
 
             return shopOrderItemOpenStatusCount;
         }
