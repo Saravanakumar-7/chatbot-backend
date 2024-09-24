@@ -58,7 +58,7 @@ namespace Tips.Purchase.Api.Controllers
                 }
                 var podetails = await _PoRepository.GetPurchaseOrderItemsByPONumber(Ponumber);
 
-               // serviceResponse.Data = result;
+                serviceResponse.Data = result;
                 serviceResponse.Message = "Returned GetPO_GRIN_IQC_POBreakDownDetailsBYPONo Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;

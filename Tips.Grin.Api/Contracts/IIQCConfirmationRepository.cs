@@ -30,6 +30,6 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<IQCConfirmation_SPReport>> GetIQCConfirmationSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<IQCConfirmationSPReportForTrans>> GetIQCConfirmationSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
         Task<PagedList<IQCConfirmationSPReportForTrans>> GetIQCConfirmationSPReportForTrans(PagingParameter pagingParameter);
-
+        Task<List<IQCConfirmation>> GetIqcDetailsByGrinNoAndParts(Dictionary<string, List<string>> Grins);
     }
 }

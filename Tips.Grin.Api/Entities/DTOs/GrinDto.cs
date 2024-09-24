@@ -420,7 +420,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string Warehouse { get; set; }
         public string Location { get; set; }
         public string ProjectNumber { get; set; }
-        
+
     }
     public class GrinIQCConfirmationSaveDto
     {
@@ -443,5 +443,10 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string message { get; set; }
         public bool success { get; set; }
         public int statusCode { get; set; }
+    }
+    public class GrinandIqcDetail
+    {
+        public List<Grins> grins { get; set; }
+        public List<IQCConfirmation>? iqcs { get; set; }
     }
 }
