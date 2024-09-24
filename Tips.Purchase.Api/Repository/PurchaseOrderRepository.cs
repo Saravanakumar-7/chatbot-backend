@@ -1368,6 +1368,25 @@ namespace Tips.Purchase.Api.Repository
 
             return purchaseOrderDetailbyPONumber;
         }
+        public async Task<PurchaseOrder> GetLatestPurchaseOrderItemsByPONumber(string poNumber)
+        {
+            var purchaseOrderDetailbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders
+                .Where(x => x.PONumber == poNumber && x.RevisionNumber==(_tipsPurchaseDbContext.PurchaseOrders.Where(x => x.PONumber == poNumber).Max(x=>x.RevisionNumber)))
+                .Include(t => t.POItems)
+                                .ThenInclude(x => x.POAddprojects)
+                                .Include(m => m.POItems)
+                                .ThenInclude(i => i.POAddDeliverySchedules)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.POSpecialInstructions)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.POConfirmationDates)
+                                .Include(itm => itm.POItems)
+                                .ThenInclude(po => po.PrDetails)
+                                .Include(itm => itm.POIncoTerms)
+                                .FirstOrDefaultAsync();            
+
+            return purchaseOrderDetailbyPONumber;
+        }
 
         public async Task<PurchaseOrder> GetPurchaseOrderByPONoAndRevNo(string poNumber, int revisionNumber)
         {
