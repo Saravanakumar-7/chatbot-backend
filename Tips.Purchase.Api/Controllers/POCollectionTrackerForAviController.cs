@@ -34,7 +34,7 @@ namespace Tips.Purchase.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetPO_GRIN_IQC_POBreakDownDetailsBYPONo([FromQuery]string Ponumber)
         {
-            ServiceResponse<IEnumerable<POCollectionTrackerForAviDto>> serviceResponse = new ServiceResponse<IEnumerable<POCollectionTrackerForAviDto>>();
+            ServiceResponse<PurchaseOrder> serviceResponse = new ServiceResponse<PurchaseOrder>();
 
             try
             {
@@ -58,7 +58,7 @@ namespace Tips.Purchase.Api.Controllers
                 }
                 var podetails = await _PoRepository.GetPurchaseOrderItemsByPONumber(Ponumber);
 
-                serviceResponse.Data = result;
+                serviceResponse.Data = podetails;
                 serviceResponse.Message = "Returned GetPO_GRIN_IQC_POBreakDownDetailsBYPONo Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;

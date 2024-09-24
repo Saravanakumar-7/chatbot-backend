@@ -148,7 +148,7 @@ namespace Tips.Grin.Api.Controllers
                     IqcDetails = await _iQCConfirmationRepository.GetIqcDetailsByGrinNoAndParts(Iqcs);
                     IqcDetails.ForEach(x=>x.IQCConfirmationItems.ForEach(z=>z.IQCConfirmation=null));
                 }
-              //  _logger.LogInfo($"Returned all GetGrinAndIqcsByPurchaseOrder {Ponumber}");
+                _logger.LogInfo($"Returned all GetGrinAndIqcsByPurchaseOrder {Ponumber}");
 
                 GrinandIqcDetail result = new GrinandIqcDetail()
                 {
