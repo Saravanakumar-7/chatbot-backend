@@ -43,7 +43,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? Location { get; set; }
         public decimal? LocationStock { get; set; }
         public decimal DispatchQty { get; set; }
-        public string Remarks { get; set; }
+        public string? Remarks { get; set; }
         public string? SerialNo { get; set; }
         public List<ReturnOpenDeliveryOrderItemQtyDistributionPostDto>? QtyDistribution { get; set; }
     }

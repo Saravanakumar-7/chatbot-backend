@@ -31,7 +31,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var date = DateTime.Now;
             openDeliveryOrder.CreatedBy = _createdBy;
-            openDeliveryOrder.CreatedOn = date.Date;
+            openDeliveryOrder.CreatedOn = date;
 
             openDeliveryOrder.Unit = _unitname;
             var result = await Create(openDeliveryOrder);

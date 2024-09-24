@@ -25,6 +25,7 @@ namespace Tips.Grin.Api.Contracts
         Task<int?> GetGrinPartsIqcStatusCount(int grinId);
         Task<int?> GetGrinPartsBinningStatusCount(int grinId);
         Task<int?> GetGrinPartsCount(int grinId);
+        Task<List<int>?> GetGrinIdsByPonumber(string Ponumber);
     }
 }
 

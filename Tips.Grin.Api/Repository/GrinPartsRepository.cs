@@ -133,7 +133,12 @@ namespace Tips.Grin.Api.Repository
         //    string result = $"Grin Detail {grinParts.Id} is updated successfully!";
         //    return result;
         //}
+        public async Task<List<int>?> GetGrinIdsByPonumber(string Ponumber)
+        {
+            var GrinIds = _tipsGrinDbContext.GrinParts.Where(x => x.PONumber == Ponumber).Select(x => x.GrinsId).Distinct().ToList();
 
+            return GrinIds;
+        }
     }
 
 }

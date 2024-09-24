@@ -35,7 +35,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var date = DateTime.Now;
             bTODeliveryOrder.CreatedBy = _createdBy;
-            bTODeliveryOrder.CreatedOn = date.Date;
+            bTODeliveryOrder.CreatedOn = date;
             bTODeliveryOrder.Unit = _unitname;
             //Guid btoDeliveryOrderNumber = Guid.NewGuid();
             //bTODeliveryOrder.BTONumber = " BTO-" + btoDeliveryOrderNumber.ToString();

@@ -200,6 +200,23 @@ namespace Tips.Grin.Api.Repository
 
             return activeIQCConfirmationNameList;
         }
+        public async Task<List<IQCConfirmation>> GetIqcDetailsByGrinNoAndParts(Dictionary<string, List<string>> Grins)
+        {
+            var iQCDetails = await _tipsGrinDbContext.IQCConfirmations
+                .Where(iqc => Grins.Keys.Contains(iqc.GrinNumber)) // Check if GrinNumber exists in the dictionary keys
+                .Include(iqc => iqc.IQCConfirmationItems)          // Include the IQCConfirmationItems
+                .ToListAsync();
+
+            // Filter the items based on the PartNumber
+            foreach (var iqc in iQCDetails)
+            {
+                iqc.IQCConfirmationItems = iqc.IQCConfirmationItems
+                    .Where(item => Grins[iqc.GrinNumber].Contains(item.ItemNumber)) // Filter parts based on the dictionary values
+                    .ToList();
+            }
+
+            return iQCDetails;
+        }
 
     }
 

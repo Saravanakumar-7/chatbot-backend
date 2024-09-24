@@ -448,7 +448,16 @@ namespace Tips.Grin.Api.Repository
             string result = $"Grin Detail {grins.Id} is updated successfully!";
             return result;
         }
-
+        public async Task<IEnumerable<Grins>> GetGrinDetailsofPOByGrinIds(List<int> grinIds,string Ponumber)
+        {
+            var grinDetailsList = await FindByCondition(x => grinIds.Contains(x.Id))
+                .Include(item => item.GrinParts.Where(x=>x.PONumber==Ponumber))
+                    .ThenInclude(pr => pr.ProjectNumbers)
+                    .Include(item => item.GrinParts.Where(x => x.PONumber == Ponumber))
+                    .Include(o => o.OtherCharges)
+                .ToListAsync();
+            return grinDetailsList;
+        }
 
     }
     public class UploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository
