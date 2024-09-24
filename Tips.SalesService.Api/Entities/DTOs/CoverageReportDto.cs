@@ -91,5 +91,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? BalanceToOrder { get; set; }
 
     }
+    public class CoverageReportProjectDto
+    {
+        public List<string> ProjectNumber { get; set; }
 
+    }
 }
