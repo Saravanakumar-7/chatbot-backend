@@ -975,6 +975,8 @@ namespace Tips.SalesService.Api.Controllers
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
                     {
                         SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
+                        var oldSOItem = salesOrderDetailBeforeUpdate.SalesOrdersItems[i];
+                        salesOrderItemsDetail.Id = oldSOItem.Id;
                         if (salesOrderItemsDetail.StatusEnum != OrderStatus.ShortClosed)
                         {
                             salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty - salesOrderItemsDetail.DispatchQty;
@@ -1790,51 +1792,71 @@ namespace Tips.SalesService.Api.Controllers
                     }
                 }
             else return NotFound();
-            //var orderItem = salesOrderItems.FirstOrDefault();
-            //if (orderItem.BalanceQty != orderItem.ShopOrderQty)
-            //{
-            //    orderItem.ShopOrderQty += shopOrderReleaseQtyDto.ReleaseQty;
-            //    await _salesOrderItemsRepository.UpdateSalesOrderItem(orderItem);
-
-            //    _salesOrderItemsRepository.SaveAsync();
-            //}
             return Ok();
         }
+
         //Update Pending shoporder Qty in salesorder
         [HttpPost]
         public async Task<IActionResult> UpdatePendingShopOrderQty([FromBody] UpdatePendingShopOrderConfirmationQtyDto updatePendingShopOrderConfirmationQtyDto)
         {
-
-            IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderBySalesOrderNoandItemNo(updatePendingShopOrderConfirmationQtyDto.SalesOrderNumber,
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.UpdateShopOrderQtyBySalesOrderNoandItemNo(updatePendingShopOrderConfirmationQtyDto.SalesOrderNumber,
                                                                                                        updatePendingShopOrderConfirmationQtyDto.FGItemNumber, updatePendingShopOrderConfirmationQtyDto.ProjectNumber);
 
-            var pendingSOConfQty = updatePendingShopOrderConfirmationQtyDto.PendingSoConfirmationQty;
+                var pendingSOConfQty = updatePendingShopOrderConfirmationQtyDto.PendingSoConfirmationQty;
 
-            if (salesOrderItems.Count() > 0)
-            {
-                foreach (var item in salesOrderItems)
+                if (salesOrderItems.Count() > 0)
                 {
-                    if (item.ShopOrderQty >= pendingSOConfQty)
+                    foreach (var item in salesOrderItems)
                     {
-                        item.ShopOrderQty -= pendingSOConfQty;
-                        pendingSOConfQty = 0;
-                    }
-                    else
-                    {
-                        pendingSOConfQty -= item.ShopOrderQty;
-                        item.ShopOrderQty = 0;
-                    }
+                        if (item.ShopOrderQty >= pendingSOConfQty)
+                        {
+                            item.ShopOrderQty -= pendingSOConfQty;
+                            pendingSOConfQty = 0;
+                        }
+                        else
+                        {
+                            pendingSOConfQty -= item.ShopOrderQty;
+                            item.ShopOrderQty = 0;
+                        }
 
-                    await _salesOrderItemsRepository.UpdateSalesOrderItem(item);
+                        await _salesOrderItemsRepository.UpdateSalesOrderItem(item);
 
-                    if (pendingSOConfQty <= 0)
-                    {
-                        break;
+                        if (pendingSOConfQty <= 0)
+                        {
+                            break;
+                        }
                     }
+                    _salesOrderItemsRepository.SaveAsync();
                 }
-                _salesOrderItemsRepository.SaveAsync();
+                else
+                {
+                    _logger.LogError($"Something went wrong inside UpdateShopOrderQtyBySalesOrderNoandItemNo action:{updatePendingShopOrderConfirmationQtyDto.SalesOrderNumber}");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "SalesOrder Not Found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "ShopOrderQty in SalesOrder have been Updated";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
-            return Ok();
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdatePendingShopOrderQty action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal error in SalesOrderUpdate";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
         }
 
         //Update Invoiced Value and DispatchQty Using Invoice 
@@ -4380,6 +4402,7 @@ namespace Tips.SalesService.Api.Controllers
                     SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
 
                     var oldSOItem = salesOrderDetailBeforeUpdate.SalesOrdersItems[i];
+                    salesOrderItemsDetail.Id = oldSOItem.Id;
                     if (salesOrderItemsDto[i].NowShortClosed == true)
                     {
                         salesOrderItemsDetail.ShortClosedBy = _createdBy;
@@ -4441,6 +4464,7 @@ namespace Tips.SalesService.Api.Controllers
                     salesOrderItemsDetail.SoConfirmationDates = listCon;
                     salesOrderItemsList.Add(salesOrderItemsDetail);
                 }
+
                 var salesAdditionalChargesList = _mapper.Map<List<SalesOrderAdditionalCharges>>(salesAdditionalChargesDto);
 
                 var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetailBeforeUpdate);

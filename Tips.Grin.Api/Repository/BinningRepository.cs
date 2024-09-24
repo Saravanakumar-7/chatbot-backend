@@ -123,6 +123,8 @@ namespace Tips.Grin.Api.Repository
                 GrinNumber = grinNumber.GrinNumber,
                 InvoiceNumber = grinNumber.InvoiceNumber,
                 VendorName = grinNumber.VendorName,
+                VendorId = grinNumber.VendorId,
+                VendorNumber = grinNumber.VendorNumber,
                 CreatedBy = binningGrinNoList.Where(b => b.GrinNumber == grinNumber.GrinNumber).Select(x => x.CreatedBy).FirstOrDefault(),
                 CreatedOn = binningGrinNoList.Where(b => b.GrinNumber == grinNumber.GrinNumber).Select(x => x.CreatedOn).FirstOrDefault(),
                 LastModifiedBy = binningGrinNoList.Where(b => b.GrinNumber == grinNumber.GrinNumber).Select(x => x.LastModifiedBy).FirstOrDefault(),
@@ -136,6 +138,8 @@ namespace Tips.Grin.Api.Repository
                 grinDetails = grinDetails
                               .Where(dto =>
                                   dto.GrinNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                  dto.VendorId.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                  dto.VendorNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                                   dto.InvoiceNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
                                   dto.VendorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).OrderByDescending(x => x.Id).ToList();
             }

@@ -92,9 +92,9 @@ namespace Tips.Production.Api.Entities.DTOs
     }
     public class ListOfShopOrderDto
     {
-       public int Id { get; set; }
-       public string? ShopOrderNumber { get; set; }
-       public decimal TotalSOReleaseQty { get; set; }
+        public int Id { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        public decimal TotalSOReleaseQty { get; set; }
     }
     public class ShopOrderSearchDto
     {
@@ -180,5 +180,11 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal? WO_Balance_Qty { get; set; }
         public string? Status { get; set; }
     }
+    public class ShopOrderShortCloseDto
+    {
+        public decimal? SOReleaseQty { get; set; }
+        public decimal WipQty { get; set; }
+        public OrderStatus Status { get; set; }
 
+    }
 }
