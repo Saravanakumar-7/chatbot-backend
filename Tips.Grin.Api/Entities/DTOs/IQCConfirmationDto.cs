@@ -17,11 +17,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? IQCNumber { get; set; }
 
         public string? GrinNumber { get; set; }
-        [Required]
-        public string VendorName { get; set; }
-
-        [Required]
         public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
 
         [Required]
         public string InvoiceNumber { get; set; }
@@ -60,7 +58,9 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public string GrinNumber { get; set; }
         public int GrinId { get; set; }
-
+        public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
         public List<IQCConfirmationItemsPostDto>? IQCConfirmationItemsPostDtos { get; set; }
 
     }
@@ -71,6 +71,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         public int Id { get; set; }
         public string GrinNumber { get; set; }
         public int GrinId { get; set; }
+        public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
         public string Unit { get; set; }
         public List<IQCConfirmationItemsUpdateDto>? IQCConfirmationItemsUpdateDtos { get; set; }
 
@@ -134,7 +137,9 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public string? GrinNumber { get; set; }
         public int GrinId { get; set; }
-
+        public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
         public IQCConfirmationItemsSaveDto? IQCConfirmationItemsPostDtos { get; set; }
 
     }

@@ -149,9 +149,12 @@ namespace Tips.Grin.Api.Repository
         public async Task<PagedList<IQCConfirmation>> GetAllIqcDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             var getallIQCList = FindAll()
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || (inv.GrinNumber != null && inv.GrinNumber.Contains(searchParams.SearchValue)) ||
-                   (inv.Id != null && inv.Id.ToString().Contains(searchParams.SearchValue))
-                ))).OrderByDescending(x=>x.Id);
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || (inv.GrinNumber != null && inv.GrinNumber.Contains(searchParams.SearchValue)) 
+                ||(inv.Id != null && inv.Id.ToString().Contains(searchParams.SearchValue)
+                   || (inv.VendorName != null && inv.VendorName.Contains(searchParams.SearchValue))
+                    || (inv.VendorNumber != null && inv.VendorName.Contains(searchParams.SearchValue)) ||
+                   (inv.VendorId != null && inv.VendorId.ToString().Contains(searchParams.SearchValue))
+                )))).OrderByDescending(x=>x.Id);
                  
 
             return PagedList<IQCConfirmation>.ToPagedList(getallIQCList, pagingParameter.PageNumber, pagingParameter.PageSize);

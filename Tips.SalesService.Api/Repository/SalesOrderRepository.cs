@@ -1020,6 +1020,15 @@ namespace Tips.SalesService.Api.Repository
 
             return updateShopOrderQty;
         }
+        public async Task<IEnumerable<SalesOrderItems>> UpdateShopOrderQtyBySalesOrderNoandItemNo(string salesOrderNumber, string itemNumber, string projectNumber)
+        {
+
+            var updateShopOrderQty = await _tipsSalesServiceDbContexts.SalesOrdersItems
+                 .Where(x => x.ItemNumber == itemNumber && x.ProjectNumber == projectNumber && x.SalesOrderNumber == salesOrderNumber)
+                          .ToListAsync();
+
+            return updateShopOrderQty;
+        }
         public async Task<IEnumerable<SalesOrderItems>> GetSalesOrderItemDetailsByIdandItemNo(string ItemNumber, int SalesOrderId)
         {
             OrderStatus[] status = { OrderStatus.Open, OrderStatus.PartiallyClosed };

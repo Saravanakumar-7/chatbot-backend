@@ -1825,10 +1825,45 @@ namespace Tips.Production.Api.Controllers
         //SA ShopOrder
 
 
+        //[HttpGet]
+        //public async Task<IActionResult> GetSAShopOrderBalanceQty(string fgItemNumber, string saItemNumber, string projectNumber, string salesOrderNumber)
+        //{
+        //    ServiceResponse<decimal?> serviceResponse = new ServiceResponse<decimal?>();
+        //    try
+        //    {
+        //        var notShortCloseQty = await _shopOrderItemRepository.GetNotShortCloseQty(fgItemNumber, saItemNumber, projectNumber, salesOrderNumber);
+        //        if (notShortCloseQty == null)
+        //        {
+        //            _logger.LogError($"ShopOrder Release Quantity is getting Null Values");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"ShopOrder Release Quantity is getting Null Values";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(serviceResponse);
+        //        }
+
+        //        serviceResponse.Data = notShortCloseQty;
+        //        serviceResponse.Message = "Get ShopOrder Qunatity successfully";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside ShortCloseShopOrderItemSatusByShopOrderItemId action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
         [HttpGet]
         public async Task<IActionResult> GetSAShopOrderBalanceQty(string fgItemNumber, string saItemNumber, string projectNumber, string salesOrderNumber)
         {
-            ServiceResponse<decimal?> serviceResponse = new ServiceResponse<decimal?>();
+            ServiceResponse<List<ShopOrderShortCloseDto>> serviceResponse = new ServiceResponse<List<ShopOrderShortCloseDto>>();
             try
             {
                 var notShortCloseQty = await _shopOrderItemRepository.GetNotShortCloseQty(fgItemNumber, saItemNumber, projectNumber, salesOrderNumber);
@@ -1843,7 +1878,7 @@ namespace Tips.Production.Api.Controllers
                 }
 
                 serviceResponse.Data = notShortCloseQty;
-                serviceResponse.Message = "Get ShopOrder Qunatity successfully";
+                serviceResponse.Message = "Returened SAShopOrder Quantity successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -1851,7 +1886,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside ShortCloseShopOrderItemSatusByShopOrderItemId action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetSAShopOrderBalanceQty action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -1859,6 +1894,7 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> PickListReport(string? ShopOrderNumber)
         {

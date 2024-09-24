@@ -17,6 +17,9 @@ namespace Tips.Grin.Api.Entities
         public string? IQCNumber { get; set; }
         public string? GrinNumber { get; set; }
         public int GrinId { get; set; }
+        public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
         public bool IsIqcCompleted { get; set; }
         public bool IsBinningCompleted { get; set; }
         public string Unit { get; set; }

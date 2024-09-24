@@ -1238,6 +1238,9 @@ namespace Tips.Grin.Api.Controllers
                 var binningDetail = new Binning();
 
                 binningDetail.GrinNumber = binningSaveDto.GrinNumber;
+                binningDetail.VendorId = binningSaveDto.VendorId;
+                binningDetail.VendorName = binningSaveDto.VendorName;
+                binningDetail.VendorNumber = binningSaveDto.VendorNumber;
 
                 List<BinningItems>? binningItemsEntityList = new List<BinningItems>();
                 BinningItems binningItemsEntity = new BinningItems();
