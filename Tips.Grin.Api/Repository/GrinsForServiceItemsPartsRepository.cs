@@ -53,5 +53,11 @@ namespace Tips.Grin.Api.Repository
             data.RejectedQty = Convert.ToDecimal(RejectedQty);
             return data;
         }
+        public async Task<List<int>?> GetGrinForServiceItemsIdsByPonumber(string Ponumber)
+        {
+            var GrinForServiceItemsIds = _tipsGrinDbContext.GrinsForServiceItemsParts.Where(x => x.PONumber == Ponumber).Select(x => x.GrinsForServiceItemsId).Distinct().ToList();
+
+            return GrinForServiceItemsIds;
+        }
     }
 }

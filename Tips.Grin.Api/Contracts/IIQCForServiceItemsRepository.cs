@@ -18,5 +18,6 @@ namespace Tips.Grin.Api.Contracts
         Task<IQCForServiceItems> GetIQCForServiceItemsDetailsbyGrinForServiceItemsNo(string grinsForServiceItemsNumber);
         Task<string> UpdateIQCForServiceItems(IQCForServiceItems iQCForServiceItems);
         Task<IQCForServiceItems> GetIQCForServiceItemsDetailsbyId(int id);
+        Task<List<IQCForServiceItems>> GetIqcForServiceItemsDetailsByGrinForServiceItemsNoAndParts(Dictionary<string, List<string>> Grins);
     }
 }

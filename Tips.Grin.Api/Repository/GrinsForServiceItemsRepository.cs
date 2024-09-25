@@ -163,5 +163,15 @@ namespace Tips.Grin.Api.Repository
             }).ToListAsync();
             return grinNoForIqc;
         }
+        public async Task<IEnumerable<GrinsForServiceItems>> GetGrinDetailsofPOByGrinIds(List<int> grinIds, string Ponumber)
+        {
+            var grinDetailsList = await FindByCondition(x => grinIds.Contains(x.Id))
+                .Include(item => item.GrinsForServiceItemsParts.Where(x => x.PONumber == Ponumber))
+                    .ThenInclude(pr => pr.GrinsForServiceItemsProjectNumbers)
+                    .Include(item => item.GrinsForServiceItemsParts.Where(x => x.PONumber == Ponumber))
+                    .Include(o => o.GrinsForServiceItemsOtherCharges)
+                .ToListAsync();
+            return grinDetailsList;
+        }
     }
 }

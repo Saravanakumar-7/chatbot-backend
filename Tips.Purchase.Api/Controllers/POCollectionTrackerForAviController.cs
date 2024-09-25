@@ -23,18 +23,22 @@ namespace Tips.Purchase.Api.Controllers
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IPurchaseOrderRepository _PoRepository;
-        public POCollectionTrackerForAviController(IPOCollectionTrackerForAviRepository repository, IPurchaseOrderRepository PoRepository, ILoggerManager logger, IMapper mapper)
+        private readonly IHttpClientFactory _clientFactory;
+        private readonly IConfiguration _config;
+        public POCollectionTrackerForAviController(IPOCollectionTrackerForAviRepository repository, IConfiguration config, IHttpClientFactory clientFactory, IPurchaseOrderRepository PoRepository, ILoggerManager logger, IMapper mapper)
         {
+            _config = config;
+            _clientFactory = clientFactory;
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
-            _PoRepository=PoRepository;
+            _PoRepository = PoRepository;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPO_GRIN_IQC_POBreakDownDetailsBYPONo([FromQuery]string Ponumber)
+        public async Task<IActionResult> GetPO_GRIN_IQC_POBreakDownDetailsBYPONo([FromQuery] string Ponumber)
         {
-            ServiceResponse<PurchaseOrder> serviceResponse = new ServiceResponse<PurchaseOrder>();
+            ServiceResponse<PO_GRIN_IQC_POBreakDownDetailsDto> serviceResponse = new ServiceResponse<PO_GRIN_IQC_POBreakDownDetailsDto>();
 
             try
             {
@@ -56,9 +60,55 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError("Invalid Ponumber object sent from client.");
                     return BadRequest("Invalid model object");
                 }
-                var podetails = await _PoRepository.GetPurchaseOrderItemsByPONumber(Ponumber);
+                var podetails = await _PoRepository.GetLastestPurchaseOrderByPONumber(Ponumber);
+                podetails.POIncoTerms.ForEach(x => x.PurchaseOrder = null);
+                podetails.POItems.ForEach(x =>
+                {
+                    x.PurchaseOrder = null;
+                    x.POAddprojects.ForEach(z => z.POItemDetail = null);
+                    x.POAddDeliverySchedules.ForEach(z => z.POItemDetail = null);
+                    x.POSpecialInstructions.ForEach(z => z.POItemDetail = null);
+                    x.POConfirmationDates.ForEach(z => z.POItemDetail = null);
+                    x.PrDetails.ForEach(z => z.POItemDetail = null);
+                });
+                var FinalReportData = new PO_GRIN_IQC_POBreakDownDetailsDto();
+                FinalReportData.PurchaseOrder = podetails;
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                var encodedPONumber = Uri.EscapeDataString(Ponumber);
 
-                serviceResponse.Data = podetails;
+                if (podetails.ProcurementType != "Service")
+                {
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["GRINService"],
+                        $"Grin/GetGrinAndIqcsByPurchaseOrder?Ponumber={encodedPONumber}"));
+                    request.Headers.Add("Authorization", token);
+                    var GRINandIQCObjectResult = await client.SendAsync(request);
+                    if (GRINandIQCObjectResult.StatusCode == HttpStatusCode.OK)
+                    {
+                        var GRINandIQCObjectString = await GRINandIQCObjectResult.Content.ReadAsStringAsync();
+                        var GRINandIQCObjectData = JsonConvert.DeserializeObject<GrinandIqcDetail>(GRINandIQCObjectString);
+                        FinalReportData.Grins = GRINandIQCObjectData.Data.Grins;
+                        FinalReportData.Iqcs = GRINandIQCObjectData.Data.Iqcs;
+                    }
+                }
+                else
+                {
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["GRINService"],
+                        $"GrinsForServiceItems/GetGrinForServiceItemsAndIqcsForServiceItemsByPurchaseOrder?Ponumber={encodedPONumber}"));
+                    request.Headers.Add("Authorization", token);
+                    var GRINForServiceItemsandIQCForServiceItemsObjectResult = await client.SendAsync(request);
+                    if (GRINForServiceItemsandIQCForServiceItemsObjectResult.StatusCode == HttpStatusCode.OK)
+                    {
+                        var GRINandIQCObjectString = await GRINForServiceItemsandIQCForServiceItemsObjectResult.Content.ReadAsStringAsync();
+                        var GRINandIQCObjectData = JsonConvert.DeserializeObject<GrinForServiceItemsandIqcForServiceItemsDetail>(GRINandIQCObjectString);
+                        FinalReportData.grinsForServiceItems = GRINandIQCObjectData.Data.grinsForServiceItems;
+                        FinalReportData.iqcsForServiceItems = GRINandIQCObjectData.Data.iqcsForServiceItems;
+                    }
+                }
+                var breakdownDetails = await _repository.GetAllPOCollectionTrackersForAviByPonumber(Ponumber);
+                breakdownDetails.ForEach(x => x.POBreakDownForAvi.ForEach(z => z.POCollectionTrackerForAvi = null));
+                FinalReportData.POCollectionTrackers = breakdownDetails;
+                serviceResponse.Data = FinalReportData;
                 serviceResponse.Message = "Returned GetPO_GRIN_IQC_POBreakDownDetailsBYPONo Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;

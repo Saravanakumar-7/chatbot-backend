@@ -236,6 +236,13 @@ namespace Tips.Purchase.Api.Repository
             string result = $"POCollectionTracker details of {pocollectionTracker.Id} is updated successfully!";
             return result;
         }
+        public async Task<List<POCollectionTrackerForAvi>> GetAllPOCollectionTrackersForAviByPonumber(string Ponumber)
+        {
+            var CollectionTrackerIds= await _tipsPurchaseDbContext.POBreakDownsForAvi.Where(x=>x.PONumber==Ponumber).Select(x=>x.POCollectionTrackerForAviId).ToListAsync();
+            var CollectionDetails = await _tipsPurchaseDbContext.POCollectionTrackersForAvi.Where(x => CollectionTrackerIds.Contains(x.Id))
+                .Include(x => x.POBreakDownForAvi.Where(x => x.PONumber == Ponumber)).ToListAsync();
 
+            return CollectionDetails;
+        }
     }
 }

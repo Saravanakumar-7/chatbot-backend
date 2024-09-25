@@ -9,5 +9,6 @@ namespace Tips.Grin.Api.Contracts
         Task<GrinsForServiceItemsParts> GetGrinsForServiceItemsPartsDetailsbyGrinsForServiceItemsPartsId(int GrinsForServiceItemsPartsId);
         Task<int?> GetGrinsForServiceItemsPartsCount(int grinForServiceItemsId);
         Task<GrinsForServiceItemsParts> UpdateGrinsForServiceItemsPartsQty(int GrinsForServiceItemsPartsId, string AcceptedQty, string RejectedQty);
+        Task<List<int>?> GetGrinForServiceItemsIdsByPonumber(string Ponumber);
     }
 }

@@ -40,6 +40,86 @@ namespace Tips.Grin.Api.Controllers
             _iQCForServiceItems_ItemsRepository = iQCForServiceItems_ItemsRepository;
             _documentUploadRepository = documentUploadRepository;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetGrinForServiceItemsAndIqcsForServiceItemsByPurchaseOrder(string Ponumber)
+        {
+            ServiceResponse<GrinForServiceItemsandIqcForServiceItemsDetail> serviceResponse = new ServiceResponse<GrinForServiceItemsandIqcForServiceItemsDetail>();
+            try
+            {
+                if (Ponumber is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Ponumber object sent from client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Ponumber object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Ponumber object sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid Ponumber object sent from client.");
+                    return BadRequest("Invalid model object");
+                }
+                var getGrinIds = await _grinPartsRepository.GetGrinForServiceItemsIdsByPonumber(Ponumber);
+
+                if (getGrinIds.Count() == 0)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"No Grins Create for Ponumber: {Ponumber}";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"No Grins Create for Ponumber: {Ponumber}");
+                    return StatusCode(404, serviceResponse);
+                }
+                var Grindetails = await _repository.GetGrinDetailsofPOByGrinIds(getGrinIds, Ponumber);
+                var Iqcs = new Dictionary<string, List<string>>();
+                foreach (var grins in Grindetails)
+                {
+                    grins.GrinsForServiceItemsParts.ForEach(x => x.GrinsForServiceItems = null);
+                    grins.GrinsForServiceItemsParts.ForEach(x => x.GrinsForServiceItemsProjectNumbers.ForEach(z => z.GrinsForServiceItemsParts = null));
+                    grins.GrinsForServiceItemsOtherCharges.ForEach(x => x.GrinsForServiceItems = null);
+
+                    var partNo = grins.GrinsForServiceItemsParts.Where(x => x.IsIqcForServiceItemsCompleted == true).Select(x => x.ItemNumber).ToList();
+                    if (partNo.Count != 0)
+                    {
+                        Iqcs.Add(grins.GrinsForServiceItemsNumber, partNo);
+                    }
+                }
+                List<IQCForServiceItems>? IqcDetails = null;
+                if (Iqcs.Count() != 0)
+                {
+                    IqcDetails = await _iQCForServiceItemsRepository.GetIqcForServiceItemsDetailsByGrinForServiceItemsNoAndParts(Iqcs);
+                    IqcDetails.ForEach(x => x.IQCForServiceItems_Items.ForEach(z => z.IQCForServiceItems = null));
+                }
+                _logger.LogInfo($"Returned all GetGrinForServiceItemsAndIqcsForServiceItemsByPurchaseOrder {Ponumber}");
+
+                GrinForServiceItemsandIqcForServiceItemsDetail result = new GrinForServiceItemsandIqcForServiceItemsDetail()
+                {
+                    grinsForServiceItems = Grindetails.ToList(),
+                    iqcsForServiceItems = IqcDetails
+                };
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all GrinForServiceItems And IqcsForServiceItems Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"GetGrinForServiceItemsAndIqcsForServiceItemsByPurchaseOrder Faced issue :\n{ex.Message}\n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Internal server error {ex.Message}:\n{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAllGrinsForServiceItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
 
