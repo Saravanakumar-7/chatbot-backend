@@ -385,8 +385,19 @@ namespace Tips.Production.Api.Controllers
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogError("Returned all getAllMaterialRequestStatusOpen");
-                var result = _mapper.Map<IEnumerable<MaterialRequestsDto>>(materialRequestDetails);
-                serviceResponse.Data = result;
+                var materialRequestsDtos = _mapper.Map<IEnumerable<MaterialRequestsDto>>(materialRequestDetails);
+
+                foreach (var materialRequest in materialRequestDetails)
+                {
+                    var materialRequestsDto = materialRequestsDtos.FirstOrDefault(dto => dto.Id == materialRequest.Id);
+
+                    if (materialRequestsDto != null)
+                    {
+                        materialRequestsDto.SumOfIssuedQty = materialRequest.MaterialRequestItems.Sum(mri => mri.IssuedQty);
+                    }
+                }
+
+                serviceResponse.Data = materialRequestsDtos;
                 serviceResponse.Message = "Returned all MaterialRequestStatusOpen Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
