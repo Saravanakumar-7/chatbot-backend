@@ -1978,6 +1978,42 @@ namespace Tips.Purchase.Api.Repository
 
 
         }
+
+        public async Task<OpenPurchaseOrderByProjectNoDto?> GetOpenPOTGDetailsByItemAndMultipleProjecNoForCoverage(string itemNumber, List<string> projectNo)
+        {
+            OpenPurchaseOrderByProjectNoDto? openPurchaseOrderDto = new OpenPurchaseOrderByProjectNoDto();
+            var openPoNumbers = await _tipsPurchaseDbContext.PurchaseOrders
+            .Where(po =>
+                 (po.Status == Status.Open || po.Status == Status.PartiallyClosed) &&
+                 po.IsDeleted == false &&
+                 po.IsShortClosed == false &&
+                 (po.ApprovalCount == 4 && po.POApprovalI == true && po.POApprovalII == true && po.POApprovalIII == true && po.POApprovalIV == true) ||
+                (po.ApprovalCount == 2 && po.POApprovalI == true && po.POApprovalII == true) &&
+                 po.IsModified == false &&
+                 po.POItems.Any(pi =>
+                     pi.ItemNumber == itemNumber &&
+                     pi.BalanceQty > 0 &&
+                     pi.PartType == PoPartType.TG &&
+                     (pi.PoStatus == PoStatus.Open || pi.PoStatus == PoStatus.PartiallyClosed) &&
+                     pi.POAddprojects.Any(pr => projectNo.Contains(pr.ProjectNumber))
+                 )
+             )
+             .Select(x => x.Id)
+             .ToListAsync(); // Assuming you want to materialize the result as a list
+
+            openPurchaseOrderDto = await _tipsPurchaseDbContext.PoItems.
+                Where(x => x.ItemNumber == itemNumber && openPoNumbers.Contains(x.PurchaseOrderId) && x.POAddprojects.Any(pr => projectNo.Contains(pr.ProjectNumber)))
+                .GroupBy(g => new { g.ItemNumber })
+                .Select(group => new OpenPurchaseOrderByProjectNoDto
+                {
+                    ItemNumber = group.Key.ItemNumber,
+
+                    BalanceQty = group.Sum(c => c.BalanceQty)
+                }).FirstOrDefaultAsync();
+
+            return openPurchaseOrderDto;
+
+        }
         public async Task<List<OpenPurchaseOrderDto>> GetOpenPODetailsByItem(string itemNumber)
         {
 
