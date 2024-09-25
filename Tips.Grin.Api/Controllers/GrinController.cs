@@ -163,7 +163,7 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"GetGrinAndIqcsByPurchaseOrder Faced issue :\n{ex.Message}\n{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Internal server error {ex.Message}:\n{ex.InnerException}";
                 serviceResponse.Success = false;

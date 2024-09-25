@@ -9,6 +9,9 @@ namespace Tips.Grin.Api.Entities
         public string? IQCForServiceItemsNumber { get; set; }
         public string? GrinsForServiceItemsNumber { get; set; }
         public int GrinsForServiceItemsId { get; set; }
+        public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
         public bool IsIqcForServiceItemsCompleted { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }

@@ -93,5 +93,22 @@ namespace Tips.Grin.Api.Repository
                                 .FirstOrDefaultAsync();
             return iQCDetailsbyId;
         }
+        public async Task<List<IQCForServiceItems>> GetIqcForServiceItemsDetailsByGrinForServiceItemsNoAndParts(Dictionary<string, List<string>> Grins)
+        {
+            var iQCDetails = await _tipsGrinDbContext.IQCForServiceItems
+                .Where(iqc => Grins.Keys.Contains(iqc.GrinsForServiceItemsNumber)) // Check if GrinNumber exists in the dictionary keys
+                .Include(iqc => iqc.IQCForServiceItems_Items)          // Include the IQCConfirmationItems
+                .ToListAsync();
+
+            // Filter the items based on the PartNumber
+            foreach (var iqc in iQCDetails)
+            {
+                iqc.IQCForServiceItems_Items = iqc.IQCForServiceItems_Items
+                    .Where(item => Grins[iqc.GrinsForServiceItemsNumber].Contains(item.ItemNumber)) // Filter parts based on the dictionary values
+                    .ToList();
+            }
+
+            return iQCDetails;
+        }
     }
 }

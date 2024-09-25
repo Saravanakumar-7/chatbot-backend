@@ -257,4 +257,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ProjectNumber { get; set; }
         public string? UOC { get; set; }
     }
+    public class GrinForServiceItemsandIqcForServiceItemsDetail
+    {
+        public List<GrinsForServiceItems> grinsForServiceItems { get; set; }
+        public List<IQCForServiceItems>? iqcsForServiceItems { get; set; }
+    }
 }

@@ -22,5 +22,6 @@ namespace Tips.Grin.Api.Contracts
         Task<string> UpdateGrinsForServiceItems(GrinsForServiceItems grinsForServiceItems);
         Task<int?> GetGrinsForServiceItemsIqcForServiceItemsStatusCount(string grinNo);
         Task<IEnumerable<GrinForServiceItemsNoForIqcForServiceItems>> GetAllGrinForServiceItemsNumberForIqcForServiceItems();
+        Task<IEnumerable<GrinsForServiceItems>> GetGrinDetailsofPOByGrinIds(List<int> grinIds, string Ponumber);
     }
 }

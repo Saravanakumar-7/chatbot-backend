@@ -11,6 +11,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string VendorName { get; set; }
         [Required]
         public string VendorId { get; set; }
+        public string VendorNumber { get; set; }
         [Required]
         public string InvoiceNumber { get; set; }
         public decimal? InvoiceValue { get; set; }
@@ -38,12 +39,18 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public string GrinsForServiceItemsNumber { get; set; }
         public int GrinsForServiceItemsId { get; set; }
+        public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
         public List<IQCForServiceItems_ItemsPostDto>? IQCForServiceItems_Items { get; set; }
     }
     public class IQCForServiceItemsSaveDto
     {
         public string GrinsForServiceItemsNumber { get; set; }
         public int GrinsForServiceItemsId { get; set; }
+        public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
         public IQCForServiceItems_ItemsSaveDto? IQCForServiceItems_Items { get; set; }
 
     }
