@@ -49,6 +49,7 @@ namespace Tips.Production.Api.Controllers
             try
             {
                 var materialRequestDetails = await _materialRequestRepository.GetAllMaterialRequest(pagingParameter, searchParammes);
+
                 var metadata = new
                 {
                     materialRequestDetails.TotalCount,

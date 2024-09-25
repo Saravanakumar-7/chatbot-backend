@@ -24,6 +24,8 @@ namespace Tips.Purchase.Api.Contracts
         Task<PoItem> GetPoItemDetailsByPONumberandItemNo(string ItemNumber, string PONumber, int poItemId);
         Task<OpenPurchaseOrderDto?> GetOpenPOTGDetailsByItemForCoverage(string itemNumber);
         Task<OpenPurchaseOrderByProjectNoDto?> GetOpenPOTGDetailsByItemAndProjecNoForCoverage(string itemNumber, string projectNo);
+        Task<OpenPurchaseOrderByProjectNoDto?> GetOpenPOTGDetailsByItemAndMultipleProjecNoForCoverage(string itemNumber, List<string> projectNo);
         Task<List<OpenPoQuantityDto>> GetListOfOpenPOQtyByItemNoListByProjectNo(string projectNo, List<string> itemNumberList);
+        Task<List<OpenPoQuantityDto>> GetListOfOpenPOQtyByItemNoListByMultipleProjectNo(List<string> itemNumberList, List<string> projectNoList);
     }
 }
