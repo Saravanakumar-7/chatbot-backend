@@ -16,6 +16,7 @@ using static Tips.SalesService.Api.Repository.RfqEnggItemRepository;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,6 +33,14 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 //builder.Services.AddDbContext<DbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Server=DESKTOP-EFBBM74;Database=TipsSalesService;Trusted_Connection=True;Trusted_Connection=SSPI;Encrypt=false;TrustServerCertificate=true;")));
 builder.Services.AddControllers();
+builder.Services.Configure<KestrelServerOptions>(option =>
+{
+    option.Limits.MaxRequestBodySize = 1073741824;
+});
+builder.Services.Configure<IISServerOptions>(option =>
+{
+    option.MaxRequestBodySize = 1073741824;
+});
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo

@@ -537,6 +537,7 @@ namespace Tips.Warehouse.Api.Controllers
                             InventoryTranction inventoryTranction = new InventoryTranction();
                             inventoryTranction.PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
                             inventoryTranction.MftrPartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                            inventoryTranction.LotNumber = eachbin.LotNumber;
                             inventoryTranction.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
                             inventoryTranction.Description = openDeliveryOrderItemsDtoList[i].ItemDescription;
                             inventoryTranction.Issued_Quantity = eachbin.DistributingQty;

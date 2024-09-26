@@ -721,7 +721,7 @@ namespace Tips.Warehouse.Api.Repository
             {
                 foreach (var eachinv in invdetails)
                 {
-                    if (eachinv.Warehouse == eachDis.Warehouse && eachinv.Location == eachDis.Location)
+                    if (eachinv.Warehouse == eachDis.Warehouse && eachinv.Location == eachDis.Location && eachinv.LotNumber == eachDis.LotNumber)
                     {
                         if (eachDis.DistributingQty <= eachinv.Balance_Quantity)
                         {
@@ -761,7 +761,7 @@ namespace Tips.Warehouse.Api.Repository
             {
                 foreach (var eachinv in invdetails)
                 {
-                    if (eachinv.Warehouse == eachDis.Warehouse && eachinv.Location == eachDis.Location)
+                    if (eachinv.Warehouse == eachDis.Warehouse && eachinv.Location == eachDis.Location && eachinv.LotNumber == eachDis.LotNumber)
                     {
                         if (eachDis.DistributingQty <= eachinv.Balance_Quantity)
                         {
@@ -801,7 +801,8 @@ namespace Tips.Warehouse.Api.Repository
             {
                 foreach (var inventoryItemDetail in dataFromInventory)
                 {
-                    if (inventoryItemDetail.Warehouse.Trim() == odoItemDetail.Warehouse.Trim() && inventoryItemDetail.Location.Trim() == odoItemDetail.Location.Trim())
+                    if (inventoryItemDetail.Warehouse.Trim() == odoItemDetail.Warehouse.Trim() && inventoryItemDetail.Location.Trim() == odoItemDetail.Location.Trim()
+                                                                                                    && inventoryItemDetail.LotNumber.Trim() == odoItemDetail.LotNumber.Trim())
                     {
                         if (odoItemDetail.DistributingQty <= inventoryItemDetail.Balance_Quantity)
                         {

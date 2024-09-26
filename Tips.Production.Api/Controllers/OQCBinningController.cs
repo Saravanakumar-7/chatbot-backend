@@ -163,7 +163,7 @@ namespace Tips.Production.Api.Controllers
                 foreach (var loc in oqcBinningLocationList)
                 {
                     var newinv = _mapper.Map<OQCBinningInventoryUpdateDto>(inventoryDetails.data[0]);
-                    newinv.GrinPartId = null;
+                    //newinv.GrinPartId = null;
                     newinv.Warehouse = loc.Warehouse;
                     newinv.Location = loc.Location;
                     newinv.Balance_Quantity = loc.Quantity;
@@ -222,6 +222,7 @@ namespace Tips.Production.Api.Controllers
                     InventoryTranctionDto inventoryTranction = new InventoryTranctionDto();
                     inventoryTranction.PartNumber = ItemNo;
                     inventoryTranction.MftrPartNumber = newinv.MftrPartNumber;
+                    inventoryTranction.LotNumber = newinv.LotNumber;
                     inventoryTranction.Description = Desc;
                     inventoryTranction.ProjectNumber = ProjectNo;
                     inventoryTranction.PartType = ItemType;

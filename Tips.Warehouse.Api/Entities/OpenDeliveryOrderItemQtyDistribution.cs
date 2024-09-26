@@ -7,6 +7,7 @@
         public string ProjectNumber { get; set; }
         public string Warehouse { get; set; }
         public string Location { get; set; }
+        public string LotNumber { get; set; }
         public decimal DistributingQty { get; set; }
         public int OpenDeliveryOrderPartsId { get; set; }
         public OpenDeliveryOrderParts? OpenDeliveryOrderParts { get; set; }

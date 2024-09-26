@@ -7,6 +7,7 @@
         public string? ProjectNumber { get; set; }
         public string Warehouse { get; set; }
         public string Location { get; set; }
+        public string LotNumber { get; set; }
         public decimal DistributingQty { get; set; }
         public int BTODeliveryOrderItemsId { get; set; }
         public BTODeliveryOrderItems? BTODeliveryOrderItems { get; set; }
