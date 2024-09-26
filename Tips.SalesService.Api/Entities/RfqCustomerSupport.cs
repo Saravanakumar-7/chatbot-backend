@@ -11,14 +11,23 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqCustomerSupport
     {
-        
+        [Key]
         public int Id { get; set; }
+        public string? LeadId { get; set; }
         public string? CustomerName { get; set; }
-        public string? RevisionNumber { get; set; }
-        public string RfqNumber { get; set; } 
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
+        public string? CustomerAliasName { get; set; }
+
+        public string RfqNumber { get; set; }
+
         public string? CustomerRfqNumber { get; set; }
-        public DateTime? RequestReceiveDate { get; set; }
-        public DateTime? QuoteExpectDate { get; set; }
+        public DateTime? RequestReceivedate { get; set; }
+        public DateTime? QuoteExpectdate { get; set; } 
+
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
 
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
@@ -26,9 +35,8 @@ namespace Tips.SalesService.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<RfqCustomerSupportItems>? rfqCustomerSupportItems { get; set; }
-        public List<RfqCustomerSupportNotes>? rfqCustomerSupportNotes { get; set; }
-        //public List<RfqCSDeliverySchedule>? rfqCSDeliverySchedules { get; set; }
+        public List<RfqCustomerSupportItems>? RfqCustomerSupportItems { get; set; }
+        public List<RfqCustomerSupportNotes>? RfqCustomerSupportNotes { get; set; }
 
 
 

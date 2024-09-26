@@ -8,18 +8,34 @@ namespace Tips.SalesService.Api.Entities
         [Key]
 
         public int? Id { get; set; }
-        public string? RFQNo { get; set; }
+        public string? RfqNumber { get; set; }
         public string? CustomerName { get; set; }
         public string? Rev { get; set; }
         public DateTime? DateOnLpCreation { get; set; }
         public string? ItemNo { get; set; }
         public string? RLpItemNo { get; set; }
         public string? Description { get; set; }
-
+        public decimal? RevisionNumber { get; set; }
         [Precision(18, 3)]
         public decimal? Qty { get; set; }
         public string? UOC { get; set; }
-        public string? LeastCost { get; set; }
+        public string? UOM { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? LeastCost { get; set; }
+
+        [Precision(13,3)]
+        public decimal? LeastCostPlus { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? LeastCostminus { get; set; }
+
+
+        [Precision(13, 3)]
+        public decimal?  DiscountPlus { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? DiscountMinus { get; set; }
 
         [Precision(18, 3)]
         public decimal? Markup { get; set; }

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Entities.Migrations;
 using System.Net;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,27 +16,32 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class LeadController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
+        private ILeadRepository _leadRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
 
-        public LeadController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        public LeadController(IRepositoryWrapperForMaster repository, ILeadRepository leadRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _leadRepository = leadRepository;
         }
+
         // GET: api/<CustomerInfoController>
+
         [HttpGet]
-        public async Task<IActionResult> GetAllLeads([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllLeads([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LeadDto>> serviceResponse = new ServiceResponse<IEnumerable<LeadDto>>();
 
             try
             {
-                var listOfLeads = await _repository.LeadRepository.GetAllLeads(pagingParameter);
+                var listOfLeads = await _repository.LeadRepository.GetAllLeads(pagingParameter, searchParams);
 
                 var metadata = new
                 {
@@ -90,8 +96,26 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned LeadDetails with id: {id}");
-                    var result = _mapper.Map<LeadDto>(LeadDetails);
-                    serviceResponse.Data = result;
+
+                    LeadDto leadDtos = _mapper.Map<LeadDto>(LeadDetails);
+
+                    List<LeadAddressDto> leadAddressDtoList = new List<LeadAddressDto>();
+
+                    if (LeadDetails.LeadAddress != null)
+                    {
+
+                        foreach (var leadAddressDetails in LeadDetails.LeadAddress)
+                        {
+                            LeadAddressDto leadAddressDtos = _mapper.Map<LeadAddressDto>(leadAddressDetails);
+                            leadAddressDtoList.Add(leadAddressDtos);
+                        }
+                    }
+
+                    leadDtos.LeadAddresses = leadAddressDtoList;
+
+
+                    //var result = _mapper.Map<LeadDto>(LeadDetails);
+                    serviceResponse.Data = leadDtos;
                     serviceResponse.Message = $"Returned LeadDetails with id: {id}";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -142,12 +166,29 @@ namespace Tips.Master.Api.Controllers
                 var lead = _mapper.Map<Lead>(leadDtoPost);
 
                 lead.LeadAddress = address.ToList();
-               
 
-                _repository.LeadRepository.CreateLead(lead);
+                var date = DateTime.Now;
 
+                var leadcount = await _leadRepository.GetLeadIDIncrementCount(date);
+
+                if (leadcount > 0)
+                {
+                    var number = leadcount + 1;
+                    string e = String.Format("{0:D4}", number);
+                    lead.LeadID = "L" + (e);
+                }
+                else
+                {
+                    var count = 1;
+                    var e = count.ToString("D4");
+                    lead.LeadID = "L" + (e);
+                }
+
+
+                var leadDetails = await _repository.LeadRepository.CreateLead(lead);
+                var leadDetailsDto = _mapper.Map<LeadDto>(leadDetails);
                 _repository.SaveAsync();
-                serviceResponse.Data = null;
+                serviceResponse.Data = leadDetailsDto;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -167,9 +208,9 @@ namespace Tips.Master.Api.Controllers
 
         // PUT api/<CustomerInfoController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateLead(int id, [FromBody] LeadDto leadUpdateDto)
+        public async Task<IActionResult> UpdateLead(int id, [FromBody] LeadDtoUpdate leadUpdateDto)
         {
-            ServiceResponse<LeadDto> serviceResponse = new ServiceResponse<LeadDto>();
+            ServiceResponse<LeadDtoUpdate> serviceResponse = new ServiceResponse<LeadDtoUpdate>();
 
             try
             {

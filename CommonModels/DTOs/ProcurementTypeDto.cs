@@ -32,9 +32,7 @@ namespace Entities.DTOs
         [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]
         public string? Remarks { get; set; }
         public bool IsActive { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
+      
     }
 
     public class ProcurementTypeDtoUpdate
@@ -42,7 +40,7 @@ namespace Entities.DTOs
         public int Id { get; set; }
         [Required(ErrorMessage = "ProcurementType is required")]
         [StringLength(100, ErrorMessage = "ProcurementType can't be longer than 100 characters")]
-        public string? ProcurementTypeName { get; set; }
+        public string? ProcurementName { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
         [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]

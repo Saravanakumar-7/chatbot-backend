@@ -1,27 +1,41 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Repository
 {
-    internal class PackingInstructionRepository : RepositoryBase<PackingInstruction>, IPackingInstructionRepository
+    public class PackingInstructionRepository : RepositoryBase<PackingInstruction>, IPackingInstructionRepository
     {
-        public PackingInstructionRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public PackingInstructionRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreatePackingInstruction(PackingInstruction packingInstruction)
         {
-            packingInstruction.CreatedBy = "Admin";
+            packingInstruction.CreatedBy = _createdBy;
             packingInstruction.CreatedOn = DateTime.Now;
+            packingInstruction.Unit = _unitname;
             var result = await Create(packingInstruction);
-            packingInstruction.Unit = "Bangalore";
+            
             return result.Id;
         }
 
@@ -32,34 +46,35 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<PackingInstruction>> GetAllActivePackingInstruction()
+        public async Task<IEnumerable<PackingInstruction>> GetAllActivePackingInstruction([FromQuery] SearchParames searchParams)
         {
-
-            var PackingInstructionList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return PackingInstructionList;
+            var packingInstructionDetails = FindAll()
+                                         .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PackingInstructionsName.Contains(searchParams.SearchValue) ||
+                                   inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return packingInstructionDetails;
         }
 
-        public async Task<IEnumerable<PackingInstruction>> GetAllPackingInstruction()
+        public async Task<IEnumerable<PackingInstruction>> GetAllPackingInstruction([FromQuery] SearchParames searchParams)
         {
-
-            var PackingInstructionList = await FindAll().ToListAsync();
-
-            return PackingInstructionList;
+            var packingInstructionDetails = FindAll().OrderByDescending(x => x.Id)
+                                         .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PackingInstructionsName.Contains(searchParams.SearchValue) ||
+                                   inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return packingInstructionDetails;
         }
 
         public async Task<PackingInstruction> GetPackingInstructionById(int id)
         {
-            var auditFrequency = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var PackingInstructionbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return auditFrequency;
+            return PackingInstructionbyId;
         }
 
         public async Task<string> UpdatePackingInstruction(PackingInstruction packingInstruction)
         {
-            packingInstruction.LastModifiedBy = "Admin";
+            packingInstruction.LastModifiedBy = _createdBy;
             packingInstruction.LastModifiedOn = DateTime.Now;
             Update(packingInstruction);
-            string result = $"AuditFrequency details of {packingInstruction.Id} is updated successfully!";
+            string result = $"UpdatePackingInstruction details of {packingInstruction.Id} is updated successfully!";
             return result;
         }
     }

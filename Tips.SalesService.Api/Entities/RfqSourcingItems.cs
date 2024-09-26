@@ -11,20 +11,19 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqSourcingItems
     {
-       
+        [Key]
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? ItemDescription { get; set; }
-        public int? QuantityReq { get; set;}       
-        public int? Count { get; set;}
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+
+        [Precision(13,3)]
+        public decimal? QtyReq { get; set;}
+
+        [Precision(13, 3)]
+        public decimal? Count { get; set;}        
         public int RfqSourcingId { get; set; }
         public RfqSourcing? RfqSourcing { get; set; }
 
-        public List<RfqSourcingVendor>? rfqSourcingVendors { get; set; }
+        public List<RfqSourcingVendor>? RfqSourcingVendors { get; set; }
     }
 }

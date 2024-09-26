@@ -9,11 +9,15 @@ namespace Contracts
 {
     public interface IPriceListRepository
     {
-        Task<IEnumerable<PriceList>> GetAllPriceLists();
+        Task<IEnumerable<PriceList>> GetAllPriceLists(SearchParames searchParams);
         Task<PriceList> GetPriceListById(int id);
-        Task<IEnumerable<PriceList>> GetAllActivePriceLists();
+
+        Task<IEnumerable<PriceList>> GetLatestPriceListName();
+        Task<IEnumerable<PriceList>> GetAllActivePriceLists(SearchParames searchParams);
         Task<int?> CreatePriceList(PriceList priceList);
         Task<string> UpdatePriceList(PriceList priceList);
         Task<string> DeletePriceList(PriceList priceList);
+        Task<PriceList> GetLatestPriceLists();
+        Task<IEnumerable<PriceList>> GetAllTruePriceListCount();
     }
 }

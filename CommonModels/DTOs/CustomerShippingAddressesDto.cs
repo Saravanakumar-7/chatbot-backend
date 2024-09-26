@@ -13,14 +13,12 @@ namespace Entities.DTOs
 
         public string? ShippingAddress { get; set; }
 
-        //public string? GSTNNumber { get; set; }
-
         public string? GooglePinLocation { get; set; }
 
-        public bool SameasAddress { get; set; } = false;
+        public bool SameAsAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
-        public string Unit { get; set; }
+        
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -32,17 +30,12 @@ namespace Entities.DTOs
 
         public string? ShippingAddress { get; set; }
 
-        //public string? GSTNNumber { get; set; }
-
         public string? GooglePinLocation { get; set; }
 
-        public bool SameasAddress { get; set; } = false;
+        public bool SameAsAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
 
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
 
     }
     public class CustomerShippingAddressesDtoUpdate
@@ -51,17 +44,13 @@ namespace Entities.DTOs
 
         public string? ShippingAddress { get; set; }
 
-        //public string? GSTNNumber { get; set; }
-
         public string? GooglePinLocation { get; set; }
 
-        public bool SameasAddress { get; set; } = false;
+        public bool SameAsAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
 
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
+       
 
     }
 }

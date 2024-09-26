@@ -3,6 +3,7 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol.Core.Types;
@@ -11,6 +12,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class SegmentController : ControllerBase
     {
 
@@ -26,12 +28,12 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<SegmentController>
         [HttpGet]
-        public async Task<IActionResult> GetAllSegment()
+        public async Task<IActionResult> GetAllSegment([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<SegmentDto>> serviceResponse = new ServiceResponse<IEnumerable<SegmentDto>>();
             try
             {
-                var segmentList = await _repository.SegmentRepository.GetAllSegment();
+                var segmentList = await _repository.SegmentRepository.GetAllSegment(searchParams);
                 _logger.LogInfo("Returned all Segment");
                 var result = _mapper.Map<IEnumerable<SegmentDto>>(segmentList);
                 serviceResponse.Data = result;

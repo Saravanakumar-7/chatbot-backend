@@ -9,6 +9,7 @@ namespace Entities
 {
     public  class IncoTerm
     {
+        [Key]
         public int Id { get; set; }
         public string? IncoTermName { get; set; }
         public string? Description { get; set; }

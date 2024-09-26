@@ -9,8 +9,13 @@ namespace Entities
 {
     public class Locations
     {
+        [Key]
         public int Id { get; set; }
+        public string WarehouseId { get; set; }
+
+
         [Required]
+        public string Warehouse { get; set; }
         public string LocationName { get; set; }
         public string Description { get; set; }
         public string Remarks { get; set; }

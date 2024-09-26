@@ -9,11 +9,11 @@ namespace Entities
 {
     public class CompanyMasterHeadCounting
     {
+        [Key]
         public int Id { get; set; }
         public string? DepartmentSkill { get; set; }
 
         public string? NumberOfPeople { get; set; }
-        public string Unit { get; set; }
 
         public int CompanyMasterId { get; set; }
 

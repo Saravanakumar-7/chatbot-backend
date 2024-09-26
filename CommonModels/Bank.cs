@@ -9,6 +9,7 @@ namespace Entities
 {
     public class Bank
     {
+        [Key]
         public int Id { get; set; }
         public string? BankName { get; set; }
         public string? Description { get; set; }

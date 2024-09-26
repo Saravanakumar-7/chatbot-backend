@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -9,17 +10,17 @@ namespace Entities
 {
     public class CustomerMaster
     {
-
+        [Key]
         public int Id { get; set; }
 
-        [Required]
-        public string? CustomerId { get; set; }//api//api1
+        [Required(ErrorMessage = "CustomerNumber is required")]
+        public string? CustomerNumber { get; set; }
         
-        [Required]
-        public string? CustomerName { get; set; }//api
-        public string? CustomerAliasName { get; set; }//api1
+        [Required(ErrorMessage = "CustomerName is required")]
+        public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
         
-        [Required]
+        [Required(ErrorMessage = "CustomerType is required")]
         public string? CustomerType { get; set; }
         public string? Address { get; set; }
         public string? City { get; set; }
@@ -27,6 +28,7 @@ namespace Entities
         public string? Country { get; set; }
         public string? PinZipCode { get; set; }
         public string? Segment { get; set; }
+        public string? ArchitectName { get; set; }
         public string? BoardNumber { get; set; }
         public string? Website { get; set; }
         public string? GeneralEmail { get; set; }
@@ -38,15 +40,15 @@ namespace Entities
         public string? SalesManager { get; set; }
         public string? SalesManagerCode { get; set; }
         public string? Region { get; set; }
-       
+        public string? CustomerApprove { get; set; }
 
         //RelatedLink
 
-        public string? RelatedCustomerName { get; set; }
+        //public string? RelatedCustomerName { get; set; }
 
-        public string? RelatedCustomerAlias { get; set; }
+        //public string? RelatedCustomerAlias { get; set; }
 
-        public string? NatureOfRelationship { get; set; }
+        //public string? NatureOfRelationship { get; set; }
     
         //Dispatch
 
@@ -84,13 +86,12 @@ namespace Entities
         public string? TurnOver { get; set; }
         public string? DNBNumber { get; set; }
         public string? ICRA { get; set; }
-        public string? HeadCount { get; set; }
+        public int? HeadCount { get; set; }
         public string? Capacity { get; set; }
         public string? FloorSpace { get; set; }
         public string? Machine { get; set; }
         public string? ToolsAndEquip { get; set; }
-        //public string? Tools { get; set; }
-        //public string? Equip { get; set; }
+      
         public bool ERP { get; set; }
         public string? ERPValue { get; set; }
         public string?ESDSetup { get; set; }
@@ -99,8 +100,7 @@ namespace Entities
         public string? Sqft { get; set; }
         public string? MachineDetails { get; set; }
         public string? ToolsAndEquipDetails { get; set; }
-        //public string? ToolsDetials { get; set; }
-        //public string? EquipDetials { get; set; }
+     
         public bool ERPDetails { get; set; }
         public string? ESDSetupDetails { get; set; }
         public string? HazmatSetupDetails { get; set; }
@@ -118,13 +118,11 @@ namespace Entities
         public string? ApprovalBy { get; set; }
 
         public string? Upload { get; set; }
-
+        public string? ShippingMode { get; set; }
         public bool ReAudit { get; set; } = true;
-
         public string? AuditFrequency { get; set; }
-        public string? CustomerApprove { get; set; }
-        //public bool IsActive { get; set; } = true;
-        public string Unit { get; set; }
+        public bool IsActive { get; set; } = true;
+        public string? Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -132,6 +130,9 @@ namespace Entities
         public DateTime? LastModifiedOn { get; set; }
 
         public List<CustomerAddresses>? CustomerAddresses { get; set; }
+
+        public List<CustomerRelatedCustomer>? RelatedCustomers { get; set; }
+
         public List<CustomerShippingAddresses>? CustomerShippingAddresses { get; set; }
         public List<CustomerContacts>? CustomerContacts { get; set; }
         public List<CustomerBanking>? CustomerBanking { get; set; }

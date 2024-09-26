@@ -14,21 +14,26 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
-        
+
+        public string? CustomerItemNumber { get; set; }
+
         [Precision(13, 3)]
         public decimal? TotalCost { get; set; }
         [Precision(13, 3)]
         public decimal? MaterialCost { get; set; }
         [Precision(13, 3)]
         public decimal? MarkUpForMaterial { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
+
+        public string? MarkUpForProcessSteps { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandedPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MOQCost { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<RfqLPCostingProcessDto>? rfqLPCostingProcesses { get; set; }
-        public List<RfqLPCostingNREConsumableDto>? rfqLPCostingNREConsumables { get; set; }
-        public List<RfqLPCostingOtherChargesDto>? rfqLPCostingOtherCharges { get; set; }
+        public List<RfqLPCostingProcessDto>? RfqLPCostingProcesses { get; set; }
+        public List<RfqLPCostingNREConsumableDto>? RfqLPCostingNREConsumables { get; set; }
+        public List<RfqLPCostingOtherChargesDto>? RfqLPCostingOtherCharges { get; set; }
 
     }
     public class RfqLPCostingItemDtoPost
@@ -38,6 +43,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         public string? ItemNumber { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
+        public string? CustomerItemNumber { get; set; }
 
         public string? Description { get; set; }
         [Precision(13, 3)]
@@ -46,19 +52,26 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? MaterialCost { get; set; }
         [Precision(13, 3)]       
         public decimal? MarkUpForMaterial { get; set; }
-        public string Unit { get; set; }
-        public List<RfqLPCostingProcessDtoPost>? rfqLPCostingProcesses { get; set; }
-        public List<RfqLPCostingNREConsumableDtoPost>? rfqLPCostingNREConsumables { get; set; }
-        public List<RfqLPCostingOtherChargesDtoPost>? rfqLPCostingOtherCharges { get; set; }
+        public string? MarkUpForProcessSteps { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandedPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MOQCost { get; set; }
+
+        public List<RfqLPCostingProcessDtoPost>? RfqLPCostingProcesses { get; set; }
+        public List<RfqLPCostingNREConsumableDtoPost>? RfqLPCostingNREConsumables { get; set; }
+        public List<RfqLPCostingOtherChargesDtoPost>? RfqLPCostingOtherCharges { get; set; }
 
     }
     public class RfqLPCostingItemDtoUpdate
     {
-        public int Id { get; set; }
+       
         [StringLength(500, ErrorMessage = "ItemNumber can't be longer than 500 characters")]
 
         public string? ItemNumber { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
+
+        public string? CustomerItemNumber { get; set; }
 
         public string? Description { get; set; }
         [Precision(13, 3)]
@@ -67,10 +80,15 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? MaterialCost { get; set; }
         [Precision(13, 3)]
         public decimal? MarkUpForMaterial { get; set; }
-        public string Unit { get; set; }
-        public List<RfqLPCostingProcessDtoUpdate>? rfqLPCostingProcesses { get; set; }
-        public List<RfqLPCostingNREConsumableDtoUpdate>? rfqLPCostingNREConsumables { get; set; }
-        public List<RfqLPCostingOtherChargesDtoUpdate>? rfqLPCostingOtherCharges { get; set; }
+
+        public string? MarkUpForProcessSteps { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandedPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MOQCost { get; set; }
+        public List<RfqLPCostingProcessDtoUpdate>? RfqLPCostingProcesses { get; set; }
+        public List<RfqLPCostingNREConsumableDtoUpdate>? RfqLPCostingNREConsumables { get; set; }
+        public List<RfqLPCostingOtherChargesDtoUpdate>? RfqLPCostingOtherCharges { get; set; }
 
     }
 }

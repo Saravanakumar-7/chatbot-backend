@@ -8,13 +8,14 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IMaterialRequestRepository : IRepositoryBase<MaterialRequest>
     {
-        Task<PagedList<MaterialRequest>> GetAllMaterialRequest(PagingParameter pagingParameter);
+        Task<PagedList<MaterialRequest>> GetAllMaterialRequest(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<MaterialRequest> GetMaterialRequestById(int id);
-        Task<MaterialRequest> GetMRNoDetailsById(string MRnumber);
+        Task<MaterialRequest> GetMaterialReqByMRNumber(string MRnumber);
+        Task<string> GenerateMRNumber();
+        Task<int?> GetMRNumberAutoIncrementCount(DateTime date);
         Task<int?> CreateMaterialRequest(MaterialRequest request);
         Task<string> UpdateMaterialRequest(MaterialRequest request);
         Task<string> DeleteMaterialRequest(MaterialRequest request);
-
         Task<IEnumerable<MaterialRequestIdNoDto>> GetAllOpenMRIdNoList();
         public void SaveAsync();
     }

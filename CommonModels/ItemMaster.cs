@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Entities.Enums;
 
 namespace Entities
 {
@@ -14,16 +15,19 @@ namespace Entities
         [Key]
         [Column("ItemMasterId")]
         public long Id { get; set; }
+        [Required(ErrorMessage = "ItemNumber is required")]
         [MaxLength(100)]
         public string? ItemNumber { get; set; }
+        [Required(ErrorMessage = "Description is required")]
         [MaxLength(500)]
         public string? Description { get; set; }
         [DefaultValue(true)]
         public bool IsActive { get; set; }
         [DefaultValue(false)]
         public bool IsObsolete { get; set; }
-        [MaxLength(50)]
-        public string? ItemType { get; set; }
+
+        public PartType ItemType { get; set; }
+
         [MaxLength(20)]
         public string? Uom { get; set; }
         [MaxLength(50)]
@@ -60,17 +64,22 @@ namespace Entities
         public bool IsShelfLife { get; set; }
         [DefaultValue(false)]
         public bool IsReachItem { get; set; }
+        public string? FileUpload { get; set; }
+
+        public int? ImageUpload { get; set; }
+
         public decimal NetWeight { get; set; }
         public string? NetUom { get; set; }
         public decimal GrossWeight { get; set; }
         public string? GrossUom { get; set; }
+        public bool Tolerance { get; set; } = false;
         public decimal Volume { get; set; }
         public string? VolumeUom { get; set; }
         public decimal Size { get; set; }
         public string? FootPrint { get; set; }
         public decimal Min { get; set; }
         public decimal Max { get; set; }
-        public string? Leadtime { get; set; }
+        public string? LeadTime { get; set; }
         public string? Reorder { get; set; }
         public string? TwoBin { get; set; }
         public bool Kanban { get; set; }
@@ -98,19 +107,23 @@ namespace Entities
         public bool Valuation { get; set; }
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
+        public string? RemarksToVendor { get; set; }
         public string Unit { get; set; }
-
         public string? CreatedBy { get; set; }
-        [DisplayFormat(DataFormatString = "{dd-MM-yyyy HH:mm:ss}")]
-        public DateTime CreatedOn { get; set; }
+        
+        public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
-        [DisplayFormat(DataFormatString = "{dd-MM-yyyy HH:mm:ss}")]
-        public DateTime LastModifiedOn { get; set; }
+       
+        public DateTime? LastModifiedOn { get; set; }
+
 
         public List<ItemmasterAlternate>? ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouse>? ItemMasterWarehouse { get; set; }
-        public List<ItemMasterApprovedVendor>? ItemMasterApprovedVendor { get; set; }
-        public List<ItemMasterFileUpload>? ItemMasterFileUpload { get; set; }
+        public List<ItemMasterApprovedVendor>? ItemMasterApprovedVendor { get; set; }     
+        
+        //public List<ImageUpload>? ImageUploads { get; set; }
+
+        //public List<ItemMasterFileUpload>? ItemMasterFileUpload { get; set; }
         public List<ItemMasterRouting>? ItemMasterRouting { get; set; }
     }
 

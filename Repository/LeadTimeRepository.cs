@@ -1,27 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
     public class LeadTimeRepository:RepositoryBase<LeadTime>,ILeadTimeRepository
     {
-        public LeadTimeRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public LeadTimeRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
 
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateLeadTime(LeadTime leadTime)
         {
-            leadTime.CreatedBy = "Admin";
+            leadTime.CreatedBy = _createdBy;
             leadTime.CreatedOn = DateTime.Now;
+            leadTime.Unit = _unitname;
             var result = await Create(leadTime);
-            leadTime.Unit = "Bangalore";
+           
             return result.Id;
         }
 
@@ -32,29 +44,34 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<LeadTime>> GetAllActiveLeadTime()
+        public async Task<IEnumerable<LeadTime>> GetAllActiveLeadTime([FromQuery] SearchParames searchParams)
         {
-            var LeadTimeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return LeadTimeList;
+            var leadTimeDetails = FindAll()
+        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Days.Contains(searchParams.SearchValue) ||
+       inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
+            return leadTimeDetails;
         }
 
-        public async Task<IEnumerable<LeadTime>> GetAllLeadTime()
+        public async Task<IEnumerable<LeadTime>> GetAllLeadTime([FromQuery] SearchParames searchParams)
         {
-            var LeadTimeList = await FindAll().ToListAsync();
+            var leadTimeDetails = FindAll().OrderByDescending(x => x.Id)
+        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Days.Contains(searchParams.SearchValue) ||
+       inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
-            return LeadTimeList;
+            return leadTimeDetails;
         }
 
         public async Task<LeadTime> GetLeadTimeById(int id)
         {
-            var LeadTimeList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var LeadTimebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return LeadTimeList;
+            return LeadTimebyId;
         }
 
         public async Task<string> UpdateLeadTime(LeadTime leadTime)
         {
-            leadTime.LastModifiedBy = "Admin";
+            leadTime.LastModifiedBy = _createdBy;
             leadTime.LastModifiedOn = DateTime.Now;
             Update(leadTime);
             string result = $"LeadTime details of {leadTime.Id} is updated successfully!";

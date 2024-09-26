@@ -3,6 +3,7 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class ShipmentInstructionsController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
@@ -25,12 +27,12 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<ShipmentInstructionsController>
         [HttpGet]
-        public async Task<IActionResult> GetAllShipmentInstructions()
+        public async Task<IActionResult> GetAllShipmentInstructions([FromQuery]SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ShipmentInstructionsDto>> serviceResponse = new ServiceResponse<IEnumerable<ShipmentInstructionsDto>>();
             try
             {
-                var shipmentInstructionsList = await _repository.ShipmentInstructionsRepository.GetAllShipmentInstructions();
+                var shipmentInstructionsList = await _repository.ShipmentInstructionsRepository.GetAllShipmentInstructions(searchParams);
                 _logger.LogInfo("Returned all ShipmentInstructions");
                 var result = _mapper.Map<IEnumerable<ShipmentInstructionsDto>>(shipmentInstructionsList);
                 serviceResponse.Data = result;

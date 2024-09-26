@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,9 @@ namespace Contracts
     public interface ICostCenterRepository : IRepositoryBase<CostCenter>
 
     {
-        Task<IEnumerable<CostCenter>> GetAllCostCenters();
+        Task<IEnumerable<CostCenter>> GetAllCostCenters(SearchParames searchParams);
         Task<CostCenter> GetCostCenterById(int id);
-        Task<IEnumerable<CostCenter>> GetAllActiveCostCenters();
+        Task<IEnumerable<CostCenter>> GetAllActiveCostCenters(SearchParames searchParams);
         Task<int?> CreateCostCenter(CostCenter costCenter);
         Task<string> UpdateCostCenter(CostCenter costCenter);
         Task<string> DeleteCostCenter(CostCenter costCenter);

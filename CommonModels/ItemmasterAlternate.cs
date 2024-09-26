@@ -11,11 +11,13 @@ namespace Entities
 {
     public class ItemmasterAlternate
     {
-    
+        [Key]
         public int Id { get; set; }
         public string? ManufacturerPartNo { get; set; }
         public string? Manufacturer { get; set; }
-        public string Unit { get; set; }
+
+        [DefaultValue(false)]
+        public bool AlternateSource { get; set; }
 
         [DefaultValue(false)]
         public bool IsDefault { get; set; }

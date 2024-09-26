@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Entities.DTOs;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Entities.Dto;
 using Tips.SalesService.Api.Entities.DTOs;
@@ -9,6 +10,9 @@ namespace Tips.SalesService.Api
     {
         public MappingProfile()
         {
+
+            CreateMap<SalesOrderFGandBalanceQtyByProjectNo, SalesOrderItemNoAndProjectNoDto>().ReverseMap();
+            CreateMap<SalesOrderSPReport, SalesOrderSPResportDTO>().ReverseMap();
             CreateMap<RfqCustomerSupport, RfqCustomerSupportDto>().ReverseMap();
             CreateMap<RfqCustomerSupport, RfqCustomerSupportPostDto>().ReverseMap();
             CreateMap<RfqCustomerSupport, RfqCustomerSupportUpdateDto>().ReverseMap();
@@ -36,35 +40,47 @@ namespace Tips.SalesService.Api
             CreateMap<Rfq, RfqNumberListDto>().ReverseMap();
 
 
+
             CreateMap<RfqCustomGroup, RfqCustomGroupDto>().ReverseMap();
             CreateMap<RfqCustomGroup, RfqCustomGroupPostDto>().ReverseMap();
             CreateMap<RfqCustomGroup, RfqCustomGroupUpdateDto>().ReverseMap();
+            CreateMap<RfqCustomGroup, ListOfCustomGroupDto>().ReverseMap();
 
-             
+
             CreateMap<SourcingVendor, SourcingVendorDto>().ReverseMap();
             CreateMap<SourcingVendor, SourcingVendorPostDto>().ReverseMap();
             CreateMap<SourcingVendor, SourcingVendorUpdateDto>().ReverseMap();
 
             CreateMap<RfqSourcing, RfqSourcingDto>().ReverseMap();
-            CreateMap<RfqSourcing, RfqSourcingDtoPost>().ReverseMap();
-            CreateMap<RfqSourcing, RfqSourcingDtoUpdate>().ReverseMap();
+            CreateMap<RfqSourcing, RfqSourcingPostDto>().ReverseMap();
+            CreateMap<RfqSourcing, RfqSourcingUpdateDto>().ReverseMap();
 
             CreateMap<RfqSourcingItems, RfqSourcingItemsDto>().ReverseMap();
-            CreateMap<RfqSourcingItems, RfqSourcingItemsDtoPost>().ReverseMap();
-            CreateMap<RfqSourcingItems, RfqSourcingItemsDtoUpdate>().ReverseMap();
+            CreateMap<RfqSourcingItems, RfqSourcingItemsPostDto>().ReverseMap();
+            CreateMap<RfqSourcingItems, RfqSourcingItemsUpdateDto>().ReverseMap();
+            CreateMap<RfqSourcingItemsDto, EnggBomFGItemNumberWithQtyDto>().ReverseMap();
+
+            CreateMap<ScheduleDate, ScheduleDateDto>().ReverseMap();
+            CreateMap<ScheduleDate, ScheduleDatePostDto>().ReverseMap();
+            CreateMap<ScheduleDate, ScheduleDateUpdateDto>().ReverseMap();
+
 
             CreateMap<RfqSourcingVendor, RfqSourcingVendorDto>().ReverseMap();
-            CreateMap<RfqSourcingVendor, RfqSourcingVendorDtoPost>().ReverseMap();
-            CreateMap<RfqSourcingVendor, RfqSourcingVendorDtoUpdate>().ReverseMap();
+            CreateMap<RfqSourcingVendor, RfqSourcingVendorPostDto>().ReverseMap();
+            CreateMap<RfqSourcingVendor, RfqSourcingVendorUpdateDto>().ReverseMap();
 
 
             CreateMap<RfqEngg, RfqEnggDto>().ReverseMap();
             CreateMap<RfqEngg, RfqEnggDtoPost>().ReverseMap();
             CreateMap<RfqEngg, RfqEnggDtoUpdate>().ReverseMap();
+            CreateMap<RfqEngg, RfqCustomerSupportPostDto>().ReverseMap();
+
 
             CreateMap<RfqEnggItem, RfqEnggItemDto>().ReverseMap();
             CreateMap<RfqEnggItem, RfqEnggItemDtoPost>().ReverseMap();
             CreateMap<RfqEnggItem, RfqEnggItemDtoUpdate>().ReverseMap();
+            CreateMap<RfqEnggItem, RfqCustomerSupportItemPostDto>().ReverseMap();
+
 
             CreateMap<RfqEnggRiskIdentification, RfqEnggRiskIdentificationDto>().ReverseMap();
             CreateMap<RfqEnggRiskIdentification, RfqEnggRiskIdentificationDtoPost>().ReverseMap();
@@ -90,47 +106,58 @@ namespace Tips.SalesService.Api
             CreateMap<RfqLPCostingOtherCharges, RfqLPCostingOtherChargesDtoPost>().ReverseMap();
             CreateMap<RfqLPCostingOtherCharges, RfqLPCostingOtherChargesDtoUpdate>().ReverseMap();
 
+            CreateMap<SalesOrderDto,SalesOrderId_SP>().ReverseMap();
             CreateMap<SalesOrder, SalesOrderDto>().ReverseMap();
-            CreateMap<SalesOrder, SalesOrderDtoPost>().ReverseMap();
-            CreateMap<SalesOrder, SalesOrderDtoUpdate>().ReverseMap();
+            CreateMap<SalesOrder, SalesOrderPostDto>().ReverseMap();
+            CreateMap<SalesOrder, SalesOrderUpdateDto>().ReverseMap();
+
+            CreateMap<SalesOrder, SalesOrderReportDto>().ReverseMap();
+            CreateMap<SalesOrder, ShortClosedDto>().ReverseMap();
 
             CreateMap<SalesOrderItems, SalesOrderItemsDto>().ReverseMap();
-            CreateMap<SalesOrderItems, SalesOrderItemsDtoPost>().ReverseMap();
-            CreateMap<SalesOrderItems, SalesOrderItemsDtoUpdate>().ReverseMap();
+            CreateMap<SalesOrderItems, SalesOrderItemsPostDto>().ReverseMap();
+            CreateMap<SalesOrderItems, SalesOrderItemsUpdateDto>().ReverseMap();
+            //CreateMap<List<SalesOrderItems>, List<SalesOrderItemsDto>>().ReverseMap();
+
+            CreateMap<SoConfirmationDate, SoConfirmationDateDto>().ReverseMap();
+
+            CreateMap<SalesOrderAdditionalCharges, SalesOrderAdditionalChargesDto>().ReverseMap();
+            CreateMap<SalesOrderAdditionalCharges, SalesOrderAdditionalChargesPostDto>().ReverseMap();
+            CreateMap<SalesOrderAdditionalCharges, SalesOrderAdditionalChargesUpdateDto>().ReverseMap();
 
             CreateMap<Quote, QuoteDto>().ReverseMap();
-            CreateMap<Quote, QuoteDtoPost>().ReverseMap();
-            CreateMap<Quote, QuoteDtoUpdate>().ReverseMap();
+            CreateMap<Quote, QuotePostDto>().ReverseMap();
+            CreateMap<Quote, QuoteUpdateDto>().ReverseMap();
 
             CreateMap<QuoteAdditionalCharges, QuoteAdditionalChargesDto>().ReverseMap();
-            CreateMap<QuoteAdditionalCharges, QuoteAdditionalChargesDtoPost>().ReverseMap();
-            CreateMap<QuoteAdditionalCharges, QuoteAdditionalChargesDtoUpdate>().ReverseMap();
+            CreateMap<QuoteAdditionalCharges, QuoteAdditionalChargesPostDto>().ReverseMap();
+            CreateMap<QuoteAdditionalCharges, QuoteAdditionalChargesUpdateDto>().ReverseMap();
 
             CreateMap<QuoteGeneral, QuoteGeneralDto>().ReverseMap();
-            CreateMap<QuoteGeneral, QuoteGeneralDtoPost>().ReverseMap();
-            CreateMap<QuoteGeneral, QuoteGeneralDtoUpdate>().ReverseMap();
+            CreateMap<QuoteGeneral, QuoteGeneralPostDto>().ReverseMap();
+            CreateMap<QuoteGeneral, QuoteGeneralUpdateDto>().ReverseMap();
 
             CreateMap<QuoteOtherTerms, QuoteOtherTermsDto>().ReverseMap();
-            CreateMap<QuoteOtherTerms, QuoteOtherTermsDtoPost>().ReverseMap();
-            CreateMap<QuoteOtherTerms, QuoteOtherTermsDtoUpdate>().ReverseMap();
+            CreateMap<QuoteOtherTerms, QuoteOtherTermsPostDto>().ReverseMap();
+            CreateMap<QuoteOtherTerms, QuoteOtherTermsUpdateDto>().ReverseMap();
 
             CreateMap<QuoteRFQNotes, QuoteRFQNotesDto>().ReverseMap();
-            CreateMap<QuoteRFQNotes, QuoteRFQNotesDtoPost>().ReverseMap();
-            CreateMap<QuoteRFQNotes, QuoteRFQNotesDtoUpdate>().ReverseMap();
+            CreateMap<QuoteRFQNotes, QuoteRFQNotesPostDto>().ReverseMap();
+            CreateMap<QuoteRFQNotes, QuoteRFQNotesUpdateDto>().ReverseMap();
 
             CreateMap<QuoteSpecialTerms, QuoteSpecialTermsDto>().ReverseMap();
-            CreateMap<QuoteSpecialTerms, QuoteSpecialTermsDtoPost>().ReverseMap();
-            CreateMap<QuoteSpecialTerms, QuoteSpecialTermsDtoUpdate>().ReverseMap();
+            CreateMap<QuoteSpecialTerms, QuoteSpecialTermsPostDto>().ReverseMap();
+            CreateMap<QuoteSpecialTerms, QuoteSpecialTermsUpdateDto>().ReverseMap();
 
 
             CreateMap<FgOqc, FgOqcDto>().ReverseMap();
-            CreateMap<FgOqc, FgOqcDtoPost>().ReverseMap();
-            CreateMap<FgOqc, FgOqcDtoUpdate>().ReverseMap();
+            CreateMap<FgOqc, FgOqcPostDto>().ReverseMap();
+            CreateMap<FgOqc, FgOqcUpdateDto>().ReverseMap();
 
 
-            CreateMap<SaOqc, SaOqcDto>().ReverseMap();
-            CreateMap<SaOqc, SaOqcDtoPost>().ReverseMap();
-            CreateMap<SaOqc, SaOqcDtoUpdate>().ReverseMap();
+            CreateMap<FinalOqc, FinalOqcDto>().ReverseMap();
+            CreateMap<FinalOqc, FinalOqcPostDto>().ReverseMap();
+            CreateMap<FinalOqc, FinalOqcUpdateDto>().ReverseMap();
 
             CreateMap<ForeCast, ForeCastDto>().ReverseMap();
             CreateMap<ForeCast, ForeCastPostDto>().ReverseMap();
@@ -206,31 +233,31 @@ namespace Tips.SalesService.Api
             CreateMap<ForecastLpCostingOtherCharges, ForecastLPCostingOtherChargesDtoUpdate>().ReverseMap();
 
             CreateMap<MaterialRequest, MaterialRequestDto>().ReverseMap();
-            CreateMap<MaterialRequest, MaterialRequestDtoPost>().ReverseMap();
-            CreateMap<MaterialRequest, MaterialRequestDtoUpdate>().ReverseMap();
+            CreateMap<MaterialRequest, MaterialRequestPostDto>().ReverseMap();
+            CreateMap<MaterialRequest, MaterialRequestUpdateDto>().ReverseMap();
 
             CreateMap<MaterialRequestItem, MaterialRequestItemDto>().ReverseMap();
-            CreateMap<MaterialRequestItem, MaterialRequestItemDtoPost>().ReverseMap();
-            CreateMap<MaterialRequestItem, MaterialRequestItemDtoUpdate>().ReverseMap();
+            CreateMap<MaterialRequestItem, MaterialRequestItemPostDto>().ReverseMap();
+            CreateMap<MaterialRequestItem, MaterialRequestItemUpdateDto>().ReverseMap();
 
             CreateMap<MaterialTransactionNote, MaterialTransactionNoteDto>().ReverseMap();
-            CreateMap<MaterialTransactionNote, MaterialTransactionNoteDtoPost>().ReverseMap();
-            CreateMap<MaterialTransactionNote, MaterialTransactionNoteDtoUpdate>().ReverseMap();
+            CreateMap<MaterialTransactionNote, MaterialTransactionNotePostDto>().ReverseMap();
+            CreateMap<MaterialTransactionNote, MaterialTransactionNoteUpdateDto>().ReverseMap();
 
             CreateMap<MaterialTransactionNoteItem, MaterialTransactionNoteItemDto>().ReverseMap();
-            CreateMap<MaterialTransactionNoteItem, MaterialTransactionNoteItemDtoPost>().ReverseMap();
-            CreateMap<MaterialTransactionNoteItem, MaterialTransactionNoteItemDtoUpdate>().ReverseMap();
+            CreateMap<MaterialTransactionNoteItem, MaterialTransactionNoteItemPostDto>().ReverseMap();
+            CreateMap<MaterialTransactionNoteItem, MaterialTransactionNoteItemUpdateDto>().ReverseMap();
 
             CreateMap<LocationTransfer, LocationTransferDto>().ReverseMap();
-            CreateMap<LocationTransfer, LocationTransferDtoPost>().ReverseMap();
-            CreateMap<LocationTransfer, LocationTransferDtoUpdate>().ReverseMap();
+            CreateMap<LocationTransfer, LocationTransferPostDto>().ReverseMap();
+            CreateMap<LocationTransfer, LocationTransferUpdateDto>().ReverseMap();
 
             CreateMap<ReleaseLp, ReleaseLpDto>().ReverseMap();
             CreateMap<ReleaseLp, ReleaseLpDtoPost>().ReverseMap();
             CreateMap<ReleaseLp, ReleaseLpDtoUpdate>().ReverseMap();
 
             CreateMap<RfqCustomField, RfqCustomFieldDto>().ReverseMap();
-            CreateMap<RfqCustomField, RfqCustomFieldDtoPost>().ReverseMap();
+            CreateMap<List<RfqCustomField>, RfqCustomFieldDtoPost>().ReverseMap();
             CreateMap<RfqCustomField, RfqCustomFieldDtoUpdate>().ReverseMap();
 
             CreateMap<ForeCastCustomField, ForeCastCustomFieldDto>().ReverseMap();
@@ -240,6 +267,45 @@ namespace Tips.SalesService.Api
             CreateMap<ForeCastCustomGroup, ForeCastCustomGroupDto>().ReverseMap();
             CreateMap<ForeCastCustomGroup, ForeCastCustomGroupDtoPost>().ReverseMap();
             CreateMap<ForeCastCustomGroup, ForeCastCustomGroupDtoUpdate>().ReverseMap();
+
+            CreateMap<ForeCastReleaseLp, ForecastReleaseLpDto>().ReverseMap();
+            CreateMap<ForeCastReleaseLp, ForecastReleaseLpDtoPost>().ReverseMap();
+            CreateMap<ForeCastReleaseLp, ForecastReleaseLpDtoUpdate>().ReverseMap();
+
+            CreateMap<RfqLPCostingProcess, ItemMasterRoutingListDto>().ReverseMap();
+
+            //CreateMap<SalesOrderItems, ListOfProjectNoDto>().ReverseMap();
+
+            CreateMap<SalesOrder, ListofSalesOrderDetails>().ReverseMap();
+
+            CreateMap<SalesOrderItems, GetSalesOrderDetailsDto>().ReverseMap();
+
+
+            CreateMap<ItemPriceList, ItemPriceListDto>().ReverseMap();
+            CreateMap<ItemPriceList, ItemPriceListPostDto>().ReverseMap();
+            CreateMap<ItemPriceList, ItemPriceListUpdateDto>().ReverseMap();
+            CreateMap<ItemPriceList, ReleaseLpDtoPost>().ReverseMap();
+
+            CreateMap<ItemPriceList, ItemNumberAndPriceNameListDto>().ReverseMap(); 
+
+            CreateMap<SalesOrderItems, SalesOrderDispatchQtyDto>().ReverseMap();
+  
+            CreateMap<ItemDetailsForShopOrderDto, ProductionBomRevisionNumber>().ReverseMap();
+
+
+            CreateMap<CollectionTracker, CollectionTrackerDto>().ReverseMap();
+            CreateMap<CollectionTracker, CollectionTrackerPostDto>().ReverseMap();
+            CreateMap<CollectionTracker, CollectionTrackerUpdateDto>().ReverseMap();
+
+            CreateMap<SOBreakDown, SOBreakDownDto>().ReverseMap();
+            CreateMap<SOBreakDown, SOBreakDownPostDto>().ReverseMap();
+            CreateMap<SOBreakDown, SOBreakDownUpdateDto>().ReverseMap();
+
+            CreateMap<Rfq, LatestRfqNumberListDto>().ReverseMap();
+
+            CreateMap<DocumentUpload, DocumentUploadDto>().ReverseMap();
+            CreateMap<DocumentUpload, DocumentUploadPostDto>().ReverseMap();
+            CreateMap<DocumentUpload, DocumentUploadUpdateDto>().ReverseMap();
         }
     }
 }

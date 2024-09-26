@@ -20,8 +20,8 @@ namespace Tips.SalesService.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
-        public List<RfqLPCostingItem>? rfqLPCostingItems { get; set; }        
+        public decimal? RevisionNumber { get; set; }
+        public List<RfqLPCostingItem>? RfqLPCostingItems { get; set; }        
 
     }
 }

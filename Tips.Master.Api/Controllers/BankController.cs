@@ -2,7 +2,9 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Net;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -11,6 +13,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class BankController : ControllerBase
     {
 
@@ -30,15 +33,16 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<BankController>
         [HttpGet]
-        public async Task<IActionResult> GetAllBankDetails()
+        public async Task<IActionResult> GetAllBankDetails([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<BankDto>> serviceResponse = new ServiceResponse<IEnumerable<BankDto>>();
 
             try
             {
-                var banks = await _repository.BankRepository.GetAllActiveBank();
+                var GetallBanks = await _repository.BankRepository.GetAllActiveBank(searchParams);
+
                 _logger.LogInfo("Returned all Bank");
-                var result = _mapper.Map<IEnumerable<BankDto>>(banks);
+                var result = _mapper.Map<IEnumerable<BankDto>>(GetallBanks);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Banks Successfully";
                 serviceResponse.Success = true;
@@ -57,15 +61,15 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveBankDetails()
+        public async Task<IActionResult> GetAllActiveBankDetails([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<BankDto>> serviceResponse = new ServiceResponse<IEnumerable<BankDto>>();
 
             try
             {
-                var banks = await _repository.BankRepository.GetAllActiveBank();
+                var allActiveBanks = await _repository.BankRepository.GetAllActiveBank(searchParams);
                 _logger.LogInfo("Returned all Banks");
-                var result = _mapper.Map<IEnumerable<BankDto>>(banks);
+                var result = _mapper.Map<IEnumerable<BankDto>>(allActiveBanks);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Active Banks Successfully";
                 serviceResponse.Success = true;
@@ -92,8 +96,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var bank = await _repository.BankRepository.GetBankById(id);
-                if (bank == null)
+                var BankbyId = await _repository.BankRepository.GetBankById(id);
+                if (BankbyId == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"Bank with id: {id}, hasn't been found in db.";
@@ -105,7 +109,7 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned Bank with id: {id}");
-                    var result = _mapper.Map<BankDto>(bank);
+                    var result = _mapper.Map<BankDto>(BankbyId);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned Bank with id Successfully";
                     serviceResponse.Success = true;
@@ -127,13 +131,13 @@ namespace Tips.Master.Api.Controllers
 
         // POST api/<BankController>
         [HttpPost]
-        public IActionResult CreateBank([FromBody] BankPostDto bank)
+        public IActionResult CreateBank([FromBody] BankPostDto bankPostDto)
         {
             ServiceResponse<BankDto> serviceResponse = new ServiceResponse<BankDto>();
 
             try
             {
-                if (bank is null)
+                if (bankPostDto is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Bank object sent from client is null";
@@ -152,8 +156,8 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 } 
 
-                var banks = _mapper.Map<Bank>(bank);
-                _repository.BankRepository.CreateBank(banks);
+                var CreateBanks = _mapper.Map<Bank>(bankPostDto);
+                _repository.BankRepository.CreateBank(CreateBanks);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
@@ -198,8 +202,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid Bank object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var bank = await _repository.BankRepository.GetBankById(id);
-                if (bank is null)
+                var BankUpdate = await _repository.BankRepository.GetBankById(id);
+                if (BankUpdate is null)
                 {
                     _logger.LogError($"Update Bank with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -208,8 +212,8 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(bankUpdateDto, bank);
-                string result = await _repository.BankRepository.UpdateBank(bank);
+                _mapper.Map(bankUpdateDto, BankUpdate);
+                string result = await _repository.BankRepository.UpdateBank(BankUpdate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -237,8 +241,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var bank = await _repository.BankRepository.GetBankById(id);
-                if (bank == null)
+                var Deletebank = await _repository.BankRepository.GetBankById(id);
+                if (Deletebank == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Bank object sent from client is null";
@@ -247,7 +251,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"Bank with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                string result = await _repository.BankRepository.DeleteBank(bank);
+                string result = await _repository.BankRepository.DeleteBank(Deletebank);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deleted Successfully";
@@ -273,8 +277,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var bank = await _repository.BankRepository.GetBankById(id);
-                if (bank is null)
+                var BankActivate = await _repository.BankRepository.GetBankById(id);
+                if (BankActivate is null)
                 {                   
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Bank object sent from client is null";
@@ -283,8 +287,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"bank with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                bank.IsActive = true;
-                string result = await _repository.BankRepository.UpdateBank(bank);
+                BankActivate.IsActive = true;
+                string result = await _repository.BankRepository.UpdateBank(BankActivate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -310,8 +314,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var bank = await _repository.BankRepository.GetBankById(id);
-                if (bank is null)
+                var BankDeactivate = await _repository.BankRepository.GetBankById(id);
+                if (BankDeactivate is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Bank object sent from client is null";
@@ -320,8 +324,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"bank with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                bank.IsActive = false;
-                string result = await _repository.BankRepository.UpdateBank(bank);
+                BankDeactivate.IsActive = false;
+                string result = await _repository.BankRepository.UpdateBank(BankDeactivate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deactivated Successfully";

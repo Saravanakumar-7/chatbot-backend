@@ -11,27 +11,31 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqSourcingVendor
     {
-        
+        [Key]
         public int Id { get; set; }
         public string? Vendor { get; set; }
-        [Precision(13, 3)]
+        public string? VendorId { get; set; }
+        [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
         public string? UnitPricePer { get; set; }
         public string? Currency { get; set; }
         public string? MOQ { get; set; }
         public string? LeadTime { get; set; }
-        public string? Freight { get; set; }      
-        public string? Duties { get; set; }
-        public int? QuoteQuantity { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Duties { get; set; }
+
+        [Precision(13,3)]
+        public decimal? QuoteQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandingPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MoqCost { get; set; }
+
         public DateTime? QuoteDate { get; set; }
-        public DateTime? QuoteValidity { get; set; }
-        public string? UploadFile { get; set; }
-        public bool IsActive { get; set; } = true;
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public DateTime? QuoteValidity { get; set; }       
+        public bool Primary { get; set; } = true;        
         public int RfqSourcingItemsId { get; set; }
         public RfqSourcingItems? RfqSourcingItems { get; set; }
     }

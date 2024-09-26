@@ -13,6 +13,8 @@ namespace Entities.DTOs
 
         public string? ContactName { get; set; }
 
+        public string? LeadID { get; set; }
+
         public string? CustomerFirstName { get; set; }
 
         public string? CustomerLastName { get; set; }
@@ -28,6 +30,7 @@ namespace Entities.DTOs
         public string? OptIn { get; set; }
 
         public DateTime? DateOfBirth { get; set; }
+        public string? Salutation { get; set; }
 
         public int? GsheetSalesCount { get; set; }
 
@@ -117,6 +120,8 @@ namespace Entities.DTOs
 
         public DateTime? Anniversary { get; set; }
 
+        public string? Salutation { get; set; }
+
         public string? Occupation { get; set; }
         public string? GISLocation { get; set; }
         public string? LostReason { get; set; }
@@ -165,7 +170,7 @@ namespace Entities.DTOs
         public string? StagOfConstuction { get; set; }
 
         public string? Tags { get; set; }
-        public string Unit { get; set; }
+        
         public List<LeadAddressPostDto>? LeadAddresses { get; set; }
 
     }
@@ -197,8 +202,9 @@ namespace Entities.DTOs
     public string? Occupation { get; set; }
     public string? GISLocation { get; set; }
     public string? LostReason { get; set; }
+        public string? Salutation { get; set; }
 
-    public string? LostRemarks { get; set; }
+        public string? LostRemarks { get; set; }
 
     public string? TypeOfHome { get; set; }
 

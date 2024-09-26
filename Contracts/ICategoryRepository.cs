@@ -4,14 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
+using Entities.Helper;
 
 namespace Contracts
 {
     public interface ICategoryRepository : IRepositoryBase<Category>
     {
-        Task<IEnumerable<Category>> GetAllCategory();
+        Task<IEnumerable<Category>> GetAllCategory(SearchParames searchParams);
         Task<Category> GetCategoryById(int id);
-        Task<IEnumerable<Category>> GetAllActiveCategory();
+        Task<IEnumerable<Category>> GetAllActiveCategory(SearchParames searchParams);
         Task<int?> CreateCategory(Category category);
         Task<string> UpdateCategory(Category category);
         Task<string> DeleteCategory(Category category);

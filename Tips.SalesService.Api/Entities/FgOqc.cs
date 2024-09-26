@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class FgOqc
     {
+        [Key]
         public int? Id { get; set; }
         public string? ProjectNumber { get; set; }
 

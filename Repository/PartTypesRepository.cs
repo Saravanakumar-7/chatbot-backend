@@ -1,9 +1,12 @@
 ﻿using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,16 +14,26 @@ namespace Repository
 {
     public class PartTypesRepository : RepositoryBase<PartTypes>, IPartTypesRepository
     {
-        public PartTypesRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public PartTypesRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreatePartTypes(PartTypes partTypes)
         {
-            partTypes.CreatedBy = "Admin";
+            partTypes.CreatedBy = _createdBy;
             partTypes.CreatedOn = DateTime.Now;
+            partTypes.Unit = _unitname;
             var result = await Create(partTypes);
-            partTypes.Unit = "Bangalore";
+            
             return result.Id;
         }
 
@@ -31,29 +44,34 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<PartTypes>> GetAllActivePartTypes()
+        public async Task<IEnumerable<PartTypes>> GetAllActivePartTypes([FromQuery] SearchParames searchParams)
         {
-            var PartTypeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return PartTypeList;
+            var partTypeDetails = FindAll()
+          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PartTypeName.Contains(searchParams.SearchValue) ||
+         inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
+            return partTypeDetails;
         }
 
-        public async Task<IEnumerable<PartTypes>> GetAllPartTypes()
+        public async Task<IEnumerable<PartTypes>> GetAllPartTypes([FromQuery] SearchParames searchParams)
         {
-            var PartTypeList = await FindAll().ToListAsync();
+            var partTypeDetails = FindAll().OrderByDescending(x => x.Id)
+          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PartTypeName.Contains(searchParams.SearchValue) ||
+         inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
-            return PartTypeList;
+            return partTypeDetails;
         }
 
         public async Task<PartTypes> GetPartTypesById(int id)
         {
-            var partTypes = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var PartTypesbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return partTypes;
+            return PartTypesbyId;
         }
 
         public async Task<string> UpdatePartTypes(PartTypes partTypes)
         {
-            partTypes.LastModifiedBy = "Admin";
+            partTypes.LastModifiedBy = _createdBy;
             partTypes.LastModifiedOn = DateTime.Now;
             Update(partTypes);
             string result = $"PartType details of {partTypes.Id} is updated successfully!";

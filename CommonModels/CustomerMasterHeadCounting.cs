@@ -9,11 +9,12 @@ namespace Entities
 {
     public class CustomerMasterHeadCounting
     {
+        [Key]
         public int Id { get; set; }
         public string? DepartmentSkill { get; set; }
 
         public string? NumberOfPeople { get; set; }
-        public string Unit { get; set; }
+
 
         public int CustomerMasterId { get; set; }
 

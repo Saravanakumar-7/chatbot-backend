@@ -1,0 +1,37 @@
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Tips.Warehouse.Api.Entities
+{
+    public class DeliveryOrderSPReport
+    {
+        public string? DoNumber { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
+        public string? CustomerLeadid { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public int? SalesOrderRevisionNumber { get; set; }
+        public DateTime? DODate { get; set; }
+        public string? ProductType { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? OrderType { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public string? ProjectNumber {  get; set; }
+        public string? IssuedTo { get; set; }
+        public string? IssuedBy { get; set; }
+        public string? KPN { get; set; }
+        public string? MPN { get; set; }
+        public string? Description { get; set; }
+        public decimal? Discount { get; set; }
+        public decimal? TotalAmount { get; set; }
+        public decimal? DOvalue { get; set; }
+        public string? UOC { get; set; }
+        public string? UOM { get; set; }
+        public decimal? FGOrderQty { get; set; }
+        public decimal? DODispatchQty { get; set; }
+        public decimal? OrderBalanceQty { get; set; }
+        public decimal? DoReturnQty { get; set; }
+        public string? SerialNo { get; set; }
+        public string? Remarks { get; set; }
+    }
+}

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,10 +11,13 @@ namespace Entities
 {
     public class EnggAlternates
     {
+        [Key]
         public int Id { get; set; }
 
         public string ChildItemNumber { get; set; }
         public string ChildItemAlternateNumber { get; set; }
+
+        public string? CustomerName { get; set; }
 
         public string? UOM { get; set; }
 
@@ -30,8 +34,7 @@ namespace Entities
 
         [DefaultValue(true)]
         public bool IsActive { get; set; }
-
-        public string Unit { get; set; }
+         
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

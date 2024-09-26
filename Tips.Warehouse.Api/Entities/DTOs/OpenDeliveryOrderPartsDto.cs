@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -11,81 +12,110 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class OpenDeliveryOrderPartsDto
     {
         public int Id { get; set; }
-        public string ItemNo { get; set; }
-        public string ItemType { get; set; }
+        public string ItemNumber { get; set; }
+        public string ODONumber { get; set; }
+        public PartType ItemType { get; set; }
+
+        [Required]
+        public string ItemDescription { get; set; }
+        public string? Warehouse { get; set; }
+
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
         public string UOC { get; set; }
         public string UOM { get; set; }
-        public int StockAvailable { get; set; }
-        public string Location { get; set; }
-        public string LocationStock { get; set; }
+        public decimal StockAvailable { get; set; }
+        public string? Location { get; set; }
+        public decimal? LocationStock { get; set; }
+
         [Precision(13, 3)]
         public decimal DispatchQty { get; set; }
-        public string Remarks { get; set; }
+        public string? Remarks { get; set; }
+        public string? SerialNo { get; set; }
+        public decimal? InitialDispatchQty { get; set; }
         public bool IsActive { get; set; } = true;
-        public string Unit { get; set; }
+
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public List<OpenDeliveryOrderPartsQtyDistributionDto>? QtyDistribution { get; set; }
+
     }
     public class OpenDeliveryOrderPartsDtoPost
     {
-        [Required(ErrorMessage = "ItemNo is required")]
-        public string ItemNo { get; set; }
-        [Required(ErrorMessage = "ItemType is required")]
-        public string ItemType { get; set; }
-        [Required(ErrorMessage = "UnitPrice is required")]
+         
+        public string ItemNumber { get; set; } 
+        public PartType ItemType { get; set; }
+
+        [Required]
+        public string ItemDescription { get; set; }
+         
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
-        [Required(ErrorMessage = "UOC is required")]
+         
         public string UOC { get; set; }
-        [Required(ErrorMessage = "UOM is required")]
+         
         public string UOM { get; set; }
-        [Required(ErrorMessage = "StockAvailable is required")]
-        public int StockAvailable { get; set; }
-        [Required(ErrorMessage = "Location is required")]
-        public string Location { get; set; }
-        [Required(ErrorMessage = "LocationStock is required")]
-        public string LocationStock { get; set; }
-        [Required(ErrorMessage = "DispatchQty is required")]
+         
+        public decimal StockAvailable { get; set; }
+        public string? Warehouse { get; set; }
+         
+        public string? Location { get; set; }
+         
+        public decimal? LocationStock { get; set; }
+         
         [Precision(13, 3)]
         public decimal DispatchQty { get; set; }
-        [Required(ErrorMessage = "Remarks is required")]
-        public string Remarks { get; set; }
+         
+        public string? Remarks { get; set; }
+        public string? SerialNo { get; set; }
+
         public bool IsActive { get; set; } = true;
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
+
+        public List<OpenDeliveryOrderPartsQtyDistributionPostDto>? QtyDistribution { get; set; }
+
     }
     public class OpenDeliveryOrderPartsDtoUpdate
     {
-        public int Id { get; set; }
 
         [Required(ErrorMessage = "ItemNo is required")]
-        public string ItemNo { get; set; }
+        public string ItemNumber { get; set; }
+
         [Required(ErrorMessage = "ItemType is required")]
-        public string ItemType { get; set; }
+        public PartType ItemType { get; set; }
+
+        [Required]
+        public string ItemDescription { get; set; }
+
         [Required(ErrorMessage = "UnitPrice is required")]
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
+        public string? Warehouse { get; set; }
+
         [Required(ErrorMessage = "UOC is required")]
         public string UOC { get; set; }
+
         [Required(ErrorMessage = "UOM is required")]
         public string UOM { get; set; }
+
         [Required(ErrorMessage = "StockAvailable is required")]
-        public int StockAvailable { get; set; }
+        public decimal StockAvailable { get; set; }
+
         [Required(ErrorMessage = "Location is required")]
-        public string Location { get; set; }
+        public string? Location { get; set; }
+
         [Required(ErrorMessage = "LocationStock is required")]
-        public string LocationStock { get; set; }
+        public decimal? LocationStock { get; set; }
+
         [Required(ErrorMessage = "DispatchQty is required")]
         [Precision(13, 3)]
         public decimal DispatchQty { get; set; }
+
         [Required(ErrorMessage = "Remarks is required")]
-        public string Remarks { get; set; }
+        public string? SerialNo { get; set; }
+        public string? Remarks { get; set; }
         public bool IsActive { get; set; } = true;
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
+        
     }
 }

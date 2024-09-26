@@ -31,8 +31,7 @@ namespace Entities.DTOs
 
         public string? Country { get; set; }
         public string? ZIP { get; set; }
-
-        public string Unit { get; set; }
+         
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -73,8 +72,6 @@ namespace Entities.DTOs
         [StringLength(100, ErrorMessage = "ZIP can't be longer than 100 characters")]
         public string? ZIP { get; set; }
 
-        public string Unit { get; set; }
-
     }
 
     public class LeadAddressUpdateDto
@@ -109,8 +106,7 @@ namespace Entities.DTOs
         public string? Country { get; set; }
 
         [StringLength(100, ErrorMessage = "ZIP can't be longer than 100 characters")]
-        public string? ZIP { get; set; }
-        public string Unit { get; set; }
+        public string? ZIP { get; set; } 
     }
 
 }

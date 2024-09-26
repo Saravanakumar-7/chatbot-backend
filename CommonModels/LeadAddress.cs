@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace Entities
 {
     public class LeadAddress
     {
+        [Key]
         public int Id { get; set; }
 
         public string? ProjectName { get; set; }
@@ -31,7 +33,6 @@ namespace Entities
         public string? Country { get; set; }
         public string? ZIP { get; set; }
 
-        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

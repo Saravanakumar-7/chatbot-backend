@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace Contracts
 {
     public interface ILeadStatusRepository : IRepositoryBase<LeadStatus>
     {
-        Task<IEnumerable<LeadStatus>> GetAllLeadStatus();
+        Task<PagedList<LeadStatus>> GetAllLeadStatus(PagingParameter pagingParameter, SearchParames searchParames);
         Task<LeadStatus> GetLeadStatusById(int id);
-        Task<IEnumerable<LeadStatus>> GetAllActiveLeadStatus();
+        Task<PagedList<LeadStatus>> GetAllActiveLeadStatus(PagingParameter pagingParameter, SearchParames searchParames);
         Task<int?> CreateLeadStatus(LeadStatus leadStatus);
         Task<string> UpdateLeadStatus(LeadStatus leadStatus);
         Task<string> DeleteLeadStatus(LeadStatus leadStatus);

@@ -1,0 +1,16 @@
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+
+namespace Tips.Grin.Api.Entities
+{
+    public class GrinsForServiceItemsProjectNumbers
+    {
+        [Key]
+        public int Id { get; set; }
+        public string? ProjectNumber { get; set; }
+        [Precision(18, 3)]
+        public decimal? ProjectQty { get; set; }
+        public int GrinsForServiceItemsPartsId { get; set; }
+        public GrinsForServiceItemsParts? GrinsForServiceItemsParts { get; set; }
+    }
+}

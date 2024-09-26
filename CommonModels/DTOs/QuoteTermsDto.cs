@@ -27,9 +27,7 @@ namespace Entities.DTOs
         public string QuoteTermsName { get; set; }
         public string Description { get; set; }
         public bool ActiveStatus { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
+
     }
     public class QuoteTermsDtoUpdate
     {

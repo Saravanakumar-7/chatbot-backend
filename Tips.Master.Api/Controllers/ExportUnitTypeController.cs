@@ -2,7 +2,9 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
 
@@ -12,6 +14,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class ExportUnitTypeController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
@@ -25,13 +28,14 @@ namespace Tips.Master.Api.Controllers
         }
  
         [HttpGet]
-        public async Task<IActionResult> GetAllExportUnitTypes()
+        public async Task<IActionResult> GetAllExportUnitTypes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ExportUnitTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<ExportUnitTypeDto>>();
             try
             {
 
-                var ExportUnitTypeList = await _repository.ExportUnitTypeRepository.GetAllExportUnitTypes();
+                var ExportUnitTypeList = await _repository.ExportUnitTypeRepository.GetAllExportUnitTypes(searchParams);
+
                 _logger.LogInfo("Returned all ExportUnitTypeList");
                 var result = _mapper.Map<IEnumerable<ExportUnitTypeDto>>(ExportUnitTypeList);
                 serviceResponse.Data = result;
@@ -52,13 +56,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveExportUnitTypes()
+        public async Task<IActionResult> GetAllActiveExportUnitTypes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ExportUnitTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<ExportUnitTypeDto>>();
 
             try
             {
-                var ExportUnitTypes = await _repository.ExportUnitTypeRepository.GetAllActiveExportUnitTypes();
+                var ExportUnitTypes = await _repository.ExportUnitTypeRepository.GetAllActiveExportUnitTypes(searchParams);
                 _logger.LogInfo("Returned all ExportUnitTypes");
                 var result = _mapper.Map<IEnumerable<ExportUnitTypeDto>>(ExportUnitTypes);
                 serviceResponse.Data = result;
@@ -79,7 +83,7 @@ namespace Tips.Master.Api.Controllers
 
             }
         }
- 
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetExportUnitTypeById(int id)
         {

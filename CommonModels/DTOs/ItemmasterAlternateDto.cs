@@ -15,13 +15,12 @@ namespace Entities.DTOs
         public int Id { get; set; }
         public string? ManufacturerPartNo { get; set; }
         public string? Manufacturer { get; set; }
+
+        [DefaultValue(false)]
+        public bool AlternateSource { get; set; }
+
         [DefaultValue(false)]
         public bool IsDefault { get; set; }
-
-        //[ForeignKey(nameof(ItemMaster))]
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
-        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -32,16 +31,14 @@ namespace Entities.DTOs
 
     {
         public string? ManufacturerPartNo { get; set; }
+
+        [DefaultValue(false)]
+        public bool AlternateSource { get; set; }
+
         public string? Manufacturer { get; set; }
         [DefaultValue(false)]
         public bool IsDefault { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
-
-        //[ForeignKey(nameof(ItemMaster))]
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
+       
     }
 
     public class ItemmasterAlternateDtoUpdate
@@ -49,16 +46,27 @@ namespace Entities.DTOs
         [Key]
         public int Id { get; set; }
         public string? ManufacturerPartNo { get; set; }
+
+        [DefaultValue(false)]
+        public bool AlternateSource { get; set; }
         public string? Manufacturer { get; set; }
         [DefaultValue(false)]
         public bool IsDefault { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
+          
+    }
+    public class ItemmasterAlternateReportDto
+    {
+        [Key]
+        public int Id { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ManufacturerPartNo { get; set; }
+        public string? Manufacturer { get; set; }
 
-        //[ForeignKey(nameof(ItemMaster))]
-        //public long ItemMasterId { get; set; }
-        //public ItemMaster? ItemMaster { get; set; }
+        [DefaultValue(false)]
+        public bool AlternateSource { get; set; }
 
+        [DefaultValue(false)]
+        public bool IsDefault { get; set; }
+        
     }
 }

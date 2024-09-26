@@ -2,6 +2,7 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using System.Net;
@@ -12,6 +13,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class PaymentTermController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
@@ -26,13 +28,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<PaymentTermController>
         [HttpGet]
-        public async Task<IActionResult> GetAllPaymentTerms()
+        public async Task<IActionResult> GetAllPaymentTerms([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PaymentTermDto>> serviceResponse = new ServiceResponse<IEnumerable<PaymentTermDto>>();
             try
             {
 
-                var PaymentTermList = await _repository.PaymentTermRepository.GetAllpaymentTerms();
+                var PaymentTermList = await _repository.PaymentTermRepository.GetAllpaymentTerms(searchParams);
                 _logger.LogInfo("Returned all PaymentTermList");
                 var result = _mapper.Map<IEnumerable<PaymentTermDto>>(PaymentTermList);
                 serviceResponse.Data = result;
@@ -53,13 +55,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActivePaymentTerms()
+        public async Task<IActionResult> GetAllActivePaymentTerms([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PaymentTermDto>> serviceResponse = new ServiceResponse<IEnumerable<PaymentTermDto>>();
 
             try
             {
-                var Patmentterms = await _repository.PaymentTermRepository.GetAllActivepaymentTerms();
+                var Patmentterms = await _repository.PaymentTermRepository.GetAllActivepaymentTerms(searchParams);
                 _logger.LogInfo("Returned all Patmentterms");
                 var result = _mapper.Map<IEnumerable<PaymentTermDto>>(Patmentterms);
                 serviceResponse.Data = result;

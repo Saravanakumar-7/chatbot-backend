@@ -1,0 +1,8 @@
+﻿namespace Tips.Grin.Api.Entities
+{
+    public class GrinNumber
+    {
+        public int Id { get; set; }
+        public int CurrentValue { get; set; }
+    }
+}

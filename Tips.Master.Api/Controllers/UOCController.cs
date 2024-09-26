@@ -2,6 +2,7 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol.Core.Types;
@@ -11,6 +12,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class UOCController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
@@ -25,13 +27,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<UOMController>
         [HttpGet]
-        public async Task<IActionResult> GetAllUOC()
+        public async Task<IActionResult> GetAllUOC([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<UOCDto>> serviceResponse = new ServiceResponse<IEnumerable<UOCDto>>();
 
             try
             {
-                var UOCList = await _repository.UOCRepository.GetAllUOC();
+                var UOCList = await _repository.UOCRepository.GetAllUOC(searchParams);
                 _logger.LogInfo("Returned all UOC");
                 var result = _mapper.Map<IEnumerable<UOCDto>>(UOCList);
                 serviceResponse.Data = result;
@@ -52,13 +54,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveUocs()
+        public async Task<IActionResult> GetAllActiveUocs([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<UOCDto>> serviceResponse = new ServiceResponse<IEnumerable<UOCDto>>();
 
             try
             {
-                var UOCList = await _repository.UOCRepository.GetAllActiveUOC();
+                var UOCList = await _repository.UOCRepository.GetAllActiveUOC(searchParams);
                 _logger.LogInfo("Returned all UOC");
                 var result = _mapper.Map<IEnumerable<UOCDto>>(UOCList);
                 serviceResponse.Data = result;

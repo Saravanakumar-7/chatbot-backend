@@ -12,9 +12,10 @@ namespace Tips.SalesService.Api.Entities
 {
     public class MaterialTransactionNote
     {
+        [Key]
         public int? Id { get; set; }
-        public string? MTNNO { get; set; }
-        public string? ProjectNo { get; set; }
+        public string? MTNNumber { get; set; }
+        public string? ProjectNUmber { get; set; }
 
         public string Unit { get; set; }
 

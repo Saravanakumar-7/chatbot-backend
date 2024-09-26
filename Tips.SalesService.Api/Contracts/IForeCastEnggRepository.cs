@@ -12,7 +12,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IForeCastEnggRepository : IRepositoryBase<ForeCastEngg>
     {
-        Task<PagedList<ForeCastEngg>> GetAllForeCastEngg(PagingParameter pagingParameter);
+        Task<PagedList<ForeCastEngg>> GetAllForeCastEngg(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<ForeCastEngg> GetForeCastEnggById(int id);
         Task<int?> CreateForeCastEngg(ForeCastEngg foreCastEngg);
         Task<string> UpdateForeCastEngg(ForeCastEngg foreCastEngg);

@@ -1,0 +1,244 @@
+﻿using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
+using Tips.Production.Api.Contracts;
+using Tips.Production.Api.Entities;
+using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Entities.Enums;
+//using Tips.Warehouse.Api.Entities;
+
+namespace Tips.Production.Api.Repository
+{
+    public class MaterialReturnNoteRepository : RepositoryBase<MaterialReturnNote>, IMaterialReturnNoteRepository
+    {
+        private AdvitaTipsProductionDbContext _advitaTipsProductionDbContext;
+        private TipsProductionDbContext _tipsProductionDbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public MaterialReturnNoteRepository(TipsProductionDbContext repositoryContext, AdvitaTipsProductionDbContext advitaTipsProductionDbContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext,advitaTipsProductionDbContext)
+        {
+            _advitaTipsProductionDbContext= advitaTipsProductionDbContext;
+            _tipsProductionDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+        }
+
+        public async Task<int?> CreateMaterialReturnNote(MaterialReturnNote materialReturnNote)
+        {
+            materialReturnNote.CreatedBy = _createdBy;
+            materialReturnNote.CreatedOn = DateTime.Now;
+            materialReturnNote.Unit = _unitname;
+            var result = await Create(materialReturnNote);
+            return result.Id;
+        }
+
+        public async Task<int?> GetMRNumberAutoIncrementCount(DateTime date)
+        {
+            var mRNumberAutoIncrementCount = _tipsProductionDbContext.MaterialReturnNotes.Where(x => x.CreatedOn == date.Date).Count();
+
+            return mRNumberAutoIncrementCount;
+        }
+        public async Task<string> GenerateMRNNumberForAvision()
+        {
+            using var transaction = await _tipsProductionDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var rfqNumberEntity = await _tipsProductionDbContext.MRNumbers.SingleAsync();
+                rfqNumberEntity.CurrentValue += 1;
+                _tipsProductionDbContext.Update(rfqNumberEntity);
+                await _tipsProductionDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                //int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
+                //int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+
+                DateTime currentDate = DateTime.Now;
+                DateTime financeYearStart;
+
+                if (currentDate.Month >= 4) // Check if the current date is after or equal to April
+                {
+                    financeYearStart = new DateTime(currentDate.Year, 4, 1);
+                }
+                else
+                {
+                    financeYearStart = new DateTime(currentDate.Year - 1, 4, 1);
+                }
+
+                int currentYear = financeYearStart.Year % 100; // Get the last two digits of the current finance year
+                int nextYear = (financeYearStart.Year + 1) % 100; // Get the last two digits of the next finance year
+
+                return $"ASPL|MRN|{currentYear:D2}-{nextYear:D2}|{rfqNumberEntity.CurrentValue:D3}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+        public async Task<string> GenerateMRNNumber()
+        {
+            using var transaction = await _tipsProductionDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var mrnNumberEntity = await _tipsProductionDbContext.MRNNumbers.SingleAsync();
+                mrnNumberEntity.CurrentValue += 1;
+                _tipsProductionDbContext.Update(mrnNumberEntity);
+                await _tipsProductionDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"MRN-{mrnNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
+        public async Task<string> DeleteMaterialReturnNote(MaterialReturnNote materialReturnNote)
+        {
+            Delete(materialReturnNote);
+            string result = $"MaterialReturnNote details of {materialReturnNote.Id} is deleted successfully!";
+            return result;
+        }
+
+        public async Task<IEnumerable<MaterialReturnNoteIdNameList>> GetAllMaterialReturnNoteIdNameList()
+        {
+            IEnumerable<MaterialReturnNoteIdNameList> materialReturnNoteIdNameList = await _tipsProductionDbContext.MaterialReturnNotes
+                                .Select(x => new MaterialReturnNoteIdNameList()
+                                {
+                                    Id = x.Id,
+
+                                    MRNNumber = x.MRNNumber,
+
+                                })
+                                .OrderByDescending(x => x.Id)
+                              .ToListAsync();
+
+            return materialReturnNoteIdNameList;
+        }
+
+        public async Task<PagedList<MaterialReturnNote>> GetAllMaterialReturnNotes([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            var materialReturnNoteDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProjectNumber.Contains(searchParams.SearchValue) ||
+                   inv.MRNNumber.Contains(searchParams.SearchValue) || inv.ShopOrderNumber.Contains(searchParams.SearchValue))));
+
+            return PagedList<MaterialReturnNote>.ToPagedList(materialReturnNoteDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+        public async Task<PagedList<MaterialReturnNote>> GetAllMRNStatusOpen([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            var materialReturnNoteDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProjectNumber.Contains(searchParams.SearchValue) ||
+                   inv.MRNNumber.Contains(searchParams.SearchValue)))&& inv.MrnStatus == MaterialStatus.Open)
+                .Include(s => s.MaterialReturnNoteItems)
+                .ThenInclude(m => m.MRNWarehouseList);
+
+
+            return PagedList<MaterialReturnNote>.ToPagedList(materialReturnNoteDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+        public async Task<PagedList<MaterialReturnNote>> GetAllMRNOpenwithPartialStatus(PagingParameter pagingParameter, SearchParamess searchParammes)
+        {
+            var materialReturnNoteDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.MRNNumber.Contains(searchParammes.SearchValue)
+              || inv.ProjectNumber.Contains(searchParammes.SearchValue))) && (inv.MrnStatus == MaterialStatus.Open || inv.MrnStatus == MaterialStatus.PartiallyClosed))
+                .Include(s => s.MaterialReturnNoteItems)
+                .ThenInclude(m => m.MRNWarehouseList);
+
+
+            return PagedList<MaterialReturnNote>.ToPagedList(materialReturnNoteDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+        public async Task<IEnumerable<MaterialReturnNote>> GetAllMRNStatusClose()
+        {
+            var materialReturnNoteDetails = FindAll().OrderByDescending(x => x.Id)
+                .Where(x => x.MrnStatus == MaterialStatus.Closed)
+                .Include(s => s.MaterialReturnNoteItems)
+                .ThenInclude(m => m.MRNWarehouseList)
+                .ToList();
+
+            return materialReturnNoteDetails;
+        }
+
+        public async Task<MaterialReturnNote> GetMaterialReturnNoteById(int id)
+        {
+            var materialReturnNoteDetailById = await _tipsProductionDbContext.MaterialReturnNotes.Where(x => x.Id == id)
+                              .Include(x => x.MaterialReturnNoteItems)
+                              .ThenInclude(s => s.MRNWarehouseList)
+
+                              .FirstOrDefaultAsync();
+
+            return materialReturnNoteDetailById;
+        }
+
+        public async Task<string> UpdateMaterialReturnNote(MaterialReturnNote materialReturnNote)
+        {
+            materialReturnNote.LastModifiedBy = _createdBy;
+            materialReturnNote.LastModifiedOn = DateTime.Now;
+            Update(materialReturnNote);
+            string result = $"MaterialReturnNote of Detail {materialReturnNote.Id} is updated successfully!";
+            return result;
+        }
+        public async Task<IEnumerable<MaterialReturnNote>> GetAllMaterialReturnNoteWithItems(MaterialReturnNoteSearchDto materialReturnNoteSearch)
+        {
+            using (var context = _tipsProductionDbContext)
+            {
+                var query = _tipsProductionDbContext.MaterialReturnNotes.Include("MaterialReturnNoteItems");
+                if (materialReturnNoteSearch != null || (materialReturnNoteSearch.ProjectNumber.Any())
+               && materialReturnNoteSearch.ShopOrderNumber.Any() && materialReturnNoteSearch.MRNNumber.Any())
+                {
+                    query = query.Where
+                    (mrn => (materialReturnNoteSearch.ProjectNumber.Any() ? materialReturnNoteSearch.ProjectNumber.Contains(mrn.ProjectNumber) : true)
+                   && (materialReturnNoteSearch.ShopOrderNumber.Any() ? materialReturnNoteSearch.ShopOrderNumber.Contains(mrn.ShopOrderNumber) : true)
+                   && (materialReturnNoteSearch.MRNNumber.Any() ? materialReturnNoteSearch.MRNNumber.Contains(mrn.MRNNumber) : true))
+                    //&& (materialReturnNoteSearch.FGShopOrderNumber.Any() ? materialReturnNoteSearch.FGShopOrderNumber.Contains(po.FGShopOrderNumber) : true)
+                    //  && (materialReturnNoteSearch.SAShopOrderNumber.Any() ? materialReturnNoteSearch.SAShopOrderNumber.Contains(po.SAShopOrderNumber) : true));
+                    .Include(x => x.MaterialReturnNoteItems)
+                    .ThenInclude(s => s.MRNWarehouseList);
+                }
+                return query.ToList();
+            }
+        }
+
+        public async Task<IEnumerable<MaterialReturnNote>> SearchMaterialReturnNote([FromQuery] SearchParamess searchParammes)
+        {
+            using (var context = _tipsProductionDbContext)
+            {
+                var query = _tipsProductionDbContext.MaterialReturnNotes.Include("MaterialReturnNoteItems");
+                if (!string.IsNullOrEmpty(searchParammes.SearchValue))
+                {
+                    query = query.Where(po => po.ProjectNumber.Contains(searchParammes.SearchValue)
+                    || po.MRNNumber.Contains(searchParammes.SearchValue)
+                    || po.ShopOrderNumber.Contains(searchParammes.SearchValue)
+                    || po.MaterialReturnNoteItems.Any(s => s.PartNumber.Contains(searchParammes.SearchValue) ||
+                    s.PartDescription.Contains(searchParammes.SearchValue)
+                    || s.MftrPartNumber.Contains(searchParammes.SearchValue)))
+                        .Include(x => x.MaterialReturnNoteItems)
+                    .ThenInclude(s => s.MRNWarehouseList) ;
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<MaterialReturnNote>> SearchMaterialReturnNoteDate([FromQuery] SearchDateparames searchDatesParams)
+        {
+            var materialReturnNoteDetails = _tipsProductionDbContext.MaterialReturnNotes
+            .Where(inv => ((inv.CreatedOn >= searchDatesParams.SearchFromDate &&
+            inv.CreatedOn <= searchDatesParams.SearchToDate
+            )))
+            .Include(itm => itm.MaterialReturnNoteItems)
+            .ThenInclude(s => s.MRNWarehouseList)
+            .ToList();
+            return materialReturnNoteDetails;
+        }
+
+
+    }
+}

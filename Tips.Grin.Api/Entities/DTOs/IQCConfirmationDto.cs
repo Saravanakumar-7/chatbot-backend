@@ -7,94 +7,178 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Microsoft.EntityFrameworkCore;
+using Entities.Enums;
 
 namespace Tips.Grin.Api.Entities.DTOs
 {
     public class IQCConfirmationDto
     {
         public int Id { get; set; }
+        public string? IQCNumber { get; set; }
 
         public string? GrinNumber { get; set; }
+        public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
 
-        public string? ItemNumber { get; set; }
+        [Required]
+        public string InvoiceNumber { get; set; }
 
-        public int ItemId { get; set; }
+        public decimal? InvoiceValue { get; set; }
 
+        public DateTime? InvoiceDate { get; set; }
 
-        public string? ProjectNumber { get; set; }
+        public string? AWBNumber1 { get; set; }
 
-        [Precision(13, 3)]
-        public decimal? AcceptedQunatity { get; set; }
+        public DateTime? AWBDate1 { get; set; }
 
-        [Precision(13, 3)]
-        public decimal? RejectedQunatity { get; set; }
+        public string? AWBNumber2 { get; set; }
 
-        public bool IsBinningDone { get; set; } = false;
+        public DateTime? AWBDate2 { get; set; }
 
+        public string? BENumber { get; set; }
+
+        public DateTime? BEDate { get; set; }
+
+        public decimal? TotalInvoiceValue { get; set; }
+        public int GrinId { get; set; }
+
+        public string Unit { get; set; }
+        public bool IsDeleted { get; set; } = false;
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public string? GateEntryNo { get; set; }
+        public DateTime? GateEntryDate { get; set; }
+        public List<IQCConfirmationItemsDto>? IQCConfirmationItems { get; set; }
+
+    }
+    public class IQCConfirmationPostDto
+    {
+        public string GrinNumber { get; set; }
+        public int GrinId { get; set; }
+        public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
+        public List<IQCConfirmationItemsPostDto>? IQCConfirmationItemsPostDtos { get; set; }
+
+    }
+
+    public class IQCConfirmationUpdateDto
+    {
+
+        public int Id { get; set; }
+        public string GrinNumber { get; set; }
+        public int GrinId { get; set; }
+        public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
+        public string Unit { get; set; }
+        public List<IQCConfirmationItemsUpdateDto>? IQCConfirmationItemsUpdateDtos { get; set; }
+
+    }
+    public class IQCConfirmationIdNameListDto
+    {
+        public int Id { get; set; }
+        public string? GrinNumber { get; set; }
+    }
+    public class IQCConfirmationSearchDto
+    {
+        public List<string>? GrinNumber { get; set; }
+        public List<string>? VendorName { get; set; }
+        public List<string>? VendorId { get; set; }
+        public List<string>? InvoiceNumber { get; set; }
+    }
+    public class IQCConfirmationReportDto
+    {
+        public int Id { get; set; }
+
+        public string? GrinNumber { get; set; }
+        [Required]
+        public string VendorName { get; set; }
+
+        [Required]
+        public string VendorId { get; set; }
+
+        [Required]
+        public string InvoiceNumber { get; set; }
+
+        public decimal? InvoiceValue { get; set; }
+
+        public DateTime? InvoiceDate { get; set; }
+
+        public string? AWBNumber1 { get; set; }
+
+        public DateTime? AWBDate1 { get; set; }
+
+        public string? AWBNumber2 { get; set; }
+
+        public DateTime? AWBDate2 { get; set; }
+
+        public string? BENumber { get; set; }
+
+        public DateTime? BEDate { get; set; }
+
+        public decimal? TotalInvoiceValue { get; set; }
+        public int GrinId { get; set; }
+
+        public string Unit { get; set; }
         public bool IsDeleted { get; set; } = false;
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public string Unit { get; set; }
-
-        
+        public List<IQCConfirmationItemsReportDto>? IQCConfirmationItems { get; set; }
 
     }
-    public class IQCConfirmationPostDto
+    public class IQCConfirmationSaveDto
     {
         public string? GrinNumber { get; set; }
-
-        public string? ItemNumber { get; set; }
-
-        public int ItemId { get; set; }
-
-        public string? ProjectNumber { get; set; }
-
-        [Precision(13, 3)]
-        public decimal? AcceptedQunatity { get; set; }
-
-        [Precision(13, 3)]
-        public decimal? RejectedQunatity { get; set; }
-
-        public bool IsBinningDone { get; set; } = false;
-
-        public bool IsDeleted { get; set; } = false;
-
-
-        public string Unit { get; set; }
-
+        public int GrinId { get; set; }
+        public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
+        public IQCConfirmationItemsSaveDto? IQCConfirmationItemsPostDtos { get; set; }
 
     }
-
-    public class IQCConfirmationUpdateDto
+    public class IQCInventoryTranctionDto
     {
-    public int Id { get; set; }
-    
-    public string? GrinNumber { get; set; }
+        public string PartNumber { get; set; }
+        public string? LotNumber { get; set; }
 
-    public string? ItemNumber { get; set; }
+        public string MftrPartNumber { get; set; }
 
-    public int ItemId { get; set; }
+        public bool IsStockAvailable { get; set; }
+        public string Description { get; set; }
 
-    public string? ProjectNumber { get; set; }
 
-    [Precision(13, 3)]
-    public decimal? AcceptedQunatity { get; set; }
+        public string ProjectNumber { get; set; }
+        public decimal Issued_Quantity { get; set; }
+        public string? UOM { get; set; }
 
-    [Precision(13, 3)]
-    public decimal? RejectedQunatity { get; set; }
-
-    public bool IsBinningDone { get; set; } = false;
-
-    public bool IsDeleted { get; set; } = false;
-
-        public string Unit { get; set; }
+        public string? Warehouse { get; set; }
+        public string? From_Location { get; set; }
+        public string? TO_Location { get; set; }
+        public string? GrinNo { get; set; }
+        public int? GrinPartId { get; set; }
+        public PartType PartType { get; set; }
+        public string? GrinMaterialType { get; set; }
+        public string? ReferenceID { get; set; }
+        public string? ReferenceIDFrom { get; set; }
+        public string? ShopOrderNo { get; set; }
 
     }
-
-
-
-
+    public class IQCConfirmationReportWithParamDto
+    {
+        public string? GrinNumber { get; set; }
+        public string? ItemNumber { get; set; }
+    }
+    public class IQCConfirmationReportWithParamForTransDto
+    {
+        public string? GrinNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
 }

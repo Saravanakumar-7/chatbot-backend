@@ -9,6 +9,7 @@ namespace Entities
 {
     public class VendorContacts
     {
+        [Key]
         public int Id { get; set; } 
 
         public string? Salutation { get; set; }
@@ -33,7 +34,7 @@ namespace Entities
 
         public string? Department { get; set; }
 
-        public string? AlternameMobileNumber { get; set; }
+        public string? AlternateMobileNumber { get; set; }
 
         public string? AlternateMobileCountryCode { get; set; }
 
@@ -44,8 +45,7 @@ namespace Entities
         public string? Extension { get; set; }
 
         public string? Language{ get; set; }
-        public string Unit { get; set; }
-
+ 
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

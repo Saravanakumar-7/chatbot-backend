@@ -4,6 +4,7 @@ using Entities.DTOs;
 using Entities;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -11,6 +12,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class PartTypesController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
@@ -25,13 +27,13 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<PartTypeController>
         [HttpGet]
-        public async Task<IActionResult> GetAllPartTypes()
+        public async Task<IActionResult> GetAllPartTypes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PartTypesDto>> serviceResponse = new ServiceResponse<IEnumerable<PartTypesDto>>();
             try
             {
 
-                var PartTypeList = await _repository.partTypesRepository.GetAllPartTypes();
+                var PartTypeList = await _repository.partTypesRepository.GetAllPartTypes(searchParams);
                 _logger.LogInfo("Returned all PartTypes");
                 var result = _mapper.Map<IEnumerable<PartTypesDto>>(PartTypeList);
                 serviceResponse.Data = result;
@@ -51,13 +53,13 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllActivePartTypes()
+        public async Task<IActionResult> GetAllActivePartTypes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PartTypesDto>> serviceResponse = new ServiceResponse<IEnumerable<PartTypesDto>>();
 
             try
             {
-                var PartTypes = await _repository.partTypesRepository.GetAllActivePartTypes();
+                var PartTypes = await _repository.partTypesRepository.GetAllActivePartTypes(searchParams);
                 _logger.LogInfo("Returned all PartTypes");
                 var result = _mapper.Map<IEnumerable<PartTypesDto>>(PartTypes);
                 serviceResponse.Data = result;

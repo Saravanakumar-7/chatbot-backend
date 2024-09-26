@@ -2,6 +2,7 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using System.Net;
@@ -12,6 +13,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class SalutationsController : ControllerBase
     {  
         private IRepositoryWrapperForMaster _repository;
@@ -25,13 +27,13 @@ namespace Tips.Master.Api.Controllers
             }
             // GET: api/<SalutationsController>
             [HttpGet]
-        public async Task<IActionResult> GetAllSalutations()
+        public async Task<IActionResult> GetAllSalutations([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<SalutationsDto>> serviceResponse = new ServiceResponse<IEnumerable<SalutationsDto>>();
             try
             {
 
-                var SalutationsList = await _repository.SalutationsRepository.GetAllSalutations();
+                var SalutationsList = await _repository.SalutationsRepository.GetAllSalutations(searchParams);
                 _logger.LogInfo("Returned all SalutationsList");
                 var result = _mapper.Map<IEnumerable<SalutationsDto>>(SalutationsList);
                 serviceResponse.Data = result;
@@ -52,13 +54,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveSalutations()
+        public async Task<IActionResult> GetAllActiveSalutations([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<SalutationsDto>> serviceResponse = new ServiceResponse<IEnumerable<SalutationsDto>>();
 
             try
             {
-                var Salutations = await _repository.SalutationsRepository.GetAllActiveSalutations();
+                var Salutations = await _repository.SalutationsRepository.GetAllActiveSalutations(searchParams);
                 _logger.LogInfo("Returned all Salutations");
                 var result = _mapper.Map<IEnumerable<SalutationsDto>>(Salutations);
                 serviceResponse.Data = result;

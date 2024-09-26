@@ -2,20 +2,23 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Entities
 {
     public class PurchaseRequisition
     {
+        [Key]
         public int Id { get; set; }
 
-        public string? PRNumber { get; set; }
+        public string? PrNumber { get; set; }
 
-        public DateTime? PRDate { get; set; }
+        public DateTime? PrDate { get; set; }
 
         public int? RevisionNumber { get; set; }
 
@@ -23,36 +26,46 @@ namespace Tips.Purchase.Api.Entities
 
         public string? Purpose { get; set; }
 
-        public string? PRFiles { get; set; }
+        public string? PrFiles { get; set; }
 
         public string? DeliveryTerms { get; set; }
 
         public string? PaymentTerms { get; set; }
 
         public string? ShippingMode { get; set; }
-
-        public string? ShipTo { get; set; }
-
-        public string? BillTo { get; set; }
+         
 
         public string? RetentionPeriod { get; set; }
 
         public string? SpecialTermsConditions { get; set; }
 
-        public bool PRApprovalI { get; set; } = false;
-        public string? PRApprovedIBy { get; set; }
-        public DateTime PRApprovedIDate { get; set; }
+        [DefaultValue(0)]
+        public Status Status { get; set; }
 
-        public bool PRApprovalII { get; set; } = false;
-        public string? PRApprovedIIBy { get; set; }
-        public DateTime PRApprovedIIDate { get; set; }
+        [DefaultValue(false)]
+        public bool IsShortClosed { get; set; }
+        public string? ShortClosedBy { get; set; }
+        public DateTime? ShortClosedOn { get; set; }
+
+        public bool PrApprovalI { get; set; } = false;
+        public string? PrApprovedIBy { get; set; }
+        public DateTime PrApprovedIDate { get; set; }
+
+        public bool PrApprovalII { get; set; } = false;
+        public string? PrApprovedIIBy { get; set; }
+        public DateTime PrApprovedIIDate { get; set; }         
+        public bool IsDeleted { get; set; } = false;
+        public bool IsModified { get; set; } = false;
+        [DefaultValue(0)]
+        public PrStatus PrStatus { get; set; }
+        public string? Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<PrItem>? PrItemList { get; set; }     
+        public List<PrItem>? PrItemsDtoList { get; set; }     
 
     }
 }

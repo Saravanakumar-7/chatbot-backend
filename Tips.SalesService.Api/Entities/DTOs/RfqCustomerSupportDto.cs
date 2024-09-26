@@ -1,4 +1,5 @@
 ﻿using Entities.DTOs;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,12 +11,20 @@ namespace Tips.SalesService.Api.Entities.DTOs
 {
     public class RfqCustomerSupportDto
     {   
-        public int Id { get; set; }    
+        public int Id { get; set; }
+        public string? LeadId { get; set; }
         public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
+        public string? CustomerId { get; set; }
         public string RFQNumber { get; set; }
+        public string? SalesPerson { get; set; }
         public string? CustomerRfqNumber { get; set; }
-        public string? RevisionNumber { get; set; }
-        public DateTime? RequestReceiveDate { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
+        public DateTime? RequestReceivedate { get; set; }
         public DateTime? QuoteExpectdate { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
@@ -23,57 +32,83 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<RfqCustomerSupportItemDto>? rfqCustomerSupportItems { get; set; }
+        public List<RfqCustomerSupportItemDto>? RfqCustomerSupportItems { get; set; }
 
-        public List<RfqCustomerSupportNotesDto>? rfqCustomerSupportNotes { get; set; }
+        public List<RfqCustomerSupportNotesDto>? RfqCustomerSupportNotes { get; set; }
 
-        //public List<RfqNotes>? rfqNotes { get; set; }
 
     }
     public class RfqCustomerSupportPostDto
-    { 
+    {
+        public string? LeadId { get; set; }
+
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
-        public string? CustomerName { get; set; }
+        public string? CustomerName { get; set; }        
+
+        [Required]
         public string RFQNumber { get; set; }
+
+        public string? CustomerAliasName { get; set; }
 
         [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
         public string? CustomerRfqNumber { get; set; }
-        public string? RevisionNumber { get; set; }
 
-        public DateTime? RequestReceiveDate { get; set; }
-        public DateTime? QuoteExpectDate { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-        public List<RfqCustomerSupportItemPostDto>? rfqCustomerSupportItems { get; set; }
-        public List<RfqCustomerSupportNotesPostDto>? rfqCustomerSupportNotes { get; set; }
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
 
-        //public List<RfqNotes>? rfqNotes { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+        public DateTime? RequestReceivedate { get; set; }
+        public DateTime? QuoteExpectdate { get; set; } 
+        public List<RfqCustomerSupportItemPostDto>? RfqCustomerSupportItems { get; set; }
+        public List<RfqCustomerSupportNotesPostDto>? RfqCustomerSupportNotes { get; set; }
+
     }
+    //public class RfqCustomerSupportUpdateDto
+    //{
+
+    //    public string? LeadId { get; set; }
+
+    //    [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
+    //    public string? CustomerName { get; set; }
+    //    public string? CustomerAliasName { get; set; }
+
+
+    //    [Required]
+    //    public string RFQNumber { get; set; }
+
+    //    [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
+    //    public string? CustomerRfqNumber { get; set; }
+
+    //    public string? TypeOfSolution { get; set; }
+    //    public string? ProductType { get; set; }
+
+
+    //    public DateTime? RequestReceivedate { get; set; }
+    //    public DateTime? QuoteExpectdate { get; set; }
+    //    public string Unit { get; set; }
+    //    public List<RfqCustomerSupportItemUpdateDto>? RfqCustomerSupportItems { get; set; }
+    //    public List<RfqCustomerSupportNotesUpdateDto>? RfqCustomerSupportNotes { get; set; }
+
+    //}
     public class RfqCustomerSupportUpdateDto
     {
         public int Id { get; set; }
-
-        [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
+        public string RfqNumber { get; set; }
+        public int RevisionNumber { get; set; }
+        public string? CustomerId { get; set; }
         public string? CustomerName { get; set; }
-        public string RFQNumber { get; set; }
-
-        [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
+        public string? CustomerAliasName { get; set; }
         public string? CustomerRfqNumber { get; set; }
-        public string? RevisionNumber { get; set; }
-        public DateTime? RequestReceiveDate { get; set; }
-        public DateTime? QuoteExpectDate { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-        public List<RfqCustomerSupportItemUpdateDto>? rfqCustomerSupportItems { get; set; }
-        public List<RfqCustomerSupportNotesUpdateDto>? rfqCustomerSupportNotes { get; set; }
+        public DateTime? RequestReceivedate { get; set; }
+        public DateTime? QuoteExpectdate { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+        public string? Remarks { get; set; }
+        public string? ReasonForModification { get; set; }
+        public List<RfqCustomerSupportItemUpdateDto>? RfqCustomerSupportItems { get; set; }
+        public List<RfqCustomerSupportNotesUpdateDto>? RfqCustomerSupportNotes { get; set; }
 
-        //public List<RfqNotes>? rfqNotes { get; set; }
     }
     public class RfqCustomerSupportUpdateReleaseDto
     {
@@ -81,20 +116,24 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
         public string? CustomerName { get; set; }
+
+        public string? CustomerAliasName { get; set; }
+
         public string RFQNumber { get; set; }
  
         [StringLength(500, ErrorMessage = "CustomerRfqNumber can't be longer than 500 characters")]
-        public string? CustomerRfqNumber { get; set; }
-        public string? RevisionNumber { get; set; }
-        public DateTime? RequestReceiveDate { get; set; }
-        public DateTime? QuoteExpectDate { get; set; }
+        public string? CustomerRfqNumber { get; set; } 
+
+        [Precision(13, 1)]
+        public decimal? RevisionNumber { get; set; }
+        public DateTime? RequestReceivedate { get; set; }
+        public DateTime? QuoteExpectdate { get; set; }
+
+        [Required]
         public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-        public List<RfqCustomerSupportItemUpdateReleaseDto>? rfqCustomerSupportItems { get; set; }
-        public List<RfqCustomerSupportNotesUpdateDto>? rfqCustomerSupportNotes { get; set; }
+       
+        public List<RfqCustomerSupportItemUpdateReleaseDto>? RfqCustomerSupportItems { get; set; }
+        public List<RfqCustomerSupportNotesUpdateDto>? RfqCustomerSupportNotes { get; set; }
 
     } 
 }

@@ -4,6 +4,8 @@ using Entities;
 using Microsoft.EntityFrameworkCore;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -11,19 +13,25 @@ namespace Tips.SalesService.Api.Repository
     public class FgOqcRepository : RepositoryBase<FgOqc>, IFgOqcRepository
     {
         private TipsSalesServiceDbContext _tipsSalesServiceDbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
 
-        public FgOqcRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext) : base(tipsSalesServiceDbContext)
+        public FgOqcRepository(TipsSalesServiceDbContext tipsSalesServiceDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsSalesServiceDbContext)
         {
             _tipsSalesServiceDbContext = tipsSalesServiceDbContext;
-
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<int?> CreateFgOqc(FgOqc fgOqc)
         {
-            fgOqc.CreatedBy = "Admin";
+            fgOqc.CreatedBy = _createdBy;
             fgOqc.CreatedOn = DateTime.Now;
-            var result = await Create(fgOqc);
-            fgOqc.Unit = "Bangalore";
+            fgOqc.Unit = _unitname;
+            var result = await Create(fgOqc);            
             return result.Id;
         }
 
@@ -34,25 +42,27 @@ namespace Tips.SalesService.Api.Repository
             return result;
         }
 
-        public async Task<PagedList<FgOqc>> GetAllFgOqcs(PagingParameter pagingParameter)
+        public async Task<PagedList<FgOqc>> GetAllFgOqcs([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
-            var fgqoc = PagedList<FgOqc>.ToPagedList(FindAll()
-           .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-            return fgqoc;
+            var getAllFgoqcDetails = FindAll().OrderByDescending(x => x.Id)
+              .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.ProjectNumber.Contains(searchParammes.SearchValue) ||
+                 inv.FGItemNumber.Contains(searchParammes.SearchValue) || inv.ShopOrderNumber.Contains(searchParammes.SearchValue))));
+
+            return PagedList<FgOqc>.ToPagedList(getAllFgoqcDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
         }
 
 
         public async Task<FgOqc> GetFgOqcById(int id)
         {
-            var fgQocs = await _tipsSalesServiceDbContext.FgOqcs.Where(x => x.Id == id).FirstOrDefaultAsync();
-            return fgQocs;
+            var getFgOqcById = await _tipsSalesServiceDbContext.FgOqcs.Where(x => x.Id == id).FirstOrDefaultAsync();
+            return getFgOqcById;
         }
 
         public async Task<string> UpdateFgOqc(FgOqc fgOqc)
         {
-            fgOqc.CreatedBy = "Admin";
-            fgOqc.CreatedOn = DateTime.Now;
+            fgOqc.LastModifiedBy = _createdBy;
+            fgOqc.LastModifiedOn = DateTime.Now;
             Update(fgOqc);
             string result = $"fgOqc of Detail {fgOqc.Id} is updated successfully!";
             return result;

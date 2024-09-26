@@ -12,34 +12,22 @@ namespace Tips.Grin.Api.Entities
 {
     public class IQCConfirmation
     {
+        [Key]
         public int Id { get; set; }
-
+        public string? IQCNumber { get; set; }
         public string? GrinNumber { get; set; }
-
-        public string? ItemNumber { get; set; }
-
-        public string? ItemId { get; set; }
-
-        public string? ProjectNumber { get; set; }
-
-        [Precision(13,3)]
-        public decimal? AcceptedQunatity { get; set; }
-
-        [Precision(13,3)]
-        public decimal? RejectedQunatity { get; set; }
-
-        public bool IsBinningDone { get; set; } = false;
-
-        public bool IsDeleted { get; set; } = false;
+        public int GrinId { get; set; }
+        public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
+        public bool IsIqcCompleted { get; set; }
+        public bool IsBinningCompleted { get; set; }
+        public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
-        public string Unit { get; set; }
-
-        
-
+        public List<IQCConfirmationItems>? IQCConfirmationItems { get; set; }
 
     }
 }

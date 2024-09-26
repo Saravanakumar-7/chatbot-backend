@@ -1,27 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
     public class WarehouseRepository : RepositoryBase<Warehouse>, IWarehouseRepository
     {
-        public WarehouseRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public WarehouseRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
 
         public async Task<int?> CreateWarehouse(Warehouse warehouse)
         {
-            warehouse.CreatedBy = "Admin";
+            warehouse.CreatedBy = _createdBy;
             warehouse.CreatedOn = DateTime.Now;
+            warehouse.Unit = _unitname;
             var result = await Create(warehouse);
-            warehouse.Unit = "Bangalore";
+            
             return result.Id;
         }
 
@@ -32,27 +44,32 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Warehouse>> GetAllActiveWarehouse()
+        public async Task<IEnumerable<Warehouse>> GetAllActiveWarehouse([FromQuery] SearchParames searchParams)
         {
-            var warehouseList = await FindByCondition(x => x.ActiveStatus == true).ToListAsync();
-            return warehouseList;
+            var warehouseDetails = FindAll()
+                                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.WarehouseName.Contains(searchParams.SearchValue) ||
+                                inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue)))
+                                && inv.ActiveStatus == true);
+            return warehouseDetails;
         }
 
-        public async Task<IEnumerable<Warehouse>> GetAllWarehouse()
+        public async Task<IEnumerable<Warehouse>> GetAllWarehouse([FromQuery] SearchParames searchParams)
         {
-            var warehouseList = await FindAll().ToListAsync();
-            return warehouseList;
+            var warehouseDetails = FindAll()
+                                      .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.WarehouseName.Contains(searchParams.SearchValue) ||
+                                inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return warehouseDetails;
         }
 
         public async Task<Warehouse> GetWarehouseById(int id)
         {
-            var warehouseList = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
-            return warehouseList;
+            var WarehousebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            return WarehousebyId;
         }
 
         public async Task<string> UpdateWarehouse(Warehouse warehouse)
         {
-            warehouse.LastModifiedBy = "Admin";
+            warehouse.LastModifiedBy = _createdBy;
             warehouse.LastModifiedOn = DateTime.Now;
             Update(warehouse);
             string result = $"Warehouse details of {warehouse.Id} is updated successfully!";

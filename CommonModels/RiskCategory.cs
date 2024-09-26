@@ -9,6 +9,7 @@ namespace Entities
 {
     public class RiskCategory
     {
+        [Key]
         public int Id { get; set; }
         [Required]
         public string RiskCategoryName { get; set; }

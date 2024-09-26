@@ -1,27 +1,65 @@
 ﻿using Entities;
 using Entities.Helper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
+using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Repository
 {
     public class DeliveryOrderRepository : RepositoryBase<DeliveryOrder>, IDeliveryOrderRepository
     {
         private TipsWarehouseDbContext _tipsWarehouseDbContext;
-        public DeliveryOrderRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public DeliveryOrderRepository(TipsWarehouseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsWarehouseDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         public async Task<long> CreateDeliveryOrder(DeliveryOrder deliveryOrder)
         {
-            deliveryOrder.CreatedBy = "Admin";
-            deliveryOrder.CreatedOn = DateTime.Now;
-            deliveryOrder.LastModifiedBy = "Admin";
-            deliveryOrder.LastModifiedOn = DateTime.Now;
+            var date = DateTime.Now;
+            deliveryOrder.CreatedBy = _createdBy;
+            deliveryOrder.CreatedOn = date.Date;
+            deliveryOrder.Unit = _unitname;
+            //Guid deliveryOrderNumber = Guid.NewGuid();
+            //deliveryOrder.DeliveryOrderNumber = " DO-" + deliveryOrderNumber.ToString();
             var result = await Create(deliveryOrder);
             return result.Id;
+        }
+        public async Task<int?> GetDONumberAutoIncrementCount(DateTime date)
+        {
+            var getBTODeliveryOrderDetailsByIds = _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.CreatedOn == date.Date).Count();
+
+            return getBTODeliveryOrderDetailsByIds;
+        }
+
+        public async Task<string> GenerateDONumber()
+        {
+            using var transaction = await _tipsWarehouseDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var doNumberEntity = await _tipsWarehouseDbContext.DONumbers.SingleAsync();
+                doNumberEntity.CurrentValue += 1;
+                _tipsWarehouseDbContext.Update(doNumberEntity);
+                await _tipsWarehouseDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"DO-{doNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
         }
 
         public async Task<string> DeleteDeliveryOrder(DeliveryOrder deliveryOrder)
@@ -31,38 +69,111 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<DeliveryOrder>> GetAllActiveDeliveryOrder()
+        public async Task<PagedList<DeliveryOrder>> GetAllActiveDeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var deliveryOrderDetails = await FindAll().ToListAsync();
-            return deliveryOrderDetails;
+
+
+            var allActiveDeliveryOrderDetails = FindAll()
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
+                || inv.ProjectNumber.Contains(searchParams.SearchValue)
+                || inv.DeliveryOrderNumber.Contains(searchParams.SearchValue)
+                || inv.CustomerName.Contains(searchParams.SearchValue))))
+                .Include(t => t.DeliveryOrderItemsDto)
+                .ThenInclude(y => y.doSerialNumberDto);
+
+            return PagedList<DeliveryOrder>.ToPagedList(allActiveDeliveryOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<PagedList<DeliveryOrder>> GetAllDeliveryOrder(PagingParameter pagingParameter, string DeliveryOrderNumber)
+        public async Task<PagedList<DeliveryOrder>> GetAllDeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
-            var deliveryOrderDetails = PagedList<DeliveryOrder>.ToPagedList(FindAll()
-                                 .Include(t => t.deliveryOrderItems)
-                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
 
-            return deliveryOrderDetails;
+
+            var allDeliveryOrderDetails = FindAll().OrderByDescending(x => x.Id)
+               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DeliveryOrderNumber.Contains(searchParams.SearchValue) ||
+                inv.ProjectNumber.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue))))
+                .Include(t => t.DeliveryOrderItemsDto)
+                .ThenInclude(y => y.doSerialNumberDto);
+
+            return PagedList<DeliveryOrder>.ToPagedList(allDeliveryOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-
-        public async Task<DeliveryOrder> GetDeliveryOrderById(int id, string DeliveryOrderNumber)
+        public async Task<DeliveryOrder> GetDeliveryOrderById(int id)
         {
-            var deliveryOrderDetails = await _tipsWarehouseDbContext.deliveryOrder.Where(x => x.Id == id)
-                              .Include(t => t.deliveryOrderItems)
+            var deliveryOrderDetailsbyId = await _tipsWarehouseDbContext.DeliveryOrder.Where(x => x.Id == id)
+                              .Include(t => t.DeliveryOrderItemsDto)
+                              .ThenInclude(y => y.doSerialNumberDto)
                               .FirstOrDefaultAsync();
 
 
-            return deliveryOrderDetails;
+            return deliveryOrderDetailsbyId;
         }
-
-        public async Task<string> UpdateDeliveryOrder(DeliveryOrder deliveryOrder, string DeliveryOrderNumber)
+        public async Task<IEnumerable<DeliveryOrder>> GetAllDeliveryOrderWithItems(DeliveryOrderSearchDto DeliveryOrderSearch)
         {
-            deliveryOrder.LastModifiedBy = "Admin";
+            using (var context = _tipsWarehouseDbContext)
+            {
+                var query = _tipsWarehouseDbContext.DeliveryOrder.Include("DeliveryOrderItemsDto");
+                if (DeliveryOrderSearch != null || (DeliveryOrderSearch.ProjectNumber.Any())
+                && DeliveryOrderSearch.DeliveryOrderNumber.Any() && DeliveryOrderSearch.CustomerId.Any() 
+                && DeliveryOrderSearch.CustomerName.Any() && DeliveryOrderSearch.PONumber.Any())
+                {
+                    query = query.Where
+                    (po => (DeliveryOrderSearch.CustomerName.Any() ? DeliveryOrderSearch.CustomerName.Contains(po.CustomerName) : true)
+                   && (DeliveryOrderSearch.CustomerId.Any() ? DeliveryOrderSearch.CustomerId.Contains(po.CustomerId) : true)
+                   && (DeliveryOrderSearch.DeliveryOrderNumber.Any() ? DeliveryOrderSearch.DeliveryOrderNumber.Contains(po.DeliveryOrderNumber) : true)
+                   && (DeliveryOrderSearch.ProjectNumber.Any() ? DeliveryOrderSearch.ProjectNumber.Contains(po.ProjectNumber) : true)
+                   && (DeliveryOrderSearch.PONumber.Any() ? DeliveryOrderSearch.PONumber.Contains(po.PONumber) : true));
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<DeliveryOrder>> SearchDeliveryOrderDate([FromQuery] SearchsDateParms searchsDateParms)
+        {
+            var DeliveryOrderDetails = _tipsWarehouseDbContext.DeliveryOrder
+            .Where(inv => ((inv.CreatedOn >= searchsDateParms.SearchFromDate &&
+            inv.CreatedOn <= searchsDateParms.SearchToDate
+            )))
+            .Include(itm => itm.DeliveryOrderItemsDto)
+            .ToList();
+            return DeliveryOrderDetails;
+        }
+        public async Task<IEnumerable<DeliveryOrder>> SearchDeliveryOrder([FromQuery] SearchParames searchParames)
+        {
+            using (var context = _tipsWarehouseDbContext)
+            {
+                var query = _tipsWarehouseDbContext.DeliveryOrder.Include("DeliveryOrderItemsDto");
+                if (!string.IsNullOrEmpty(searchParames.SearchValue))
+                {
+                    query = query.Where(po => po.CustomerName.Contains(searchParames.SearchValue)
+                    || po.PONumber.Contains(searchParames.SearchValue)
+                    || po.ProjectNumber.Contains(searchParames.SearchValue)
+                    || po.DeliveryOrderItemsDto.Any(s => s.FGItemNumber.Contains(searchParames.SearchValue)
+                    || s.ItemDescription.Contains(searchParames.SearchValue)));
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<string> UpdateDeliveryOrder(DeliveryOrder deliveryOrder)
+        {
+            deliveryOrder.LastModifiedBy = _createdBy;
             deliveryOrder.LastModifiedOn = DateTime.Now;
             Update(deliveryOrder);
             string result = $"DeliveryOrder of Detail {deliveryOrder.Id} is updated successfully!";
             return result;
+        }
+
+        public async Task<IEnumerable<DeliveryOrderIdNameList>> GetAllDeliveryOrderIdNameList()
+        {
+            IEnumerable<DeliveryOrderIdNameList> DeliveryOrderIddNameList = await _tipsWarehouseDbContext.DeliveryOrder
+                                .Select(x => new DeliveryOrderIdNameList()
+                                {
+                                    Id = x.Id,
+
+                                    DeliveryOrderNumber = x.DeliveryOrderNumber
+
+                                })
+                                .OrderByDescending(x => x.Id)
+                              .ToListAsync();
+
+            return DeliveryOrderIddNameList;
         }
     }
 }

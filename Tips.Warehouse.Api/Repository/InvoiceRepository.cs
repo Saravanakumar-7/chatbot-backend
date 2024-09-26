@@ -5,7 +5,10 @@ using Contracts;
 using Entities;
 using Entities.Helper;
 using Entities.DTOs;
-
+using Microsoft.AspNetCore.Mvc;
+using Tips.Warehouse.Api.Entities.DTOs;
+using System.Security.Claims;
+using Entities.Enums;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -13,61 +16,301 @@ namespace Tips.Warehouse.Api.Repository
     {
         private TipsWarehouseDbContext _tipsWarehouseDbContext;
 
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
 
-
-    public InvoiceRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
-    {
-            _tipsWarehouseDbContext = repositoryContext;
-    }
-
-    public async Task<long?> CreateInvoice(Invoice invoice)
+        public InvoiceRepository(TipsWarehouseDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
-        invoice.LastModifiedBy = "Admin";
-        invoice.LastModifiedOn = DateTime.Now;
-        invoice.CreatedBy = "Admin";
-        invoice.CreatedOn = DateTime.Now;
-        invoice.Unit = "Bangalore";
-        var result = await Create(invoice);
-        return result.Id;
+            _tipsWarehouseDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
-        public async Task<PagedList<Invoice>> GetAllInvoice(PagingParameter pagingParameter)
+        public async Task<long?> CreateInvoice(Invoice invoice)
         {
-            var invoiceList = PagedList<Invoice>.ToPagedList(FindAll()
-                .Include(k => k.InvoiceChildItems)
-                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);//await _tipsWarehouseDbContext.invoices.Include(t => t.InvoiceChildItems).ToListAsync();
+            var date = DateTime.Now;
+            invoice.CreatedBy = _createdBy;
+            invoice.CreatedOn = date.Date;
+            //Guid invoiceNumber = Guid.NewGuid();
+            //invoice.InvoiceNo = " IN-" + invoiceNumber.ToString();
+            invoice.Unit = _unitname;
+            var result = await Create(invoice);
+            return result.Id;
+        }
+        public async Task<int?> GetInvoiceNumberAutoIncrementCount(DateTime date)
+        {
+            var getInvoiceNumberAutoIncrementCount = _tipsWarehouseDbContext.invoices.Where(x => x.CreatedOn == date.Date).Count();
 
-            return (invoiceList);
+            return getInvoiceNumberAutoIncrementCount;
+        }
+        public async Task<string> GenerateInvoiceNumberAvision()
+        {
+            using var transaction = await _tipsWarehouseDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
 
-         }
+            try
+            {
+                var invoiceNumberEntity = await _tipsWarehouseDbContext.InvoiceNumbers.SingleAsync();
+                invoiceNumberEntity.CurrentValue += 1;
+                _tipsWarehouseDbContext.Update(invoiceNumberEntity);
+                await _tipsWarehouseDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
 
-        
+                //int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
+                //int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
 
+                DateTime currentDate = DateTime.Now;
+                DateTime financeYearStart;
 
+                if (currentDate.Month >= 4) // Check if the current date is after or equal to April
+                {
+                    financeYearStart = new DateTime(currentDate.Year, 4, 1);
+                }
+                else
+                {
+                    financeYearStart = new DateTime(currentDate.Year - 1, 4, 1);
+                }
+
+                int currentYear = financeYearStart.Year % 100; // Get the last two digits of the current finance year
+                int nextYear = (financeYearStart.Year + 1) % 100; // Get the last two digits of the next finance year
+
+                return $"ASPL|INV|{currentYear:D2}-{nextYear:D2}|{invoiceNumberEntity.CurrentValue:D3}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+        public async Task<string> GenerateInvoiceNumber()
+        {
+            using var transaction = await _tipsWarehouseDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var invoiceNumberEntity = await _tipsWarehouseDbContext.InvoiceNumbers.SingleAsync();
+                invoiceNumberEntity.CurrentValue += 1;
+                _tipsWarehouseDbContext.Update(invoiceNumberEntity);
+                await _tipsWarehouseDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"IN-{invoiceNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<InvoiceSPReport>()
+                         .FromSqlInterpolated($"CALL Invoice_Report_withparameter_invoicedate({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<InvoiceSPReportForTrans>> InvoiceSPReportDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<InvoiceSPReportForTrans>()
+                         .FromSqlInterpolated($"CALL Invoice_Report_withparameter_invoicedate_tras({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
+
+        public async Task<PagedList<InvoiceSPReport>> InvoiceSPReport(PagingParameter pagingParameter)
+        {
+            var results = _tipsWarehouseDbContext.Set<InvoiceSPReport>()
+                        .FromSqlInterpolated($"CALL Invoice_Report")
+                        .ToList();
+
+            return PagedList<InvoiceSPReport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+        public async Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportWithParameter(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName, string? CustomerAliasName, string? SalesOrderNumber, string? Location, string? Warehouse, string? KPN, string? MPN, string? IssuedTo)
+        {
+            var result = _tipsWarehouseDbContext.Set<InvoiceSPReport>()
+                            .FromSqlInterpolated($"CALL Invoice_Report_withparameter({InvoiceNumber},{DONumber},{CustomerId},{CustomerName},{CustomerAliasName},{SalesOrderNumber},{Location},{Warehouse},{KPN},{MPN},{IssuedTo})")
+                            .ToList();
+
+            return result;
+
+        }
+        public async Task<IEnumerable<InvoiceSPReportForTrans>> InvoiceSPReportWithParameterForTrans(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName,
+                                                                                                        string? SalesOrderNumber, string? Location,
+                                                                                                            string? Warehouse, string? KPN, string? MPN, string? IssuedTo, string? ProjectNumber)
+        {
+            var result = _tipsWarehouseDbContext.Set<InvoiceSPReportForTrans>()
+                            .FromSqlInterpolated($"CALL Invoice_Report_withparameter_tras({InvoiceNumber},{DONumber},{CustomerId},{CustomerName},{SalesOrderNumber},{Location},{Warehouse},{KPN},{MPN},{IssuedTo},{ProjectNumber})")
+                            .ToList();
+
+            return result;
+
+        }
+        public async Task<PagedList<Invoice>> GetAllInvoices([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        {
+            var getAllInvoiceList = _tipsWarehouseDbContext.invoices
+                .OrderByDescending(x => x.Id)
+                .Where(inv =>
+                    (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
+                    inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
+                    inv.CustomerAliasName.Contains(searchParams.SearchValue) ||
+                    inv.CustomerId.Contains(searchParams.SearchValue) ||
+                    inv.CustomerName.Contains(searchParams.SearchValue) ||
+                    inv.CompanyName.Contains(searchParams.SearchValue) ||
+                    inv.invoiceChildItems.Any(child => child.DONumber.Contains(searchParams.SearchValue)))) // Include searching by DoNumber in invoiceChildItems
+                .Include(k => k.invoiceChildItems)
+                .Include(p => p.InvoiceAdditionalCharges);
+
+            return PagedList<Invoice>.ToPagedList(getAllInvoiceList, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+
+    
+    //public async Task<PagedList<Invoice>> GetAllInvoices([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+    //{
+
+    //    var getAllInvoiceList = FindAll().OrderByDescending(x => x.Id)
+    //       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
+    //        inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
+    //        || inv.CompanyName.Contains(searchParams.SearchValue))))
+    //        .Include(k => k.invoiceChildItems)
+    //        .Include(p => p.InvoiceAdditionalCharges);
+
+    //    return PagedList<Invoice>.ToPagedList(getAllInvoiceList, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+    //}
+
+    public async Task<IEnumerable<Invoice>> SearchInvoiceDate([FromQuery] SearchsDateParms searchsDateParms)
+        {
+            var invoiceDetails = _tipsWarehouseDbContext.invoices
+            .Where(inv => ((inv.CreatedOn >= searchsDateParms.SearchFromDate &&
+            inv.CreatedOn <= searchsDateParms.SearchToDate
+            )))
+            .Include(itm => itm.invoiceChildItems)
+            .Include(ina => ina.InvoiceAdditionalCharges)
+            .ToList();
+            return invoiceDetails;
+        }
+
+        public async Task<IEnumerable<Invoice>> SearchInvoice([FromQuery] SearchParames searchParames)
+        {
+            using (var context = _tipsWarehouseDbContext)
+            {
+                var query = _tipsWarehouseDbContext.invoices.Include("invoiceChildItems");
+                if (!string.IsNullOrEmpty(searchParames.SearchValue))
+                {
+                    query = query.Where(po => po.InvoiceNumber.Contains(searchParames.SearchValue)
+                    || po.CustomerName.Contains(searchParames.SearchValue)
+                    || po.CompanyName.Contains(searchParames.SearchValue)
+                    || po.invoiceChildItems.Any(s => s.FGItemNumber.Contains(searchParames.SearchValue) ||
+                    s.DONumber.Contains(searchParames.SearchValue)
+                    || s.Description.Contains(searchParames.SearchValue)))
+                        .Include(itm => itm.invoiceChildItems)
+            .Include(ina => ina.InvoiceAdditionalCharges);
+                }
+                return query.ToList();
+            }
+        }
+        public async Task<IEnumerable<Invoice>> GetAllInvoiceWithItems(InvoiceSearchDto invoiceSearch)
+        {
+            using (var context = _tipsWarehouseDbContext)
+            {
+                var query = _tipsWarehouseDbContext.invoices.Include("invoiceChildItems");
+                if (invoiceSearch != null || (invoiceSearch.InvoiceNumber.Any())
+               && invoiceSearch.CustomerName.Any() && invoiceSearch.CompanyName.Any())
+                {
+                    query = query.Where
+                    (po => (invoiceSearch.CustomerName.Any() ? invoiceSearch.CustomerName.Contains(po.CustomerName) : true)
+                   && (invoiceSearch.InvoiceNumber.Any() ? invoiceSearch.InvoiceNumber.Contains(po.InvoiceNumber) : true)
+                   && (invoiceSearch.CompanyName.Any() ? invoiceSearch.CompanyName.Contains(po.CompanyName) : true))
+                    .Include(itm => itm.invoiceChildItems)
+            .Include(ina => ina.InvoiceAdditionalCharges);
+                }
+                return query.ToList();
+            }
+        }
         public async Task<Invoice> GetInvoiceById(int id)
         {
-        var invoiceList = await _tipsWarehouseDbContext.invoices
-                        .Where(x => x.Id == id)
-                        .Include(k => k.InvoiceChildItems)
-                         .FirstOrDefaultAsync();
-        return invoiceList;
+            var getInvoiceListById = await _tipsWarehouseDbContext.invoices
+                            .Where(x => x.Id == id)
+                            .Include(o => o.InvoiceAdditionalCharges)
+                            .Include(k => k.invoiceChildItems)
+                            .FirstOrDefaultAsync();
+            return getInvoiceListById;
         }
-
+        public async Task<Invoice> GetInvoiceByInvoiceNumber(string InvoiceNumber)
+        {
+            var getInvoiceListById = await _tipsWarehouseDbContext.invoices
+                            .Where(x => x.InvoiceNumber == InvoiceNumber)
+                            .Include(o => o.InvoiceAdditionalCharges)
+                            .Include(k => k.invoiceChildItems)
+                            .FirstOrDefaultAsync();
+            return getInvoiceListById;
+        }
         public async Task<string> UpdateInvoice(Invoice invoice)
         {
-        invoice.LastModifiedBy = "Admin";
-        invoice.LastModifiedOn = DateTime.Now;
-        Update(invoice);
-        string result = $"LeadTime details of {invoice.Id} is updated successfully!";
-        return result;
+            invoice.LastModifiedBy = _createdBy;
+            invoice.LastModifiedOn = DateTime.Now;
+            Update(invoice);
+            string result = $"Invoice details of {invoice.Id} is updated successfully!";
+            return result;
         }
-
+        public async Task<string> UpdateInvoiceFromReturnInvoice(Invoice invoice)
+        {           
+            Update(invoice);
+            string result = $"Invoice details of {invoice.Id} is updated successfully!";
+            return result;
+        }
         public async Task<string> DeleteInvoice(Invoice invoice)
         {
             Delete(invoice);
-            string result = $"invoice details of {invoice.Id} is deleted successfully!";
+            string result = $"Invoice details of {invoice.Id} is deleted successfully!";
             return result;
         }
 
+        public async Task<IEnumerable<InvoiceIdNameList>> GetAllInvoiceIdNameList()
+        {
+            IEnumerable<InvoiceIdNameList> invoiceIdNameList = await _tipsWarehouseDbContext.invoices
+                                .Select(x => new InvoiceIdNameList()
+                                {
+                                    Id = x.Id,
+
+                                    InvoiceNumber = x.InvoiceNumber,
+                                    CustomerName = x.CustomerName
+
+                                })
+                                .OrderByDescending(x => x.Id)
+                              .ToListAsync();
+
+            return invoiceIdNameList;
+        }
+        public async Task<Invoice> GetInvoiceByIdExceptClosed(int id)
+        {
+            var getInvoiceListById = await _tipsWarehouseDbContext.invoices
+                            .Where(x => x.Id == id)
+                            .Include(o => o.InvoiceAdditionalCharges)
+                            .Include(k => k.invoiceChildItems.Where(x=>x.InvoiceItemStatus!=Status.Closed))
+                            .FirstOrDefaultAsync();
+            return getInvoiceListById;
+        }
+    }
+
+    public class InvoiceChildRepository : RepositoryBase<InvoiceChildItem>, IInvoiceChildRepository
+    {
+        private TipsWarehouseDbContext _tipsWarehouseDbContexts;
+
+        public InvoiceChildRepository(TipsWarehouseDbContext repositoryContext) : base(repositoryContext)
+        {
+            _tipsWarehouseDbContext = repositoryContext;
+        }
+        public async Task<InvoiceChildItem> GetInvoiceChildItemDetails(int invoiceChildId)
+        {
+            var getInvoiceChildItemDetails = await _tipsWarehouseDbContext.invoiceChildItems
+                    .Where(x => x.Id == invoiceChildId)
+                          .FirstOrDefaultAsync();
+            return getInvoiceChildItemDetails;
+        }
     }
 }

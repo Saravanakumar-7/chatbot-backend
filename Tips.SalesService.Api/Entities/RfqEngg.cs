@@ -11,19 +11,23 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqEngg
     {
+        [Key]
         public int Id { get; set; }
-        public string? CustomerName { get; set; }
+        public string? CustomerName { get; set;}
+        public string? CustomerAliasName { get; set; }
         public string? RFQNumber { get; set;}
-        public string? CustomerRFQNumber { get;}
+        public string? CustomerRfqNumber { get; set; }
         public DateTime? RequestReceiveDate { get; set; }
         public DateTime? QuoteExpectDate { get; set;}
-        public string? RevisionNumber { get; set; }
+
+        [Precision(13,1)]
+        public decimal? RevisionNumber { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<RfqEnggItem>? rfqEnggItems { get; set; }
-        public List<RfqEnggRiskIdentification>? rfqEnggRiskIdentifications { get; set; }
+        public List<RfqEnggItem>? RfqEnggItems { get; set; }
+        public List<RfqEnggRiskIdentification>? RfqEnggRiskIdentifications { get; set; }
     }
 }

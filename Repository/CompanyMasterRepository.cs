@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
+using System.Data;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts;
@@ -8,22 +11,33 @@ using Entities;
 using Entities.DTOs;
 using Entities.Helper;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
     public class CompanyMasterRepository : RepositoryBase<CompanyMaster>, ICompanyMasterRepository
     {
-        public CompanyMasterRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public CompanyMasterRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateCompanyMaster(CompanyMaster companyMaster)
         {
-            companyMaster.CreatedBy = "Admin";
+            companyMaster.CreatedBy = _createdBy;
             companyMaster.CreatedOn = DateTime.Now;
+            companyMaster.Unit = _unitname;
             var result = await Create(companyMaster);
-            companyMaster.Unit = "Bangalore";
+            
             return result.Id;
         }
 
@@ -34,58 +48,140 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<CompanyIdNameListDto>> GetAllActiveCompanyIdNameList()
+        public async Task<IEnumerable<CompanyIdNameListDto>> GetAllActiveCompanyMasterIdNameList()
         {
-            IEnumerable<CompanyIdNameListDto> companyDetails = await TipsMasterDbContext.CompanyMasters
+            IEnumerable<CompanyIdNameListDto> getAllActiveCompanyMasterIdNameList = await TipsMasterDbContext.CompanyMasters
+                                .Where(x=>x.IsActive == true)                
                                 .Select(x => new CompanyIdNameListDto()
                                 {
                                     Id = x.Id,
+                                    CompanyId = x.CompanyId,
                                     CompanyAliasName = x.CompanyAliasName,
-                                    CompanyName = x.CompanyName
+                                    CompanyName = x.CompanyName,
+                                    CompanyCategory = x.CompanyCategory,
+                                    CompanyType = x.CompanyType
                                 })
                               .ToListAsync();
 
-            return companyDetails;
+            return getAllActiveCompanyMasterIdNameList;
         }
 
-        public async Task<IEnumerable<CompanyMaster>> GetAllActiveCompanyMaster()
+        public async Task<IEnumerable<CompanyIdNameListDto>> GetAllCompanyMasterIdNameList()
         {
-            var companyMasterDetails = await FindAll().ToListAsync();
-            return companyMasterDetails;
+            IEnumerable<CompanyIdNameListDto> getAllActiveCompanyMasterIdNameList = await TipsMasterDbContext.CompanyMasters
+
+                                .Select(x => new CompanyIdNameListDto()
+                                {
+                                    Id = x.Id,
+                                    CompanyId = x.CompanyId,
+                                    CompanyAliasName = x.CompanyAliasName,
+                                    CompanyName = x.CompanyName,
+                                    CompanyCategory = x.CompanyCategory,
+                                    CompanyType = x.CompanyType
+                                })
+                              .ToListAsync();
+
+            return getAllActiveCompanyMasterIdNameList;
         }
 
-        public async Task<PagedList<CompanyMaster>> GetAllCompanyMaster(PagingParameter pagingParameter)
+        public async Task<IEnumerable<CompanyMaster>> GetAllActiveCompanyMasters()
         {
-            var companyMasterDetails = PagedList<CompanyMaster>.ToPagedList(FindAll()
-                                .Include(t => t.CompanyAddresses)
-                                .Include(x => x.CompanyContacts)
-                                .Include(m => m.CompanyBankings)
-                                .Include(v => v.CompanyMasterHeadCountings)
-                                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-
-
-            return companyMasterDetails;
+            var allActiveCompanyMasters = await FindByCondition(x => x.IsActive == true)
+            .Include(t => t.CompanyAddresses)
+            .Include(x => x.CompanyContacts)
+            .Include(m => m.CompanyBankings)
+            .Include(s => s.CompanyApprovals)
+            .Include(v => v.CompanyMasterHeadCountings).ToListAsync();
+            return allActiveCompanyMasters;
         }
-         
+        public async Task<PagedList<CompanyMaster>> GetAllCompanyMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        {
+            var companymasterDetails = FindAll().OrderByDescending(x => x.Id)
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CompanyName.Contains(searchParams.SearchValue) ||
+                inv.TypeOfCompany.Contains(searchParams.SearchValue) || inv.CompanyType.Contains(searchParams.SearchValue) || inv.PurchaseGroup.Contains(searchParams.SearchValue)
+                                 || inv.CompanyAliasName.Contains(searchParams.SearchValue))))
+
+             .Include(t => t.CompanyAddresses)
+             .Include(t => t.CompanyBankings)
+             .Include(t => t.CompanyContacts)
+              .Include(d => d.CompanyMasterHeadCountings)
+              .Include(x => x.CompanyApprovals);
+
+            return PagedList<CompanyMaster>.ToPagedList(companymasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+        //public async Task<PagedList<CompanyMaster>> GetAllCompanyMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //{
+        //    var companymasterDetails = FindAll().OrderByDescending(x => x.Id)
+        //     .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CompanyName.Contains(searchParams.SearchValue) ||
+        //        inv.CompanyId.Contains(searchParams.SearchValue) || inv.CompanyType.Contains(searchParams.SearchValue) || inv.PurchaseGroup.Contains(searchParams.SearchValue)
+        //                         || inv.CompanyAliasName.Contains(searchParams.SearchValue))))
+                                                                                                                                                                            
+        //     .Include(t => t.CompanyAddresses)
+        //     .Include(t => t.CompanyBankings)
+        //     .Include(t => t.CompanyContacts)
+        //      .Include(d => d.CompanyMasterHeadCountings)
+        //      .Include(x => x.CompanyApprovals);
+
+        //    return PagedList<CompanyMaster>.ToPagedList(companymasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
+
 
         public async Task<CompanyMaster> GetCompanyMasterById(int id)
         {
-            var companyMasterDetails = await TipsMasterDbContext.CompanyMasters.Where(x => x.Id == id)
+            var getCompanyMasterById = await TipsMasterDbContext.CompanyMasters.Where(x => x.Id == id)
                                 .Include(t => t.CompanyAddresses)
                                 .Include(x => x.CompanyContacts)
                                 .Include(m => m.CompanyBankings)
                                 .Include(v => v.CompanyMasterHeadCountings)
+                                .Include(x => x.CompanyApprovals)
                                 .FirstOrDefaultAsync();
 
-            return companyMasterDetails;
+            return getCompanyMasterById;
         }
 
         public async Task<string> UpdateCompanyMaster(CompanyMaster companyMaster)
         {
-            companyMaster.LastModifiedBy = "Admin";
+            companyMaster.LastModifiedBy = _createdBy;
             companyMaster.LastModifiedOn = DateTime.Now;
             Update(companyMaster);
             string result = $"companyMaster of Detail {companyMaster.Id} is updated successfully!";
+            return result;
+        }
+    }
+
+    public class CompanyMasterOtherUploadsRepository : RepositoryBase<CompanyOtherUploads>, ICompanyMasterOtherUploadsRepository
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public CompanyMasterOtherUploadsRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+        }
+        public async Task<int?> CreateCompanyOtherUploads(CompanyOtherUploads companyOtherUploads)
+        {
+            companyOtherUploads.CreatedBy = _createdBy;
+            companyOtherUploads.CreatedOn = DateTime.Now;
+            companyOtherUploads.Unit = _unitname;
+            var result = await Create(companyOtherUploads);
+
+            return result.Id;
+        }
+        public async Task<CompanyOtherUploads> GetCompanyMasterOtherUploadsbyCompanyId(int Id)
+        {
+            var otherUploads = await TipsMasterDbContext.CompanyOtherUploads.Where(x => x.CompanyId == Id).FirstOrDefaultAsync();
+            return otherUploads;
+        }
+        public async Task<string> UpdateCompanyOtherUploads(CompanyOtherUploads companyOtherUploads)
+        {
+            companyOtherUploads.LastModifiedBy = _createdBy;
+            companyOtherUploads.LastModifiedOn = DateTime.Now;
+            Update(companyOtherUploads);
+            string result = $"companyMaster of Detail {companyOtherUploads.Id} is updated successfully!";
             return result;
         }
     }

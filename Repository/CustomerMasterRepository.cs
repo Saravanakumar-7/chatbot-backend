@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Contracts;
@@ -8,85 +9,266 @@ using Entities;
 using Entities.DTOs;
 using Entities.Helper;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
     public class CustomerMasterRepository: RepositoryBase<CustomerMaster>,ICustomerMasterRepository
     {
-        public CustomerMasterRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public CustomerMasterRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateCustomerMaster(CustomerMaster customerMaster)
         {
-            customerMaster.CreatedBy = "Admin";
+            customerMaster.CreatedBy = _createdBy;
             customerMaster.CreatedOn = DateTime.Now;
+            customerMaster.Unit = _unitname;
             var result = await Create(customerMaster);
-            customerMaster.Unit = "Bangalore";
+            
             return result.Id;
+        }
+        public async Task<CustomerMaster> GetCSNumberAutoIncrementCount()
+        {
+            var cSNumberAutoIncrementCount = await TipsMasterDbContext.CustomerMasters.OrderByDescending(x => x.Id).FirstOrDefaultAsync();
+            return cSNumberAutoIncrementCount;
+        }
+        //for Avision CustomerMaster Format
+        public async Task<string> GenerateCustomerNumberAvision()
+        {
+            using var transaction = await TipsMasterDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var customerNumberEntity = await TipsMasterDbContext.CSNOs.SingleAsync();
+                customerNumberEntity.CurrentValue += 1;
+                TipsMasterDbContext.Update(customerNumberEntity);
+                await TipsMasterDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+
+                //int currentYear = DateTime.Now.Year % 100; // Get the last two digits of the current year
+                //int nextYear = (DateTime.Now.Year + 1) % 100; // Get the last two digits of the next year
+
+                DateTime currentDate = DateTime.Now;
+                DateTime financeYearStart;
+
+                if (currentDate.Month >= 4) // Check if the current date is after or equal to April
+                {
+                    financeYearStart = new DateTime(currentDate.Year, 4, 1);
+                }
+                else
+                {
+                    financeYearStart = new DateTime(currentDate.Year - 1, 4, 1);
+                }
+
+                int currentYear = financeYearStart.Year % 100; // Get the last two digits of the current finance year
+                int nextYear = (financeYearStart.Year + 1) % 100; // Get the last two digits of the next finance year
+
+                return $"ASPL|CS|{currentYear:D2}-{nextYear:D2}|{customerNumberEntity.CurrentValue:D3}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
         }
 
         public async Task<string> DeleteCustomerMaster(CustomerMaster customerMaster)
         {
             Delete(customerMaster);
-            string result = $"customerMaster details are deleted successfully!";
+            string result = $"CustomerMaster details are deleted successfully!";
             return result;
         }
 
-        public async Task<IEnumerable<CustomerIdNameListDto>> GetAllActiveCustomerIdNameList()
+        public async Task<IEnumerable<CustomerIdNameListDto>> GetAllCustomerMasterIdNameList()
         {
-            IEnumerable<CustomerIdNameListDto> customerDetails = await TipsMasterDbContext.CustomerMasters
+            IEnumerable<CustomerIdNameListDto> getAllActiveCustomerIdNameList = await TipsMasterDbContext.CustomerMasters
+                                              
                                 .Select(x => new CustomerIdNameListDto() 
                                 {
                                     Id = x.Id,
                                     CustomerAliasName = x.CustomerAliasName,
-                                    CustomerName = x.CustomerName 
+                                    CustomerName = x.CustomerName,
+                                    CustomerNumber = x.CustomerNumber,
+                                    CustomerCategory = x.CustomerCategory,
+                                    CustomerType = x.CustomerType,
+
                                 })
+                                .OrderByDescending(x => x.Id)
                               .ToListAsync();   
 
-            return customerDetails;
+            return getAllActiveCustomerIdNameList;
+        }
+        public async Task<int?> GetCustomerbyCustomerNumber(string customerNumber)
+        {
+            CustomerMaster? cus = await TipsMasterDbContext.CustomerMasters.Where(x => x.CustomerNumber == customerNumber).FirstOrDefaultAsync();
+            if (cus == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return 1;
+            }
         }
 
-        public async Task<IEnumerable<CustomerMaster>> GetAllActiveCustomerMaster()
+        public async Task<IEnumerable<CustomerIdNameListDto>> GetAllActiveCustomerMasterIdNameList()
         {
-            var customerDetails = await FindAll().ToListAsync();
-            return customerDetails;
+            IEnumerable<CustomerIdNameListDto> getAllActiveCustomerIdNameList = await TipsMasterDbContext.CustomerMasters
+                                .Where(x => x.IsActive == true)
+                                .Select(x => new CustomerIdNameListDto()
+                                {
+                                    Id = x.Id,
+                                    CustomerAliasName = x.CustomerAliasName,
+                                    CustomerName = x.CustomerName,
+                                    CustomerNumber = x.CustomerNumber,
+                                 
+                                })
+                                .OrderByDescending(x => x.Id)
+                              .ToListAsync();
+
+            return getAllActiveCustomerIdNameList;
         }
 
-        public async Task<PagedList<CustomerMaster>> GetAllCustomerMaster(PagingParameter pagingParameter)
+        //public async Task<PagedList<CustomerMaster>> GetAllActiveCustomerMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        //{
+        //    var customermasterDetails = FindAll()
+        //         .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue) ||
+        //            inv.CustomerAliasName.Contains(searchParams.SearchValue))))
+        //           .Include(t => t.CustomerAddresses)
+        //     .Include(t => t.CustomerShippingAddresses)
+        //     .Include(t => t.CustomerContacts)
+        //      .Include(d => d.CustomerBanking)
+        //      .Include(d => d.CustomerMasterHeadCountings);
+
+        //    return PagedList<CustomerMaster>.ToPagedList(customermasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
+
+        public async Task<IEnumerable<CustomerMaster>> GetAllActiveCustomerMasters()
         {
-            var customerDetails = PagedList<CustomerMaster>.ToPagedList(FindAll()
-                                .Include(t => t.CustomerAddresses)
-                                .Include(x => x.CustomerShippingAddresses)
-                                .Include(m => m.CustomerContacts)
-                                .Include(s => s.CustomerBanking)
-                                .Include(v => v.CustomerMasterHeadCountings)
-                                .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
+            var allActiveCompanyMasters = await FindByCondition(x => x.IsActive == true)
+            .Include(t => t.CustomerAddresses)
+            .Include(t => t.RelatedCustomers)
+            .Include(t => t.CustomerShippingAddresses)
+            .Include(t => t.CustomerContacts)
+            .Include(d => d.CustomerBanking)
+            .Include(d => d.CustomerMasterHeadCountings)
+            .ToListAsync();
+            return allActiveCompanyMasters;
+        }
 
-
-            return customerDetails;
-        }         
-
-        public async Task<CustomerMaster> GetCustomerMasterById(int id)
+        public async Task<CustomerMaster> GetLatestCustomerMasterDetail()
         {
-            var customerDetails = await TipsMasterDbContext.CustomerMasters.Where(x => x.Id == id)
+            var getLatestCustomermasterList = TipsMasterDbContext.CustomerMasters.OrderByDescending(x => x.Id).FirstOrDefault();
+            return getLatestCustomermasterList;
+        }
+
+        
+            public async Task<PagedList<CustomerMaster>> GetAllCustomerMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+            {
+                var customermasterDetails = FindAll().OrderByDescending(x => x.Id)
+                  .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue) ||
+                                         inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerNumber.Contains(searchParams.SearchValue))))
+                    .Include(t => t.CustomerAddresses)
+                   .Include(t => t.RelatedCustomers)
+                 .Include(t => t.CustomerShippingAddresses)
+                 .Include(t => t.CustomerContacts)
+                  .Include(d => d.CustomerBanking)
+                  .Include(d => d.CustomerMasterHeadCountings);
+
+                return PagedList<CustomerMaster>.ToPagedList(customermasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+            }
+
+
+            public async Task<CustomerMaster> GetCustomerMasterById(int id)
+        {
+            var getCustomerMasterById = await TipsMasterDbContext.CustomerMasters.Where(x => x.Id == id)
                               .Include(x => x.CustomerAddresses)
+                              .Include(t => t.RelatedCustomers)
                               .Include(x => x.CustomerShippingAddresses)
                               .Include(m => m.CustomerContacts)
                               .Include(s=>s.CustomerBanking)
                               .Include(v => v.CustomerMasterHeadCountings)
                               .FirstOrDefaultAsync();
 
-            return customerDetails;
+            return getCustomerMasterById;
         }
+        public async Task<IEnumerable<CustomerMasterLeadIdSPReport>> GetCustomerLeadIdDataOnDailyBasis(DateTime? FromDate, DateTime? ToDate)
+        {
+            var result = TipsMasterDbContext
+            .Set<CustomerMasterLeadIdSPReport>()
+            .FromSqlInterpolated($"CALL customerlead_data_ondaily_basis({FromDate},{ToDate})")
+            .ToList();
 
+            return result;
+        }
         public async Task<string> UpdateCustomerMaster(CustomerMaster customerMaster)
         {
-            customerMaster.LastModifiedBy = "Admin";
+            customerMaster.LastModifiedBy = _createdBy;
             customerMaster.LastModifiedOn = DateTime.Now;
             Update(customerMaster);
-            string result = $"customer details are updated successfully!";
+            string result = $"CustomerMaster details are updated successfully!";
+            return result;
+        }
+
+        public async Task<CustomerMaster> GetCustomerMasterByCustomerNo(string customerNumber)
+        {
+            var customerMasterDetails = await TipsMasterDbContext.CustomerMasters.Where(x => x.CustomerNumber == customerNumber)
+                              .Include(x => x.CustomerAddresses)
+                              .Include(t => t.RelatedCustomers)
+                              .Include(x => x.CustomerShippingAddresses)
+                              .Include(m => m.CustomerContacts)
+                              .Include(s => s.CustomerBanking)
+                              .Include(v => v.CustomerMasterHeadCountings)
+                              .FirstOrDefaultAsync();
+
+            return customerMasterDetails;
+        }
+    }
+
+    public class CustomerMasterOtherUploadsRepository : RepositoryBase<CustomerOtherUploads>, ICustomerMasterOtherUploadsRepository
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public CustomerMasterOtherUploadsRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+        }
+        public async Task<int?> CreateCustomerOtherUploads(CustomerOtherUploads customerOtherUploads)
+        {
+            customerOtherUploads.CreatedBy = _createdBy;
+            customerOtherUploads.CreatedOn = DateTime.Now;
+            customerOtherUploads.Unit = _unitname;
+            var result = await Create(customerOtherUploads);
+
+            return result.Id;
+        }
+        public async Task<CustomerOtherUploads> GetCustomerMasterOtherUploadsbyCustomerId(int Id)
+        {
+            var otherUploads = await TipsMasterDbContext.CustomerOtherUploads.Where(x => x.CustomerId == Id).FirstOrDefaultAsync();
+            return otherUploads;
+        }
+        public async Task<string> UpdateCustomerOtherUploads(CustomerOtherUploads customerOtherUploads)
+        {
+            customerOtherUploads.LastModifiedBy = _createdBy;
+            customerOtherUploads.LastModifiedOn = DateTime.Now;
+            Update(customerOtherUploads);
+            string result = $"companyMaster of Detail {customerOtherUploads.Id} is updated successfully!";
             return result;
         }
     }

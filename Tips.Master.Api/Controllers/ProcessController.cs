@@ -2,6 +2,7 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using System.Net;
@@ -12,6 +13,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class ProcessController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
@@ -25,13 +27,13 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<ProcessController>
         [HttpGet]
-        public async Task<IActionResult> GetAllProcesses()
+        public async Task<IActionResult> GetAllProcesses([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ProcessDto>> serviceResponse = new ServiceResponse<IEnumerable<ProcessDto>>();
             try
             {
 
-                var processlist = await _repository.ProcessRepository.GetAllProcesses();
+                var processlist = await _repository.ProcessRepository.GetAllProcesses(searchParams);
                 _logger.LogInfo("Returned all processlist");
                 var result = _mapper.Map<IEnumerable<ProcessDto>>(processlist);
                 serviceResponse.Data = result;
@@ -52,13 +54,13 @@ namespace Tips.Master.Api.Controllers
         }
         [HttpGet]
 
-        public async Task<IActionResult> GetAllActiveProcesses()
+        public async Task<IActionResult> GetAllActiveProcesses([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ProcessDto>> serviceResponse = new ServiceResponse<IEnumerable<ProcessDto>>();
 
             try
             {
-                var processlist = await _repository.ProcessRepository.GetAllActiveProcesses();
+                var processlist = await _repository.ProcessRepository.GetAllActiveProcesses(searchParams);
                 _logger.LogInfo("Returned all processlist");
                 var result = _mapper.Map<IEnumerable<ProcessDto>>(processlist);
                 serviceResponse.Data = result;

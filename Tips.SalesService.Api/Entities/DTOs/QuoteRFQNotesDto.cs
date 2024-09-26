@@ -3,27 +3,14 @@
     public class QuoteRFQNotesDto
     {
         public int Id { get; set; }
-        public string? RFQNotes { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public string? RFQNotes { get; set; } 
     }
-    public class QuoteRFQNotesDtoPost
+    public class QuoteRFQNotesPostDto
     {
-        public string? RFQNotes { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public string? RFQNotes { get; set; } 
     }
-    public class QuoteRFQNotesDtoUpdate
+    public class QuoteRFQNotesUpdateDto
     {
-        public int Id { get; set; }
-        public string? RFQNotes { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public string? RFQNotes { get; set; } 
     }
 }

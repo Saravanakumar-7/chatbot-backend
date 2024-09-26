@@ -1,10 +1,13 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -13,16 +16,26 @@ namespace Repository
 {
     public class VendorCategoryRepository : RepositoryBase<VendorCategory>, IVendorCategoryRepository
     {
-        public VendorCategoryRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public VendorCategoryRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateVendorCategory(VendorCategory vendorCategory)
         {
-            vendorCategory.CreatedBy = "Admin";
+            vendorCategory.CreatedBy = _createdBy;
             vendorCategory.CreatedOn = DateTime.Now;
+            vendorCategory.Unit = _unitname;
             var result = await Create(vendorCategory);
-            vendorCategory.Unit = "Bangalore";
+            
             return result.Id;
         }
 
@@ -33,29 +46,34 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<VendorCategory>> GetAllActiveVendorCategory()
+        public async Task<IEnumerable<VendorCategory>> GetAllActiveVendorCategory([FromQuery] SearchParames searchParams)
         {
-            var vendorCategories = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return vendorCategories;
+            var vendorCategoriesDetails = FindAll()
+           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorCategoryName.Contains(searchParams.SearchValue) ||
+          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
+            return vendorCategoriesDetails;
         }
 
-        public async Task<IEnumerable<VendorCategory>> GetAllVendorCategory()
+        public async Task<IEnumerable<VendorCategory>> GetAllVendorCategory([FromQuery] SearchParames searchParams)
         {
-            var vendorCategories = await FindAll().ToListAsync();
+            var vendorCategoriesDetails = FindAll()
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorCategoryName.Contains(searchParams.SearchValue) ||
+           inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
-            return vendorCategories;
+            return vendorCategoriesDetails;
         }
 
         public async Task<VendorCategory> GetVendorCategoryById(int id)
         {
-            var vendorCategory = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var vendorCategorybyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return vendorCategory;
+            return vendorCategorybyId;
         }
 
         public async Task<string> UpdateVendorCategory(VendorCategory vendorCategory)
         {
-            vendorCategory.LastModifiedBy = "Admin";
+            vendorCategory.LastModifiedBy = _createdBy;
             vendorCategory.LastModifiedOn = DateTime.Now;
             Update(vendorCategory);
             string result = $"Vendor Category of Detail {vendorCategory.Id} is updated successfully!";

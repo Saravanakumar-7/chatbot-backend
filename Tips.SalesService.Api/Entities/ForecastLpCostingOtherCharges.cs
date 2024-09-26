@@ -11,17 +11,14 @@ namespace Tips.SalesService.Api.Entities
 {
     public class ForecastLpCostingOtherCharges
     {
+        [Key]
         public int Id { get; set; }
         public string? Name { get; set; }
 
         [Precision(13, 8)]
-        public decimal? Value { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
+        public decimal? Value { get; set; }        
         public DateTime? LastModifiedOn { get; set; }
         public int ForeCastLPCostingItemId { get; set; }
-        public ForecastLpCostingItem? forecastLpCostingItem { get; set; }
+        public ForecastLpCostingItem? ForecastLpCostingItem { get; set; }
     }
 }

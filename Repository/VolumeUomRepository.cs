@@ -1,10 +1,12 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,19 +14,29 @@ namespace Repository
 {
     public class VolumeUomRepository : RepositoryBase<VolumeUom>, IVolumeUomRepository
     {
-        public VolumeUomRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public VolumeUomRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateVolumeUom(VolumeUom volumeUom)
         {
-            volumeUom.CreatedBy = "Admin";
+            volumeUom.CreatedBy = _createdBy;
             volumeUom.CreatedOn = DateTime.Now;
+            volumeUom.Unit = _unitname;
             var result = await Create(volumeUom);
-            volumeUom.Unit = "Bangalore";
+
             return result.Id;
 
-            //throw new NotImplementedException();
+            
         }
 
         public async Task<string> DeleteVolumeUom(VolumeUom volumeUom)
@@ -36,27 +48,27 @@ namespace Repository
 
         public async Task<IEnumerable<VolumeUom>> GetAllActiveVolumeUom()
         {
-            var VolumeUomList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return VolumeUomList;
+            var AllActiveVolumeUomList = await FindByCondition(x => x.IsActive == true).ToListAsync();
+            return AllActiveVolumeUomList;
         }
 
         public async Task<IEnumerable<VolumeUom>> GetAllVolumeUom()
         {
-            var volumeUoms = await FindAll().ToListAsync();
+            var GetallVolumeUom = await FindAll().ToListAsync();
 
-            return volumeUoms;
+            return GetallVolumeUom;
         }
 
         public async Task<VolumeUom> GetVolumeUomById(int id)
         {
-            var volumeUom = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var VolumeUombyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return volumeUom;
+            return VolumeUombyId;
         }
 
         public async Task<string> UpdateVolumeUom(VolumeUom volumeUom)
         {
-            volumeUom.LastModifiedBy = "Admin";
+            volumeUom.LastModifiedBy = _createdBy;
             volumeUom.LastModifiedOn = DateTime.Now;
             Update(volumeUom);
             string result = $"Volume Uom of Detail {volumeUom.Id} is updated successfully!";

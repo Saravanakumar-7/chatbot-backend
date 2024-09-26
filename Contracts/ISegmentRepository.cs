@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface ISegmentRepository : IRepositoryBase<Segment>
     {
-        Task<IEnumerable<Segment>> GetAllSegment();
+        Task<IEnumerable<Segment>> GetAllSegment(SearchParames searchParams);
         Task<Segment> GetSegmentById(int id);
-        Task<IEnumerable<Segment>> GetAllActiveSegment();
+        Task<IEnumerable<Segment>> GetAllActiveSegment(SearchParames searchParams);
         Task<int?> CreateSegment(Segment segment);
         Task<string> UpdateSegment(Segment segment);
         Task<string> DeleteSegment(Segment segment);

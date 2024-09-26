@@ -2,53 +2,58 @@
 using AutoMapper;
 using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using Tips.Warehouse.Api.Contracts;
 using Tips.Warehouse.Api.Entities;
-using Tips.Warehouse.Api.Entities.Dto;
+using Tips.Warehouse.Api.Entities.DTOs;
+using Tips.Warehouse.Api.Repository;
 
 namespace Tips.Warehouse.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class DeliveryOrderController : ControllerBase
     {
         private IDeliveryOrderRepository _repository;
+        private IInventoryRepository _inventoryRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
 
-        public DeliveryOrderController(IDeliveryOrderRepository repository, ILoggerManager logger, IMapper mapper)
+        public DeliveryOrderController(IDeliveryOrderRepository repository,IInventoryRepository inventoryRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
+            _inventoryRepository = inventoryRepository;
             _logger = logger;
             _mapper = mapper;
         }
 
-        // GET: api/<DeliveryOrderController>
+        
         [HttpGet]
-        public async Task<IActionResult> GetAllDeliveryOrder([FromQuery] PagingParameter pagingParameter,string DeliveryOrderNumber)
+        public async Task<IActionResult> GetAllDeliveryOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             ServiceResponse<IEnumerable<DeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderDto>>();
             try
             {
-                var listOfDeliveryOrder = await _repository.GetAllDeliveryOrder(pagingParameter, DeliveryOrderNumber);
+                var getAllDeliveryOrderDetails = await _repository.GetAllDeliveryOrders(pagingParameter, searchParams);
                 var metadata = new
                 {
-                    listOfDeliveryOrder.TotalCount,
-                    listOfDeliveryOrder.PageSize,
-                    listOfDeliveryOrder.CurrentPage,
-                    listOfDeliveryOrder.HasNext,
-                    listOfDeliveryOrder.HasPreviuos
+                    getAllDeliveryOrderDetails.TotalCount,
+                    getAllDeliveryOrderDetails.PageSize,
+                    getAllDeliveryOrderDetails.CurrentPage,
+                    getAllDeliveryOrderDetails.HasNext,
+                    getAllDeliveryOrderDetails.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all DeliveryOrder");
-                var result = _mapper.Map<IEnumerable<DeliveryOrderDto>>(listOfDeliveryOrder);
+                var result = _mapper.Map<IEnumerable<DeliveryOrderDto>>(getAllDeliveryOrderDetails);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all DeliveryOrder";
+                serviceResponse.Message = "Returned all DeliveryOrders";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -63,17 +68,110 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> SearchDeliveryOrderDate([FromQuery] SearchsDateParms searchDateParam)
+        {
+            ServiceResponse<IEnumerable<DeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderDto>>();
+            try
+            {
+                var DeliveryOrders = await _repository.SearchDeliveryOrderDate(searchDateParam);
 
-        // GET api/<DeliveryOrderController>/5
+                var result = _mapper.Map<IEnumerable<DeliveryOrderDto>>(DeliveryOrders);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all DeliveryOrders";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllDeliveryOrderWithItems([FromBody] DeliveryOrderSearchDto DeliveryOrderSearch)
+        {
+            ServiceResponse<IEnumerable<DeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderDto>>();
+            try
+            {
+                var deliveryOrders = await _repository.GetAllDeliveryOrderWithItems(DeliveryOrderSearch);
+
+                _logger.LogInfo("Returned all DeliveryOrders");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<DeliveryOrderDto, DeliveryOrder>().ReverseMap()
+                    .ForMember(dest => dest.DeliveryOrderItemsDto, opt => opt.MapFrom(src => src.DeliveryOrderItemsDto));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<DeliveryOrderDto>>(deliveryOrders);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all DeliveryOrders";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchDeliveryOrder([FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<DeliveryOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderDto>>();
+            try
+            {
+                var DeliveyOrderList = await _repository.SearchDeliveryOrder(searchParams);
+
+                _logger.LogInfo("Returned all DeliveryOrder");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<DeliveryOrderDto, DeliveryOrder>().ReverseMap()
+                    .ForMember(dest => dest.DeliveryOrderItemsDto, opt => opt.MapFrom(src => src.DeliveryOrderItemsDto));
+                });
+                var mapper = config.CreateMapper();
+
+                var result = mapper.Map<IEnumerable<DeliveryOrderDto>>(DeliveyOrderList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all DeliveryOrder";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDeliveryOrderById(int id,string DeliveryOrderNumber)
+        public async Task<IActionResult> GetDeliveryOrderById(int id)
         {
             ServiceResponse<DeliveryOrderDto> serviceResponse = new ServiceResponse<DeliveryOrderDto>();
             try
             {
-                var deliveryOrderDetails = await _repository.GetDeliveryOrderById(id, DeliveryOrderNumber);
+                var getDeliveryOrderDetailById = await _repository.GetDeliveryOrderById(id);
 
-                if (deliveryOrderDetails == null)
+                if (getDeliveryOrderDetailById == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"DeliveryOrder  hasn't been found in db.";
@@ -85,17 +183,26 @@ namespace Tips.Warehouse.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    DeliveryOrderDto deliveryOrderDto = _mapper.Map<DeliveryOrderDto>(deliveryOrderDetails);
+
+                    DeliveryOrderDto deliveryOrderDto = _mapper.Map<DeliveryOrderDto>(getDeliveryOrderDetailById);
+
                     List<DeliveryOrderItemsDto> deliveryOrderItemsDtoList = new List<DeliveryOrderItemsDto>();
-                    foreach (var itemDetails in deliveryOrderDetails.deliveryOrderItems)
+
+                    if (getDeliveryOrderDetailById.DeliveryOrderItemsDto != null)
                     {
-                        DeliveryOrderItemsDto deliveryOrderItemsDtos = _mapper.Map<DeliveryOrderItemsDto>(itemDetails);
-                        deliveryOrderItemsDtoList.Add(deliveryOrderItemsDtos);
+
+                        foreach (var itemDetails in getDeliveryOrderDetailById.DeliveryOrderItemsDto)
+                        {
+                            DeliveryOrderItemsDto deliveryOrderItemsDtos = _mapper.Map<DeliveryOrderItemsDto>(itemDetails);
+                            deliveryOrderItemsDtos.DoSerialNumberDto = _mapper.Map<List<DoSerialNumberDto>>(itemDetails.doSerialNumberDto);
+                            deliveryOrderItemsDtoList.Add(deliveryOrderItemsDtos);
+                        }
                     }
-                    deliveryOrderDto.deliveryOrderItemsDto = deliveryOrderItemsDtoList;
+
+                    deliveryOrderDto.DeliveryOrderItemsDto = deliveryOrderItemsDtoList;
 
                     serviceResponse.Data = deliveryOrderDto;
-                    serviceResponse.Message = "Returned DeliveryOrder";
+                    serviceResponse.Message = "Returned DeliveryOrderById Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -112,7 +219,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        // POST api/<DeliveryOrderController>
+        
         [HttpPost]
         public async Task<IActionResult> CreateDeliveryOrder([FromBody] DeliveryOrderDtoPost deliveryOrderDtoPost)
         {
@@ -139,15 +246,57 @@ namespace Tips.Warehouse.Api.Controllers
                 }
 
                 var deliveryOrder = _mapper.Map<DeliveryOrder>(deliveryOrderDtoPost);
-                var deliveryOrderitemsDto = deliveryOrderDtoPost.deliveryOrderItemsDtoPost;
+                var deliveryOrderitemsDto = deliveryOrderDtoPost.DeliveryOrderItemsDtoPost;
 
                 var deliveryOrderItemsDtoList = new List<DeliveryOrderItems>();
-                for (int i = 0; i < deliveryOrderitemsDto.Count; i++)
+
+                if (deliveryOrderitemsDto != null)
                 {
-                    DeliveryOrderItems deliveryOrderItemsDetails = _mapper.Map<DeliveryOrderItems>(deliveryOrderitemsDto[i]);
-                    deliveryOrderItemsDtoList.Add(deliveryOrderItemsDetails);
+                  
+                    for (int i = 0; i < deliveryOrderitemsDto.Count; i++)
+                    {    string csv = "";
+                        var data = deliveryOrderitemsDto[i].DoSerialNumberDtoPost.ToList();
+                        if (data.Count() != 0)
+                        {
+                            for (int j = 0; j < data.Count(); j++)
+                            {
+                                csv += data[j].SerialNumber.Trim() + ",";
+                            }
+                            csv = csv.TrimEnd(',');
+                            deliveryOrderitemsDto[i].SerialNo = csv;
+                        }
+                        DeliveryOrderItems deliveryOrderItems = _mapper.Map<DeliveryOrderItems>(deliveryOrderitemsDto[i]);
+                        deliveryOrderItems.doSerialNumberDto = _mapper.Map<List<DoSerialNumber>>(deliveryOrderitemsDto[i].DoSerialNumberDtoPost);
+                        deliveryOrderItemsDtoList.Add(deliveryOrderItems);
+                    }
                 }
-                deliveryOrder.deliveryOrderItems = deliveryOrderItemsDtoList;
+
+                deliveryOrder.DeliveryOrderItemsDto = deliveryOrderItemsDtoList;
+                var date = DateTime.Now;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
+
+
+
+                //var newcount = await _repository.GetDONumberAutoIncrementCount(date);
+
+                //if (newcount > 0)
+                //{
+                //    var number = newcount + 1;
+                //    string e = String.Format("{0:D4}", number);
+                //    deliveryOrder.DeliveryOrderNumber = days + months + years + "DO" + (e);
+                //}
+                //else
+                //{
+                //    var count = 1;
+                //    var e = count.ToString("D4");
+                //    deliveryOrder.DeliveryOrderNumber = days + months + years + "DO" + (e);
+                //}
+
+                var dateFormat = days + months + years;
+                var doNumber = await _repository.GenerateDONumber();
+                deliveryOrder.DeliveryOrderNumber = dateFormat + doNumber;
 
                 await _repository.CreateDeliveryOrder(deliveryOrder);
                 _repository.SaveAsync();
@@ -160,7 +309,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateDeliveryOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong ,try again";
                 serviceResponse.Success = false;
@@ -169,11 +318,11 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        // PUT api/<DeliveryOrderController>/5
+  
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateDeliveryOrder(int id,string DeliveryOrderNumber, [FromBody] DeliveryOrderDtoPost deliveryOrderDtoUpdate)
+        public async Task<IActionResult> UpdateDeliveryOrder(int id, [FromBody] DeliveryOrderDtoUpdate deliveryOrderDtoUpdate)
         {
-            ServiceResponse<DeliveryOrderDto> serviceResponse = new ServiceResponse<DeliveryOrderDto>();
+            ServiceResponse<DeliveryOrderDtoUpdate> serviceResponse = new ServiceResponse<DeliveryOrderDtoUpdate>();
             try
             {
                 if (deliveryOrderDtoUpdate is null)
@@ -194,8 +343,8 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var updateDeliveryOrder = await _repository.GetDeliveryOrderById(id, DeliveryOrderNumber);
-                if (updateDeliveryOrder is null)
+                var deliveryOrderDetailById = await _repository.GetDeliveryOrderById(id);
+                if (deliveryOrderDetailById is null)
                 {
                     _logger.LogError($"Update DeliveryOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -206,20 +355,26 @@ namespace Tips.Warehouse.Api.Controllers
                 }
 
 
-                var deliveryOrderList = _mapper.Map<DeliveryOrder>(updateDeliveryOrder);
+                var deliveryOrder = _mapper.Map<DeliveryOrder>(deliveryOrderDetailById);
 
-                var deliveryOrderitemsDto = deliveryOrderDtoUpdate.deliveryOrderItemsDtoPost;
+                var deliveryOrderitemsDto = deliveryOrderDtoUpdate.DeliveryOrderItemsDtoUpdate;
 
                 var deliveryOrderitemsList = new List<DeliveryOrderItems>();
-                for (int i = 0; i < deliveryOrderitemsDto.Count; i++)
+
+                if (deliveryOrderitemsDto != null)
                 {
-                    DeliveryOrderItems deliveryOrderItemsDetails = _mapper.Map<DeliveryOrderItems>(deliveryOrderitemsDto[i]);
-
+                    for (int i = 0; i < deliveryOrderitemsDto.Count; i++)
+                    {
+                        DeliveryOrderItems deliveryOrderItemsDetails = _mapper.Map<DeliveryOrderItems>(deliveryOrderitemsDto[i]);
+                        deliveryOrderitemsList.Add(deliveryOrderItemsDetails);
+                    }
                 }
-                deliveryOrderList.deliveryOrderItems = deliveryOrderitemsList;
-                var data = _mapper.Map(deliveryOrderDtoUpdate, deliveryOrderList);
 
-                string result = await _repository.UpdateDeliveryOrder(data, DeliveryOrderNumber);
+                deliveryOrder.DeliveryOrderItemsDto = deliveryOrderitemsList;
+
+                var updateDeliveryOrder = _mapper.Map(deliveryOrderDtoUpdate, deliveryOrder);
+
+                string result = await _repository.UpdateDeliveryOrder(updateDeliveryOrder);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -239,15 +394,15 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        // DELETE api/<DeliveryOrderController>/5
+     
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteDeliveryOrder(int id,string DeliveryOrderNumber)
+        public async Task<IActionResult> DeleteDeliveryOrder(int id)
         {
             ServiceResponse<DeliveryOrderDto> serviceResponse = new ServiceResponse<DeliveryOrderDto>();
             try
             {
-                var deleteDeliveryOrder = await _repository.GetDeliveryOrderById(id, DeliveryOrderNumber);
-                if (deleteDeliveryOrder == null)
+                var deleteDeliveryOrderDetailById = await _repository.GetDeliveryOrderById(id);
+                if (deleteDeliveryOrderDetailById == null)
                 {
                     _logger.LogError($"Delete DeliveryOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -256,7 +411,7 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.DeleteDeliveryOrder(deleteDeliveryOrder);
+                string result = await _repository.DeleteDeliveryOrder(deleteDeliveryOrderDetailById);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
 
@@ -268,7 +423,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeleteDeliveryOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong,try again";
                 serviceResponse.Success = false;
@@ -277,5 +432,29 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllDeliveryOrderIdNameList()
+        {
+            ServiceResponse<IEnumerable<BtoIDNameList>> serviceResponse = new ServiceResponse<IEnumerable<BtoIDNameList>>();
+            try
+            {
+                var listOfAllDeliveryOrderIdNames = await _repository.GetAllDeliveryOrderIdNameList();
+                var result = _mapper.Map<IEnumerable<BtoIDNameList>>(listOfAllDeliveryOrderIdNames);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All listOfAllDeliveryOrderIdNames";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllDeliveryOrderIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

@@ -14,14 +14,14 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? ItemDescription { get; set; }
-        public int? QuantityReq { get; set; }
-        public int? Count { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-        public List<ForecastSourcingVendorDto>? forecastSourcingVendors { get; set; }
+
+        [Precision(13,3)]
+        public decimal? QtyReq { get; set; }
+
+        [Precision(13,3)]
+        public decimal? Count { get; set; }
+       
+        public List<ForecastSourcingVendorDto>? ForecastSourcingVendors { get; set; }
     }
     public class ForecastSourcingItemsDtoPost
     {
@@ -31,9 +31,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ItemDescription { get; set; }
         public int? QuantityReq { get; set; }
         public int? Count { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
-        public List<ForecastSourcingVendorDtoPost>? forecastSourcingVendors { get; set; }
+        public List<ForecastSourcingVendorDtoPost>? ForecastSourcingVendors { get; set; }
 
     }
     public class ForecastSourcingItemsDtoUpdate
@@ -43,11 +41,15 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         [StringLength(500, ErrorMessage = "ItemDescription can't be longer than 500 characters")]
         public string? ItemDescription { get; set; }
-        public int? QuantityReq { get; set; }
-        public int? Count { get; set; }
+
+        [Precision(13,3)]
+        public decimal? QtyReq { get; set; }
+
+        [Precision(13,3)]
+        public decimal? Count { get; set; }
         [Required(ErrorMessage = "Unit is required")]
         public string Unit { get; set; }
-        public List<ForecastSourcingVendorDtoUpdate>? forecastSourcingVendors { get; set; }
+        public List<ForecastSourcingVendorDtoUpdate>? ForecastSourcingVendors { get; set; }
 
     }
 }

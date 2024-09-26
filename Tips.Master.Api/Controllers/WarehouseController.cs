@@ -3,6 +3,7 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class WarehouseController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
@@ -24,12 +26,12 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<WarehouseController>
         [HttpGet]
-        public async Task<IActionResult> GetAllWarehouse()
+        public async Task<IActionResult> GetAllWarehouse([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<WarehouseDto>> serviceResponse = new ServiceResponse<IEnumerable<WarehouseDto>>();
             try
             {
-                var warehouseList = await _repository.WarehouseRepository.GetAllWarehouse();
+                var warehouseList = await _repository.WarehouseRepository.GetAllWarehouse(searchParams);
                 _logger.LogInfo("Returned all Warehouse");
                 var result = _mapper.Map<IEnumerable<WarehouseDto>>(warehouseList);
                 serviceResponse.Data = result;
@@ -46,6 +48,35 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveWarehouse([FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<WarehouseDto>> serviceResponse = new ServiceResponse<IEnumerable<WarehouseDto>>();
+
+            try
+            {
+                var locations = await _repository.WarehouseRepository.GetAllActiveWarehouse(searchParams);
+                _logger.LogInfo("Returned all Warehouse");
+                var result = _mapper.Map<IEnumerable<WarehouseDto>>(locations);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active Warehouse Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+
             }
         }
 

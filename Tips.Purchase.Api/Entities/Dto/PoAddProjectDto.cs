@@ -1,33 +1,53 @@
-﻿namespace Tips.Purchase.Api.Entities.DTOs
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Tips.Purchase.Api.Entities.DTOs
 {
     public class PoAddProjectDto
     {
         public int Id { get; set; }
-        public string PoProjectNumber { get; set; }
-        public decimal PoProjectQuantity { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public string? ProjectNumber { get; set; }
+
+        [Precision(13, 3)]
+        public decimal ProjectQty { get; set; }
+        public decimal BalanceQty { get; set; }
+        public decimal ReceivedQty { get; set; }
+
     }
-    public class PoAddProjectDtoPost
+    public class PoAddProjectPostDto
     {
-        
-        public string PoProjectNumber { get; set; }
-        public decimal PoProjectQuantity { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public string? ProjectNumber { get; set; }
+
+        [Precision(13, 3)]
+        public decimal ProjectQty { get; set; }
+
     }
-    public class PoAddProjectDtoUpdate
+    public class PoAddProjectUpdateDto
+    {
+        public string? ProjectNumber { get; set; }
+
+        [Precision(13, 3)]
+        public decimal ProjectQty { get; set; }
+
+    }
+    public class PoAddProjectReportDto
     {
         public int Id { get; set; }
-        public string PoProjectNumber { get; set; }
-        public decimal PoProjectQuantity { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public string? PONumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+
+        [Precision(13, 3)]
+        public decimal ProjectQty { get; set; }
+        public decimal BalanceQty { get; set; }
+        public decimal ReceivedQty { get; set; }
+
+    }
+    public class PoProjectNoUpdateQtyDetailsDto
+    {
+        public string ItemNumber { get; set; }
+        public string ProjectNumber { get; set; }
+        public decimal ProjectQty { get; set; }
+        public int PoItemId { get; set; }
+
     }
 }

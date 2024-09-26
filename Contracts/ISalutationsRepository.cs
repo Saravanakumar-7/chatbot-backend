@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface ISalutationsRepository : IRepositoryBase<Salutations>
     {
-        Task<IEnumerable<Salutations>> GetAllSalutations();
+        Task<IEnumerable<Salutations>> GetAllSalutations(SearchParames searchParams);
         Task<Salutations> GetSalutationsById(int id);
-        Task<IEnumerable<Salutations>> GetAllActiveSalutations();
+        Task<IEnumerable<Salutations>> GetAllActiveSalutations(SearchParames searchParams);
         Task<int?> CreateSalutations(Salutations salutations);
         Task<string> UpdateSalutations(Salutations salutations);
         Task<string> DeleteSalutations(Salutations salutations);

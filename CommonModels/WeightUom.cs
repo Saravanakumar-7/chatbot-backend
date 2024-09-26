@@ -9,6 +9,7 @@ namespace Entities
 {
     public class WeightUom
     {
+        [Key]
         public int Id { get; set; }
         public string? WeightUomName { get; set; }
         public string? Description { get; set; }

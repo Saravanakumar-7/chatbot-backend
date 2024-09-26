@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entities;
+using Entities.Helper;
 
 namespace Contracts
 {
@@ -11,7 +12,7 @@ namespace Contracts
     {
         Task<IEnumerable<CompanyBanking>> GetAllCompanyBankings();
         Task<CompanyBanking> GetCompanyBankingById(int id);
-        Task<IEnumerable<CompanyBanking>> GetAllActiveCompanyBanking();
+        Task<IEnumerable<CompanyBanking>> GetAllActiveCompanyBankings();
         Task<int?> CreateCompanyBanking(CompanyBanking CompanyBanking);
         Task<string> UpdateCompanyBanking(CompanyBanking CompanyBanking);
         Task<string> DeleteCompanyBanking(CompanyBanking CompanyBanking);

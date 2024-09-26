@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -10,14 +11,14 @@ namespace Entities.DTOs
     public class CompanyMasterDto
     {
         public int Id { get; set; }
-        [Required]
-        public string CompanyId { get; set; }
-        [Required]
-        public string CompanyName { get; set; }
+        [Required(ErrorMessage = "CompanyId is required")]
+        public string? CompanyId { get; set; }
+        [Required(ErrorMessage = "CompanyName is required")]
+        public string? CompanyName { get; set; }
 
         public string? CompanyAliasName { get; set; }
-        [Required]
-        public string CompanyType { get; set; }
+        [Required(ErrorMessage = "CompanyType is required")]
+        public string? CompanyType { get; set; }
 
         public string? Address { get; set; }
 
@@ -38,6 +39,7 @@ namespace Entities.DTOs
         public string? TypeOfCompany { get; set; }
         public string? ExportUnitType { get; set; }
         public bool GeneralMSME { get; set; } = true;
+        public string? CompanyApprove { get; set; }
 
         //Related Company
 
@@ -92,7 +94,7 @@ namespace Entities.DTOs
         public string? Capacity { get; set; }
         public string? UOM { get; set; }
         public string? FloorSpace { get; set; }
-        public string? sqft { get; set; }
+        public string? Sqft { get; set; }
 
         public string? Machine { get; set; }
         public string? ToolsandEquip { get; set; }
@@ -126,9 +128,9 @@ namespace Entities.DTOs
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-        //public bool IsActive { get; set; } = true;
-        
-        public string Unit { get; set; }
+        public bool IsActive { get; set; } = true;
+
+        public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -138,20 +140,21 @@ namespace Entities.DTOs
         public List<CompanyContactsDto>? CompanyContacts { get; set; }
         public List<CompanyBankingDto>? CompanyBankings { get; set; }
         public List<CompanyMasterHeadCountingDto>? CompanyMasterHeadCountings { get; set; }
+        public List<CompanyApprovalDto>? CompanyApprovals { get; set; }
 
     }
 
     public class CompanyMasterDtoPost
     {
 
-        [Required]
-        public string CompanyId { get; set; }
-        [Required]
-        public string CompanyName { get; set; }
+        [Required(ErrorMessage = "CompanyId is required")]
+        public string? CompanyId { get; set; }
+        [Required(ErrorMessage = "CompanyName is required")]
+        public string? CompanyName { get; set; }
 
         public string? CompanyAliasName { get; set; }
-        [Required]
-        public string CompanyType { get; set; }
+        [Required(ErrorMessage = "CompanyType is required")]
+        public string? CompanyType { get; set; }
 
         public string? Address { get; set; }
 
@@ -172,6 +175,7 @@ namespace Entities.DTOs
         public string? TypeOfCompany { get; set; }
         public string? ExportUnitType { get; set; }
         public bool GeneralMSME { get; set; } = true;
+        public string? CompanyApprove { get; set; }
 
         //Related Company
 
@@ -226,7 +230,7 @@ namespace Entities.DTOs
         public string? Capacity { get; set; }
         public string? UOM { get; set; }
         public string? FloorSpace { get; set; }
-        public string? sqft { get; set; }
+        public string? Sqft { get; set; }
 
         public string? Machine { get; set; }
         public string? ToolsandEquip { get; set; }
@@ -260,33 +264,27 @@ namespace Entities.DTOs
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-        //public bool IsActive { get; set; } = true;
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public bool IsActive { get; set; } = true;
 
         public List<CompanyAddressesDtoPost>? CompanyAddresses { get; set; }
         public List<CompanyContactsDtoPost>? CompanyContacts { get; set; }
         public List<CompanyBankingDtoPost>? CompanyBankings { get; set; }
         public List<CompanyMasterHeadCountingDtoPost>? CompanyMasterHeadCountings { get; set; }
+        public List<CompanyApprovalPostDto>? CompanyApprovals { get; set; }
 
     }
 
     public class CompanyMasterDtoUpdate
     {
         public int Id { get; set; }
-        [Required]
-        public string CompanyId { get; set; }
-        [Required]
-        public string CompanyName { get; set; }
+        [Required(ErrorMessage = "CompanyId is required")]
+        public string? CompanyId { get; set; }
+        [Required(ErrorMessage = "CompanyName is required")]
+        public string? CompanyName { get; set; }
 
         public string? CompanyAliasName { get; set; }
-        [Required]
-        public string CompanyType { get; set; }
+        [Required(ErrorMessage = "CompanyType is required")]
+        public string? CompanyType { get; set; }
 
         public string? Address { get; set; }
 
@@ -307,6 +305,7 @@ namespace Entities.DTOs
         public string? TypeOfCompany { get; set; }
         public string? ExportUnitType { get; set; }
         public bool GeneralMSME { get; set; } = true;
+        public string? CompanyApprove { get; set; }
 
         //Related Company
 
@@ -361,7 +360,7 @@ namespace Entities.DTOs
         public string? Capacity { get; set; }
         public string? UOM { get; set; }
         public string? FloorSpace { get; set; }
-        public string? sqft { get; set; }
+        public string? Sqft { get; set; }
 
         public string? Machine { get; set; }
         public string? ToolsandEquip { get; set; }
@@ -395,12 +394,13 @@ namespace Entities.DTOs
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-        //public bool IsActive { get; set; } = true;
+        public bool IsActive { get; set; } = true;
+
         [Required(ErrorMessage = "Unit is required")]
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
+        public string? Unit { get; set; }
+        //public string? CreatedBy { get; set; }
+        //public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
@@ -408,13 +408,17 @@ namespace Entities.DTOs
         public List<CompanyContactsDtoUpdate>? CompanyContacts { get; set; }
         public List<CompanyBankingDtoUpdate>? CompanyBankings { get; set; }
         public List<CompanyMasterHeadCountingDtoUpdate>? CompanyMasterHeadCountings { get; set; }
+        public List<CompanyApprovalUpdateDto>? CompanyApprovals { get; set; }
 
     }
 
     public class CompanyIdNameListDto
     {
         public int Id { get; set; }
+        public string? CompanyId { get; set; }
         public string? CompanyName { get; set; }
         public string? CompanyAliasName { get; set; }
+        public string? CompanyCategory { get; set; }
+        public string? CompanyType { get; set; }
     }
 }

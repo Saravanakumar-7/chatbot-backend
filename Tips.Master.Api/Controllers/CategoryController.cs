@@ -3,13 +3,16 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class CategoryController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
@@ -24,14 +27,15 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<CategoryController>
         [HttpGet]
-        public async Task<IActionResult> GetAllCategory()
+        public async Task<IActionResult> GetAllCategory([FromQuery]SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<CategoryDto>>();
             try
             {
-                var categoryList = await _repository.CategoryRepository.GetAllCategory();
+                var GetallCategoryList = await _repository.CategoryRepository.GetAllCategory(searchParams);
+
                 _logger.LogInfo("Returned all Category");
-                var result = _mapper.Map<IEnumerable<CategoryDto>>(categoryList);
+                var result = _mapper.Map<IEnumerable<CategoryDto>>(GetallCategoryList);
 
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Successfully Returned all Category";
@@ -45,7 +49,35 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong,Try again ";
                 serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveCategory([FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<CategoryDto>> serviceResponse = new ServiceResponse<IEnumerable<CategoryDto>>();
+            try
+            {
+                var GetallCategoryList = await _repository.CategoryRepository.GetAllActiveCategory(searchParams);
+
+                _logger.LogInfo("Returned all Active Category");
+                var result = _mapper.Map<IEnumerable<CategoryDto>>(GetallCategoryList);
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Successfully Returned all Active Category";
+                serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong,Try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -57,8 +89,8 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<CategoryDto> serviceResponse = new ServiceResponse<CategoryDto>();
             try
             {
-                var category = await _repository.CategoryRepository.GetCategoryById(id);
-                if (category == null)
+                var CategorybyId = await _repository.CategoryRepository.GetCategoryById(id);
+                if (CategorybyId == null)
                 {
                     _logger.LogError($"Category with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -70,7 +102,7 @@ namespace Tips.Master.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    var result = _mapper.Map<CategoryDto>(category);
+                    var result = _mapper.Map<CategoryDto>(CategorybyId);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Category Successfully Returned";
                     serviceResponse.Success = true;
@@ -114,8 +146,8 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-                var categoryEntity = _mapper.Map<Category>(categoryDtoPost);
-                _repository.CategoryRepository.CreateCategory(categoryEntity);
+                var categoryCreate = _mapper.Map<Category>(categoryDtoPost);
+                _repository.CategoryRepository.CreateCategory(categoryCreate);
                 _repository.SaveAsync();
 
                 serviceResponse.Data = null;
@@ -126,7 +158,7 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside categoryCreate action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
@@ -161,8 +193,8 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-                var categoryEntity = await _repository.CategoryRepository.GetCategoryById(id);
-                if (categoryEntity is null)
+                var categoryUpdate = await _repository.CategoryRepository.GetCategoryById(id);
+                if (categoryUpdate is null)
                 {
                     _logger.LogError($"Category with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -171,8 +203,8 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-                _mapper.Map(categoryDtoUpdate, categoryEntity);
-                string result = await _repository.CategoryRepository.UpdateCategory(categoryEntity);
+                _mapper.Map(categoryDtoUpdate, categoryUpdate);
+                string result = await _repository.CategoryRepository.UpdateCategory(categoryUpdate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -199,8 +231,8 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<CategoryDto> serviceResponse = new ServiceResponse<CategoryDto>();
             try
             {
-                var category = await _repository.CategoryRepository.GetCategoryById(id);
-                if (category == null)
+                var categoryDelete = await _repository.CategoryRepository.GetCategoryById(id);
+                if (categoryDelete == null)
                 {
                     _logger.LogError($"Category with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -209,7 +241,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-                string result = await _repository.CategoryRepository.DeleteCategory(category);
+                string result = await _repository.CategoryRepository.DeleteCategory(categoryDelete);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -220,7 +252,7 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside categoryDelete action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
@@ -235,8 +267,8 @@ namespace Tips.Master.Api.Controllers
             ServiceResponse<CategoryDto> serviceResponse = new ServiceResponse<CategoryDto>();
             try
             {
-                var category = await _repository.CategoryRepository.GetCategoryById(id);
-                if (category is null)
+                var CategoryActivate = await _repository.CategoryRepository.GetCategoryById(id);
+                if (CategoryActivate is null)
                 {
                     _logger.LogError($"Category with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -245,8 +277,8 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-                category.ActiveStatus = true;
-                string result = await _repository.CategoryRepository.UpdateCategory(category);
+                CategoryActivate.ActiveStatus = true;
+                string result = await _repository.CategoryRepository.UpdateCategory(CategoryActivate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -267,13 +299,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> DectivateCategory(int id)
+        public async Task<IActionResult> DeactivateCategory(int id)
         {
             ServiceResponse<CategoryDto> serviceResponse = new ServiceResponse<CategoryDto>();
             try
             {
-                var category = await _repository.CategoryRepository.GetCategoryById(id);
-                if (category is null)
+                var CategoryDeactivate = await _repository.CategoryRepository.GetCategoryById(id);
+                if (CategoryDeactivate is null)
                 {
                     _logger.LogError($"Category with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -282,19 +314,19 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-                category.ActiveStatus = false;
-                string result = await _repository.CategoryRepository.UpdateCategory(category);
+                CategoryDeactivate.ActiveStatus = false;
+                string result = await _repository.CategoryRepository.UpdateCategory(CategoryDeactivate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Returned DectivateCategory";
+                serviceResponse.Message = "Returned DeactivateCategory";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DectivateCategory action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeactivateCategory action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;

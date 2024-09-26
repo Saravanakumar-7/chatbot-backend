@@ -5,16 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 using Entities.Helper;
 using Entities;
+using Entities.DTOs;
 
 namespace Contracts
 {
-    public interface IReleaseEnggBomRepository : IRepositoryBase<ReleaseEnggBom>
+    public interface IReleaseEnggBomRepository : IRepositoryBase<EngineeringBom>
     {
-        Task<PagedList<ReleaseEnggBom>> GetAllReleaseEnggBom(PagingParameter pagingParameter);
-        Task<ReleaseEnggBom> GetReleaseEnggBomById(int id);
-        Task<IEnumerable<ReleaseEnggBom>> GetAllActiveReleaseEnggBom();
-        Task<int?> CreateReleaseEnggBom(ReleaseEnggBom releaseEnggBom);
-        Task<string> UpdateReleaseEnggBom(ReleaseEnggBom releaseEnggBom);
-        Task<string> DeleteReleaseEnggBom(ReleaseEnggBom releaseEnggBom);
+        Task<PagedList<EngineeringBom>> GetAllReleaseEnggBom(PagingParameter pagingParameter,SearchParames searchParams);
+        Task<EngineeringBom> GetReleaseEnggBomById(int id);
+        Task<PagedList<EngineeringBom>> GetAllActiveReleaseEnggBom(PagingParameter pagingParameter, SearchParames searchParams);
+        Task<int?> CreateReleaseEnggBom(EngineeringBom releaseEnggBom);
+        Task<string> UpdateReleaseEnggBom(EngineeringBom releaseEnggBom);
+        Task<string> DeleteReleaseEnggBom(EngineeringBom releaseEnggBom);
+        Task<EngineeringBom> ReleasedEnggBomByItemAndRevisionNumber(string itemNumber, decimal revisionNumber);
+        Task<EngineeringBom> ReleasedEnggProductionByItemAndRevisionNumber(string itemNumber, decimal revisionNumber);
     }
 }

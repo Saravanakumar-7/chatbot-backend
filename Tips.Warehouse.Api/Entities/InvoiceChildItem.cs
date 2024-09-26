@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel;
 using Tips.Warehouse.Api.Entities;
+using Entities.Enums;
 
 namespace Tips.Warehouse.Api.Entities
 {
@@ -9,30 +10,46 @@ namespace Tips.Warehouse.Api.Entities
     {
         [Key]
         public int Id { get; set; }
-        public string? DONo { get; set; }
-        public string? FGItemNo { get; set; }
-        public string? Quantity { get; set; }
+        public string? DONumber { get; set; }
+        public string? FGItemNumber { get; set; }
+        public string? Description { get; set; }
+        public string? CustomerItemNumber { get; set; }
+
+        [Precision(13,3)]
+        public decimal InvoicedQty { get; set; }
         public string? UOM { get; set; }
+        public PartType PartType { get; set; }
+        public string? SerialNumber { get; set; }
+        public int BtoDeliveryOrderPartsId { get; set; }
+
         [Precision(13, 3)]
         public decimal UnitPrice { get; set; }
-        public string? UOC { get; set; }
+        public string UOC { get; set; }
+
         [Precision(13, 3)]
         public decimal TotalValue { get; set; }
-        public string? SalesOrderID { get; set; }
+        public int? SalesOrderID { get; set; }
 
         [Precision(13, 3)]
         public decimal SGST { get; set; }
+
         [Precision(13, 3)]
         public decimal IGST { get; set; }
+
         [Precision(13, 3)]
         public decimal CGST { get; set; }
+
         [Precision(13, 3)]
-        public decimal GST { get; set; }
+        public decimal UTGST { get; set; }
+
         [Precision(13, 3)]
         public decimal TotalValueWithTax { get; set; }
-        
-
-
+        [Precision(13, 3)]
+        public decimal Discount { get; set; }
+        public string? DiscountType { get; set; }
+        public decimal? InitialDispatchQty { get; set; }
+        public Status InvoiceItemStatus { get; set; }
+        public decimal? ReturnInvoiceQty { get; set; }
         public int InvoiceId { get; set; }
         public Invoice? Invoice { get; set; }
     }

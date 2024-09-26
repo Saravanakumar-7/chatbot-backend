@@ -2,36 +2,42 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
+using System.Security.Claims;
 
 namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class UOMController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
 
-        public UOMController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        private readonly IUOMRepository _uOMRepository;
+
+        public UOMController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper,IUOMRepository uOMRepository)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _uOMRepository = uOMRepository;
         }
 
         // GET: api/<UOMController>
         [HttpGet]
-        public async Task<IActionResult> GetAllUOM()
+        public async Task<IActionResult> GetAllUOM([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<UOMDto>> serviceResponse = new ServiceResponse<IEnumerable<UOMDto>>();
 
             try
             {
-                var UOMList = await _repository.UOMRepository.GetAllUOM();
+                var UOMList = await _repository.UOMRepository.GetAllUOM(searchParams);
                 _logger.LogInfo("Returned all UOM");
                 var result = _mapper.Map<IEnumerable<UOMDto>>(UOMList);
                 serviceResponse.Data = result;
@@ -52,13 +58,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveUOMs()
+        public async Task<IActionResult> GetAllActiveUOMs([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<UOMDto>> serviceResponse = new ServiceResponse<IEnumerable<UOMDto>>();
 
             try
             {
-                var UOMList = await _repository.UOMRepository.GetAllActiveUOM();
+                var UOMList = await _repository.UOMRepository.GetAllActiveUOM(searchParams);
                 _logger.LogInfo("Returned all UOM");
                 var result = _mapper.Map<IEnumerable<UOMDto>>(UOMList);
                 serviceResponse.Data = result;
@@ -144,7 +150,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid UOM object sent from client.");
                     return BadRequest(serviceResponse);
-                }
+                } 
                 var UOMEntity = _mapper.Map<UOM>(UomDtoPost);
                 _repository.UOMRepository.CreateUOM(UOMEntity);
                 _repository.SaveAsync();

@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.Helper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +10,9 @@ namespace Contracts
 {
     public interface IBankRepository
     {
-        Task<IEnumerable<Bank>> GetAllBank();
+        Task<IEnumerable<Bank>> GetAllBank(SearchParames searchParams);
         Task<Bank> GetBankById(int id);
-        Task<IEnumerable<Bank>> GetAllActiveBank();
+        Task<IEnumerable<Bank>> GetAllActiveBank(SearchParames searchParams);
         Task<int?> CreateBank(Bank bank);
         Task<string> UpdateBank(Bank bank);
         Task<string> DeleteBank(Bank bank);

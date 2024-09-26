@@ -1,0 +1,36 @@
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel;
+using Entities.Enums;
+using System.ComponentModel.DataAnnotations.Schema;
+using Tips.Production.Api.Entities.Enums;
+
+namespace Tips.Production.Api.Entities
+{
+    public class MaterialReturnNoteItem
+    {
+        public int? Id { get; set; }
+        public string? PartNumber { get; set; }
+        public string? PartDescription { get; set; }
+        public string? MftrPartNumber { get; set; }
+        [NotMapped]
+        public string? ProjectNumber { get; set; }
+        [NotMapped]
+        public string? ShopOrderNumber { get; set; }
+
+        public PartType PartType { get; set; }
+        [Precision(13, 3)]
+        public decimal ReturnQty { get; set; }
+        public MaterialStatus MrnStatus { get; set; }
+        public decimal? ScrapQty { get; set; }
+        public string? Remarks { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public int? MaterialReturnNoteId { get; set; }
+        public MaterialReturnNote? MaterialReturnNote { get; set; }
+        public List<MRNWarehouseDetails> MRNWarehouseList { get; set; }
+
+    }
+}

@@ -2,7 +2,9 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
 
@@ -12,6 +14,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class DemoStatusController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
@@ -25,13 +28,24 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<DemoStatusController>
         [HttpGet]
-        public async Task<IActionResult> GetAllDemoStatus()
+        public async Task<IActionResult> GetAllDemoStatus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<DemoStatusDto>> serviceResponse = new ServiceResponse<IEnumerable<DemoStatusDto>>();
             try
             {
 
-                var demoStatusList = await _repository.DemoStatusRepository.GetAllDemoStatus();
+                var demoStatusList = await _repository.DemoStatusRepository.GetAllDemoStatus(pagingParameter, searchParams);
+
+                var metadata = new
+                {
+                    demoStatusList.TotalCount,
+                    demoStatusList.PageSize,
+                    demoStatusList.CurrentPage,
+                    demoStatusList.HasNext,
+                    demoStatusList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all DemoStatus");
                 var result = _mapper.Map<IEnumerable<DemoStatusDto>>(demoStatusList);
                 serviceResponse.Data = result;
@@ -50,15 +64,16 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpGet]
 
-        public async Task<IActionResult> GetAllActiveDemoStatus()
+        public async Task<IActionResult> GetAllActiveDemoStatus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<DemoStatusDto>> serviceResponse = new ServiceResponse<IEnumerable<DemoStatusDto>>();
 
             try
             {
-                var demoStatus = await _repository.DemoStatusRepository.GetAllActiveDemoStatus();
+                var demoStatus = await _repository.DemoStatusRepository.GetAllActiveDemoStatus(pagingParameter, searchParams);
                 _logger.LogInfo("Returned all Demostatus");
                 var result = _mapper.Map<IEnumerable<DemoStatusDto>>(demoStatus);
                 serviceResponse.Data = result;

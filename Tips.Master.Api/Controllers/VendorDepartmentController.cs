@@ -2,6 +2,7 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using System.Net;
@@ -12,6 +13,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class VendorDepartmentController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
@@ -28,13 +30,13 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<VendorDepartmentController>
         [HttpGet]
-        public async Task<IActionResult> GetAllVendorDepartment()
+        public async Task<IActionResult> GetAllVendorDepartment([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<VendorDepartmentDto>> serviceResponse = new ServiceResponse<IEnumerable<VendorDepartmentDto>>();
 
             try
             {
-                var vendorDepartments = await _repository.VendorDepartmentRepository.GetAllVendorDepartment();
+                var vendorDepartments = await _repository.VendorDepartmentRepository.GetAllVendorDepartment(searchParams);
                 _logger.LogInfo("Returned all Vendor Department");
                 var result = _mapper.Map<IEnumerable<VendorDepartmentDto>>(vendorDepartments);
                 serviceResponse.Data = result;
@@ -53,13 +55,13 @@ namespace Tips.Master.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveVendorDepartments()
+        public async Task<IActionResult> GetAllActiveVendorDepartments([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<VendorDepartmentDto>> serviceResponse = new ServiceResponse<IEnumerable<VendorDepartmentDto>>();
 
             try
             {
-                var vendorDepartments = await _repository.VendorDepartmentRepository.GetAllActiveVendorDepartment();
+                var vendorDepartments = await _repository.VendorDepartmentRepository.GetAllActiveVendorDepartment(searchParams);
                 _logger.LogInfo("Returned all Vendor Department");
                 var result = _mapper.Map<IEnumerable<VendorDepartmentDto>>(vendorDepartments);
                 serviceResponse.Data = result;

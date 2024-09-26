@@ -4,6 +4,11 @@ using Microsoft.EntityFrameworkCore.Design;
 using Contracts;
 using Tips.Grin.Api.Entities;
 using Tips.Grin.Api.Repository;
+using Entities;
+using MySql.EntityFrameworkCore.Extensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Tips.Grin.Api.Extensions
 {
@@ -17,7 +22,7 @@ namespace Tips.Grin.Api.Extensions
                     builder => builder.AllowAnyOrigin()
                     .AllowAnyMethod()
                     .AllowAnyHeader()
-                    .WithExposedHeaders("X-Pagination"));
+                    .WithExposedHeaders("X-Pagination", "Content-Disposition"));
             });
         }
 
@@ -34,15 +39,81 @@ namespace Tips.Grin.Api.Extensions
             services.AddSingleton<ILoggerManager, LoggerManager>();
         }
 
-        public static void ConfigureMSSqlContext(this IServiceCollection services, IConfiguration config)
+        //public static void ConfigureMSSqlContext(this IServiceCollection services, IConfiguration config)
+        //{
+        //    var connectionString = config["MSSqlconnection:connectionString"];
+        //    services.AddDbContext<TipsGrinDbContext>(o => o.UseSqlServer(connectionString));
+        //}
+
+        public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
         {
-            var connectionString = config["MSSqlconnection:connectionString"];
-            services.AddDbContext<TipsGrinDbContext>(o => o.UseSqlServer(connectionString));
+
+            var connectionString = config["MySqlconnection:connectionString"];
+            services.AddDbContext<TipsGrinDbContext>(options =>
+            {
+                options.UseMySQL(connectionString, mysqlOptions =>
+                {
+                    mysqlOptions.CommandTimeout(3600); // Set command timeout to 600 seconds (10 minutes)
+                });
+            });
+        }
+
+        public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices
+        {
+            public void ConfigureDesignTimeServices(IServiceCollection serviceCollection)
+            {
+                serviceCollection.AddEntityFrameworkMySQL();
+                new EntityFrameworkRelationalDesignServicesBuilder(serviceCollection)
+                    .TryAddCoreServices();
+            }
         }
 
         //public static void ConfigureRepositoryWrapper(this IServiceCollection services)
         //{
         //    services.AddScoped<IRepositoryWrapperForMaster, RepositoryWrapperForMaster>();
         //}
+
+        public static void AuthenticateByJwtToken(this IServiceCollection services, IConfiguration config)
+        {
+            var key = config["Jwt:key"];
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+             .AddJwtBearer(options =>
+             {
+                 options.TokenValidationParameters = new TokenValidationParameters
+                 {
+                     ValidateIssuer = false,
+                     ValidateAudience = false,
+                     ValidateLifetime = true,
+                     ValidateIssuerSigningKey = true,
+                     //ValidIssuer = "[Issuer name]", // replace with the actual issuer name used by the Master API Microservice
+                     //ValidAudience = "[Audience name]", // replace with the actual audience name used by the Grin Service
+                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key)) // replace with the actual secret key used by the Master API Microservice
+                 };
+             });
+        }
+        public static void ConfigureJwtToken(this IServiceCollection services, IConfiguration config)
+        {
+            /// security key for token generation
+            var key = config["Jwt:key"];
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime=true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(key))
+                };
+            });
+        }
+
     }
 }

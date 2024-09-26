@@ -2,7 +2,9 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 //using MySqlX.XDevAPI.Common;
 using NuGet.Protocol;
 using System.Net;
@@ -13,6 +15,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class CustomerTypeController : ControllerBase
     {
         private  IRepositoryWrapperForMaster _repository;
@@ -28,13 +31,14 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<CustomerTypeController>
         [HttpGet]
-        public async Task<IActionResult> GetAllCustomerTypes()
+        public async Task<IActionResult> GetAllCustomerTypes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CustomerTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerTypeDto>>();
             try
             {
-                
-                var customerTypeList = await _repository.CustomerTypeRepository.GetAllCustomerTypes();
+
+                var customerTypeList = await _repository.CustomerTypeRepository.GetAllCustomerTypes(searchParams);
+
                 _logger.LogInfo("Returned all customerTypes");
                 var result = _mapper.Map<IEnumerable<CustomerTypeDto>>(customerTypeList);
                 serviceResponse.Data = result;
@@ -54,15 +58,16 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+
         // GET: api/<CustomerTypeController>
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCustomerTypes()
+        public async Task<IActionResult> GetAllActiveCustomerTypes([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CustomerTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<CustomerTypeDto>>();
 
             try
             {
-                var customerTypeList = await _repository.CustomerTypeRepository.GetAllActiveCustomerTypes();
+                var customerTypeList = await _repository.CustomerTypeRepository.GetAllActiveCustomerTypes(searchParams);
                 _logger.LogInfo("Returned all customerTypes");
                 var result = _mapper.Map<IEnumerable<CustomerTypeDto>>(customerTypeList);
                 serviceResponse.Data = result;

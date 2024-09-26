@@ -13,7 +13,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IRfqLPCostingNREConsumableRepository
     {
-        Task<IEnumerable<RfqLPCostingNREConsumable>> GetAllRfqLPCostingNREConsumable();
+        Task<PagedList<RfqLPCostingNREConsumable>> GetAllRfqLPCostingNREConsumable(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<RfqLPCostingNREConsumable> GetRfqLPCostingNREConsumableById(int id);
         Task<int?> CreateRfqLPCostingNREConsumable(RfqLPCostingNREConsumable rfqLPCostingNREConsumable);
         Task<string> UpdateRfqLPCostingNREConsumable(RfqLPCostingNREConsumable rfqLPCostingNREConsumable);

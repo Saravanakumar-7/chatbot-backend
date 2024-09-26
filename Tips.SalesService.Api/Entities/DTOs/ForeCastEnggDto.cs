@@ -15,16 +15,16 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? ForecastNumber { get; set; }
         public string? CustomerForecastReference { get; }
-        public DateTime? RequestReceiveDate { get; set; }
-        public DateTime? QuoteExpectDate { get; set; }
+        public DateTime? RequestReceivedDate { get; set; }
+        public DateTime? QuoteExpectedDate { get; set; }
         public string? RevisionNumber { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<ForeCastEnggItemsDto>? foreCastEnggItems { get; set; }
-        public List<ForeCastEnggRiskIdentificationDto>? forecastEnggRiskIdentifications { get; set; }
+        public List<ForeCastEnggItemsDto>? ForeCastEnggItems { get; set; }
+        public List<ForeCastEnggRiskIdentificationDto>? ForecastEnggRiskIdentifications { get; set; }
 
     }
     public class ForeCastEnggPostDto
@@ -33,16 +33,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? ForecastNumber { get; set; }
         public string? CustomerForecastReference { get; }
-        public DateTime? RequestReceiveDate { get; set; }
-        public DateTime? QuoteExpectDate { get; set; }
+        public DateTime? RequestReceivedDate { get; set; }
+        public DateTime? QuoteExpectedDate { get; set; }
         public string? RevisionNumber { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-        public List<ForeCastEnggItemsPostDto>? foreCastEnggItems { get; set; }
-        public List<ForeCastEnggRiskIdentificationPostDto>? foreCastEnggRiskIdentifications { get; set; }
+        public List<ForeCastEnggItemsPostDto>? ForeCastEnggItems { get; set; }
+        public List<ForeCastEnggRiskIdentificationPostDto>? ForeCastEnggRiskIdentifications { get; set; }
 
     }
     public class ForeCastEnggUpdateDto
@@ -51,16 +46,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? ForecastNumber { get; set; }
         public string? CustomerForecastReference { get; }
-        public DateTime? RequestReceiveDate { get; set; }
-        public DateTime? QuoteExpectDate { get; set; }
+        public DateTime? RequestReceivedDate { get; set; }
+        public DateTime? QuoteExpectedDate { get; set; }
         public string? RevisionNumber { get; set; }
         public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-        public List<ForeCastEnggItemsUpdateDto>? foreCastEnggItems { get; set; }
-        public List<ForeCastEnggRiskIdentificationUpdateDto>? foreCastEnggRiskIdentificationUpdateDtos { get; set; }
+                public List<ForeCastEnggItemsUpdateDto>? ForeCastEnggItems { get; set; }
+        public List<ForeCastEnggRiskIdentificationUpdateDto>? RoreCastEnggRiskIdentifications { get; set; }
 
     }
 }

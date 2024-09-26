@@ -2,7 +2,9 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
 
@@ -12,6 +14,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class CostCenterController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
@@ -25,15 +28,16 @@ namespace Tips.Master.Api.Controllers
         }
 
          [HttpGet]
-        public async Task<IActionResult> GetAllCostCenters()
+        public async Task<IActionResult> GetAllCostCenters([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CostCenterDto>> serviceResponse = new ServiceResponse<IEnumerable<CostCenterDto>>();
             try
             {
 
-                var CostCenterList = await _repository.CostCenterRepository.GetAllCostCenters();
+                var GetallCostCenters = await _repository.CostCenterRepository.GetAllCostCenters(searchParams);
+
                 _logger.LogInfo("Returned all CostCenters");
-                var result = _mapper.Map<IEnumerable<CostCenterDto>>(CostCenterList);
+                var result = _mapper.Map<IEnumerable<CostCenterDto>>(GetallCostCenters);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all CostCenters Successfully";
                 serviceResponse.Success = true;
@@ -51,16 +55,17 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveCostCenters()
+        public async Task<IActionResult> GetAllActiveCostCenters([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<CostCenterDto>> serviceResponse = new ServiceResponse<IEnumerable<CostCenterDto>>();
 
             try
             {
-                var CostCenters = await _repository.CostCenterRepository.GetAllActiveCostCenters();
+                var AllActiveCostCenters = await _repository.CostCenterRepository.GetAllActiveCostCenters(searchParams);
                 _logger.LogInfo("Returned all CostCenters");
-                var result = _mapper.Map<IEnumerable<CostCenterDto>>(CostCenters);
+                var result = _mapper.Map<IEnumerable<CostCenterDto>>(AllActiveCostCenters);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Active CostCenters Successfully";
                 serviceResponse.Success = true;
@@ -87,8 +92,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var CostCenter = await _repository.CostCenterRepository.GetCostCenterById(id);
-                if (CostCenter == null)
+                var CostCenterbyId = await _repository.CostCenterRepository.GetCostCenterById(id);
+                if (CostCenterbyId == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"CostCenter with id: {id}, hasn't been found in db.";
@@ -101,7 +106,7 @@ namespace Tips.Master.Api.Controllers
                 {
 
                     _logger.LogInfo($"Returned CostCenter with id: {id}");
-                    var result = _mapper.Map<CostCenterDto>(CostCenter);
+                    var result = _mapper.Map<CostCenterDto>(CostCenterbyId);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned CostCenter with id Successfully";
                     serviceResponse.Success = true;
@@ -134,7 +139,6 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Costcenter object sent from client is null.");
-                    //return BadRequest("PurchaseGroup object is null");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
@@ -144,11 +148,10 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid Costcenter object sent from client.");
-                    //return BadRequest("Invalid model object");
                     return BadRequest(serviceResponse);
                 }
-                var costcenter = _mapper.Map<CostCenter>(costCenterDtoPost);
-                _repository.CostCenterRepository.CreateCostCenter(costcenter);
+                var CreateCostcenter = _mapper.Map<CostCenter>(costCenterDtoPost);
+                _repository.CostCenterRepository.CreateCostCenter(CreateCostcenter);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
@@ -193,8 +196,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid Update Costcenter object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                var costcenter = await _repository.CostCenterRepository.GetCostCenterById(id);
-                if (costcenter is null)
+                var UpdateCostcenter = await _repository.CostCenterRepository.GetCostCenterById(id);
+                if (UpdateCostcenter is null)
                 {
                     _logger.LogError($"Update costcenter with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
@@ -203,8 +206,8 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                _mapper.Map(costCenterDtoUpdate, costcenter);
-                string result = await _repository.CostCenterRepository.UpdateCostCenter(costcenter);
+                _mapper.Map(costCenterDtoUpdate, UpdateCostcenter);
+                string result = await _repository.CostCenterRepository.UpdateCostCenter(UpdateCostcenter);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -231,8 +234,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var costcenter = await _repository.CostCenterRepository.GetCostCenterById(id);
-                if (costcenter == null)
+                var DeleteCostcenter = await _repository.CostCenterRepository.GetCostCenterById(id);
+                if (DeleteCostcenter == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Delete Costcenter object sent from client is null";
@@ -241,7 +244,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"Delete Costcenter with id: {id}, hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.CostCenterRepository.DeleteCostCenter(costcenter);
+                string result = await _repository.CostCenterRepository.DeleteCostCenter(DeleteCostcenter);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deleted Successfully";
@@ -256,7 +259,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeleteCostcenter action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -268,8 +271,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var Costcenter = await _repository.CostCenterRepository.GetCostCenterById(id);
-                if (Costcenter is null)
+                var CostcenterActivate = await _repository.CostCenterRepository.GetCostCenterById(id);
+                if (CostcenterActivate is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Costcenter object sent from client is null";
@@ -278,8 +281,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"Costcenter with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                Costcenter.IsActive = true;
-                string result = await _repository.CostCenterRepository.UpdateCostCenter(Costcenter);
+                CostcenterActivate.IsActive = true;
+                string result = await _repository.CostCenterRepository.UpdateCostCenter(CostcenterActivate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Activated Successfully";
@@ -304,8 +307,8 @@ namespace Tips.Master.Api.Controllers
 
             try
             {
-                var Costcenter = await _repository.CostCenterRepository.GetCostCenterById(id);
-                if (Costcenter is null)
+                var CostcenterDeactivate = await _repository.CostCenterRepository.GetCostCenterById(id);
+                if (CostcenterDeactivate is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Costcenter object sent from client is null";
@@ -314,8 +317,8 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError($"purchasegroup with id: {id}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                Costcenter.IsActive = false;
-                string result = await _repository.CostCenterRepository.UpdateCostCenter(Costcenter);
+                CostcenterDeactivate.IsActive = false;
+                string result = await _repository.CostCenterRepository.UpdateCostCenter(CostcenterDeactivate);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Deactivated Successfully";

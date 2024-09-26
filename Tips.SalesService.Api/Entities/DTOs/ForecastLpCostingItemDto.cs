@@ -20,16 +20,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? MaterialCost { get; set; }
         [Precision(13, 3)]
-        public decimal? MarkUpForMaterial { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
+        public decimal? MarkUpForMaterial { get; set; }        
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<ForecastLpCostingProcessDto>? forecastLpCostingProcesses { get; set; }
-        public List<ForecastLpCostingNREConsumableDto>? forecastLpCostingNREConsumables { get; set; }
-        public List<ForecastLpCostingOtherChargesDto>? forecastLpCostingOtherCharges { get; set; }
+        public List<ForecastLpCostingProcessDto>? ForecastLpCostingProcesses { get; set; }
+        public List<ForecastLpCostingNREConsumableDto>? ForecastLpCostingNREConsumables { get; set; }
+        public List<ForecastLpCostingOtherChargesDto>? ForecastLpCostingOtherCharges { get; set; }
 
     }
     public class ForecastLPCostingItemDtoPost
@@ -47,15 +44,15 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? MaterialCost { get; set; }
         [Precision(13, 3)]
         public decimal? MarkUpForMaterial { get; set; }
-        public string Unit { get; set; }
-        public List<ForecastLPCostingProcessDtoPost>? forecastLPCostingProcesses { get; set; }
-        public List<ForecastLPCostingNREConsumableDtoPost>? forecastLPCostingNREConsumables { get; set; }
-        public List<ForecastLPCostingOtherChargesDtoPost>? forecastLPCostingOtherCharges { get; set; }
+    
+        public List<ForecastLPCostingProcessDtoPost>? ForecastLPCostingProcesses { get; set; }
+        public List<ForecastLPCostingNREConsumableDtoPost>? ForecastLPCostingNREConsumables { get; set; }
+        public List<ForecastLPCostingOtherChargesDtoPost>? ForecastLPCostingOtherCharges { get; set; }
 
     }
     public class ForecastLPCostingItemDtoUpdate
     {
-        public int Id { get; set; }
+     
         [StringLength(500, ErrorMessage = "ItemNumber can't be longer than 500 characters")]
 
         public string? ItemNumber { get; set; }
@@ -68,9 +65,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? MaterialCost { get; set; }
         [Precision(13, 3)]
         public decimal? MarkUpForMaterial { get; set; }
-        public string Unit { get; set; }
-        public List<ForecastLPCostingProcessDtoUpdate>? forecastLPCostingProcesses { get; set; }
-        public List<ForecastLPCostingNREConsumableDtoUpdate>? forecastLPCostingNREConsumables { get; set; }
-        public List<ForecastLPCostingOtherChargesDtoUpdate>? forecastLPCostingOthers { get; set; }
+     
+        public List<ForecastLPCostingProcessDtoUpdate>? ForecastLPCostingProcesses { get; set; }
+        public List<ForecastLPCostingNREConsumableDtoUpdate>? ForecastLPCostingNREConsumables { get; set; }
+        public List<ForecastLPCostingOtherChargesDtoUpdate>? ForecastLPCostingOthers { get; set; }
     }
 }

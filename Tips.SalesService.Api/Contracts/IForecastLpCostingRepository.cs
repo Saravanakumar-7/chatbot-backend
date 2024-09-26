@@ -12,11 +12,11 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IForecastLpCostingRepository : IRepositoryBase<ForecastLpCosting>
     {
-        Task<PagedList<ForecastLpCosting>> GetAllForecastLpCosting(PagingParameter pagingParameter);
+        Task<PagedList<ForecastLpCosting>> GetAllForecastLpCosting(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<ForecastLpCosting> GetForecastLpCostingById(int id);
         Task<int?> CreateForecastLpCosting(ForecastLpCosting forecastLpCosting);
         Task<string> UpdateForecastLpCosting(ForecastLpCosting forecastLpCosting);
         Task<string> DeleteForecastLpCosting(ForecastLpCosting forecastLpCosting);
-        Task<ForecastLpCosting> ForecastLpCostingByForeCastNumber(string ForeCastNumber);
+        Task<ForecastLpCosting> GetForecastLpCostingByForeCastNumber(string ForeCastNumber);
     }
 }

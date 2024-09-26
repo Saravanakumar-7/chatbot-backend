@@ -22,23 +22,17 @@ namespace Entities.DTOs
     }
     public class PaymentTermDtoPost
     {
-        [Required(ErrorMessage = "PaymentTerms is required")]
-        [StringLength(100, ErrorMessage = "PaymentTerms can't be longer than 100 characters")]
         public string PaymentTerms { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
         [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]
         public string? Remarks { get; set; }
         public bool IsActive { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
-        public string Unit { get; set; }
+        
     }
     public class PaymentTermDtoUpdate
     {
         public int Id { get; set; }
-        [Required(ErrorMessage = "PaymentTerms is required")]
-        [StringLength(100, ErrorMessage = "PaymentTerms can't be longer than 100 characters")]
         public string PaymentTerms { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }

@@ -38,29 +38,22 @@ namespace Entities.DTOs
 
     [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
     public string? Description { get; set; }
-    public string Unit { get; set; }
-
-    public string? CreatedBy { get; set; }
-    public DateTime? CreatedOn { get; set; }
-    public string? LastModifiedBy { get; set; }
-    public DateTime? LastModifiedOn { get; set; }
+   
 }
     public class BomNREConsumableUpdateDto
-    {
-        public int Id { get; set; }
-
+    { 
         public string? NREItemNumber { get; set; }
 
         [Precision(13, 3)]
-        public int? NREQuantity { get; set; }
+        public decimal? NREQuantity { get; set; }
 
         [Precision(18, 3)]
-        public int? NRECost { get; set; }
+        public decimal? NRECost { get; set; }
 
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
 
-        public string Unit { get; set; }
+        //public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

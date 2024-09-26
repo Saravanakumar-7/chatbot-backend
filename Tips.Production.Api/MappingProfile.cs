@@ -1,0 +1,130 @@
+﻿using AutoMapper;
+using Tips.Production.Api.Entities.DTOs;
+using Tips.Production.Api.Entities;
+using Entities.DTOs;
+using Entities;
+
+namespace Tips.Production.Api
+{
+    public class MappingProfile : Profile
+    {
+        public MappingProfile()
+        {
+            CreateMap<PickListGetDTO, PickListDTO>().ReverseMap();
+
+            CreateMap<ShopOrder, AdvitaShopOrderDetails>().ReverseMap();
+            CreateMap<ShopOrder, ShopOrderDto>().ReverseMap();
+            CreateMap<ShopOrder, ShopOrderPostDto>().ReverseMap();
+            CreateMap<ShopOrder, ShopOrderUpdateDto>().ReverseMap();
+            CreateMap<ShopOrder, ListOfShopOrderDto>().ReverseMap();
+
+            CreateMap<OQCBinning, OQCBinningDto>().ReverseMap();
+            CreateMap<OQCBinning, OQCBinningPostDto>().ReverseMap();
+            CreateMap<OQCBinning, OQCBinningUpdateDto>().ReverseMap();
+
+            CreateMap<OQCBinningLocation, OQCBinningLocationPostDto>().ReverseMap();
+            CreateMap<OQCBinningLocation, OQCBinningLocationDto>().ReverseMap();
+            CreateMap<OQCBinningLocation, OQCBinningLocationUpdateDto>().ReverseMap();
+
+            CreateMap<OQCBinningInventoryUpdateDto, Data2>().ReverseMap();
+
+            CreateMap<ShopOrderItem, ShopOrderItemDto>().ReverseMap();
+            CreateMap<ShopOrderItem, ShopOrderItemPostDto>().ReverseMap();
+            CreateMap<ShopOrderItem, ShopOrderItemUpdateDto>().ReverseMap();
+            CreateMap<ShopOrderItemPostDto, UpdateSalesOrderQtyDto>().ReverseMap();
+
+            CreateMap<ShopOrderConfirmation, ShopOrderConfirmationDto>().ReverseMap();
+            CreateMap<ShopOrderConfirmation, ShopOrderConfirmationPostDto>().ReverseMap();
+            CreateMap<ShopOrderConfirmation, ShopOrderConfirmationUpdateDto>().ReverseMap();
+
+            CreateMap<SAShopOrder, SAShopOrderDto>().ReverseMap();
+            CreateMap<SAShopOrder, SAShopOrderPostDto>().ReverseMap();
+            CreateMap<SAShopOrder, SAShopOrderUpdateDto>().ReverseMap();
+
+            CreateMap<SAShopOrderMaterialIssue, SAShopOrderMaterialIssueDto>().ReverseMap();
+            CreateMap<SAShopOrderMaterialIssue, SAShopOrderMaterialIssuePostDto>().ReverseMap();
+            CreateMap<SAShopOrderMaterialIssue, SAShopOrderMaterialIssueUpdateDto>().ReverseMap();
+
+            CreateMap<SAShopOrderMaterialIssueGeneral, SAShopOrderMaterialIssueGeneralDto>().ReverseMap();
+            CreateMap<SAShopOrderMaterialIssueGeneral, SAShopOrderMaterialIssueGeneralPostDto>().ReverseMap();
+            CreateMap<SAShopOrderMaterialIssueGeneral, SAShopOrderMaterialIssueGeneralUpdateDto>().ReverseMap();
+
+            CreateMap<FGShopOrderMaterialIssue, FGShopOrderMaterialIssueDto>().ReverseMap();
+            CreateMap<FGShopOrderMaterialIssue, FGShopOrderMaterialIssuePostDto>().ReverseMap();
+            CreateMap<FGShopOrderMaterialIssue, FGShopOrderMaterialIssueUpdateDto>().ReverseMap();
+
+            CreateMap<FGShopOrderMaterialIssueGeneral, FGShopOrderMaterialIssueGeneralDto>().ReverseMap();
+            CreateMap<FGShopOrderMaterialIssueGeneral, FGShopOrderMaterialIssueGeneralPostDto>().ReverseMap();
+            CreateMap<FGShopOrderMaterialIssueGeneral, FGShopOrderMaterialIssueGeneralUpdateDto>().ReverseMap();
+
+
+            CreateMap<MaterialIssue, MaterialIssueDto>().ReverseMap();
+            CreateMap<MaterialIssue, MaterialIssuePostDto>().ReverseMap();
+            CreateMap<MaterialIssue, MaterialIssueUpdateDto>().ReverseMap();
+            CreateMap<MaterialIssue, IssueMaterialIssueUpdateDto>().ReverseMap();
+
+            CreateMap<MaterialIssueLocation, MaterialIssueLocationDto>().ReverseMap();
+            CreateMap<MaterialIssueLocation, MaterialIssueLocationPostDto>().ReverseMap();
+            CreateMap<MaterialIssueLocation, MaterialIssueLocationUpdateDto>().ReverseMap();
+            CreateMap<MaterialIssueLocation, IssueMaterialIssueLocationUpdateDto>().ReverseMap();
+            
+            CreateMap<MaterialIssueItem, MaterialIssueItemDto>().ReverseMap();
+            CreateMap<MaterialIssueItem, MaterialIssueItemPostDto>().ReverseMap();
+            CreateMap<MaterialIssueItem, MaterialIssueItemUpdateDto>().ReverseMap();
+            CreateMap<MaterialIssueItem, IssueMaterialIssueItemUpdateDto>().ReverseMap();
+
+            CreateMap<MaterialIssue, MaterialIssuesDto>().ReverseMap();
+            CreateMap<MaterialIssueItem, MaterialIssueItemsDto>().ReverseMap();
+
+            CreateMap<MaterialReturnNote, MaterialReturnNoteDto>().ReverseMap();
+            CreateMap<MaterialReturnNote, MaterialReturnNotePostDto>().ReverseMap();
+            CreateMap<MaterialReturnNote, MaterialReturnNoteUpdateDto>().ReverseMap();
+
+            CreateMap<MaterialReturnNoteItem, MaterialReturnNoteItemDto>().ReverseMap();
+            CreateMap<MaterialReturnNoteItem, MaterialReturnNoteItemPostDto>().ReverseMap();
+            CreateMap<MaterialReturnNoteItem, MaterialReturnNoteItemUpdateDto>().ReverseMap();
+
+            CreateMap<MRNWarehouseDetails, MRNWarehouseDetailsDto>().ReverseMap();
+            CreateMap<MRNWarehouseDetails, MRNWarehouseDetailsPostDto>().ReverseMap();
+            CreateMap<MRNWarehouseDetails, MRNWarehouseDetailsUpdateDto>().ReverseMap();
+
+            CreateMap<OQC, OQCDto>().ReverseMap();
+            CreateMap<OQC, OQCPostDto>().ReverseMap();
+            CreateMap<OQC, OQCUpdateDto>().ReverseMap();
+
+            CreateMap<MaterialRequests, MaterialRequestsDto>().ReverseMap();
+            CreateMap<MaterialRequests, MaterialRequestsPostDto>().ReverseMap();
+            CreateMap<MaterialRequests, MaterialRequestUpdateDto>().ReverseMap();
+            CreateMap<MaterialRequests, IssueMaterialRequestUpdateDto>().ReverseMap();
+
+            CreateMap<MaterialRequestItems, MaterialRequestItemsDto>().ReverseMap();
+            CreateMap<MaterialRequestItems, MaterialRequestItemPostDto>().ReverseMap();
+            CreateMap<MaterialRequestItems, MaterialRequestItemUpdateDto>().ReverseMap();
+            CreateMap<MaterialRequestItems, IssueMaterialRequestItemUpdateDto>().ReverseMap();
+
+            CreateMap<MRStockDetails, MRStockDetailsDto>().ReverseMap();
+            CreateMap<MRStockDetails, MRStockDetailsPostDto>().ReverseMap();
+            CreateMap<MRStockDetails, MRStockDetailsUpdateDto>().ReverseMap();
+            CreateMap<MRStockDetails, IssueMRStockDetailsUpdateDto>().ReverseMap();
+
+            CreateMap<MRStockDetailsUpdateDto, InventoryUpdateDtoForMRWarehouse>().ReverseMap();
+            CreateMap<MRStockDetails, InventoryUpdateDtoForMRWarehouse>().ReverseMap();
+
+            CreateMap<MaterialRequestItems, UpdateInventoryBalanceQty>().ReverseMap();
+            CreateMap<MRStockDetails, UpdateInventoryBalanceQty>().ReverseMap();
+
+            CreateMap<MaterialReturnNoteItem, MRNUpdateInventoryBalanceQty>().ReverseMap();
+            CreateMap<MRNWarehouseDetails, MRNUpdateInventoryBalanceQty>().ReverseMap();
+
+            CreateMap<InventoryDtoForShopOrderConfirmation, ShopOrderItemConfirmationDto>().ReverseMap();
+
+            
+
+
+
+
+
+
+        }
+    }
+}

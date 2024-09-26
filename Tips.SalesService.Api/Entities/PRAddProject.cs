@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class PRAddProject
     {
+        [Key]
         public int Id { get; set; }
         public string ProjectNumber { get; set; }
         public string ProjectQuantity { get; set; }

@@ -9,18 +9,18 @@ namespace Entities
 {
     public class VendorAddress
     {
+        [Key]
         public int Id { get; set; }
 
-        public string? PoAddress { get; set; }
+        public string? POAddress { get; set; }
 
         public string? GSTNNumber { get; set; }
 
         public string? PANNumber { get; set; }
 
-        public bool SameasAddress { get; set; } = false;
+        public bool SameAsAddress { get; set; } = false;
 
         public bool IsActive { get; set; } = true;
-        public string Unit { get; set; }
 
 
         public string? CreatedBy { get; set; }

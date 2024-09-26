@@ -6,7 +6,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IMaterialTransactionNoteRepository : IRepositoryBase<MaterialTransactionNote>
     {
-        Task<PagedList<MaterialTransactionNote>> GetAllMaterialTransactionNote(PagingParameter pagingParameter);
+        Task<PagedList<MaterialTransactionNote>> GetAllMaterialTransactionNote(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<MaterialTransactionNote> GetMaterialTransactionNoteById(int id);
         Task<int?> CreateMaterialTransactionNote(MaterialTransactionNote mtn);
         Task<string> UpdateMaterialTransactionNote(MaterialTransactionNote mtn);

@@ -1,28 +1,40 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.AspNetCore.Mvc;
 
 namespace Repository
 {
     public class VendorDepartmentRepository : RepositoryBase<VendorDepartment>, IVendorDepartmentRepository
     {
-        public VendorDepartmentRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public VendorDepartmentRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateVendorDepartment(VendorDepartment vendorDepartment)
         {
-            vendorDepartment.CreatedBy = "Admin";
+            vendorDepartment.CreatedBy = _createdBy;
             vendorDepartment.CreatedOn = DateTime.Now;
+            vendorDepartment.Unit = _unitname;
             var result = await Create(vendorDepartment);
-            vendorDepartment.Unit = "Bangalore";
+            
             return result.Id;
         }
 
@@ -33,29 +45,32 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<VendorDepartment>> GetAllActiveVendorDepartment()
+        public async Task<IEnumerable<VendorDepartment>> GetAllActiveVendorDepartment([FromQuery] SearchParames searchParams)
         {
-            var vendorDepartments = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return vendorDepartments;
+            var vendorDepartmentDetails = FindAll()
+                                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorDepartmentName.Contains(searchParams.SearchValue) ||
+                                 inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return vendorDepartmentDetails;
         }
 
-        public async Task<IEnumerable<VendorDepartment>> GetAllVendorDepartment()
+        public async Task<IEnumerable<VendorDepartment>> GetAllVendorDepartment([FromQuery] SearchParames searchParams)
         {
-            var vendorDepartments = await FindAll().ToListAsync();
-
-            return vendorDepartments;
+            var vendorDepartmentDetails = FindAll()
+                                        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorDepartmentName.Contains(searchParams.SearchValue) ||
+                                  inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return vendorDepartmentDetails;
         }
 
         public async Task<VendorDepartment> GetVendorDepartmentById(int id)
         {
-            var vendorDepartment = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var VendorDepartmentbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return vendorDepartment;
+            return VendorDepartmentbyId;
         }
 
         public async Task<string> UpdateVendorDepartment(VendorDepartment vendorDepartment)
         {
-            vendorDepartment.LastModifiedBy = "Admin";
+            vendorDepartment.LastModifiedBy = _createdBy;
             vendorDepartment.LastModifiedOn = DateTime.Now;
             Update(vendorDepartment);
             string result = $"Vendor Department of Detail {vendorDepartment.Id} is updated successfully!";

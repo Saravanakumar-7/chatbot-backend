@@ -1,14 +1,19 @@
 ﻿using Tips.Purchase.Api.Entities;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Contracts
 {
-    public interface IPrItemsRepository
+    public interface IPrItemsRepository : IRepositoryBase<PrItem>
     {
         Task<IEnumerable<PrItem>> GetAllPrItems();
-        Task<PrItem> GetPrItemsById(int id);
+        Task<PrItem> GetPrItemById(int id);
         Task<IEnumerable<PrItem>> GetAllActivePrItems();
-        Task<int?> CreatePrItems(PrItem prItems);
-        Task<string> UpdatePrItems(PrItem prItems);
-        Task<string> DeletePrItems(PrItem prItems);
+        Task<int?> CreatePrItem(PrItem prItem);
+        Task<string> UpdatePrItem(PrItem prItem);
+        Task<string> DeletePrItem(PrItem prItem);
+        Task<PrItem> ClosePrItemSatusByPrItemId(int prItemId);
+        Task<int?> GetPrItemOpenStatusCount(int prId);
+        Task<PrStatus> GetPrItemClosedStatusCount(string prNo);
+        Task<PrItem> GetPrItemByPRNo(string prNo, string pritem);
     }
 }

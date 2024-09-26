@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface IShipmentModeRepository
     {
-        Task<IEnumerable<ShipmentMode>> GetAllShipmentModes();
+        Task<IEnumerable<ShipmentMode>> GetAllShipmentModes(SearchParames searchParams);
         Task<ShipmentMode> GetShipmentModeById(int id);
-        Task<IEnumerable<ShipmentMode>> GetAllActiveShipmentModes();
+        Task<IEnumerable<ShipmentMode>> GetAllActiveShipmentModes(SearchParames searchParams);
         Task<int?> CreateShipmentMode(ShipmentMode shipmentMode);
         Task<string> UpdateShipmentMode(ShipmentMode shipmentMode);
         Task<string> DeleteShipmentMode(ShipmentMode shipmentMode);

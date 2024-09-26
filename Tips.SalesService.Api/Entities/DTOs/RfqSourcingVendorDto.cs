@@ -13,86 +13,129 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? Vendor { get; set; }
+        public string? VendorId { get; set; }
+
+        [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
         public string? UnitPricePer { get; set; }
         public string? Currency { get; set; }
         public string? MOQ { get; set; }
         public string? LeadTime { get; set; }
-        public string? Freight { get; set; }
-        public string? Duties { get; set; }
-        public int? QuoteQuantity { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Duties { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? QuoteQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandingPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MoqCost { get; set; }
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }
-        public string? UploadFile { get; set; }
-        public bool IsActive { get; set; } = true;
+        public bool Primary { get; set; }
+
+    }
+    public class RfqSourcingVendorPostDto
+    {
+        [StringLength(500, ErrorMessage = "Vendor can't be longer than 500 characters")]
+        public string? Vendor { get; set; }
+        public string? VendorId { get; set; }
+
+        [Required(ErrorMessage = "UnitPrice is required")]
+        [Precision(13, 3)]
+        public decimal? UnitPrice { get; set; }
+        public string? UnitPricePer { get; set; }
+
+        [StringLength(500, ErrorMessage = "Currency can't be longer than 500 characters")]
+        public string? Currency { get; set; }
+
+        [StringLength(500, ErrorMessage = "MOQ can't be longer than 500 characters")]
+        public string? MOQ { get; set; }
+
+        [StringLength(500, ErrorMessage = "LeadTime can't be longer than 500 characters")]
+        public string? LeadTime { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Duties { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? QuoteQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandingPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MoqCost { get; set; }
+        public DateTime? QuoteDate { get; set; }
+        public DateTime? QuoteValidity { get; set; }       
+        public bool Primary { get; set; } = true;
+         
+    }
+    public class RfqSourcingVendorUpdateDto
+    {
+        public int? Id { get; set; }
+        [StringLength(500, ErrorMessage = "Vendor can't be longer than 500 characters")]
+        public string? Vendor { get; set; }
+        public string? VendorId { get; set; }
+        [Required(ErrorMessage = "UnitPrice is required")]
+        [Precision(13, 3)]
+        public decimal? UnitPrice { get; set; }
+        public string? UnitPricePer { get; set; }
+
+        [StringLength(500, ErrorMessage = "Currency can't be longer than 500 characters")]
+        public string? Currency { get; set; }
+
+        [StringLength(500, ErrorMessage = "MOQ can't be longer than 500 characters")]
+        public string? MOQ { get; set; }
+
+        [StringLength(500, ErrorMessage = "LeadTime can't be longer than 500 characters")]
+        public string? LeadTime { get; set; }
+        [Precision(13, 3)]
+        public decimal? Freight { get; set; }
+        [Precision(13, 3)]
+        public decimal? Duties { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? QuoteQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandingPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MoqCost { get; set; }
+        public DateTime? QuoteDate { get; set; }
+        public DateTime? QuoteValidity { get; set; }
+        public bool Primary { get; set; } = true;
+    }
+    public class RfqSourcingConvertionrateDto
+    {
+        public Data Data { get; set; }
+        public string Message { get; set; }
+        public bool Success { get; set; }
+        public int StatusCode { get; set; }
+    }
+
+    public class Data
+    {
+        public int Id { get; set; }
+        public decimal ConvertionRate { get; set; }
+        public string UOC { get; set; }
+        public DateTime Date { get; set; }
+        public bool ActiveStatus { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
-    public class RfqSourcingVendorDtoPost
+    public class RfqSourcingVendorDetailsDto
     {
-        [StringLength(500, ErrorMessage = "Vendor can't be longer than 500 characters")]
-
-        public string? Vendor { get; set; }
-        [Required(ErrorMessage = "UnitPrice is required")]
+        public string? ProjectNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? VendorId { get; set; }
+        public string? VendorName { get; set; }
         [Precision(13, 3)]
-        public decimal? UnitPrice { get; set; }
-        public string? UnitPricePer { get; set; }
-        [StringLength(500, ErrorMessage = "Currency can't be longer than 500 characters")]
-
-        public string? Currency { get; set; }
-        [StringLength(500, ErrorMessage = "MOQ can't be longer than 500 characters")]
-
-        public string? MOQ { get; set; }
-        [StringLength(500, ErrorMessage = "LeadTime can't be longer than 500 characters")]
-
-        public string? LeadTime { get; set; }
-        [StringLength(500, ErrorMessage = "Freight can't be longer than 500 characters")]
-
-        public string? Freight { get; set; }
-       [StringLength(500, ErrorMessage = "Duties can't be longer than 500 characters")]
-
-        public string? Duties { get; set; }
-        public int? QuoteQuantity { get; set; }
-        public DateTime? QuoteDate { get; set; }
-        public DateTime? QuoteValidity { get; set; }
-        public string? UploadFile { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
-    }
-    public class RfqSourcingVendorDtoUpdate
-    {
-        public int Id { get; set; }
-
-        [StringLength(500, ErrorMessage = "Vendor can't be longer than 500 characters")]
-
-        public string? Vendor { get; set; }
-        [Required(ErrorMessage = "UnitPrice is required")]
+        public decimal? LandingPrice { get; set; }
         [Precision(13, 3)]
-        public decimal? UnitPrice { get; set; }
-        public string? UnitPricePer { get; set; }
-        [StringLength(500, ErrorMessage = "Currency can't be longer than 500 characters")]
-
-        public string? Currency { get; set; }
-        [StringLength(500, ErrorMessage = "MOQ can't be longer than 500 characters")]
-
-        public string? MOQ { get; set; }
-        [StringLength(500, ErrorMessage = "LeadTime can't be longer than 500 characters")]
-
-        public string? LeadTime { get; set; }
-        [StringLength(500, ErrorMessage = "Freight can't be longer than 500 characters")]
-
-        public string? Freight { get; set; }
-        [StringLength(500, ErrorMessage = "Duties can't be longer than 500 characters")]
-
-        public string? Duties { get; set; }
-        public int? QuoteQuantity { get; set; }
-        public DateTime? QuoteDate { get; set; }
-        public DateTime? QuoteValidity { get; set; }
-        public string? UploadFile { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
+        public decimal? MoqCost { get; set; }
     }
 }

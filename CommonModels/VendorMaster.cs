@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -9,16 +10,16 @@ namespace Entities
 {
     public class VendorMaster
     {
-
+        [Key]
         public int Id { get; set; }
-
-        public string VendorId { get; set; }
-
-        public string VendorName { get; set; }
+       
+        public string? VendorId { get; set; }
+        [Required(ErrorMessage = "VendorName is required")]
+        public string? VendorName { get; set; }
 
         public string? VendorAliasName { get; set; }
-
-        public string VendorType { get; set; }
+        [Required(ErrorMessage = "VendorType is required")]
+        public string? VendorType { get; set; }
 
         public string? Address { get; set; }
         
@@ -40,16 +41,16 @@ namespace Entities
         public string? TypeOfCompany { get; set; }
         public string? ExportUnitType { get; set; }
 
-
+        public string? VendorApprove { get; set; }
         public bool GeneralMSME { get; set; } = true;
 
         //Related Vendor
 
-        public string? RelatedVendorName { get; set; }
+        //public string? RelatedVendorName { get; set; }
 
-        public string? RelatedVendorAlias { get; set; }
+        //public string? RelatedVendorAlias { get; set; }
 
-        public string? NatureOfRelationship { get; set; }
+        //public string? NatureOfRelationship { get; set; }
 
         //term
 
@@ -94,7 +95,7 @@ namespace Entities
         public string? Capacity { get; set; }
         public string? UOM { get; set; }
         public string? FloorSpace { get; set; }
-        public string? sqft { get; set; }
+        public string? Sqft { get; set; }
 
         public string? Machine { get; set; }
         public string? ToolsandEquip { get; set; }
@@ -129,7 +130,7 @@ namespace Entities
 
         public string? AuditFrequency { get; set; }
         public bool IsActive { get; set; } = true;
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
 
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -138,9 +139,9 @@ namespace Entities
 
         public List<VendorBanking>? VendorBankings { get; set; }
         public List<VendorContacts>? Contacts { get; set; }
-        public List<VendorAddress>? Addresses { get; set; } 
-
-        public List<HeadCounting>? HeadCountings { get; set; }
+        public List<VendorAddress>? Addresses { get; set; }
+        public List<VendorRelatedVendor>? RelatedVendors { get; set; }
+        public List<VendorHeadCounting>? HeadCountings { get; set; }
 
     }
 }

@@ -12,11 +12,11 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IRfqLPCostingRepository : IRepositoryBase<RfqLPCosting>
     {
-        Task<PagedList<RfqLPCosting>> GetAllRfqLPCosting(PagingParameter pagingParameter);
+        Task<PagedList<RfqLPCosting>> GetAllRfqLPCosting(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<RfqLPCosting> GetRfqLPCostingById(int id);
         Task<int?> CreateRfqLPCosting(RfqLPCosting rfqLPCosting);
         Task<string> UpdateRfqLPCosting(RfqLPCosting rfqLPCosting);
         Task<string> DeleteRfqLPCosting(RfqLPCosting rfqLPCosting);
-        Task<RfqLPCosting> RfqLPCostingByRfqNumber(string RfqNumber);
+        Task<RfqLPCosting> GetRfqLPCostingByRfqNumber(string RfqNumber);
     }
 }

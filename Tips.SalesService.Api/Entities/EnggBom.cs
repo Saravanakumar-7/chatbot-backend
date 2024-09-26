@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class EnggBom
     {
+        [Key]
         public int Id { get; set; }
 
         public string ItemNumber { get; set; }
@@ -22,5 +23,19 @@ namespace Tips.SalesService.Api.Entities
         public string RevisionNumber { get; set; }
 
         public bool IsActive { get; set; }
+    }
+    public class EnggItemsLandedandMoq
+    {
+        public Data? data { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
+        public int statusCode { get; set; }
+    }
+
+    public class Data
+    {
+        public string fgItemNumber { get; set; }
+        public decimal? finalLandindPrice { get; set; }
+        public decimal? finalMoqcost { get; set; }
     }
 }

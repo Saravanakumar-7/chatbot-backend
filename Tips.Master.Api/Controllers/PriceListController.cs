@@ -2,9 +2,11 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NuGet.Protocol;
 using System.Net;
+
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -12,26 +14,29 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class PriceListController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        public PriceListController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        private IConfiguration _config;
+        public PriceListController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
+            _config = config;
         }
         // GET: api/<PriceListController>
         [HttpGet]
-        public async Task<IActionResult> GetAllPriceLists()
+        public async Task<IActionResult> GetAllPriceLists([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PriceListDto>> serviceResponse = new ServiceResponse<IEnumerable<PriceListDto>>();
             try
             {
 
-                var PriceList = await _repository.PriceListRepository.GetAllPriceLists();
+                var PriceList = await _repository.PriceListRepository.GetAllPriceLists(searchParams);
                 _logger.LogInfo("Returned all PriceLists");
                 var result = _mapper.Map<IEnumerable<PriceListDto>>(PriceList);
                 serviceResponse.Data = result;
@@ -50,15 +55,42 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetLatestPriceLists()
+        {
+            ServiceResponse<PriceListDto> serviceResponse = new ServiceResponse<PriceListDto>();
+            try
+            {
+                var PriceList = await _repository.PriceListRepository.GetLatestPriceLists();
+                _logger.LogInfo("Returned Latest PriceLists");
+                var result = _mapper.Map<PriceListDto>(PriceList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned Latest PriceLists Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
 
-        public async Task<IActionResult> GetAllActivePriceLists()
+        public async Task<IActionResult> GetAllActivePriceLists([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<PriceListDto>> serviceResponse = new ServiceResponse<IEnumerable<PriceListDto>>();
 
             try
             {
-                var PriceList = await _repository.PriceListRepository.GetAllActivePriceLists();
+                var PriceList = await _repository.PriceListRepository.GetAllActivePriceLists(searchParams);
                 _logger.LogInfo("Returned all PriceLists");
                 var result = _mapper.Map<IEnumerable<PriceListDto>>(PriceList);
                 serviceResponse.Data = result;
@@ -121,14 +153,36 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
+
         // POST api/<PriceListController>
         [HttpPost]
-        public IActionResult CreatePriceList([FromBody] PriceListDtoPost priceListDtoPost)
+        public async Task<IActionResult> CreatePriceList([FromBody] PriceListDtoPost priceListDtoPost)
         {
             ServiceResponse<PriceListDto> serviceResponse = new ServiceResponse<PriceListDto>();
 
             try
             {
+                //string serverKey = GetServerKey();
+
                 if (priceListDtoPost is null)
                 {
                     serviceResponse.Data = null;
@@ -149,9 +203,37 @@ namespace Tips.Master.Api.Controllers
                     //return BadRequest("Invalid model object");
                     return BadRequest(serviceResponse);
                 }
-                var PriceList = _mapper.Map<PriceList>(priceListDtoPost);
-                _repository.PriceListRepository.CreatePriceList(PriceList);
-                _repository.SaveAsync();
+                //if (serverKey == "keus")
+                //{
+
+                //    var PriceList = _mapper.Map<PriceList>(priceListDtoPost);
+                   
+                //        _repository.PriceListRepository.CreatePriceList(PriceList);
+                //        _repository.SaveAsync();
+
+                //        var latestPriceListCount = _repository.PriceListRepository.GetLatestPriceLists();
+
+                //        if (latestPriceListCount != null)
+                //        {
+                //            IEnumerable<PriceList> falsePriceListCount = await _repository.PriceListRepository.GetAllTruePriceListCount();
+                //            foreach (var price in falsePriceListCount)
+                //            {
+                //                price.IsActive = false;
+                //                _repository.PriceListRepository.UpdatePriceList(PriceList);
+                //            }
+                //            _repository.SaveAsync();
+                //        }
+                       
+                    
+                //}
+                //else
+                //{
+                    var PriceList = _mapper.Map<PriceList>(priceListDtoPost);
+                    _repository.PriceListRepository.CreatePriceList(PriceList);
+                    _repository.SaveAsync();
+
+                //}
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Successfully Created";
                 serviceResponse.Success = true;
@@ -168,6 +250,48 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //get latest pricelist name
+        [HttpGet]
+        public async Task<IActionResult> GetLatestPriceListName()
+
+        {
+            ServiceResponse<IEnumerable<PriceListDto>> serviceResponse = new ServiceResponse<IEnumerable<PriceListDto>>();
+
+            try
+            {
+                var latestPriceList = await _repository.PriceListRepository.GetLatestPriceListName();
+                if (latestPriceList == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"latestPriceList hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"latestPriceList hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned latestPriceList");
+                    var result = _mapper.Map<IEnumerable<PriceListDto>>(latestPriceList);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned latestPriceList";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong latestPriceList: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         // PUT api/<PriceListController>/5
         [HttpPut("{id}")]

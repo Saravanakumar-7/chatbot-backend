@@ -1,9 +1,13 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,17 +15,26 @@ namespace Repository
 {
     public class LeadTypeRepository : RepositoryBase<LeadType>, ILeadTypeRepository
     {
-        public LeadTypeRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public LeadTypeRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
 
         public async Task<int?> CreateLeadType(LeadType leadType)
         {
-            leadType.CreatedBy = "Admin";
+            leadType.CreatedBy = _createdBy;
             leadType.CreatedOn = DateTime.Now;
+            leadType.Unit = _unitname;
             var result = await Create(leadType);
-            leadType.Unit = "Bangalore";
+            
             return result.Id;
 
         }
@@ -33,31 +46,35 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<LeadType>> GetAllActiveLeadTypes()
+        public async Task<PagedList<LeadType>> GetAllActiveLeadTypes([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var leadTypeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return leadTypeList;
+            var leadTypeDetails = FindAll()
+             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LeadTypeName.Contains(searchParams.SearchValue) ||
+            inv.Description.Contains(searchParams.SearchValue))));
+            return PagedList<LeadType>.ToPagedList(leadTypeDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
-        public async Task<IEnumerable<LeadType>> GetAllLeadTypes()
+        public async Task<PagedList<LeadType>> GetAllLeadTypes([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
 
-            var leadStatusList = await FindAll().ToListAsync();
+            var leadTypeDetails = FindAll().OrderByDescending(x => x.Id)
+               .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.LeadTypeName.Contains(searchParams.SearchValue) ||
+                  inv.Description.Contains(searchParams.SearchValue))));
 
-            return leadStatusList;
+            return PagedList<LeadType>.ToPagedList(leadTypeDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
 
         public async Task<LeadType> GetLeadTypeById(int id)
         {
-            var leadType = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var LeadTypebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return leadType;
+            return LeadTypebyId;
         }
         public async Task<string> UpdateLeadType(LeadType leadType)
         {
 
-            leadType.LastModifiedBy = "Admin";
+            leadType.LastModifiedBy = _createdBy;
             leadType.LastModifiedOn = DateTime.Now;
             Update(leadType);
             string result = $"leadStatus details of {leadType.Id} is updated successfully!";

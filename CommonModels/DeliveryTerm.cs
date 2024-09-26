@@ -9,6 +9,7 @@ namespace Entities
 {
     public class DeliveryTerm
     {
+        [Key]
         public int Id { get; set; }
         public string? DeliveryTermName { get; set; }
         public string? Description { get; set; }

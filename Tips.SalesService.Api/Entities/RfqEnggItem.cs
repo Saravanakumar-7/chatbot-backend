@@ -10,20 +10,27 @@ namespace Tips.SalesService.Api.Entities
 {
     public class RfqEnggItem
     {
+        [Key]
         public int Id { get; set; }
         public string? CustomerItemNumber { get; set; }
         public string Description { get; set; }
         public bool ReleaseStatus { get; set; } = false;
-        public int? Quantity { get;set;}
-        public string? CostingBomVersionNo { get;}
+
+        [Precision(13,3)]
+        public decimal Qty { get;set;}
+
+        [Precision(13, 3)]
+        public decimal? CostingBomVersionNo { get; set; }
         public string? ItemNumber { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+
+        public string? CustomFields { get; set; }
+        [Precision(13, 3)]
+        public decimal? LandedPrice { get; set; }
+        [Precision(13, 3)]
+        public decimal? MOQCost { get; set; }
+
         public int RfqEnggId { get; set; }
-        public RfqEngg? rfqEngg { get; set; }
+        public RfqEngg? RfqEngg { get; set; }
       
 
     }

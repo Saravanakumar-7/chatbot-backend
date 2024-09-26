@@ -1,10 +1,14 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Helper;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,16 +16,25 @@ namespace Repository
 {
     public class DepartmentRepository : RepositoryBase<Department>, IDepartmentRepository
     {
-        public DepartmentRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public DepartmentRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateDepartment(Department department)
         {
-            department.CreatedBy = "Admin";
+            department.CreatedBy = _createdBy;
             department.CreatedOn = DateTime.Now;
+            department.Unit = _unitname;
             var result = await Create(department);
-            department.Unit = "Bangalore";
+            
             return result.Id;
         }
 
@@ -32,29 +45,34 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<Department>> GetAllActiveDepartment()
+        public async Task<IEnumerable<Department>> GetAllActiveDepartment([FromQuery] SearchParames searchParams)
         {
-            var Department = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return Department;
+            var departmentDetails = FindAll()
+          .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DepartmentName.Contains(searchParams.SearchValue) ||
+         inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+
+            return departmentDetails;
         }
 
-        public async Task<IEnumerable<Department>> GetAllDepartment()
+        public async Task<IEnumerable<Department>> GetAllDepartment([FromQuery] SearchParames searchParams)
         {
-            var Departments= await FindAll().ToListAsync();
+            var departmentDetails = FindAll().OrderByDescending(x => x.Id)
+         .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.DepartmentName.Contains(searchParams.SearchValue) ||
+        inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
-            return Departments;
+            return departmentDetails;
         }
 
         public async Task<Department> GetDepartmentById(int id)
         {
-            var department = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var DepartmentbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return department;
+            return DepartmentbyId;
         }
 
         public async Task<string> UpdateDepartment(Department department)
         {
-            department.LastModifiedBy = "Admin";
+            department.LastModifiedBy = _createdBy;
             department.LastModifiedOn = DateTime.Now;
             Update(department);
             string result = $"Department of Detail {department.Id} is updated successfully!";

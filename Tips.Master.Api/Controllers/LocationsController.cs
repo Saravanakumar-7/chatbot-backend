@@ -2,14 +2,17 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Net;
 
 namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class LocationsController : ControllerBase
     {
 
@@ -25,13 +28,14 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<LocationsController>
         [HttpGet]
-        public async Task<IActionResult> GetAllLocations()
+        public async Task<IActionResult> GetAllLocations([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LocationsDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationsDto>>();
 
             try
             {
-                var LocationsList = await _repository.LocationsRepository.GetAllLocations();
+                var LocationsList = await _repository.LocationsRepository.GetAllLocations(searchParams);
+           
                 _logger.LogInfo("Returned all Locations");
                 var result = _mapper.Map<IEnumerable<LocationsDto>>(LocationsList);
                 serviceResponse.Data = result;
@@ -50,19 +54,18 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveLocations()
+        public async Task<IActionResult> GetAllActiveLocations([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<LocationsDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationsDto>>();
 
             try
             {
-                var locations = await _repository.LocationsRepository.GetAllActiveLocations();
-                _logger.LogInfo("Returned all departments");
+                var locations = await _repository.LocationsRepository.GetAllActiveLocations(searchParams);
+                _logger.LogInfo("Returned all Warehouse");
                 var result = _mapper.Map<IEnumerable<LocationsDto>>(locations);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all Active departments Successfully";
+                serviceResponse.Message = "Returned all Active Locations Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -77,6 +80,46 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");
 
+            }
+        }
+
+        [HttpGet("{Warehouse}")]
+        public async Task<IActionResult> GetListofLocationsByWarehouse(string Warehouse)
+        {
+            ServiceResponse<IEnumerable<GetListofLocationsByWarehouseDto>> serviceResponse = new ServiceResponse<IEnumerable<GetListofLocationsByWarehouseDto>>();
+
+            try
+            {
+                var locationbywh = await _repository.LocationsRepository.GetListofLocationsByWarehouse(Warehouse);
+                if (locationbywh == null)
+                {
+                    _logger.LogError($"ListOfLocations with id: {Warehouse}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ListOfLocations with id: {Warehouse}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned ListOfLocations with id: {Warehouse}");
+                    var result = _mapper.Map<IEnumerable<GetListofLocationsByWarehouseDto>>(locationbywh);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside ListOfLocations action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
 

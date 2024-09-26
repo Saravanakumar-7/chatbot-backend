@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class ForecastLpCosting
     {
+        [Key]
         public int Id { get; set; }
         public string? ForeCastNumber { get; set; }
         public string? CustomerName { get; set; }
@@ -20,6 +21,6 @@ namespace Tips.SalesService.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<ForecastLpCostingItem>? forecastLpCostingItems { get; set; }
+        public List<ForecastLpCostingItem>? ForecastLpCostingItems { get; set; }
     }
 }

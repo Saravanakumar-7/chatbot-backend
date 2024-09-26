@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Org.BouncyCastle.Crypto.Macs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,19 @@ namespace Contracts
 {
     public interface IRepositoryWrapperForMaster
     {
+
         ILeadTimeRepository leadTimeRepository { get; }
+        I_SA_Weighted_AvgCostRepository SA_Weighted_AvgCostRepository { get; }
+        I_SA_Weighted_AvgCost_History_Repository SA_Weighted_AvgCost_History_Repository { get; }
+        I_FG_Weighted_AvgCostRepository FG_Weighted_AvgCostRepository { get; }
+        I_FG_Weighted_AvgCost_History_Repository FG_Weighted_AvgCost_History_Repository { get; }
+        IFileUploadRepository FileUploadRepository { get; }
+        IEmailTemplateRepository EmailTemplateRepository { get; }
+        IUnitRepository unitRepository { get; }
+        IImageUploadRepository ImageUploadRepository { get; }
+        IUserRepository userRepository { get; }
+        ILeadWebsiteRepository leadWebsiteRepository { get; }
+        IStageOfConstructionRepository StageOfConstructionRepository { get; }
         ICustomerTypeRepository CustomerTypeRepository { get; }
         IPurchaseGroupRepository PurchaseGroupRepository { get; }
         ICostCenterRepository CostCenterRepository { get; }
@@ -26,14 +39,16 @@ namespace Contracts
 
         IUOMRepository UOMRepository { get; }
         IUOCRepository UOCRepository { get; }
-        ICommodityRepository CommodityRepository{ get; }
+        ICommodityRepository CommodityRepository { get; }
         ILocationsRepository LocationsRepository { get; }
 
         ICompanyMasterRepository CompanyMasterRepository { get; }
         ICompanyAddressesRepository CompanyAddressesRepository { get; }
         ICompanyContactsRepository CompanyContactsRepository { get; }
         ICompanyBankingRepository CompanyBankingRepository { get; }
-
+        ICompanyMasterOtherUploadsRepository CompanyMasterOtherUploads { get; }
+        ICustomerMasterOtherUploadsRepository CustomerMasterOtherUploads { get; }
+        IVendorMasterOtherUploadsRepository VendorOtherUploads { get; }
         ICustomerMasterRepository CustomerMasterRepository { get; }
         ICustomerBankingsRepository CustomerBankingsRepository { get; }
         ICustomerAddressesRepository CustomerAddressesRepository { get; }
@@ -44,7 +59,7 @@ namespace Contracts
         IItemmasterAlternate ItemmasterAlternateRepository { get; }
         IItemMasterApprovedVendor ItemMasterApprovedVendorRepository { get; }
         IItemMasterFileUpload ItemMasterFileUploadRepository { get; }
-        IItemMasterRouting ItemMasterRoutingRepository { get; }
+        IItemMasterRoutingRepository ItemMasterRoutingRepository { get; }
         IItemMasterWarehouse ItemMasterWarehouseRepository { get; }
         IVolumeUomRepository VolumeUomRepo { get; }
         IWeightUomRepository WeightUomRepository { get; }
@@ -62,7 +77,7 @@ namespace Contracts
 
         IVendorContactRepository VendorContactRepository { get; }
 
-        IVendorAddressRepository VendorAddressRepository { get; }   
+        IVendorAddressRepository VendorAddressRepository { get; }
 
         IVendorBankingRepository VendorBankingRepository { get; }
 
@@ -83,9 +98,9 @@ namespace Contracts
 
         IEnggBomChildItemRepository EnggBomChildItemRepository { get; }
 
-        IEnggBomNREConsumableRepository EnggBomNREConsumableRepository { get; } 
+        IEnggBomNREConsumableRepository EnggBomNREConsumableRepository { get; }
 
-        IEnggBomRepository EnggBomRepository { get; } 
+        IEnggBomRepository EnggBomRepository { get; }
         IPartTypesRepository partTypesRepository { get; }
         ILeadRepository LeadRepository { get; }
         IDemoStatusRepository DemoStatusRepository { get; }
@@ -96,13 +111,50 @@ namespace Contracts
         ISecondarySourceRepository secondarySourceRepository { get; }
 
         ISourceRepository sourceRepository { get; }
-        
+
         IReleaseEnggBomRepository ReleaseEnggBomRepository { get; }
         IReleaseCostBomRepository ReleaseCostBomRepository { get; }
         IReleaseProductBomRepository ReleaseProductBomRepository { get; }
 
         IEnggBomGroupRepository EnggBomGroupRepository { get; }
         IEnggCustomFieldRepository EnggCustomFieldRepository { get; }
+
+        IProductTypeRepository ProductTypeRepository { get; }
+        ITypeSolutionRepository TypeSolutionRepository { get; }
+
+        IRoomNameRepository RoomNameRepository { get; }
+        IEmailIDsRepository EmailIDsRepository { get; }
+        ICityRepository CityRepository { get; }
+        IBHKRepository BHKRepository { get; }
+        ILightningDesignerRepository LightningDesignerRepository { get; }
+        IPmcContractorRepository PmcContractorRepository { get; }
+        IStateRepository StateRepository { get; }
+        IArchitectureRepository ArchitectureRepository { get; }
+        IProjectNameRepository ProjectNameRepository { get; }
+        ISourceDetailsRepository SourceDetailsRepository { get; }
+        ISFTRepository SFTRepository { get; }
+        ITypeOfHomeRepository TypeOfHomeRepository { get; }
+        IRoleRepository RoleRepository { get; }
+        IRoleAccessRepository RoleAccessRepository { get; }
+        IRegistrationFormRepository RegistrationFormRepository { get; }
+        IUserAccessRepository UserAccessRepository { get; }
+        IFormsAccessRepository FormsAccessRepository { get; }
+        IOrderTypeRepository OrderTypeRepository { get; }
+        IIssuingStockRepository IssuingStockRepository { get; }
+        IAdditionalChargesRepository AdditionalChargesRepository { get; }
+        ICompanyCategoryRepository CompanyCategoryRepository { get; }
+        ICustomerCategoryRepository CustomerCategoryRepository { get; }
+        IVendorRelatedVendorRepository VendorRelatedVendorRepository { get; }
+        ICustomerRelatedCustomerRepository CustomerRelatedCustomerRepository { get; }
+        IOtherChargesRepository OtherChargesRepository { get; }
+        ICompanyApprovalRepository CompanyApprovalRepository { get; }
+        ICompanyFileUploadRepository CompanyFileUploadRepository { get; }
+        INoOfRoomRepository NoOfRoomRepository { get; }
+        ITypeOfRoomRepository TypeOfRoomRepository { get; }
+        IConvertionrateRepository ConvertionrateRepository { get; }
+        IEnggChildItemsRepository EnggChildItemsRepository { get; }
+        IWeightedAvgRateRepository WeightedAvgRateRepository { get; }
         void SaveAsync();
+        void Save();
     }
 }

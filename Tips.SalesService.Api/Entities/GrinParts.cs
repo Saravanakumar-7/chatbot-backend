@@ -11,6 +11,7 @@ namespace Tips.SalesService.Api.Entities
 {
     public class GrinParts
     {
+        [Key]
         public int Id { get; set; }
 
         public string ItemNODescription { get; set; }

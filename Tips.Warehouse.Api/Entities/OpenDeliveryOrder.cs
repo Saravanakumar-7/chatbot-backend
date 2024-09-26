@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Warehouse.Api.Entities
 {
     public class OpenDeliveryOrder
     {
+        [Key]
         public int Id { get; set; }
-        public DateTime? DODate { get; set; }
-        public string DONumber { get; set; }
+        public DateTime? OpenDODate { get; set; }
+        public string OpenDONumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerId { get; set; }

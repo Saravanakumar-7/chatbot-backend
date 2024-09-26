@@ -1,9 +1,12 @@
 ﻿using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,16 +15,26 @@ namespace Repository
 {
     public class ShipmentModeRepository : RepositoryBase<ShipmentMode>, IShipmentModeRepository
     {
-        public ShipmentModeRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ShipmentModeRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreateShipmentMode(ShipmentMode shipmentMode)
         {
-            shipmentMode.CreatedBy = "Admin";
+            shipmentMode.CreatedBy = _createdBy;
             shipmentMode.CreatedOn = DateTime.Now;
+            shipmentMode.Unit = _unitname;
             var result = await Create(shipmentMode);
-            shipmentMode.Unit = "Bangalore";
+
             return result.Id;
         }
 
@@ -32,30 +45,32 @@ namespace Repository
             return result;
         }
 
-        public async Task<IEnumerable<ShipmentMode>> GetAllActiveShipmentModes()
+        public async Task<IEnumerable<ShipmentMode>> GetAllActiveShipmentModes([FromQuery] SearchParames searchParams)
         {
-
-            var shipmentModeList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return shipmentModeList;
+            var shipmentModeDetails = FindAll()
+                             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ShipmentModeName.Contains(searchParams.SearchValue) ||
+                                    inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return shipmentModeDetails;
         }
 
-        public async Task<IEnumerable<ShipmentMode>> GetAllShipmentModes()
+        public async Task<IEnumerable<ShipmentMode>> GetAllShipmentModes([FromQuery] SearchParames searchParams)
         {
-            var shipmentModeList = await FindAll().ToListAsync();
-
-            return shipmentModeList;
+            var shipmentModeDetails = FindAll()
+                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ShipmentModeName.Contains(searchParams.SearchValue) ||
+                                     inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return shipmentModeDetails;
         }
 
         public async Task<ShipmentMode> GetShipmentModeById(int id)
         {
-            var shipmentMode = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var ShipmentModebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return shipmentMode;
+            return ShipmentModebyId;
         }
 
         public async Task<string> UpdateShipmentMode(ShipmentMode shipmentMode)
         {
-            shipmentMode.LastModifiedBy = "Admin";
+            shipmentMode.LastModifiedBy = _createdBy;
             shipmentMode.LastModifiedOn = DateTime.Now;
             Update(shipmentMode);
             string result = $"shipmentMode details of {shipmentMode.Id} is updated successfully!";

@@ -3,10 +3,12 @@ using Entities;
 using Entities.DTOs;
 using Entities.Helper;
 using Entities.Migrations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,106 +16,208 @@ namespace Repository
 {
     public class VendorRepository : RepositoryBase<VendorMaster>, IVendorRepository
     {
-        public VendorRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public VendorRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
-        public async Task<int?> CreateVendor(VendorMaster vendorMaster)
+        public async Task<int?> CreateVendorMaster(VendorMaster vendorMaster)
         {
-                vendorMaster.CreatedBy = "Admin";
+                vendorMaster.CreatedBy = _createdBy;
                 vendorMaster.CreatedOn = DateTime.Now;
-                vendorMaster.LastModifiedBy = "Admin";
-                vendorMaster.LastModifiedOn = DateTime.Now; 
-            
-                var result = await Create(vendorMaster);
-            vendorMaster.Unit = "Bangalore";
+             //   vendorMaster.LastModifiedBy = _createdBy;
+              //  vendorMaster.LastModifiedOn = DateTime.Now;
+                 vendorMaster.Unit = _unitname;
+                 var result = await Create(vendorMaster);
+           
             return result.Id; 
 
         }
-         
 
-        //public async Task<string> DeleteVendor(VendorMasterDto vendorMasterDto)
+        public async Task<string> GenerateVendorId()
+        {
+            using var transaction = await TipsMasterDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var poNumberEntity = await TipsMasterDbContext.VendorIds.SingleAsync();
+                poNumberEntity.CurrentValue += 1;
+                TipsMasterDbContext.Update(poNumberEntity);
+                await TipsMasterDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"VD-{poNumberEntity.CurrentValue:D6}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+        public async Task<string> GenerateVendorIdForAvision()
+        {
+            using var transaction = await TipsMasterDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);
+
+            try
+            {
+                var poNumberEntity = await TipsMasterDbContext.VendorIds.SingleAsync();
+                poNumberEntity.CurrentValue += 1;
+                TipsMasterDbContext.Update(poNumberEntity);
+                await TipsMasterDbContext.SaveChangesAsync();
+                await transaction.CommitAsync();
+                return $"210{poNumberEntity.CurrentValue:D3}";
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                throw ex;
+            }
+        }
+
+        public async Task<IEnumerable<VendorMaster>> GetAllActiveVendorMasters()
+        {
+            var getAllActiveVendorMastersList = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
+            return getAllActiveVendorMastersList;
+            
+
+        }
+        public async Task<PagedList<VendorMaster>> GetAllVendorMasters(PagingParameter pagingParameter, SearchParames searchParams)
+        {
+            var itemmasterDetails = FindAll().OrderByDescending(x => x.Id)
+            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue)
+            || inv.VendorType.Contains(searchParams.SearchValue) || inv.VendorAliasName.Contains(searchParams.SearchValue)
+            || inv.PurchaseGroup.Contains(searchParams.SearchValue) || inv.TypeOfCompany.Contains(searchParams.SearchValue))))
+            .Include(a => a.VendorBankings)
+            .Include(a => a.Addresses)
+            .Include(a => a.RelatedVendors)
+            .Include(a => a.HeadCountings)
+            .Include(a => a.Contacts);
+
+            return PagedList<VendorMaster>.ToPagedList(itemmasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
+        }
+        //public async Task<PagedList<VendorMaster>> GetAllVendorMasters(PagingParameter pagingParameter, SearchParames searchParams)
         //{
-        //    //Delete(vendorMasterDto.Address);
-        //    //string result = $"Delete Vendor details of {vendorMasterDto.Id} is deleted successfully!";
-        //    //return result;
-        //    throw new NotImplementedException();
+        //    var itemmasterDetails = FindAll().OrderByDescending(x => x.Id)
+        //    .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.VendorName.Contains(searchParams.SearchValue) ||
+        //    inv.VendorType.Contains(searchParams.SearchValue) || inv.VendorAliasName.Contains(searchParams.SearchValue))))
+        //    .Include(a => a.VendorBankings)
+        //    .Include(a => a.Addresses)
+        //    .Include(a => a.RelatedVendors)
+        //    .Include(a => a.HeadCountings)
+        //    .Include(a => a.Contacts);
 
+        //    return PagedList<VendorMaster>.ToPagedList(itemmasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         //}
 
-        public async Task<IEnumerable<VendorMaster>> GetAllActiveVendors()
+        public async Task<VendorMaster> GetVendorMasterById(int id)
         {
-            var vendorDetails = await FindAll().ToListAsync();
-            return vendorDetails;
-            //throw new NotImplementedException();
-
-        }
-
-        public async Task<PagedList<VendorMaster>> GetAllVendors(PagingParameter pagingParameter)
-        {
-
-            var vendorDetails = PagedList<VendorMaster>.ToPagedList(FindAll()
-                                .Include(t => t.VendorBankings)
-                                .Include(x => x.Addresses)
-                                .Include(m => m.Contacts)
-                                .Include(v => v.HeadCountings)
-               .OrderBy(on => on.Id), pagingParameter.PageNumber, pagingParameter.PageSize);
-
-            //var vendorDetails = await TipsMasterDbContext.VendorMasters
-            //                    .Include(t=> t.VendorBankings)
-            //                    .Include(x=> x.Addresses)
-            //                    .Include(m=> m.Contacts)
-            //                    .ToListAsync();
-
-            return vendorDetails;
-            //throw new NotImplementedException();
-
-
-        }
-
-        public async Task<VendorMaster> GetVendorById(int id)
-        {
-          var vendorDetails = await TipsMasterDbContext.VendorMasters.Where(x=> x.Id == id)
+          var getVendorMasterbyId = await TipsMasterDbContext.VendorMasters.Where(x=> x.Id == id)
                               .Include(x => x.VendorBankings)
                               .Include(x => x.Addresses)
+                              .Include(a => a.RelatedVendors)
                               .Include(m => m.Contacts)
                               .Include(v => v.HeadCountings)
                               .FirstOrDefaultAsync();
 
-          return vendorDetails;
-          //  throw new NotImplementedException();
+          return getVendorMasterbyId;
+          
         }
          
 
-        public async Task<string> UpdateVendor(VendorMaster DataUpdate)             
+        public async Task<string> UpdateVendorMaster(VendorMaster DataUpdate)             
         {
-            DataUpdate.LastModifiedBy = "Admin";
+            DataUpdate.LastModifiedBy = _createdBy;
             DataUpdate.LastModifiedOn = DateTime.Now; 
             Update(DataUpdate);
-            string result = $"Vendor of Detail {DataUpdate.Id} is updated successfully!";
+            string result = $"VendorMaster of Detail {DataUpdate.Id} is updated successfully!";
             return result; 
         }
 
-        public async Task<string> DeleteVendor(VendorMaster vendormaster)
+        public async Task<string> DeleteVendorMaster(VendorMaster vendormaster)
         {
             Delete(vendormaster);
-            string result = $"Vendor details of {vendormaster.Id} is deleted successfully!";
+            string result = $"VendorMaster details of {vendormaster.Id} is deleted successfully!";
             return result;
         }
 
-        public async Task<IEnumerable<VendorIdNameListDto>> GetAllActiveVendorNameList()
+        public async Task<IEnumerable<VendorIdNameListDto>> GetAllActiveVendorMasterNameList()
         {
-            IEnumerable<VendorIdNameListDto> vendorDetails = await TipsMasterDbContext.VendorMasters
+            IEnumerable<VendorIdNameListDto> getAllActiveVendorMasterNameList = await TipsMasterDbContext.VendorMasters
+                                .Where(x => x.IsActive == true)
                                 .Select(x => new VendorIdNameListDto()
                                 {
                                     Id = x.Id,
                                     VednorAliasName = x.VendorAliasName,
-                                    VendorName = x.VendorName
+                                    VendorName = x.VendorName,
+                                    VendorId = x.VendorId,
+                                    VendorCategory = x.VendorCategory,
+                                    VendorType = x.VendorType,
                                 })
                               .ToListAsync();
 
-            return vendorDetails;
+            return getAllActiveVendorMasterNameList;
         }
-         
+
+        public async Task<IEnumerable<VendorIdNameListDto>> GetAllVendorMasterNameList()
+        {
+            IEnumerable<VendorIdNameListDto> getAllActiveVendorMasterNameList = await TipsMasterDbContext.VendorMasters
+
+                                .Select(x => new VendorIdNameListDto()
+                                {
+                                    Id = x.Id,
+                                    VednorAliasName = x.VendorAliasName,
+                                    VendorName = x.VendorName,
+                                    VendorId = x.VendorId,
+                                    VendorCategory = x.VendorCategory,
+                                    VendorType = x.VendorType,
+                                })
+                              .ToListAsync();
+
+            return getAllActiveVendorMasterNameList;
+        }
+
+    }
+    public class VendorMasterOtherUploadsRepository : RepositoryBase<VendorOtherUploads>, IVendorMasterOtherUploadsRepository
+    {
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public VendorMasterOtherUploadsRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
+        {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+        }
+        public async Task<int?> CreateVendorOtherUploads(VendorOtherUploads vendorOtherUploads)
+        {
+            vendorOtherUploads.CreatedBy = _createdBy;
+            vendorOtherUploads.CreatedOn = DateTime.Now;
+            vendorOtherUploads.Unit = _unitname;
+            var result = await Create(vendorOtherUploads);
+
+            return result.Id;
+        }
+        public async Task<VendorOtherUploads> GetVendorMasterOtherUploadsbyVendorId(int Id)
+        {
+            var otherUploads = await TipsMasterDbContext.VendorOtherUploads.Where(x => x.VendorId == Id).FirstOrDefaultAsync();
+            return otherUploads;
+        }
+        public async Task<string> UpdateVendorOtherUploads(VendorOtherUploads vendorOtherUploads)
+        {
+            vendorOtherUploads.LastModifiedBy = _createdBy;
+            vendorOtherUploads.LastModifiedOn = DateTime.Now;
+            Update(vendorOtherUploads);
+            string result = $"vendorMaster of Detail {vendorOtherUploads.Id} is updated successfully!";
+            return result;
+        }
     }
 }

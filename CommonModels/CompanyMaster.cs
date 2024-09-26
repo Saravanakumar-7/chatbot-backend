@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -9,15 +10,16 @@ namespace Entities
 {
     public class CompanyMaster
     {
+        [Key]
         public int Id { get; set; }
-        [Required]
-        public string CompanyId { get; set; }
-        [Required]
-        public string CompanyName { get; set; }
+        [Required(ErrorMessage = "CompanyId is required")]
+        public string? CompanyId { get; set; }
+        [Required(ErrorMessage = "CompanyName is required")]
+        public string? CompanyName { get; set; }
 
         public string? CompanyAliasName { get; set; }
-        [Required]
-        public string CompanyType { get; set; }
+        [Required(ErrorMessage = "CompanyType is required")]
+        public string? CompanyType { get; set; }
 
         public string? Address { get; set; }
 
@@ -36,8 +38,8 @@ namespace Entities
         public string? Currency { get; set; }
         public string? GooglePinLocation { get; set; }
         public string? TypeOfCompany { get; set; }
-        public string? ExportUnitType { get; set; }       
-       
+        public string? ExportUnitType { get; set; }
+        public string? CompanyApprove { get; set; }
         public bool GeneralMSME { get; set; } = true;
 
         //Related Company
@@ -92,7 +94,7 @@ namespace Entities
         public string? Capacity { get; set; }
         public string? UOM { get; set; }
         public string? FloorSpace { get; set; }
-        public string? sqft { get; set; }
+        public string? Sqft { get; set; }
 
         public string? Machine { get; set; }
         public string? ToolsandEquip { get; set; }
@@ -126,8 +128,8 @@ namespace Entities
         public bool ReAudit { get; set; } = true;
 
         public string? AuditFrequency { get; set; }
-        //public bool IsActive { get; set; } = true;
-        public string Unit { get; set; }
+        public bool IsActive { get; set; } = true;
+        public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -137,6 +139,7 @@ namespace Entities
         public List<CompanyContacts>? CompanyContacts { get; set; }
         public List<CompanyBanking>? CompanyBankings { get; set; }
         public List<CompanyMasterHeadCounting>? CompanyMasterHeadCountings { get; set; }
+        public List<CompanyApproval>? CompanyApprovals { get; set; }
 
 
     }

@@ -1,9 +1,12 @@
 ﻿using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,16 +15,26 @@ namespace Repository
 {
     public class PaymentTermRepository : RepositoryBase<PaymentTerm>, IPaymentTermRepository
     {
-        public PaymentTermRepository(TipsMasterDbContext repositoryContext) : base(repositoryContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public PaymentTermRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         public async Task<int?> CreatePaymentTerm(PaymentTerm paymentTerm)
         {
-            paymentTerm.CreatedBy = "Admin";
+            paymentTerm.CreatedBy = _createdBy;
             paymentTerm.CreatedOn = DateTime.Now;
+            paymentTerm.Unit = _unitname;
             var result = await Create(paymentTerm);
-            paymentTerm.Unit = "Bangalore";
+           
             return result.Id;
         }
 
@@ -29,39 +42,40 @@ namespace Repository
         {
 
             Delete(paymentTerm);
-            string result = $"AuditFrequency details of {paymentTerm.Id} is deleted successfully!";
+            string result = $"PaymentTerm details of {paymentTerm.Id} is deleted successfully!";
             return result;
         }
 
-        public async Task<IEnumerable<PaymentTerm>> GetAllActivepaymentTerms()
+        public async Task<IEnumerable<PaymentTerm>> GetAllActivepaymentTerms([FromQuery] SearchParames searchParams)
         {
-
-            var PaymentTermList = await FindByCondition(x => x.IsActive == true).ToListAsync();
-            return PaymentTermList;
+            var paymentTermDetails = FindAll()
+                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PaymentTerms.Contains(searchParams.SearchValue) ||
+                        inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return paymentTermDetails;
         }
 
-        public async Task<IEnumerable<PaymentTerm>> GetAllpaymentTerms()
+        public async Task<IEnumerable<PaymentTerm>> GetAllpaymentTerms([FromQuery] SearchParames searchParams)
         {
-
-            var PaymentTermList = await FindAll().ToListAsync();
-
-            return PaymentTermList;
+            var paymentTermDetails = FindAll().OrderByDescending(x => x.Id)
+                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PaymentTerms.Contains(searchParams.SearchValue) ||
+                        inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+            return paymentTermDetails;
         }
 
         public async Task<PaymentTerm> GetpaymentTermById(int id)
         {
 
-            var PaymentTerm = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
+            var PaymentTermbyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
 
-            return PaymentTerm;
+            return PaymentTermbyId;
         }
 
         public async Task<string> UpdatePaymentTerm(PaymentTerm paymentTerm)
         {
-            paymentTerm.LastModifiedBy = "Admin";
+            paymentTerm.LastModifiedBy = _createdBy;
             paymentTerm.LastModifiedOn = DateTime.Now;
             Update(paymentTerm);
-            string result = $"AuditFrequency details of {paymentTerm.Id} is updated successfully!";
+            string result = $"PaymentTerm details of {paymentTerm.Id} is updated successfully!";
             return result;
         }
     }

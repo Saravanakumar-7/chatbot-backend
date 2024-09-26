@@ -11,9 +11,9 @@ namespace Contracts
 
     {
        
-            Task<IEnumerable<PurchaseGroup>> GetAllPurchaseGroups();
+            Task<IEnumerable<PurchaseGroup>> GetAllPurchaseGroups(SearchParames searchParams);
             Task<PurchaseGroup> GetPurchaseGroupById(int id);
-            Task<IEnumerable<PurchaseGroup>> GetAllActivePurchaseGroups();
+            Task<IEnumerable<PurchaseGroup>> GetAllActivePurchaseGroups(SearchParames searchParams);
             Task<int?> CreatePurchaseGroup(PurchaseGroup purchaseGroup);
             Task<string> UpdatePurchaseGroup(PurchaseGroup purchaseGroup);
             Task<string> DeletePurchaseGroup(PurchaseGroup purchaseGroup);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -10,15 +11,22 @@ namespace Tips.SalesService.Api.Entities
 {
     public class MaterialRequest
     {
+        [Key]
         public int Id { get; set; }
-        public string MRNo { get; set; }
-        public string? ProjectNo { get; set; }
-        public string? FGItemNo { get; set; }
+
+
+        [Required(ErrorMessage = "MRNumber is required")]
+        public string MRNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? FGItemNumber { get; set; }
         public string? ShopOrderType { get; set; }
-        public string? ShopOrderNo { get; set; }
+        public string? ShopOrderNumber { get; set; }
         public string? IssuedBy { get; set; }
         public DateTime? IssuedOn { get; set; }
-        public bool IssuedStatus { get; set; }
+        public IssuedStatus IssuedStatus { get; set; }
+
+        [DefaultValue(0)]
+        public ShortStatus StatusOfShort { get; set; }  
 
         public string Unit { get; set; }
 
@@ -27,7 +35,7 @@ namespace Tips.SalesService.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<MaterialRequestItem>? MaterialRequestItemList { get; set; }
+        public List<MaterialRequestItem>? MaterialRequestItems { get; set; }
 
     }
 }

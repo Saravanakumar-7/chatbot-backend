@@ -13,10 +13,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? CustomerSupportCategory { get; set; }
-        public string? CustomerSupportNotes { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
+        public string? CustomerSupportNotes { get; set; }       
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }
@@ -28,24 +25,17 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "CustomerSupportNotes can't be longer than 500 characters")]
         public string? CustomerSupportNotes { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+      
     }
     public class ForeCastCustomerSupportNotesUpdateDto
     {
-        public int Id { get; set; }
+       // public int Id { get; set; }
         [StringLength(500, ErrorMessage = "CustomerSupportCategory can't be longer than 500 characters")]
 
         public string? CustomerSupportCategory { get; set; }
 
         [StringLength(500, ErrorMessage = "CustomerSupportNotes can't be longer than 500 characters")]
-        public string? CustomerSupportNotes { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
+        public string? CustomerSupportNotes { get; set; }      
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
     }

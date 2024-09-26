@@ -9,9 +9,9 @@ namespace Contracts
 {
     public interface IPaymentTermRepository : IRepositoryBase<PaymentTerm>
     {
-        Task<IEnumerable<PaymentTerm>> GetAllpaymentTerms();
+        Task<IEnumerable<PaymentTerm>> GetAllpaymentTerms(SearchParames searchParams);
         Task<PaymentTerm> GetpaymentTermById(int id);
-        Task<IEnumerable<PaymentTerm>> GetAllActivepaymentTerms();
+        Task<IEnumerable<PaymentTerm>> GetAllActivepaymentTerms(SearchParames searchParams);
         Task<int?> CreatePaymentTerm(PaymentTerm paymentTerm);
         Task<string> UpdatePaymentTerm(PaymentTerm paymentTerm);
         Task<string> DeletePaymentTerm(PaymentTerm paymentTerm);

@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,53 +14,56 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string RfqNumber { get; set; }
         public string? ItemNumber { get; set; }
-        public int? Quantity { get; set; }
-        public string? Description { get; set; }
-        public string Unit { get; set; }
+        public string? CustomFields { get; set; }
 
-        public bool ReleaseStatus { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
+        [Precision(13,3)]
+        public decimal Qty { get; set; }
+        public string? Description { get; set; }
+        public string? RoomName { get; set; }
+        public bool ReleaseStatus { get; set; }       
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<RfqCSDeliveryScheduleDto>? rfqCSDeliverySchedules { get; set; }
+        public string? Upload { get; set; }
+        public List<RfqCSDeliveryScheduleDto>? RfqCSDeliverySchedule { get; set; }
 
     }
     public class RfqCustomerSupportItemPostDto
     {
+        [Required]
         public string RfqNumber { get; set; }
         public string? ItemNumber { get; set; }
+        public string? CustomFields { get; set; }
 
-        public int? Quantity { get; set; }
+        [Precision(13,3)]
+        public decimal Qty { get; set; }
 
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
-        public string Unit { get; set; }
-
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-        public List<RfqCSDeliverySchedulePostDto>? rfqCSDeliverySchedules { get; set; }
+        public string? RoomName { get; set; }
+        public string? Upload { get; set; }
+        public List<RfqCSDeliverySchedulePostDto>? RfqCSDeliverySchedule { get; set; }
 
     }
     public class RfqCustomerSupportItemUpdateDto
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
+        [Required]
         public string RfqNumber { get; set; }
-        public string? ItemNumber { get; set; } 
+        public string? ItemNumber { get; set; }
+        public string? CustomFields { get; set; }
 
-        public int? Quantity { get; set; }
+        [Precision(13,3)]
+        public decimal Qty { get; set; }
 
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
-        public string Unit { get; set; }
+        public string? RoomName { get; set; }
 
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-        public List<RfqCSDeliveryScheduleUpdateDto>? rfqCSDeliverySchedules { get; set; }
+        [NotMapped]
+        public bool ReleaseStatus { get; set; }
+        public string? Upload { get; set; }
+
+        public List<RfqCSDeliveryScheduleUpdateDto>? RfqCSDeliverySchedule { get; set; }
 
     }
     public class RfqCustomerSupportItemUpdateReleaseDto
@@ -67,6 +72,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
         public string? CustomerName { get; set; }
+
+        [Required]
         public string RFQNumber { get; set; }
         public bool ReleaseStatus { get; set; } = true;
 
@@ -74,14 +81,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerRfqNumber { get; set; }
         public string? RevisionNumber { get; set; }
         public DateTime? RequestReceiveDate { get; set; }
-        public DateTime? QuoteExpectDate { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public DateTime? QuoteExpectDate { get; set; }     
 
-        public List<RfqCSDeliveryScheduleUpdateDto>? rfqCSDeliverySchedules { get; set; }
+        public List<RfqCSDeliveryScheduleUpdateDto>? RfqCSDeliverySchedule { get; set; }
 
-    }
+    }   
 }

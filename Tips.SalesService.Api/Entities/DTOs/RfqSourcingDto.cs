@@ -19,41 +19,44 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<RfqSourcingItemsDto>? rfqSourcingItems { get; set; }
-        //public List<RfqSourcingVendorDto>? rfqSourcingVendors { get; set; }
+        public List<RfqSourcingItemsDto>? RfqSourcingItemsDtos { get; set; }
+        
 
     }
-    public class RfqSourcingDtoPost
+    public class RfqSourcingPostDto
     {
+        public int RFQId { get; set; }
         [StringLength(500, ErrorMessage = "RFQNumber can't be longer than 100 characters")]
-
         public string? RFQNumber { get; set; }
-        [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
 
-        public string? CustomerName { get; set; }
+        [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
+        public string? CustomerName { get; set; }      
        
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
-        public List<RfqSourcingItemsDtoPost>? rfqSourcingItems { get; set; }
-        //public List<RfqSourcingVendorDtoPost>? rfqSourcingVendors { get; set; }
+        public List<RfqSourcingItemsPostDto>? RfqSourcingItemsPostDtos { get; set; }
+       
 
 
 
     }
-    public class RfqSourcingDtoUpdate
+    public class RfqSourcingUpdateDto
     {
         public int Id { get; set; }
+        public int RFQId { get; set; }
         [StringLength(500, ErrorMessage = "RFQNumber can't be longer than 100 characters")]
-
         public string? RFQNumber { get; set; }
-        [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
 
+        [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
         public string? CustomerName { get; set; }
 
-        [Required(ErrorMessage = "Unit is required")]
+        [Required]
         public string Unit { get; set; }
-        public List<RfqSourcingItemsDtoUpdate>? rfqSourcingItems { get; set; }
-       // public List<RfqSourcingVendorDtoUpdate>? rfqSourcingVendors { get; set; }
 
+        public List<RfqSourcingItemsUpdateDto>? RfqSourcingItemsUpdateDtos { get; set; }
+    }
+    public class RfqSourcingPPdetails
+    {
+        public string PPItemNumber { get; set; }
+        public decimal? VLandindPrice { get; set; }
+        public decimal? VMoqcost { get; set; }
     }
 }

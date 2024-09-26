@@ -10,6 +10,9 @@ using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities.DTOs;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Repository;
+using Microsoft.EntityFrameworkCore;
+using System.Net.Http;
+using Microsoft.AspNetCore.Authorization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -17,44 +20,51 @@ namespace Tips.SalesService.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class LocationTransferController : ControllerBase
     {
 
         private ILocationTransferRepository _locationTransferRepository;
         private IMapper _mapper;
         private ILoggerManager _logger;
-        public LocationTransferController(ILocationTransferRepository locationTransferRepository, ILoggerManager logger, IMapper mapper)
+        private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
+        private readonly IHttpClientFactory _clientFactory;
+        public LocationTransferController(ILocationTransferRepository locationTransferRepository, IHttpClientFactory clientFactory, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
+            _clientFactory = clientFactory;
             _locationTransferRepository = locationTransferRepository;
             _mapper = mapper;
             _logger = logger;
+            _httpClient = httpClient;
+            _config = config;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllLocationTransfer([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllLocationTransfer([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             ServiceResponse<IEnumerable<LocationTransferDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferDto>>();
 
             try
             {
-                var listOflocationsTrans = await _locationTransferRepository.GetAllLocationTransfer(pagingParameter);
+                var getAllLocationTransfers = await _locationTransferRepository.GetAllLocationTransfer(pagingParameter, searchParammes);
 
                 var metadata = new
                 {
-                    listOflocationsTrans.TotalCount,
-                    listOflocationsTrans.PageSize,
-                    listOflocationsTrans.CurrentPage,
-                    listOflocationsTrans.HasNext,
-                    listOflocationsTrans.HasPreviuos
+                    getAllLocationTransfers.TotalCount,
+                    getAllLocationTransfers.PageSize,
+                    getAllLocationTransfers.CurrentPage,
+                    getAllLocationTransfers.HasNext,
+                    getAllLocationTransfers.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
 
                 _logger.LogError("Returned all LocationTransferdetails");
-                var result = _mapper.Map<IEnumerable<LocationTransferDto>>(listOflocationsTrans);
+                var result = _mapper.Map<IEnumerable<LocationTransferDto>>(getAllLocationTransfers);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all LocationTransfer Successfully";
+                serviceResponse.Message = "Returned all LocationTransfers Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -77,21 +87,21 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var locationTransId = await _locationTransferRepository.GetLocationTransferById(id);
+                var locationTransFerDetails = await _locationTransferRepository.GetLocationTransferById(id);
 
-                if (locationTransId == null)
+                if (locationTransFerDetails == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"locationDetails with id: {id}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"locationDetails with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"locationDetails with id: {id}, hasn't been found.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
                     _logger.LogError($"Returned LocationTransfer with id: {id}");
-                    var result = _mapper.Map<LocationTransferDto>(locationTransId);
+                    var result = _mapper.Map<LocationTransferDto>(locationTransFerDetails);
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned LocationTransfer with id: {id}";
                     serviceResponse.Success = true;
@@ -110,14 +120,105 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> SearchLocationTransferDate([FromQuery] SearchDateParam searchDatesParams)
+        {
+            ServiceResponse<IEnumerable<LocationTransferDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferDto>>();
+            try
+            {
+                var locationTransFerDate = await _locationTransferRepository.SearchLocationTransferDate(searchDatesParams);
+                var result = _mapper.Map<IEnumerable<LocationTransferDto>>(locationTransFerDate);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all LocationTransferDate";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchLocationTransfer([FromQuery] SearchParammes searchParammes)
+        {
+            ServiceResponse<IEnumerable<LocationTransferDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferDto>>();
+            try
+            {
+                var locationTransferList = await _locationTransferRepository.SearchLocationTransfer(searchParammes);
+
+                _logger.LogInfo("Returned all LocationTransfer");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<LocationTransferDto, LocationTransfer>().ReverseMap();
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<LocationTransferDto>>(locationTransferList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all LocationTransfers";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
-        public async Task<IActionResult> CreateLocationTransfer([FromBody] LocationTransferDtoPost locationTransferDtoPost)
+        public async Task<IActionResult> GetAllLocationTransferWithItems([FromBody] LocationTransferSearchDto locationTransferSearchDto)
+        {
+            ServiceResponse<IEnumerable<LocationTransferDto>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferDto>>();
+            try
+            {
+                var locationTransferList = await _locationTransferRepository.GetAllLocationTransferWithItems(locationTransferSearchDto);
+
+                _logger.LogInfo("Returned all LocationTransfer");
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<LocationTransferDto, LocationTransfer>().ReverseMap();
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<LocationTransferDto>>(locationTransferList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all LocationTransfersWithItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateLocationTransfer([FromBody] LocationTransferPostDto locationTransferPostDto)
         {
             ServiceResponse<LocationTransferDto> serviceResponse = new ServiceResponse<LocationTransferDto>();
 
             try
             {
-                if (locationTransferDtoPost is null)
+                if (locationTransferPostDto is null)
                 {
                     _logger.LogError("locationTransfer object sent from client is null.");
                     serviceResponse.Data = null;
@@ -135,12 +236,34 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var locationTransfer = _mapper.Map<LocationTransfer>(locationTransferDtoPost);
+                var createLocationTransfer = _mapper.Map<LocationTransfer>(locationTransferPostDto);
 
-                _locationTransferRepository.CreateLocationTransfer(locationTransfer);
+                await _locationTransferRepository.CreateLocationTransfer(createLocationTransfer);
                 _locationTransferRepository.SaveAsync();
+
+                //var PartNumber = locationTransferPostDto.FromPartNumber;
+                //var ToPartNumber = locationTransferPostDto.ToPartNumber;
+                //var Location = locationTransferPostDto.FromLocation;
+                //var ToLocation = locationTransferPostDto.ToLocation;
+                //var availstock = locationTransferPostDto.AvailableStockInLocation;
+                //var TransferQty = locationTransferPostDto.TransferQty;
+
+                //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                //              "GetInventoryDetailsByItemnumberandLocation?", "ItemNumber=", PartNumber, "&Location=", Location));
+
+                //var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                //dynamic inventoryObject = inventoryObjectData.data;
+                //var count = inventoryObject.Count;
+                //if(count != null)
+                //{
+                //    if (count.Count == 1)
+                //    {
+
+                //    }
+                //}
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Message = "locationTransfer Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Created("GetLocationTransferId", serviceResponse);
@@ -158,13 +281,13 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateLocationTransfer(int id, [FromBody] LocationTransferDtoUpdate locationTransferDtoUpdate)
+        public async Task<IActionResult> UpdateLocationTransfer(int id, [FromBody] LocationTransferUpdateDto locationTransferUpdateDto)
         {
             ServiceResponse<LocationTransferDto> serviceResponse = new ServiceResponse<LocationTransferDto>();
 
             try
             {
-                if (locationTransferDtoUpdate is null)
+                if (locationTransferUpdateDto is null)
                 {
                     _logger.LogError("locationTransfer object sent from client is null.");
                     serviceResponse.Data = null;
@@ -182,24 +305,24 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var locations = await _locationTransferRepository.GetLocationTransferById(id);
-                if (locations is null)
+                var getLocationTransferById = await _locationTransferRepository.GetLocationTransferById(id);
+                if (getLocationTransferById is null)
                 {
                     _logger.LogError($"locationTransfer with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update locationTransfer with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Update locationTransfer with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
 
-                var data = _mapper.Map(locationTransferDtoUpdate, locations);
+                var updateData = _mapper.Map(locationTransferUpdateDto, getLocationTransferById);
 
-                string result = await _locationTransferRepository.UpdateLocationTransfer(data);
+                string result = await _locationTransferRepository.UpdateLocationTransfer(updateData);
                 _logger.LogError(result);
                 _locationTransferRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = "LocationTransfers Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -222,21 +345,21 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var deletelocation = await _locationTransferRepository.GetLocationTransferById(id);
-                if (deletelocation == null)
+                var getLocationTransfer = await _locationTransferRepository.GetLocationTransferById(id);
+                if (getLocationTransfer == null)
                 {
                     _logger.LogError($"Delete LocationTransfer with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Delete LocationTransfer with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Delete LocationTransfer with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _locationTransferRepository.DeleteLocationTransfer(deletelocation);
+                string result = await _locationTransferRepository.DeleteLocationTransfer(getLocationTransfer);
                 _logger.LogError(result);
                 _locationTransferRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Delete Successfully";
+                serviceResponse.Message = "LocationTransfer Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -250,6 +373,32 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllLocationTransferIdNameList()
+        {
+            ServiceResponse<IEnumerable<LocationTransferIdNameList>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferIdNameList>>();
+            try
+            {
+                var listOfAllLocationTransferIdNames = await _locationTransferRepository.GetAllLocationTransferIdNameList();
+                var result = _mapper.Map<IEnumerable<LocationTransferIdNameList>>(listOfAllLocationTransferIdNames);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All listOfAllLocationTransferIdNames";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllLocationTransferIdNameList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
         }
     }
 }

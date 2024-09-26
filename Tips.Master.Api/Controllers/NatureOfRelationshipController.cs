@@ -2,7 +2,9 @@
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using NuGet.Protocol;
 using System.Net;
 
@@ -12,6 +14,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class NatureOfRelationshipController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
@@ -25,15 +28,16 @@ namespace Tips.Master.Api.Controllers
         }
         // GET: api/<NatureOfRelationshipController>
         [HttpGet]
-        public async Task<IActionResult> GetAllNatureOfRelationships()
+        public async Task<IActionResult> GetAllNatureOfRelationships([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<NatureOfRelationshipDto>> serviceResponse = new ServiceResponse<IEnumerable<NatureOfRelationshipDto>>();
             try
             {
 
-                var NatureOfRelationshiplist = await _repository.NatureOfRelationshipRepository.GetAllNatureOfRelationships();
+                var natureOfRelationshiplist = await _repository.NatureOfRelationshipRepository.GetAllNatureOfRelationships(searchParams);
+
                 _logger.LogInfo("Returned all NatureOfRelationships");
-                var result = _mapper.Map<IEnumerable<NatureOfRelationshipDto>>(NatureOfRelationshiplist);
+                var result = _mapper.Map<IEnumerable<NatureOfRelationshipDto>>(natureOfRelationshiplist);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all NatureOfRelationships Successfully";
                 serviceResponse.Success = true;
@@ -51,13 +55,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllActiveNatureOfRelationships()
+        public async Task<IActionResult> GetAllActiveNatureOfRelationships([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<NatureOfRelationshipDto>> serviceResponse = new ServiceResponse<IEnumerable<NatureOfRelationshipDto>>();
 
             try
             {
-                var NatureOfRelationships = await _repository.NatureOfRelationshipRepository.GetAllActiveNatureOfRelationships();
+                var NatureOfRelationships = await _repository.NatureOfRelationshipRepository.GetAllActiveNatureOfRelationships(searchParams);
                 _logger.LogInfo("Returned all NatureOfRelationships");
                 var result = _mapper.Map<IEnumerable<NatureOfRelationshipDto>>(NatureOfRelationships);
                 serviceResponse.Data = result;
@@ -78,6 +82,7 @@ namespace Tips.Master.Api.Controllers
 
             }
         }
+
         // GET api/<NatureOfRelationshipController>/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetNatureOfRelationshipById(int id)

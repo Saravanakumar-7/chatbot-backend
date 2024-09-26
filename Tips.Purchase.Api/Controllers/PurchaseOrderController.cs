@@ -1,55 +1,182 @@
-﻿using System.Net;
+﻿using System;
+using System.Buffers.Text;
+using System.IO;
+using System.IO.Compression;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Reflection;
+using System.Security.Claims;
+using System.Text;
 using AutoMapper;
+using Azure;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Helper;
+using MailKit.Security;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using MimeKit;
+using MimeKit.Text;
+using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using Tips.Purchase.Api.Contracts;
 using Tips.Purchase.Api.Entities;
 using Tips.Purchase.Api.Entities.Dto;
 using Tips.Purchase.Api.Entities.DTOs;
+using Tips.Purchase.Api.Entities.Enums;
+using Tips.Purchase.Api.Repository;
+using EmailIDsDto = Tips.Purchase.Api.Entities.Dto.EmailIDsDto;
+using EmailTemplateDto = Tips.Purchase.Api.Entities.DTOs.EmailTemplateDto;
+//using static Org.BouncyCastle.Math.EC.ECCurve;
 
 namespace Tips.Purchase.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [Authorize]
     public class PurchaseOrderController : ControllerBase
     {
         private IPurchaseOrderRepository _repository;
+        private IPoItemsRepository _poItemsRepository;
+        private IPurchaseRequisitionRepository _purchaseRequisitionRepository;
+        private IPoConfirmationDateHistoryRepository _poConfirmationDateHistoryRepository;
+        private IPoConfirmationHistoryRepository _poConfirmationHistoryRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
-        
-        public PurchaseOrderController(IPurchaseOrderRepository repository, ILoggerManager logger, IMapper mapper)
+        private IDocumentUploadRepository _documentUploadRepository;
+        private IPoConfirmationDateRepository _poConfirmationDateRepository;
+        private IPRItemsDocumentUploadRepository _pRItemsDocumentUploadRepository;
+        private IConfiguration _config;
+        private IPrItemsRepository _purchaseRequisitionItemRepository;
+        private IPoAddprojectRepository _poAddprojectRepository;
+        private readonly IHttpClientFactory _clientFactory;
+        private IPoItemHistoryRepository _poItemHistoryRepository;
+        public static IWebHostEnvironment _webHostEnvironment { get; set; }
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        private readonly HttpClient _httpClient;
+        public PurchaseOrderController(IPrItemsRepository purchaseRequisitionItemRepository, IPoItemHistoryRepository poItemHistoryRepository, IHttpClientFactory clientFactory, HttpClient httpClient, IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository, IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository, IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IPoAddprojectRepository poAddprojectRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
+            _httpClient = httpClient;
+            _poItemsRepository = poItemsRepository;
+            _purchaseRequisitionRepository = purchaseRequisitionRepository;
             _logger = logger;
             _mapper = mapper;
+            _documentUploadRepository = documentUploadRepository;
+            _webHostEnvironment = webHostEnvironment;
+            _poConfirmationDateHistoryRepository = poConfirmationDateHistoryRepository;
+            _poConfirmationHistoryRepository = poConfirmationHistoryRepository;
+            _poConfirmationDateRepository = poConfirmationDateRepository;
+            _pRItemsDocumentUploadRepository = pRItemsDocumentUploadRepository;
+            _purchaseRequisitionItemRepository = purchaseRequisitionItemRepository;
+            _poAddprojectRepository = poAddprojectRepository;
+            _poItemHistoryRepository = poItemHistoryRepository;
+            _config = config;
+            _clientFactory = clientFactory;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
-        // GET: api/<PurchaseOrderController>
         [HttpGet]
-        public async Task<IActionResult> GetAllPurchaseOrder([FromQuery] PagingParameter pagingParameter)
+        public async Task<IActionResult> GetAllPurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<PurchaseOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderDto>>();
             try
             {
-                var listOfPurchaseOrder = await _repository.GetAllPurchaseOrder(pagingParameter);
+                var purchaseOrderDetails = await _repository.GetAllPurchaseOrders(pagingParameter, searchParamess);
                 var metadata = new
                 {
-                    listOfPurchaseOrder.TotalCount,
-                    listOfPurchaseOrder.PageSize,
-                    listOfPurchaseOrder.CurrentPage,
-                    listOfPurchaseOrder.HasNext,
-                    listOfPurchaseOrder.HasPreviuos
+                    purchaseOrderDetails.TotalCount,
+                    purchaseOrderDetails.PageSize,
+                    purchaseOrderDetails.CurrentPage,
+                    purchaseOrderDetails.HasNext,
+                    purchaseOrderDetails.HasPreviuos
                 };
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogInfo("Returned all PurchaseOrder");
-                var result = _mapper.Map<IEnumerable<PurchaseOrderDto>>(listOfPurchaseOrder);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderDto>>(purchaseOrderDetails);
+
+                List<DocumentUploadDto> documentUploadDtos = new List<DocumentUploadDto>();
+
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all PurchaseOrder";
+                serviceResponse.Message = "Returned all PurchaseOrders";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPurchaseOrderTillPoBreakDownByPoNumber(string PONumber)
+        {
+            ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
+            try
+            {
+                var latestPo = await _repository.GetLastestPurchaseOrderByPONumber(PONumber);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Returned all PurchaseOrders";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetPurchaseOrderTillPoBreakDownByPoNumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllLastestPurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderDto>>();
+            try
+            {
+                var lastestPurchaseOrderDetails = await _repository.GetAllLastestPurchaseOrders(pagingParameter, searchParamess);
+                var metadata = new
+                {
+                    lastestPurchaseOrderDetails.TotalCount,
+                    lastestPurchaseOrderDetails.PageSize,
+                    lastestPurchaseOrderDetails.CurrentPage,
+                    lastestPurchaseOrderDetails.HasNext,
+                    lastestPurchaseOrderDetails.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all LastestPurchaseOrders");
+                var result = _mapper.Map<IEnumerable<PurchaseOrderDto>>(lastestPurchaseOrderDetails);
+
+                List<DocumentUploadDto> documentUploadDtos = new List<DocumentUploadDto>();
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all LastestPurchaseOrders";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -65,19 +192,958 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-        // GET api/<PurchaseOrderController>/5
+        //get details by ponumber
+        [HttpGet]
+        public async Task<IActionResult> GetPurchaseOrderByPoNumber(string PONumber)
+        {
+            ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
+            try
+            {
+                var purchaseOrderDetailbyPONumber = await _repository.GetPurchaseOrderByPONumber(PONumber);
+
+                if (purchaseOrderDetailbyPONumber == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder  hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder with id: {PONumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {PONumber}");
+
+                    PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetailbyPONumber);
+                    List<PoItemsDto> poItemDtoList = new List<PoItemsDto>();
+                    var poIncoTermList = _mapper.Map<IEnumerable<PoIncoTerm>>(purchaseOrderDto.POIncoTerms);
+                    //List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
+
+                    //if (purchaseOrderDto.POFiles.Count() != 0)
+                    //{
+                    //    foreach (var documentUploadDetails in purchaseOrderDto.POFiles)
+                    //    {
+                    //        DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
+                    //        documentUplaodDtoList.Add(poItemDtos);
+                    //    }
+                    //}
+                    //purchaseOrderDto.POFiles = documentUplaodDtoList;
+
+                    var poIncoTermDto = purchaseOrderDto.POIncoTerms;
+
+                    var poIncoTermsList = new List<PoIncoTermDto>();
+                    if (poIncoTermDto != null)
+                    {
+                        for (int i = 0; i < poIncoTermDto.Count; i++)
+                        {
+                            PoIncoTermDto poIncoTermDetails = _mapper.Map<PoIncoTermDto>(poIncoTermDto[i]);
+                            poIncoTermsList.Add(poIncoTermDetails);
+                        }
+                    }
+                    purchaseOrderDto.POIncoTerms = poIncoTermsList;
+
+                    if (purchaseOrderDetailbyPONumber.POItems != null)
+                    {
+                        foreach (var poItemDetails in purchaseOrderDetailbyPONumber.POItems)
+                        {
+                            PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
+                            poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
+                            poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
+                            poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
+                            poItemDtos.POConfirmationDates = _mapper.Map<List<PoConfirmationDateDto>>(poItemDetails.POConfirmationDates);
+                            poItemDtos.PrDetails = _mapper.Map<List<PrDetailsDto>>(poItemDetails.PrDetails);
+                            poItemDtoList.Add(poItemDtos);
+                        }
+                    }
+
+                    purchaseOrderDto.POItems = poItemDtoList;
+                    serviceResponse.Data = purchaseOrderDto;
+                    serviceResponse.Message = "Returned PurchaseOrderByPONumber Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside PurchaseOrderByPONumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetPurchaseOrderItemsByPoNumber(string PONumber)
+        {
+            ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
+            try
+            {
+                var purchaseOrderDetailbyPONumber = await _repository.GetPurchaseOrderItemsByPONumber(PONumber);
+
+                if (purchaseOrderDetailbyPONumber == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder  hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder with id: {PONumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {PONumber}");
+
+                    PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetailbyPONumber);
+                    List<PoItemsDto> poItemDtoList = new List<PoItemsDto>();
+                    var poIncoTermList = _mapper.Map<IEnumerable<PoIncoTerm>>(purchaseOrderDto.POIncoTerms);
+                    //List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
+
+                    //if (purchaseOrderDto.POFiles.Count() != 0)
+                    //{
+                    //    foreach (var documentUploadDetails in purchaseOrderDto.POFiles)
+                    //    {
+                    //        DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
+                    //        documentUplaodDtoList.Add(poItemDtos);
+                    //    }
+                    //}
+                    //purchaseOrderDto.POFiles = documentUplaodDtoList;
+
+                    var poIncoTermDto = purchaseOrderDto.POIncoTerms;
+
+                    var poIncoTermsList = new List<PoIncoTermDto>();
+                    if (poIncoTermDto != null)
+                    {
+                        for (int i = 0; i < poIncoTermDto.Count; i++)
+                        {
+                            PoIncoTermDto poIncoTermDetails = _mapper.Map<PoIncoTermDto>(poIncoTermDto[i]);
+                            poIncoTermsList.Add(poIncoTermDetails);
+                        }
+                    }
+                    purchaseOrderDto.POIncoTerms = poIncoTermsList;
+
+                    if (purchaseOrderDetailbyPONumber.POItems != null)
+                    {
+                        foreach (var poItemDetails in purchaseOrderDetailbyPONumber.POItems)
+                        {
+                            PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
+                            poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
+                            poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
+                            poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
+                            poItemDtos.POConfirmationDates = _mapper.Map<List<PoConfirmationDateDto>>(poItemDetails.POConfirmationDates);
+                            poItemDtos.PrDetails = _mapper.Map<List<PrDetailsDto>>(poItemDetails.PrDetails);
+                            poItemDtoList.Add(poItemDtos);
+                        }
+                    }
+
+                    purchaseOrderDto.POItems = poItemDtoList;
+                    serviceResponse.Data = purchaseOrderDto;
+                    serviceResponse.Message = "Returned GetPurchaseOrderItemsByPoNumber Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside PurchaseOrderByPONumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+
+        }
+
+        [HttpGet("{PONumber}")]
+        public async Task<IActionResult> GetAllRevisionNumberListByPoNumber(string PONumber)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderRevNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderRevNoListDto>>();
+            try
+            {
+                var revNumberDetailsbyPONumber = await _repository.GetAllRevisionNumberListByPoNumber(PONumber);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderRevNoListDto>>(revNumberDetailsbyPONumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all RevisionNumberList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllRevisionNumberListByPoNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllOpenPoDetails(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<OpenPurchaseOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenPurchaseOrderDto>>();
+            try
+            {
+                var revNumberDetailsbyPONumber = await _poItemsRepository.GetOpenPODetailsByItem(itemNumber);
+                var result = _mapper.Map<IEnumerable<OpenPurchaseOrderDto>>(revNumberDetailsbyPONumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Open PurchaseOrder Details";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside PurchaseOrderDetails action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        //get only open TG Parts
+        [HttpGet]
+        public async Task<IActionResult> GetAllOpenTGPoDetails(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<OpenPurchaseOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenPurchaseOrderDto>>();
+            try
+            {
+                var revNumberDetailsbyPONumber = await _poItemsRepository.GetOpenPOTGDetailsByItem(itemNumber);
+                var result = _mapper.Map<IEnumerable<OpenPurchaseOrderDto>>(revNumberDetailsbyPONumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Open PurchaseOrder Details";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside PurchaseOrderDetails action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReport>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderSPReportWithDate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderApprovalSPReportWithDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate, [FromQuery] string RecordType, [FromQuery] string Approval)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderApprovalSPReportWithDateForTrans(FromDate, ToDate, RecordType, Approval);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderApprovalSPReportWithDateForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderApprovalSPReportWithDate(PurchaseOrderApprovalSPReportWithDateDTO purchaseOrderApprovalSPReportWithDateDTO)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderApprovalSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderApprovalSPReport>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderApprovalSPReportWithDate(purchaseOrderApprovalSPReportWithDateDTO.FromDate, purchaseOrderApprovalSPReportWithDateDTO.ToDate,
+                                                                                            purchaseOrderApprovalSPReportWithDateDTO.RecordType, purchaseOrderApprovalSPReportWithDateDTO.Approval);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderApprovalSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderApprovalSPReportWithDateForAvision([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate, [FromQuery] string RecordType, [FromQuery] string Approval)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderSPReportForAvision>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReportForAvision>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderApprovalSPReportWithDateForAvision(FromDate, ToDate, RecordType, Approval);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderApprovalSPReportWithDateForAvision action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        //[HttpGet()] // Adjust your route as needed
+        //public async Task<IActionResult> GetPurchaseOrderSPReportWithDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        //{
+        //    ServiceResponse<IEnumerable<PurchaseOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReportForTrans>>();
+        //    try
+        //    {
+        //        var products = await _repository.GetPurchaseOrderSPReportWithDateForTrans(FromDate, ToDate);
+
+        //        if (products == null)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            _logger.LogError($"PurchaseOrder hasn't been found in db.");
+        //            return Ok(serviceResponse);
+        //        }
+        //        else
+        //        {
+        //            serviceResponse.Data = products;
+        //            serviceResponse.Message = "Returned PurchaseOrder Details";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(serviceResponse);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderSPReportWithDateForTrans action";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
+        [HttpGet]
+        public async Task<IActionResult> GetPurchaseOrderSPResport([FromQuery] PagingParameter pagingParameter)
+        {
+
+            ServiceResponse<IEnumerable<PurchaseOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReport>>();
+
+            try
+            {
+                var products = await _repository.GetPurchaseOrderSPResport(pagingParameter);
+
+                var metadata = new
+                {
+                    products.TotalCount,
+                    products.PageSize,
+                    products.CurrentPage,
+                    products.HasNext,
+                    products.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
+                _logger.LogInfo("Returned all PurchaseOrderSPReport");
+                var result = _mapper.Map<IEnumerable<PurchaseOrderSPReport>>(products);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PurchaseOrderSPReport Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Get_Tras_POReport_ConfirmationDate([FromQuery] PagingParameter pagingParameter)
+        {
+
+            ServiceResponse<IEnumerable<Tras_PO_ConfirmationDate>> serviceResponse = new ServiceResponse<IEnumerable<Tras_PO_ConfirmationDate>>();
+
+            try
+            {
+                var products = await _repository.Get_Tras_POReport_ConfirmationDate(pagingParameter);
+
+                var metadata = new
+                {
+                    products.TotalCount,
+                    products.PageSize,
+                    products.CurrentPage,
+                    products.HasNext,
+                    products.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
+                _logger.LogInfo("Returned all Get_Tras_POReport_ConfirmationDate");
+                var result = _mapper.Map<IEnumerable<Tras_PO_ConfirmationDate>>(products);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Get_Tras_POReport_ConfirmationDate Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderSPReportWithParam([FromBody] PurchaseOrderSPReportWithParamDTO purchaseOrderSPReport)
+
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReport>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderSPReportWithParam(purchaseOrderSPReport.VendorName, purchaseOrderSPReport.PONumber, purchaseOrderSPReport.ItemNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderSPReportWithParamForTrans([FromBody] PurchaseOrderSPReportWithParamForTransDTO purchaseOrderSPReportWithParamForTransDTO)
+
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReport>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderSPReportWithParamForTrans(purchaseOrderSPReportWithParamForTransDTO.VendorName, purchaseOrderSPReportWithParamForTransDTO.PONumber,
+                                                                                    purchaseOrderSPReportWithParamForTransDTO.ItemNumber, purchaseOrderSPReportWithParamForTransDTO.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderSPReportWithParamForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderUnitListSPReportWithParamForTrans([FromBody] PurchaseOrderUnitListSPReportWithParamForTransDTO purchaseOrderUnitListSPReportWithParamForTransDTO)
+
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderUnitListSPReportWithParamForTrans>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderUnitListSPReportWithParamForTrans>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderUnitListSPReportWithParamForTrans(purchaseOrderUnitListSPReportWithParamForTransDTO.ItemNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrderUnitList hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrderUnitList hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrderUnitList Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderUnitListSPReportWithParamForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderApprovalSPReportWithParam([FromBody] PurchaseOrderApprovalSPReportWithParamDTO purchaseOrderApprovalSPReport)
+
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderApprovalSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderApprovalSPReport>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderApprovalSPReportWithParam(purchaseOrderApprovalSPReport.VendorName, purchaseOrderApprovalSPReport.PONumber,
+                                                                                    purchaseOrderApprovalSPReport.ItemNumber, purchaseOrderApprovalSPReport.RecordType,
+                                                                                        purchaseOrderApprovalSPReport.Postatus, purchaseOrderApprovalSPReport.Approval);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrderApprovalSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderApprovalSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderApprovalSPReportWithParamForTrans([FromBody] PurchaseOrderApprovalSPReportWithParamForTransDTO purchaseOrderApprovalSPReport)
+
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderApprovalSPReportWithParamForTrans(purchaseOrderApprovalSPReport.VendorName, purchaseOrderApprovalSPReport.PONumber,
+                                                                                    purchaseOrderApprovalSPReport.ItemNumber, purchaseOrderApprovalSPReport.RecordType,
+                                                                                        purchaseOrderApprovalSPReport.Postatus, purchaseOrderApprovalSPReport.Approval,
+                                                                                        purchaseOrderApprovalSPReport.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrderApprovalSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderApprovalSPReportWithParamForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseOrderApprovalSPReportWithParamForAvision([FromBody] PurchaseOrderApprovalSPReportWithParamForTransDTO purchaseOrderApprovalSPReport)
+
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderSPReportForAvision>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderSPReportForAvision>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderApprovalSPReportWithParamForAvision(purchaseOrderApprovalSPReport.VendorName, purchaseOrderApprovalSPReport.PONumber,
+                                                                                    purchaseOrderApprovalSPReport.ItemNumber, purchaseOrderApprovalSPReport.RecordType,
+                                                                                        purchaseOrderApprovalSPReport.Postatus, purchaseOrderApprovalSPReport.Approval,
+                                                                                        purchaseOrderApprovalSPReport.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrderApprovalSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderApprovalSPReportWithParamForAvision action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetListOfOpenPOQtyByItemNoList(List<string> itemNumberList)
+        {
+            //openpurchaseorderdto
+            ServiceResponse<IEnumerable<OpenPoQuantityDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenPoQuantityDto>>();
+            try
+            {
+                var revNumberDetailsbyPONumber = await _poItemsRepository.GetListOfOpenPOQtyByItemNoList(itemNumberList);
+                var result = _mapper.Map<IEnumerable<OpenPoQuantityDto>>(revNumberDetailsbyPONumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Open PurchaseOrder Details";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside PurchaseOrderDetails action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetListOfOpenPOQtyByItemNoListByProjectNo(string projectNo, List<string> itemNumberList)
+        {
+            //openpurchaseorderdto
+            ServiceResponse<IEnumerable<OpenPoQuantityDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenPoQuantityDto>>();
+            try
+            {
+                var revNumberDetailsbyPONumber = await _poItemsRepository.GetListOfOpenPOQtyByItemNoListByProjectNo(projectNo, itemNumberList);
+                var result = _mapper.Map<IEnumerable<OpenPoQuantityDto>>(revNumberDetailsbyPONumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Open PurchaseOrder Details By ProjectNo and ItemNo List";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetListOfOpenPOQtyByItemNoListByProjectNo action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPRNumberandQtyListByItemNumber(string itemMaster)
+        {
+            ServiceResponse<IEnumerable<PRNoandQtyListDto>> serviceResponse = new ServiceResponse<IEnumerable<PRNoandQtyListDto>>();
+            try
+            {
+                var revNumberDetailsbyPONumber = await _repository.GetPRNumberandQtyListByItemNumber(itemMaster);
+                var result = _mapper.Map<IEnumerable<PRNoandQtyListDto>>(revNumberDetailsbyPONumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PRNumberandQtyList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPRNumberandQtyListByItemNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        //CoverageReport
+        //[HttpGet]
+        //public async Task<IActionResult> GetPODetailsByItemNo(string ItemNumber)
+        //{
+        //    ServiceResponse<IEnumerable<PoItem>> serviceResponse = new ServiceResponse<IEnumerable<PoItem>>();
+        //    try
+        //    {
+        //        var poItemDetails = await _poItemsRepository.GetPODetailsByItemNo(ItemNumber);
+        //        var result = _mapper.Map<IEnumerable<PoItem>>(poItemDetails);
+        //        serviceResponse.Data = result;
+        //        serviceResponse.Message = "Returned all PoDetails";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong inside GetPODetailsByItemNo action";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
+        [HttpGet]
+        public async Task<IActionResult> GetPurchaseOrderByPoNoAndRevNo(string PONumber, int revisionNumber)
+        {
+            ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
+            try
+            {
+                var purchaseOrderDetail = await _repository.GetPurchaseOrderByPONoAndRevNo(PONumber, revisionNumber);
+
+                if (purchaseOrderDetail == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder  hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrder with id: {PONumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {PONumber}");
+
+                    PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetail);
+                    List<PoItemsDto> poItemDtoList = new List<PoItemsDto>();
+
+                    //List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
+
+                    //if (purchaseOrderDto.POFiles.Count() != 0)
+                    //{
+                    //    foreach (var documentUploadDetails in purchaseOrderDto.POFiles)
+                    //    {
+                    //        DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
+                    //        documentUplaodDtoList.Add(poItemDtos);
+                    //    }
+                    //}
+                    //purchaseOrderDto.POFiles = documentUplaodDtoList;
+
+                    var poIncoTermDto = purchaseOrderDto.POIncoTerms;
+
+                    var poIncoTermsList = new List<PoIncoTermDto>();
+                    if (poIncoTermDto != null)
+                    {
+                        for (int i = 0; i < poIncoTermDto.Count; i++)
+                        {
+                            PoIncoTermDto poIncoTermDetails = _mapper.Map<PoIncoTermDto>(poIncoTermDto[i]);
+                            poIncoTermsList.Add(poIncoTermDetails);
+                        }
+                    }
+                    purchaseOrderDto.POIncoTerms = poIncoTermsList;
+
+                    if (purchaseOrderDetail.POItems != null)
+                    {
+                        foreach (var poItemDetails in purchaseOrderDetail.POItems)
+                        {
+                            PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
+                            poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
+                            poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
+                            poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
+                            poItemDtos.POConfirmationDates = _mapper.Map<List<PoConfirmationDateDto>>(poItemDetails.POConfirmationDates);
+                            poItemDtos.PrDetails = _mapper.Map<List<PrDetailsDto>>(poItemDetails.PrDetails);
+                            poItemDtoList.Add(poItemDtos);
+                        }
+                    }
+
+                    purchaseOrderDto.POItems = poItemDtoList;
+                    serviceResponse.Data = purchaseOrderDto;
+                    serviceResponse.Message = "Returned PurchaseOrderByPONoAndRevNo Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetPurchaseOrderByPoNoAndRevNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetPurchaseOrderById(int id)
         {
             ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
             try
             {
-                var purchaseOrderDetails = await _repository.GetPurchaseOrderById(id);
+                var purchaseOrderDetailbyId = await _repository.GetPurchaseOrderById(id);
 
-                if (purchaseOrderDetails == null)
+                if (purchaseOrderDetailbyId == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"PurchaseOrder  hasn't been found in db.";
+                    serviceResponse.Message = $"PurchaseOrder  hasn't been found";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"PurchaseOrder with id: {id}, hasn't been found in db.");
@@ -86,19 +1152,58 @@ namespace Tips.Purchase.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
-                    PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetails);
-                    List<PoItemsDto> poItemsDtoList = new List<PoItemsDto>();
-                    foreach (var itemDetails in purchaseOrderDetails.PoItemList)
+
+                    PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetailbyId);
+                    List<PoItemsDto> poItemDtoList = new List<PoItemsDto>();
+
+                    //List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
+
+                    //if (purchaseOrderDto.POFiles.Count() != 0)
+                    //{
+                    //    foreach (var documentUploadDetails in purchaseOrderDto.POFiles)
+                    //    {
+                    //        DocumentUploadDto poItemDtos = _mapper.Map<DocumentUploadDto>(documentUploadDetails);
+                    //        documentUplaodDtoList.Add(poItemDtos);
+                    //    }
+                    //}
+                    //purchaseOrderDto.POFiles = documentUplaodDtoList;
+
+                    var poIncoTermDto = purchaseOrderDto.POIncoTerms;
+
+                    var poIncoTermsList = new List<PoIncoTermDto>();
+                    if (poIncoTermDto != null)
                     {
-                        PoItemsDto poItemsDtos = _mapper.Map<PoItemsDto>(itemDetails);
-                        poItemsDtos.PoAddprojectsDtoList = _mapper.Map<List<PoAddProjectDto>>(itemDetails.PoAddprojects);
-                        poItemsDtos.PoAddDeliverySchedulesDtoList = _mapper.Map<List<PoAddDeliveryScheduleDto>>(itemDetails.PoAddDeliverySchedules);
-                        poItemsDtoList.Add(poItemsDtos);
+                        for (int i = 0; i < poIncoTermDto.Count; i++)
+                        {
+                            PoIncoTermDto poIncoTermDetails = _mapper.Map<PoIncoTermDto>(poIncoTermDto[i]);
+                            poIncoTermsList.Add(poIncoTermDetails);
+                        }
+                    }
+                    purchaseOrderDto.POIncoTerms = poIncoTermsList;
+
+                    if (purchaseOrderDetailbyId.POItems != null)
+                    {
+                        foreach (var poItemDetails in purchaseOrderDetailbyId.POItems)
+                        {
+                            PoItemsDto poItemDtos = _mapper.Map<PoItemsDto>(poItemDetails);
+
+                            var poItemHistoryReceivedQty = await _poItemHistoryRepository.GetPoItemHistoryDetailsByPoItemId(poItemDtos.PONumber, poItemDtos.ItemNumber);
+                            if (poItemHistoryReceivedQty != null)
+                            {
+                                poItemDtos.ShortClosedQty = poItemHistoryReceivedQty.Sum(x => x.ShortClosedQty);
+                            }
+                            poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
+                            poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
+                            poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
+                            poItemDtos.POConfirmationDates = _mapper.Map<List<PoConfirmationDateDto>>(poItemDetails.POConfirmationDates);
+                            poItemDtos.PrDetails = _mapper.Map<List<PrDetailsDto>>(poItemDetails.PrDetails);
+                            poItemDtoList.Add(poItemDtos);
+                        }
                     }
 
-                    purchaseOrderDto.PoItemsDtoList = poItemsDtoList;     
+                    purchaseOrderDto.POItems = poItemDtoList;
                     serviceResponse.Data = purchaseOrderDto;
-                    serviceResponse.Message = "Returned PurchaseOrder";
+                    serviceResponse.Message = "Returned PurchaseOrderById Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -115,17 +1220,272 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-        // POST api/<PurchaseOrderController>
+        //Edit upload update document apoi
+
+
+        //[HttpPost]
+        //public async Task<IActionResult> UploadDocument([FromBody] List<UploadDocumentDto> uploadDocumentDto)
+        //{
+        //    ServiceResponse<UploadDocumentDto> serviceResponse = new ServiceResponse<UploadDocumentDto>();
+        //    try
+        //    {
+        //        if (uploadDocumentDto is null)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "PurchaseOrder UploadDocument object is null.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            _logger.LogError("PurchaseOrder UploadDocument sent from client is null.");
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid PurchaseOrder UploadDocument.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            _logger.LogError("Invalid PurchaseOrder UploadDocument sent from client.");
+        //            return BadRequest(serviceResponse);
+        //        }
+
+        //        //var uploadDocumentDetails = _mapper.Map<DocumentUpload>(uploadDocumentDto);
+        //        //var uploadDocumentDtoList = new List<UploadDocumentDto>();
+
+        //        foreach (var poUploadDetail in uploadDocumentDto)
+        //        {
+        //            var fileContent = poUploadDetail.FileByte;
+        //            var poNumber = poUploadDetail.ParentNumber;
+        //            string fileName = poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
+        //            string FileExt = Path.GetExtension(fileName).ToUpper();
+
+        //            Guid guid = Guid.NewGuid();
+        //            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", /*guid.ToString() + "_" */ fileName);
+        //            using (MemoryStream ms = new MemoryStream(fileContent))
+        //            {
+        //                ms.Position = 0;
+        //                using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+        //                {
+        //                    ms.WriteTo(fileStream);
+        //                }
+
+        //                var uploadedFile = new DocumentUpload
+        //                {
+        //                    FileName = fileName,
+        //                    FileExtension = FileExt,
+        //                    FilePath = filePath,
+        //                    ParentNumber = poNumber,
+        //                    DocumentFrom = "PODocument",
+
+        //                    //PurchaseOrder = poUploadDetail.PurchaseOrder,
+
+        //                };
+        //                var poUploadDoc = _mapper.Map<DocumentUpload>(uploadedFile);
+
+        //                await _documentUploadRepository.CreateUploadDocumentPO(poUploadDoc);
+        //                _documentUploadRepository.SaveAsync();
+
+        //            }
+        //        }
+
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = " UploadDocument Successfully Created";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside UploadDocument action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong ,try again";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
+
+        //image get api
         [HttpPost]
-        public async Task<IActionResult> CreatePurchaseOrder([FromBody] PurchaseOrderDtoPost purchaseOrderDtoPost)
+
+        public async Task<IActionResult> getUploadedFile([FromBody] string fileName)
         {
-            ServiceResponse<PurchaseOrderDtoPost> serviceResponse = new ServiceResponse<PurchaseOrderDtoPost>();
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", fileName);
+            string FileExt = Path.GetExtension(fileName).ToUpper();
+            if (System.IO.File.Exists(filePath))
+            {
+                byte[] a = System.IO.File.ReadAllBytes(filePath);
+                return File(a, "image/" + FileExt);
+            }
+            return null;
+        }
+
+        //getponumber by vendorid
+
+        [HttpGet("{vendorId}")]
+        public async Task<IActionResult> GetAllPoNumberListByVendorId(string vendorId)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
             try
             {
-                if (purchaseOrderDtoPost is null)
+                var pONumberDetailsbyVendorId = await _repository.GetAllPONumberListByVendorId(vendorId);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PONumberListId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllPONumberListByVendorId action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("{vendorId}")]
+        public async Task<IActionResult> GetAllServicePoNumberListByVendorId(string vendorId)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pONumberDetailsbyVendorId = await _repository.GetAllServicePoNumberListByVendorId(vendorId);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ServicePONumberListId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllServicePONumberListByVendorId action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("{vendorId}")]
+        public async Task<IActionResult> GetAllNonServicePoNumberListByVendorId(string vendorId)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pONumberDetailsbyVendorId = await _repository.GetAllNonServicePoNumberListByVendorId(vendorId);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all NonServicePONumberListId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllNonServicePONumberListByVendorId action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("{vendorId}")]
+        public async Task<IActionResult> GetAllServicePoNumberListByVendorIdForAvision(string vendorId)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pONumberDetailsbyVendorId = await _repository.GetAllServicePoNumberListByVendorIdForAvision(vendorId);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ServicePONumberListId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllServicePoNumberListByVendorIdForAvision action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("{vendorId}")]
+        public async Task<IActionResult> GetAllNonServicePoNumberListByVendorIdForAvision(string vendorId)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pONumberDetailsbyVendorId = await _repository.GetAllNonServicePoNumberListByVendorIdForAvision(vendorId);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all NonServicePONumberListId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllNonServicePoNumberListByVendorIdForAvision action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("{vendorId}")]
+        public async Task<IActionResult> GetAllPoNumberListByVendorIdForAvision(string vendorId)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pONumberDetailsbyVendorId = await _repository.GetAllPoNumberListByVendorIdForAvision(vendorId);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PONumberListId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllPoNumberListByVendorIdForAvision action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        //amount in words
+        private string GetTotalValueInWords(decimal totalValue)
+        {
+            RupeesToWords a = new RupeesToWords();
+            string totalValueInWords = a.words(Convert.ToDouble(totalValue), true);
+            return totalValueInWords;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreatePurchaseOrder([FromBody] PurchaseOrderPostDto purchaseOrderPostDto)
+        {
+            ServiceResponse<PurchaseOrderPostDto> serviceResponse = new ServiceResponse<PurchaseOrderPostDto>();
+            try
+            {
+                string serverKey = GetServerKey();
+
+                if (purchaseOrderPostDto is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "PurchaseOrder object sent from client is null.";
+                    serviceResponse.Message = "PurchaseOrder object is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("PurchaseOrder object sent from client is null.");
@@ -134,28 +1494,195 @@ namespace Tips.Purchase.Api.Controllers
                 if (!ModelState.IsValid)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid PurchaseOrder object sent from client.";
+                    serviceResponse.Message = "Invalid PurchaseOrder object.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid PurchaseOrder object sent from client.");
                     return BadRequest(serviceResponse);
                 }
 
-                var purchaseOrder = _mapper.Map<PurchaseOrder>(purchaseOrderDtoPost);
-                var itemsDto = purchaseOrderDtoPost.PoItemsDtoPostList;
-                var itemsDtoList = new List<PoItem>();
-                for(int i=0;i< itemsDto.Count;i++)
-                {
-                    PoItem poItemsDetails=_mapper.Map<PoItem>(itemsDto[i]);
-                    poItemsDetails.PoAddprojects = _mapper.Map<List<PoAddProject>>(itemsDto[i].PoAddprojectsDtoPostList);
-                    poItemsDetails.PoAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(itemsDto[i].PoAddDeliverySchedulesDtoPostList);
-                    
-                    itemsDtoList.Add(poItemsDetails);
-                }
-                purchaseOrder.PoItemList=itemsDtoList;
+                var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderPostDto);
+                var AmountInWords = GetTotalValueInWords(purchaseOrderDetails.TotalAmount);
+                purchaseOrderDetails.AmountInWords = AmountInWords;
+                var poItemDto = purchaseOrderPostDto.POItems;
+                var prDetailsPostDto = poItemDto[0].PrDetails;
+                var poFile = purchaseOrderPostDto.POFiles;
+                var poItemDtoList = new List<PoItem>();
+                var poIncoTermList = _mapper.Map<IEnumerable<PoIncoTerm>>(purchaseOrderPostDto.POIncoTerms);
 
-                await _repository.CreatePurchaseOrder(purchaseOrder);
+                var date = DateTime.Now;
+                purchaseOrderPostDto.QuotationDate = date;
+                var days = Convert.ToString(date.Day.ToString("D2"));
+                var months = Convert.ToString(date.Month.ToString("D2"));
+                var years = Convert.ToString(date.ToString("yy"));
+                if (serverKey == "avision")
+                {
+                    var poNum = await _repository.GeneratePONumberForAvision();
+                    purchaseOrderDetails.PONumber = poNum;
+                }
+                else
+                {
+                    var dateFormat = days + months + years;
+                    var poNumber = await _repository.GeneratePONumber();
+                    purchaseOrderDetails.PONumber = dateFormat + poNumber;
+                }
+                if (poItemDto != null)
+                {
+                    for (int i = 0; i < poItemDto.Count; i++)
+                    {
+                        PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+                        poItemDetails.BalanceQty = poItemDto[i].Qty;
+                        poItemDetails.PoPartsStatus = false;
+                        poItemDetails.PONumber = purchaseOrderDetails.PONumber;
+                        poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                        for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                        {
+                            PoAddProject poaddproject = poItemDetails.POAddprojects[j];
+                            poaddproject.BalanceQty = poaddproject.ProjectQty;
+                        }
+
+                        poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
+                        poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                        //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
+                        poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
+                        poItemDtoList.Add(poItemDetails);
+                    }
+                }
+
+                purchaseOrderDetails.POItems = poItemDtoList;
+                // purchaseOrderDetails.POFiles = poDocumentUploadDtoList;
+                purchaseOrderDetails.POIncoTerms = poIncoTermList.ToList();
+                await _repository.CreatePurchaseOrder(purchaseOrderDetails);
+
+
+                if (purchaseOrderPostDto.POItems != null)
+                {
+                    foreach (var pritem in purchaseOrderPostDto.POItems)
+                    {
+                        if (pritem.PrDetails != null)
+                        {
+                            foreach (var pritemdetail in pritem.PrDetails)
+                            {
+                                if (pritemdetail.PrDetailDocumentUploadPostDtos != null)
+                                {
+                                    foreach (var prDetailsDto in pritemdetail.PrDetailDocumentUploadPostDtos)
+                                    {
+                                        var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
+                                        if (prUploadDocument != null)
+                                        {
+                                            prUploadDocument.Checked = true;
+                                            await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                foreach (var poItems in poItemDtoList)
+                {
+                    foreach (var prDetails in poItems.PrDetails)
+                    {
+                        var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, poItems.ItemNumber);
+                        if (prItemDetail != null)
+                        {
+                            prItemDetail.PrStatus = PrStatus.Closed;
+                            await _purchaseRequisitionItemRepository.UpdatePrItem(prItemDetail);
+                            _purchaseRequisitionItemRepository.SaveAsync();
+                        }
+
+                        var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
+                        var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
+                        prDetail.PrStatus = prItemClosedStatusCount;
+                        await _purchaseRequisitionRepository.UpdatePurchaseRequisition_ForApproval(prDetail);
+                    }
+                }
+                _documentUploadRepository.SaveAsync();
+                _pRItemsDocumentUploadRepository.SaveAsync();
+                _purchaseRequisitionRepository.SaveAsync();
                 _repository.SaveAsync();
+                if (serverKey == "avision")
+                {
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    request.Headers.Add("Authorization", token);
+                    var response = await client.SendAsync(request);
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,CreatePurchaseOrder";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    var mails = (emaildetails1.data.Where(x => x.operation == "CreatePurchaseOrder").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                    //var mails = "accounts@avisionsystems.com";
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+                    //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    var podate = purchaseOrderDetails.PODate.ToString().Split(" ");
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
+                    email.Subject = emaildetails.data.subject;
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{PO Number}}", purchaseOrderDetails.PONumber);
+                    body = body.Replace("{{PO Revision No}}", purchaseOrderDetails.RevisionNumber.ToString());
+                    body = body.Replace("{{PO Date}}", podate[0]);
+                    body = body.Replace("{{PO Value}}", purchaseOrderDetails.TotalAmount.ToString());
+                    body = body.Replace("{{Vendor Name}}", purchaseOrderDetails.VendorName.ToString());
+                    body = body.Replace("{{Approval1}}", "Awaiting");
+                    body = body.Replace("{{Approval2}}", "Awaiting");
+                    body = body.Replace("{{Approval3}}", "Awaiting");
+                    body = body.Replace("{{Approval4}}", "Awaiting");
+                    body = body.Replace("{{PO Conf}}", "Awaiting");
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRNo = null;
+                    foreach (var item in purchaseOrderDetails.POItems)
+                    {
+
+                        if (item.POAddprojects.Count > 0)
+                            foreach (var project in item.POAddprojects)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                            }
+                        if (item.PrDetails.Count > 0)
+                            foreach (var pr in item.PrDetails)
+                            {
+                                if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                            }
+
+                    }
+                    body = body.Replace("{{Project No}}", ProjectNos);
+                    body = body.Replace("{{PR Numbers}}", PRNo);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    _logger.LogInfo($"SMTP Details:Host: {(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault())} |Port:{port} |From:{(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault())} |Password:{(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault())}");
+
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    _logger.LogInfo("Connection Successful");
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+                    _logger.LogInfo("Authenticate Successful");
+
+                    smtp.Send(email);
+                    _logger.LogInfo("Send Successful");
+
+                    smtp.Disconnect(true);
+
+                }
                 serviceResponse.Data = null;
                 serviceResponse.Message = " PurchaseOrder Successfully Created";
                 serviceResponse.Success = true;
@@ -165,7 +1692,7 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreatePurchaseOrder action: {ex.Message} {ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong ,try again";
                 serviceResponse.Success = false;
@@ -174,67 +1701,410 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-
-        // PUT api/<PurchaseOrderController>/5
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdatePurchaseOrder(int id, [FromBody] PurchaseOrderDtoUpdate purchaseOrderDtoUpdate)
+        //download file api
+        //
+        [HttpGet]
+        public async Task<ActionResult> DownloadFile(string Filename)
         {
-            ServiceResponse<PurchaseOrderDtoUpdate> serviceResponse = new ServiceResponse<PurchaseOrderDtoUpdate>();
+            ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
             try
             {
-                if (purchaseOrderDtoUpdate is null)
-                {
-                    _logger.LogError("Update PurchaseOrder object sent from client is null.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Update PurchaseOrder object sent from client is null.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(serviceResponse);
-                }
-                if (!ModelState.IsValid)
-                {
-                    _logger.LogError("Invalid Update PurchaseOrder object sent from client.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Update PurchaseOrder object sent from client.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(serviceResponse);
-                }
-                var updatePurchaseOrder = await _repository.GetPurchaseOrderById(id);
-                if (updatePurchaseOrder is null)
-                {
-                    _logger.LogError($"Update PurchaseOrder with id: {id}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update PurchaseOrder hasn't been found in db.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
-                }
 
-                var purchaseOrderList = _mapper.Map<PurchaseOrder>(updatePurchaseOrder);
-                var itemsDto = purchaseOrderDtoUpdate.PoItemsDtoUpdateList;
-                var itemsList = new List<PoItem>();
-                for (int i = 0; i < itemsDto.Count; i++)
+                var filename = Uri.UnescapeDataString(Filename);
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", filename);
+                var provider = new FileExtensionContentTypeProvider();
+                if (!provider.TryGetContentType(filePath, out var ContentType))
                 {
-                    PoItem poItemsDetails = _mapper.Map<PoItem>(itemsDto[i]);
-                    poItemsDetails.PoAddprojects = _mapper.Map<List<PoAddProject>>(itemsDto[i].PoAddprojectsDtoUpdateList);
-                    poItemsDetails.PoAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(itemsDto[i].PoAddDeliverySchedulesDtoUpdateList);  
-                    itemsList.Add(poItemsDetails);
+                    ContentType = "application/octet-stream";
                 }
-                purchaseOrderList.PoItemList = itemsList;
-                var data = _mapper.Map(purchaseOrderDtoUpdate, purchaseOrderList);
-                string result = await _repository.UpdatePurchaseOrder(data);
-                _logger.LogInfo(result);
-                _repository.SaveAsync();
+                var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+                var DownloadFilename = filename.Split('_');
+                var downloadFilename = string.IsNullOrWhiteSpace(DownloadFilename[1]) ? Path.GetFileName(filePath) : DownloadFilename[1];
+
+                return File(bytes, ContentType, downloadFilename);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DownloadFile action: {ex.Message} {ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = " PurchaseOrder Successfully Updated";
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
+
+        //public async Task<IActionResult> StageDocumentDownloadFile(int fileid)
+        //{
+        //    ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+        //    StageDocumentUpload DownloadFilesList = await _repository.StageDocumentUploadService.StageDownloadFiles(fileid);
+        //    if (DownloadFilesList == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var DownloadFilesdata = DownloadFilesList;
+        //    var stream = new FileStream(DownloadFilesdata.FilePath, FileMode.Open);
+        //    return File(stream, "application/octet-stream", DownloadFilesdata.FileName);
+        //}
+
+        [HttpGet]
+        public async Task<IActionResult> SearchPurchaseOrderDate([FromQuery] SearchDatesParams searchDateParam, PoVersion poVersion)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderReportDto>>();
+            try
+            {
+                var purchaseOrderList = await _repository.SearchPurchaseOrderDate(searchDateParam, poVersion);
+
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<PurchaseOrder, PurchaseOrderReportDto>()
+                    .ForMember(dest => dest.POIncoTerms, opt => opt.MapFrom(src => src.POIncoTerms
+                        .Select(PoIncoTerm => new PoIncoTermReportDto
+                        {
+                            Id = PoIncoTerm.Id,
+                            IncoTermName = PoIncoTerm.IncoTermName,
+                            PONumber = src.PONumber,
+                        })
+                            )
+                        );
+                    cfg.CreateMap<PoItem, PoItemsReportDto>()
+                        .ForMember(dest => dest.POAddprojects, opt => opt.MapFrom(src => src.POAddprojects
+                        .Select(PoAddProject => new PoAddProjectReportDto
+                        {
+                            Id = PoAddProject.Id,
+                            PONumber = src.PONumber,
+                            ItemNumber = src.ItemNumber,
+                            ProjectNumber = PoAddProject.ProjectNumber,
+                            ProjectQty = PoAddProject.ProjectQty,
+                            BalanceQty = PoAddProject.BalanceQty,
+                            ReceivedQty = PoAddProject.ReceivedQty
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.POAddDeliverySchedules, opt => opt.MapFrom(src => src.POAddDeliverySchedules
+                        .Select(PoAddDeliverySchedule => new PoAddDeliveryScheduleReportDto
+                        {
+                            Id = PoAddDeliverySchedule.Id,
+                            PONumber = src.PONumber,
+                            ItemNumber = src.ItemNumber,
+                            PODeliveryDate = PoAddDeliverySchedule.PODeliveryDate,
+                            PODeliveryQty = PoAddDeliverySchedule.PODeliveryQty
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.POConfirmationDates, opt => opt.MapFrom(src => src.POConfirmationDates
+                        .Select(PoConfirmationDate => new PoConfirmationDateReportDto
+                        {
+                            Id = PoConfirmationDate.Id,
+                            ConfirmationDate = PoConfirmationDate.ConfirmationDate,
+                            Qty = PoConfirmationDate.Qty
+                        })
+                        ));
+                });
+                var mapper = config.CreateMapper();
+
+                var result = mapper.Map<IEnumerable<PurchaseOrderReportDto>>(purchaseOrderList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PurchaseOrderItems";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdatePurchaseOrder action: {ex.Message}");
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetAllPurchaseOrderWithItems([FromBody] PurchaseOrderSearchDto purchaseOrderSearch, PoVersion poVersion)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderReportDto>>();
+            try
+            {
+                var purchaseOrderList = await _repository.GetAllPurchaseOrderWithItems(purchaseOrderSearch, poVersion);
+
+                _logger.LogInfo("Returned all PurhaseOrders");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<PurchaseOrderDto, PurchaseOrder>().ReverseMap()
+                //    .ForMember(dest => dest.POItems, opt => opt.MapFrom(src => src.POItems));
+                //});
+
+                //var mapper = config.CreateMapper();
+
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<PurchaseOrder, PurchaseOrderReportDto>()
+
+                        .ForMember(dest => dest.POIncoTerms, opt => opt.MapFrom(src => src.POIncoTerms
+                        .Select(PoIncoTerm => new PoIncoTermReportDto
+                        {
+                            Id = PoIncoTerm.Id,
+                            IncoTermName = PoIncoTerm.IncoTermName,
+                            PONumber = src.PONumber,
+                        })
+                            )
+                        );
+                    cfg.CreateMap<PoItem, PoItemsReportDto>()
+                        .ForMember(dest => dest.POAddprojects, opt => opt.MapFrom(src => src.POAddprojects
+                        .Select(PoAddProject => new PoAddProjectReportDto
+                        {
+                            Id = PoAddProject.Id,
+                            PONumber = src.PONumber,
+                            ItemNumber = src.ItemNumber,
+                            ProjectNumber = PoAddProject.ProjectNumber,
+                            ProjectQty = PoAddProject.ProjectQty,
+                            BalanceQty = PoAddProject.BalanceQty,
+                            ReceivedQty = PoAddProject.ReceivedQty
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.POAddDeliverySchedules, opt => opt.MapFrom(src => src.POAddDeliverySchedules
+                        .Select(PoAddDeliverySchedule => new PoAddDeliveryScheduleReportDto
+                        {
+                            Id = PoAddDeliverySchedule.Id,
+                            PONumber = src.PONumber,
+                            ItemNumber = src.ItemNumber,
+                            PODeliveryDate = PoAddDeliverySchedule.PODeliveryDate,
+                            PODeliveryQty = PoAddDeliverySchedule.PODeliveryQty
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.POConfirmationDates, opt => opt.MapFrom(src => src.POConfirmationDates
+                        .Select(PoConfirmationDate => new PoConfirmationDateReportDto
+                        {
+                            Id = PoConfirmationDate.Id,
+                            ConfirmationDate = PoConfirmationDate.ConfirmationDate,
+                            Qty = PoConfirmationDate.Qty
+                        })
+                        ));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<PurchaseOrderReportDto>>(purchaseOrderList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PurchaseOrderItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> SearchPurchaseOrder([FromQuery] SearchParamess searchParams, PoVersion poVersion)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderReportDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderReportDto>>();
+            try
+            {
+                var purchaseOrderList = await _repository.SearchPurchaseOrder(searchParams, poVersion);
+                _logger.LogInfo("Returned all PurchaseOrders");
+                //var config = new MapperConfiguration(cfg =>
+                //{
+                //    cfg.AddProfile<MappingProfile>();
+                //    cfg.CreateMap<PurchaseOrderDto, PurchaseOrder>().ReverseMap()
+                //    .ForMember(dest => dest.POItems, opt => opt.MapFrom(src => src.POItems));
+                //});
+
+                //var mapper = config.CreateMapper();
+
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.AddProfile<MappingProfile>();
+                    cfg.CreateMap<PurchaseOrder, PurchaseOrderReportDto>()
+                    .ForMember(dest => dest.POIncoTerms, opt => opt.MapFrom(src => src.POIncoTerms
+                        .Select(PoIncoTerm => new PoIncoTermReportDto
+                        {
+                            Id = PoIncoTerm.Id,
+                            IncoTermName = PoIncoTerm.IncoTermName,
+                            PONumber = src.PONumber,
+                        })
+                            )
+                        );
+
+                    cfg.CreateMap<PoItem, PoItemsReportDto>()
+                        .ForMember(dest => dest.POAddprojects, opt => opt.MapFrom(src => src.POAddprojects
+                        .Select(PoAddProject => new PoAddProjectReportDto
+                        {
+                            Id = PoAddProject.Id,
+                            PONumber = src.PONumber,
+                            ItemNumber = src.ItemNumber,
+                            ProjectNumber = PoAddProject.ProjectNumber,
+                            ProjectQty = PoAddProject.ProjectQty,
+                            BalanceQty = PoAddProject.BalanceQty,
+                            ReceivedQty = PoAddProject.ReceivedQty
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.POAddDeliverySchedules, opt => opt.MapFrom(src => src.POAddDeliverySchedules
+                        .Select(PoAddDeliverySchedule => new PoAddDeliveryScheduleReportDto
+                        {
+                            Id = PoAddDeliverySchedule.Id,
+                            PONumber = src.PONumber,
+                            ItemNumber = src.ItemNumber,
+                            PODeliveryDate = PoAddDeliverySchedule.PODeliveryDate,
+                            PODeliveryQty = PoAddDeliverySchedule.PODeliveryQty
+                        })
+                            )
+                        )
+                        .ForMember(dest => dest.POConfirmationDates, opt => opt.MapFrom(src => src.POConfirmationDates
+                        .Select(PoConfirmationDate => new PoConfirmationDateReportDto
+                        {
+                            Id = PoConfirmationDate.Id,
+                            ConfirmationDate = PoConfirmationDate.ConfirmationDate,
+                            Qty = PoConfirmationDate.Qty
+                        })
+                        ));
+                });
+                var mapper = config.CreateMapper();
+                var result = mapper.Map<IEnumerable<PurchaseOrderReportDto>>(purchaseOrderList);
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PurchaseOrderItems";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("{filename}")]
+        public IActionResult DownloadFiles(string filename)
+        {
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", filename);
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                return NotFound();
+            }
+
+            try
+            {
+                var downloadUrl = $"{Request.Scheme}://{Request.Host}/api/PurchaseOrder/DownloadFile?Filename={filename}";
+
+                return Ok(new { FilePath = filePath, DownloadUrl = downloadUrl });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        //update uploaded files
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePOUploadDocument([FromBody] List<DocumentUploadPostDto> uploadDocumentDto)
+        {
+            ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
+            try
+            {
+                if (uploadDocumentDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "PurchaseOrder UploadDocument object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("PurchaseOrder UploadDocument sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseOrder UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseOrder UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<string>? id_s = new List<string>();
+                foreach (var poUploadDetail in uploadDocumentDto)
+                {
+                    Guid guid = Guid.NewGuid();
+                    var fileContent = poUploadDetail.FileByte;
+                    byte[] imageContent = Convert.FromBase64String(poUploadDetail.FileByte);
+                    string fileName = guid.ToString() + "_" + poUploadDetail.FileName + "." + poUploadDetail.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", fileName);
+                    using (MemoryStream ms = new MemoryStream(imageContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+
+                        var uploadedFile = new DocumentUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            ParentNumber = "Purchase Order",
+                            //PurchaseOrderId = Id,
+                            DocumentFrom = "PODocument",
+
+                        };
+                        //var poUploadDoc = _mapper.Map<DocumentUpload>(uploadedFile);
+
+                        await _documentUploadRepository.CreateUploadDocumentPO(uploadedFile);
+                        _documentUploadRepository.SaveAsync();
+
+                        id_s.Add(uploadedFile.Id.ToString());
+                    }
+                }
+
+                serviceResponse.Data = id_s;
+                serviceResponse.Message = " POUploadDocument Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdatePOUploadDocument action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong ,try again";
                 serviceResponse.Success = false;
@@ -243,24 +2113,847 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-        // DELETE api/<CompanyMasterController>/5
+        //delete uploaded file
+
+        [HttpDelete]
+        public async Task<IActionResult> DeletePOUploadDocument(int id)
+        {
+            ServiceResponse<IEnumerable<DocumentUploadDto>> serviceResponse = new ServiceResponse<IEnumerable<DocumentUploadDto>>();
+
+            try
+            {
+                var documentUploadDetails = await _documentUploadRepository.GetUploadDocById(id);
+                var fileName = documentUploadDetails.FileName;
+                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "PODocument", /*guid.ToString() + "_" */ fileName);
+                if (System.IO.File.Exists(filePath))
+                {
+                    System.IO.File.Delete(filePath);
+                    string result = await _documentUploadRepository.DeleteUploadFile(documentUploadDetails);
+                    _logger.LogInfo(result);
+                    _documentUploadRepository.SaveAsync();
+
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = " UploadDocument Deleted Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogError($"Given UploadDocument file is doesn't exist");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Given UploadDocument file is doesn't exist";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateUploadDocument action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDownloadUrlDetails(string poNumber)
+        {
+            ServiceResponse<IEnumerable<GetDownloadUrlDto>> serviceResponse = new ServiceResponse<IEnumerable<GetDownloadUrlDto>>();
+
+            try
+            {
+                string serverKey = GetServerKey();
+
+                var getDownloadDetailByPoNumber = await _repository.GetDownloadUrlDetails(poNumber);
+
+                if (getDownloadDetailByPoNumber.Count() == 0)
+                {
+                    _logger.LogError($"DownloadDetail with id: {poNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {poNumber}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseOrder UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseOrder UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<GetDownloadUrlDto> downloadUrls = new List<GetDownloadUrlDto>();
+                if (getDownloadDetailByPoNumber != null)
+                {
+                    foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
+                    {
+                        GetDownloadUrlDto downloadUrlDto = _mapper.Map<GetDownloadUrlDto>(getDownloadUrlByFilename);
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["PurchaseBaseUrl"]}";
+                            downloadUrlDto.DownloadUrl = $"{baseUrl}/apigateway/tips/PurchaseOrder/DownloadFile?Filename={downloadUrlDto.FileName}";
+                        }
+                        else
+                        {
+                            var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
+                            downloadUrlDto.DownloadUrl = $"{baseUrl}/api/PurchaseOrder/DownloadFile?Filename={downloadUrlDto.FileName}";
+
+                        }
+                        downloadUrls.Add(downloadUrlDto);
+                    }
+                }
+                _logger.LogInfo($"Returned DownloadDetail with id: {poNumber}");
+                //var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(getDownloadDetailByPoNumber);
+                serviceResponse.Data = downloadUrls;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside PoFiles action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetDownloadUrlDetails_PoFiles(string FileIds)
+        {
+            ServiceResponse<IEnumerable<GetDownloadUrlDto>> serviceResponse = new ServiceResponse<IEnumerable<GetDownloadUrlDto>>();
+
+            try
+            {
+                string serverKey = GetServerKey();
+
+                var getDownloadDetailByPoNumber = await _repository.GetDownloadUrlPoDetails(FileIds);
+
+                if (getDownloadDetailByPoNumber.Count() == 0)
+                {
+                    _logger.LogError($"DownloadDetail with id: {FileIds}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {FileIds}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseRequisition UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseRequisition UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<GetDownloadUrlDto> downloadUrls = new List<GetDownloadUrlDto>();
+                if (getDownloadDetailByPoNumber != null)
+                {
+                    foreach (var getDownloadUrlByFilename in getDownloadDetailByPoNumber)
+                    {
+                        GetDownloadUrlDto downloadUrlDto = _mapper.Map<GetDownloadUrlDto>(getDownloadUrlByFilename);
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["PurchaseBaseUrl"]}";
+                            downloadUrlDto.DownloadUrl = $"{baseUrl}/apigateway/tips/PurchaseOrder/DownloadFile?Filename={Uri.EscapeDataString(downloadUrlDto.FileName)}";
+                        }
+                        else
+                        {
+                            var baseUrl = $"{Request.Scheme}://{_config["PurchaseBaseUrl"]}";
+                            downloadUrlDto.DownloadUrl = $"{baseUrl}/api/PurchaseOrder/DownloadFile?Filename={Uri.EscapeDataString(downloadUrlDto.FileName)}";
+                        }
+                        downloadUrls.Add(downloadUrlDto);
+                    }
+                }
+                _logger.LogInfo($"Returned DownloadDetail with id: {FileIds}");
+                //var result = _mapper.Map<IEnumerable<GetDownloadUrlDto>>(getDownloadDetailByPoNumber);
+                serviceResponse.Data = downloadUrls;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside PRFiles action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdatePurchaseOrder([FromBody] PurchaseOrderUpdateDto purchaseOrderUpdateDto)
+        {
+            ServiceResponse<PurchaseOrderPostDto> serviceResponse = new ServiceResponse<PurchaseOrderPostDto>();
+            try
+            {
+                string serverKey = GetServerKey();
+                if (purchaseOrderUpdateDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "PurchaseOrder object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("PurchaseOrder object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseOrder object.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseOrder object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+
+                var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderUpdateDto);
+                var AmountInWords = GetTotalValueInWords(purchaseOrderDetails.TotalAmount);
+                purchaseOrderDetails.AmountInWords = AmountInWords;
+                var poItemDto = purchaseOrderUpdateDto.POItems;
+                var poItemDtoList = new List<PoItem>();
+                var poIncoTermDto = purchaseOrderUpdateDto.POIncoTerms;
+                var poIncoTermsList = new List<PoIncoTerm>();
+
+                if (poIncoTermDto != null)
+                {
+                    for (int i = 0; i < poIncoTermDto.Count; i++)
+                    {
+                        PoIncoTerm poIncoTermDetails = _mapper.Map<PoIncoTerm>(poIncoTermDto[i]);
+                        poIncoTermsList.Add(poIncoTermDetails);
+                    }
+                }
+                purchaseOrderDetails.POIncoTerms = poIncoTermsList;
+
+                if (poItemDto != null)
+                {
+                    for (int i = 0; i < poItemDto.Count; i++)
+                    {
+                        PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+                        poItemDetails.BalanceQty = poItemDto[i].Qty;
+                        poItemDetails.PoPartsStatus = false;
+                        poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                        for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                        {
+                            PoAddProject poaddproject = poItemDetails.POAddprojects[j];
+                            poaddproject.BalanceQty = poaddproject.ProjectQty;
+                        }
+
+                        poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
+                        poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                        poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
+                        poItemDetails.PONumber = purchaseOrderUpdateDto.PONumber;
+                        poItemDtoList.Add(poItemDetails);
+                    }
+                }
+
+                purchaseOrderDetails.POItems = poItemDtoList;
+                await _repository.ChangePurchaseOrderVersion(purchaseOrderDetails);
+
+                if (purchaseOrderUpdateDto.POItems != null)
+                {
+                    foreach (var pritem in purchaseOrderUpdateDto.POItems)
+                    {
+                        if (pritem.PrDetails != null)
+                        {
+                            foreach (var pritemdetail in pritem.PrDetails)
+                            {
+                                if (pritemdetail.PrDetailDocumentUploadUpdateDtos != null)
+                                {
+                                    foreach (var prDetailsDto in pritemdetail.PrDetailDocumentUploadUpdateDtos)
+                                    {
+                                        var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
+                                        if (prUploadDocument != null)
+                                        {
+                                            prUploadDocument.Checked = true;
+                                            await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
+                                        }
+
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (poItemDtoList != null)
+                {
+                    foreach (var poItems in poItemDtoList)
+                    {
+                        if (poItems.PrDetails != null)
+                        {
+                            foreach (var prDetails in poItems.PrDetails)
+                            {
+                                var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, poItems.ItemNumber);
+                                if (prItemDetail != null)
+                                {
+                                    prItemDetail.PrStatus = PrStatus.Closed;
+                                    await _purchaseRequisitionItemRepository.UpdatePrItem(prItemDetail);
+                                    _purchaseRequisitionItemRepository.SaveAsync();
+                                }
+
+                                var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
+                                if (prItemClosedStatusCount == 0)
+                                {
+                                    var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
+                                    prDetail.PrStatus = PrStatus.Closed;
+                                    await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
+
+                                }
+                            }
+                        }
+                    }
+                }
+
+                _repository.SaveAsync();
+                _pRItemsDocumentUploadRepository.SaveAsync();
+                _purchaseRequisitionRepository.SaveAsync();
+
+                if (serverKey == "avision")
+                {
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
+                           "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    request.Headers.Add("Authorization", token);
+
+                    var response = await client.SendAsync(request);
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,CreatePurchaseOrder";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    //var mails = "accounts@avisionsystems.com";
+                    var mails = (emaildetails1.data.Where(x => x.operation == "CreatePurchaseOrder").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                    //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    var podate = purchaseOrderDetails.PODate.ToString().Split(" ");
+                    //email.To.Add(MailboxAddress.Parse(mails));
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
+                    email.Subject = "Purchase Order Modified Notification";
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{PO Number}}", purchaseOrderDetails.PONumber);
+                    body = body.Replace("{{PO Revision No}}", purchaseOrderDetails.RevisionNumber.ToString());
+                    body = body.Replace("{{PO Date}}", podate[0]);
+                    body = body.Replace("{{PO Value}}", purchaseOrderDetails.TotalAmount.ToString());
+                    body = body.Replace("{{Vendor Name}}", purchaseOrderDetails.VendorName.ToString());
+                    body = body.Replace("{{Approval1}}", "Awaiting");
+                    body = body.Replace("{{Approval2}}", "Awaiting");
+                    body = body.Replace("{{Approval3}}", "Awaiting");
+                    body = body.Replace("{{Approval4}}", "Awaiting");
+                    body = body.Replace("{{PO Conf}}", "Awaiting");
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRNo = null;
+                    foreach (var item in purchaseOrderDetails.POItems)
+                    {
+
+                        if (item.POAddprojects.Count > 0)
+                            foreach (var project in item.POAddprojects)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                            }
+                        if (item.PrDetails.Count > 0)
+                            foreach (var pr in item.PrDetails)
+                            {
+                                if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                            }
+
+                    }
+                    body = body.Replace("{{Project No}}", ProjectNos);
+                    body = body.Replace("{{PR Numbers}}", PRNo);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+                    //smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                    //smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+
+                }
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = " PurchaseOrder Successfully Updated";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateurchaseOrder action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> ShortCloseForPurchaseOrder([FromBody] PurchaseOrderForShortCloseDto purchaseOrderUpdateDto)
+        {
+            ServiceResponse<PurchaseOrderPostDto> serviceResponse = new ServiceResponse<PurchaseOrderPostDto>();
+            try
+            {
+                string serverKey = GetServerKey();
+                if (purchaseOrderUpdateDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "PurchaseOrder object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("PurchaseOrder object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseOrder object.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseOrder object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var poDetailBeforeUpdate = await _repository.GetPurchaseOrderById(purchaseOrderUpdateDto.Id);
+
+                if (poDetailBeforeUpdate is null)
+                {
+                    _logger.LogError($"ShortClose SalesOrder with id: {poDetailBeforeUpdate.Id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Update SalesOrder hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderUpdateDto);
+                var AmountInWords = GetTotalValueInWords(purchaseOrderDetails.TotalAmount);
+                purchaseOrderDetails.AmountInWords = AmountInWords;
+                var poItemDto = purchaseOrderUpdateDto.POItems;
+                var poItemDtoList = new List<PoItem>();
+                var poIncoTermDto = purchaseOrderUpdateDto.POIncoTerms;
+                var poIncoTermsList = new List<PoIncoTerm>();
+
+                if (poIncoTermDto != null)
+                {
+                    for (int i = 0; i < poIncoTermDto.Count; i++)
+                    {
+                        PoIncoTerm poIncoTermDetails = _mapper.Map<PoIncoTerm>(poIncoTermDto[i]);
+                        poIncoTermsList.Add(poIncoTermDetails);
+                    }
+                }
+
+                if (poItemDto != null)
+                {
+                    for (int i = 0; i < poItemDto.Count; i++)
+                    {
+                        PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+
+                        if (poItemDto[i].NowShortClosed == true)
+                        {
+                            poItemDetails.ShortClosedBy = _createdBy;
+                            poItemDetails.ShortClosedOn = DateTime.Now;
+                            PoItemHistory poItemHistory = new PoItemHistory();
+                            poItemHistory.PONumber = poDetailBeforeUpdate.PONumber;
+                            poItemHistory.PODate = poDetailBeforeUpdate.PODate;
+                            poItemHistory.PoStatus = poDetailBeforeUpdate.PoStatus;
+                            poItemHistory.RevisionNumber = poDetailBeforeUpdate.RevisionNumber;
+                            poItemHistory.BillToId = poDetailBeforeUpdate.BillToId;
+                            poItemHistory.ShipToId = poDetailBeforeUpdate.ShipToId;
+                            poItemHistory.ProcurementType = poDetailBeforeUpdate.ProcurementType;
+                            poItemHistory.Currency = poDetailBeforeUpdate.Currency;
+                            poItemHistory.CompanyAliasName = poDetailBeforeUpdate.CompanyAliasName;
+                            poItemHistory.PoConfirmationStatus = poDetailBeforeUpdate.PoConfirmationStatus;
+                            poItemHistory.Transports = poDetailBeforeUpdate.Transports;
+                            poItemHistory.Other = poDetailBeforeUpdate.Other;
+                            poItemHistory.VendorName = poDetailBeforeUpdate.VendorName;
+                            poItemHistory.VendorId = poDetailBeforeUpdate.VendorId;
+                            poItemHistory.VendorNumber = poDetailBeforeUpdate.VendorNumber;
+                            poItemHistory.QuotationReferenceNumber = poDetailBeforeUpdate.QuotationReferenceNumber;
+                            poItemHistory.QuotationDate = poDetailBeforeUpdate.QuotationDate;
+                            poItemHistory.VendorAddress = poDetailBeforeUpdate.VendorAddress;
+                            poItemHistory.DeliveryTerms = poDetailBeforeUpdate.DeliveryTerms;
+                            poItemHistory.PaymentTerms = poDetailBeforeUpdate.PaymentTerms;
+                            poItemHistory.ShippingMode = poDetailBeforeUpdate.ShippingMode;
+                            poItemHistory.ShipTo = poDetailBeforeUpdate.ShipTo;
+                            poItemHistory.BillTo = poDetailBeforeUpdate.BillTo;
+                            poItemHistory.POFiles = poDetailBeforeUpdate.POFiles;
+                            poItemHistory.RetentionPeriod = poDetailBeforeUpdate.RetentionPeriod;
+                            poItemHistory.SpecialTermsAndConditions = poDetailBeforeUpdate.SpecialTermsAndConditions;
+                            poItemHistory.IsDeleted = poDetailBeforeUpdate.IsDeleted;
+                            poItemHistory.IsShortClosed = purchaseOrderDetails.IsShortClosed;
+                            poItemHistory.ShortClosedBy = poItemDetails.ShortClosedBy;
+                            poItemHistory.ShortClosedOn = poItemDetails.ShortClosedOn;
+                            poItemHistory.TotalAmount = poDetailBeforeUpdate.TotalAmount;
+                            poItemHistory.POApprovalI = poDetailBeforeUpdate.POApprovalI;
+                            poItemHistory.POApprovedIDate = poDetailBeforeUpdate.POApprovedIDate;
+                            poItemHistory.POApprovedIBy = poDetailBeforeUpdate.POApprovedIBy;
+                            poItemHistory.POApprovalII = poDetailBeforeUpdate.POApprovalII;
+                            poItemHistory.POApprovedIIDate = poDetailBeforeUpdate.POApprovedIIDate;
+                            poItemHistory.POApprovedIIBy = poDetailBeforeUpdate.POApprovedIIBy;
+                            poItemHistory.POApprovalIII = poDetailBeforeUpdate.POApprovalIII;
+                            poItemHistory.POApprovedIIIDate = poDetailBeforeUpdate.POApprovedIIIDate;
+                            poItemHistory.POApprovedIIIBy = poDetailBeforeUpdate.POApprovedIIIBy;
+                            poItemHistory.POApprovalIV = poDetailBeforeUpdate.POApprovalIV;
+                            poItemHistory.POApprovedIVDate = poDetailBeforeUpdate.POApprovedIVDate;
+                            poItemHistory.POApprovedIVBy = poDetailBeforeUpdate.POApprovedIVBy;
+                            poItemHistory.ApprovalCount = poDetailBeforeUpdate.ApprovalCount;
+                            poItemHistory.Unit = poDetailBeforeUpdate.Unit;
+                            poItemHistory.PoItemId = poItemDetails.Id;
+                            poItemHistory.ItemNumber = poItemDetails.ItemNumber;
+                            poItemHistory.MftrItemNumber = poItemDetails.MftrItemNumber;
+                            poItemHistory.Description = poItemDetails.Description;
+                            poItemHistory.UOM = poItemDetails.UOM;
+                            poItemHistory.UnitPrice = poItemDetails.UnitPrice;
+                            poItemHistory.Qty = poItemDetails.Qty;
+                            poItemHistory.BalanceQty = poItemDetails.BalanceQty;
+                            poItemHistory.ReceivedQty = poItemDetails.ReceivedQty;
+                            poItemHistory.PartType = poItemDetails.PartType;
+                            poItemHistory.SpecialInstruction = poItemDetails.SpecialInstruction;
+                            poItemHistory.IsTechnicalDocsRequired = poItemDetails.IsTechnicalDocsRequired;
+                            poItemHistory.PoPartsStatus = poItemDetails.PoPartsStatus;
+                            poItemHistory.SGST = poItemDetails.SGST;
+                            poItemHistory.CGST = poItemDetails.CGST;
+                            poItemHistory.IGST = poItemDetails.IGST;
+                            poItemHistory.UTGST = poItemDetails.UTGST;
+                            poItemHistory.SubTotal = poItemDetails.SubTotal;
+                            poItemHistory.TotalWithTax = poItemDetails.TotalWithTax;
+                            poItemHistory.ShortClosedBy = poItemDto[i].ShortClosedBy;
+                            poItemHistory.ShortClosedOn = poItemDto[i].ShortClosedOn;
+                            poItemHistory.CreatedBy = poItemDetails.CreatedBy;
+                            poItemHistory.CreatedOn = poItemDetails.CreatedOn;
+                            poItemHistory.LastModifiedBy = poItemDetails.LastModifiedBy;
+                            poItemHistory.LastModifiedOn = poItemDetails.LastModifiedOn;
+                            poItemHistory.PoItemStatus = poItemDetails.PoStatus;
+                            poItemHistory.ReasonforShortClose = poItemDetails.ReasonforShortClose;
+                            poItemHistory.Remarks = poItemDetails.Remarks;
+                            poItemHistory.PurchaseOrderId = poItemDetails.PurchaseOrderId;
+                            poItemHistory.ShortClosedQty = poItemDto[i].ShortClosedQty;
+
+                            await _poItemHistoryRepository.CreatePoItemHistory(poItemHistory);
+                        }
+
+                        poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                        for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                        {
+                            PoAddProject poaddproject = poItemDetails.POAddprojects[j];
+                            poaddproject.BalanceQty = poaddproject.ProjectQty;
+                        }
+
+                        poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
+                        poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                        poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
+                        poItemDetails.PONumber = purchaseOrderUpdateDto.PONumber;
+                        poItemDtoList.Add(poItemDetails);
+                    }
+                }
+
+                if (purchaseOrderUpdateDto.POItems != null)
+                {
+                    foreach (var pritem in purchaseOrderUpdateDto.POItems)
+                    {
+                        if (pritem.PrDetails != null)
+                        {
+                            foreach (var pritemdetail in pritem.PrDetails)
+                            {
+                                if (pritemdetail.PrDetailDocumentUploadUpdateDtos != null)
+                                {
+                                    foreach (var prDetailsDto in pritemdetail.PrDetailDocumentUploadUpdateDtos)
+                                    {
+                                        var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
+                                        if (prUploadDocument != null)
+                                        {
+                                            prUploadDocument.Checked = true;
+                                            await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
+                                        }
+
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                var updateData = _mapper.Map(purchaseOrderUpdateDto, poDetailBeforeUpdate);
+                updateData.POItems = poItemDtoList;
+                updateData.POIncoTerms = poIncoTermsList;
+                await _repository.UpdatePurchaseOrder_ForApproval(updateData);
+                _repository.SaveAsync();
+                _poItemHistoryRepository.SaveAsync();
+                _pRItemsDocumentUploadRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = " PurchaseOrder ShortClosed Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ShortCloseForPurchaseOrder action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        //pass data from grin using _httpclient service to purchase
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateBalanceQtyDetails([FromBody] List<PurchaseOrderUpdateQtyDetailsDto> purchaseOrderUpdateQtyDetails)
+        {
+            foreach (var item in purchaseOrderUpdateQtyDetails)
+            {
+                IEnumerable<PoItem> poItems = await _poItemsRepository.GetPODetailsByPONumberandItemNo(item.ItemNumber, item.PONumber);
+                decimal dispatchedQty = item.Qty;
+
+                foreach (var poItem in poItems)
+                {
+                    poItem.ReceivedQty += item.Qty;
+                    if (poItem.BalanceQty >= dispatchedQty)
+                    {
+                        if (poItem.BalanceQty == dispatchedQty)
+                        {
+                            poItem.PoPartsStatus = true;
+                        }
+                        poItem.BalanceQty -= dispatchedQty;
+                        dispatchedQty = 0;
+                        break;
+                    }
+                    else
+                    {
+                        dispatchedQty -= poItem.BalanceQty;
+                        poItem.BalanceQty = 0;
+                    }
+
+                    _poItemsRepository.UpdatePOOrderItem(poItem);
+
+                    if (dispatchedQty <= 0)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            _poItemsRepository.SaveAsync();
+            return Ok();
+        }
+
+        //pass data from grin using _httpclient service to purchase
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePoProjectNoBalanceQtyDetails([FromBody] List<PoProjectNoUpdateQtyDetailsDto> poProjectNoUpdateBalQtyDetails)
+        {
+            foreach (var item in poProjectNoUpdateBalQtyDetails)
+            {
+                IEnumerable<PoAddProject> poProjectNoDetails = await _poAddprojectRepository.GetPOProjectNoDetailsByProjectNo(item.ItemNumber, item.ProjectNumber, item.PoItemId);
+                decimal dispatchedQty = item.ProjectQty;
+
+                foreach (var poProjectNos in poProjectNoDetails)
+                {
+                    poProjectNos.ReceivedQty = item.ProjectQty;
+                    if (poProjectNos.BalanceQty >= dispatchedQty)
+                    {
+                        if (poProjectNos.BalanceQty == dispatchedQty)
+                        {
+                            poProjectNos.PoAddProjectStatus = true;
+                        }
+                        poProjectNos.BalanceQty -= dispatchedQty;
+                        dispatchedQty = 0;
+                        break;
+                    }
+                    else
+                    {
+                        dispatchedQty -= poProjectNos.BalanceQty;
+                        poProjectNos.BalanceQty = 0;
+                    }
+
+                    await _poAddprojectRepository.UpdatePoAddproject(poProjectNos);
+
+                    if (dispatchedQty <= 0)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            _poAddprojectRepository.SaveAsync();
+            return Ok();
+        }
+
+        //pass data from grin qty using _httpclient service to purchase
+
+        [HttpPost]
+        public async Task<IActionResult> UpdatePoStatus([FromBody] List<PurchaseOrderStatusUpdateDto> purchaseOrderStatusUpdateDto)
+        {
+            foreach (var item in purchaseOrderStatusUpdateDto)
+            {
+                var poItem = await _poItemsRepository.GetPoItemDetailsByPONumberandItemNo(item.ItemNumber, item.PONumber, item.PoItemId);
+
+                if (poItem.BalanceQty == poItem.Qty)
+                {
+                    poItem.PoStatus = PoStatus.Open;
+                }
+                else if (poItem.BalanceQty < poItem.Qty && poItem.BalanceQty > 0)
+                {
+                    poItem.PoStatus = PoStatus.PartiallyClosed;
+                }
+                else
+                {
+                    poItem.PoStatus = PoStatus.Closed;
+                }
+
+                await _poItemsRepository.UpdatePOOrderItem(poItem);
+
+            }
+            _poItemsRepository.SaveAsync();
+
+            var poItemsPartiallyClosedStatusCount = await _poItemsRepository.GetPoItemsPartiallyClosedStatusCount(purchaseOrderStatusUpdateDto[0].PONumber);
+
+            if (poItemsPartiallyClosedStatusCount != 0)
+            {
+                var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
+                purchaseOrderDetails.PoStatus = PoStatus.PartiallyClosed;
+                await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetails);
+
+            }
+            else
+            {
+                var purchaseOrderDetails = await _repository.GetLastestPurchaseOrderByPONumber(purchaseOrderStatusUpdateDto[0].PONumber);
+                purchaseOrderDetails.PoStatus = PoStatus.Closed;
+                await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetails);
+            }
+            _repository.SaveAsync();
+
+            return Ok();
+        }
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> UpdatePurchaseOrder(int id, [FromBody] PurchaseOrderUpdateDto purchaseOrderUpdateDto)
+        //{
+        //    ServiceResponse<PurchaseOrderUpdateDto> serviceResponse = new ServiceResponse<PurchaseOrderUpdateDto>();
+        //    try
+        //    {
+        //        if (purchaseOrderUpdateDto is null)
+        //        {
+        //            _logger.LogError("Update PurchaseOrder object sent from client is null.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Update PurchaseOrder object is null.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _logger.LogError("Invalid Update PurchaseOrder object sent from client.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid Update PurchaseOrder object.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        var purchaseOrderDetailbyId = await _repository.GetPurchaseOrderById(id);
+        //        if (purchaseOrderDetailbyId is null)
+        //        {
+        //            _logger.LogError($"Update PurchaseOrder with id: {id}, hasn't been found in db.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"Update PurchaseOrder hasn't been found.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            return NotFound(serviceResponse);
+        //        }
+
+        //        var purchaseOrderDetails= _mapper.Map<PurchaseOrder>(purchaseOrderDetailbyId);
+        //        var poItemDto = purchaseOrderUpdateDto.POItems;
+        //        var poItemList = new List<PoItem>();
+
+        //        if (poItemDto != null)
+        //        {
+        //            for (int i = 0; i < poItemDto.Count; i++)
+        //            {
+        //                PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+        //                poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+        //                poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
+        //                poItemList.Add(poItemDetails);
+        //            }
+        //        }
+
+        //        purchaseOrderDetails.POItems = poItemList;
+        //        var updatePurchaseOrder = _mapper.Map(purchaseOrderUpdateDto, purchaseOrderDetails);
+        //        string result = await _repository.UpdatePurchaseOrder(updatePurchaseOrder);
+        //        _logger.LogInfo(result);
+        //        _repository.SaveAsync();
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = " PurchaseOrder Successfully Updated";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside UpdatePurchaseOrder action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong ,try again";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePurchaseOrder(int id)
         {
             ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
             try
             {
-                var deletePurchaseOrder = await _repository.GetPurchaseOrderById(id);
-                if (deletePurchaseOrder == null)
+                var purchaseOrderDetailbyId = await _repository.GetPurchaseOrderById(id);
+                if (purchaseOrderDetailbyId == null)
                 {
                     _logger.LogError($"Delete PurchaseOrder with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Delete PurchaseOrder hasn't been found in db.";
+                    serviceResponse.Message = $"Delete PurchaseOrder hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                string result = await _repository.DeletePurchaseOrder(deletePurchaseOrder);
+                string result = await _repository.DeletePurchaseOrder(purchaseOrderDetailbyId);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
 
@@ -272,7 +2965,7 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside DeletePurchasrOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong,try again";
                 serviceResponse.Success = false;
@@ -284,14 +2977,13 @@ namespace Tips.Purchase.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllActivePurchaseOrderNameList()
         {
-            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            ServiceResponse<List<PONameList>> serviceResponse = new ServiceResponse<List<PONameList>>();
             try
             {
-                var listOfPurchaseOrder = await _repository.GetAllActivePurchaseOrderNameList();
-                //_logger.LogInfo("Returned all PurchaseOrder");
-                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(listOfPurchaseOrder);
-                serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all PurchaseOrder";
+                var activePONameList = await _repository.GetAllActivePurchaseOrderNameList();
+
+                serviceResponse.Data = activePONameList;
+                serviceResponse.Message = "Returned all ActivePurchaseOrderNameList";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -308,14 +3000,62 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetAllPurchaseOrderNameList()
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var poNumberList = await _repository.GetAllPurchaseOrderNameList();
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(poNumberList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PurchaseOrderNameList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllPurchaseOrderNameList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllLatestRevNoPurchaseOrderNameList()
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var poNumberList = await _repository.GetAllLatestRevNoPurchaseOrderNameList();
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(poNumberList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PurchaseOrderNameList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllLatestRevNoPurchaseOrderNameList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
         public async Task<IActionResult> GetAllPendingPurchaseOrderApprovalINameList()
         {
             ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
             try
             {
-                var listOfPurchaseOrder = await _repository.GetAllPendingPurchaseOrderApprovalINameList();
-                //_logger.LogInfo("Returned all PurchaseOrder");
-                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(listOfPurchaseOrder);
+                var pendingPOApprovalINameList = await _repository.GetAllPendingPOApprovalINameList();
+
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pendingPOApprovalINameList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PendingApprovalIPurchaseOrder";
                 serviceResponse.Success = true;
@@ -326,22 +3066,20 @@ namespace Tips.Purchase.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllPendingPurchaseOrderApprovalINameList action";
+                serviceResponse.Message = $"Something went wrong inside GetAllPendingPOApprovalINameList action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpGet]
         public async Task<IActionResult> GetAllPendingPurchaseOrderApprovalIINameList()
         {
             ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
             try
             {
-                var listOfPurchaseOrder = await _repository.GetAllPendingPurchaseOrderApprovalIINameList();
-                //_logger.LogInfo("Returned all PurchaseOrder");
-                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(listOfPurchaseOrder);
+                var pendingPOApprovalIINameList = await _repository.GetAllPendingPOApprovalIINameList();
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pendingPOApprovalIINameList);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all PendingApprovalIIPurchaseOrder";
                 serviceResponse.Success = true;
@@ -352,7 +3090,286 @@ namespace Tips.Purchase.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllPendingPurchaseOrderApprovalIINameList action";
+                serviceResponse.Message = $"Something went wrong inside GetAllPendingPOApprovalIINameList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllPendingPurchaseOrderApprovalIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pendingPOApprovalINameList = await _repository.GetAllPendingPOApprovalIList(pagingParameter, searchParams);
+                var metadata = new
+                {
+                    pendingPOApprovalINameList.TotalCount,
+                    pendingPOApprovalINameList.PageSize,
+                    pendingPOApprovalINameList.CurrentPage,
+                    pendingPOApprovalINameList.HasNext,
+                    pendingPOApprovalINameList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pendingPOApprovalINameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PendingApprovalIPurchaseOrder";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllPendingPurchaseOrderApprovalIList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllLastestPendingPurchaseOrderApprovalIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var lastestPendingPOApprovalINameList = await _repository.GetAllLastestPendingPOApprovalIList(pagingParameter, searchParams);
+                var metadata = new
+                {
+                    lastestPendingPOApprovalINameList.TotalCount,
+                    lastestPendingPOApprovalINameList.PageSize,
+                    lastestPendingPOApprovalINameList.CurrentPage,
+                    lastestPendingPOApprovalINameList.HasNext,
+                    lastestPendingPOApprovalINameList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(lastestPendingPOApprovalINameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all LastestPendingApprovalIPurchaseOrder";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllLastestPendingPOApprovalINameList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPendingPurchaseOrderApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pendingPOApprovalIINameList = await _repository.GetAllPendingPOApprovalIIList(pagingParameter, searchParams);
+                var metadata = new
+                {
+                    pendingPOApprovalIINameList.TotalCount,
+                    pendingPOApprovalIINameList.PageSize,
+                    pendingPOApprovalIINameList.CurrentPage,
+                    pendingPOApprovalIINameList.HasNext,
+                    pendingPOApprovalIINameList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pendingPOApprovalIINameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PendingApprovalIIPurchaseOrder";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllPendingPOApprovalIINameList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPendingPurchaseOrderApprovalIIIListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pendingPOApprovalIINameList = await _repository.GetAllPendingPOApprovalIIIListForAvision(pagingParameter, searchParams);
+                var metadata = new
+                {
+                    pendingPOApprovalIINameList.TotalCount,
+                    pendingPOApprovalIINameList.PageSize,
+                    pendingPOApprovalIINameList.CurrentPage,
+                    pendingPOApprovalIINameList.HasNext,
+                    pendingPOApprovalIINameList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pendingPOApprovalIINameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PendingApprovalIIIPurchaseOrder";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllPendingPurchaseOrderApprovalIIIListForAvision action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPendingPurchaseOrderApprovalIVListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pendingPOApprovalIINameList = await _repository.GetAllPendingPOApprovalIVListForAvision(pagingParameter, searchParams);
+                var metadata = new
+                {
+                    pendingPOApprovalIINameList.TotalCount,
+                    pendingPOApprovalIINameList.PageSize,
+                    pendingPOApprovalIINameList.CurrentPage,
+                    pendingPOApprovalIINameList.HasNext,
+                    pendingPOApprovalIINameList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pendingPOApprovalIINameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all PendingApprovalIVPurchaseOrder";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllPendingPurchaseOrderApprovalIVListForAvision action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllLastestPendingPurchaseOrderApprovalIIList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var lastestPendingPOApprovalIINameList = await _repository.GetAllLastestPendingPOApprovalIIList(pagingParameter, searchParams);
+                var metadata = new
+                {
+                    lastestPendingPOApprovalIINameList.TotalCount,
+                    lastestPendingPOApprovalIINameList.PageSize,
+                    lastestPendingPOApprovalIINameList.CurrentPage,
+                    lastestPendingPOApprovalIINameList.HasNext,
+                    lastestPendingPOApprovalIINameList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(lastestPendingPOApprovalIINameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all LastestPendingApprovalIIPurchaseOrder";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllLastestPendingPOApprovalIINameList action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllLastestPendingPOApprovalIIIListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var lastestPendingPOApprovalIINameList = await _repository.GetAllLastestPendingPOApprovalIIIListForAvision(pagingParameter, searchParams);
+                var metadata = new
+                {
+                    lastestPendingPOApprovalIINameList.TotalCount,
+                    lastestPendingPOApprovalIINameList.PageSize,
+                    lastestPendingPOApprovalIINameList.CurrentPage,
+                    lastestPendingPOApprovalIINameList.HasNext,
+                    lastestPendingPOApprovalIINameList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(lastestPendingPOApprovalIINameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all LastestPendingApprovalIIIPurchaseOrder";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllLastestPendingPOApprovalIIIListForAvision action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllLastestPendingPOApprovalIVListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var lastestPendingPOApprovalIINameList = await _repository.GetAllLastestPendingPOApprovalIVListForAvision(pagingParameter, searchParams);
+                var metadata = new
+                {
+                    lastestPendingPOApprovalIINameList.TotalCount,
+                    lastestPendingPOApprovalIINameList.PageSize,
+                    lastestPendingPOApprovalIINameList.CurrentPage,
+                    lastestPendingPOApprovalIINameList.HasNext,
+                    lastestPendingPOApprovalIINameList.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(lastestPendingPOApprovalIINameList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all LastestPendingApprovalIVPurchaseOrder";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllLastestPendingPOApprovalIVListForAvision action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -366,23 +3383,98 @@ namespace Tips.Purchase.Api.Controllers
 
             try
             {
-                var purchaseOrder = await _repository.GetPurchaseOrderByPONumber(PONumber);
-                if (purchaseOrder is null)
+                string serverKey = GetServerKey();
+                var purchaseOrderDetailByPONumber = await _repository.GetPurchaseOrderByPONumber(PONumber);
+                if (purchaseOrderDetailByPONumber is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "PurchaseOrderApprovalI object sent from client is null";
+                    serviceResponse.Message = "PurchaseOrderApprovalI object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"PurchaseOrderApprovalI with string: {PONumber}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                purchaseOrder.POApprovalI = true;
-                purchaseOrder.POApprovedIBy = "Admin";
-                purchaseOrder.POApprovedIDate = DateTime.Now;
-                string result = await _repository.UpdatePurchaseOrder(purchaseOrder);
+                purchaseOrderDetailByPONumber.POApprovalI = true;
+                purchaseOrderDetailByPONumber.POApprovedIBy = _createdBy;
+                purchaseOrderDetailByPONumber.POApprovedIDate = DateTime.Now;
+                string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailByPONumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                serviceResponse.Message = "Activated Successfully";
+                if (serverKey == "avision")
+                {
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    request.Headers.Add("Authorization", token);
+                    var response = await client.SendAsync(request);
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,Approval1";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    //var mails = new List<string>() {"bala@avisionsystems.com","anilyadav@avisionsystems.com" };
+                    var mails = (emaildetails1.data.Where(x => x.operation == "Approval1").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+                    //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
+                    email.Subject = emaildetails.data.subject;
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
+                    body = body.Replace("{{PO Revision No}}", purchaseOrderDetailByPONumber.RevisionNumber.ToString());
+                    body = body.Replace("{{PO Date}}", podate[0]);
+                    body = body.Replace("{{PO Value}}", purchaseOrderDetailByPONumber.TotalAmount.ToString());
+                    body = body.Replace("{{Vendor Name}}", purchaseOrderDetailByPONumber.VendorName.ToString());
+                    body = body.Replace("{{Approval1}}", purchaseOrderDetailByPONumber.POApprovedIBy);
+                    body = body.Replace("{{Approval2}}", "Awaiting");
+                    body = body.Replace("{{Approval3}}", "Awaiting");
+                    body = body.Replace("{{Approval4}}", "Awaiting");
+                    body = body.Replace("{{PO Conf}}", "Awaiting");
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRNo = null;
+                    foreach (var item in purchaseOrderDetailByPONumber.POItems)
+                    {
+
+                        if (item.POAddprojects.Count > 0)
+                            foreach (var project in item.POAddprojects)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                            }
+                        if (item.PrDetails.Count > 0)
+                            foreach (var pr in item.PrDetails)
+                            {
+                                if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                            }
+
+                    }
+                    body = body.Replace("{{Project No}}", ProjectNos);
+                    body = body.Replace("{{PR Numbers}}", PRNo);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+
+                }
+                serviceResponse.Message = "PurchaseOrderApprovalI Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -406,23 +3498,173 @@ namespace Tips.Purchase.Api.Controllers
 
             try
             {
-                var purchaseOrder = await _repository.GetPurchaseOrderByPONumber(PONumber);
-                if (purchaseOrder is null)
+                string serverKey = GetServerKey();
+                var purchaseOrderDetailByPONumber = await _repository.GetPurchaseOrderByPONumber(PONumber);
+                if (purchaseOrderDetailByPONumber is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "PurchaseOrderApprovalII object sent from client is null";
+                    serviceResponse.Message = "PurchaseOrderApprovalII object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError($"PurchaseOrderApprovalII with string: {PONumber}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                purchaseOrder.POApprovalII = true;
-                purchaseOrder.POApprovedIIBy = "Admin";
-                purchaseOrder.POApprovedIIDate = DateTime.Now;
-                string result = await _repository.UpdatePurchaseOrder(purchaseOrder);
+                purchaseOrderDetailByPONumber.POApprovalII = true;
+                purchaseOrderDetailByPONumber.POApprovedIIBy = _createdBy;
+                purchaseOrderDetailByPONumber.POApprovedIIDate = DateTime.Now;
+                string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailByPONumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
-                serviceResponse.Message = "Activated Successfully";
+                if (serverKey == "avision")
+                {
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    request.Headers.Add("Authorization", token);
+                    var response = await client.SendAsync(request);
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+
+                    if (purchaseOrderDetailByPONumber.ApprovalCount > 2)
+                    {
+                        var Operations = "From,Approval2";
+                        var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                        request1.Headers.Add("Authorization", token);
+                        var response1 = await client.SendAsync(request1);
+                        var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                        var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
+                        var httpclientHandler = new HttpClientHandler();
+                        var httpClient = new HttpClient(httpclientHandler);
+                        var email = new MimeMessage();
+                        email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                        // email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                        var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
+                        //var mails = "venkat.k@avisionsystems.com";
+                        var mails = (emaildetails1.data.Where(x => x.operation == "Approval2").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                        email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+                        //email.To.Add(MailboxAddress.Parse(mails));
+                        email.Subject = emaildetails.data.subject;
+                        string body = emaildetails.data.template;
+                        body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
+                        body = body.Replace("{{PO Revision No}}", purchaseOrderDetailByPONumber.RevisionNumber.ToString());
+                        body = body.Replace("{{PO Date}}", podate[0]);
+                        body = body.Replace("{{PO Value}}", purchaseOrderDetailByPONumber.TotalAmount.ToString());
+                        body = body.Replace("{{Vendor Name}}", purchaseOrderDetailByPONumber.VendorName.ToString());
+                        body = body.Replace("{{Approval1}}", purchaseOrderDetailByPONumber.POApprovedIBy);
+                        body = body.Replace("{{Approval2}}", purchaseOrderDetailByPONumber.POApprovedIIBy);
+                        body = body.Replace("{{Approval3}}", "Awaiting");
+                        body = body.Replace("{{Approval4}}", "Awaiting");
+                        body = body.Replace("{{PO Conf}}", "Awaiting");
+                        string? ProjectNos = null;
+                        List<string>? tempProj = new List<string>();
+                        List<string>? tempPRno = new List<string>();
+                        string? PRNo = null;
+                        foreach (var item in purchaseOrderDetailByPONumber.POItems)
+                        {
+
+                            if (item.POAddprojects.Count > 0)
+                                foreach (var project in item.POAddprojects)
+                                {
+                                    if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                    else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                }
+                            if (item.PrDetails.Count > 0)
+                                foreach (var pr in item.PrDetails)
+                                {
+                                    if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                    else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                }
+
+                        }
+                        body = body.Replace("{{Project No}}", ProjectNos);
+                        body = body.Replace("{{PR Numbers}}", PRNo);
+
+                        email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                        using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                        //smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                        //smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+                        int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                        smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                        smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+                        smtp.Send(email);
+                        smtp.Disconnect(true);
+                    }
+                    else
+                    {
+                        var Operations = "From,Approval2count2";
+                        var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                        request1.Headers.Add("Authorization", token);
+                        var response1 = await client.SendAsync(request1);
+                        var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                        var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
+                        var httpclientHandler = new HttpClientHandler();
+                        var httpClient = new HttpClient(httpclientHandler);
+                        var email = new MimeMessage();
+                        email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                        // email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                        var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
+                        //var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com" };
+                        //email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+                        var mails = (emaildetails1.data.Where(x => x.operation == "Approval2count2").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                        email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+                        email.Subject = emaildetails.data.subject;
+                        string body = emaildetails.data.template;
+                        body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
+                        body = body.Replace("{{PO Revision No}}", purchaseOrderDetailByPONumber.RevisionNumber.ToString());
+                        body = body.Replace("{{PO Date}}", podate[0]);
+                        body = body.Replace("{{PO Value}}", purchaseOrderDetailByPONumber.TotalAmount.ToString());
+                        body = body.Replace("{{Vendor Name}}", purchaseOrderDetailByPONumber.VendorName.ToString());
+                        body = body.Replace("{{Approval1}}", purchaseOrderDetailByPONumber.POApprovedIBy);
+                        body = body.Replace("{{Approval2}}", purchaseOrderDetailByPONumber.POApprovedIIBy);
+                        body = body.Replace("{{Approval3}}", "--");
+                        body = body.Replace("{{Approval4}}", "--");
+                        body = body.Replace("{{PO Conf}}", "Awaiting");
+                        string? ProjectNos = null;
+                        List<string>? tempProj = new List<string>();
+                        List<string>? tempPRno = new List<string>();
+                        string? PRNo = null;
+                        foreach (var item in purchaseOrderDetailByPONumber.POItems)
+                        {
+
+                            if (item.POAddprojects.Count > 0)
+                                foreach (var project in item.POAddprojects)
+                                {
+                                    if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                    else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                }
+                            if (item.PrDetails.Count > 0)
+                                foreach (var pr in item.PrDetails)
+                                {
+                                    if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                    else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                }
+
+                        }
+                        body = body.Replace("{{Project No}}", ProjectNos);
+                        body = body.Replace("{{PR Numbers}}", PRNo);
+
+                        email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                        using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                        int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                        smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                        smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+                        smtp.Send(email);
+                        smtp.Disconnect(true);
+                    }
+
+
+
+                }
+                serviceResponse.Message = "PurchaseOrderApprovalII Activated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -438,17 +3680,246 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        [HttpPut("{PONumber}")]
+        public async Task<IActionResult> ActivatePurchaseOrderApprovalIIIForAvision(string PONumber)
+        {
+            ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
+
+            try
+            {
+                string serverKey = GetServerKey();
+                var purchaseOrderDetailByPONumber = await _repository.GetPurchaseOrderByPONumber(PONumber);
+                if (purchaseOrderDetailByPONumber is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "PurchaseOrderApprovalII object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"PurchaseOrderApprovalII with string: {PONumber}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
+                }
+                purchaseOrderDetailByPONumber.POApprovalIII = true;
+                purchaseOrderDetailByPONumber.POApprovedIIIBy = _createdBy;
+                purchaseOrderDetailByPONumber.POApprovedIIIDate = DateTime.Now;
+                string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailByPONumber);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                if (serverKey == "avision")
+                {
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    request.Headers.Add("Authorization", token);
+                    var response = await client.SendAsync(request);
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,Approval3";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    //var mails =new List<string>() { "eyalbn@uvisionuav.com", "yonatan@uvisionuav.com"};
+                    var mails = (emaildetails1.data.Where(x => x.operation == "Approval3").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                    var email = new MimeMessage();
+                    //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+                    var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
+                    email.Subject = emaildetails.data.subject;
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
+                    body = body.Replace("{{PO Revision No}}", purchaseOrderDetailByPONumber.RevisionNumber.ToString());
+                    body = body.Replace("{{PO Date}}", podate[0]);
+                    body = body.Replace("{{PO Value}}", purchaseOrderDetailByPONumber.TotalAmount.ToString());
+                    body = body.Replace("{{Vendor Name}}", purchaseOrderDetailByPONumber.VendorName.ToString());
+                    body = body.Replace("{{Approval1}}", purchaseOrderDetailByPONumber.POApprovedIBy);
+                    body = body.Replace("{{Approval2}}", purchaseOrderDetailByPONumber.POApprovedIIBy);
+                    body = body.Replace("{{Approval3}}", purchaseOrderDetailByPONumber.POApprovedIIIBy);
+                    body = body.Replace("{{Approval4}}", "Awaiting");
+                    body = body.Replace("{{PO Conf}}", "Awaiting");
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRNo = null;
+                    foreach (var item in purchaseOrderDetailByPONumber.POItems)
+                    {
+
+                        if (item.POAddprojects.Count > 0)
+                            foreach (var project in item.POAddprojects)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                            }
+                        if (item.PrDetails.Count > 0)
+                            foreach (var pr in item.PrDetails)
+                            {
+                                if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                            }
+
+                    }
+                    body = body.Replace("{{Project No}}", ProjectNos);
+                    body = body.Replace("{{PR Numbers}}", PRNo);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+
+                }
+                serviceResponse.Message = "PurchaseOrderApprovalIII Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside ActivatePurchaseOrderApprovalIII action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPut("{PONumber}")]
+        public async Task<IActionResult> ActivatePurchaseOrderApprovalIVForAvision(string PONumber)
+        {
+            ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
+
+            try
+            {
+                string serverKey = GetServerKey();
+                var purchaseOrderDetailByPONumber = await _repository.GetPurchaseOrderByPONumber(PONumber);
+                if (purchaseOrderDetailByPONumber is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "PurchaseOrderApprovalIV object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"PurchaseOrderApprovalIV with string: {PONumber}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
+                }//
+                purchaseOrderDetailByPONumber.POApprovalIV = true;
+                purchaseOrderDetailByPONumber.POApprovedIVBy = _createdBy;
+                purchaseOrderDetailByPONumber.POApprovedIVDate = DateTime.Now;
+                string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailByPONumber);
+                _logger.LogInfo(result);
+                _repository.SaveAsync();
+                if (serverKey == "avision")
+                {
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    request.Headers.Add("Authorization", token);
+                    var response = await client.SendAsync(request);
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,Approval4";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    // var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com"};
+                    var mails = (emaildetails1.data.Where(x => x.operation == "Approval4").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                    var email = new MimeMessage();
+                    //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+                    var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
+                    email.Subject = emaildetails.data.subject;
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
+                    body = body.Replace("{{PO Revision No}}", purchaseOrderDetailByPONumber.RevisionNumber.ToString());
+                    body = body.Replace("{{PO Date}}", podate[0]);
+                    body = body.Replace("{{PO Value}}", purchaseOrderDetailByPONumber.TotalAmount.ToString());
+                    body = body.Replace("{{Vendor Name}}", purchaseOrderDetailByPONumber.VendorName.ToString());
+                    body = body.Replace("{{Approval1}}", purchaseOrderDetailByPONumber.POApprovedIBy);
+                    body = body.Replace("{{Approval2}}", purchaseOrderDetailByPONumber.POApprovedIIBy);
+                    body = body.Replace("{{Approval3}}", purchaseOrderDetailByPONumber.POApprovedIIIBy);
+                    body = body.Replace("{{Approval4}}", purchaseOrderDetailByPONumber.POApprovedIVBy);
+                    body = body.Replace("{{PO Conf}}", "Awaiting");
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRNo = null;
+                    foreach (var item in purchaseOrderDetailByPONumber.POItems)
+                    {
+
+                        if (item.POAddprojects.Count > 0)
+                            foreach (var project in item.POAddprojects)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                            }
+                        if (item.PrDetails.Count > 0)
+                            foreach (var pr in item.PrDetails)
+                            {
+                                if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                            }
+
+                    }
+                    body = body.Replace("{{Project No}}", ProjectNos);
+                    body = body.Replace("{{PR Numbers}}", PRNo);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    //smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                    //smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+
+                }
+                serviceResponse.Message = "PurchaseOrderApprovalIV Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Something went wrong inside ActivatePurchaseOrderApprovalIV action: {ex.Message}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet("{VendorName}")]
         public async Task<IActionResult> GetAllPoNumberListByVendorName(string VendorName)
         {
             ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
             try
             {
-                var listOfPoNumber = await _repository.GetAllPoNumberListByVendorName(VendorName);
-                //_logger.LogInfo("Returned all PurchaseOrder");
-                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(listOfPoNumber);
+                var pONumberDetailsbyVendorName = await _repository.GetAllPONumberListByVendorName(VendorName);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorName);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all PoNumberList";
+                serviceResponse.Message = "Returned all PONumberList";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -457,7 +3928,7 @@ namespace Tips.Purchase.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllPoNumberListByVendorName action";
+                serviceResponse.Message = $"Something went wrong inside GetAllPONumberListByVendorName action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -470,11 +3941,10 @@ namespace Tips.Purchase.Api.Controllers
             ServiceResponse<IEnumerable<PurchaseOrderItemNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderItemNoListDto>>();
             try
             {
-                var listOfPoNumber = await _repository.GetAllPoItemNumberListByPoNumber(PoNumber);
-                //_logger.LogInfo("Returned all PurchaseOrder");
-                var result = _mapper.Map<IEnumerable<PurchaseOrderItemNoListDto>>(listOfPoNumber);
+                var pOItemNumberDetailsbyPONumber = await _repository.GetAllPOItemNumberListByPoNumber(PoNumber);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderItemNoListDto>>(pOItemNumberDetailsbyPONumber);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all PoItemNumberList";
+                serviceResponse.Message = "Returned all POItemNumberList";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -483,38 +3953,1329 @@ namespace Tips.Purchase.Api.Controllers
             {
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllPoItemNumberListByPoNumber action";
+                serviceResponse.Message = $"Something went wrong inside GetAllPOItemNumberListByPoNumber action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
 
-        //[HttpGet("{PoNumber}/{ItemNumber}")]
-        //public async Task<IActionResult> GetAllPoListByPoNumberAndItemNumber(string PoNumber,string ItemNumber)
-        //{
-        //    ServiceResponse<IEnumerable<PoItemListDto>> serviceResponse = new ServiceResponse<IEnumerable<PoItemListDto>>();
-        //    try
-        //    {
-        //        var listOfPoItem = await _repository.GetAllPoListByPoNumberAndItemNumber(PoNumber, ItemNumber);
-        //        //_logger.LogInfo("Returned all PurchaseOrder");
-        //        var result = _mapper.Map<IEnumerable<PoItemListDto>>(listOfPoItem);
-        //        serviceResponse.Data = result;
-        //        serviceResponse.Message = "Returned all PoItemNumberList";
-        //        serviceResponse.Success = true;
-        //        serviceResponse.StatusCode = HttpStatusCode.OK;
-        //        return Ok(serviceResponse);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex.Message);
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = $"Something went wrong inside GetAllPoListByPoNumberAndItemNumber action";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    }
-        //}
+        [HttpGet("{id}")]
+        public async Task<IActionResult> ShortClosePurchaseOrder(int id)
+        {
+            ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
 
+            try
+            {
+                var purchaseOrderDetailById = await _repository.GetPurchaseOrderById(id);
+                if (purchaseOrderDetailById == null)
+                {
+                    _logger.LogError($"PurchaseOrder with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrder with id hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+
+                purchaseOrderDetailById.IsShortClosed = true;
+                purchaseOrderDetailById.ShortClosedBy = _createdBy;
+                purchaseOrderDetailById.ShortClosedOn = DateTime.Now;
+                string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailById);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "PurchaseOrder have been closed";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside Purchaseorderclosed action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PoConfirmationStatus(List<List<PoItemConfirmationDateDto>> poItemConfirmationDateDto)
+        {
+            ServiceResponse<PoItemConfirmationDateDto> serviceResponse = new ServiceResponse<PoItemConfirmationDateDto>();
+
+            try
+            {
+                string serverKey = GetServerKey();
+                var poid_1 = poItemConfirmationDateDto.First();
+                var PoId = poid_1.First();
+                var PODetails = await _repository.GetPurchaseOrderById(PoId.PoId);
+                foreach (var poItemConfirmationDateSet in poItemConfirmationDateDto)
+                {
+                    if (!poItemConfirmationDateSet.Any())
+                    {
+                        // Skip empty sets
+                        continue;
+                    }
+
+                    var firstItemInSet = poItemConfirmationDateSet.First(); // Get the first item in the set
+
+                    var purchaseOrderDetailById = await _repository.GetPurchaseOrderById(firstItemInSet.PoId);
+                    if (purchaseOrderDetailById == null)
+                    {
+                        _logger.LogError($"PurchaseOrder with PoId: {firstItemInSet.PoId}, hasn't been found in db.");
+                        serviceResponse.Message = $"PurchaseOrder with PoId hasn't been found.";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        return NotFound(serviceResponse);
+                    }
+
+                    //Updating PoConfirmationDate table
+                    var poItemConfirmationDateDtoDetails = await _poConfirmationDateRepository.GetPoConfirmationDateDetailsById(firstItemInSet.POItemDetailId);
+
+                    if (poItemConfirmationDateDtoDetails.Count() == 0)
+                    {
+                        var poConfirmationDateDtoDetails = poItemConfirmationDateSet
+                            .Select(poConfirmationDate => new PoConfirmationDate
+                            {
+                                ConfirmationDate = poConfirmationDate.ConfirmationDate,
+                                Qty = poConfirmationDate.Qty,
+                                POItemDetailId = poConfirmationDate.POItemDetailId
+                            })
+                            .ToList();
+
+                        await _poConfirmationDateRepository.CreatePoConfirmationDateList(poConfirmationDateDtoDetails);
+                        _poConfirmationDateRepository.SaveAsync();
+                    }
+
+                    else
+                    {
+                        await _poConfirmationDateRepository.DeletePoConfirmationDateList(poItemConfirmationDateDtoDetails);
+                        _poConfirmationDateRepository.SaveAsync();
+
+                        var poItemConfirmationDateDtoList = await _poConfirmationDateRepository.GetPoConfirmationDateDetailsById(firstItemInSet.POItemDetailId);
+
+                        if (poItemConfirmationDateDtoList.Count() == 0)
+                        {
+                            var poConfirmationDateDtoDetails = poItemConfirmationDateSet
+                                .Select(poConfirmationDate => new PoConfirmationDate
+                                {
+                                    ConfirmationDate = poConfirmationDate.ConfirmationDate,
+                                    Qty = poConfirmationDate.Qty,
+                                    POItemDetailId = poConfirmationDate.POItemDetailId
+                                })
+                                .ToList();
+
+                            await _poConfirmationDateRepository.CreatePoConfirmationDateList(poConfirmationDateDtoDetails);
+                            _poConfirmationDateRepository.SaveAsync();
+                        }
+                        else
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "PoConfirmationDateDetails have been Found";
+                            serviceResponse.Success = true;
+                            serviceResponse.StatusCode = HttpStatusCode.OK;
+                            return Ok(serviceResponse);
+                        }
+
+                    }
+
+                    //Update PoConfirmationHistory Table
+                    var poItemConfirmationDateDetails = await _poConfirmationDateRepository.GetPoConfirmationDateDetailsById(firstItemInSet.POItemDetailId);
+                    if (poItemConfirmationDateDetails != null)
+                    {
+                        foreach (var poConfirmationDate in poItemConfirmationDateDetails)
+                        {
+                            var purchaseOrderItemDetailById = await _poItemsRepository.GetPoItemDetailsById(firstItemInSet.POItemDetailId);
+                            PoConfirmationHistory poConfirmationHistory = new PoConfirmationHistory();
+                            poConfirmationHistory.ItemNumber = purchaseOrderItemDetailById.ItemNumber;
+                            poConfirmationHistory.MftrItemNumber = purchaseOrderItemDetailById.MftrItemNumber;
+                            poConfirmationHistory.Description = purchaseOrderItemDetailById.Description;
+                            poConfirmationHistory.UOM = purchaseOrderItemDetailById.UOM;
+                            poConfirmationHistory.UnitPrice = purchaseOrderItemDetailById.UnitPrice;
+                            poConfirmationHistory.Qty = poConfirmationDate.Qty;
+                            poConfirmationHistory.ConfirmationDate = poConfirmationDate.ConfirmationDate;
+                            poConfirmationHistory.PONumber = purchaseOrderItemDetailById.PONumber;
+                            poConfirmationHistory.BalanceQty = purchaseOrderItemDetailById.BalanceQty;
+                            poConfirmationHistory.ReceivedQty = purchaseOrderItemDetailById.ReceivedQty;
+                            poConfirmationHistory.PartType = purchaseOrderItemDetailById.PartType;
+                            poConfirmationHistory.SpecialInstruction = purchaseOrderItemDetailById.SpecialInstruction;
+                            poConfirmationHistory.IsTechnicalDocsRequired = purchaseOrderItemDetailById.IsTechnicalDocsRequired;
+                            poConfirmationHistory.PoPartsStatus = purchaseOrderItemDetailById.PoPartsStatus;
+                            poConfirmationHistory.PoStatus = purchaseOrderItemDetailById.PoStatus;
+                            poConfirmationHistory.SGST = purchaseOrderItemDetailById.SGST;
+                            poConfirmationHistory.CGST = purchaseOrderItemDetailById.CGST;
+                            poConfirmationHistory.IGST = purchaseOrderItemDetailById.IGST;
+                            poConfirmationHistory.UTGST = purchaseOrderItemDetailById.UTGST;
+                            poConfirmationHistory.SubTotal = purchaseOrderItemDetailById.SubTotal;
+                            poConfirmationHistory.TotalWithTax = purchaseOrderItemDetailById.TotalWithTax;
+                            poConfirmationHistory.CreatedBy = _createdBy;
+                            poConfirmationHistory.CreatedOn = DateTime.Now;
+                            //poConfirmationHistory.LastModifiedBy = purchaseOrderItemDetailById.LastModifiedBy;
+                            //poConfirmationHistory.LastModifiedOn = purchaseOrderItemDetailById.LastModifiedOn;
+
+                            await _poConfirmationHistoryRepository.CreatePoConfirmationHistory(poConfirmationHistory);
+                        }
+                        _poConfirmationHistoryRepository.SaveAsync();
+                    }
+
+                    //Update PoConfirmationStatus in PurchaseOrder Table
+                    purchaseOrderDetailById.PoConfirmationStatus = true;
+                    string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailById);
+                    _repository.SaveAsync();
+                } // If the loop completes without returning a response, it means all sets were processed successfully
+                if (serverKey == "avision")
+                {
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    // var response = await _httpClient.GetAsync(string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    request.Headers.Add("Authorization", token);
+                    var response = await client.SendAsync(request);
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,POConformation";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    //var mails = new List<string>() { "scm@avisionsystems.com", "purchase@avisionsystems.com", "accounts@avisionsystems.com", "bala@avisionsystems.com" };
+                    var mails = (emaildetails1.data.Where(x => x.operation == "POConformation").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+
+                    var email = new MimeMessage();
+                    // email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                    var podate = PODetails.PODate.ToString().Split(" ");
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+                    email.Subject = emaildetails.data.subject;
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{PO Number}}", PODetails.PONumber);
+                    body = body.Replace("{{PO Revision No}}", PODetails.RevisionNumber.ToString());
+                    body = body.Replace("{{PO Date}}", podate[0]);
+                    body = body.Replace("{{PO Value}}", PODetails.TotalAmount.ToString());
+                    body = body.Replace("{{Vendor Name}}", PODetails.VendorName.ToString());
+                    body = body.Replace("{{Approval1}}", PODetails.POApprovedIBy);
+                    body = body.Replace("{{Approval2}}", PODetails.POApprovedIIBy);
+                    body = body.Replace("{{Approval3}}", PODetails.POApprovedIIIBy);
+                    body = body.Replace("{{Approval4}}", PODetails.POApprovedIVBy);
+                    body = body.Replace("{{PO Conf}}", "P Madhusudhan Rao");
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRNo = null;
+                    foreach (var item in PODetails.POItems)
+                    {
+
+                        if (item.POAddprojects.Count > 0)
+                            foreach (var project in item.POAddprojects)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                            }
+                        if (item.PrDetails.Count > 0)
+                            foreach (var pr in item.PrDetails)
+                            {
+                                if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                            }
+
+                    }
+                    body = body.Replace("{{Project No}}", ProjectNos);
+                    body = body.Replace("{{PR Numbers}}", PRNo);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+
+                }
+                serviceResponse.Data = null;
+                serviceResponse.Message = "PoConfirmationStatus have been Updated";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside PoConfirmationStatus action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> ShortClosePoItemSatusByPoItemId(int poItemId, string? ReasonforShortClose)
+        {
+            ServiceResponse<PoItemsDto> serviceResponse = new ServiceResponse<PoItemsDto>();
+
+            try
+            {
+                var poItemDetailByPoItemId = await _poItemsRepository.ClosePoItemSatusByPoItemId(poItemId);
+                if (poItemDetailByPoItemId == null)
+                {
+                    _logger.LogError($"PoItem with poItemId: {poItemId}, hasn't been found.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PoItem with poItemId hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+                string? reasonforShortClose = ReasonforShortClose;
+                poItemDetailByPoItemId.ReasonforShortClose = reasonforShortClose;
+                poItemDetailByPoItemId.PoStatus = PoStatus.ShortClosed;
+                poItemDetailByPoItemId.BalanceQty = 0;
+                string result = await _poItemsRepository.UpdatePOOrderItem(poItemDetailByPoItemId);
+                _poItemsRepository.SaveAsync();
+
+                var poItemOpenStatuscount = await _poItemsRepository.GetPoItemOpenStatusCount(poItemDetailByPoItemId.PurchaseOrderId);
+
+                if (poItemOpenStatuscount == 0)
+                {
+                    var poDetails = await _repository.GetPurchaseOrderById(poItemDetailByPoItemId.PurchaseOrderId);
+                    poDetails.PoStatus = PoStatus.ShortClosed;
+                    await _repository.UpdatePurchaseOrder_ForApproval(poDetails);
+                    _repository.SaveAsync();
+                }
+                else
+                {
+                    var poDetails = await _repository.GetPurchaseOrderById(poItemDetailByPoItemId.PurchaseOrderId);
+                    poDetails.PoStatus = PoStatus.PartiallyClosed;
+                    await _repository.UpdatePurchaseOrder_ForApproval(poDetails);
+                    _repository.SaveAsync();
+                }
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "PoItem Status have been closed";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ChangePoItemSatusByPoItemId action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet()]
+        public async Task<IActionResult> Get_Tras_PurchaseOrderSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<Tras_POSPReport>> serviceResponse = new ServiceResponse<IEnumerable<Tras_POSPReport>>();
+            try
+            {
+                var products = await _repository.Get_Tras_PurchaseOrderSPReportWithDate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Tras_PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Tras_PurchaseOrder hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Tras_POSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside Tras_POSPReport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Get_Tras_PurchaseOrderSPResport([FromQuery] PagingParameter pagingParameter)
+        {
+
+            ServiceResponse<IEnumerable<Tras_POSPReport>> serviceResponse = new ServiceResponse<IEnumerable<Tras_POSPReport>>();
+
+            try
+            {
+                var products = await _repository.Get_Tras_PurchaseOrderSPResport(pagingParameter);
+
+                var metadata = new
+                {
+                    products.TotalCount,
+                    products.PageSize,
+                    products.CurrentPage,
+                    products.HasNext,
+                    products.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+
+                _logger.LogInfo("Returned all Tras_PurchaseOrderSPReport");
+                var result = _mapper.Map<IEnumerable<Tras_POSPReport>>(products);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Tras_PurchaseOrderSPReport Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> Get_Tras_PurchaseOrderSPReportWithParam([FromBody] Tras_POSPReportDTO tras_POSPReport)
+
+        {
+            ServiceResponse<IEnumerable<Tras_POSPReport>> serviceResponse = new ServiceResponse<IEnumerable<Tras_POSPReport>>();
+            try
+            {
+                var products = await _repository.Get_Tras_PurchaseOrderSPReportWithParam(tras_POSPReport.VendorName, tras_POSPReport.PONumber, tras_POSPReport.PartNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Tras_PurchaseOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Tras_PurchaseOrder hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var result = _mapper.Map<IEnumerable<Tras_POSPReport>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Tras_PurchaseOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside Tras_PurchaseOrder action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetPoConfirmationSPReportwithParam([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderLimitSPReportDto paramsforPurchase)
+        {
+            ServiceResponse<IEnumerable<poconfirmation_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_Dto>>();
+            try
+            {
+                var result = await _repository.GetPoConfirmationLimitSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName,
+                                                                                    paramsforPurchase.POStatus, paramsforPurchase.Approval, paramsforPurchase.RecordType,
+                                                                                    paramsforPurchase.Offset, paramsforPurchase.Limit);
+
+                var TotalCount = await _repository.GetAllPurchaseOrderCountForTrans(SearchTerm);
+
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $" PoConfirmationLimitSPReportwithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PoConfirmationLimitSPReportwithParam hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var metadata = new
+                    {
+                        TotalCount,
+                        pagingParameter.PageSize,
+                        CurrentPage = pagingParameter.PageNumber
+                    };
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned  PoConfirmationLimitSPReportwithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPoConfirmationSPReportwithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetPoConfirmationSPReportwithDate([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderDateLimitSPReportDto purchaseOrderDate_ReportGetDto)
+        {
+            ServiceResponse<IEnumerable<poconfirmation_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_Dto>>();
+            try
+            {
+                var result = await _repository.GetPoConfirmationLimitSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
+                                                                                                purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType,
+                                                                                                purchaseOrderDate_ReportGetDto.Offset, purchaseOrderDate_ReportGetDto.Limit);
+
+                var TotalCount = await _repository.GetAllPurchaseOrderCountForTrans(SearchTerm);
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $" PoConfirmationLimitSPReportswithDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PoConfirmationLimitSPReportswithDate hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var metadata = new
+                    {
+                        TotalCount,
+                        pagingParameter.PageSize,
+                        CurrentPage = pagingParameter.PageNumber
+                    };
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned  PoConfirmationLimitSPReportswithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPoConfirmationSPReportwithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportPOConfirmationReportToExcel([FromBody] PurchaseOrderConfor_ReportGetDto paramsforPurchase)
+        {
+
+            try
+            {
+                var poConfirmationReports = await _repository.GetPoConfirmationSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName,
+                                                                                   paramsforPurchase.POStatus, paramsforPurchase.Approval, paramsforPurchase.RecordType);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("POConfirmationReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Vendor ID");
+                headerRow.CreateCell(1).SetCellValue("Vendor Name");
+                headerRow.CreateCell(2).SetCellValue("PO Number");
+                headerRow.CreateCell(3).SetCellValue("PO Date");
+                headerRow.CreateCell(4).SetCellValue("PR Number");
+                headerRow.CreateCell(5).SetCellValue("PR Qty");
+                headerRow.CreateCell(6).SetCellValue("Revision Number");
+                headerRow.CreateCell(7).SetCellValue("Item Number");
+                headerRow.CreateCell(8).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(9).SetCellValue("Item Description");
+                headerRow.CreateCell(10).SetCellValue("PO Qty");
+                headerRow.CreateCell(11).SetCellValue("Received Qty");
+                headerRow.CreateCell(12).SetCellValue("Balance Qty");
+                headerRow.CreateCell(13).SetCellValue("Currency");
+                headerRow.CreateCell(14).SetCellValue("UOM");
+                headerRow.CreateCell(15).SetCellValue("Unit Price");
+                headerRow.CreateCell(16).SetCellValue("Balance Value");
+                headerRow.CreateCell(17).SetCellValue("PO Approved I By");
+                headerRow.CreateCell(18).SetCellValue("PO Approved I Date");
+                headerRow.CreateCell(19).SetCellValue("PO Approved II By");
+                headerRow.CreateCell(20).SetCellValue("PO Approved II Date");
+                headerRow.CreateCell(21).SetCellValue("PO Status");
+                headerRow.CreateCell(22).SetCellValue("Created By");
+                headerRow.CreateCell(23).SetCellValue("Created On");
+                headerRow.CreateCell(24).SetCellValue("Confirmation Date");
+                headerRow.CreateCell(25).SetCellValue("Confirmation Qty");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in poConfirmationReports)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.VendorId ?? ""); // VendorId
+                    row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
+                    row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
+                    row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("MM/dd/yyyy") : ""); // PODate
+                    row.CreateCell(4).SetCellValue(item.PRNumber ?? ""); // PRNumber
+                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+                    row.CreateCell(6).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+                    row.CreateCell(7).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+                    row.CreateCell(8).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+                    row.CreateCell(9).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
+                    row.CreateCell(13).SetCellValue(item.Currency ?? ""); // Currency
+                    row.CreateCell(14).SetCellValue(item.UOM ?? ""); // UOM
+                    row.CreateCell(15).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
+                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
+                    row.CreateCell(17).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
+                    row.CreateCell(18).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
+                    row.CreateCell(19).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
+                    row.CreateCell(20).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
+                    row.CreateCell(21).SetCellValue(item.PoStatus ?? 0); // POStatus
+                    row.CreateCell(22).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
+                    row.CreateCell(23).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
+                    row.CreateCell(24).SetCellValue(item.ConfirmationDate.HasValue ? item.ConfirmationDate.Value.ToString("MM/dd/yyyy") : ""); // ConfirmationDate
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.ConfirmationQty ?? 0)); // ConfirmationQty
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "POConfirmationReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                // Return appropriate error response to the client
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportPOConfirmationReportWithDateToExcel([FromBody] PurchaseOrderDate_ReportGetDto purchaseOrderDate_ReportGetDto)
+        {
+
+            try
+            {
+                var poConfirmationReports = await _repository.GetPoConfirmationSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
+                                                                                                purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("POConfirmationReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Vendor ID");
+                headerRow.CreateCell(1).SetCellValue("Vendor Name");
+                headerRow.CreateCell(2).SetCellValue("PO Number");
+                headerRow.CreateCell(3).SetCellValue("PO Date");
+                headerRow.CreateCell(4).SetCellValue("PR Number");
+                headerRow.CreateCell(5).SetCellValue("PR Qty");
+                headerRow.CreateCell(6).SetCellValue("Revision Number");
+                headerRow.CreateCell(7).SetCellValue("Item Number");
+                headerRow.CreateCell(8).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(9).SetCellValue("Item Description");
+                headerRow.CreateCell(10).SetCellValue("PO Qty");
+                headerRow.CreateCell(11).SetCellValue("Received Qty");
+                headerRow.CreateCell(12).SetCellValue("Balance Qty");
+                headerRow.CreateCell(13).SetCellValue("Currency");
+                headerRow.CreateCell(14).SetCellValue("UOM");
+                headerRow.CreateCell(15).SetCellValue("Unit Price");
+                headerRow.CreateCell(16).SetCellValue("Balance Value");
+                headerRow.CreateCell(17).SetCellValue("PO Approved I By");
+                headerRow.CreateCell(18).SetCellValue("PO Approved I Date");
+                headerRow.CreateCell(19).SetCellValue("PO Approved II By");
+                headerRow.CreateCell(20).SetCellValue("PO Approved II Date");
+                headerRow.CreateCell(21).SetCellValue("PO Status");
+                headerRow.CreateCell(22).SetCellValue("Created By");
+                headerRow.CreateCell(23).SetCellValue("Created On");
+                headerRow.CreateCell(24).SetCellValue("Confirmation Date");
+                headerRow.CreateCell(25).SetCellValue("Confirmation Qty");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in poConfirmationReports)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.VendorId ?? ""); // VendorId
+                    row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
+                    row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
+                    row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("MM/dd/yyyy") : ""); // PODate
+                    row.CreateCell(4).SetCellValue(item.PRNumber ?? ""); // PRNumber
+                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+                    row.CreateCell(6).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+                    row.CreateCell(7).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+                    row.CreateCell(8).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+                    row.CreateCell(9).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
+                    row.CreateCell(13).SetCellValue(item.Currency ?? ""); // Currency
+                    row.CreateCell(14).SetCellValue(item.UOM ?? ""); // UOM
+                    row.CreateCell(15).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
+                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
+                    row.CreateCell(17).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
+                    row.CreateCell(18).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
+                    row.CreateCell(19).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
+                    row.CreateCell(20).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
+                    row.CreateCell(21).SetCellValue(item.PoStatus ?? 0); // POStatus
+                    row.CreateCell(22).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
+                    row.CreateCell(23).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
+                    row.CreateCell(24).SetCellValue(item.ConfirmationDate.HasValue ? item.ConfirmationDate.Value.ToString("MM/dd/yyyy") : ""); // ConfirmationDate
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.ConfirmationQty ?? 0)); // ConfirmationQty
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "POConfirmationReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                // Return appropriate error response to the client
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetPoDeliverySchedulewithParam([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderLimitSPReportDto paramsforPurchase)
+        {
+            ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>>();
+            try
+            {
+                var result = await _repository.GetPoDeliveryScheduleLimitwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName,
+                                                                                                paramsforPurchase.POStatus, paramsforPurchase.Approval, paramsforPurchase.RecordType,
+                                                                                                 paramsforPurchase.Offset, paramsforPurchase.Limit);
+
+                var TotalCount = await _repository.GetAllPurchaseOrderCountForTrans(SearchTerm);
+
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $" PoDeliveryScheduleLimitSPReportwithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PoDeliveryScheduleLimitSPReportwithParam hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var metadata = new
+                    {
+                        TotalCount,
+                        pagingParameter.PageSize,
+                        CurrentPage = pagingParameter.PageNumber
+                    };
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned  PoDeliveryScheduleLimitSPReportwithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPoDeliverySchedulewithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetPoDeliveryScheduleSPReportwithDate([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderDateLimitSPReportDto purchaseOrderDate_ReportGetDto)
+        {
+            ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>>();
+            try
+            {
+                var result = await _repository.GetPoDeliveryScheduleLimitSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
+                                                                                                purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType,
+                                                                                                purchaseOrderDate_ReportGetDto.Offset, purchaseOrderDate_ReportGetDto.Limit);
+
+                var TotalCount = await _repository.GetAllPurchaseOrderCountForTrans(SearchTerm);
+
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $" PoDeliveryScheduleLimitSPReportswithDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PoDeliveryScheduleLimitSPReportswithDate hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var metadata = new
+                    {
+                        TotalCount,
+                        pagingParameter.PageSize,
+                        CurrentPage = pagingParameter.PageNumber
+                    };
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned  PoDeliveryScheduleLimitSPReportswithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPoDeliveryScheduleSPReportwithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportPODeliveryScheduleReportToExcel([FromBody] PurchaseOrderConfor_ReportGetDto paramsforPurchase)
+        {
+            try
+            {
+                var poDeliveryScheduleReports = await _repository.GetPoDeliverySchedulewithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName,
+                                                                                                paramsforPurchase.POStatus, paramsforPurchase.Approval, paramsforPurchase.RecordType);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("PODeliveryScheduleReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Vendor ID");
+                headerRow.CreateCell(1).SetCellValue("Vendor Name");
+                headerRow.CreateCell(2).SetCellValue("PO Number");
+                headerRow.CreateCell(3).SetCellValue("PO Date");
+                headerRow.CreateCell(4).SetCellValue("PR Number");
+                headerRow.CreateCell(5).SetCellValue("PR Qty");
+                headerRow.CreateCell(6).SetCellValue("Revision Number");
+                headerRow.CreateCell(7).SetCellValue("Item Number");
+                headerRow.CreateCell(8).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(9).SetCellValue("Item Description");
+                headerRow.CreateCell(10).SetCellValue("PO Qty");
+                headerRow.CreateCell(11).SetCellValue("Schedule Qty");
+                headerRow.CreateCell(12).SetCellValue("Received Qty");
+                headerRow.CreateCell(13).SetCellValue("Balance Qty");
+                headerRow.CreateCell(14).SetCellValue("Currency");
+                headerRow.CreateCell(15).SetCellValue("UOM");
+                headerRow.CreateCell(16).SetCellValue("Unit Price");
+                headerRow.CreateCell(17).SetCellValue("Balance Value");
+                headerRow.CreateCell(18).SetCellValue("PO Approved I By");
+                headerRow.CreateCell(19).SetCellValue("PO Approved I Date");
+                headerRow.CreateCell(20).SetCellValue("PO Approved II By");
+                headerRow.CreateCell(21).SetCellValue("PO Approved II Date");
+                headerRow.CreateCell(22).SetCellValue("PO Status");
+                headerRow.CreateCell(23).SetCellValue("Created By");
+                headerRow.CreateCell(24).SetCellValue("Created On");
+                headerRow.CreateCell(25).SetCellValue("Schedule Date");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in poDeliveryScheduleReports)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.VendorId ?? ""); // VendorId
+                    row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
+                    row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
+                    row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("MM/dd/yyyy") : ""); // PODate
+                    row.CreateCell(4).SetCellValue(item.PRNumber ?? ""); // PRNumber
+                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+                    row.CreateCell(6).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+                    row.CreateCell(7).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+                    row.CreateCell(8).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+                    row.CreateCell(9).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.ScheduleQty ?? 0)); // ScheduleQty
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
+                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
+                    row.CreateCell(14).SetCellValue(item.Currency ?? ""); // Currency
+                    row.CreateCell(15).SetCellValue(item.UOM ?? ""); // UOM
+                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
+                    row.CreateCell(17).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
+                    row.CreateCell(18).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
+                    row.CreateCell(19).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
+                    row.CreateCell(20).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
+                    row.CreateCell(21).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
+                    row.CreateCell(22).SetCellValue(item.PoStatus ?? 0); // POStatus
+                    row.CreateCell(23).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
+                    row.CreateCell(24).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
+                    row.CreateCell(25).SetCellValue(item.ScheduleDate.HasValue ? item.ScheduleDate.Value.ToString("MM/dd/yyyy") : ""); // ScheduleDate
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "PODeliveryScheduleReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                // Return appropriate error response to the client
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportPODeliveryScheduleReportWithDateToExcel([FromBody] PurchaseOrderDate_ReportGetDto purchaseOrderDate_ReportGetDto)
+        {
+            try
+            {
+                var poDeliveryScheduleReports = await _repository.GetPoDeliveryScheduleSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
+                                                                                                purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("PODeliveryScheduleReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Vendor ID");
+                headerRow.CreateCell(1).SetCellValue("Vendor Name");
+                headerRow.CreateCell(2).SetCellValue("PO Number");
+                headerRow.CreateCell(3).SetCellValue("PO Date");
+                headerRow.CreateCell(4).SetCellValue("PR Number");
+                headerRow.CreateCell(5).SetCellValue("PR Qty");
+                headerRow.CreateCell(6).SetCellValue("Revision Number");
+                headerRow.CreateCell(7).SetCellValue("Item Number");
+                headerRow.CreateCell(8).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(9).SetCellValue("Item Description");
+                headerRow.CreateCell(10).SetCellValue("PO Qty");
+                headerRow.CreateCell(11).SetCellValue("Schedule Qty");
+                headerRow.CreateCell(12).SetCellValue("Received Qty");
+                headerRow.CreateCell(13).SetCellValue("Balance Qty");
+                headerRow.CreateCell(14).SetCellValue("Currency");
+                headerRow.CreateCell(15).SetCellValue("UOM");
+                headerRow.CreateCell(16).SetCellValue("Unit Price");
+                headerRow.CreateCell(17).SetCellValue("Balance Value");
+                headerRow.CreateCell(18).SetCellValue("PO Approved I By");
+                headerRow.CreateCell(19).SetCellValue("PO Approved I Date");
+                headerRow.CreateCell(20).SetCellValue("PO Approved II By");
+                headerRow.CreateCell(21).SetCellValue("PO Approved II Date");
+                headerRow.CreateCell(22).SetCellValue("PO Status");
+                headerRow.CreateCell(23).SetCellValue("Created By");
+                headerRow.CreateCell(24).SetCellValue("Created On");
+                headerRow.CreateCell(25).SetCellValue("Schedule Date");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in poDeliveryScheduleReports)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.VendorId ?? ""); // VendorId
+                    row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
+                    row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
+                    row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("MM/dd/yyyy") : ""); // PODate
+                    row.CreateCell(4).SetCellValue(item.PRNumber ?? ""); // PRNumber
+                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+                    row.CreateCell(6).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+                    row.CreateCell(7).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+                    row.CreateCell(8).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+                    row.CreateCell(9).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.ScheduleQty ?? 0)); // ScheduleQty
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
+                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
+                    row.CreateCell(14).SetCellValue(item.Currency ?? ""); // Currency
+                    row.CreateCell(15).SetCellValue(item.UOM ?? ""); // UOM
+                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
+                    row.CreateCell(17).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
+                    row.CreateCell(18).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
+                    row.CreateCell(19).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
+                    row.CreateCell(20).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
+                    row.CreateCell(21).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
+                    row.CreateCell(22).SetCellValue(item.PoStatus ?? 0); // POStatus
+                    row.CreateCell(23).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
+                    row.CreateCell(24).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
+                    row.CreateCell(25).SetCellValue(item.ScheduleDate.HasValue ? item.ScheduleDate.Value.ToString("MM/dd/yyyy") : ""); // ScheduleDate
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "PODeliveryScheduleReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                // Return appropriate error response to the client
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetPoProjectSPReportwithParam([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderProLimitSPReportDto paramsforPurchase)
+        {
+            ServiceResponse<IEnumerable<PoProjectSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PoProjectSPReport>>();
+            try
+            {
+                var result = await _repository.GetPoProjectLimitSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName,
+                                                                                        paramsforPurchase.POStatus, paramsforPurchase.Approval, paramsforPurchase.ProjectNumber,
+                                                                                        paramsforPurchase.RecordType, paramsforPurchase.Offset, paramsforPurchase.Limit);
+
+                var TotalCount = await _repository.GetAllPurchaseOrderCountForTrans(SearchTerm);
+
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $" PoProjectLimitSPReportwithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PoProjectLimitSPReportwithParam hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var metadata = new
+                    {
+                        TotalCount,
+                        pagingParameter.PageSize,
+                        CurrentPage = pagingParameter.PageNumber
+                    };
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned  GetPoProjectLimitSPReportwithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPoProjectSPReportwithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetPoProjectSPReportwithDate([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderDateLimitSPReportDto purchaseOrderDate_ReportGetDto)
+        {
+            ServiceResponse<IEnumerable<PoProjectSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PoProjectSPReport>>();
+            try
+            {
+                var result = await _repository.GetPoProjectLimitSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
+                                                                                                purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType,
+                                                                                                purchaseOrderDate_ReportGetDto.Offset, purchaseOrderDate_ReportGetDto.Limit);
+
+                var TotalCount = await _repository.GetAllPurchaseOrderCountForTrans(SearchTerm);
+
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $" PoProjectLimitSPReportswithDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PoProjectlimitSPReportswithDate hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var metadata = new
+                    {
+                        TotalCount,
+                        pagingParameter.PageSize,
+                        CurrentPage = pagingParameter.PageNumber
+                    };
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned  PoProjectLimitSPReportwithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPoProjectSPReportwithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ExportPoProjectSPReportToExcel([FromBody] PurchaseOrder_ReportGetDto paramsforPurchase)
+        {
+            try
+            {
+                var poProjectReports = await _repository.GetPoProjectSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName,
+                                                                                       paramsforPurchase.POStatus, paramsforPurchase.Approval, paramsforPurchase.ProjectNumber,
+                                                                                       paramsforPurchase.RecordType);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("PoProjectSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Vendor ID");
+                headerRow.CreateCell(1).SetCellValue("Vendor Name");
+                headerRow.CreateCell(2).SetCellValue("PO Number");
+                headerRow.CreateCell(3).SetCellValue("PO Date");
+                headerRow.CreateCell(4).SetCellValue("PR Number");
+                headerRow.CreateCell(5).SetCellValue("PR Qty");
+                headerRow.CreateCell(6).SetCellValue("Revision Number");
+                headerRow.CreateCell(7).SetCellValue("Project Number");
+                headerRow.CreateCell(8).SetCellValue("Project Qty");
+                headerRow.CreateCell(9).SetCellValue("Item Number");
+                headerRow.CreateCell(10).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(11).SetCellValue("Item Description");
+                headerRow.CreateCell(12).SetCellValue("PO Qty");
+                headerRow.CreateCell(13).SetCellValue("Received Qty");
+                headerRow.CreateCell(14).SetCellValue("Balance Qty");
+                headerRow.CreateCell(15).SetCellValue("Currency");
+                headerRow.CreateCell(16).SetCellValue("UOM");
+                headerRow.CreateCell(17).SetCellValue("Unit Price");
+                headerRow.CreateCell(18).SetCellValue("Balance Value");
+                headerRow.CreateCell(19).SetCellValue("PO Approved I By");
+                headerRow.CreateCell(20).SetCellValue("PO Approved I Date");
+                headerRow.CreateCell(21).SetCellValue("PO Approved II By");
+                headerRow.CreateCell(22).SetCellValue("PO Approved II Date");
+                headerRow.CreateCell(23).SetCellValue("PO Status");
+                headerRow.CreateCell(24).SetCellValue("Created By");
+                headerRow.CreateCell(25).SetCellValue("Created On");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in poProjectReports)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.VendorId ?? ""); // VendorId
+                    row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
+                    row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
+                    row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("MM/dd/yyyy") : ""); // PODate
+                    row.CreateCell(4).SetCellValue(item.PRNumber ?? ""); // PRNumber
+                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+                    row.CreateCell(6).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+                    row.CreateCell(7).SetCellValue(item.ProjectNumber ?? ""); // ProjectNumber
+                    row.CreateCell(8).SetCellValue(Convert.ToDouble(item.ProjectQty ?? 0)); // ProjectQty
+                    row.CreateCell(9).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+                    row.CreateCell(10).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+                    row.CreateCell(11).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
+                    row.CreateCell(14).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
+                    row.CreateCell(15).SetCellValue(item.Currency ?? ""); // Currency
+                    row.CreateCell(16).SetCellValue(item.UOM ?? ""); // UOM
+                    row.CreateCell(17).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
+                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
+                    row.CreateCell(19).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
+                    row.CreateCell(20).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
+                    row.CreateCell(21).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
+                    row.CreateCell(22).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
+                    row.CreateCell(23).SetCellValue(item.PoStatus ?? 0); // POStatus
+                    row.CreateCell(24).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
+                    row.CreateCell(25).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "PoProjectSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                // Return appropriate error response to the client
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ExportPoProjectSPReportWithDateToExcel([FromBody] PurchaseOrderDate_ReportGetDto purchaseOrderDate_ReportGetDto)
+        {
+            try
+            {
+                var poProjectReports = await _repository.GetPoProjectSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
+                                                                                              purchaseOrderDate_ReportGetDto.Approval, purchaseOrderDate_ReportGetDto.RecordType);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("PoProjectSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Vendor ID");
+                headerRow.CreateCell(1).SetCellValue("Vendor Name");
+                headerRow.CreateCell(2).SetCellValue("PO Number");
+                headerRow.CreateCell(3).SetCellValue("PO Date");
+                headerRow.CreateCell(4).SetCellValue("PR Number");
+                headerRow.CreateCell(5).SetCellValue("PR Qty");
+                headerRow.CreateCell(6).SetCellValue("Revision Number");
+                headerRow.CreateCell(7).SetCellValue("Project Number");
+                headerRow.CreateCell(8).SetCellValue("Project Qty");
+                headerRow.CreateCell(9).SetCellValue("Item Number");
+                headerRow.CreateCell(10).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(11).SetCellValue("Item Description");
+                headerRow.CreateCell(12).SetCellValue("PO Qty");
+                headerRow.CreateCell(13).SetCellValue("Received Qty");
+                headerRow.CreateCell(14).SetCellValue("Balance Qty");
+                headerRow.CreateCell(15).SetCellValue("Currency");
+                headerRow.CreateCell(16).SetCellValue("UOM");
+                headerRow.CreateCell(17).SetCellValue("Unit Price");
+                headerRow.CreateCell(18).SetCellValue("Balance Value");
+                headerRow.CreateCell(19).SetCellValue("PO Approved I By");
+                headerRow.CreateCell(20).SetCellValue("PO Approved I Date");
+                headerRow.CreateCell(21).SetCellValue("PO Approved II By");
+                headerRow.CreateCell(22).SetCellValue("PO Approved II Date");
+                headerRow.CreateCell(23).SetCellValue("PO Status");
+                headerRow.CreateCell(24).SetCellValue("Created By");
+                headerRow.CreateCell(25).SetCellValue("Created On");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in poProjectReports)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.VendorId ?? ""); // VendorId
+                    row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
+                    row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
+                    row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("MM/dd/yyyy") : ""); // PODate
+                    row.CreateCell(4).SetCellValue(item.PRNumber ?? ""); // PRNumber
+                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+                    row.CreateCell(6).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+                    row.CreateCell(7).SetCellValue(item.ProjectNumber ?? ""); // ProjectNumber
+                    row.CreateCell(8).SetCellValue(Convert.ToDouble(item.ProjectQty ?? 0)); // ProjectQty
+                    row.CreateCell(9).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+                    row.CreateCell(10).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+                    row.CreateCell(11).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
+                    row.CreateCell(14).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
+                    row.CreateCell(15).SetCellValue(item.Currency ?? ""); // Currency
+                    row.CreateCell(16).SetCellValue(item.UOM ?? ""); // UOM
+                    row.CreateCell(17).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
+                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
+                    row.CreateCell(19).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
+                    row.CreateCell(20).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
+                    row.CreateCell(21).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
+                    row.CreateCell(22).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
+                    row.CreateCell(23).SetCellValue(item.PoStatus ?? 0); // POStatus
+                    row.CreateCell(24).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
+                    row.CreateCell(25).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "PoProjectSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                // Return appropriate error response to the client
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdatePurchaseOrderTallyStatus(int Id, bool TallyStatus)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                var getPOdetails = await _repository.GetPurchaseOrderById(Id);
+                getPOdetails.TallyStatus = TallyStatus;
+                await _repository.UpdatePurchaseOrder_ForApproval(getPOdetails);
+                _repository.SaveAsync();
+                _logger.LogInfo($"Successfully Updated the TallyStatus of PO Id {Id} and is set to {TallyStatus} from the UpdatePurchaseOrderTallyStatus API");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Successfully Updated the TallyStatus of PO Id {Id} and is set to {TallyStatus}";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return StatusCode(200, serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside UpdatePurchaseOrderTallyStatus action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

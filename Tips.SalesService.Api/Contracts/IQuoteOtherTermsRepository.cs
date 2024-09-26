@@ -6,7 +6,7 @@ namespace Tips.SalesService.Api.Contracts
 {
     public interface IQuoteOtherTermsRepository : IRepositoryBase<QuoteOtherTerms>
     {
-        Task<PagedList<QuoteOtherTerms>> GetAllQuoteOtherTerms(PagingParameter pagingParameter);
+        Task<PagedList<QuoteOtherTerms>> GetAllQuoteOtherTerms(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<QuoteOtherTerms> GetQuoteOtherTermsById(int id);
         Task<IEnumerable<QuoteOtherTerms>> GetAllActiveQuoteOtherTerms();
         Task<long> CreateQuoteOtherTerms(QuoteOtherTerms quoteOtherTerms);

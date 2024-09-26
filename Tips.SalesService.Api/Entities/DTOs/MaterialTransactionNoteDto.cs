@@ -3,8 +3,8 @@
     public class MaterialTransactionNoteDto
     {
         public int? Id { get; set; }
-        public string? MTNNO { get; set; }
-        public string? ProjectNo { get; set; }
+        public string? MTNNumber { get; set; }
+        public string? ProjectNUmber { get; set; }
 
         public string Unit { get; set; }
 
@@ -13,37 +13,25 @@
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        public List<MaterialTransactionNoteItemDto>? MaterialTransactionNoteItems { get; set; }
+        public List<MaterialTransactionNoteItemDto>? MaterialTransactionNoteItemDtos { get; set; }
     }
 
-    public class MaterialTransactionNoteDtoPost
+    public class MaterialTransactionNotePostDto
     {
-        public string? MTNNO { get; set; }
-        public string? ProjectNo { get; set; }
+        public string? MTNNumber { get; set; }
+        public string? ProjectNUmber { get; set; }       
 
-        public string Unit { get; set; }
-
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-
-        public List<MaterialTransactionNoteItemDtoPost>? MaterialTransactionNoteItems { get; set; }
+        public List<MaterialTransactionNoteItemPostDto>? MaterialTransactionNoteItemPostDtos { get; set; }
     }
 
-    public class MaterialTransactionNoteDtoUpdate
+    public class MaterialTransactionNoteUpdateDto
     {
         public int? Id { get; set; }
-        public string? MTNNO { get; set; }
-        public string? ProjectNo { get; set; }
+        public string? MTNNumber { get; set; }
+        public string? ProjectNUmber { get; set; }
 
-        public string Unit { get; set; }
+        public string Unit { get; set; }      
 
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-
-        public List<MaterialTransactionNoteItemDtoUpdate>? MaterialTransactionNoteItems { get; set; }
+        public List<MaterialTransactionNoteItemUpdateDto>? MaterialTransactionNoteItemUpdateDtos { get; set; }
     }
 }

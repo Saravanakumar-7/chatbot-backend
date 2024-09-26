@@ -14,40 +14,46 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? ItemDescription { get; set; }
-        public int? QuantityReq { get; set; }
-        public int? Count { get; set; }
-        public string Unit { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
-        public List<RfqSourcingVendorDto>? rfqSourcingVendors { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? QtyReq { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? Count { get; set; }
+        public List<RfqSourcingVendorDto>? RfqSourcingVendorDtos { get; set; }
     }
-    public class RfqSourcingItemsDtoPost
+    public class RfqSourcingItemsPostDto
     {
         [StringLength(500, ErrorMessage = "ItemNumber can't be longer than 100 characters")]
         public string? ItemNumber { get; set; }
+
         [StringLength(500, ErrorMessage = "ItemDescription can't be longer than 500 characters")]
         public string? ItemDescription { get; set; }
-        public int? QuantityReq { get; set; }
-        public int? Count { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
-        public List<RfqSourcingVendorDtoPost>? rfqSourcingVendors { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? QtyReq { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? Count { get; set; }
+
+        public List<RfqSourcingVendorPostDto>? RfqSourcingVendorDtos { get; set; }
 
     }
-    public class RfqSourcingItemsDtoUpdate
+    public class RfqSourcingItemsUpdateDto
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         [StringLength(500, ErrorMessage = "ItemNumber can't be longer than 100 characters")]
         public string? ItemNumber { get; set; }
+
         [StringLength(500, ErrorMessage = "ItemDescription can't be longer than 500 characters")]
         public string? ItemDescription { get; set; }
-        public int? QuantityReq { get; set; }
-        public int? Count { get; set; }
-        [Required(ErrorMessage = "Unit is required")]
-        public string Unit { get; set; }
-        public List<RfqSourcingVendorDtoUpdate>? rfqSourcingVendors { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? QtyReq { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? Count { get; set; }
+        public List<RfqSourcingVendorUpdateDto>? RfqSourcingVendorDtos { get; set; }
 
     }
 }

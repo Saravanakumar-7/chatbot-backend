@@ -10,44 +10,55 @@ namespace Tips.SalesService.Api.Entities.DTOs
 {
     public class MaterialRequestItemDto
     {
-        public int Id { get; set; }
-        public string MRNo { get; set; }
-        public string? PartNo { get; set; }
+        public int Id { get; set; }      
+        public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
-        public string? MftrPartNo { get; set; }
+        public string? MftrPartNumber { get; set; }
         public string? PartType { get; set; }
         public string? Stock { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         public string? LocationStock { get; set; }
-        public string? RequiredQty { get; set; }
-        public string Unit { get; set; }
+        public bool IssueStatus { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? RequiredQty { get; set; }
+
+   
+
     }
-    public class MaterialRequestItemDtoPost
+    public class MaterialRequestItemPostDto
     {
-        public string MRNo { get; set; }
-        public string? PartNo { get; set; }
+     
+        public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
-        public string? MftrPartNo { get; set; }
+        public string? MftrPartNumber { get; set; }
         public string? PartType { get; set; }
+        public string? Stock { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         public string? LocationStock { get; set; }
-        public string? RequiredQty { get; set; }
-        public string Unit { get; set; }
+        public bool IssueStatus { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? RequiredQty { get; set; }
+
     }
-    public class MaterialRequestItemDtoUpdate
-    {
-        public int Id { get; set; }
-        public string MRNo { get; set; }
-        public string? PartNo { get; set; }
+    public class MaterialRequestItemUpdateDto
+    {     
+        public string? PartNumber { get; set; }
         public string? PartDescription { get; set; }
-        public string? MftrPartNo { get; set; }
+        public string? MftrPartNumber { get; set; }
         public string? PartType { get; set; }
+        public string? Stock { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         public string? LocationStock { get; set; }
-        public string? RequiredQty { get; set; }
-        public string Unit { get; set; }
+        public bool IssueStatus { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? RequiredQty { get; set; }      
+       
+
     }
 }
