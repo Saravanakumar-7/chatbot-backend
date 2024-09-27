@@ -725,10 +725,9 @@ namespace Tips.Production.Api.Controllers
                 _logger.LogInfo($"ShopOrder Created");
                 if (serverKey == "avision")
                 {
-                    _logger.LogInfo($"avision is doing");
+                    _logger.LogInfo($"Avision ShopOrder Email Creation Process");
                     var client = _clientFactory.CreateClient();
-                    var token = HttpContext.Request.Headers["Authorization"].ToString();
-                    _logger.LogInfo($"{_config["EmailAPI"]} is doing");
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();                   
                     var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreateShopOrder"));
                     request.Headers.Add("Authorization", token);
                     var response = await client.SendAsync(request);
@@ -807,7 +806,7 @@ namespace Tips.Production.Api.Controllers
                             dynamic itemMasterObject = itemMasterObjectData.data;
                             string uom = itemMasterObject.uom;
                             itemstring = itemstring.Replace("{{UOM}}", uom);
-                            string? PRDeliveryDate = null;
+                            
                             var temp = shopOrder.SOCloseDate.ToString("dd/MM/yyyy").Split(" ");
                             itemstring = itemstring.Replace("{{SOCloseDate}}", temp[0]);
 
@@ -836,10 +835,8 @@ namespace Tips.Production.Api.Controllers
                             dynamic itemMasterObject = itemMasterObjectData.data;
                             string uom = itemMasterObject.uom;
                             itemstring = itemstring.Replace("{{UOM}}", uom);
-                            string? PRDeliveryDate = null;
-                            var temp = shopOrder.SOCloseDate.ToString("dd/MM/yyyy").Split(" ");
-                            itemstring = itemstring.Replace("{{SOCloseDate}}", temp[0]);
-                            ItemData = ItemData + itemstring;
+                           
+                            
                         }
                     }
                     body = body.Replace("{{ShopOrderItems}}", ItemData);

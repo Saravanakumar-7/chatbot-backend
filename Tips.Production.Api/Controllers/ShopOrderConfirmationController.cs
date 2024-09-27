@@ -3,8 +3,11 @@ using System.Text;
 using AutoMapper;
 using Contracts;
 using Entities;
+using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit;
+using MimeKit.Text;
 using Newtonsoft.Json;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
@@ -19,10 +22,10 @@ namespace Tips.Production.Api.Controllers
     public class ShopOrderConfirmationController : ControllerBase
     {
         private IShopOrderConfirmationRepository _shopOrderConfirmationRepository;
-       private IShopOrderRepository _shopOrderRepo;
+        private IShopOrderRepository _shopOrderRepo;
         private ILoggerManager _logger;
         private readonly HttpClient _httpClient;
-        private readonly IConfiguration _config; 
+        private readonly IConfiguration _config;
         private IMapper _mapper;
         private readonly IHttpClientFactory _clientFactory;
 
@@ -36,9 +39,9 @@ namespace Tips.Production.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _clientFactory = clientFactory;
-    }
+        }
 
-       [HttpGet]
+        [HttpGet]
         public async Task<IActionResult> GetAllShopOrderConfirmation([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
             ServiceResponse<IEnumerable<ShopOrderConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderConfirmationDto>>();
@@ -115,10 +118,27 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
 
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> CreateShopOrderConfirmation([FromBody] ShopOrderConfirmationPostDto shopOrderConfirmationPostDto)
-        
+
         {
             ServiceResponse<ShopOrderConfirmationPostDto> serviceResponse = new ServiceResponse<ShopOrderConfirmationPostDto>();
 
@@ -142,14 +162,14 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                
+
                 var shopOrderConfirmation = _mapper.Map<ShopOrderConfirmation>(shopOrderConfirmationPostDto);
                 var shopOrderNumber = shopOrderConfirmation.ShopOrderNumber;
                 var shopOrderDetail = await _shopOrderRepo.GetShopOrderDetailsByShopOrderNo(shopOrderNumber);
                 shopOrderDetail.WipQty = shopOrderDetail.WipQty + shopOrderConfirmation.WipConfirmedQty;
-                if(shopOrderDetail.TotalSOReleaseQty == shopOrderDetail.WipQty) shopOrderDetail.ShopOrderConfirmationStatus = ShopOrderConformationStatus.FullyDone;
-                if(shopOrderDetail.TotalSOReleaseQty > shopOrderDetail.WipQty) shopOrderDetail.ShopOrderConfirmationStatus= ShopOrderConformationStatus.PartiallyDone;
-                await _shopOrderRepo.UpdateShopOrder(shopOrderDetail);               
+                if (shopOrderDetail.TotalSOReleaseQty == shopOrderDetail.WipQty) shopOrderDetail.ShopOrderConfirmationStatus = ShopOrderConformationStatus.FullyDone;
+                if (shopOrderDetail.TotalSOReleaseQty > shopOrderDetail.WipQty) shopOrderDetail.ShopOrderConfirmationStatus = ShopOrderConformationStatus.PartiallyDone;
+                await _shopOrderRepo.UpdateShopOrder(shopOrderDetail);
                 await _shopOrderConfirmationRepository.CreateShopOrderConfirmation(shopOrderConfirmation);
 
                 //shopOrderConfirmationPostDto.shopOrderItemConfirmations[0].WipConfirmedQty = shopOrderConfirmation.WipConfirmedQty;
@@ -157,8 +177,8 @@ namespace Tips.Production.Api.Controllers
                 //update Inventory Code                          
 
                 var json = JsonConvert.SerializeObject(shopOrderConfirmationPostDto.shopOrderItemConfirmations);
-               var data = new StringContent(json, Encoding.UTF8, "application/json");
-               //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnShopOrderConfirmation"), data);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnShopOrderConfirmation"), data);
 
                 var client1 = _clientFactory.CreateClient();
                 var token1 = HttpContext.Request.Headers["Authorization"].ToString();
@@ -184,15 +204,106 @@ namespace Tips.Production.Api.Controllers
                 {
                     _shopOrderRepo.SaveAsync();
                     _shopOrderConfirmationRepository.SaveAsync();
+                    string serverKey = GetServerKey();
+                    if (serverKey == "avision")
+                    {
+                        _logger.LogInfo($"Avision ShopOrderConfirmation Email Creation Process");
+                        var client = _clientFactory.CreateClient();
+                        var token = HttpContext.Request.Headers["Authorization"].ToString();
+                        var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreateShopOrderConfirmation"));
+                        request.Headers.Add("Authorization", token);
+                        var response1 = await client.SendAsync(request);
+                        _logger.LogInfo($"GetEmailTemplatebyProcessType is doing");
+                        if (response1.StatusCode != HttpStatusCode.OK)
+                            _logger.LogError($"Something went wrong inside GetEmailTemplatebyProcessType During Email action");
+                        var EmailTempString = await response1.Content.ReadAsStringAsync();
+                        var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                        var Operations = "From,CreateShopOrderConfirmation";
+                        var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                        request2.Headers.Add("Authorization", token);
+                        var response2 = await client.SendAsync(request2);
+                        _logger.LogInfo($"GetEmailIdDetailsbyOperation is doing");
+                        if (response1.StatusCode != HttpStatusCode.OK)
+                            _logger.LogError($"Something went wrong inside GetEmailIdDetailsbyOperation During Email action");
+                        var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                        var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+                        var httpclientHandler = new HttpClientHandler();
+                        var httpClient = new HttpClient(httpclientHandler);
+                        var mails = (emaildetails1.data.Where(x => x.operation == "CreateShopOrderConfirmation").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                        var email = new MimeMessage();
+                        email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                        email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
+                        email.Subject = emaildetails.data.subject;
+                        string body = emaildetails.data.template;
+                        
+                        body = body.Replace("{{ShopOrderNo}}", shopOrderDetail.ShopOrderNumber);
+                        List<string>? SalesorderList = new List<string>();
+                        string? salesorderNos = null;
+                        foreach (var item in shopOrderDetail.ShopOrderItems)
+                        {
+                            if (salesorderNos == null)
+                            {
+                                salesorderNos = item.SalesOrderNumber;
+                                SalesorderList.Add(item.SalesOrderNumber);
+                            }
+                            else
+                            {
+                                if (!SalesorderList.Contains(item.SalesOrderNumber))
+                                {
+                                    salesorderNos = salesorderNos + "," + item.SalesOrderNumber;
+                                    SalesorderList.Add(item.SalesOrderNumber);
+                                }
+                            }
+                        }
+
+                        body = body.Replace("{{SalesOrderNo}}", salesorderNos);
+                        body = body.Replace("{{ConfirmedBy}}", shopOrderConfirmation.CreatedBy);
+                        body = body.Replace("{{ProjectNo}}", shopOrderDetail.ShopOrderItems[0].ProjectNumber);                       
+                        body = body.Replace("{{Sl.No}}", "1");
+                        body = body.Replace("{{ItemNumbers}}", shopOrderDetail.ItemNumber);
+                        body = body.Replace("{{ItemDesc}}", shopOrderDetail.Description);
+                        body = body.Replace("{{RevNo}}", shopOrderDetail.BomRevisionNo.ToString());
+                        body = body.Replace("{{ProductQty}}", (shopOrderDetail.TotalSOReleaseQty-shopOrderDetail.WipQty).ToString());
+                        body = body.Replace("{{WIPQty}}", shopOrderDetail.WipQty.ToString());
+                        var ItemNumber = shopOrderDetail.ItemNumber;
+                        var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+                        var request3 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
+                            $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+                        request3.Headers.Add("Authorization", token);
+                        var itemMasterObjectResult = await client.SendAsync(request3);
+                        if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                            _logger.LogError($"Something went wrong inside GetItemMasterByItemNumber During Email action");
+                        var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                        dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                        dynamic itemMasterObject = itemMasterObjectData.data;
+                        string uom = itemMasterObject.uom;
+                        body = body.Replace("{{UOM}}", uom);
+
+                        email.Body = new TextPart(TextFormat.Html) { Text = body };
+                        _logger.LogInfo($"SmtpClient is doing");
+
+                        using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                        int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                        smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                        smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+                        smtp.Send(email);
+                        smtp.Disconnect(true);
+
+                    }
+
                 }
                 else
                 {
-                _logger.LogError($"Something went wrong inside CreateShopOrderConfirmation inside http inventory action UpdateInventoryOnShopOrderConfirmation action");
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
+                    _logger.LogError($"Something went wrong inside CreateShopOrderConfirmation inside http inventory action UpdateInventoryOnShopOrderConfirmation action");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Internal server error";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
                 }
 
 
@@ -364,7 +475,7 @@ namespace Tips.Production.Api.Controllers
                 }
                 else
                 {
-                   // shopOrderConfirmationList.IsOQCDone = False;
+                    // shopOrderConfirmationList.IsOQCDone = False;
                     _logger.LogInfo($"Returned Oqc with shopOrderNo: {shopOrderNo}");
                     var result = _mapper.Map<IEnumerable<ShopOrderConfirmationDto>>(openDataForOqcByShopOrderNo);
                     serviceResponse.Data = result;
@@ -404,7 +515,7 @@ namespace Tips.Production.Api.Controllers
                 }
                 else
                 {
-            
+
                     _logger.LogInfo($"Returned ShopOrderItemNo By FGItemType");
                     var result = _mapper.Map<IEnumerable<ShopOrderItemNoListDto>>(shopOrderItemNoList);
                     serviceResponse.Data = result;
