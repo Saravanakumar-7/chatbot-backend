@@ -38,6 +38,7 @@ namespace Tips.Warehouse.Api.Contracts
                                                                                                     string Warehouse, string Location, string ItemNumber, string MPN, string ProjectNumber);
         Task<IEnumerable<DailyDOReport>> GetDailyDeliveryOrderReports();
         Task<SalesOrderNoandIdDto> GetAllSalesOrderNoAndIdByBTONo(string btoNumber);
+        Task<IEnumerable<DoLotNumberListDto>> GetDOLotNumberListByBTONoAndItemNo(string btoNumber, string itemNumber);
         Task<BTODeliveryOrder> GetBTODeliveryOrderByIdExcludingClosed(int id);
         Task<IEnumerable<ListOfBtoNumberDetails>> GetBtoNumberListByCustomerIdExcludingClosed(string customerLeadId);
     }

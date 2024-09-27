@@ -16,6 +16,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? FGItemNumber { get; set; }
         public int? SalesOrderId { get; set; }
         public string? BTONumber { get; set; }
+        public string? LotNumber { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         public string? Description { get; set; }

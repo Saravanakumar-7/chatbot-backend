@@ -647,6 +647,22 @@ namespace Tips.SalesService.Api.Repository
             return getSalesorderList;
         }
 
+        public async Task<IEnumerable<ListofSalesOrderDetails>> GetSalesOrderNoDetailsByCustomerId(string Customerid)
+        {
+
+            IEnumerable<ListofSalesOrderDetails> getSalesorderList = await _tipsSalesServiceDbContext.SalesOrders
+                                .Where(b => b.CustomerId == Customerid)
+                                .Select(x => new ListofSalesOrderDetails()
+                                {
+                                    SalesOrderId = x.Id,
+                                    SalesOrderNumber = x.SalesOrderNumber,
+                                    PONumber = x.PONumber,
+                                })
+                              .ToListAsync();
+
+            return getSalesorderList;
+        }
+
         public async Task<object> GetSalesOrderTotalBySalesOrderId(int salesOrderId)
         {
 

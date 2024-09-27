@@ -1278,6 +1278,45 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetSalesOrderNoDetailsByCustomerId(string Customerid)
+        {
+            ServiceResponse<IEnumerable<ListofSalesOrderDetails>> serviceResponse = new ServiceResponse<IEnumerable<ListofSalesOrderDetails>>();
+
+            try
+            {
+                var getSalesDetailByCustomerId = await _repository.GetSalesOrderNoDetailsByCustomerId(Customerid);
+                if (getSalesDetailByCustomerId == null)
+                {
+                    _logger.LogError($"SalesOrderDetail with id: {Customerid}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderDetail with id: {Customerid}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned SalesOrderDetail with id: {Customerid}");
+                    var result = _mapper.Map<IEnumerable<ListofSalesOrderDetails>>(getSalesDetailByCustomerId);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetSalesOrderNoDetailsByCustomerId action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetSalesOrderTotalBySalesOrderId(int salesOrderId)
         {
             ServiceResponse<IEnumerable<SalesOrder>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrder>>();

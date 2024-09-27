@@ -25,6 +25,7 @@ namespace Tips.Warehouse.Api.Entities
         public decimal? UnitPrice { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
+        public string? LotNumber { get; set; }
         public decimal? StockAvailable { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }

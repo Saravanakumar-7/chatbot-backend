@@ -402,6 +402,23 @@ namespace Tips.Warehouse.Api.Repository
 
             return btoIddNameList;
         }
+        public async Task<IEnumerable<DoLotNumberListDto>> GetDOLotNumberListByBTONoAndItemNo(string btoNumber, string itemNumber)
+        {
+            var btoItemIdList = await _tipsWarehouseDbContext.bTODeliveryOrderItems
+                               .Where(x => x.BTONumber == btoNumber)
+                               .Select(b => b.Id).Distinct().ToListAsync();
+
+            var btoLotNumberlist = await _tipsWarehouseDbContext.BtoDeliveryOrderItemQtyDistribution
+                               .Where(x => x.PartNumber == itemNumber && btoItemIdList.Contains( x.BTODeliveryOrderItemsId))
+                              .Select(x => new DoLotNumberListDto()
+                              {
+                                  LotNumber = x.LotNumber
+
+                              })
+                            .ToListAsync();
+
+            return btoLotNumberlist;
+        }
         public async Task<BTODeliveryOrder> GetBTODeliveryOrderByIdExcludingClosed(int id)
         {
             var getBTODeliveryOrderDetailsbyId = await _tipsWarehouseDbContext.bTODeliveryOrder.Where(x => x.Id == id)

@@ -704,6 +704,7 @@ namespace Tips.Warehouse.Api.Controllers
                         {
                             InventoryTranction inventoryTranction = new InventoryTranction();
                             inventoryTranction.PartNumber = bTODoItemList[i].FGItemNumber;
+                            inventoryTranction.LotNumber = eachbin.LotNumber;
                             inventoryTranction.MftrPartNumber = bTODoItemList[i].FGItemNumber;
                             inventoryTranction.PartType = PartType.FG;
                             inventoryTranction.Description = bTODoItemList[i].Description;
@@ -1587,6 +1588,31 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError($"Something went wrong inside GetBtoNumberListByCustomerIdExcludingClosed action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDOLotNumberListByBTONoAndItemNo(string btoNumber, string itemNumber)
+        {
+            ServiceResponse<IEnumerable<DoLotNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<DoLotNumberListDto>>();
+            try
+            {
+                var doLotNumberList = await _repository.GetDOLotNumberListByBTONoAndItemNo(btoNumber, itemNumber);
+                var result = _mapper.Map<IEnumerable<DoLotNumberListDto>>(doLotNumberList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All DOLotNumberList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetDOLotNumberListByBTONoAndItemNo action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

@@ -441,8 +441,9 @@ namespace Tips.Warehouse.Api.Controllers
                         OpenDeliveryOrderItemsDetails.ODONumber = openDeliveryorder.OpenDONumber;
                         openDeliveryOrderItemsDtoList.Add(OpenDeliveryOrderItemsDetails);
 
+                        var distriution = _mapper.Map<List<OpenDeliveryOrderPartsQtyDistribution>>(openDeliveryOrderitemsList[i].QtyDistribution);
                         //Update Inventory balanced Quantity 
-                        await _inventoryRepository.UpdateInventoryforODO(openDeliveryOrderitemsList[i].QtyDistribution);
+                        await _inventoryRepository.UpdateInventoryforODO(distriution);
 
 
                         //Old Code [

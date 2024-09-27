@@ -26,12 +26,12 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandLocationandwarehouse(string ItemNumber, string Location, string Warehouse, string projectNumber);
         Task<Inventory> GetInventoryDetails(string ItemNumber);
         Task<List<InventoryQtyforDO>> GetInventorybyItemandProject(string itemNumber, string projectNumber);
-        Task<Inventory?> GetInventorybyItemProjectWarehouseLocation(string itemNumber, string projectNumber, string warehouse, string location);
+        Task<Inventory?> GetInventorybyItemProjectWarehouseLocation(string itemNumber, string projectNumber, string warehouse, string location, string lotNumber);
         Task<List<InventoryQtyforDO>> GetInventorybyItem(string itemNumber);
         Task UpdateInventoryforBTO(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis, string DoNumber);
         Task UpdateInventoryforBTO_Keus(List<BtoDeliveryOrderItemQtyDistribution> bToitemDis, string DoNumber);
         // Task UpdateInventoryforODO(List<OpenDeliveryOrderPartsQtyDistribution> ODOitemDis);
-        Task UpdateInventoryforODO(List<OpenDeliveryOrderPartsQtyDistributionPostDto> ODOItemsLocationWiseList);
+        Task UpdateInventoryforODO(List<OpenDeliveryOrderPartsQtyDistribution> ODOItemsLocationWiseList);
         Task<Inventory> GetInventoryFGDetailsByItemNumber(string ItemNumber);
 
         //Task<Inventory> UpdateInventoryBalanceQty(string partNumber, string Qty);

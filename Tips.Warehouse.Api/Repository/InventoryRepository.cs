@@ -588,10 +588,11 @@ namespace Tips.Warehouse.Api.Repository
             string result = $"NaterialIssue details of {inventory.Id} is deleted successfully!";
             return result;
         }
-        public async Task<Inventory?> GetInventorybyItemProjectWarehouseLocation(string itemNumber, string projectNumber, string warehouse, string location)
+        public async Task<Inventory?> GetInventorybyItemProjectWarehouseLocation(string itemNumber, string projectNumber, string warehouse, string location, string lotNumber)
         {
             var invdetails = await _tipsWarehouseDbContext.Inventories
-                .Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber && x.Warehouse == warehouse && x.Location == location).FirstOrDefaultAsync();
+                .Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber && x.Warehouse == warehouse 
+                && x.Location == location && x.LotNumber == lotNumber).FirstOrDefaultAsync();
             return invdetails;
         }
         public async Task<List<InventoryQtyforDO>> GetInventorybyItemandProject(string itemNumber, string projectNumber)
@@ -792,7 +793,7 @@ namespace Tips.Warehouse.Api.Repository
                 }
             }
         }
-        public async Task UpdateInventoryforODO(List<OpenDeliveryOrderPartsQtyDistributionPostDto> ODOItemsLocationWiseList)
+        public async Task UpdateInventoryforODO(List<OpenDeliveryOrderPartsQtyDistribution> ODOItemsLocationWiseList)
         {
             var itemNumber = ODOItemsLocationWiseList.Select(x => x.PartNumber).FirstOrDefault();
             var projectNumber = ODOItemsLocationWiseList.Select(x => x.ProjectNumber).FirstOrDefault();

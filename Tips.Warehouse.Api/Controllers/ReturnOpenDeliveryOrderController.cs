@@ -542,11 +542,12 @@ namespace Tips.Warehouse.Api.Controllers
                             var itemMasterObjectData = JsonConvert.DeserializeObject<ReturnBTONumberInvDetails>(itemMasterObjectString);
                             var itemMasterObject = itemMasterObjectData.data;
 
-                            var exInv = await _inventoryRepository.GetInventorybyItemProjectWarehouseLocation(returnOpenDeliveryOrderParts.ItemNumber, eachbin.ProjectNumber, eachbin.Warehouse, eachbin.Location);
+                            var exInv = await _inventoryRepository.GetInventorybyItemProjectWarehouseLocation(returnOpenDeliveryOrderParts.ItemNumber, eachbin.ProjectNumber, eachbin.Warehouse, eachbin.Location, eachbin.LotNumber);
                             if (exInv == null)
                             {
                                 Inventory inventory = new Inventory();
                                 inventory.PartNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
+                                inventory.LotNumber = eachbin.LotNumber;
                                 inventory.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                                 inventory.Description = returnOpenDeliveryOrderPartsDtoList[i].Description;
                                 inventory.ProjectNumber = eachbin.ProjectNumber;
@@ -567,6 +568,35 @@ namespace Tips.Warehouse.Api.Controllers
 
                                 await _inventoryRepository.CreateInventory(inventory);
                                 _inventoryRepository.SaveAsync();
+
+                                InventoryTranction inventoryTranction1 = new InventoryTranction();
+                                inventoryTranction1.PartNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
+                                inventoryTranction1.LotNumber = eachbin.LotNumber;
+                                inventoryTranction1.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                inventoryTranction1.Description = returnOpenDeliveryOrderPartsDtoList[i].Description;
+                                inventoryTranction1.Issued_Quantity = eachbin.DistributingQty;
+                                inventoryTranction1.UOM = returnOpenDeliveryOrderPartsDtoList[i].UOM;
+                                inventoryTranction1.Issued_DateTime = DateTime.Now;
+                                inventoryTranction1.ReferenceID = returnOpenDeliveryOrderParts.ODONumber;
+                                inventoryTranction1.ReferenceIDFrom = "Return ODO Delivery Order";
+                                inventoryTranction1.Issued_By = _createdBy;
+                                inventoryTranction1.From_Location = "BTO";
+                                inventoryTranction1.TO_Location = eachbin.Location;
+                                inventoryTranction1.Remarks = "Return BTO";
+                                inventoryTranction1.Warehouse = eachbin.Warehouse;
+                                inventoryTranction1.PartType = returnOpenDeliveryOrderPartsDtoList[i].ItemType;
+
+                                if (returnOpenDeliveryOrderPartsDtoList[i].StockAvailable != null)
+                                {
+                                    inventoryTranction1.IsStockAvailable = true;
+                                }
+                                else
+                                {
+                                    inventoryTranction1.IsStockAvailable = false;
+                                }
+
+                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction1);
+                                _inventoryTranctionRepository.SaveAsync();
                             }
                             else
                             {
@@ -576,36 +606,37 @@ namespace Tips.Warehouse.Api.Controllers
                                 exInv.Balance_Quantity += eachbin.DistributingQty;
                                 await _inventoryRepository.UpdateInventory(exInv);
                                 _inventoryRepository.SaveAsync();
+
+                                InventoryTranction inventoryTranction = new InventoryTranction();
+                                inventoryTranction.PartNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
+                                inventoryTranction.LotNumber = eachbin.LotNumber;
+                                inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                inventoryTranction.Description = returnOpenDeliveryOrderPartsDtoList[i].Description;
+                                inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
+                                inventoryTranction.UOM = returnOpenDeliveryOrderPartsDtoList[i].UOM;
+                                inventoryTranction.Issued_DateTime = DateTime.Now;
+                                inventoryTranction.ReferenceID = returnOpenDeliveryOrderParts.ODONumber;
+                                inventoryTranction.ReferenceIDFrom = "Return ODO Delivery Order";
+                                inventoryTranction.Issued_By = _createdBy;
+                                inventoryTranction.From_Location = "BTO";
+                                inventoryTranction.TO_Location = eachbin.Location;
+                                inventoryTranction.Remarks = "Return BTO";
+                                inventoryTranction.Warehouse = eachbin.Warehouse;
+                                inventoryTranction.PartType = returnOpenDeliveryOrderPartsDtoList[i].ItemType;
+                                if (returnOpenDeliveryOrderPartsDtoList[i].StockAvailable != null)
+                                {
+                                    inventoryTranction.IsStockAvailable = true;
+                                }
+                                else
+                                {
+                                    inventoryTranction.IsStockAvailable = false;
+                                }
+
+                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
+                                _inventoryTranctionRepository.SaveAsync();
                             }
 
-                            InventoryTranction inventoryTranction = new InventoryTranction();
-                            inventoryTranction.PartNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
-                            inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); 
-                            inventoryTranction.Description = returnOpenDeliveryOrderPartsDtoList[i].Description;
-                            inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
-                            inventoryTranction.UOM = returnOpenDeliveryOrderPartsDtoList[i].UOM;
-                            inventoryTranction.Issued_DateTime = DateTime.Now;
-                            inventoryTranction.ReferenceID = returnOpenDeliveryOrderParts.ODONumber;
-                            inventoryTranction.ReferenceIDFrom = "Return ODO Delivery Order";
-                            inventoryTranction.Issued_By = _createdBy;
-                            inventoryTranction.From_Location = "BTO";
-                            inventoryTranction.TO_Location = eachbin.Location;
-                            inventoryTranction.Remarks = "Return BTO";
-                            inventoryTranction.Warehouse = eachbin.Warehouse;
-                            inventoryTranction.PartType = returnOpenDeliveryOrderPartsDtoList[i].ItemType;
-                            if (returnOpenDeliveryOrderPartsDtoList[i].StockAvailable != null)
-                            {
-                                inventoryTranction.IsStockAvailable = true;
-                            }
-                            else
-                            {
-                                inventoryTranction.IsStockAvailable = false;
-                            }
-
-                            var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
-
-                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
-                            _inventoryTranctionRepository.SaveAsync();
+                           
 
                             //update Dispatch Qty in Open Delivery Order Table
                             int getODOPartsId = returnOpenDeliveryOrderPartsDto[i].ODOPartId;
@@ -637,7 +668,7 @@ namespace Tips.Warehouse.Api.Controllers
                             openDeliveryOrderHistory.ODOType = returnOpenDeliveryOrder.ODOType;
                             openDeliveryOrderHistory.ODODate = Convert.ToDateTime(returnOpenDeliveryOrder.ODODate);
                             openDeliveryOrderHistory.Unit = _unitname;
-
+                            openDeliveryOrderHistory.LotNumber = eachbin.LotNumber;
                             openDeliveryOrderHistory.ItemNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
                             openDeliveryOrderHistory.ItemDescription = returnOpenDeliveryOrderPartsDtoList[i].Description;
                             openDeliveryOrderHistory.ItemType = returnOpenDeliveryOrderPartsDtoList[i].ItemType;

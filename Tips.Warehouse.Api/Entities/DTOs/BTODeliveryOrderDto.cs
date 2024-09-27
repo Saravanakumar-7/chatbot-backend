@@ -206,4 +206,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public int? SalesOrderId { get; set; }
         public string? SalesOrderNumber { get; set; }
     }
+    public class DoLotNumberListDto
+    {
+        public string LotNumber { get; set; }
+    }
 }

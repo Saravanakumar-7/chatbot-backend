@@ -281,11 +281,12 @@ namespace Tips.Warehouse.Api.Controllers
                             var itemMasterObjectData = JsonConvert.DeserializeObject<ReturnBTONumberInvDetails>(itemMasterObjectString);
                             var itemMasterObject = itemMasterObjectData.data;
 
-                            var exInv = await _inventoryRepository.GetInventorybyItemProjectWarehouseLocation(returnInvoiceItems.FGPartNumber, eachbin.ProjectNumber, eachbin.Warehouse, eachbin.Location);
+                            var exInv = await _inventoryRepository.GetInventorybyItemProjectWarehouseLocation(returnInvoiceItems.FGPartNumber, eachbin.ProjectNumber, eachbin.Warehouse, eachbin.Location, eachbin.LotNumber);
                             if (exInv == null)
                             {
                                 Inventory inventory = new Inventory();
                                 inventory.PartNumber = returnInvoiceItemsList[i].FGPartNumber;
+                                inventory.LotNumber = eachbin.LotNumber;
                                 inventory.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                                 inventory.Description = returnInvoiceItemsList[i].Description;
                                 inventory.ProjectNumber = eachbin.ProjectNumber;
@@ -311,6 +312,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                                 InventoryTranction inventoryTranction = new InventoryTranction();
                                 inventoryTranction.PartNumber = inventory.PartNumber;
+                                inventoryTranction.LotNumber = eachbin.LotNumber;
                                 inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                                 inventoryTranction.Description = inventory.Description;
                                 inventoryTranction.Issued_Quantity = inventory.Balance_Quantity;
@@ -341,6 +343,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                                 InventoryTranction inventoryTranction = new InventoryTranction();
                                 inventoryTranction.PartNumber = exInv.PartNumber;
+                                inventoryTranction.LotNumber = eachbin.LotNumber;
                                 inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                                 inventoryTranction.Description = exInv.Description;
                                 inventoryTranction.Issued_Quantity = exInv.Balance_Quantity;
@@ -386,6 +389,7 @@ namespace Tips.Warehouse.Api.Controllers
                             bTODeliveryOrderHistory.FGStock = Convert.ToDecimal(btoDeliveryOrderItemDetails.FGStock);
                             bTODeliveryOrderHistory.Discount = btoDeliveryOrderItemDetails.Discount;
                             bTODeliveryOrderHistory.NetValue = btoDeliveryOrderItemDetails.NetValue;
+                            bTODeliveryOrderHistory.LotNumber = eachbin.LotNumber;
                             bTODeliveryOrderHistory.Location = eachbin.Location;
                             bTODeliveryOrderHistory.Warehouse = eachbin.Warehouse;
                             bTODeliveryOrderHistory.DispatchQty = eachbin.DistributingQty;
