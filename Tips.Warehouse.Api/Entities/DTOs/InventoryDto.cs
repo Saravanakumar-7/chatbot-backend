@@ -375,7 +375,14 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal WipQuantity { get; set; }
 
     }
+    public class ConsumptionChildItemForProjectListInventoryDto
+    {
+        public string PartNumber { get; set; }
+        public string ProjectNumber { get; set; }
+        public decimal BalanceQuantity { get; set; }
+        public decimal WipQuantity { get; set; }
 
+    }
     public class InventoryBalanceQtyMaterialIssue
     {
         public string PartNumber { get; set; }

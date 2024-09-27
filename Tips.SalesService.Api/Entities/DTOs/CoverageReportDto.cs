@@ -51,7 +51,14 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal WipQuantity { get; set; }
 
     }
+    public class ChildItemStockWithProjectListWipDto
+    {
+        public string PartNumber { get; set; }
+        public string ProjectNumber { get; set; }
+        public decimal BalanceQuantity { get; set; }
+        public decimal WipQuantity { get; set; }
 
+    }
     public class OpenPoQuantityDto
     {
         public string? ItemNumber { get; set; }

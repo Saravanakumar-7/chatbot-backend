@@ -49,6 +49,7 @@ namespace Tips.Production.Api.Controllers
             try
             {
                 var materialRequestDetails = await _materialRequestRepository.GetAllMaterialRequest(pagingParameter, searchParammes);
+
                 var metadata = new
                 {
                     materialRequestDetails.TotalCount,
@@ -61,8 +62,24 @@ namespace Tips.Production.Api.Controllers
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogError("Returned all listOfmaterials");
-                var result = _mapper.Map<IEnumerable<MaterialRequestsDto>>(materialRequestDetails);
-                serviceResponse.Data = result;
+
+                var materialRequestsDtos = _mapper.Map<IEnumerable<MaterialRequestsDto>>(materialRequestDetails);
+
+                foreach (var materialRequest in materialRequestsDtos)
+                {
+                    if (materialRequest.MaterialRequestItems != null)
+                    {
+                        materialRequest.SumOfIssuedQty = materialRequest.MaterialRequestItems
+                            .Sum(mri => mri.IssuedQty);
+                    }
+                    else
+                    {
+                        materialRequest.SumOfIssuedQty = 0; 
+                    }
+                }
+
+                serviceResponse.Data = materialRequestsDtos;
+
                 serviceResponse.Message = "Returned all MaterialRequest Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -384,8 +401,10 @@ namespace Tips.Production.Api.Controllers
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
                 _logger.LogError("Returned all getAllMaterialRequestStatusOpen");
-                var result = _mapper.Map<IEnumerable<MaterialRequestsDto>>(materialRequestDetails);
-                serviceResponse.Data = result;
+                var materialRequestsDtos = _mapper.Map<IEnumerable<MaterialRequestsDto>>(materialRequestDetails);
+
+
+                serviceResponse.Data = materialRequestsDtos;
                 serviceResponse.Message = "Returned all MaterialRequestStatusOpen Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;

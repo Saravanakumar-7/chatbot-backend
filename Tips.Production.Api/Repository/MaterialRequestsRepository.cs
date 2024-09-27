@@ -119,7 +119,9 @@ namespace Tips.Production.Api.Repository
         {
             var materialRequests = FindAll().OrderByDescending(x => x.Id)
               .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.MRNumber.Contains(searchParammes.SearchValue)
-              || inv.ProjectNumber.Contains(searchParammes.SearchValue) || inv.ShopOrderNumber.Contains(searchParammes.SearchValue))) /*&& inv.MrStatus != MaterialStatus.Closed*/);
+              || inv.ProjectNumber.Contains(searchParammes.SearchValue) || inv.ShopOrderNumber.Contains(searchParammes.SearchValue))) /*&& inv.MrStatus != MaterialStatus.Closed*/)
+              .Include(s => s.MaterialRequestItems)
+                .ThenInclude(m => m.MRStockDetails); 
 
               
             return PagedList<MaterialRequests>.ToPagedList(materialRequests, pagingParameter.PageNumber, pagingParameter.PageSize);

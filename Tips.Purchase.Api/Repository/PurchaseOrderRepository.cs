@@ -2082,6 +2082,38 @@ namespace Tips.Purchase.Api.Repository
             return openPoQtyList;
 
         }
+
+        public async Task<List<OpenPoQuantityDto>> GetListOfOpenPOQtyByItemNoListByMultipleProjectNo(List<string> itemNumberList, List<string> projectNoList)
+        {
+            var poStatus = new List<PoStatus> { PoStatus.Open, PoStatus.PartiallyClosed, PoStatus.Closed };
+
+            var poItemIds = await _tipsPurchaseDbContext.PoAddProjects
+                .Where(x => projectNoList.Contains(x.ProjectNumber))
+                .Select(x => x.POItemDetailId)
+                .ToListAsync();
+
+            var openPoQtyList = await _tipsPurchaseDbContext.PoItems
+                .Include(x => x.PurchaseOrder)
+                .Where(x => poStatus.Contains(x.PurchaseOrder.PoStatus)
+                    && poItemIds.Contains(x.Id)
+                    && itemNumberList.Contains(x.ItemNumber)
+                    && x.PurchaseOrder.IsDeleted == false
+                    && x.PurchaseOrder.IsModified == false
+                    && x.POAddprojects.Any(pr => projectNoList.Contains(pr.ProjectNumber))
+                    && ((x.PurchaseOrder.ApprovalCount == 4 && x.PurchaseOrder.POApprovalI && x.PurchaseOrder.POApprovalII &&
+                          x.PurchaseOrder.POApprovalIII && x.PurchaseOrder.POApprovalIV) ||
+                        (x.PurchaseOrder.ApprovalCount == 2 && x.PurchaseOrder.POApprovalI && x.PurchaseOrder.POApprovalII)))
+                .GroupBy(i => i.ItemNumber) // Group by ItemNumber
+                .Select(gr => new OpenPoQuantityDto
+                {
+                    ItemNumber = gr.Key,
+                    OpenPoQty = gr.Sum(x => x.Qty)
+                })
+                .ToListAsync();
+
+            return openPoQtyList;
+        }
+
         public async Task<PoItem> ClosePoItemSatusByPoItemId(int poItemId)
         {
             var poItemDetailByPoItemId = await _tipsPurchaseDbContext.PoItems.Where(x => x.Id == poItemId)

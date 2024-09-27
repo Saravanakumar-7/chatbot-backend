@@ -18,7 +18,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? IssuedBy { get; set; }
         public string? IssuedTo { get; set; }
         public DateTime? IssuedOn { get; set; }
-
+        public decimal? SumOfIssuedQty { get; set; }
         public IssuedStatus IssuedStatus { get; set; }
 
         [DefaultValue(0)]
