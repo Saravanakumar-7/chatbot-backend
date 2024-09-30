@@ -291,6 +291,12 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal OpenPoQty { get; set; }
 
     }
+    public class coveragePOByMultipleProjectDto
+    {
+        public List<string> itemNumberList { get; set; }
+        public List<string> projectNo { get; set; }
+
+    }
     public class PoItemConfirmationDateDto
     {
         public int PoId { get; set; }

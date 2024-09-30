@@ -997,6 +997,33 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetListOfOpenPOQtyByItemNoListByMultipleProjectNo(coveragePOByMultipleProjectDto coveragePOByMultipleProjectDto)
+        {
+            //openpurchaseorderdto
+            ServiceResponse<IEnumerable<OpenPoQuantityDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenPoQuantityDto>>();
+            try
+            {
+                var revNumberDetailsbyPONumber = await _poItemsRepository.GetListOfOpenPOQtyByItemNoListByMultipleProjectNo(coveragePOByMultipleProjectDto.itemNumberList,
+                                                                                                                                    coveragePOByMultipleProjectDto.projectNo);
+                var result = _mapper.Map<IEnumerable<OpenPoQuantityDto>>(revNumberDetailsbyPONumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Open PurchaseOrder Details By ProjectNo and ItemNo List";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetListOfOpenPOQtyByItemNoListByProjectNo action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetPRNumberandQtyListByItemNumber(string itemMaster)
         {

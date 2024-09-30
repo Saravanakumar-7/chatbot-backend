@@ -1750,12 +1750,13 @@ namespace Tips.Grin.Api.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> GetListOfBinningQtyByItemNoListByMultipleProjectNo(string itemNumber, List<string> projectNo)
+        public async Task<IActionResult> GetListOfBinningQtyByItemNoListByMultipleProjectNo(coverageBinningByMultipleProjectDto coverageBinningByMultipleProjectDto)
         {
             ServiceResponse<IEnumerable<BinningQuantityDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningQuantityDto>>();
             try
             {
-                var revNumberDetailsbyPONumber = await _binningLocationRepository.GetListOfBinningQtyByItemNoListByMultipleProjectNo(itemNumber,projectNo);
+                var revNumberDetailsbyPONumber = await _binningLocationRepository.GetListOfBinningQtyByItemNoListByMultipleProjectNo(coverageBinningByMultipleProjectDto.ItemNumber,
+                                                                                                                                        coverageBinningByMultipleProjectDto.projectNo);
 
 
                 var result = _mapper.Map<IEnumerable<BinningQuantityDto>>(revNumberDetailsbyPONumber);

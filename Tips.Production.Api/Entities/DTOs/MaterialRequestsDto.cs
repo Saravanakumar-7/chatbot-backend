@@ -134,6 +134,13 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ProjectNumber { get; set; }
         public string? Itemnumber { get; set; }
         public string? ShopOrderNumber { get; set; }
+        public string? IssuedStatus { get; set; }
+    }
+    public class MaterialRequestReportWithDateDtoForTrans
+    {
+        public  DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+        public string? IssuedStatus { get; set; }
     }
     public class MaterialIssueAgainstMaterialRequestReportWithParamDto
     {

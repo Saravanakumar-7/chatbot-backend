@@ -1173,10 +1173,10 @@ namespace Tips.SalesService.Api.Controllers
                             var projNoListString = new StringContent(projNoListJson, Encoding.UTF8, "application/json");
 
                             //Open Stock with WIP Quantity
-                            List<ChildItemStockWithProjectListWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItemsByMultipleProjectNo(itemNoListString, projNoListString);
+                            List<ChildItemStockWithProjectListWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItemsByMultipleProjectNo(itemNumberList, coverageReportProjectDto.ProjectNumber);
 
                             //Open PO Qty for Child Items
-                            List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItemsByMultipleProjectNo(itemNoListString, projNoListString);
+                            List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItemsByMultipleProjectNo(itemNumberList, coverageReportProjectDto.ProjectNumber);
 
 
                             foreach (var item in childItemReqQtyDtos)
@@ -1197,7 +1197,7 @@ namespace Tips.SalesService.Api.Controllers
                                 };
 
                                 //Binning Qty 
-                                List<BinningQuantityDto> binningQtyList = await GetBinningQtyForChildItemsByMultipleProjectNo(item.ItemNumber, projNoListString);
+                                List<BinningQuantityDto> binningQtyList = await GetBinningQtyForChildItemsByMultipleProjectNo(item.ItemNumber, coverageReportProjectDto.ProjectNumber);
 
                                 var OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault();
                                 var binningQty = binningQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.BinningQty).FirstOrDefault();
@@ -1512,18 +1512,20 @@ namespace Tips.SalesService.Api.Controllers
             return childItemStockWithWipQty;
         }
 
-        private async Task<List<ChildItemStockWithProjectListWipDto>> GetStockWithWipQtyForChildItemsByMultipleProjectNo(StringContent itemNoListString, StringContent projectnoListString)
+        private async Task<List<ChildItemStockWithProjectListWipDto>> GetStockWithWipQtyForChildItemsByMultipleProjectNo(List<string> itemNumberList, List<string> projectNoList)
         {
             var client = _clientFactory.CreateClient();
             var token = HttpContext.Request.Headers["Authorization"].ToString();
-            //var encodedProjectNo = Uri.EscapeDataString(projectno);
-            var content = new MultipartFormDataContent();
 
-            content.Add(itemNoListString, "itemNoList");
+            // Serialize the lists into a single JSON object
+            var requestData = new
+            {
+                itemNumberList = itemNumberList,
+                projectNo = projectNoList
+            };
+            var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
 
-            content.Add(projectnoListString, "projectnoList");
-
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"], $"GetConsumptionChildItemStockWithWipQtyByMultipleProjectNo?"))
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQtyByMultipleProjectNo"))
             {
                 Content = content
             };
@@ -1603,18 +1605,20 @@ namespace Tips.SalesService.Api.Controllers
             return openPoQtyList;
         }
 
-        private async Task<List<OpenPoQuantityDto>> GetOpenPoQtyForChildItemsByMultipleProjectNo(StringContent itemNoListString, StringContent projectnoListString)
+        private async Task<List<OpenPoQuantityDto>> GetOpenPoQtyForChildItemsByMultipleProjectNo(List<string> itemNumberList, List<string> projectNoList)
         {
             var client = _clientFactory.CreateClient();
             var token = HttpContext.Request.Headers["Authorization"].ToString();
-            //var encodedProjectNo = Uri.EscapeDataString(projectNo);
-            var content = new MultipartFormDataContent();
 
-            content.Add(itemNoListString, "itemNoList");
+            var requestData = new 
+            {
+                itemNumberList = itemNumberList,
+                projectNo = projectNoList
+            };
 
-            content.Add(projectnoListString, "projectnoList");
+            var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
 
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"], $"GetListOfOpenPOQtyByItemNoListByMultipleProjectNo?"))
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"], $"GetListOfOpenPOQtyByItemNoListByMultipleProjectNo"))
             {
                 Content = content
             };
@@ -1660,16 +1664,23 @@ namespace Tips.SalesService.Api.Controllers
 
             return openPoQtyList;
         }
-        private async Task<List<BinningQuantityDto>> GetBinningQtyForChildItemsByMultipleProjectNo(string itemNumber, StringContent projectnoListString)
+        private async Task<List<BinningQuantityDto>> GetBinningQtyForChildItemsByMultipleProjectNo(string itemNumber, List<string> projectNoList)
         {
             var client = _clientFactory.CreateClient();
             var token = HttpContext.Request.Headers["Authorization"].ToString();
-            //var encodedProjectNo = Uri.EscapeDataString(projectNo);
-            var encodedItemNo = Uri.EscapeDataString(itemNumber);
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["BinningAPI"], $"GetListOfBinningQtyByItemNoListByMultipleProjectNo?ItemNumber={encodedItemNo}"))
+
+            var requestData = new
             {
-                Content = projectnoListString
-            }; 
+                ItemNumber = itemNumber,
+                projectNo = projectNoList
+            };
+
+            var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["BinningAPI"], "GetListOfBinningQtyByItemNoListByMultipleProjectNo"))
+            {
+                Content = content
+            };
 
             request.Headers.Add("Authorization", token);
 
@@ -1719,6 +1730,8 @@ namespace Tips.SalesService.Api.Controllers
         private async Task<List<CoverageReportChildItemReqQtyDataByProjectNoDto>> GetChildItemRequiredQtyFromBomByProjectNo(List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails)
         {
             var client = _clientFactory.CreateClient();
+            //client.Timeout = TimeSpan.FromMinutes(10); // Set to 5 minutes, or whatever duration you need
+
             var token = HttpContext.Request.Headers["Authorization"].ToString();
             var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
             var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
@@ -1746,6 +1759,56 @@ namespace Tips.SalesService.Api.Controllers
 
 
         }
+
+        private async Task<List<CoverageReportChildItemReqQtyDataByProjectNoDto>> GetChildItemRequiredQtyFromBomByMultipleProjectNo(List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails)
+        {
+            var client = _clientFactory.CreateClient();
+            // Increase timeout if needed
+            //client.Timeout = TimeSpan.FromMinutes(10);
+
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            const int batchSize = 200; // Define your batch size
+            var childItemReqQtyDtos = new List<CoverageReportChildItemReqQtyDataByProjectNoDto>();
+
+            var totalBatches = (int)Math.Ceiling((double)openFGCoverageDetails.Count / batchSize);
+
+            for (int batchIndex = 0; batchIndex < totalBatches; batchIndex++)
+            {
+                // Create a batch of items
+                var batch = openFGCoverageDetails.Skip(batchIndex * batchSize).Take(batchSize).ToList();
+                var openFGCoverageDetailsJson = JsonConvert.SerializeObject(batch);
+                var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
+
+                var request = new HttpRequestMessage(HttpMethod.Post, $"{_config["EngineeringBomAPI"]}GetBomDetailsByProjectNoForCoverageReport")
+                {
+                    Content = openFGCoverageDetailsString
+                };
+                request.Headers.Add("Authorization", token);
+
+                try
+                {
+                    var response = await client.SendAsync(request);
+                    response.EnsureSuccessStatusCode(); // Throws if the status code is not 2xx
+
+                    var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
+                    dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
+
+                    foreach (var item in childItemRequiredQtyData.data)
+                    {
+                        CoverageReportChildItemReqQtyDataByProjectNoDto dto = JsonConvert.DeserializeObject<CoverageReportChildItemReqQtyDataByProjectNoDto>(item.ToString());
+                        childItemReqQtyDtos.Add(dto);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    // Log or handle the exception as needed
+                    // You might want to continue processing other batches even if one fails
+                }
+            }
+
+            return childItemReqQtyDtos;
+        }
+
         //test consumption report
         [HttpGet]
         public async Task<List<CoverageReport>> GenerateCoverageReportAsync()
