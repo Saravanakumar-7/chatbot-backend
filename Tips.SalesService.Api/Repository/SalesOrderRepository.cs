@@ -649,16 +649,19 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<ListofSalesOrderDetails>> GetSalesOrderNoDetailsByCustomerId(string Customerid)
         {
+           var soAddSalesOrderIds = await _tipsSalesServiceDbContext.SalesOrderAdditionalCharges
+                                .Where(x=> x.SOAdditionalStatus != SoStatus.Closed)
+                                .Select(x => x.SalesOrderId) .ToListAsync();
 
             IEnumerable<ListofSalesOrderDetails> getSalesorderList = await _tipsSalesServiceDbContext.SalesOrders
-                                .Where(b => b.CustomerId == Customerid)
-                                .Select(x => new ListofSalesOrderDetails()
-                                {
-                                    SalesOrderId = x.Id,
-                                    SalesOrderNumber = x.SalesOrderNumber,
-                                    PONumber = x.PONumber,
-                                })
-                              .ToListAsync();
+                               .Where(b => b.CustomerId == Customerid && soAddSalesOrderIds.Contains( b.Id))
+                               .Select(x => new ListofSalesOrderDetails()
+                               {
+                                   SalesOrderId = x.Id,
+                                   SalesOrderNumber = x.SalesOrderNumber,
+                                   PONumber = x.PONumber,
+                               })
+                             .ToListAsync();
 
             return getSalesorderList;
         }
