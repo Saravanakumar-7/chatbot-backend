@@ -1500,6 +1500,7 @@ namespace Tips.SalesService.Api.Controllers
                                     Description = item.Description,
                                     UOM = item.UOM,
                                     PartType = item.PartType,
+                                    RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
                                     Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
                                     WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
                                     //OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
@@ -1572,7 +1573,7 @@ namespace Tips.SalesService.Api.Controllers
                     if (openFGCoverageDetails != null && openFGCoverageDetails.Count() != 0)
                     {
                         // Child Item Required Qty from BOM
-                        List<CoverageReportChildItemReqQtyDataByProjectNoDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBomByProjectNo(openFGCoverageDetails);
+                        List<BomCoverageReportChildItemReqQtyByProjectNoDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBom(openFGCoverageDetails);
 
                         if (childItemReqQtyDtos != null && childItemReqQtyDtos.Count() != 0)
                         {
@@ -1940,6 +1941,7 @@ namespace Tips.SalesService.Api.Controllers
         private async Task<List<BomCoverageReportChildItemReqQtyByProjectNoDto>> GetChildItemRequiredQtyFromBom(List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails)
         {
             var client = _clientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(10);
             var token = HttpContext.Request.Headers["Authorization"].ToString();
             var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
             var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");

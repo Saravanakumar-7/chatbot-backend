@@ -2551,8 +2551,11 @@ namespace Tips.Master.Api.Controllers
                         .Select(group => new BomCoverageReportChildItemReqQtyByProjectNoDto
                         {
                             ItemNumber = group.Key,
-                            PartType = group.First().PartType,
+                            MftrItemNumber = group.First().MftrItemNumber,
+                            Version = group.First().Version,
+                            Description = group.First().Description,
                             UOM = group.First().UOM,
+                            PartType = group.First().PartType,
                             RequiredQty = group.Sum(item => item.RequiredQty)
                         })
                         .ToList();
@@ -2720,6 +2723,7 @@ namespace Tips.Master.Api.Controllers
                                     //  "GetTotalStockOfItemNumber?", "itemNumber=", saItemNumber));
 
                                     var client = _clientFactory.CreateClient();
+                                    client.Timeout = TimeSpan.FromMinutes(10);
                                     var token = HttpContext.Request.Headers["Authorization"].ToString();
 
                                     var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
