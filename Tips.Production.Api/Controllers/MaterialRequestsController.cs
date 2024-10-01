@@ -201,7 +201,7 @@ namespace Tips.Production.Api.Controllers
             {
                 var products = await _materialRequestRepository.GetMaterialRequestSPReportWithParamForTrans(materialRequestReportWithParamDto.MRNumber,
                                                                             materialRequestReportWithParamDto.ProjectNumber, materialRequestReportWithParamDto.Itemnumber,
-                                                                            materialRequestReportWithParamDto.ShopOrderNumber);
+                                                                            materialRequestReportWithParamDto.ShopOrderNumber,materialRequestReportWithParamDto.IssuedStatus);
 
                 if (products == null)
                 {
@@ -269,13 +269,15 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
-        [HttpGet] // Adjust your route as needed
-        public async Task<IActionResult> GetMaterialRequestSPReportWithDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetMaterialRequestSPReportWithDateForTrans(MaterialRequestReportWithDateDtoForTrans materialRequestReportWithDateDtoForTrans)
         {
             ServiceResponse<IEnumerable<MaterialRequestSpReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<MaterialRequestSpReportForTrans>>();
             try
             {
-                var products = await _materialRequestRepository.GetMaterialRequestSPReportWithDateForTrans(FromDate, ToDate);
+                var products = await _materialRequestRepository.GetMaterialRequestSPReportWithDateForTrans(materialRequestReportWithDateDtoForTrans.FromDate,
+                                                                                                            materialRequestReportWithDateDtoForTrans.ToDate, 
+                                                                                                            materialRequestReportWithDateDtoForTrans.IssuedStatus);
 
                 if (products == null)
                 {

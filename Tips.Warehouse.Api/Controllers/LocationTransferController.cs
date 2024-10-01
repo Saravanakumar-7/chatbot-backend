@@ -309,6 +309,7 @@ namespace Tips.Warehouse.Api.Controllers
                     var toWarehouse = loca.ToWarehouse;
                     var availstock = loca.AvailableStockInLocation;
                     var transferQty = loca.TransferQty;
+                    var toPartType = loca.ToPartType;
 
                     var client = _clientFactory.CreateClient();
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
@@ -352,7 +353,7 @@ namespace Tips.Warehouse.Api.Controllers
                                     inventoryItem.Max = inventoryItem.Max;
                                     inventoryItem.Warehouse = toWarehouse;
                                     inventoryItem.Location = toLocation;
-                                    inventoryItem.PartType = inventoryItem.PartType;
+                                    inventoryItem.PartType = toPartType;
                                     inventoryItem.ReferenceID = LocationTransReferId; /*Convert.ToString(loca.Id)*/;
                                     inventoryItem.ReferenceIDFrom = "LocationTransfer";
                                     await _inventoryRepository.UpdateInventory(inventoryItem);
@@ -430,7 +431,7 @@ namespace Tips.Warehouse.Api.Controllers
                                     inventoryPost.IsStockAvailable = true;
                                     inventoryPost.Warehouse = toWarehouse;
                                     inventoryPost.Location = toLocation;
-                                    inventoryPost.PartType = inventoryItem.PartType;
+                                    inventoryPost.PartType = toPartType;
                                     inventoryPost.ReferenceID = LocationTransReferId; /*Convert.ToString(loca.Id);*/
                                     inventoryPost.ReferenceIDFrom = "LocationTransfer";
                                     await _inventoryRepository.CreateInventory(inventoryPost);

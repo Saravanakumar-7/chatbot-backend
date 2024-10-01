@@ -1245,7 +1245,47 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-       
+
+        [HttpPost]
+        public async Task<IActionResult> GetConsumptionChildItemStockWithWipQtyByMultipleProjectNo(coverageInventoryByMultipleProjectDto coverageInventoryByMultipleProjectDto)
+        {
+            ServiceResponse<List<ConsumptionChildItemForProjectListInventoryDto>> serviceResponse = new ServiceResponse<List<ConsumptionChildItemForProjectListInventoryDto>>();
+            try
+            {
+                var InventoryDetails = await _inventoryRepository.GetConsumptionChildItemStockWithWipQtyByMultipleProjectNo(coverageInventoryByMultipleProjectDto.itemNumberList,
+                                                                                                                                        coverageInventoryByMultipleProjectDto.projectNo);
+                if (InventoryDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory Details hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"In GetConsumptionChildItemStockWithWipQtyByProjectNo ItemNumber List is Empty");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with Itemnumber List and projectNo in GetConsumptionChildItemStockWithWipQtyByProjectNo");
+                    //var result = _mapper.Map<ConsumptionInventoryDto>(InventoryDetails);
+                    //var result = _mapper.Map<ConsumptionChildItemInventoryDto>(InventoryDetails);
+                    serviceResponse.Data = InventoryDetails;
+                    serviceResponse.Message = "Returned InventoryDetails with Itemnumber List and projectNo  Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"In GetConsumptionChildItemStockWithWipQty error: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> UpdateInventoryOnShopOrderConfirmation(List<InventoryDtoForShopOrderConfirmation> dtoForShopOrderConfirmation)
         {

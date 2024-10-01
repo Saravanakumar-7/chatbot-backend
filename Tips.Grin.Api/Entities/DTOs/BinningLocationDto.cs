@@ -76,4 +76,10 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal BinningQty { get; set; }
 
     }
+    public class coverageBinningByMultipleProjectDto
+    {
+        public string ItemNumber { get; set; }
+        public List<string> projectNo { get; set; }
+
+    }
 }
