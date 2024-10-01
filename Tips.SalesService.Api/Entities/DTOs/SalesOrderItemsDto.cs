@@ -381,6 +381,11 @@ namespace Tips.SalesService.Api.Entities.Dto
 
 
     }
+    public class SalesOrderFGandBalanceQtyByCustomerName
+    {
+        public string ProjectNumber { get; set; }
+
+    }
     public class SalesOrderItemNoAndProjectNoDto
     {
         public string? FGItemNumber { get; set; }

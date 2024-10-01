@@ -359,6 +359,25 @@ namespace Tips.Grin.Api.Repository
         //    return binningQuantityList;
 
         //}
+
+        public async Task<List<BinningQuantityDto>> GetListOfBinningQtyByItemNo(string itemNumber)
+        {
+            var binningItemIds = await _tipsGrinDbContext.BinningItem.Where(x => x.ItemNumber == itemNumber)
+                                             .Select(x => x.Id)
+                                            .ToListAsync();
+
+            List<BinningQuantityDto> binningQuantityList = await _tipsGrinDbContext.BinningLocations
+                .Where(x =>  binningItemIds.Contains(x.BinningItemsId))
+                .GroupBy(x => new { x.ProjectNumber })
+                .Select(gr => new BinningQuantityDto
+                {
+                    ItemNumber = itemNumber,
+                    BinningQty = gr.Sum(x => x.Qty)
+                })
+                .ToListAsync();
+
+            return binningQuantityList;
+        }
         public async Task<List<BinningQuantityDto>> GetListOfBinningQtyByItemNoListByProjectNo(string projectNo, string itemNumber)
         {
             var binningItemIds = await _tipsGrinDbContext.BinningItem.Where(x => x.ItemNumber == itemNumber)

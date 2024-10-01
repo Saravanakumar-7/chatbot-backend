@@ -19,6 +19,8 @@ namespace Tips.Production.Api.Entities.DTOs
         
         public decimal? ReleaseQty { get; set; }
         public decimal? RequiredQty { get; set; }
+        public decimal? InitialQty { get; set; }
+        public decimal? ShopOrderShortCloseQty { get; set; }
 
     }
     public class ShopOrderItemPostDto

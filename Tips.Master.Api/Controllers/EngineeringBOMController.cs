@@ -2504,9 +2504,9 @@ namespace Tips.Master.Api.Controllers
         //coverage test final
 
         [HttpPost]
-        public async Task<IActionResult> GetBomDetailsForCoverageReport(List<OpenSalesCoverageReportDto> openFGCoverageDetails)
+        public async Task<IActionResult> GetBomDetailsForCoverageReport(List<OpenSalesCoverageReportByprojectNoDto> openFGCoverageDetails)
         {
-            ServiceResponse<List<BomCoverageReportChildItemReqQtyDto>> serviceResponse = new ServiceResponse<List<BomCoverageReportChildItemReqQtyDto>>();
+            ServiceResponse<List<BomCoverageReportChildItemReqQtyByProjectNoDto>> serviceResponse = new ServiceResponse<List<BomCoverageReportChildItemReqQtyByProjectNoDto>>();
             try
             {
                 if (openFGCoverageDetails == null)
@@ -2528,7 +2528,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid coverageReportChildItemReqQtyDtos object sent from the client.");
                     return BadRequest(serviceResponse);
                 }
-                List<BomCoverageReportChildItemReqQtyDto> bomCoverageList = new List<BomCoverageReportChildItemReqQtyDto>();
+                List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList = new List<BomCoverageReportChildItemReqQtyByProjectNoDto>();
                 if (openFGCoverageDetails != null)
                 {
 
@@ -2548,7 +2548,7 @@ namespace Tips.Master.Api.Controllers
                 }
                 var itemsRequiredQtyGrouped = bomCoverageList
                         .GroupBy(item => item.ItemNumber)
-                        .Select(group => new BomCoverageReportChildItemReqQtyDto
+                        .Select(group => new BomCoverageReportChildItemReqQtyByProjectNoDto
                         {
                             ItemNumber = group.Key,
                             PartType = group.First().PartType,
@@ -2648,84 +2648,122 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        private async Task ChildItemRequiredQtyForCoverage(List<BomCoverageReportChildItemReqQtyDto> bomCoverageList, string itemNumber, decimal requiredQty)
+        private async Task ChildItemRequiredQtyForCoverage(List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList, string itemNumber, decimal requiredQty)
         {
-            var productionBomMaxVersion = await _releaseProductBomRepository
-                                        .GetLatestProductionBomByItemNumber(itemNumber);
-            Dictionary<string, decimal> saItemOpenStock = new Dictionary<string, decimal>();
-            if (productionBomMaxVersion >= 0)
+            try
             {
-                var enggBomDetail = await _enggBomRepository
-                      .GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);
-                if (enggBomDetail != null)
+                var productionBomMaxVersion = await _releaseProductBomRepository
+                                            .GetLatestProductionBomByItemNumber(itemNumber);
+                Dictionary<string, decimal> saItemOpenStock = new Dictionary<string, decimal>();
+                if (productionBomMaxVersion >= 0)
                 {
-                    foreach (var enggChildItem in enggBomDetail?.EnggChildItems)
+                    var enggBomDetail = await _enggBomRepository
+                          .GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);
+                    if (enggBomDetail != null)
                     {
-                        if (enggChildItem.PartType != PartType.SA)
+                        foreach (var enggChildItem in enggBomDetail?.EnggChildItems)
                         {
-                            BomCoverageReportChildItemReqQtyDto bomCoverageReportChildItemReqQty = new BomCoverageReportChildItemReqQtyDto
+                            if (enggChildItem.PartType != PartType.SA)
                             {
-                                ItemNumber = enggChildItem.ItemNumber,
-                                PartType = enggChildItem.PartType,
-                                RequiredQty = enggChildItem.Quantity * requiredQty,
-                                UOM = enggChildItem.UOM
+                                decimal requiredQuantity;
+                                if (string.IsNullOrEmpty(enggChildItem.ScrapAllowance) || enggChildItem.ScrapAllowance == "0" || enggChildItem.ScrapAllowance == "-")
+                                {
+                                    requiredQuantity = enggChildItem.Quantity * requiredQty;
 
-                            };
-                            bomCoverageList.Add(bomCoverageReportChildItemReqQty);
-                        }
-                        else
-                        {
-                            decimal openSAQty = 0;
-                            string saItemNumber = enggChildItem.ItemNumber;
-                            if (saItemOpenStock.ContainsKey(saItemNumber))
-                            {
-                                openSAQty = saItemOpenStock[saItemNumber];
+                                }
+
+                                else
+                                {
+                                    decimal scrappercent = Convert.ToDecimal(enggChildItem.ScrapAllowance);
+                                    if (enggChildItem.ScrapAllowanceType == "percentage")
+                                    {
+                                        decimal scrapvalue = scrappercent / 100;
+                                        requiredQuantity = (enggChildItem.Quantity + (enggChildItem.Quantity * scrapvalue)) * requiredQty;
+
+                                    }
+                                    else if (enggChildItem.ScrapAllowanceType == "number")
+                                    {
+                                        requiredQuantity = (enggChildItem.Quantity * requiredQty) + scrappercent;
+                                    }
+                                    else
+                                    {
+                                        requiredQuantity = enggChildItem.Quantity * requiredQty;
+                                    }
+
+                                }
+
+                                BomCoverageReportChildItemReqQtyByProjectNoDto bomCoverageReportChildItemReqQty = new BomCoverageReportChildItemReqQtyByProjectNoDto
+                                {
+                                    ItemNumber = enggChildItem.ItemNumber,
+                                    Version = enggChildItem.Version,
+                                    MftrItemNumber = enggChildItem.MftrItemNumbers,
+                                    Description = enggChildItem.Description,
+                                    UOM = enggChildItem.UOM,
+                                    PartType = enggChildItem.PartType,
+                                    RequiredQty = requiredQuantity
+
+                                };
+
+                                bomCoverageList.Add(bomCoverageReportChildItemReqQty);
                             }
                             else
                             {
-                                //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                                //  "GetTotalStockOfItemNumber?", "itemNumber=", saItemNumber));
+                                decimal openSAStock = 0;
+                                string saItemNumber = enggChildItem.ItemNumber;
+                                if (saItemOpenStock.ContainsKey(saItemNumber))
+                                {
+                                    openSAStock = saItemOpenStock[saItemNumber];
+                                }
+                                else
+                                {
+                                    //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                                    //  "GetTotalStockOfItemNumber?", "itemNumber=", saItemNumber));
 
-                                var client = _clientFactory.CreateClient();
-                                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                                    var client = _clientFactory.CreateClient();
+                                    var token = HttpContext.Request.Headers["Authorization"].ToString();
 
-                                var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
+                                    var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
 
-                                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                    $"GetTotalStockOfItemNumber?itemNumber={encodedItemNumber}"));
-                                request.Headers.Add("Authorization", token);
+                                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                                        $"GetTotalStockOfItemNumber?itemNumber={encodedItemNumber}"));
+                                    request.Headers.Add("Authorization", token);
 
-                                var inventoryObjectResult = await client.SendAsync(request);
+                                    var inventoryObjectResult = await client.SendAsync(request);
 
-                                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                                dynamic inventoryObject = inventoryObjectData.data;
-                                openSAQty = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
+                                    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                                    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                                    dynamic inventoryObject = inventoryObjectData.data;
+                                    openSAStock = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
+                                }
+
+                                // get stock from inventory
+                                decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
+                                decimal newRequiredQtySA = requiredQtySA - openSAStock;
+                                newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
+                                decimal newOpenSAStock = requiredQtySA >= openSAStock ? 0 : (openSAStock - requiredQtySA);
+                                if (saItemOpenStock.ContainsKey(saItemNumber))
+                                {
+                                    saItemOpenStock[saItemNumber] = newOpenSAStock;
+                                }
+                                else
+                                {
+                                    saItemOpenStock.Add(saItemNumber, newOpenSAStock);
+                                }
+
+                                if (newRequiredQtySA <= 0)
+                                {
+                                    continue;
+                                }
+                                await ChildItemRequiredQtyForCoverage(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA);
                             }
 
-                            // get stock from inventory
-                            decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
-                            decimal newRequiredQtySA = requiredQtySA - openSAQty;
-                            newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
-                            decimal newOpenSAQty = requiredQtySA >= openSAQty ? 0 : (openSAQty - requiredQtySA);
-                            if (saItemOpenStock.ContainsKey(saItemNumber))
-                            {
-                                saItemOpenStock[saItemNumber] = newOpenSAQty;
-                            }
-                            else
-                            {
-                                saItemOpenStock.Add(saItemNumber, newOpenSAQty);
-                            }
-
-                            if (newRequiredQtySA <= 0)
-                            {
-                                continue;
-                            }
-                            await ChildItemRequiredQtyForCoverage(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA);
                         }
-
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
             }
         }
 
