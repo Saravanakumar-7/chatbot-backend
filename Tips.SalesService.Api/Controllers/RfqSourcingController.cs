@@ -354,12 +354,12 @@ namespace Tips.SalesService.Api.Controllers
                 createRfqSource.RfqSourcingItems = sourceItemList;
                 await _repository.CreateRfqSourcing(createRfqSource);
                 _rfqRepository.Update(rfqIsSourcingUpdate);
-
+                var sourcingData = createRfqSource;
                 // LandedPrice and MoqCost Calculation
                 int rfqId = rfqSourcingPostDto.RFQId;
                 //Taking the Sourcing PP And is Primary Vendor Details 
                 List<RfqSourcingPPdetails> rfqSourcingPPdetailsList = new List<RfqSourcingPPdetails>();
-                foreach (var ppinsource in createRfqSource.RfqSourcingItems)
+                foreach (var ppinsource in sourcingData.RfqSourcingItems)
                 {                   
                     if (ppinsource.RfqSourcingVendors != null && ppinsource.RfqSourcingVendors.Count!=0)
                     {
@@ -385,7 +385,7 @@ namespace Tips.SalesService.Api.Controllers
                                     //var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={ppvendor.Currency}");
                                     var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
                                     var vendorUOC = JsonConvert.DeserializeObject<RfqSourcingConvertionrateDto>(rfqCustomerIdString);
-                                    if (vendorUOC.Data == null || vendorUOC.Data.ConvertionRate == 0)
+                                    if (vendorUOC.Data.ConvertionRate == 0)
                                     {
                                         _logger.LogError($"Currency was not present for {ppvendor.Currency} for the Vendor {ppvendor.Vendor} for the ItemNumber{ppinsource.ItemNumber}");
                                         serviceResponse.Data = null;
@@ -506,12 +506,12 @@ namespace Tips.SalesService.Api.Controllers
                 //updateData.RfqSourcingItems = rfqSourceItemList;          
                 string result = await _repository.UpdateRfqSourcing(updateData);
                 _rfqRepository.Update(rfqIsSourcingUpdate);
-
+                var sourcingData = updateData;
                 // LandedPrice and MoqCost Calculation
                 int rfqId = rfqSourcingUpdateDto.RFQId;
                 //Taking the Sourcing PP And is Primary Vendor Details 
                 List<RfqSourcingPPdetails> rfqSourcingPPdetailsList = new List<RfqSourcingPPdetails>();
-                foreach (var ppinsource in updateData.RfqSourcingItems)
+                foreach (var ppinsource in sourcingData.RfqSourcingItems)
                 {                   
                     if (ppinsource.RfqSourcingVendors != null && ppinsource.RfqSourcingVendors.Count!=0)
                     {
@@ -537,7 +537,7 @@ namespace Tips.SalesService.Api.Controllers
                                     //var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={ppvendor.Currency}");
                                     var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
                                     var vendorUOC = JsonConvert.DeserializeObject<RfqSourcingConvertionrateDto>(rfqCustomerIdString);
-                                    if(vendorUOC.Data==null || vendorUOC.Data.ConvertionRate == 0)
+                                    if(vendorUOC.Data.ConvertionRate == 0)
                                     {
                                         _logger.LogError($"Currency was not present for {ppvendor.Currency} for the Vendor {ppvendor.Vendor} for the ItemNumber{ppinsource.ItemNumber}");
                                         serviceResponse.Data = null;
