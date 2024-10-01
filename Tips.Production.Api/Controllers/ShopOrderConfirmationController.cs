@@ -238,7 +238,7 @@ namespace Tips.Production.Api.Controllers
 
                         email.Subject = emaildetails.data.subject;
                         string body = emaildetails.data.template;
-                        
+
                         body = body.Replace("{{ShopOrderNo}}", shopOrderDetail.ShopOrderNumber);
                         List<string>? SalesorderList = new List<string>();
                         string? salesorderNos = null;
@@ -261,12 +261,12 @@ namespace Tips.Production.Api.Controllers
 
                         body = body.Replace("{{SalesOrderNo}}", salesorderNos);
                         body = body.Replace("{{ConfirmedBy}}", shopOrderConfirmation.CreatedBy);
-                        body = body.Replace("{{ProjectNo}}", shopOrderDetail.ShopOrderItems[0].ProjectNumber);                       
+                        body = body.Replace("{{ProjectNo}}", shopOrderDetail.ShopOrderItems[0].ProjectNumber);
                         body = body.Replace("{{Sl.No}}", "1");
                         body = body.Replace("{{ItemNumbers}}", shopOrderDetail.ItemNumber);
                         body = body.Replace("{{ItemDesc}}", shopOrderDetail.Description);
                         body = body.Replace("{{RevNo}}", shopOrderDetail.BomRevisionNo.ToString());
-                        body = body.Replace("{{ProductQty}}", (shopOrderDetail.TotalSOReleaseQty-shopOrderDetail.WipQty).ToString());
+                        body = body.Replace("{{ProductQty}}", (shopOrderDetail.TotalSOReleaseQty - shopOrderDetail.WipQty).ToString());
                         body = body.Replace("{{WIPQty}}", shopOrderDetail.WipQty.ToString());
                         var ItemNumber = shopOrderDetail.ItemNumber;
                         var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
