@@ -945,6 +945,7 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var salesOrderDetailBeforeUpdate = await _repository.GetSalesOrderById(id);
+                var salesOrderItemDetailBeforeUpdate = salesOrderDetailBeforeUpdate.SalesOrdersItems;
                 var salesOrderNumber = salesOrderDetailBeforeUpdate.SalesOrderNumber;
 
                 if (salesOrderDetailBeforeUpdate is null)
@@ -975,8 +976,11 @@ namespace Tips.SalesService.Api.Controllers
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
                     {
                         SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
-                        var oldSOItem = salesOrderDetailBeforeUpdate.SalesOrdersItems[i];
-                        salesOrderItemsDetail.Id = oldSOItem.Id;
+                        //if (salesOrderDetailBeforeUpdate.SalesOrdersItems[i] != null)
+                        //{
+                        //    var oldSOItem = salesOrderDetailBeforeUpdate.SalesOrdersItems[i];
+                        //    salesOrderItemsDetail.Id = oldSOItem.Id;
+                        //}
                         if (salesOrderItemsDetail.StatusEnum != OrderStatus.ShortClosed)
                         {
                             salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty - salesOrderItemsDetail.DispatchQty;
