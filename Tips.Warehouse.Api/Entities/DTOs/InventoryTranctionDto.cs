@@ -88,8 +88,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         [Display(Name = "Mftr Part Number")]
         public string? MftrPartNumber { get; set; }
 
-        [Display(Name = "Description")]
-        [StringLength(250, ErrorMessage = "String length exceeded")]
+        [Display(Name = "Description")]        
         public string? Description { get; set; }
 
         [Display(Name = "Project Number")]
