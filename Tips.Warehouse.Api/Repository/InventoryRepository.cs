@@ -1602,8 +1602,10 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<List<Inventory>> GetInventoryStockByItemAndShopOrderNo(string itemNumber, string shopordernumber)
         {
+            string[] WareLoc = { "FG", "SA" };
+
             var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.shopOrderNo == shopordernumber
-                                            && x.IsStockAvailable == true && x.Warehouse == "FG" && x.Location == "FG")
+                                            && x.IsStockAvailable == true && WareLoc.Contains(x.Warehouse) && WareLoc.Contains(x.Location))
                                             .ToListAsync();
 
             return getInventoryById;

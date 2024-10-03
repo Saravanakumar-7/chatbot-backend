@@ -615,6 +615,26 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
+        public async Task<IEnumerable<RFQSalesorderConfirmationSPReport>> GetRFQSalesorderConfirmationSPReportWithParamForTrans(string CustomerName, string SalesOrderNumber, string KPN
+                                                                                                                    , string SOStatus, string ProjectNumber)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<RFQSalesorderConfirmationSPReport>()
+            .FromSqlInterpolated($"CALL RFQ_salesorder_confirmation_withparameter_tras({CustomerName},{SalesOrderNumber},{KPN},{SOStatus},{ProjectNumber})")
+            .ToList();
+
+            return result;
+
+        }
+        public async Task<IEnumerable<RFQSalesorderConfirmationSPReport>> GetRFQSalesorderConfirmationSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<RFQSalesorderConfirmationSPReport>()
+                        .FromSqlInterpolated($"CALL RFQ_salesorder_confirmation_withdate_tras({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
         public async Task<Rfq> RfqSourcingByRfqNumbers(string RfqNumber)
         {
             var SourcingByRfqNumber = await _tipsSalesServiceDbContext.Rfqs

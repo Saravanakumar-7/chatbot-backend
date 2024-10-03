@@ -24,57 +24,57 @@ namespace Tips.Production.Api.Repository
 
         }
 
-        //public async Task<decimal?> GetNotShortCloseQty(string fgItemNumber, string saItemNumber, string projectNumber, string salesOrderNumber)
-        //{
-
-        //    List<int> shopOrderIds = await _tipsProductionDbContext.ShopOrders
-        //                        .Where(im => im.ItemNumber == saItemNumber)
-        //                        .Select(x => x.Id)
-        //                        .Distinct()
-        //                        .ToListAsync();
-
-        //    decimal? totalReleaseQty = await _tipsProductionDbContext.ShopOrderItems
-        //                            .Where(x => x.FGItemNumber == fgItemNumber &&
-        //                                        x.ProjectNumber == projectNumber &&
-        //                                        x.SalesOrderNumber == salesOrderNumber &&
-        //                                        shopOrderIds.Contains(x.ShopOrderId))
-        //                            .SumAsync(x => x.ReleaseQty);
-        //    return totalReleaseQty;
-
-        //}
-        public async Task<List<ShopOrderShortCloseDto>> GetNotShortCloseQty(string fgItemNumber, string saItemNumber, string projectNumber,
-                                                                     string salesOrderNumber)
+        public async Task<decimal?> GetNotShortCloseQty(string fgItemNumber, string saItemNumber, string projectNumber, string salesOrderNumber)
         {
-            var shopOrderData = await _tipsProductionDbContext.ShopOrders
-                .Where(im => im.ItemNumber == saItemNumber)
-                .Select(x => new
-                {
-                    x.Id,
-                    x.WipQty,
-                    x.Status
-                })
-                .ToListAsync();
 
-            var shopOrderIds = shopOrderData.Select(x => x.Id).Distinct().ToList();
+            List<int> shopOrderIds = await _tipsProductionDbContext.ShopOrders
+                                .Where(im => im.ItemNumber == saItemNumber)
+                                .Select(x => x.Id)
+                                .Distinct()
+                                .ToListAsync();
 
-            var shopOrderItems = await _tipsProductionDbContext.ShopOrderItems
-                .Where(x => x.FGItemNumber == fgItemNumber &&
-                            x.ProjectNumber == projectNumber &&
-                            x.SalesOrderNumber == salesOrderNumber &&
-                            shopOrderIds.Contains(x.ShopOrderId))
-                .ToListAsync(); 
-
-            var shopOrderShortCloseDetails = shopOrderItems.Select(s => new ShopOrderShortCloseDto
-            {
-                SOReleaseQty = s.ReleaseQty,
-                WipQty = shopOrderData.Where(o => o.Id == s.ShopOrderId).Select(x=>x.WipQty).FirstOrDefault(),
-                Status = shopOrderData.Where(o => o.Id == s.ShopOrderId).Select(x => x.Status).FirstOrDefault()
-            }).ToList();
-
-            return shopOrderShortCloseDetails;
-
+            decimal? totalReleaseQty = await _tipsProductionDbContext.ShopOrderItems
+                                    .Where(x => x.FGItemNumber == fgItemNumber &&
+                                                x.ProjectNumber == projectNumber &&
+                                                x.SalesOrderNumber == salesOrderNumber &&
+                                                shopOrderIds.Contains(x.ShopOrderId))
+                                    .SumAsync(x => x.ReleaseQty);
+            return totalReleaseQty;
 
         }
+        //public async Task<List<ShopOrderShortCloseDto>> GetNotShortCloseQty(string fgItemNumber, string saItemNumber, string projectNumber,
+        //                                                             string salesOrderNumber)
+        //{
+        //    var shopOrderData = await _tipsProductionDbContext.ShopOrders
+        //        .Where(im => im.ItemNumber == saItemNumber)
+        //        .Select(x => new
+        //        {
+        //            x.Id,
+        //            x.WipQty,
+        //            x.Status
+        //        })
+        //        .ToListAsync();
+
+        //    var shopOrderIds = shopOrderData.Select(x => x.Id).Distinct().ToList();
+
+        //    var shopOrderItems = await _tipsProductionDbContext.ShopOrderItems
+        //        .Where(x => x.FGItemNumber == fgItemNumber &&
+        //                    x.ProjectNumber == projectNumber &&
+        //                    x.SalesOrderNumber == salesOrderNumber &&
+        //                    shopOrderIds.Contains(x.ShopOrderId))
+        //        .ToListAsync(); 
+
+        //    var shopOrderShortCloseDetails = shopOrderItems.Select(s => new ShopOrderShortCloseDto
+        //    {
+        //        SOReleaseQty = s.ReleaseQty,
+        //        WipQty = shopOrderData.Where(o => o.Id == s.ShopOrderId).Select(x=>x.WipQty).FirstOrDefault(),
+        //        Status = shopOrderData.Where(o => o.Id == s.ShopOrderId).Select(x => x.Status).FirstOrDefault()
+        //    }).ToList();
+
+        //    return shopOrderShortCloseDetails;
+
+
+        //}
 
         public Task<IEnumerable<ShopOrderItem>> GetAllShopOrderItems()
         {

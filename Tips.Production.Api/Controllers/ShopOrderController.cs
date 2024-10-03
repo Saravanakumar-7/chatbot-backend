@@ -1629,71 +1629,85 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> ShortCloseShopOrder(int id)
+        [HttpPost]
+        public async Task<IActionResult> ShortCloseShopOrder([FromBody] ShopOrderDto shopOrderDto)
         {
             ServiceResponse<ShopOrderDto> serviceResponse = new ServiceResponse<ShopOrderDto>();
 
             try
             {
-                var shortCloseShopOrderById = await _shopOrderRepository.GetShopOrderById(id);
-                if (shortCloseShopOrderById == null)
+                if (shopOrderDto == null)
                 {
-                    _logger.LogError($"ShortCloseShopOrder with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"ShortCloseShopOrder  object sent from client is null..");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ShortCloseShopOrder with id hasn't been found.";
+                    serviceResponse.Message = $"ShortCloseShopOrder object hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid ShortCloseShopOrder object sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid ShortCloseShopOrder object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                var shopOrderDetails = _mapper.Map<ShopOrder>(shopOrderDto);
 
-                var shopOrderItemDetails = shortCloseShopOrderById.ShopOrderItems;
+                var shopOrderItemDetails = shopOrderDetails.ShopOrderItems;
+
                 var shopOrderItemList = new List<ShopOrderItem>();
 
-                for (int i = 0; i < shopOrderItemDetails.Count; i++)
-                {
-                    shopOrderItemDetails[i].Status = OrderStatus.ShortClose;
-                    shopOrderItemList.Add(shopOrderItemDetails[i]);
-
-                    if (shortCloseShopOrderById.ItemType == PartType.FG)
+                if (shopOrderItemDetails.Count > 0)
+                { 
+                    for (int i = 0; i < shopOrderItemDetails.Count; i++)
                     {
-                        //Update PendingShopOrderConfirmationQty in SalesOrder Table
+                        shopOrderItemDetails[i].Status = OrderStatus.ShortClose;
+                        shopOrderItemDetails[i].InitialQty = shopOrderItemDetails[i].ReleaseQty;
+                        shopOrderItemDetails[i].ReleaseQty -= shopOrderItemDetails[i].ShopOrderShortCloseQty;
+                        shopOrderItemList.Add(shopOrderItemDetails[i]);
 
-                        var pendingSoConfirmationQty = shortCloseShopOrderById.TotalSOReleaseQty - shortCloseShopOrderById.WipQty;
-
-                        UpdateShopOrderQtyDto updateShopOrderQtyDto = new UpdateShopOrderQtyDto();
-                        updateShopOrderQtyDto.FGItemNumber = shopOrderItemDetails[i].FGItemNumber;
-                        updateShopOrderQtyDto.ProjectNumber = shopOrderItemDetails[i].ProjectNumber;
-                        updateShopOrderQtyDto.SalesOrderNumber = shopOrderItemDetails[i].SalesOrderNumber;
-                        updateShopOrderQtyDto.PendingSoConfirmationQty = pendingSoConfirmationQty;
-
-                        var jsons = JsonConvert.SerializeObject(updateShopOrderQtyDto);
-                        var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                        //var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdatePendingShopOrderQty?"), datas);
-
-                        var client1 = _clientFactory.CreateClient();
-                        var token1 = HttpContext.Request.Headers["Authorization"].ToString();
-                        var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
-                        "UpdatePendingShopOrderQty"))
+                        if (shopOrderDetails.ItemType == PartType.FG)
                         {
-                            Content = datas
-                        };
-                        request1.Headers.Add("Authorization", token1);
+                            //Update PendingShopOrderConfirmationQty in SalesOrder Table
 
-                        var responses = await client1.SendAsync(request1);
+                            var pendingSoConfirmationQty = shopOrderDetails.TotalSOReleaseQty - shopOrderDetails.WipQty;
+
+                            UpdateShopOrderQtyDto updateShopOrderQtyDto = new UpdateShopOrderQtyDto();
+                            updateShopOrderQtyDto.FGItemNumber = shopOrderItemDetails[i].FGItemNumber;
+                            updateShopOrderQtyDto.ProjectNumber = shopOrderItemDetails[i].ProjectNumber;
+                            updateShopOrderQtyDto.SalesOrderNumber = shopOrderItemDetails[i].SalesOrderNumber;
+                            updateShopOrderQtyDto.PendingSoConfirmationQty = pendingSoConfirmationQty;
+
+                            var jsons = JsonConvert.SerializeObject(updateShopOrderQtyDto);
+                            var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                            //var responses = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "UpdatePendingShopOrderQty?"), datas);
+
+                            var client1 = _clientFactory.CreateClient();
+                            var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+                            var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
+                            "UpdatePendingShopOrderQty"))
+                            {
+                                Content = datas
+                            };
+                            request1.Headers.Add("Authorization", token1);
+
+                            var responses = await client1.SendAsync(request1);
+                        }
                     }
                 }
+                shopOrderDetails.IsShortClosed = true;
+                shopOrderDetails.ShortClosedBy = _createdBy;
+                shopOrderDetails.ShortClosedOn = DateTime.Now;
+                shopOrderDetails.Status = OrderStatus.ShortClose;
+                shopOrderDetails.ShopOrderItems = shopOrderItemList;
 
-                shortCloseShopOrderById.IsShortClosed = true;
-                shortCloseShopOrderById.ShortClosedBy = _createdBy;
-                shortCloseShopOrderById.ShortClosedOn = DateTime.Now;
-                shortCloseShopOrderById.Status = OrderStatus.ShortClose;
-                shortCloseShopOrderById.ShopOrderItems = shopOrderItemList;
-
-                string result = await _shopOrderRepository.UpdateShopOrder(shortCloseShopOrderById);
+                string result = await _shopOrderRepository.UpdateShopOrder(shopOrderDetails);
 
                 //Get Matterial Issue Details
-                var materialIssue = await _materialIssueRepository.GetMaterialIssueByShopOrderNo(shortCloseShopOrderById.ShopOrderNumber);
+                var materialIssue = await _materialIssueRepository.GetMaterialIssueByShopOrderNo(shopOrderDetails.ShopOrderNumber);
                 materialIssue.IsShortClosed = true;
                 await _materialIssueRepository.UpdateMaterialIssue(materialIssue);
 
@@ -1822,45 +1836,10 @@ namespace Tips.Production.Api.Controllers
         //SA ShopOrder
 
 
-        //[HttpGet]
-        //public async Task<IActionResult> GetSAShopOrderBalanceQty(string fgItemNumber, string saItemNumber, string projectNumber, string salesOrderNumber)
-        //{
-        //    ServiceResponse<decimal?> serviceResponse = new ServiceResponse<decimal?>();
-        //    try
-        //    {
-        //        var notShortCloseQty = await _shopOrderItemRepository.GetNotShortCloseQty(fgItemNumber, saItemNumber, projectNumber, salesOrderNumber);
-        //        if (notShortCloseQty == null)
-        //        {
-        //            _logger.LogError($"ShopOrder Release Quantity is getting Null Values");
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = $"ShopOrder Release Quantity is getting Null Values";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.OK;
-        //            return Ok(serviceResponse);
-        //        }
-
-        //        serviceResponse.Data = notShortCloseQty;
-        //        serviceResponse.Message = "Get ShopOrder Qunatity successfully";
-        //        serviceResponse.Success = true;
-        //        serviceResponse.StatusCode = HttpStatusCode.OK;
-        //        return Ok(serviceResponse);
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Something went wrong inside ShortCloseShopOrderItemSatusByShopOrderItemId action: {ex.Message}");
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = "Internal server error";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    }
-        //}
-
         [HttpGet]
         public async Task<IActionResult> GetSAShopOrderBalanceQty(string fgItemNumber, string saItemNumber, string projectNumber, string salesOrderNumber)
         {
-            ServiceResponse<List<ShopOrderShortCloseDto>> serviceResponse = new ServiceResponse<List<ShopOrderShortCloseDto>>();
+            ServiceResponse<decimal?> serviceResponse = new ServiceResponse<decimal?>();
             try
             {
                 var notShortCloseQty = await _shopOrderItemRepository.GetNotShortCloseQty(fgItemNumber, saItemNumber, projectNumber, salesOrderNumber);
@@ -1875,7 +1854,7 @@ namespace Tips.Production.Api.Controllers
                 }
 
                 serviceResponse.Data = notShortCloseQty;
-                serviceResponse.Message = "Returened SAShopOrder Quantity successfully";
+                serviceResponse.Message = "Get ShopOrder Qunatity successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -1883,7 +1862,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetSAShopOrderBalanceQty action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside ShortCloseShopOrderItemSatusByShopOrderItemId action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -1891,6 +1870,41 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //[HttpGet]
+        //public async Task<IActionResult> GetSAShopOrderBalanceQty(string fgItemNumber, string saItemNumber, string projectNumber, string salesOrderNumber)
+        //{
+        //    ServiceResponse<List<ShopOrderShortCloseDto>> serviceResponse = new ServiceResponse<List<ShopOrderShortCloseDto>>();
+        //    try
+        //    {
+        //        var notShortCloseQty = await _shopOrderItemRepository.GetNotShortCloseQty(fgItemNumber, saItemNumber, projectNumber, salesOrderNumber);
+        //        if (notShortCloseQty == null)
+        //        {
+        //            _logger.LogError($"ShopOrder Release Quantity is getting Null Values");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"ShopOrder Release Quantity is getting Null Values";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(serviceResponse);
+        //        }
+
+        //        serviceResponse.Data = notShortCloseQty;
+        //        serviceResponse.Message = "Returened SAShopOrder Quantity successfully";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside GetSAShopOrderBalanceQty action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
 
         [HttpGet]
         public async Task<IActionResult> PickListReport(string? ShopOrderNumber)

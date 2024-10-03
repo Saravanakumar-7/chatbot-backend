@@ -192,10 +192,10 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? GrinNumber { get; set; }
-        public string VendorId { get; set; }
-        public string VendorName { get; set; }
-        public string VendorNumber { get; set; }
-        public string InvoiceNumber { get; set; }
+        public string? VendorId { get; set; }
+        public string? VendorName { get; set; }
+        public string? VendorNumber { get; set; }
+        public string? InvoiceNumber { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

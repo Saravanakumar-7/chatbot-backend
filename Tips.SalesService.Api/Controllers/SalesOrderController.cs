@@ -945,6 +945,7 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var salesOrderDetailBeforeUpdate = await _repository.GetSalesOrderById(id);
+                var salesOrderItemDetailBeforeUpdate = salesOrderDetailBeforeUpdate.SalesOrdersItems;
                 var salesOrderNumber = salesOrderDetailBeforeUpdate.SalesOrderNumber;
 
                 if (salesOrderDetailBeforeUpdate is null)
@@ -975,8 +976,11 @@ namespace Tips.SalesService.Api.Controllers
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
                     {
                         SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
-                        var oldSOItem = salesOrderDetailBeforeUpdate.SalesOrdersItems[i];
-                        salesOrderItemsDetail.Id = oldSOItem.Id;
+                        //if (salesOrderDetailBeforeUpdate.SalesOrdersItems[i] != null)
+                        //{
+                        //    var oldSOItem = salesOrderDetailBeforeUpdate.SalesOrdersItems[i];
+                        //    salesOrderItemsDetail.Id = oldSOItem.Id;
+                        //}
                         if (salesOrderItemsDetail.StatusEnum != OrderStatus.ShortClosed)
                         {
                             salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty - salesOrderItemsDetail.DispatchQty;
@@ -4909,6 +4913,44 @@ namespace Tips.SalesService.Api.Controllers
 
                 serviceResponse.Data = null;
                 serviceResponse.Message = ($"Returned owner with id: {ex.Message}{ex.InnerException}");
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetSalesOrderNoDetailsByCustomerId(string Customerid)
+        {
+            ServiceResponse<IEnumerable<ListofSalesOrderDetails>> serviceResponse = new ServiceResponse<IEnumerable<ListofSalesOrderDetails>>();
+
+            try
+            {
+                var getSalesDetailByCustomerId = await _repository.GetSalesOrderNoDetailsByCustomerId(Customerid);
+                if (getSalesDetailByCustomerId == null)
+                {
+                    _logger.LogError($"SalesOrderDetail with id: {Customerid}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderDetail with id: {Customerid}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned SalesOrderDetail with id: {Customerid}");
+                    var result = _mapper.Map<IEnumerable<ListofSalesOrderDetails>>(getSalesDetailByCustomerId);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetSalesOrderNoDetailsByCustomerId action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

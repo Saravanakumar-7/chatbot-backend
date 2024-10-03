@@ -144,6 +144,7 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<SoSummaryQuotationDto>().HasNoKey();
             modelBuilder.Entity<CustomerWiseTransactionSPReport>().HasNoKey();
             modelBuilder.Entity<SalesOrderId_SP>().HasNoKey();
+            modelBuilder.Entity<RFQSalesorderConfirmationSPReport>().HasNoKey();
         }
 
     }

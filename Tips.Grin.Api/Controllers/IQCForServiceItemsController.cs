@@ -987,7 +987,10 @@ namespace Tips.Grin.Api.Controllers
                 var iqcConfirmation = new IQCForServiceItems()
                 {
                     GrinsForServiceItemsId= iQCForServiceItemsSaveDto.GrinsForServiceItemsId,
-                    GrinsForServiceItemsNumber= iQCForServiceItemsSaveDto.GrinsForServiceItemsNumber
+                    GrinsForServiceItemsNumber= iQCForServiceItemsSaveDto.GrinsForServiceItemsNumber,
+                    VendorId = iQCForServiceItemsSaveDto.VendorId,
+                    VendorName = iQCForServiceItemsSaveDto.VendorName,
+                    VendorNumber = iQCForServiceItemsSaveDto.VendorNumber,
                 };
                 var iqcConfirmationItemsDto = iQCForServiceItemsSaveDto.IQCForServiceItems_Items;
                 var iqcConfirmationItems = _mapper.Map<IQCForServiceItems_Items>(iqcConfirmationItemsDto);
