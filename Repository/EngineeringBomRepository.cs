@@ -1222,7 +1222,16 @@ namespace Repository
             return maxRevisionNumber;
         }
 
+        public async Task<IEnumerable<ReleaseProductionBomSPReport>> GetBOMReleaseSPReportWithParamForTrans(string? ItemNumber)
+        {
+            var result = _tipsMasterDbContext
+            .Set<ReleaseProductionBomSPReport>()
+            .FromSqlInterpolated($"CALL BomRelease_data({ItemNumber})")
+            .ToList();
 
+            return result;
+
+        }
 
         public async Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber)
         {

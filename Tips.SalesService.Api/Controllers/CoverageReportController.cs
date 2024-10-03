@@ -1454,7 +1454,7 @@ namespace Tips.SalesService.Api.Controllers
                     if (openFGCoverageDetails != null && openFGCoverageDetails.Count() != 0)
                     {
                         // Child Item Required Qty from BOM
-                        List<BomCoverageReportChildItemReqQtyByProjectNoDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBom(openFGCoverageDetails);
+                        List<BomCoverageReportChildItemReqQtyByProjectNoDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBomByCustomerId(openFGCoverageDetails);
 
                         if (childItemReqQtyDtos != null && childItemReqQtyDtos.Count() != 0)
                         {
@@ -1573,7 +1573,7 @@ namespace Tips.SalesService.Api.Controllers
                     if (openFGCoverageDetails != null && openFGCoverageDetails.Count() != 0)
                     {
                         // Child Item Required Qty from BOM
-                        List<BomCoverageReportChildItemReqQtyByProjectNoDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBom(openFGCoverageDetails);
+                        List<BomCoverageReportChildItemReqQtyByProjectNoDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBomByCustomerId(openFGCoverageDetails);
 
                         if (childItemReqQtyDtos != null && childItemReqQtyDtos.Count() != 0)
                         {
@@ -1938,7 +1938,37 @@ namespace Tips.SalesService.Api.Controllers
 
             return openPoQtyList;
         }
-        private async Task<List<BomCoverageReportChildItemReqQtyByProjectNoDto>> GetChildItemRequiredQtyFromBom(List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails)
+        private async Task<List<CoverageReportChildItemReqQtyDataDto>> GetChildItemRequiredQtyFromBom(List<OpenSalesCoverageReport> openFGCoverageDetails)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
+            var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
+            //var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsForCoverageReport"), openFGCoverageDetailsString);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"],
+                           "GetBomDetailsForCoverageReport"))
+            {
+                Content = openFGCoverageDetailsString
+            };
+            request.Headers.Add("Authorization", token);
+
+            var response = await client.SendAsync(request);
+            var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
+            dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
+
+            List<CoverageReportChildItemReqQtyDataDto> childItemReqQtyDtos = new List<CoverageReportChildItemReqQtyDataDto>();
+
+            foreach (var item in childItemRequiredQtyData.data)
+            {
+                CoverageReportChildItemReqQtyDataDto dto = JsonConvert.DeserializeObject<CoverageReportChildItemReqQtyDataDto>(item.ToString());
+                childItemReqQtyDtos.Add(dto);
+            }
+
+            return childItemReqQtyDtos;
+
+
+        }
+        private async Task<List<BomCoverageReportChildItemReqQtyByProjectNoDto>> GetChildItemRequiredQtyFromBomByCustomerId(List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails)
         {
             var client = _clientFactory.CreateClient();
             client.Timeout = TimeSpan.FromMinutes(10);
@@ -1947,7 +1977,7 @@ namespace Tips.SalesService.Api.Controllers
             var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
             //var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsForCoverageReport"), openFGCoverageDetailsString);
             var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"],
-                           "GetBomDetailsForCoverageReport"))
+                           "GetBomDetailsForCoverageReportByCustomerId"))
             {
                 Content = openFGCoverageDetailsString
             };

@@ -4055,6 +4055,82 @@ namespace Tips.SalesService.Api.Controllers
 
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetRFQSalesorderConfirmationSPReportWithParamForTrans([FromBody] RFQSalesorderConfirmationSPReportDTO salesOrderSPResport)
+
+        {
+            ServiceResponse<IEnumerable<RFQSalesorderConfirmationSPReport>> serviceResponse = new ServiceResponse<IEnumerable<RFQSalesorderConfirmationSPReport>>();
+            try
+            {
+                var products = await _rfqRepository.GetRFQSalesorderConfirmationSPReportWithParamForTrans(salesOrderSPResport.CustomerName, salesOrderSPResport.SalesOrderNumber, 
+                                                                                                        salesOrderSPResport.KPN, salesOrderSPResport.SOStatus,salesOrderSPResport.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RFQSalesorderConfirmation hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RFQSalesorderConfirmation hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RFQSalesorderConfirmationSPReportWithParamForTrans Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRFQSalesorderConfirmationSPReportWithParamForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetRFQSalesorderConfirmationSPReportWithDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<RFQSalesorderConfirmationSPReport>> serviceResponse = new ServiceResponse<IEnumerable<RFQSalesorderConfirmationSPReport>>();
+            try
+            {
+                var products = await _rfqRepository.GetRFQSalesorderConfirmationSPReportWithDateForTrans(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RFQSalesorderConfirmation hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RFQSalesorderConfirmation hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned GetRFQSalesorderConfirmationSPReportWithDateForTrans Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRFQSalesorderConfirmationSPReportWithDateForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
     }
 
 }
