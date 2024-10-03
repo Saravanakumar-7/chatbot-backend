@@ -104,17 +104,6 @@ namespace Tips.Grin.Api.Repository
 
             var grinNumbers = binningGrinNoList.Select(b => b.GrinNumber).ToList();
 
-            //var grinDetails = grinNumbers
-            //                    .Select(grinNumber => new GrinAndBinningDetailsDto
-            //                    {
-            //                        Id = binningGrinNoList.FirstOrDefault(b => b.GrinNumber == grinNumber)?.Id ?? 0,
-            //                        GrinNumber = grinNumber,
-            //                        InvoiceNumber = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.InvoiceNumber,
-            //                        VendorName = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.VendorName,
-            //                        LastModifiedOn = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.LastModifiedOn,
-            //                        LastModifiedBy = _tipsGrinDbContext.Grins.FirstOrDefault(g => g.GrinNumber == grinNumber)?.LastModifiedBy
-            //                    })
-            //                    .ToList();
 
             var grinDetails_1 = await _tipsGrinDbContext.Grins.Where(x => grinNumbers.Contains(x.GrinNumber)).ToListAsync();
             var grinDetails = grinDetails_1.Select(grinNumber => new GrinAndBinningDetailsDto
@@ -135,13 +124,23 @@ namespace Tips.Grin.Api.Repository
             {
                 string searchTerm = searchParams.SearchValue.Trim();
 
+                //grinDetails = grinDetails
+                //              .Where(dto =>
+                //                  dto.GrinNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                //                  dto.VendorId.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                //                  dto.VendorNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                //                  dto.InvoiceNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                //                  dto.VendorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).OrderByDescending(x => x.Id).ToList();
+
                 grinDetails = grinDetails
-                              .Where(dto =>
-                                  dto.GrinNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                                  dto.VendorId.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                                  dto.VendorNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                                  dto.InvoiceNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
-                                  dto.VendorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).OrderByDescending(x => x.Id).ToList();
+                .Where(dto =>
+                    (dto.GrinNumber != null && dto.GrinNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    (dto.VendorId != null && dto.VendorId.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    (dto.VendorNumber != null && dto.VendorNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    (dto.InvoiceNumber != null && dto.InvoiceNumber.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)) ||
+                    (dto.VendorName != null && dto.VendorName.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)))
+                .OrderByDescending(x => x.Id)
+                .ToList();
             }
             return PagedList<GrinAndBinningDetailsDto>.ToPagedList(grinDetails.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
 

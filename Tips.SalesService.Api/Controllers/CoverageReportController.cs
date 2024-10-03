@@ -1348,86 +1348,86 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> GenerateCoverageReportForFgChildIt()
-        //{
-        //    ServiceResponse<List<CoverageReportDtoForChildItem>> serviceResponse = new ServiceResponse<List<CoverageReportDtoForChildItem>>();
+        [HttpGet]
+        public async Task<IActionResult> GenerateCoverageReportForFgChildIt()
+        {
+            ServiceResponse<List<CoverageReportDtoForChildItem>> serviceResponse = new ServiceResponse<List<CoverageReportDtoForChildItem>>();
 
-        //    try
-        //    {
-        //        List<CoverageReportDtoForChildItem> coverageReportDtoForChildItemList = new List<CoverageReportDtoForChildItem>();
-        //        List<OpenSalesCoverageReport> openSalesCoverageReports = await FGLevelCoverageReport();
+            try
+            {
+                List<CoverageReportDtoForChildItem> coverageReportDtoForChildItemList = new List<CoverageReportDtoForChildItem>();
+                List<OpenSalesCoverageReport> openSalesCoverageReports = await FGLevelCoverageReport();
 
-        //        if (openSalesCoverageReports != null && openSalesCoverageReports.Count() != 0)
-        //        {
-        //            List<OpenSalesCoverageReport> openFGCoverageDetails = openSalesCoverageReports
-        //                .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
-        //            if (openFGCoverageDetails != null && openFGCoverageDetails.Count() != 0)
-        //            {
-        //                // Child Item Required Qty from BOM
-        //                List<CoverageReportChildItemReqQtyDataDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBom(openFGCoverageDetails);
+                if (openSalesCoverageReports != null && openSalesCoverageReports.Count() != 0)
+                {
+                    List<OpenSalesCoverageReport> openFGCoverageDetails = openSalesCoverageReports
+                        .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
+                    if (openFGCoverageDetails != null && openFGCoverageDetails.Count() != 0)
+                    {
+                        // Child Item Required Qty from BOM
+                        List<CoverageReportChildItemReqQtyDataDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBom(openFGCoverageDetails);
 
-        //                if (childItemReqQtyDtos != null && childItemReqQtyDtos.Count() != 0)
-        //                {
-        //                    List<string?> itemNumberList = childItemReqQtyDtos.Select(x => x.ItemNumber).ToList();
-
-
-        //                    var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
-        //                    var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
-
-        //                    //Open Stock with WIP Quantity
-        //                    List<ChildItemStockWithWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItems(itemNoListString);
-
-        //                    //Open PO Qty for Child Items
-        //                    List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItems(itemNoListString);
+                        if (childItemReqQtyDtos != null && childItemReqQtyDtos.Count() != 0)
+                        {
+                            List<string?> itemNumberList = childItemReqQtyDtos.Select(x => x.ItemNumber).ToList();
 
 
-        //                    foreach (var item in childItemReqQtyDtos)
-        //                    {
-        //                        CoverageReportDtoForChildItem coverageDetailOfChildItem = new CoverageReportDtoForChildItem
-        //                        {
-        //                            ItemNumber = item.ItemNumber,
-        //                            PartType = item.PartType,
-        //                            RequiredQty = item.RequiredQty,
-        //                            UOM = item.UOM,
-        //                            Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
-        //                            WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
-        //                            OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
-        //                        };
+                            var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
+                            var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
 
-        //                        //test
+                            //Open Stock with WIP Quantity
+                            List<ChildItemStockWithWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItems(itemNoListString);
+
+                            //Open PO Qty for Child Items
+                            List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItems(itemNoListString);
 
 
+                            foreach (var item in childItemReqQtyDtos)
+                            {
+                                CoverageReportDtoForChildItem coverageDetailOfChildItem = new CoverageReportDtoForChildItem
+                                {
+                                    ItemNumber = item.ItemNumber,
+                                    PartType = item.PartType,
+                                    RequiredQty = item.RequiredQty,
+                                    UOM = item.UOM,
+                                    Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
+                                    WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
+                                    OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
+                                };
 
-        //                        decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
-        //                           + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
-
-        //                        coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : balanceRequiredQty;
-
-        //                        coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
-        //                    }
+                                //test
 
 
-        //                }
-        //            }
-        //        }
-        //        serviceResponse.Data = coverageReportDtoForChildItemList;
-        //        serviceResponse.Message = $"Returned Child Item CoverageReport Successfully in GenerateCoverageReportForFgChildItems ";
-        //        serviceResponse.Success = true;
-        //        serviceResponse.StatusCode = HttpStatusCode.OK;
-        //        return Ok(serviceResponse);
-        //    }
-        //    catch (Exception ex)
-        //    {
 
-        //        _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItems action: {ex.Message}");
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = "Something went wrong. Please try again!";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    }
-        //}
+                                decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
+                                   + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
+
+                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : balanceRequiredQty;
+
+                                coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
+                            }
+
+
+                        }
+                    }
+                }
+                serviceResponse.Data = coverageReportDtoForChildItemList;
+                serviceResponse.Message = $"Returned Child Item CoverageReport Successfully in GenerateCoverageReportForFgChildItems ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItems action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GenerateCoverageReportForFgChildItByCustomerId(string customerId)
