@@ -16,6 +16,7 @@ using System;
 using MySqlX.XDevAPI.Common;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
+using NLog.Fluent;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -2800,49 +2801,61 @@ namespace Tips.Master.Api.Controllers
                 }
             }
         }
+
+        private async Task<decimal> GetOpenSAStockAsync(string saItemNumber)
+        {
+            decimal openSAStock = 0;
+            var client = _clientFactory.CreateClient();
+            client.Timeout = TimeSpan.FromMinutes(10);
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+            var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
+            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                $"GetTotalStockOfItemNumber?itemNumber={encodedItemNumber}"));
+            request.Headers.Add("Authorization", token);
+
+            int retryCount = 3; // Number of retries
+            int delay = 2000; // Delay in milliseconds
+
+            for (int i = 0; i < retryCount; i++)
+            {
+                try
+                {
+                    var inventoryObjectResult = await client.SendAsync(request);
+                    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                    dynamic inventoryObject = inventoryObjectData.data;
+                    openSAStock = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
+                    break; // Break if the request was successful
+                }
+                catch (HttpRequestException ex) when (i < retryCount - 1)
+                {
+                    // Log the exception if needed
+                    _logger.LogError($"Attempt {i + 1} failed: {ex.Message}. Retrying...");
+                    await Task.Delay(delay); // Wait before retrying
+                }
+            }
+
+            return openSAStock;
+        }
+
         private async Task ChildItemRequiredQtyForCoverageByCustomerId(List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList, string itemNumber, decimal requiredQty)
         {
             try
             {
-                var productionBomMaxVersion = await _releaseProductBomRepository
-                                            .GetLatestProductionBomByItemNumber(itemNumber);
+                var productionBomMaxVersion = await _releaseProductBomRepository.GetLatestProductionBomByItemNumber(itemNumber);
                 Dictionary<string, decimal> saItemOpenStock = new Dictionary<string, decimal>();
+
                 if (productionBomMaxVersion >= 0)
                 {
-                    var enggBomDetail = await _enggBomRepository
-                          .GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);
+                    var enggBomDetail = await _enggBomRepository.GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);
                     if (enggBomDetail != null)
                     {
                         foreach (var enggChildItem in enggBomDetail?.EnggChildItems)
                         {
                             if (enggChildItem.PartType != PartType.SA)
                             {
-                                decimal requiredQuantity;
-                                if (string.IsNullOrEmpty(enggChildItem.ScrapAllowance) || enggChildItem.ScrapAllowance == "0" || enggChildItem.ScrapAllowance == "-")
-                                {
-                                    requiredQuantity = enggChildItem.Quantity * requiredQty;
-
-                                }
-
-                                else
-                                {
-                                    decimal scrappercent = Convert.ToDecimal(enggChildItem.ScrapAllowance);
-                                    if (enggChildItem.ScrapAllowanceType == "percentage")
-                                    {
-                                        decimal scrapvalue = scrappercent / 100;
-                                        requiredQuantity = (enggChildItem.Quantity + (enggChildItem.Quantity * scrapvalue)) * requiredQty;
-
-                                    }
-                                    else if (enggChildItem.ScrapAllowanceType == "number")
-                                    {
-                                        requiredQuantity = (enggChildItem.Quantity * requiredQty) + scrappercent;
-                                    }
-                                    else
-                                    {
-                                        requiredQuantity = enggChildItem.Quantity * requiredQty;
-                                    }
-
-                                }
+                                decimal requiredQuantity = CalculateRequiredQuantity(enggChildItem, requiredQty);
 
                                 BomCoverageReportChildItemReqQtyByProjectNoDto bomCoverageReportChildItemReqQty = new BomCoverageReportChildItemReqQtyByProjectNoDto
                                 {
@@ -2853,7 +2866,6 @@ namespace Tips.Master.Api.Controllers
                                     UOM = enggChildItem.UOM,
                                     PartType = enggChildItem.PartType,
                                     RequiredQty = requiredQuantity
-
                                 };
 
                                 bomCoverageList.Add(bomCoverageReportChildItemReqQty);
@@ -2861,46 +2873,27 @@ namespace Tips.Master.Api.Controllers
                             else
                             {
                                 decimal openSAStock = 0;
-                                string saItemNumber = enggChildItem.ItemNumber;
-                                if (saItemOpenStock.ContainsKey(saItemNumber))
+                                if (saItemOpenStock.ContainsKey(enggChildItem.ItemNumber))
                                 {
-                                    openSAStock = saItemOpenStock[saItemNumber];
+                                    openSAStock = saItemOpenStock[enggChildItem.ItemNumber];
                                 }
                                 else
                                 {
-                                    //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                                    //  "GetTotalStockOfItemNumber?", "itemNumber=", saItemNumber));
-
-                                    var client = _clientFactory.CreateClient();
-                                    client.Timeout = TimeSpan.FromMinutes(10);
-                                    var token = HttpContext.Request.Headers["Authorization"].ToString();
-
-                                    var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
-
-                                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                        $"GetTotalStockOfItemNumber?itemNumber={encodedItemNumber}"));
-                                    request.Headers.Add("Authorization", token);
-
-                                    var inventoryObjectResult = await client.SendAsync(request);
-
-                                    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                                    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                                    dynamic inventoryObject = inventoryObjectData.data;
-                                    openSAStock = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
+                                    openSAStock = await GetOpenSAStockAsync(enggChildItem.ItemNumber);
                                 }
 
-                                // get stock from inventory
                                 decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
                                 decimal newRequiredQtySA = requiredQtySA - openSAStock;
                                 newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
+
                                 decimal newOpenSAStock = requiredQtySA >= openSAStock ? 0 : (openSAStock - requiredQtySA);
-                                if (saItemOpenStock.ContainsKey(saItemNumber))
+                                if (saItemOpenStock.ContainsKey(enggChildItem.ItemNumber))
                                 {
-                                    saItemOpenStock[saItemNumber] = newOpenSAStock;
+                                    saItemOpenStock[enggChildItem.ItemNumber] = newOpenSAStock;
                                 }
                                 else
                                 {
-                                    saItemOpenStock.Add(saItemNumber, newOpenSAStock);
+                                    saItemOpenStock.Add(enggChildItem.ItemNumber, newOpenSAStock);
                                 }
 
                                 if (newRequiredQtySA <= 0)
@@ -2909,7 +2902,6 @@ namespace Tips.Master.Api.Controllers
                                 }
                                 await ChildItemRequiredQtyForCoverageByCustomerId(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA);
                             }
-
                         }
                     }
                 }
@@ -2919,6 +2911,154 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogError(ex.Message);
             }
         }
+
+        private decimal CalculateRequiredQuantity(EnggChildItem enggChildItem, decimal requiredQty)
+        {
+            decimal requiredQuantity;
+            if (string.IsNullOrEmpty(enggChildItem.ScrapAllowance) || enggChildItem.ScrapAllowance == "0" || enggChildItem.ScrapAllowance == "-")
+            {
+                requiredQuantity = enggChildItem.Quantity * requiredQty;
+            }
+            else
+            {
+                decimal scrappercent = Convert.ToDecimal(enggChildItem.ScrapAllowance);
+                if (enggChildItem.ScrapAllowanceType == "percentage")
+                {
+                    decimal scrapvalue = scrappercent / 100;
+                    requiredQuantity = (enggChildItem.Quantity + (enggChildItem.Quantity * scrapvalue)) * requiredQty;
+                }
+                else if (enggChildItem.ScrapAllowanceType == "number")
+                {
+                    requiredQuantity = (enggChildItem.Quantity * requiredQty) + scrappercent;
+                }
+                else
+                {
+                    requiredQuantity = enggChildItem.Quantity * requiredQty;
+                }
+            }
+            return requiredQuantity;
+        }
+
+
+        //private async Task ChildItemRequiredQtyForCoverageByCustomerId(List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList, string itemNumber, decimal requiredQty)
+        //{
+        //    try
+        //    {
+        //        var productionBomMaxVersion = await _releaseProductBomRepository
+        //                                    .GetLatestProductionBomByItemNumber(itemNumber);
+        //        Dictionary<string, decimal> saItemOpenStock = new Dictionary<string, decimal>();
+        //        if (productionBomMaxVersion >= 0)
+        //        {
+        //            var enggBomDetail = await _enggBomRepository
+        //                  .GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);
+        //            if (enggBomDetail != null)
+        //            {
+        //                foreach (var enggChildItem in enggBomDetail?.EnggChildItems)
+        //                {
+        //                    if (enggChildItem.PartType != PartType.SA)
+        //                    {
+        //                        decimal requiredQuantity;
+        //                        if (string.IsNullOrEmpty(enggChildItem.ScrapAllowance) || enggChildItem.ScrapAllowance == "0" || enggChildItem.ScrapAllowance == "-")
+        //                        {
+        //                            requiredQuantity = enggChildItem.Quantity * requiredQty;
+
+        //                        }
+
+        //                        else
+        //                        {
+        //                            decimal scrappercent = Convert.ToDecimal(enggChildItem.ScrapAllowance);
+        //                            if (enggChildItem.ScrapAllowanceType == "percentage")
+        //                            {
+        //                                decimal scrapvalue = scrappercent / 100;
+        //                                requiredQuantity = (enggChildItem.Quantity + (enggChildItem.Quantity * scrapvalue)) * requiredQty;
+
+        //                            }
+        //                            else if (enggChildItem.ScrapAllowanceType == "number")
+        //                            {
+        //                                requiredQuantity = (enggChildItem.Quantity * requiredQty) + scrappercent;
+        //                            }
+        //                            else
+        //                            {
+        //                                requiredQuantity = enggChildItem.Quantity * requiredQty;
+        //                            }
+
+        //                        }
+
+        //                        BomCoverageReportChildItemReqQtyByProjectNoDto bomCoverageReportChildItemReqQty = new BomCoverageReportChildItemReqQtyByProjectNoDto
+        //                        {
+        //                            ItemNumber = enggChildItem.ItemNumber,
+        //                            Version = enggChildItem.Version,
+        //                            MftrItemNumber = enggChildItem.MftrItemNumbers,
+        //                            Description = enggChildItem.Description,
+        //                            UOM = enggChildItem.UOM,
+        //                            PartType = enggChildItem.PartType,
+        //                            RequiredQty = requiredQuantity
+
+        //                        };
+
+        //                        bomCoverageList.Add(bomCoverageReportChildItemReqQty);
+        //                    }
+        //                    else
+        //                    {
+        //                        decimal openSAStock = 0;
+        //                        string saItemNumber = enggChildItem.ItemNumber;
+        //                        if (saItemOpenStock.ContainsKey(saItemNumber))
+        //                        {
+        //                            openSAStock = saItemOpenStock[saItemNumber];
+        //                        }
+        //                        else
+        //                        {
+        //                            //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+        //                            //  "GetTotalStockOfItemNumber?", "itemNumber=", saItemNumber));
+
+        //                            var client = _clientFactory.CreateClient();
+        //                            client.Timeout = TimeSpan.FromMinutes(10);
+        //                            var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+        //                            var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
+
+        //                            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+        //                                $"GetTotalStockOfItemNumber?itemNumber={encodedItemNumber}"));
+        //                            request.Headers.Add("Authorization", token);
+
+        //                            var inventoryObjectResult = await client.SendAsync(request);
+
+        //                            var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+        //                            dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+        //                            dynamic inventoryObject = inventoryObjectData.data;
+        //                            openSAStock = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
+        //                        }
+
+        //                        // get stock from inventory
+        //                        decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
+        //                        decimal newRequiredQtySA = requiredQtySA - openSAStock;
+        //                        newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
+        //                        decimal newOpenSAStock = requiredQtySA >= openSAStock ? 0 : (openSAStock - requiredQtySA);
+        //                        if (saItemOpenStock.ContainsKey(saItemNumber))
+        //                        {
+        //                            saItemOpenStock[saItemNumber] = newOpenSAStock;
+        //                        }
+        //                        else
+        //                        {
+        //                            saItemOpenStock.Add(saItemNumber, newOpenSAStock);
+        //                        }
+
+        //                        if (newRequiredQtySA <= 0)
+        //                        {
+        //                            continue;
+        //                        }
+        //                        await ChildItemRequiredQtyForCoverageByCustomerId(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA);
+        //                    }
+
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //    }
+        //}
 
         private async Task ChildItemRequiredQtyForCoverageReportByProjectNo(List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList, string itemNumber, decimal requiredQty, string projectNo)
         {
