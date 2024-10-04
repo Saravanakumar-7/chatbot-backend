@@ -224,9 +224,9 @@ namespace Tips.Production.Api.Controllers
                         request2.Headers.Add("Authorization", token);
                         var response2 = await client.SendAsync(request2);
                         _logger.LogInfo($"GetEmailIdDetailsbyOperation is doing");
-                        if (response1.StatusCode != HttpStatusCode.OK)
+                        if (response2.StatusCode != HttpStatusCode.OK)
                             _logger.LogError($"Something went wrong inside GetEmailIdDetailsbyOperation During Email action");
-                        var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                        var EmailTempString1 = await response2.Content.ReadAsStringAsync();
                         var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
                         var httpclientHandler = new HttpClientHandler();
                         var httpClient = new HttpClient(httpclientHandler);

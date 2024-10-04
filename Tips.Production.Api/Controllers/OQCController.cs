@@ -4,8 +4,11 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.Enums;
+using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit.Text;
+using MimeKit;
 using Newtonsoft.Json;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
@@ -666,6 +669,100 @@ namespace Tips.Production.Api.Controllers
                 {
                     _shopOrderRepo.SaveAsync();
                     _shopOrderConfirmationRepository.SaveAsync();
+
+                    string serverKey = GetServerKey();
+                    if (serverKey == "avision")
+                    {
+                        _logger.LogInfo($"Avision OQC Email Creation Process");
+                        var client = _clientFactory.CreateClient();
+                        var token = HttpContext.Request.Headers["Authorization"].ToString();
+                        var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreateOQC"));
+                        request.Headers.Add("Authorization", token);
+                        var response1 = await client.SendAsync(request);
+                        _logger.LogInfo($"GetEmailTemplatebyProcessType is doing");
+                        if (response1.StatusCode != HttpStatusCode.OK)
+                            _logger.LogError($"Something went wrong inside GetEmailTemplatebyProcessType During Email action");
+                        var EmailTempString = await response1.Content.ReadAsStringAsync();
+                        var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                        var Operations = "From,CreateOQC";
+                        var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                        request2.Headers.Add("Authorization", token);
+                        var response2 = await client.SendAsync(request2);
+                        _logger.LogInfo($"GetEmailIdDetailsbyOperation is doing");
+                        if (response2.StatusCode != HttpStatusCode.OK)
+                            _logger.LogError($"Something went wrong inside GetEmailIdDetailsbyOperation During Email action");
+                        var EmailTempString1 = await response2.Content.ReadAsStringAsync();
+                        var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+                        var httpclientHandler = new HttpClientHandler();
+                        var httpClient = new HttpClient(httpclientHandler);
+                        var mails = (emaildetails1.data.Where(x => x.operation == "CreateOQC").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+                        var email = new MimeMessage();
+                        email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                        email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
+                        email.Subject = emaildetails.data.subject;
+                        string body = emaildetails.data.template;
+
+                        body = body.Replace("{{ShopOrderNo}}", shopOrderDetails.ShopOrderNumber);
+                        List<string>? SalesorderList = new List<string>();
+                        string? salesorderNos = null;
+                        foreach (var item in shopOrderDetails.ShopOrderItems)
+                        {
+                            if (salesorderNos == null)
+                            {
+                                salesorderNos = item.SalesOrderNumber;
+                                SalesorderList.Add(item.SalesOrderNumber);
+                            }
+                            else
+                            {
+                                if (!SalesorderList.Contains(item.SalesOrderNumber))
+                                {
+                                    salesorderNos = salesorderNos + "," + item.SalesOrderNumber;
+                                    SalesorderList.Add(item.SalesOrderNumber);
+                                }
+                            }
+                        }
+
+                        body = body.Replace("{{SalesOrderNo}}", salesorderNos);
+                        body = body.Replace("{{ConfirmedBy}}", oQCCreate.CreatedBy);
+                        body = body.Replace("{{ProjectNo}}", shopOrderDetails.ShopOrderItems[0].ProjectNumber);
+                        body = body.Replace("{{Sl.No}}", "1");
+                        body = body.Replace("{{ItemNumbers}}", shopOrderDetails.ItemNumber);
+                        body = body.Replace("{{ItemDesc}}", shopOrderDetails.Description);
+                        body = body.Replace("{{RevNo}}", shopOrderDetails.BomRevisionNo.ToString());
+                        body = body.Replace("{{ProductQty}}", (shopOrderDetails.TotalSOReleaseQty - shopOrderDetails.WipQty).ToString());
+                        body = body.Replace("{{WIPQty}}", shopOrderDetails.WipQty.ToString());
+                        body = body.Replace("{{ShopOrderQty}}", shopOrderDetails.TotalSOReleaseQty.ToString());
+                        body = body.Replace("{{AcceptedQty}}", oQCCreate.AcceptedQty.ToString());
+                        body = body.Replace("{{RejectQty}}", oQCCreate.RejectedQty.ToString());
+                        var ItemNumber = shopOrderDetails.ItemNumber;
+                        var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+                        var request3 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
+                            $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+                        request3.Headers.Add("Authorization", token);
+                        var itemMasterObjectResult = await client.SendAsync(request3);
+                        if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                            _logger.LogError($"Something went wrong inside GetItemMasterByItemNumber During Email action");
+                        var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                        dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                        dynamic itemMasterObject = itemMasterObjectData.data;
+                        string uom = itemMasterObject.uom;
+                        body = body.Replace("{{UOM}}", uom);
+
+                        email.Body = new TextPart(TextFormat.Html) { Text = body };
+                        _logger.LogInfo($"SmtpClient is doing");
+
+                        using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                        int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                        smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                        smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+                        smtp.Send(email);
+                        smtp.Disconnect(true);
+
+                    }
                 }
                 else
                 {
@@ -693,7 +790,24 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
 
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOQC(int id, [FromBody] OQCUpdateDto oQCUpdateDto)
         {

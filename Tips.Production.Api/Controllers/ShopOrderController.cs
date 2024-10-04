@@ -727,7 +727,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogInfo($"Avision ShopOrder Email Creation Process");
                     var client = _clientFactory.CreateClient();
-                    var token = HttpContext.Request.Headers["Authorization"].ToString();                   
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
                     var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreateShopOrder"));
                     request.Headers.Add("Authorization", token);
                     var response = await client.SendAsync(request);
@@ -780,66 +780,27 @@ namespace Tips.Production.Api.Controllers
                     body = body.Replace("{{SalesOrderNo}}", salesorderNos);
                     body = body.Replace("{{CreatedBy}}", shopOrder.CreatedBy);
                     body = body.Replace("{{ProjectNo}}", shopOrder.ShopOrderItems[0].ProjectNumber);
+                    body = body.Replace("{{Sl.No}}", "1");
+                    body = body.Replace("{{ItemNumbers}}", shopOrder.ItemNumber);
+                    body = body.Replace("{{ItemDesc}}", shopOrder.Description);
+                    body = body.Replace("{{RevNo}}", shopOrder.BomRevisionNo.ToString());
+                    body = body.Replace("{{Qty}}", shopOrder.TotalSOReleaseQty.ToString());
+                    var ItemNumber = shopOrder.ItemNumber;
+                    var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+                    var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
+                        $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+                    request2.Headers.Add("Authorization", token);
+                    var itemMasterObjectResult = await client.SendAsync(request2);
+                    if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                        _logger.LogError($"Something went wrong inside GetItemMasterByItemNumber During Email action");
+                    var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                    dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                    dynamic itemMasterObject = itemMasterObjectData.data;
+                    string uom = itemMasterObject.uom;
+                    body = body.Replace("{{UOM}}", uom);
 
-                    string ItemsHtml = "<tr><td style=\"text-align: center; border: 1px solid black; padding: 5px;\">{{Sl.No}}</td><td style=\"border: 1px solid black; padding: 5px;\">{{ItemNumbers}}</td><td style=\"border: 1px solid black; padding: 5px;\">{{ItemDesc}}</td><td style=\"border: 1px solid black; padding: 5px;\">{{RevNo}}</td><td style=\"border: 1px solid black; padding: 5px;\">{{Qty}}</td><td style=\"border: 1px solid black; padding: 5px;\">{{UOM}}</td><td style=\"border: 1px solid black; padding: 5px;\">{{SOCloseDate}}</td></tr>\r\n";
-                    string ItemData = null;
-                    for (int i = 0; i < shopOrder.ShopOrderItems.Count(); i++)
-                    {
-                        if (ItemData == null)
-                        {
-                            string itemstring = ItemsHtml;
-                            itemstring = itemstring.Replace("{{Sl.No}}", (i + 1).ToString());
-                            itemstring = itemstring.Replace("{{ItemNumbers}}", shopOrder.ShopOrderItems[i].FGItemNumber);
-                            itemstring = itemstring.Replace("{{ItemDesc}}", shopOrder.ShopOrderItems[i].Description);
-                            itemstring = itemstring.Replace("{{RevNo}}", shopOrder.BomRevisionNo.ToString());
-                            itemstring = itemstring.Replace("{{Qty}}", shopOrder.ShopOrderItems[i].ReleaseQty.ToString());
-                            var ItemNumber = shopOrder.ShopOrderItems[i].FGItemNumber;
-                            var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
-                            var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
-                                $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
-                            request2.Headers.Add("Authorization", token);
-                            var itemMasterObjectResult = await client.SendAsync(request2);
-                            if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
-                                _logger.LogError($"Something went wrong inside GetItemMasterByItemNumber During Email action");
-                            var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                            dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                            dynamic itemMasterObject = itemMasterObjectData.data;
-                            string uom = itemMasterObject.uom;
-                            itemstring = itemstring.Replace("{{UOM}}", uom);
-                            
-                            var temp = shopOrder.SOCloseDate.ToString("dd/MM/yyyy").Split(" ");
-                            itemstring = itemstring.Replace("{{SOCloseDate}}", temp[0]);
-
-                            ItemData = itemstring;
-                        }
-                        else
-                        {
-                            string itemstring = ItemsHtml;
-                            itemstring = itemstring.Replace("{{Sl.No}}", (i + 1).ToString());
-                            itemstring = itemstring.Replace("{{ItemNumbers}}", shopOrder.ShopOrderItems[i].FGItemNumber);
-                            itemstring = itemstring.Replace("{{ItemDesc}}", shopOrder.ShopOrderItems[i].Description);
-                            itemstring = itemstring.Replace("{{RevNo}}", shopOrder.BomRevisionNo.ToString());
-                            itemstring = itemstring.Replace("{{Qty}}", shopOrder.ShopOrderItems[i].ReleaseQty.ToString());
-                            var ItemNumber = shopOrder.ShopOrderItems[i].FGItemNumber;
-                            var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
-                            var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
-                                $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
-                            request2.Headers.Add("Authorization", token);
-                            var itemMasterObjectResult = await client.SendAsync(request2);
-                            _logger.LogInfo($"GetItemMasterByItemNumber is doing");
-
-                            if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
-                                _logger.LogError($"Something went wrong inside GetItemMasterByItemNumber During Email action");
-                            var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
-                            dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
-                            dynamic itemMasterObject = itemMasterObjectData.data;
-                            string uom = itemMasterObject.uom;
-                            itemstring = itemstring.Replace("{{UOM}}", uom);
-                           
-                            
-                        }
-                    }
-                    body = body.Replace("{{ShopOrderItems}}", ItemData);
+                    var temp = shopOrder.SOCloseDate.ToString("dd/MM/yyyy").Split(" ");
+                    body = body.Replace("{{SOCloseDate}}", temp[0]);
 
                     email.Body = new TextPart(TextFormat.Html) { Text = body };
                     _logger.LogInfo($"SmtpClient is doing");
@@ -1661,7 +1622,7 @@ namespace Tips.Production.Api.Controllers
                 var shopOrderItemList = new List<ShopOrderItem>();
 
                 if (shopOrderItemDetails.Count > 0)
-                { 
+                {
                     for (int i = 0; i < shopOrderItemDetails.Count; i++)
                     {
                         shopOrderItemDetails[i].Status = OrderStatus.ShortClose;
