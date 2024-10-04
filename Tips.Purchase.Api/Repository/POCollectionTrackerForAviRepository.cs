@@ -170,7 +170,7 @@ namespace Tips.Purchase.Api.Repository
 
             var result = _tipsPurchaseDbContext
             .Set<PayableSPReport>()
-            .FromSqlInterpolated($"CALL Payable_Report_with_Parameter({PONumber},{VendorName},{ProjectNumber})")
+            .FromSqlInterpolated($"CALL Payable_Report_with_Parameter_latest({PONumber},{VendorName},{ProjectNumber})")
             .ToList();
 
             return result;
@@ -178,7 +178,7 @@ namespace Tips.Purchase.Api.Repository
         public async Task<IEnumerable<PayableSPReport>> GetPayableSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsPurchaseDbContext.Set<PayableSPReport>()
-                        .FromSqlInterpolated($"CALL Payable_Report_with_Date({FromDate},{ToDate})")
+                        .FromSqlInterpolated($"CALL Payable_Report_with_Date_latest({FromDate},{ToDate})")
                         .ToList();
 
             return results;
