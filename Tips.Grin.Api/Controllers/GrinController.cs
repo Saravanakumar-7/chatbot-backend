@@ -743,7 +743,7 @@ namespace Tips.Grin.Api.Controllers
                     {
                         foreach (var project in parts.ProjectNumbers)
                         {
-                            GrinInventoryTranctionDto grinInventoryTranctionDto = new GrinInventoryTranctionDto();
+                            grinInventoryTrasactionPostDto grinInventoryTranctionDto = new grinInventoryTrasactionPostDto();
                             grinInventoryTranctionDto.PartNumber = parts.ItemNumber;
                             grinInventoryTranctionDto.LotNumber = parts.LotNumber;
                             grinInventoryTranctionDto.MftrPartNumber = parts.MftrItemNumber;
@@ -760,7 +760,7 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryTranctionDto.ReferenceID = grins.GrinNumber;
                             grinInventoryTranctionDto.ReferenceIDFrom = "GRIN";
                             grinInventoryTranctionDto.GrinMaterialType = "";
-                            grinInventoryTranctionDto.ShopOrderNo = "";
+                            grinInventoryTranctionDto.shopOrderNo = "";
                             grinInventoryTranctionDto.IsStockAvailable = true;
 
                             var json = JsonConvert.SerializeObject(grinInventoryTranctionDto);
