@@ -732,8 +732,8 @@ namespace Tips.Production.Api.Controllers
                         body = body.Replace("{{ItemNumbers}}", shopOrderDetails.ItemNumber);
                         body = body.Replace("{{ItemDesc}}", shopOrderDetails.Description);
                         body = body.Replace("{{RevNo}}", shopOrderDetails.BomRevisionNo.ToString());
-                        body = body.Replace("{{ProductQty}}", (shopOrderDetails.TotalSOReleaseQty - shopOrderDetails.WipQty).ToString());
-                        body = body.Replace("{{WIPQty}}", shopOrderDetails.WipQty.ToString());
+                        body = body.Replace("{{ProductQty}}",  shopOrderDetails.WipQty.ToString());
+                        body = body.Replace("{{WIPQty}}", (shopOrderDetails.TotalSOReleaseQty - shopOrderDetails.WipQty).ToString());
                         body = body.Replace("{{ShopOrderQty}}", shopOrderDetails.TotalSOReleaseQty.ToString());
                         body = body.Replace("{{AcceptedQty}}", oQCCreate.AcceptedQty.ToString());
                         body = body.Replace("{{RejectQty}}", oQCCreate.RejectedQty.ToString());

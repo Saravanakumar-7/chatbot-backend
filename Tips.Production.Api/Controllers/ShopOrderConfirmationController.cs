@@ -266,8 +266,8 @@ namespace Tips.Production.Api.Controllers
                         body = body.Replace("{{ItemNumbers}}", shopOrderDetail.ItemNumber);
                         body = body.Replace("{{ItemDesc}}", shopOrderDetail.Description);
                         body = body.Replace("{{RevNo}}", shopOrderDetail.BomRevisionNo.ToString());
-                        body = body.Replace("{{ProductQty}}", (shopOrderDetail.TotalSOReleaseQty - shopOrderDetail.WipQty).ToString());
-                        body = body.Replace("{{WIPQty}}", shopOrderDetail.WipQty.ToString());
+                        body = body.Replace("{{ProductQty}}", shopOrderDetail.WipQty.ToString());
+                        body = body.Replace("{{WIPQty}}",(shopOrderDetail.TotalSOReleaseQty - shopOrderDetail.WipQty).ToString());
                         var ItemNumber = shopOrderDetail.ItemNumber;
                         var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
                         var request3 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
