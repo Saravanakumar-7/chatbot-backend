@@ -10,6 +10,7 @@ namespace Tips.SalesService.Api.Entities
         [Key]
         public int Id { get; set; }
         public string? LeadId { get; set; }
+        public int SalesOrderId { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string? SalesPerson { get; set; }
         public string? ProjectNumber { get; set; }
@@ -82,5 +83,7 @@ namespace Tips.SalesService.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public List<SalesOrderItemLevelHistory>? SalesOrderItemsHistory { get; set; }
+        public List<SOAdditionalChargesHistory>? SOAdditionalChargesHistory { get; set; }
     }
 }

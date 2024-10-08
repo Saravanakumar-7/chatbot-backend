@@ -8,6 +8,7 @@ namespace Tips.SalesService.Api.Entities
     {
         [Key]
         public int Id { get; set; }
+        public int SOAdditionalChargeId { get; set; }
         public string? AdditionalChargesLabelName { get; set; }
         public string? AddtionalChargesValueType { get; set; }
 
@@ -32,7 +33,7 @@ namespace Tips.SalesService.Api.Entities
 
         [Precision(13, 3)]
         public decimal InvoicedValue { get; set; }
-        public string? SalesOrderNumber { get; set; }
-        public int? RevisionNumber { get; set; }
+        public int SalesOrderMainLevelHistoryId { get; set; }
+        public SalesOrderMainLevelHistory? SalesOrderMainLevelHistory { get; set; }
     }
 }

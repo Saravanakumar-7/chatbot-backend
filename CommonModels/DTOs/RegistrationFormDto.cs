@@ -15,7 +15,7 @@ namespace Entities.DTOs
         public int RoleId { get; set; }
         public string? RoleName { get; set; }
         [Required]
-        [EmailAddress]
+        //[EmailAddress]
         public string EmailId { get; set; }
         [Required]
         public string FirstName { get; set; }
@@ -41,7 +41,7 @@ namespace Entities.DTOs
         public int RoleId { get; set; }
         public string? RoleName { get; set; }
         [Required]
-        [EmailAddress]
+        //[EmailAddress]
         public string EmailId { get; set; }
         [Required]
         public string FirstName { get; set; }
@@ -64,7 +64,7 @@ namespace Entities.DTOs
         public int RoleId { get; set; }
         public string? RoleName { get; set; }
         [Required]
-        [EmailAddress]
+        //[EmailAddress]
         public string EmailId { get; set; }
         [Required]
         public string FirstName { get; set; }

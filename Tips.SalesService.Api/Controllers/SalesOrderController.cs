@@ -48,6 +48,7 @@ namespace Tips.SalesService.Api.Controllers
         private IScheduleDateHistoryRepository _scheduleDateHistoryRepository;
         private ISalesOrderAdditionalChargesHistoryRepository _salesOrderAdditionalChargesHistoryRepository;
         private ISalesOrderEmailsDetailsRepository _salesOrderEmailsDetailsRepository;
+        private ISalesOrderMainLevelHistoryRepository _salesOrderMainLevelHistoryRepository;
         private IQuoteRepository _quoteRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
@@ -58,7 +59,7 @@ namespace Tips.SalesService.Api.Controllers
         private readonly String _createdBy;
         private readonly String _unitname;
         private readonly IHttpClientFactory _clientFactory;
-        public SalesOrderController(ISalesOrderEmailsDetailsRepository salesOrderEmailsDetailsRepository, ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, IHttpClientFactory clientFactory, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
+        public SalesOrderController(ISalesOrderMainLevelHistoryRepository salesOrderMainLevelHistoryRepository,ISalesOrderEmailsDetailsRepository salesOrderEmailsDetailsRepository, ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, IHttpClientFactory clientFactory, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
             ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, IQuoteRepository quoteRepository, IHttpContextAccessor httpContextAccessor,
             ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
@@ -74,6 +75,7 @@ namespace Tips.SalesService.Api.Controllers
             _scheduleDateHistoryRepository = scheduleDateHistoryRepository;
             _salesOrderAdditionalChargesHistoryRepository = salesOrderAdditionalChargesHistoryRepository;
             _salesOrderEmailsDetailsRepository = salesOrderEmailsDetailsRepository;
+            _salesOrderMainLevelHistoryRepository = salesOrderMainLevelHistoryRepository;
             _quoteRepository = quoteRepository;
             _httpClient = httpClient;
             _config = config;
@@ -976,11 +978,7 @@ namespace Tips.SalesService.Api.Controllers
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
                     {
                         SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
-                        //if (salesOrderDetailBeforeUpdate.SalesOrdersItems[i] != null)
-                        //{
-                        //    var oldSOItem = salesOrderDetailBeforeUpdate.SalesOrdersItems[i];
-                        //    salesOrderItemsDetail.Id = oldSOItem.Id;
-                        //}
+
                         if (salesOrderItemsDetail.StatusEnum != OrderStatus.ShortClosed)
                         {
                             salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty - salesOrderItemsDetail.DispatchQty;
@@ -1064,6 +1062,7 @@ namespace Tips.SalesService.Api.Controllers
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
                         await _salesOrderHistory.CreateSalesOrderHistory(salesOrderHistories);
 
+
                         foreach (var scheduleDateDetial in salesOrderItemDetail.ScheduleDates)
                         {
                             ScheduleDateHistory scheduleDateHistory = new ScheduleDateHistory();
@@ -1096,11 +1095,14 @@ namespace Tips.SalesService.Api.Controllers
                         var SalesOrderAdditionalChargesHistories = _mapper.Map<SalesOrderAdditionalChargesHistory>(SalesOrderAdditionalChargesHistory);
                         await _salesOrderAdditionalChargesHistoryRepository.CreateSalesOrderAdditionalChargesHistory(SalesOrderAdditionalChargesHistories);
                     }
+
                     _salesOrderHistory.SaveAsync();
                     _scheduleDateHistoryRepository.SaveAsync();
                     _salesOrderAdditionalChargesHistoryRepository.SaveAsync();
                 }
 
+                await CreateSalesOrderHistory(salesOrderDetailBeforeUpdate);
+                
                 var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetailBeforeUpdate);
                 updateData.SalesOrdersItems = salesOrderItemsList;
                 updateData.SalesOrderAdditionalCharges = salesAdditionalChargesList;
@@ -1116,6 +1118,99 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside UpdateSalesOrder action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        private async Task<IActionResult> CreateSalesOrderHistory([FromBody] SalesOrder salesOrder)
+        {
+            ServiceResponse<SalesOrderMainLevelHistory> serviceResponse = new ServiceResponse<SalesOrderMainLevelHistory>();
+            try
+            {
+
+                if (salesOrder is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "SalesOrderHistory object sent from client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("SalesOrderHistory object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid SalesOrderHistory object sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid SalesOrderHistory object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+
+                var salesOrderMainLevelHistory = _mapper.Map<SalesOrderMainLevelHistory>(salesOrder);
+                salesOrderMainLevelHistory.Id = 0;
+                salesOrderMainLevelHistory.SalesOrderId = salesOrder.Id;
+
+                var salesOrderItems = salesOrder.SalesOrdersItems;
+                var SalesOrderItemLevelHistoryList = new List<SalesOrderItemLevelHistory>();
+                var SalesOrderScheduleDateHistoryList = new List<SalesOrderScheduleDateHistory>();
+                var SOAdditionalChargesHistoryList = new List<SOAdditionalChargesHistory>();
+
+                if (salesOrder.SalesOrderAdditionalCharges != null)
+                {
+                    foreach (var SalesOrderAdditionalCharges in salesOrder.SalesOrderAdditionalCharges)
+                    {
+                        SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(SalesOrderAdditionalCharges);
+                        soAdditionalChargesHistory.Id = 0;
+                        soAdditionalChargesHistory.SOAdditionalChargeId = SalesOrderAdditionalCharges.Id;
+                        SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
+                    }
+                }
+
+                if (salesOrderItems != null)
+                {
+                    foreach (var salesOrderItem in salesOrderItems)
+                    {
+                        SalesOrderItemLevelHistory salesOrderItemLevelHistory = _mapper.Map<SalesOrderItemLevelHistory>(salesOrderItem);
+                        salesOrderItemLevelHistory.Id = 0;
+                        salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItem.Id;
+                        SalesOrderItemLevelHistoryList.Add(salesOrderItemLevelHistory);
+
+                        if (salesOrderItem.ScheduleDates != null)
+                        {
+                            foreach (var ScheduleDate in salesOrderItem.ScheduleDates)
+                            {
+                                SalesOrderScheduleDateHistory salesOrderScheduleDateHistory = _mapper.Map<SalesOrderScheduleDateHistory>(ScheduleDate);
+                                salesOrderScheduleDateHistory.Id = 0;
+                                salesOrderScheduleDateHistory.SOScheduleDateId = ScheduleDate.Id;
+                                SalesOrderScheduleDateHistoryList.Add(salesOrderScheduleDateHistory);
+                            }
+                        }
+                    }
+                }
+
+                salesOrderMainLevelHistory.SalesOrderItemsHistory = SalesOrderItemLevelHistoryList;
+                salesOrderMainLevelHistory.SOAdditionalChargesHistory = SOAdditionalChargesHistoryList;
+
+                await _salesOrderMainLevelHistoryRepository.CreateSalesOrderMainLevelHistory(salesOrderMainLevelHistory);
+                _salesOrderMainLevelHistoryRepository.SaveChanges();
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = " SalesOrderHistory Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateSalesOrderHistory action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -4459,6 +4554,8 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderHistory.PriceList = oldSOItem.PriceList;
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
                         await _salesOrderHistory.CreateSalesOrderHistory(salesOrderHistories);
+
+                        //await CreateSalesOrderHistory(salesOrderDetailBeforeUpdate);
                     }
                     List<ScheduleDate>? listSch = _mapper.Map<List<ScheduleDate>>(salesOrderItemsDto[i].ScheduleDates);
                     List<SoConfirmationDate>? listCon = _mapper.Map<List<SoConfirmationDate>>(salesOrderItemsDto[i].SoConfirmationDates);

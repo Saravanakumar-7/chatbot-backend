@@ -4144,7 +4144,7 @@ namespace Tips.SalesService.Api.Controllers
                                                                                                         salesOrderSPResport.KPN, salesOrderSPResport.SOStatus, salesOrderSPResport.ProjectNumber);
 
                 IWorkbook workbook = new XSSFWorkbook();
-                ISheet sheet = workbook.CreateSheet("RFQSalesorderConfirmationDetails");
+                ISheet sheet = workbook.CreateSheet("RFQSalesorderConfirmation");
 
                 var headerRow = sheet.CreateRow(0);
                 headerRow.CreateCell(0).SetCellValue("Sales Order Number");

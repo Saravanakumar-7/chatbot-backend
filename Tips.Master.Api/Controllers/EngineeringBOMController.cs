@@ -2501,6 +2501,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpPost]
         public async Task<IActionResult> GetBomDetailsForCoverageReport(List<OpenSalesCoverageReportDto> openFGCoverageDetails)
         {
@@ -2571,156 +2572,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        //coverage test final
 
-        [HttpPost]
-        public async Task<IActionResult> GetBomDetailsForCoverageReportByCustomerId(List<OpenSalesCoverageReportByprojectNoDto> openFGCoverageDetails)
-        {
-            ServiceResponse<List<BomCoverageReportChildItemReqQtyByProjectNoDto>> serviceResponse = new ServiceResponse<List<BomCoverageReportChildItemReqQtyByProjectNoDto>>();
-            try
-            {
-                if (openFGCoverageDetails == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Data Not found in this coverageReportChildItemReqQtyDtos Method.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Data Not found in this coverageReportChildItemReqQtyDtos Method");
-                    return BadRequest(serviceResponse);
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "coverageReportChildItemReqQtyDtosr object sent from the client.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid coverageReportChildItemReqQtyDtos object sent from the client.");
-                    return BadRequest(serviceResponse);
-                }
-                List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList = new List<BomCoverageReportChildItemReqQtyByProjectNoDto>();
-                if (openFGCoverageDetails != null)
-                {
-
-                    foreach (var item in openFGCoverageDetails)
-                    {
-                        var itemNo = item.ItemNumber;
-                        var productionBomMaxVersion = await _releaseProductBomRepository.GetLatestProBomCountByItemNumber(itemNo);
-
-                        //var enggDetail = _enggBomRepository.GetAllLatestRevBOMIsReleaseEnggBom(itemNo);
-                        if (productionBomMaxVersion != null)
-                        {
-                            await ChildItemRequiredQtyForCoverageByCustomerId(bomCoverageList, item.ItemNumber, item.BalanceToOrder);
-                        }
-                    }
-                    //changed
-
-                }
-                var itemsRequiredQtyGrouped = bomCoverageList
-                        .GroupBy(item => item.ItemNumber)
-                        .Select(group => new BomCoverageReportChildItemReqQtyByProjectNoDto
-                        {
-                            ItemNumber = group.Key,
-                            MftrItemNumber = group.First().MftrItemNumber,
-                            Version = group.First().Version,
-                            Description = group.First().Description,
-                            UOM = group.First().UOM,
-                            PartType = group.First().PartType,
-                            RequiredQty = group.Sum(item => item.RequiredQty)
-                        })
-                        .ToList();
-
-                serviceResponse.Data = itemsRequiredQtyGrouped;
-                serviceResponse.Message = "Returned all ChildItemRequiredQtys";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error in GetBomDetailsForCoverageReport {ex.Message}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllProductionBomSAListByItemNumber action";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
-        //coverage test final
-
-        [HttpPost]
-        public async Task<IActionResult> GetBomDetailsByProjectNoForCoverageReport(List<OpenSalesCoverageReportByprojectNoDto> openFGCoverageDetails)
-        {
-            ServiceResponse<List<BomCoverageReportChildItemReqQtyByProjectNoDto>> serviceResponse = new ServiceResponse<List<BomCoverageReportChildItemReqQtyByProjectNoDto>>();
-            try
-            {
-                if (openFGCoverageDetails == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Data Not found in this coverageReportChildItemReqQtyDtos Method.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Data Not found in this coverageReportChildItemReqQtyDtos Method");
-                    return BadRequest(serviceResponse);
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "coverageReportChildItemReqQtyDtosr object sent from the client.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid coverageReportChildItemReqQtyDtos object sent from the client.");
-                    return BadRequest(serviceResponse);
-                }
-                List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList = new List<BomCoverageReportChildItemReqQtyByProjectNoDto>();
-                if (openFGCoverageDetails != null)
-                {
-
-                    foreach (var item in openFGCoverageDetails)
-                    {
-                        var itemNo = item.ItemNumber;
-                        var productionBomMaxVersion = await _releaseProductBomRepository.GetLatestProBomCountByItemNumber(itemNo);
-
-                        //var enggDetail = _enggBomRepository.GetAllLatestRevBOMIsReleaseEnggBom(itemNo);
-                        if (productionBomMaxVersion != null)
-                        {
-                            await ChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, item.ItemNumber, item.BalanceToOrder, item.ProjectNumber);
-                        }
-                    }
-                    //changed
-
-                }
-                var itemsRequiredQtyGrouped = bomCoverageList
-                        .GroupBy(item => item.ItemNumber)
-                        .Select(group => new BomCoverageReportChildItemReqQtyByProjectNoDto
-                        {
-                            ItemNumber = group.Key,
-                            MftrItemNumber = group.Key,
-                            Version = group.First().Version,
-                            Description = group.First().Description,
-                            UOM = group.First().UOM,
-                            PartType = group.First().PartType,
-                            RequiredQty = group.Sum(item => item.RequiredQty)
-                        })
-                        .ToList();
-
-                serviceResponse.Data = itemsRequiredQtyGrouped;
-                serviceResponse.Message = "Returned all ChildItemRequiredQtys";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error in GetBomDetailsForCoverageReport {ex.Message}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllProductionBomSAListByItemNumber action";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
         private async Task ChildItemRequiredQtyForCoverage(List<BomCoverageReportChildItemReqQtyDto> bomCoverageList, string itemNumber, decimal requiredQty)
         {
             var productionBomMaxVersion = await _releaseProductBomRepository
@@ -2802,263 +2654,79 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        private async Task<decimal> GetOpenSAStockAsync(string saItemNumber)
+        [HttpPost]
+        public async Task<IActionResult> GetBomDetailsByProjectNoForCoverageReport(List<OpenSalesCoverageReportByprojectNoDto> openFGCoverageDetails)
         {
-            decimal openSAStock = 0;
-            var client = _clientFactory.CreateClient();
-            client.Timeout = TimeSpan.FromMinutes(10);
-            var token = HttpContext.Request.Headers["Authorization"].ToString();
-
-            var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
-            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                $"GetTotalStockOfItemNumber?itemNumber={encodedItemNumber}"));
-            request.Headers.Add("Authorization", token);
-
-            int retryCount = 3; // Number of retries
-            int delay = 2000; // Delay in milliseconds
-
-            for (int i = 0; i < retryCount; i++)
-            {
-                try
-                {
-                    var inventoryObjectResult = await client.SendAsync(request);
-                    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                    dynamic inventoryObject = inventoryObjectData.data;
-                    openSAStock = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
-                    break; // Break if the request was successful
-                }
-                catch (HttpRequestException ex) when (i < retryCount - 1)
-                {
-                    // Log the exception if needed
-                    _logger.LogError($"Attempt {i + 1} failed: {ex.Message}. Retrying...");
-                    await Task.Delay(delay); // Wait before retrying
-                }
-            }
-
-            return openSAStock;
-        }
-
-        private async Task ChildItemRequiredQtyForCoverageByCustomerId(List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList, string itemNumber, decimal requiredQty)
-        {
+            ServiceResponse<List<BomCoverageReportChildItemReqQtyByProjectNoDto>> serviceResponse = new ServiceResponse<List<BomCoverageReportChildItemReqQtyByProjectNoDto>>();
             try
             {
-                var productionBomMaxVersion = await _releaseProductBomRepository.GetLatestProductionBomByItemNumber(itemNumber);
-                Dictionary<string, decimal> saItemOpenStock = new Dictionary<string, decimal>();
-
-                if (productionBomMaxVersion >= 0)
+                if (openFGCoverageDetails == null)
                 {
-                    var enggBomDetail = await _enggBomRepository.GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);
-                    if (enggBomDetail != null)
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Data Not found in this coverageReportChildItemReqQtyDtos Method.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Data Not found in this coverageReportChildItemReqQtyDtos Method");
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "coverageReportChildItemReqQtyDtosr object sent from the client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid coverageReportChildItemReqQtyDtos object sent from the client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList = new List<BomCoverageReportChildItemReqQtyByProjectNoDto>();
+                if (openFGCoverageDetails != null)
+                {
+
+                    foreach (var item in openFGCoverageDetails)
                     {
-                        foreach (var enggChildItem in enggBomDetail?.EnggChildItems)
+                        var itemNo = item.ItemNumber;
+                        var productionBomMaxVersion = await _releaseProductBomRepository.GetLatestProBomCountByItemNumber(itemNo);
+
+                        //var enggDetail = _enggBomRepository.GetAllLatestRevBOMIsReleaseEnggBom(itemNo);
+                        if (productionBomMaxVersion != null)
                         {
-                            if (enggChildItem.PartType != PartType.SA)
-                            {
-                                decimal requiredQuantity = CalculateRequiredQuantity(enggChildItem, requiredQty);
-
-                                BomCoverageReportChildItemReqQtyByProjectNoDto bomCoverageReportChildItemReqQty = new BomCoverageReportChildItemReqQtyByProjectNoDto
-                                {
-                                    ItemNumber = enggChildItem.ItemNumber,
-                                    Version = enggChildItem.Version,
-                                    MftrItemNumber = enggChildItem.MftrItemNumbers,
-                                    Description = enggChildItem.Description,
-                                    UOM = enggChildItem.UOM,
-                                    PartType = enggChildItem.PartType,
-                                    RequiredQty = requiredQuantity
-                                };
-
-                                bomCoverageList.Add(bomCoverageReportChildItemReqQty);
-                            }
-                            else
-                            {
-                                decimal openSAStock = 0;
-                                if (saItemOpenStock.ContainsKey(enggChildItem.ItemNumber))
-                                {
-                                    openSAStock = saItemOpenStock[enggChildItem.ItemNumber];
-                                }
-                                else
-                                {
-                                    openSAStock = await GetOpenSAStockAsync(enggChildItem.ItemNumber);
-                                }
-
-                                decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
-                                decimal newRequiredQtySA = requiredQtySA - openSAStock;
-                                newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
-
-                                decimal newOpenSAStock = requiredQtySA >= openSAStock ? 0 : (openSAStock - requiredQtySA);
-                                if (saItemOpenStock.ContainsKey(enggChildItem.ItemNumber))
-                                {
-                                    saItemOpenStock[enggChildItem.ItemNumber] = newOpenSAStock;
-                                }
-                                else
-                                {
-                                    saItemOpenStock.Add(enggChildItem.ItemNumber, newOpenSAStock);
-                                }
-
-                                if (newRequiredQtySA <= 0)
-                                {
-                                    continue;
-                                }
-                                await ChildItemRequiredQtyForCoverageByCustomerId(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA);
-                            }
+                            await ChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, item.ItemNumber, item.BalanceToOrder, item.ProjectNumber);
                         }
                     }
+                    //changed
+
                 }
+                var itemsRequiredQtyGrouped = bomCoverageList
+                        .GroupBy(item => item.ItemNumber)
+                        .Select(group => new BomCoverageReportChildItemReqQtyByProjectNoDto
+                        {
+                            ItemNumber = group.Key,
+                            MftrItemNumber = group.Key,
+                            Version = group.First().Version,
+                            Description = group.First().Description,
+                            UOM = group.First().UOM,
+                            PartType = group.First().PartType,
+                            RequiredQty = group.Sum(item => item.RequiredQty)
+                        })
+                        .ToList();
+
+                serviceResponse.Data = itemsRequiredQtyGrouped;
+                serviceResponse.Message = "Returned all ChildItemRequiredQtys";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error in GetBomDetailsForCoverageReport {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllProductionBomSAListByItemNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
             }
         }
-
-        private decimal CalculateRequiredQuantity(EnggChildItem enggChildItem, decimal requiredQty)
-        {
-            decimal requiredQuantity;
-            if (string.IsNullOrEmpty(enggChildItem.ScrapAllowance) || enggChildItem.ScrapAllowance == "0" || enggChildItem.ScrapAllowance == "-")
-            {
-                requiredQuantity = enggChildItem.Quantity * requiredQty;
-            }
-            else
-            {
-                decimal scrappercent = Convert.ToDecimal(enggChildItem.ScrapAllowance);
-                if (enggChildItem.ScrapAllowanceType == "percentage")
-                {
-                    decimal scrapvalue = scrappercent / 100;
-                    requiredQuantity = (enggChildItem.Quantity + (enggChildItem.Quantity * scrapvalue)) * requiredQty;
-                }
-                else if (enggChildItem.ScrapAllowanceType == "number")
-                {
-                    requiredQuantity = (enggChildItem.Quantity * requiredQty) + scrappercent;
-                }
-                else
-                {
-                    requiredQuantity = enggChildItem.Quantity * requiredQty;
-                }
-            }
-            return requiredQuantity;
-        }
-
-
-        //private async Task ChildItemRequiredQtyForCoverageByCustomerId(List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList, string itemNumber, decimal requiredQty)
-        //{
-        //    try
-        //    {
-        //        var productionBomMaxVersion = await _releaseProductBomRepository
-        //                                    .GetLatestProductionBomByItemNumber(itemNumber);
-        //        Dictionary<string, decimal> saItemOpenStock = new Dictionary<string, decimal>();
-        //        if (productionBomMaxVersion >= 0)
-        //        {
-        //            var enggBomDetail = await _enggBomRepository
-        //                  .GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);
-        //            if (enggBomDetail != null)
-        //            {
-        //                foreach (var enggChildItem in enggBomDetail?.EnggChildItems)
-        //                {
-        //                    if (enggChildItem.PartType != PartType.SA)
-        //                    {
-        //                        decimal requiredQuantity;
-        //                        if (string.IsNullOrEmpty(enggChildItem.ScrapAllowance) || enggChildItem.ScrapAllowance == "0" || enggChildItem.ScrapAllowance == "-")
-        //                        {
-        //                            requiredQuantity = enggChildItem.Quantity * requiredQty;
-
-        //                        }
-
-        //                        else
-        //                        {
-        //                            decimal scrappercent = Convert.ToDecimal(enggChildItem.ScrapAllowance);
-        //                            if (enggChildItem.ScrapAllowanceType == "percentage")
-        //                            {
-        //                                decimal scrapvalue = scrappercent / 100;
-        //                                requiredQuantity = (enggChildItem.Quantity + (enggChildItem.Quantity * scrapvalue)) * requiredQty;
-
-        //                            }
-        //                            else if (enggChildItem.ScrapAllowanceType == "number")
-        //                            {
-        //                                requiredQuantity = (enggChildItem.Quantity * requiredQty) + scrappercent;
-        //                            }
-        //                            else
-        //                            {
-        //                                requiredQuantity = enggChildItem.Quantity * requiredQty;
-        //                            }
-
-        //                        }
-
-        //                        BomCoverageReportChildItemReqQtyByProjectNoDto bomCoverageReportChildItemReqQty = new BomCoverageReportChildItemReqQtyByProjectNoDto
-        //                        {
-        //                            ItemNumber = enggChildItem.ItemNumber,
-        //                            Version = enggChildItem.Version,
-        //                            MftrItemNumber = enggChildItem.MftrItemNumbers,
-        //                            Description = enggChildItem.Description,
-        //                            UOM = enggChildItem.UOM,
-        //                            PartType = enggChildItem.PartType,
-        //                            RequiredQty = requiredQuantity
-
-        //                        };
-
-        //                        bomCoverageList.Add(bomCoverageReportChildItemReqQty);
-        //                    }
-        //                    else
-        //                    {
-        //                        decimal openSAStock = 0;
-        //                        string saItemNumber = enggChildItem.ItemNumber;
-        //                        if (saItemOpenStock.ContainsKey(saItemNumber))
-        //                        {
-        //                            openSAStock = saItemOpenStock[saItemNumber];
-        //                        }
-        //                        else
-        //                        {
-        //                            //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-        //                            //  "GetTotalStockOfItemNumber?", "itemNumber=", saItemNumber));
-
-        //                            var client = _clientFactory.CreateClient();
-        //                            client.Timeout = TimeSpan.FromMinutes(10);
-        //                            var token = HttpContext.Request.Headers["Authorization"].ToString();
-
-        //                            var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
-
-        //                            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-        //                                $"GetTotalStockOfItemNumber?itemNumber={encodedItemNumber}"));
-        //                            request.Headers.Add("Authorization", token);
-
-        //                            var inventoryObjectResult = await client.SendAsync(request);
-
-        //                            var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-        //                            dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-        //                            dynamic inventoryObject = inventoryObjectData.data;
-        //                            openSAStock = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
-        //                        }
-
-        //                        // get stock from inventory
-        //                        decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
-        //                        decimal newRequiredQtySA = requiredQtySA - openSAStock;
-        //                        newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
-        //                        decimal newOpenSAStock = requiredQtySA >= openSAStock ? 0 : (openSAStock - requiredQtySA);
-        //                        if (saItemOpenStock.ContainsKey(saItemNumber))
-        //                        {
-        //                            saItemOpenStock[saItemNumber] = newOpenSAStock;
-        //                        }
-        //                        else
-        //                        {
-        //                            saItemOpenStock.Add(saItemNumber, newOpenSAStock);
-        //                        }
-
-        //                        if (newRequiredQtySA <= 0)
-        //                        {
-        //                            continue;
-        //                        }
-        //                        await ChildItemRequiredQtyForCoverageByCustomerId(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA);
-        //                    }
-
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError(ex.Message);
-        //    }
-        //}
 
         private async Task ChildItemRequiredQtyForCoverageReportByProjectNo(List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList, string itemNumber, decimal requiredQty, string projectNo)
         {
@@ -3180,23 +2848,199 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        //public async Task<decimal> CalculateTotalRequiredQtyForItem(string itemNumber, decimal balanceToOrderQty)
+        //[HttpPost]
+        //public async Task<IActionResult> GetBomDetailsForCoverageReportByCustomerId(List<OpenSalesCoverageReportByprojectNoDto> openFGCoverageDetails)
         //{
-        //    decimal totalRequiredQty = 0;
-
-        //    var enggBOM = await GetEnggBOM(itemNumber);
-
-        //    if (enggBOM != null)
+        //    ServiceResponse<List<BomCoverageReportChildItemReqQtyByProjectNoDto>> serviceResponse = new ServiceResponse<List<BomCoverageReportChildItemReqQtyByProjectNoDto>>();
+        //    try
         //    {
-        //        List<CoverageReportDto> result = await CalculateTotalRequiredQtyRecursive(enggBOM, balanceToOrderQty);
+        //        if (openFGCoverageDetails == null)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Data Not found in this coverageReportChildItemReqQtyDtos Method.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            _logger.LogError("Data Not found in this coverageReportChildItemReqQtyDtos Method");
+        //            return BadRequest(serviceResponse);
+        //        }
 
-        //        // Calculate the sum of TotalRequiredQty values from the result list
-        //        totalRequiredQty = result.Sum(dto => dto.TotalRequiredQty);
+        //        if (!ModelState.IsValid)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "coverageReportChildItemReqQtyDtosr object sent from the client.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            _logger.LogError("Invalid coverageReportChildItemReqQtyDtos object sent from the client.");
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList = new List<BomCoverageReportChildItemReqQtyByProjectNoDto>();
+        //        if (openFGCoverageDetails != null)
+        //        {
+
+        //            foreach (var item in openFGCoverageDetails)
+        //            {
+        //                var itemNo = item.ItemNumber;
+        //                var productionBomMaxVersion = await _releaseProductBomRepository.GetLatestProBomCountByItemNumber(itemNo);
+
+        //                //var enggDetail = _enggBomRepository.GetAllLatestRevBOMIsReleaseEnggBom(itemNo);
+        //                if (productionBomMaxVersion != null)
+        //                {
+        //                    await ChildItemRequiredQtyForCoverageByCustomerId(bomCoverageList, item.ItemNumber, item.BalanceToOrder);
+        //                }
+        //            }
+        //            //changed
+
+        //        }
+        //        var itemsRequiredQtyGrouped = bomCoverageList
+        //                .GroupBy(item => item.ItemNumber)
+        //                .Select(group => new BomCoverageReportChildItemReqQtyByProjectNoDto
+        //                {
+        //                    ItemNumber = group.Key,
+        //                    MftrItemNumber = group.First().MftrItemNumber,
+        //                    Version = group.First().Version,
+        //                    Description = group.First().Description,
+        //                    UOM = group.First().UOM,
+        //                    PartType = group.First().PartType,
+        //                    RequiredQty = group.Sum(item => item.RequiredQty)
+        //                })
+        //                .ToList();
+
+        //        serviceResponse.Data = itemsRequiredQtyGrouped;
+        //        serviceResponse.Message = "Returned all ChildItemRequiredQtys";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
         //    }
-
-        //    return totalRequiredQty;
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Error in GetBomDetailsForCoverageReport {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong inside GetAllProductionBomSAListByItemNumber action";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
         //}
 
+
+        //private async Task ChildItemRequiredQtyForCoverageByCustomerId(List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList, string itemNumber, decimal requiredQty)
+        //{
+        //    try
+        //    {
+        //        var productionBomMaxVersion = await _releaseProductBomRepository
+        //                                    .GetLatestProductionBomByItemNumber(itemNumber);
+        //        Dictionary<string, decimal> saItemOpenStock = new Dictionary<string, decimal>();
+        //        if (productionBomMaxVersion >= 0)
+        //        {
+        //            var enggBomDetail = await _enggBomRepository
+        //                  .GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);
+        //            if (enggBomDetail != null)
+        //            {
+        //                foreach (var enggChildItem in enggBomDetail?.EnggChildItems)
+        //                {
+        //                    if (enggChildItem.PartType != PartType.SA)
+        //                    {
+        //                        decimal requiredQuantity;
+        //                        if (string.IsNullOrEmpty(enggChildItem.ScrapAllowance) || enggChildItem.ScrapAllowance == "0" || enggChildItem.ScrapAllowance == "-")
+        //                        {
+        //                            requiredQuantity = enggChildItem.Quantity * requiredQty;
+
+        //                        }
+
+        //                        else
+        //                        {
+        //                            decimal scrappercent = Convert.ToDecimal(enggChildItem.ScrapAllowance);
+        //                            if (enggChildItem.ScrapAllowanceType == "percentage")
+        //                            {
+        //                                decimal scrapvalue = scrappercent / 100;
+        //                                requiredQuantity = (enggChildItem.Quantity + (enggChildItem.Quantity * scrapvalue)) * requiredQty;
+
+        //                            }
+        //                            else if (enggChildItem.ScrapAllowanceType == "number")
+        //                            {
+        //                                requiredQuantity = (enggChildItem.Quantity * requiredQty) + scrappercent;
+        //                            }
+        //                            else
+        //                            {
+        //                                requiredQuantity = enggChildItem.Quantity * requiredQty;
+        //                            }
+
+        //                        }
+
+        //                        BomCoverageReportChildItemReqQtyByProjectNoDto bomCoverageReportChildItemReqQty = new BomCoverageReportChildItemReqQtyByProjectNoDto
+        //                        {
+        //                            ItemNumber = enggChildItem.ItemNumber,
+        //                            Version = enggChildItem.Version,
+        //                            MftrItemNumber = enggChildItem.MftrItemNumbers,
+        //                            Description = enggChildItem.Description,
+        //                            UOM = enggChildItem.UOM,
+        //                            PartType = enggChildItem.PartType,
+        //                            RequiredQty = requiredQuantity
+
+        //                        };
+
+        //                        bomCoverageList.Add(bomCoverageReportChildItemReqQty);
+        //                    }
+        //                    else
+        //                    {
+        //                        decimal openSAStock = 0;
+        //                        string saItemNumber = enggChildItem.ItemNumber;
+        //                        if (saItemOpenStock.ContainsKey(saItemNumber))
+        //                        {
+        //                            openSAStock = saItemOpenStock[saItemNumber];
+        //                        }
+        //                        else
+        //                        {
+        //                            //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+        //                            //  "GetTotalStockOfItemNumber?", "itemNumber=", saItemNumber));
+
+        //                            var client = _clientFactory.CreateClient();
+        //                            var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+        //                            var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
+
+        //                            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+        //                                $"GetTotalStockOfItemNumber?itemNumber={encodedItemNumber}"));
+        //                            request.Headers.Add("Authorization", token);
+
+        //                            var inventoryObjectResult = await client.SendAsync(request);
+
+        //                            var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+        //                            dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+        //                            dynamic inventoryObject = inventoryObjectData.data;
+        //                            openSAStock = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
+        //                        }
+
+        //                        // get stock from inventory
+        //                        decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
+        //                        decimal newRequiredQtySA = requiredQtySA - openSAStock;
+        //                        newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
+        //                        decimal newOpenSAStock = requiredQtySA >= openSAStock ? 0 : (openSAStock - requiredQtySA);
+        //                        if (saItemOpenStock.ContainsKey(saItemNumber))
+        //                        {
+        //                            saItemOpenStock[saItemNumber] = newOpenSAStock;
+        //                        }
+        //                        else
+        //                        {
+        //                            saItemOpenStock.Add(saItemNumber, newOpenSAStock);
+        //                        }
+
+        //                        if (newRequiredQtySA <= 0)
+        //                        {
+        //                            continue;
+        //                        }
+        //                        await ChildItemRequiredQtyForCoverageByCustomerId(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA);
+        //                    }
+
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //    }
+        //}
 
         private async Task<EnggBom> GetEnggBOM(string itemNumber)
         {

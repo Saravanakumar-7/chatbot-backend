@@ -1,21 +1,26 @@
 ﻿using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Tips.SalesService.Api.Entities
 {
-    public class SalesOrderItemsHistory
+    public class SalesOrderItemLevelHistory
     {
         [Key]
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
+        public int SalesOrderItemId { get; set; }
         public string? CustomerItemNumber { get; set; }
         public string? Description { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public PartType PartType { get; set; }
-        public string? ShortClosedBy { get; set; }
 
+        [DefaultValue(false)]
+        public bool IsShortClosed { get; set; }
+        public decimal? ShortClosedQty { get; set; }
+        public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }
         public OrderStatus StatusEnum { get; set; }
         public string? UOM { get; set; }
@@ -55,5 +60,8 @@ namespace Tips.SalesService.Api.Entities
         public DateTime RequestedDate { get; set; }
         public string? PriceList { get; set; }
         public string? Remarks { get; set; }
+        public int SalesOrderMainLevelHistoryId { get; set; }
+        public SalesOrderMainLevelHistory? SalesOrderMainLevelHistory { get; set; }
+        public List<SalesOrderScheduleDateHistory>? SalesOrderScheduleDateHistory { get; set; }
     }
 }

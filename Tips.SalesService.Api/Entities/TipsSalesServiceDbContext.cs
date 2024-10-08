@@ -120,6 +120,10 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<ForecastSalesOrderSPReportForTrans> ForecastSalesOrderSPReportsForTrans { get; set; }
         public DbSet<RfqSalesOrderRoomWiseSPReport> RfqSalesOrderRoomWiseSPReports { get; set; }
         public DbSet<QuotationSPReport> QuotationSPReports { get; set; }
+        public DbSet<SalesOrderMainLevelHistory> SalesOrderMainLevelHistories { get; set; }
+        public DbSet<SOAdditionalChargesHistory> SOAdditionalChargesHistories { get; set; }
+        public DbSet<SalesOrderItemLevelHistory> SalesOrderItemLevelHistories { get; set; }
+        public DbSet<SalesOrderScheduleDateHistory> SalesOrderScheduleDateHistories { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RecievableCustomer>().HasNoKey();
