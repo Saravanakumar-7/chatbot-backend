@@ -1076,6 +1076,8 @@ namespace Tips.Warehouse.Api.Controllers
             }
 
         }
+
+        [HttpGet]
         public async Task<IActionResult> GetODOLotNumberListByODONoAndItemNo(string odoNumber, string itemNumber)
         {
             ServiceResponse<IEnumerable<odoLotNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<odoLotNumberListDto>>();
