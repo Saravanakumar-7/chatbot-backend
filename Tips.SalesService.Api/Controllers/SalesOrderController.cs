@@ -1101,6 +1101,7 @@ namespace Tips.SalesService.Api.Controllers
                     _salesOrderAdditionalChargesHistoryRepository.SaveAsync();
                 }
 
+                //Update History Table
                 await CreateSalesOrderHistory(salesOrderDetailBeforeUpdate);
                 
                 var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetailBeforeUpdate);
@@ -1201,7 +1202,7 @@ namespace Tips.SalesService.Api.Controllers
                 _salesOrderMainLevelHistoryRepository.SaveChanges();
 
                 serviceResponse.Data = null;
-                serviceResponse.Message = " SalesOrderHistory Successfully Created";
+                serviceResponse.Message = " UpdateSalesOrderHistory Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -1218,6 +1219,7 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
 
         // DELETE api/<CompanyMasterController>/5
         [HttpDelete("{id}")]
@@ -4496,6 +4498,7 @@ namespace Tips.SalesService.Api.Controllers
                 var salesOrderItemsDto = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos;
                 var salesAdditionalChargesDto = salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos;
                 var salesOrderItemsList = new List<SalesOrderItems>();
+
                 for (int i = 0; i < salesOrderItemsDto.Count; i++)
                 {
                     SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
@@ -4555,7 +4558,6 @@ namespace Tips.SalesService.Api.Controllers
                         var salesOrderHistories = _mapper.Map<SalesOrderHistory>(salesOrderHistory);
                         await _salesOrderHistory.CreateSalesOrderHistory(salesOrderHistories);
 
-                        //await CreateSalesOrderHistory(salesOrderDetailBeforeUpdate);
                     }
                     List<ScheduleDate>? listSch = _mapper.Map<List<ScheduleDate>>(salesOrderItemsDto[i].ScheduleDates);
                     List<SoConfirmationDate>? listCon = _mapper.Map<List<SoConfirmationDate>>(salesOrderItemsDto[i].SoConfirmationDates);
@@ -4565,6 +4567,10 @@ namespace Tips.SalesService.Api.Controllers
                     salesOrderItemsDetail.SoConfirmationDates = listCon;
                     salesOrderItemsList.Add(salesOrderItemsDetail);
                 }
+
+                //ShortClose History Table
+                await CreateShortCloseSalesOrderHistory(salesOrderDetailBeforeUpdate, salesOrderDtoUpdate);
+
 
                 var salesAdditionalChargesList = _mapper.Map<List<SalesOrderAdditionalCharges>>(salesAdditionalChargesDto);
 
@@ -4594,6 +4600,112 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        private async Task<IActionResult> CreateShortCloseSalesOrderHistory( SalesOrder salesOrder, SalesOrderUpdateDto salesOrderDtoUpdate)
+        {
+            ServiceResponse<SalesOrderMainLevelHistory> serviceResponse = new ServiceResponse<SalesOrderMainLevelHistory>();
+            try
+            {
+
+                if (salesOrder is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ShortClose SalesOrderHistory object sent from client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("ShortClose SalesOrderHistory object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid ShortClose SalesOrderHistory object sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid ShortClose SalesOrderHistory object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+
+                var salesOrderMainLevelHistory = _mapper.Map<SalesOrderMainLevelHistory>(salesOrder);
+                salesOrderMainLevelHistory.Id = 0;
+                salesOrderMainLevelHistory.SalesOrderId = salesOrder.Id;
+                salesOrderMainLevelHistory.IsShortClosed = true;
+                salesOrderMainLevelHistory.CreatedBy = _createdBy;
+                salesOrderMainLevelHistory.CreatedOn = DateTime.Now;
+                salesOrderMainLevelHistory.LastModifiedBy = null;
+                salesOrderMainLevelHistory.LastModifiedOn = null;
+
+                var salesOrderItems = salesOrder.SalesOrdersItems;
+                var SalesOrderItemLevelHistoryList = new List<SalesOrderItemLevelHistory>();
+                var SalesOrderScheduleDateHistoryList = new List<SalesOrderScheduleDateHistory>();
+                var SOAdditionalChargesHistoryList = new List<SOAdditionalChargesHistory>();
+
+                if (salesOrder.SalesOrderAdditionalCharges != null)
+                {
+                    foreach (var SalesOrderAdditionalCharges in salesOrder.SalesOrderAdditionalCharges)
+                    {
+                        SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(SalesOrderAdditionalCharges);
+                        soAdditionalChargesHistory.Id = 0;
+                        soAdditionalChargesHistory.SOAdditionalChargeId = SalesOrderAdditionalCharges.Id;
+                        SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
+                    }
+                }
+
+                if (salesOrderItems != null)
+                {
+                    for (int  i = 0; i< salesOrderItems.Count;i++)
+                    {
+                        if (salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].NowShortClosed == true)
+                        {
+                            SalesOrderItemLevelHistory salesOrderItemLevelHistory = _mapper.Map<SalesOrderItemLevelHistory>(salesOrderItems[i]);
+                            salesOrderItemLevelHistory.Id = 0;
+                            salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItems[i].Id;
+                            salesOrderItemLevelHistory.ShortClosedQty = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].ShortClosedQty;
+                            salesOrderItemLevelHistory.ShortClosedBy = _createdBy;
+                            salesOrderItemLevelHistory.ShortClosedOn = DateAndTime.Now;
+                            salesOrderItemLevelHistory.Remarks = "Item ShortClosed";
+                            SalesOrderItemLevelHistoryList.Add(salesOrderItemLevelHistory);
+
+                            if (salesOrderItems[i].ScheduleDates != null)
+                            {
+                                foreach (var ScheduleDate in salesOrderItems[i].ScheduleDates)
+                                {
+                                    SalesOrderScheduleDateHistory salesOrderScheduleDateHistory = _mapper.Map<SalesOrderScheduleDateHistory>(ScheduleDate);
+                                    salesOrderScheduleDateHistory.Id = 0;
+                                    salesOrderScheduleDateHistory.SOScheduleDateId = ScheduleDate.Id;
+                                    SalesOrderScheduleDateHistoryList.Add(salesOrderScheduleDateHistory);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                salesOrderMainLevelHistory.SalesOrderItemsHistory = SalesOrderItemLevelHistoryList;
+                salesOrderMainLevelHistory.SOAdditionalChargesHistory = SOAdditionalChargesHistoryList;
+
+                await _salesOrderMainLevelHistoryRepository.CreateSalesOrderMainLevelHistory(salesOrderMainLevelHistory);
+                _salesOrderMainLevelHistoryRepository.SaveChanges();
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = "ShortClose SalesOrderHistory Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateShortCloseSalesOrderHistory action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetSalesOrderByIdExcepetClosedORShortClosed(int id)
         {
