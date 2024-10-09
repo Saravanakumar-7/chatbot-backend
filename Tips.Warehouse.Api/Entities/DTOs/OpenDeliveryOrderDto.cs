@@ -175,5 +175,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public string? CustomerId { get; set; }
     }
+    public class odoLotNumberListDto
+    {
+        public string LotNumber { get; set; }
+    }
 
 }

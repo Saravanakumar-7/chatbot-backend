@@ -1076,6 +1076,29 @@ namespace Tips.Warehouse.Api.Controllers
             }
 
         }
+        public async Task<IActionResult> GetODOLotNumberListByODONoAndItemNo(string odoNumber, string itemNumber)
+        {
+            ServiceResponse<IEnumerable<odoLotNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<odoLotNumberListDto>>();
+            try
+            {
+                var doLotNumberList = await _repository.GetODOLotNumberListByODONoAndItemNo(odoNumber, itemNumber);
+                var result = _mapper.Map<IEnumerable<odoLotNumberListDto>>(doLotNumberList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned All ODOLotNumberList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetODOLotNumberListByBTONoAndItemNo action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
 
         [HttpPost] // Adjust your route as needed

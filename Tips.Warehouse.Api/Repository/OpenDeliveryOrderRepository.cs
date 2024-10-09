@@ -332,5 +332,22 @@ namespace Tips.Warehouse.Api.Repository
 
             return btoIddNameList;
         }
+        public async Task<IEnumerable<odoLotNumberListDto>> GetODOLotNumberListByODONoAndItemNo(string odoNumber, string itemNumber)
+        {
+            var odoItemIdList = await _tipsWarehouseDbContext.OpenDeliveryOrderParts
+                               .Where(x => x.ODONumber == odoNumber)
+                               .Select(b => b.Id).Distinct().ToListAsync();
+
+            var odoLotNumberlist = await _tipsWarehouseDbContext.OpenDeliveryOrderPartsQtyDistribution
+                               .Where(x => x.PartNumber == itemNumber && odoItemIdList.Contains(x.OpenDeliveryOrderPartsId))
+                              .Select(x => new odoLotNumberListDto()
+                              {
+                                  LotNumber = x.LotNumber
+
+                              })
+                            .ToListAsync();
+
+            return odoLotNumberlist;
+        }
     }
 }
