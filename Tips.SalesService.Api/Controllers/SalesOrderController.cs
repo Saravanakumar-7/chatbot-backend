@@ -1102,7 +1102,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
                 //Update History Table
-                await CreateSalesOrderHistory(salesOrderDetailBeforeUpdate);
+                //await CreateSalesOrderHistory(salesOrderDetailBeforeUpdate);
                 
                 var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetailBeforeUpdate);
                 updateData.SalesOrdersItems = salesOrderItemsList;
@@ -4569,7 +4569,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
                 //ShortClose History Table
-                await CreateShortCloseSalesOrderHistory(salesOrderDetailBeforeUpdate, salesOrderDtoUpdate);
+               // await CreateShortCloseSalesOrderHistory(salesOrderDetailBeforeUpdate, salesOrderDtoUpdate);
 
 
                 var salesAdditionalChargesList = _mapper.Map<List<SalesOrderAdditionalCharges>>(salesAdditionalChargesDto);
