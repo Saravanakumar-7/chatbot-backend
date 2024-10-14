@@ -562,6 +562,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                             OpenDeliveryOrderHistory openDeliveryOrderHistory = new OpenDeliveryOrderHistory();
                             openDeliveryOrderHistory.ODONumber = openDeliveryorder.OpenDONumber;
+                            openDeliveryOrderHistory.LotNumber = eachbin.LotNumber;
                             openDeliveryOrderHistory.CustomerName = openDeliveryorder.CustomerName;
                             openDeliveryOrderHistory.CustomerAliasName = openDeliveryorder.CustomerAliasName;
                             openDeliveryOrderHistory.CustomerId = openDeliveryorder.CustomerId;
