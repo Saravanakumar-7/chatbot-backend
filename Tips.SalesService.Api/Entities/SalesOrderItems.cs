@@ -16,6 +16,7 @@ namespace Tips.SalesService.Api.Entities
         public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
         public PartType PartType { get; set; }
+        public decimal? ShortClosedQty { get; set; }
         public string? ShortClosedBy { get; set; }
 
         public DateTime? ShortClosedOn { get; set; }

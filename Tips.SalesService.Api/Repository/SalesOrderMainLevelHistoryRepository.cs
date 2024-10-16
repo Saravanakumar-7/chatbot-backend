@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Entities.Helper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
@@ -36,6 +37,17 @@ namespace Tips.SalesService.Api.Repository
             Update(salesOrderMainLevelHistory);
             string result = $"salesOrderMainLevelHistory of Detail {salesOrderMainLevelHistory.Id} is updated successfully!";
             return result;
+        }
+        public async Task<SalesOrderMainLevelHistory> GetSalesOrderMainLevelHistoryBySalesOrderId(int soid)
+        {
+            var getSalesOrderbyId = await _tipsSalesServiceDbContexts.SalesOrderMainLevelHistories.Where(x => x.SalesOrderId == soid)
+                                  .Include(t => t.SalesOrderItemLevelHistory)
+                                  .ThenInclude(p => p.SalesOrderScheduleDateHistory)
+                                    .Include(o => o.SOAdditionalChargesHistory)
+
+                                 .FirstOrDefaultAsync();
+
+            return getSalesOrderbyId;
         }
 
     }

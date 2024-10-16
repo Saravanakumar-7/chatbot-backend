@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 
@@ -24,6 +25,14 @@ namespace Tips.SalesService.Api.Repository
         string result = $"salesOrderItemLevelHistory of Detail {salesOrderItemLevelHistory.Id} is updated successfully!";
         return result;
     }
+    public async Task<SalesOrderItemLevelHistory> GetSalesOrderItemLevelHistoryBySalesOrderItemId(int soItemid)
+        {
+            var getSalesOrderItemHisbyId = await _tipsSalesServiceDbContexts.SalesOrderItemLevelHistories.Where(x => x.SalesOrderItemId == soItemid)
+
+                                 .FirstOrDefaultAsync();
+
+            return getSalesOrderItemHisbyId;
+        }
 
     }
 }

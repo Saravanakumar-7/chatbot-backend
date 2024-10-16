@@ -259,6 +259,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? TotalAmount { get; set; }
         [Precision(18, 3)]
         public decimal TotalFinalAmount { get; set; }
+        public bool NowShortClosed { get; set; }
 
         [Required]
         public string Unit { get; set; }

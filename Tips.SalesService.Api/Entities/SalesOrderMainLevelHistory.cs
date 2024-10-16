@@ -83,7 +83,7 @@ namespace Tips.SalesService.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<SalesOrderItemLevelHistory>? SalesOrderItemsHistory { get; set; }
+        public List<SalesOrderItemLevelHistory>? SalesOrderItemLevelHistory { get; set; }
         public List<SOAdditionalChargesHistory>? SOAdditionalChargesHistory { get; set; }
     }
 }
