@@ -32,7 +32,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal AcceptedQty { get; set; }
         public decimal RejectedQty { get; set; }
         public string? Remarks { get; set; }
-
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
     }
 
     public class IQCConfirmationItemsPostDto

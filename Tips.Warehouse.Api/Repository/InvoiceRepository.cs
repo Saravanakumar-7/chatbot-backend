@@ -33,7 +33,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var date = DateTime.Now;
             invoice.CreatedBy = _createdBy;
-            invoice.CreatedOn = date.Date;
+            invoice.CreatedOn = date;
             //Guid invoiceNumber = Guid.NewGuid();
             //invoice.InvoiceNo = " IN-" + invoiceNumber.ToString();
             invoice.Unit = _unitname;
