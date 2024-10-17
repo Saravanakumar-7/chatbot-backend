@@ -515,4 +515,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SalesOrdersItems { get; set; }
         public string? SalesOrderAdditionalCharges { get; set; }
     }
+    public class SOHistoryRevNoListDto
+    {
+        public int Id { get; set; }
+        public int? RevisionNumber { get; set; }
+
+    }
 }
