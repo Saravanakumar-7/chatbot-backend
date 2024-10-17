@@ -41,28 +41,38 @@ namespace Tips.SalesService.Api.Repository
         }
         public async Task<SalesOrderMainLevelHistory> GetSalesOrderMainLevelHistoryBySalesOrderId(int soid)
         {
-            var getSalesOrderbyId = await _tipsSalesServiceDbContexts.SalesOrderMainLevelHistories.Where(x => x.SalesOrderId == soid)
+            var salesOrderHistorybyId = await _tipsSalesServiceDbContexts.SalesOrderMainLevelHistories.Where(x => x.SalesOrderId == soid)
                                   .Include(t => t.SalesOrderItemLevelHistory)
                                   .ThenInclude(p => p.SalesOrderScheduleDateHistory)
                                     .Include(o => o.SOAdditionalChargesHistory)
 
                                  .FirstOrDefaultAsync();
 
-            return getSalesOrderbyId;
+            return salesOrderHistorybyId;
         }
-        public async Task<SOHistoryRevNoListDto> GetSalesOrderMainLevelHistoryBySalesOrderIdAndRevNo(int salesOrderId , int RevNo)
+        public async Task<List<SOHistoryRevNoListDto>> GetSalesOrderMainLevelHistoryRevNoListBySalesOrderIdAndRevNo(int salesOrderId , int RevNo)
         {
-            var getSalesOrderbyId = await _tipsSalesServiceDbContexts.SalesOrderMainLevelHistories.Where(x => x.SalesOrderId == salesOrderId
-                                                    && x.RevisionNumber != RevNo)
-                .Select(s=> new SOHistoryRevNoListDto
-                {
-                    Id = s.Id,
-                    RevisionNumber = s.RevisionNumber
-                })
+            var salesOrderHistorybyId = await _tipsSalesServiceDbContexts.SalesOrderMainLevelHistories
+                            .Where(x => x.SalesOrderId == salesOrderId && x.RevisionNumber != RevNo)
+                                 .Select(s=> new SOHistoryRevNoListDto
+                                 {
+                                    Id = s.Id,
+                                    RevisionNumber = s.RevisionNumber
+                                 })
+                                 .ToListAsync();
 
+            return salesOrderHistorybyId;
+        }
+        public async Task<SalesOrderMainLevelHistory> GetSalesOrderMainLevelHistoryBySalesOrderHistoryIdAndRevNo(int SalesOrderHistoryId, int RevNo)
+        {
+            var salesOrderHistorybyId = await _tipsSalesServiceDbContexts.SalesOrderMainLevelHistories
+                            .Where(x => x.Id == SalesOrderHistoryId && x.RevisionNumber == RevNo)
+                             .Include(t => t.SalesOrderItemLevelHistory)
+                                  .ThenInclude(p => p.SalesOrderScheduleDateHistory)
+                                    .Include(o => o.SOAdditionalChargesHistory)
                                  .FirstOrDefaultAsync();
 
-            return getSalesOrderbyId;
+            return salesOrderHistorybyId;
         }
 
     }

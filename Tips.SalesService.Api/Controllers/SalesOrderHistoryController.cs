@@ -116,28 +116,28 @@ namespace Tips.SalesService.Api.Controllers
         //        return StatusCode(500, serviceResponse);
         //    }
         //}
+
         [HttpGet]
-        public async Task<IActionResult> GetSalesOrderDetailsByCustomerId(int SalesOrderId, decimal RevNo)
+        public async Task<IActionResult> GetSalesOrderMainLevelHistoryRevNoListBySOIdAndRevNo(int SalesOrderId, int RevNo)
         {
-            ServiceResponse<IEnumerable<ListofSalesOrderDetails>> serviceResponse = new ServiceResponse<IEnumerable<ListofSalesOrderDetails>>();
+            ServiceResponse<IEnumerable<SOHistoryRevNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<SOHistoryRevNoListDto>>();
 
             try
             {
-                var getSalesDetailByCustomerId = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryBySalesOrderId(Customerid);
-                if (getSalesDetailByCustomerId == null)
+                var soHistoryRevNoDetailBySOIdAndRevNo = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryRevNoListBySalesOrderIdAndRevNo(SalesOrderId, RevNo);
+                if (soHistoryRevNoDetailBySOIdAndRevNo == null)
                 {
-                    _logger.LogError($"SalesOrderDetail with id: {Customerid}, hasn't been found in db.");
+                    _logger.LogError($"SalesOrderHistoryDetail with id: {SalesOrderId}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"SalesOrderDetail with id: {Customerid}, hasn't been found in db.";
+                    serviceResponse.Message = $"SalesOrderHistoryDetail with id: {SalesOrderId}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned SalesOrderDetail with id: {Customerid}");
-                    var result = _mapper.Map<IEnumerable<ListofSalesOrderDetails>>(getSalesDetailByCustomerId);
-                    serviceResponse.Data = result;
+                    _logger.LogInfo($"Returned GetSalesOrderMainLevelHistoryRevNoListBySOIdAndRevNo with id: {SalesOrderId}");
+                    serviceResponse.Data = soHistoryRevNoDetailBySOIdAndRevNo;
                     serviceResponse.Message = "Success";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -146,7 +146,45 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetSalesOrderMainLevelHistoryRevNoListBySOIdAndRevNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSalesOrderMainLevelHistoryDetialsBySOHistoryIdAndRevNo(int SalesOrderHistoryId, int RevNo)
+        {
+            ServiceResponse<SalesOrderMainLevelHistory> serviceResponse = new ServiceResponse<SalesOrderMainLevelHistory>();
+
+            try
+            {
+                var soHistoryRevNoDetailBySOIdAndRevNo = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryBySalesOrderHistoryIdAndRevNo(SalesOrderHistoryId, RevNo);
+                if (soHistoryRevNoDetailBySOIdAndRevNo == null)
+                {
+                    _logger.LogError($"SalesOrderHistoryDetail with id: {SalesOrderHistoryId}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderHistoryDetail with id: {SalesOrderHistoryId}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned GetSalesOrderMainLevelHistoryDetialsBySOHistoryIdAndRevNo with id: {SalesOrderHistoryId}");
+                    serviceResponse.Data = soHistoryRevNoDetailBySOIdAndRevNo;
+                    serviceResponse.Message = "Success";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetSalesOrderMainLevelHistoryDetialsBySOHistoryIdAndRevNo action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
                 serviceResponse.Success = false;

@@ -2149,21 +2149,24 @@ namespace Tips.SalesService.Api.Controllers
 
                 var salesdetails = await _repository.GetSalesOrderById(soAdditionalChargeUpdateDto[0].SalesOrderId);
 
-                int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
-
-                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
-
-                if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                if (salesdetails.SOStatus != OrderStatus.ShortClosed)
                 {
-                    salesdetails.SOStatus = OrderStatus.Closed;
-                }
-                else
-                {
-                    salesdetails.SOStatus = OrderStatus.PartiallyClosed;
-                }
+                    int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
 
-                await _repository.UpdateSalesOrderShortClose(salesdetails);
-                _repository.SaveAsync();
+                    int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
+
+                    if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                    {
+                        salesdetails.SOStatus = OrderStatus.Closed;
+                    }
+                    else
+                    {
+                        salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                    }
+
+                    await _repository.UpdateSalesOrderShortClose(salesdetails);
+                    _repository.SaveAsync();
+                }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SalesOrder Successfully Updated";
                 serviceResponse.Success = true;
