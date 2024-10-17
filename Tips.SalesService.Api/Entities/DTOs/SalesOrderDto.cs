@@ -253,6 +253,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SpecialDiscountType { get; set; }
         public SalesOrderStatus SalesOrderStatus { get; set; }
         public OrderStatus SOStatus { get; set; }
+        public bool IsDODone { get; set; }
         [Precision(18, 3)]
         public decimal? SpecialDiscountAmount { get; set; }
         [Precision(18, 3)]

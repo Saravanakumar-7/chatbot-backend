@@ -4,6 +4,7 @@
     {
         Open,
         PartiallyClosed,
-        Closed
+        Closed,
+        ShortClosed
     }
 }

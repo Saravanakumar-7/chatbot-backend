@@ -2066,22 +2066,24 @@ namespace Tips.SalesService.Api.Controllers
                 _salesAdditionalChargesRepository.SaveAsync();
 
                 var salesdetails = await _repository.GetSalesOrderById(soAdditionalChargeUpdateDto[0].SalesOrderId);
-
-                int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
-
-                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
-
-                if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                if (salesdetails.SOStatus != OrderStatus.ShortClosed)
                 {
-                    salesdetails.SOStatus = OrderStatus.Closed;
-                }
-                else
-                {
-                    salesdetails.SOStatus = OrderStatus.PartiallyClosed;
-                }
+                    int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
 
-                await _repository.UpdateSalesOrderShortClose(salesdetails);
-                _repository.SaveAsync();
+                    int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
+
+                    if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                    {
+                        salesdetails.SOStatus = OrderStatus.Closed;
+                    }
+                    else
+                    {
+                        salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                    }
+
+                    await _repository.UpdateSalesOrderShortClose(salesdetails);
+                    _repository.SaveAsync();
+                }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SalesOrder Successfully Updated";
                 serviceResponse.Success = true;
@@ -2167,6 +2169,7 @@ namespace Tips.SalesService.Api.Controllers
                     await _repository.UpdateSalesOrderShortClose(salesdetails);
                     _repository.SaveAsync();
                 }
+                
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SalesOrder Successfully Updated";
                 serviceResponse.Success = true;
@@ -4573,6 +4576,10 @@ namespace Tips.SalesService.Api.Controllers
                 for (int i = 0; i < salesOrderItemsDto.Count; i++)
                 {
                     SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
+                    if(salesOrderItemsDetail.DispatchQty > 0)
+                    {
+                        salesOrderDtoUpdate.IsDODone = true;
+                    }
                     var oldSOItem = salesOrderDetailBeforeUpdate.SalesOrdersItems[i];
                     salesOrderItemsDetail.Id = oldSOItem.Id;
                     salesOrderItemsDetail.ShortClosedQty += oldSOItem.ShortClosedQty;
@@ -4639,11 +4646,38 @@ namespace Tips.SalesService.Api.Controllers
                     salesOrderItemsList.Add(salesOrderItemsDetail);
                 }
 
-                //ShortClose History Table
-               await CreateShortCloseSalesOrderHistory(salesOrderDetailBeforeUpdate, salesOrderDtoUpdate);
-
-
+                
                 var salesAdditionalChargesList = _mapper.Map<List<SalesOrderAdditionalCharges>>(salesAdditionalChargesDto);
+                if (salesAdditionalChargesList.Count > 0)
+                {
+                    for (int i = 0; i < salesAdditionalChargesList.Count; i++)
+                    {
+                        if (salesOrderDtoUpdate.IsDODone == true)
+                        {
+                            if (salesAdditionalChargesList[i].TotalValue == salesAdditionalChargesList[i].InvoicedValue)
+                            {
+                                salesAdditionalChargesList[i].SOAdditionalStatus = SoStatus.Closed;
+                            }
+                            else if (salesAdditionalChargesList[i].TotalValue > salesAdditionalChargesList[i].InvoicedValue && salesAdditionalChargesList[i].InvoicedValue != 0)
+                            {
+                                salesAdditionalChargesList[i].SOAdditionalStatus = SoStatus.PartiallyClosed;
+                            }
+                            else
+                            {
+                                salesAdditionalChargesList[i].SOAdditionalStatus = SoStatus.Open;
+                            }
+                        }
+                        else
+                        {
+                            salesAdditionalChargesList[i].SOAdditionalStatus = SoStatus.ShortClosed;
+                        }
+
+                    }
+                }
+                
+
+                //ShortClose History Table
+                await CreateShortCloseSalesOrderHistory(salesOrderDetailBeforeUpdate, salesOrderDtoUpdate);
 
                 var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetailBeforeUpdate);
 
@@ -4704,6 +4738,25 @@ namespace Tips.SalesService.Api.Controllers
                                 SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(SalesOrderAdditionalCharges);
                                 soAdditionalChargesHistory.Id = 0;
                                 soAdditionalChargesHistory.SOAdditionalChargeId = SalesOrderAdditionalCharges.Id;
+                                if (salesOrderDtoUpdate.IsDODone == true)
+                                {
+                                    if (soAdditionalChargesHistory.TotalValue == soAdditionalChargesHistory.InvoicedValue)
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.Closed;
+                                    }
+                                    else if (soAdditionalChargesHistory.TotalValue > soAdditionalChargesHistory.InvoicedValue && soAdditionalChargesHistory.InvoicedValue != 0)
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.PartiallyClosed;
+                                    }
+                                    else
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.Open;
+                                    }
+                                }
+                                else
+                                {
+                                    soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.ShortClosed;
+                                }
                                 SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
                             }
                         }
@@ -4754,6 +4807,37 @@ namespace Tips.SalesService.Api.Controllers
 
                         var salesOrderItems = salesOrder.SalesOrdersItems;
                         var SalesOrderScheduleDateHistoryList = new List<SalesOrderScheduleDateHistory>();
+                        var SOAdditionalChargesHistoryList = new List<SOAdditionalChargesHistory>();
+
+                        if (salesOrder.SalesOrderAdditionalCharges != null)
+                        {
+                            for (int i = 0; i < salesOrder.SalesOrderAdditionalCharges.Count; i++)
+                            {
+                                SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(salesOrder.SalesOrderAdditionalCharges[i]);
+                                soAdditionalChargesHistory.Id = 0;
+                                soAdditionalChargesHistory.SOAdditionalChargeId = salesOrder.SalesOrderAdditionalCharges[i].Id;
+                                if (salesOrderDtoUpdate.IsDODone == true)
+                                {
+                                    if (soAdditionalChargesHistory.TotalValue == soAdditionalChargesHistory.InvoicedValue)
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.Closed;
+                                    }
+                                    else if (soAdditionalChargesHistory.TotalValue > soAdditionalChargesHistory.InvoicedValue && soAdditionalChargesHistory.InvoicedValue != 0)
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.PartiallyClosed;
+                                    }
+                                    else
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.Open;
+                                    }
+                                }
+                                else
+                                {
+                                    soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.ShortClosed;
+                                }
+                                SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
+                            }
+                        }
 
                         if (salesOrderItems != null)
                         {
@@ -4806,7 +4890,7 @@ namespace Tips.SalesService.Api.Controllers
                             }
                         }
 
-
+                        salesOrderMainLevelHistory.SOAdditionalChargesHistory = SOAdditionalChargesHistoryList;
                         await _salesOrderMainLevelHistoryRepository.UpdateSalesOrderMainLevelHistory(salesOrderMainLevelHistory);
                         _salesOrderMainLevelHistoryRepository.SaveChanges();
                     }
@@ -4838,6 +4922,27 @@ namespace Tips.SalesService.Api.Controllers
                                 SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos[i]);
                                 soAdditionalChargesHistory.Id = 0;
                                 soAdditionalChargesHistory.SOAdditionalChargeId = salesOrder.SalesOrderAdditionalCharges[i].Id;
+
+                                if (salesOrderDtoUpdate.IsDODone == true)
+                                {
+                                    if (soAdditionalChargesHistory.TotalValue == soAdditionalChargesHistory.InvoicedValue)
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.Closed;
+                                    }
+                                    else if (soAdditionalChargesHistory.TotalValue > soAdditionalChargesHistory.InvoicedValue && soAdditionalChargesHistory.InvoicedValue != 0)
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.PartiallyClosed;
+                                    }
+                                    else
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.Open;
+                                    }
+                                }
+                                else
+                                {
+                                    soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.ShortClosed;
+                                }
+
                                 SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
                             }
                         }
@@ -4889,6 +4994,38 @@ namespace Tips.SalesService.Api.Controllers
                         var salesOrderItems = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos;
                         var salesOrderItemDetails = salesOrder.SalesOrdersItems;
                         var SalesOrderScheduleDateHistoryList = new List<SalesOrderScheduleDateHistory>();
+                        var SOAdditionalChargesHistoryList = new List<SOAdditionalChargesHistory>();
+
+                        if (salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos != null)
+                        {
+                            for (int i = 0; i < salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos.Count; i++)
+                            {
+                                SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos[i]);
+                                soAdditionalChargesHistory.Id = 0;
+                                soAdditionalChargesHistory.SOAdditionalChargeId = salesOrder.SalesOrderAdditionalCharges[i].Id;
+
+                                if (salesOrderDtoUpdate.IsDODone == true)
+                                {
+                                    if (soAdditionalChargesHistory.TotalValue == soAdditionalChargesHistory.InvoicedValue)
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.Closed;
+                                    }
+                                    else if (soAdditionalChargesHistory.TotalValue > soAdditionalChargesHistory.InvoicedValue && soAdditionalChargesHistory.InvoicedValue != 0)
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.PartiallyClosed;
+                                    }
+                                    else
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.Open;
+                                    }
+                                }
+                                else
+                                {
+                                    soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.ShortClosed;
+                                }
+                                SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
+                            }
+                        }
 
                         if (salesOrderItems != null)
                         {
@@ -4941,6 +5078,7 @@ namespace Tips.SalesService.Api.Controllers
                             }
                         }
 
+                        salesOrderMainLevelHistory.SOAdditionalChargesHistory = SOAdditionalChargesHistoryList;
 
                         await _salesOrderMainLevelHistoryRepository.UpdateSalesOrderMainLevelHistory(salesOrderMainLevelHistory);
                         _salesOrderMainLevelHistoryRepository.SaveChanges();
