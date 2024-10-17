@@ -340,9 +340,10 @@ namespace Tips.Warehouse.Api.Repository
 
             var odoLotNumberlist = await _tipsWarehouseDbContext.OpenDeliveryOrderPartsQtyDistribution
                                .Where(x => x.PartNumber == itemNumber && odoItemIdList.Contains(x.OpenDeliveryOrderPartsId))
-                              .Select(x => new odoLotNumberListDto()
+                               .GroupBy(x => x.LotNumber)
+                              .Select(g => new odoLotNumberListDto()
                               {
-                                  LotNumber = x.LotNumber
+                                  LotNumber = g.Key
 
                               })
                             .ToListAsync();

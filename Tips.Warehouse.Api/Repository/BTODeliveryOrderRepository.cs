@@ -408,16 +408,17 @@ namespace Tips.Warehouse.Api.Repository
                                .Where(x => x.BTONumber == btoNumber)
                                .Select(b => b.Id).Distinct().ToListAsync();
 
-            var btoLotNumberlist = await _tipsWarehouseDbContext.BtoDeliveryOrderItemQtyDistribution
-                               .Where(x => x.PartNumber == itemNumber && btoItemIdList.Contains( x.BTODeliveryOrderItemsId))
-                              .Select(x => new DoLotNumberListDto()
-                              {
-                                  LotNumber = x.LotNumber
+            var btoLotNumberList = await _tipsWarehouseDbContext.BtoDeliveryOrderItemQtyDistribution
+                                .Where(x => x.PartNumber == itemNumber && btoItemIdList.Contains(x.BTODeliveryOrderItemsId))
+                                .GroupBy(x => x.LotNumber) 
+                                .Select(g => new DoLotNumberListDto
+                                {
+                                    LotNumber = g.Key 
+                                })
+                                .ToListAsync();
 
-                              })
-                            .ToListAsync();
+            return btoLotNumberList;
 
-            return btoLotNumberlist;
         }
         public async Task<BTODeliveryOrder> GetBTODeliveryOrderByIdExcludingClosed(int id)
         {
