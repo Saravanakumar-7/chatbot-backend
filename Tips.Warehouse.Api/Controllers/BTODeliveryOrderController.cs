@@ -753,6 +753,7 @@ namespace Tips.Warehouse.Api.Controllers
                             bTODeliveryOrderHistory.SerialNo = bTODoItemList[i].SerialNo;
                             bTODeliveryOrderHistory.Location = eachbin.Location;
                             bTODeliveryOrderHistory.Warehouse = eachbin.Warehouse;
+                            bTODeliveryOrderHistory.LotNumber = eachbin.LotNumber;
                             //bTODeliveryOrderHistory.CreatedBy = bTODoItemList[i].CreatedBy;
                             //bTODeliveryOrderHistory.LastModifiedOn = bTODoItemList[i].LastModifiedOn;
                             bTODeliveryOrderHistory.Remark = "From Create BTO";
