@@ -259,6 +259,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? TotalAmount { get; set; }
         [Precision(18, 3)]
         public decimal TotalFinalAmount { get; set; }
+        public bool NowShortClosed { get; set; }
 
         [Required]
         public string Unit { get; set; }
@@ -513,5 +514,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? QuoteRef { get; set; }
         public string? SalesOrdersItems { get; set; }
         public string? SalesOrderAdditionalCharges { get; set; }
+    }
+    public class SOHistoryRevNoListDto
+    {
+        public int Id { get; set; }
+        public int? RevisionNumber { get; set; }
+
     }
 }

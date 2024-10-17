@@ -6,5 +6,7 @@ namespace Tips.SalesService.Api.Contracts
     {
         Task<SalesOrderItemLevelHistory> CreateSalesOrderItemLevelHistory(SalesOrderItemLevelHistory salesOrderItemLevelHistory);
         Task<string> UpdateSalesOrderItemLevelHistory(SalesOrderItemLevelHistory salesOrderItemLevelHistory);
+        Task<SalesOrderItemLevelHistory> GetSalesOrderItemLevelHistoryBySalesOrderItemId(int soItemid);
+        void SaveChanges();
     }
 }

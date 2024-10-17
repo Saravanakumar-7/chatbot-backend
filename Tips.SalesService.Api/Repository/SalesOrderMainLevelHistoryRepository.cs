@@ -1,9 +1,11 @@
 ﻿using Entities;
 using Entities.Helper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Repository
 {
@@ -36,6 +38,41 @@ namespace Tips.SalesService.Api.Repository
             Update(salesOrderMainLevelHistory);
             string result = $"salesOrderMainLevelHistory of Detail {salesOrderMainLevelHistory.Id} is updated successfully!";
             return result;
+        }
+        public async Task<SalesOrderMainLevelHistory> GetSalesOrderMainLevelHistoryBySalesOrderId(int soid)
+        {
+            var salesOrderHistorybyId = await _tipsSalesServiceDbContexts.SalesOrderMainLevelHistories.Where(x => x.SalesOrderId == soid)
+                                  .Include(t => t.SalesOrderItemLevelHistory)
+                                  .ThenInclude(p => p.SalesOrderScheduleDateHistory)
+                                    .Include(o => o.SOAdditionalChargesHistory)
+
+                                 .FirstOrDefaultAsync();
+
+            return salesOrderHistorybyId;
+        }
+        public async Task<List<SOHistoryRevNoListDto>> GetSalesOrderMainLevelHistoryRevNoListBySalesOrderIdAndRevNo(int salesOrderId , int RevNo)
+        {
+            var salesOrderHistorybyId = await _tipsSalesServiceDbContexts.SalesOrderMainLevelHistories
+                            .Where(x => x.SalesOrderId == salesOrderId && x.RevisionNumber != RevNo)
+                                 .Select(s=> new SOHistoryRevNoListDto
+                                 {
+                                    Id = s.Id,
+                                    RevisionNumber = s.RevisionNumber
+                                 })
+                                 .ToListAsync();
+
+            return salesOrderHistorybyId;
+        }
+        public async Task<SalesOrderMainLevelHistory> GetSalesOrderMainLevelHistoryBySalesOrderHistoryIdAndRevNo(int SalesOrderHistoryId, int RevNo)
+        {
+            var salesOrderHistorybyId = await _tipsSalesServiceDbContexts.SalesOrderMainLevelHistories
+                            .Where(x => x.Id == SalesOrderHistoryId && x.RevisionNumber == RevNo)
+                             .Include(t => t.SalesOrderItemLevelHistory)
+                                  .ThenInclude(p => p.SalesOrderScheduleDateHistory)
+                                    .Include(o => o.SOAdditionalChargesHistory)
+                                 .FirstOrDefaultAsync();
+
+            return salesOrderHistorybyId;
         }
 
     }
