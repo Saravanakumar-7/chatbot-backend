@@ -1234,7 +1234,7 @@ namespace Tips.SalesService.Api.Controllers
                                     salesOrderItemLevelHistory.Id = exsitingSalesOrderItemLevelHistory.Id;
                                     salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItems[i].Id;
 
-                                    await _salesOrderItemLevelHistoryRepository.UpdateSalesOrderItemLevelHistory(salesOrderItemLevelHistory);
+                                await _salesOrderItemLevelHistoryRepository.UpdateSalesOrderItemLevelHistory(salesOrderItemLevelHistory);
 
                                 }
                                 else
