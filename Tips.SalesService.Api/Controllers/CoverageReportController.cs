@@ -816,6 +816,8 @@ namespace Tips.SalesService.Api.Controllers
 
                                 coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
 
+
+
                                 coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
                             }
 
@@ -939,6 +941,30 @@ namespace Tips.SalesService.Api.Controllers
             var encodedProjectNo = Uri.EscapeDataString(projectNo);
             var encodedItemNo = Uri.EscapeDataString(itemNumber);
             var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["BinningAPI"], $"GetListOfBinningQtyByItemNoListByProjectNo?ProjectNo={encodedProjectNo}&ItemNumber={encodedItemNo}"));
+
+            request.Headers.Add("Authorization", token);
+
+            var openPoQtyResponse = await client.SendAsync(request);
+            var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
+            dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
+            List<BinningQuantityDto> openPoQtyList = new List<BinningQuantityDto>();
+
+            foreach (var item in openPoQtyData.data)
+            {
+                BinningQuantityDto dto = JsonConvert.DeserializeObject<BinningQuantityDto>(item.ToString());
+                openPoQtyList.Add(dto);
+            }
+
+            return openPoQtyList;
+        }
+
+        private async Task<List<BinningQuantityDto>> GetODOQtyForChildItemsByProjectNo(string itemNumber, string projectNo)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var encodedProjectNo = Uri.EscapeDataString(projectNo);
+            var encodedItemNo = Uri.EscapeDataString(itemNumber);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ODOAPI"], $"GetListOfBinningQtyByItemNoListByProjectNo?ProjectNo={encodedProjectNo}&ItemNumber={encodedItemNo}"));
 
             request.Headers.Add("Authorization", token);
 

@@ -50,6 +50,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         public DateTime? ShortClosedOn { get; set; }
 
+        [DefaultValue(false)]
+        public bool IsDODone { get; set; }
+
+        [DefaultValue(false)]
+        public bool NowShortClosed { get; set; }
         public decimal? Total { get; set; }
         public string? ReasonForModification { get; set; }
 
@@ -253,6 +258,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SpecialDiscountType { get; set; }
         public SalesOrderStatus SalesOrderStatus { get; set; }
         public OrderStatus SOStatus { get; set; }
+        [DefaultValue(false)]
         public bool IsDODone { get; set; }
         [Precision(18, 3)]
         public decimal? SpecialDiscountAmount { get; set; }
@@ -260,6 +266,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? TotalAmount { get; set; }
         [Precision(18, 3)]
         public decimal TotalFinalAmount { get; set; }
+        [DefaultValue(false)]
         public bool NowShortClosed { get; set; }
 
         [Required]
