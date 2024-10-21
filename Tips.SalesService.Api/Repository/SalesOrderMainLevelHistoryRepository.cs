@@ -50,6 +50,15 @@ namespace Tips.SalesService.Api.Repository
 
             return salesOrderHistorybyId;
         }
+        public async Task<int> GetSalesOrderMainLevelHistoryIdBySalesOrderId(int soid)
+        {
+            var salesOrderHistorybyId = await _tipsSalesServiceDbContexts.SalesOrderMainLevelHistories.Where(x => x.SalesOrderId == soid)
+                                  .Select(x=>x.Id)
+
+                                 .FirstOrDefaultAsync();
+
+            return salesOrderHistorybyId;
+        }
         public async Task<List<SOHistoryRevNoListDto>> GetSalesOrderMainLevelHistoryRevNoListBySalesOrderIdAndRevNo(int salesOrderId , int RevNo)
         {
             var salesOrderHistorybyId = await _tipsSalesServiceDbContexts.SalesOrderMainLevelHistories

@@ -36,6 +36,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<OpenDeliveryOrderSPReportForTrans>> OpenDeliveryOrderSPReportDateForTrans(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<ODOMonthlyConsumptionSPReport>> GetODOMonthlyConsumptionSPReportWithParam(string CustomerId);
         Task<IEnumerable<ODOMonthlyConsumptionSPReport>> GetODOMonthlyConsumptionSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<List<ODOQuantityDto>> GetListOfODOQtyByItemNo(string itemNumber);
 
     }
 

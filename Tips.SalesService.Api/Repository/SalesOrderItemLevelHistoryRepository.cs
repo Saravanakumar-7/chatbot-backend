@@ -33,6 +33,15 @@ namespace Tips.SalesService.Api.Repository
 
             return getSalesOrderItemHisbyId;
         }
+        public async Task<int> GetSalesOrderItemLevelHistoryIdBySalesOrderItemId(int soItemid)
+        {
+            var getSalesOrderItemHisbyId = await _tipsSalesServiceDbContexts.SalesOrderItemLevelHistories.Where(x => x.SalesOrderItemId == soItemid)
+                                                .Select(x=>x.Id)
+
+                                 .FirstOrDefaultAsync();
+
+            return getSalesOrderItemHisbyId;
+        }
 
     }
 }
