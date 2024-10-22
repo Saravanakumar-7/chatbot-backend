@@ -1,4 +1,5 @@
 ﻿using Tips.SalesService.Api.Entities;
+using Tips.SalesService.Api.Entities.DTOs;
 
 namespace Tips.SalesService.Api.Contracts
 {
@@ -6,7 +7,9 @@ namespace Tips.SalesService.Api.Contracts
     {
         Task<SalesOrderItemLevelHistory> CreateSalesOrderItemLevelHistory(SalesOrderItemLevelHistory salesOrderItemLevelHistory);
         Task<string> UpdateSalesOrderItemLevelHistory(SalesOrderItemLevelHistory salesOrderItemLevelHistory);
-        Task<SalesOrderItemLevelHistory> GetSalesOrderItemLevelHistoryBySalesOrderItemId(int soItemid);
-        Task<int> GetSalesOrderItemLevelHistoryIdBySalesOrderItemId(int soItemid);
+        Task<SalesOrderItemLevelHistory> GetSalesOrderItemLevelHistoryBySalesOrderItemIdAndRevNo(int soItemid, int? revNo);
+        Task<SalesOrderItemLevelHistory> GetShortCloseSalesOrderItemLevelHistoryBySalesOrderItemIdAndRevNo(int soItemid, int? revNo);
+        Task<int> GetShortCloseSalesOrderItemLevelHistoryIdBySalesOrderItemIdAndRevNo(int soItemid, int? revNo);
+        Task<int> GetSalesOrderItemLevelHistoryIdBySalesOrderItemIdAndRevNo(int soItemid, int? revNo);
     }
 }

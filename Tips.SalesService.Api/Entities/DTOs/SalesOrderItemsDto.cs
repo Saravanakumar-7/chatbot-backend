@@ -96,6 +96,7 @@ namespace Tips.SalesService.Api.Entities.Dto
 
         [Precision(13, 3)]
         public decimal OrderQty { get; set; }
+        public decimal? ShortClosedQty { get; set; }
 
         [Precision(13, 3)]
         public decimal? SGST { get; set; }

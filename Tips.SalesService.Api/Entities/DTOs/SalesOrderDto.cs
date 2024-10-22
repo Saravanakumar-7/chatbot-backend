@@ -529,4 +529,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int? RevisionNumber { get; set; }
 
     }
+    public class SOHisDetailsDto
+    {
+        public int Id { get; set; }
+        public decimal? ShortClosedQty { get; set; }
+        public decimal BalanceQty { get; set; }
+        public decimal DispatchQty { get; set; }
+
+    }
 }

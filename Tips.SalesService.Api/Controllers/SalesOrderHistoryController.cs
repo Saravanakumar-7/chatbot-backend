@@ -175,6 +175,12 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned GetSalesOrderMainLevelHistoryDetialsBySOHistoryIdAndRevNo with id: {SalesOrderHistoryId}");
+                    soHistoryRevNoDetailBySOIdAndRevNo.SOAdditionalChargesHistory.ForEach(x => x.SalesOrderMainLevelHistory = null);
+                    soHistoryRevNoDetailBySOIdAndRevNo.SalesOrderItemLevelHistory.ForEach(x =>
+                    {
+                        x.SalesOrderMainLevelHistory = null;
+                        x.SalesOrderScheduleDateHistory.ForEach(z => z.SalesOrderItemLevelHistory = null);
+                    });
                     serviceResponse.Data = soHistoryRevNoDetailBySOIdAndRevNo;
                     serviceResponse.Message = "Success";
                     serviceResponse.Success = true;
