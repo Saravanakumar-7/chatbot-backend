@@ -811,10 +811,19 @@ namespace Tips.SalesService.Api.Controllers
                                     coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
                                 }
 
-                                decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
-                                   + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
+                                //ODO Qty Calculate
+                                List<ODOQuantityDto> odoQtyList = await GetODOQtyForChildItemsByItemNoAndProjectNo(item.ItemNumber);
 
-                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
+                                coverageDetailOfChildItem.ODOQty = odoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.ODOQty).FirstOrDefault();
+
+                                
+                                    decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
+                                       + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty)-coverageDetailOfChildItem.ODOQty;
+
+
+                                    coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
+                                
+
 
                                 coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
                             }
@@ -954,6 +963,29 @@ namespace Tips.SalesService.Api.Controllers
             }
 
             return openPoQtyList;
+        }
+
+        private async Task<List<ODOQuantityDto>> GetODOQtyForChildItemsByItemNoAndProjectNo(string itemNumber)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var encodedItemNo = Uri.EscapeDataString(itemNumber);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ODOAPI"], $"GetListOfODOQtyByItemNo?ItemNumber={encodedItemNo}"));
+
+            request.Headers.Add("Authorization", token);
+
+            var openODOQtyResponse = await client.SendAsync(request);
+            var openODOQtyString = await openODOQtyResponse.Content.ReadAsStringAsync();
+            dynamic openODOQtyData = JsonConvert.DeserializeObject(openODOQtyString);
+            List<ODOQuantityDto> openODOQtyList = new List<ODOQuantityDto>();
+
+            foreach (var item in openODOQtyData.data)
+            {
+                ODOQuantityDto dto = JsonConvert.DeserializeObject<ODOQuantityDto>(item.ToString());
+                openODOQtyList.Add(dto);
+            }
+
+            return openODOQtyList;
         }
         //GenerateCoverageFGLevelReportByProjectNumber
 

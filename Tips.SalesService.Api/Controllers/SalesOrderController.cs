@@ -972,6 +972,14 @@ namespace Tips.SalesService.Api.Controllers
                     for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
                     {
                         SalesOrderAdditionalCharges additionalChargesDetails = _mapper.Map<SalesOrderAdditionalCharges>(salesAdditionalChargesDto[i]);
+                        if (salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges != null)
+                        {
+                            if (salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges[i] != null && i < salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges.Count)
+                            {
+                                var oldSOAddCharges = salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges[i];
+                                additionalChargesDetails.Id = oldSOAddCharges.Id;
+                            }
+                        }
                         salesAdditionalChargesList.Add(additionalChargesDetails);
                     }
                 }
@@ -980,7 +988,14 @@ namespace Tips.SalesService.Api.Controllers
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
                     {
                         SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
-
+                        if (salesOrderDetailBeforeUpdate.SalesOrdersItems != null)
+                        {
+                            if (i < salesOrderDetailBeforeUpdate.SalesOrdersItems.Count && salesOrderDetailBeforeUpdate.SalesOrdersItems[i] != null)
+                            {
+                                var oldSOItem = salesOrderDetailBeforeUpdate.SalesOrdersItems[i];
+                                salesOrderItemsDetail.Id = oldSOItem.Id;
+                            }
+                        }
                         if (salesOrderItemsDetail.StatusEnum != OrderStatus.ShortClosed)
                         {
                             salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty - salesOrderItemsDetail.DispatchQty;
@@ -1155,7 +1170,7 @@ namespace Tips.SalesService.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var exsitingSalesOrderHistory = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryBySalesOrderId(salesOrder.Id);
+                var exsitingSalesOrderHistory = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryBySalesOrderIdAndRevNo(salesOrder.Id, salesOrder.RevisionNumber);
                 if (exsitingSalesOrderHistory == null)
                 {
                     var salesOrderMainLevelHistory = _mapper.Map<SalesOrderMainLevelHistory>(salesOrder);
@@ -1189,8 +1204,9 @@ namespace Tips.SalesService.Api.Controllers
                                 SalesOrderItemLevelHistory salesOrderItemLevelHistory = _mapper.Map<SalesOrderItemLevelHistory>(salesOrderItems[i]);
                                 salesOrderItemLevelHistory.Id = 0;
                                 salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItems[i].Id;
+                                salesOrderItemLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
 
-                                if (salesOrderItems[i].ScheduleDates != null && salesOrderItems[i].ScheduleDates.Count > 0)
+                            if (salesOrderItems[i].ScheduleDates != null && salesOrderItems[i].ScheduleDates.Count > 0)
                                 {
                                     foreach (var ScheduleDate in salesOrderItems[i].ScheduleDates)
                                     {
@@ -1210,40 +1226,47 @@ namespace Tips.SalesService.Api.Controllers
                     salesOrderMainLevelHistory.SOAdditionalChargesHistory = SOAdditionalChargesHistoryList;
 
                     await _salesOrderMainLevelHistoryRepository.CreateSalesOrderMainLevelHistory(salesOrderMainLevelHistory);
-                    _salesOrderMainLevelHistoryRepository.SaveChanges();
+                    _salesOrderMainLevelHistoryRepository.SaveAsync();
                 }
                 else
                 {
+                    var salesOrderMainLevelHistoryId = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryIdBySalesOrderIdAndRevNo(salesOrder.Id, salesOrder.RevisionNumber);
+
                     var salesOrderMainLevelHistory = _mapper.Map(salesOrder, exsitingSalesOrderHistory);
-                    salesOrderMainLevelHistory.Id = exsitingSalesOrderHistory.Id;
+                    salesOrderMainLevelHistory.Id = salesOrderMainLevelHistoryId;
                     salesOrderMainLevelHistory.SalesOrderId = salesOrder.Id;
                     salesOrderMainLevelHistory.LastModifiedBy = _createdBy;
                     salesOrderMainLevelHistory.LastModifiedOn = DateTime.Now;
 
                     var salesOrderItems = salesOrder.SalesOrdersItems;
+                    var SalesOrderItemLevelHistoryList = new List<SalesOrderItemLevelHistory>();
                     var SalesOrderScheduleDateHistoryList = new List<SalesOrderScheduleDateHistory>();
 
                     if (salesOrderItems != null)
                     {
                         for (int i = 0; i < salesOrderItems.Count; i++)
                         {
-                                var exsitingSalesOrderItemLevelHistory = await _salesOrderItemLevelHistoryRepository.GetSalesOrderItemLevelHistoryBySalesOrderItemId(salesOrderItems[i].Id);
+                                var exsitingSalesOrderItemLevelHistory = await _salesOrderItemLevelHistoryRepository.GetSalesOrderItemLevelHistoryBySalesOrderItemIdAndRevNo(salesOrderItems[i].Id, salesOrder.RevisionNumber);
                                 if (exsitingSalesOrderItemLevelHistory != null)
                                 {
-                                    var salesOrderItemLevelHistory = _mapper.Map(salesOrderItems, exsitingSalesOrderItemLevelHistory);
-                                    salesOrderItemLevelHistory.Id = exsitingSalesOrderItemLevelHistory.Id;
-                                    salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItems[i].Id;
+                                    var salesOrderItemLevelHistoryId = await _salesOrderItemLevelHistoryRepository.GetSalesOrderItemLevelHistoryIdBySalesOrderItemIdAndRevNo(salesOrderItems[i].Id, salesOrder.RevisionNumber);
 
-                                    await _salesOrderItemLevelHistoryRepository.UpdateSalesOrderItemLevelHistory(salesOrderItemLevelHistory);
+                                    var salesOrderItemLevelHistory = _mapper.Map(salesOrderItems[i], exsitingSalesOrderItemLevelHistory);
+                                    salesOrderItemLevelHistory.Id = salesOrderItemLevelHistoryId;
+                                    salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItems[i].Id;
+                                    SalesOrderItemLevelHistoryList.Add(salesOrderItemLevelHistory);
+                                    salesOrderMainLevelHistory.SalesOrderItemLevelHistory = SalesOrderItemLevelHistoryList;
 
                                 }
                                 else
                                 {
-                                    var salesOrderItemLevelHistory = _mapper.Map(salesOrderItems, exsitingSalesOrderItemLevelHistory);
+                                    var salesOrderItemLevelHistory = _mapper.Map<SalesOrderItemLevelHistory>(salesOrderItems[i]);
                                     salesOrderItemLevelHistory.Id = 0;
                                     salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItems[i].Id;
+                                    salesOrderItemLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
+                                    salesOrderItemLevelHistory.SalesOrderMainLevelHistoryId = salesOrderMainLevelHistoryId;
 
-                                    if (salesOrderItems[i].ScheduleDates != null && salesOrderItems[i].ScheduleDates.Count > 0)
+                                if (salesOrderItems[i].ScheduleDates != null && salesOrderItems[i].ScheduleDates.Count > 0)
                                     {
                                         foreach (var ScheduleDate in salesOrderItems[i].ScheduleDates)
                                         {
@@ -1253,20 +1276,19 @@ namespace Tips.SalesService.Api.Controllers
                                             SalesOrderScheduleDateHistoryList.Add(salesOrderScheduleDateHistory);
                                         }
                                     }
+
                                     salesOrderItemLevelHistory.SalesOrderScheduleDateHistory = SalesOrderScheduleDateHistoryList;
-
+                                    
                                     await _salesOrderItemLevelHistoryRepository.CreateSalesOrderItemLevelHistory(salesOrderItemLevelHistory);
-
+                                    _salesOrderItemLevelHistoryRepository.SaveAsync();
                                 }
 
-                                _salesOrderItemLevelHistoryRepository.SaveChanges();
-                            
                         }
                     }
 
-
+                    
                     await _salesOrderMainLevelHistoryRepository.UpdateSalesOrderMainLevelHistory(salesOrderMainLevelHistory);
-                    _salesOrderMainLevelHistoryRepository.SaveChanges();
+                    _salesOrderMainLevelHistoryRepository.SaveAsync();
                 }
 
                 serviceResponse.Data = null;
@@ -2066,22 +2088,24 @@ namespace Tips.SalesService.Api.Controllers
                 _salesAdditionalChargesRepository.SaveAsync();
 
                 var salesdetails = await _repository.GetSalesOrderById(soAdditionalChargeUpdateDto[0].SalesOrderId);
-
-                int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
-
-                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
-
-                if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                if (salesdetails.SOStatus != OrderStatus.ShortClosed)
                 {
-                    salesdetails.SOStatus = OrderStatus.Closed;
-                }
-                else
-                {
-                    salesdetails.SOStatus = OrderStatus.PartiallyClosed;
-                }
+                    int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed || x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
 
-                await _repository.UpdateSalesOrderShortClose(salesdetails);
-                _repository.SaveAsync();
+                    int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
+
+                    if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                    {
+                        salesdetails.SOStatus = OrderStatus.Closed;
+                    }
+                    else
+                    {
+                        salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                    }
+
+                    await _repository.UpdateSalesOrderShortClose(salesdetails);
+                    _repository.SaveAsync();
+                }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SalesOrder Successfully Updated";
                 serviceResponse.Success = true;
@@ -2167,6 +2191,7 @@ namespace Tips.SalesService.Api.Controllers
                     await _repository.UpdateSalesOrderShortClose(salesdetails);
                     _repository.SaveAsync();
                 }
+                
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SalesOrder Successfully Updated";
                 serviceResponse.Success = true;
@@ -4573,6 +4598,10 @@ namespace Tips.SalesService.Api.Controllers
                 for (int i = 0; i < salesOrderItemsDto.Count; i++)
                 {
                     SalesOrderItems salesOrderItemsDetail = _mapper.Map<SalesOrderItems>(salesOrderItemsDto[i]);
+                    if(salesOrderItemsDetail.DispatchQty > 0)
+                    {
+                        salesOrderDtoUpdate.IsDODone = true;
+                    }
                     var oldSOItem = salesOrderDetailBeforeUpdate.SalesOrdersItems[i];
                     salesOrderItemsDetail.Id = oldSOItem.Id;
                     salesOrderItemsDetail.ShortClosedQty += oldSOItem.ShortClosedQty;
@@ -4639,11 +4668,38 @@ namespace Tips.SalesService.Api.Controllers
                     salesOrderItemsList.Add(salesOrderItemsDetail);
                 }
 
-                //ShortClose History Table
-               await CreateShortCloseSalesOrderHistory(salesOrderDetailBeforeUpdate, salesOrderDtoUpdate);
-
-
+                
                 var salesAdditionalChargesList = _mapper.Map<List<SalesOrderAdditionalCharges>>(salesAdditionalChargesDto);
+                if (salesAdditionalChargesList.Count > 0)
+                {
+                    for (int i = 0; i < salesAdditionalChargesList.Count; i++)
+                    {
+                        if (salesOrderDtoUpdate.IsDODone == true)
+                        {
+                            if (salesAdditionalChargesList[i].TotalValue == salesAdditionalChargesList[i].InvoicedValue)
+                            {
+                                salesAdditionalChargesList[i].SOAdditionalStatus = SoStatus.Closed;
+                            }
+                            else if (salesAdditionalChargesList[i].TotalValue > salesAdditionalChargesList[i].InvoicedValue && salesAdditionalChargesList[i].InvoicedValue != 0)
+                            {
+                                salesAdditionalChargesList[i].SOAdditionalStatus = SoStatus.PartiallyClosed;
+                            }
+                            else
+                            {
+                                salesAdditionalChargesList[i].SOAdditionalStatus = SoStatus.Open;
+                            }
+                        }
+                        else
+                        {
+                            salesAdditionalChargesList[i].SOAdditionalStatus = SoStatus.ShortClosed;
+                        }
+
+                    }
+                }
+                
+
+                //ShortClose History Table
+                await CreateShortCloseSalesOrderHistory(salesOrderDetailBeforeUpdate, salesOrderDtoUpdate);
 
                 var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetailBeforeUpdate);
 
@@ -4680,7 +4736,7 @@ namespace Tips.SalesService.Api.Controllers
             {
                 if (salesOrderDtoUpdate.NowShortClosed != true)
                 {
-                    var exsitingSalesOrderHistory = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryBySalesOrderId(salesOrder.Id);
+                    var exsitingSalesOrderHistory = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryBySalesOrderIdAndRevNo(salesOrder.Id, salesOrder.RevisionNumber);
                     if (exsitingSalesOrderHistory == null)
                     {
                         var salesOrderMainLevelHistory = _mapper.Map<SalesOrderMainLevelHistory>(salesOrder);
@@ -4693,7 +4749,7 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderMainLevelHistory.LastModifiedOn = null;
 
                         var salesOrderItems = salesOrder.SalesOrdersItems;
-                        var SalesOrderItemLevelHistoryList = new List<SalesOrderItemLevelHistory>(); 
+                        var SalesOrderItemLevelHistoryList = new List<SalesOrderItemLevelHistory>();
                         var SalesOrderScheduleDateHistoryList = new List<SalesOrderScheduleDateHistory>();
                         var SOAdditionalChargesHistoryList = new List<SOAdditionalChargesHistory>();
 
@@ -4704,6 +4760,25 @@ namespace Tips.SalesService.Api.Controllers
                                 SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(SalesOrderAdditionalCharges);
                                 soAdditionalChargesHistory.Id = 0;
                                 soAdditionalChargesHistory.SOAdditionalChargeId = SalesOrderAdditionalCharges.Id;
+                                if (salesOrderDtoUpdate.IsDODone == true)
+                                {
+                                    if (soAdditionalChargesHistory.TotalValue == soAdditionalChargesHistory.InvoicedValue)
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.Closed;
+                                    }
+                                    else if (soAdditionalChargesHistory.TotalValue > soAdditionalChargesHistory.InvoicedValue && soAdditionalChargesHistory.InvoicedValue != 0)
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.PartiallyClosed;
+                                    }
+                                    else
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.Open;
+                                    }
+                                }
+                                else
+                                {
+                                    soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.ShortClosed;
+                                }
                                 SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
                             }
                         }
@@ -4717,6 +4792,7 @@ namespace Tips.SalesService.Api.Controllers
                                     SalesOrderItemLevelHistory salesOrderItemLevelHistory = _mapper.Map<SalesOrderItemLevelHistory>(salesOrderItems[i]);
                                     salesOrderItemLevelHistory.Id = 0;
                                     salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItems[i].Id;
+                                    salesOrderItemLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
                                     salesOrderItemLevelHistory.ShortClosedQty = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].ShortClosedQty;
                                     salesOrderItemLevelHistory.ShortClosedBy = _createdBy;
                                     salesOrderItemLevelHistory.ShortClosedOn = DateAndTime.Now;
@@ -4742,18 +4818,17 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderMainLevelHistory.SOAdditionalChargesHistory = SOAdditionalChargesHistoryList;
 
                         await _salesOrderMainLevelHistoryRepository.CreateSalesOrderMainLevelHistory(salesOrderMainLevelHistory);
-                        _salesOrderMainLevelHistoryRepository.SaveChanges();
+                        _salesOrderMainLevelHistoryRepository.SaveAsync();
                     }
                     else
                     {
-                        var salesOrderMainLevelHistory = _mapper.Map(salesOrder, exsitingSalesOrderHistory);
-                        salesOrderMainLevelHistory.Id = exsitingSalesOrderHistory.Id;
-                        salesOrderMainLevelHistory.SalesOrderId = salesOrder.Id;
-                        salesOrderMainLevelHistory.LastModifiedBy = _createdBy;
-                        salesOrderMainLevelHistory.LastModifiedOn = DateTime.Now;
+                        var salesOrderMainLevelHistoryId = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryIdBySalesOrderIdAndRevNo(salesOrder.Id, salesOrder.RevisionNumber);
+
 
                         var salesOrderItems = salesOrder.SalesOrdersItems;
+                        var SalesOrderItemLevelHistoryList = new List<SalesOrderItemLevelHistory>();
                         var SalesOrderScheduleDateHistoryList = new List<SalesOrderScheduleDateHistory>();
+                        
 
                         if (salesOrderItems != null)
                         {
@@ -4761,29 +4836,33 @@ namespace Tips.SalesService.Api.Controllers
                             {
                                 if (salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].NowShortClosed == true)
                                 {
-                                    var exsitingSalesOrderItemLevelHistory = await _salesOrderItemLevelHistoryRepository.GetSalesOrderItemLevelHistoryBySalesOrderItemId(salesOrderItems[i].Id);
+                                    var exsitingSalesOrderItemLevelHistory = await _salesOrderItemLevelHistoryRepository.GetShortCloseSalesOrderItemLevelHistoryBySalesOrderItemIdAndRevNo(salesOrderItems[i].Id, salesOrder.RevisionNumber);
                                     if (exsitingSalesOrderItemLevelHistory != null)
                                     {
-                                        var salesOrderItemLevelHistory = _mapper.Map(salesOrderItems, exsitingSalesOrderItemLevelHistory);
-                                        salesOrderItemLevelHistory.Id = exsitingSalesOrderItemLevelHistory.Id;
-                                        salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItems[i].Id;
-                                        salesOrderItemLevelHistory.ShortClosedQty = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].ShortClosedQty;
+                                        var salesOrderItemLevelHistoryId = await _salesOrderItemLevelHistoryRepository.GetShortCloseSalesOrderItemLevelHistoryIdBySalesOrderItemIdAndRevNo(salesOrderItems[i].Id, salesOrder.RevisionNumber);
+
+                                        var salesOrderItemLevelHistory = _mapper.Map(salesOrderItems[i], exsitingSalesOrderItemLevelHistory);
+                                        salesOrderItemLevelHistory.Id = salesOrderItemLevelHistoryId;
+                                        salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItems[i].Id;    
+                                        salesOrderItemLevelHistory.ShortClosedQty += salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].ShortClosedQty;
                                         salesOrderItemLevelHistory.ShortClosedBy = _createdBy;
                                         salesOrderItemLevelHistory.ShortClosedOn = DateAndTime.Now;
                                         salesOrderItemLevelHistory.Remarks = "Item ShortClosed";
-
                                         await _salesOrderItemLevelHistoryRepository.UpdateSalesOrderItemLevelHistory(salesOrderItemLevelHistory);
+                                        _salesOrderItemLevelHistoryRepository.SaveAsync();
 
                                     }
                                     else
                                     {
-                                        var salesOrderItemLevelHistory = _mapper.Map(salesOrderItems, exsitingSalesOrderItemLevelHistory);
+                                        var salesOrderItemLevelHistory = _mapper.Map<SalesOrderItemLevelHistory>(salesOrderItems[i]);
                                         salesOrderItemLevelHistory.Id = 0;
                                         salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItems[i].Id;
+                                        salesOrderItemLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
                                         salesOrderItemLevelHistory.ShortClosedQty = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].ShortClosedQty;
                                         salesOrderItemLevelHistory.ShortClosedBy = _createdBy;
                                         salesOrderItemLevelHistory.ShortClosedOn = DateAndTime.Now;
                                         salesOrderItemLevelHistory.Remarks = "Item ShortClosed";
+                                        salesOrderItemLevelHistory.SalesOrderMainLevelHistoryId = salesOrderMainLevelHistoryId;
 
                                         if (salesOrderItems[i].ScheduleDates != null && salesOrderItems[i].ScheduleDates.Count > 0)
                                         {
@@ -4798,22 +4877,18 @@ namespace Tips.SalesService.Api.Controllers
                                         salesOrderItemLevelHistory.SalesOrderScheduleDateHistory = SalesOrderScheduleDateHistoryList;
 
                                         await _salesOrderItemLevelHistoryRepository.CreateSalesOrderItemLevelHistory(salesOrderItemLevelHistory);
-
+                                        _salesOrderItemLevelHistoryRepository.SaveAsync();
                                     }
 
-                                    _salesOrderItemLevelHistoryRepository.SaveChanges();
+
                                 }
                             }
                         }
-
-
-                        await _salesOrderMainLevelHistoryRepository.UpdateSalesOrderMainLevelHistory(salesOrderMainLevelHistory);
-                        _salesOrderMainLevelHistoryRepository.SaveChanges();
                     }
                 }
                 else
                 {
-                    var exsitingSalesOrderHistory = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryBySalesOrderId(salesOrder.Id);
+                    var exsitingSalesOrderHistory = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryBySalesOrderIdAndRevNo(salesOrder.Id, salesOrder.RevisionNumber);
                     if (exsitingSalesOrderHistory == null)
                     {
                         var salesOrderMainLevelHistory = _mapper.Map<SalesOrderMainLevelHistory>(salesOrderDtoUpdate);
@@ -4833,11 +4908,32 @@ namespace Tips.SalesService.Api.Controllers
 
                         if (salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos != null)
                         {
-                            for(int i = 0; i < salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos.Count; i++)
+                            for (int i = 0; i < salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos.Count; i++)
                             {
                                 SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos[i]);
                                 soAdditionalChargesHistory.Id = 0;
                                 soAdditionalChargesHistory.SOAdditionalChargeId = salesOrder.SalesOrderAdditionalCharges[i].Id;
+
+                                if (salesOrderDtoUpdate.IsDODone == true)
+                                {
+                                    if (soAdditionalChargesHistory.TotalValue == soAdditionalChargesHistory.InvoicedValue)
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.Closed;
+                                    }
+                                    else if (soAdditionalChargesHistory.TotalValue > soAdditionalChargesHistory.InvoicedValue && soAdditionalChargesHistory.InvoicedValue != 0)
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.PartiallyClosed;
+                                    }
+                                    else
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.Open;
+                                    }
+                                }
+                                else
+                                {
+                                    soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.ShortClosed;
+                                }
+
                                 SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
                             }
                         }
@@ -4851,6 +4947,7 @@ namespace Tips.SalesService.Api.Controllers
                                     SalesOrderItemLevelHistory salesOrderItemLevelHistory = _mapper.Map<SalesOrderItemLevelHistory>(salesOrderItems[i]);
                                     salesOrderItemLevelHistory.Id = 0;
                                     salesOrderItemLevelHistory.SalesOrderItemId = salesOrder.SalesOrdersItems[i].Id;
+                                    salesOrderItemLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
                                     //salesOrderItemLevelHistory.ShortClosedQty = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].ShortClosedQty;
                                     salesOrderItemLevelHistory.ShortClosedBy = _createdBy;
                                     salesOrderItemLevelHistory.ShortClosedOn = DateAndTime.Now;
@@ -4858,7 +4955,7 @@ namespace Tips.SalesService.Api.Controllers
 
                                     if (salesOrderItems[i].ScheduleDates != null && salesOrderItems[i].ScheduleDates.Count > 0)
                                     {
-                                        for(int j = 0; j < salesOrderItems[i].ScheduleDates.Count; j++)
+                                        for (int j = 0; j < salesOrderItems[i].ScheduleDates.Count; j++)
                                         {
                                             SalesOrderScheduleDateHistory salesOrderScheduleDateHistory = _mapper.Map<SalesOrderScheduleDateHistory>(salesOrderItems[i].ScheduleDates);
                                             salesOrderScheduleDateHistory.Id = 0;
@@ -4876,19 +4973,54 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderMainLevelHistory.SOAdditionalChargesHistory = SOAdditionalChargesHistoryList;
 
                         await _salesOrderMainLevelHistoryRepository.CreateSalesOrderMainLevelHistory(salesOrderMainLevelHistory);
-                        _salesOrderMainLevelHistoryRepository.SaveChanges();
+                        _salesOrderMainLevelHistoryRepository.SaveAsync();
                     }
                     else
                     {
+                        var salesOrderMainLevelHistoryId = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryIdBySalesOrderIdAndRevNo(salesOrder.Id, salesOrder.RevisionNumber);
+
                         var salesOrderMainLevelHistory = _mapper.Map(salesOrderDtoUpdate, exsitingSalesOrderHistory);
-                        salesOrderMainLevelHistory.Id = exsitingSalesOrderHistory.Id;
+                        salesOrderMainLevelHistory.Id = salesOrderMainLevelHistoryId;
                         salesOrderMainLevelHistory.SalesOrderId = salesOrder.Id;
                         salesOrderMainLevelHistory.LastModifiedBy = _createdBy;
                         salesOrderMainLevelHistory.LastModifiedOn = DateTime.Now;
 
                         var salesOrderItems = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos;
                         var salesOrderItemDetails = salesOrder.SalesOrdersItems;
+                        var SalesOrderItemLevelHistoryList = new List<SalesOrderItemLevelHistory>();
                         var SalesOrderScheduleDateHistoryList = new List<SalesOrderScheduleDateHistory>();
+                        var SOAdditionalChargesHistoryList = new List<SOAdditionalChargesHistory>();
+
+                        if (salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos != null)
+                        {
+                            for (int i = 0; i < salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos.Count; i++)
+                            {
+                                SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos[i]);
+                                soAdditionalChargesHistory.Id = 0;
+                                soAdditionalChargesHistory.SOAdditionalChargeId = salesOrder.SalesOrderAdditionalCharges[i].Id;
+
+                                if (salesOrderDtoUpdate.IsDODone == true)
+                                {
+                                    if (soAdditionalChargesHistory.TotalValue == soAdditionalChargesHistory.InvoicedValue)
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.Closed;
+                                    }
+                                    else if (soAdditionalChargesHistory.TotalValue > soAdditionalChargesHistory.InvoicedValue && soAdditionalChargesHistory.InvoicedValue != 0)
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.PartiallyClosed;
+                                    }
+                                    else
+                                    {
+                                        soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.Open;
+                                    }
+                                }
+                                else
+                                {
+                                    soAdditionalChargesHistory.SOAdditionalStatus = SoStatus.ShortClosed;
+                                }
+                                SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
+                            }
+                        }
 
                         if (salesOrderItems != null)
                         {
@@ -4896,62 +5028,67 @@ namespace Tips.SalesService.Api.Controllers
                             {
                                 if (salesOrderItems[i].NowShortClosed == true)
                                 {
-                                    var exsitingSalesOrderItemLevelHistory = await _salesOrderItemLevelHistoryRepository.GetSalesOrderItemLevelHistoryBySalesOrderItemId(salesOrderItemDetails[i].Id);
+                                    var exsitingSalesOrderItemLevelHistory = await _salesOrderItemLevelHistoryRepository.GetShortCloseSalesOrderItemLevelHistoryBySalesOrderItemIdAndRevNo(salesOrderItemDetails[i].Id, salesOrder.RevisionNumber);
                                     if (exsitingSalesOrderItemLevelHistory != null)
                                     {
-                                        var salesOrderItemLevelHistory = _mapper.Map(salesOrderItems, exsitingSalesOrderItemLevelHistory);
-                                        salesOrderItemLevelHistory.Id = exsitingSalesOrderItemLevelHistory.Id;
+                                        var salesOrderItemLevelHistoryId = await _salesOrderItemLevelHistoryRepository.GetShortCloseSalesOrderItemLevelHistoryBySalesOrderItemIdAndRevNo(salesOrderItemDetails[i].Id, salesOrder.RevisionNumber);
+
+                                        var salesOrderItemLevelHistory = _mapper.Map(salesOrderItems[i], exsitingSalesOrderItemLevelHistory);
+                                        salesOrderItemLevelHistory.Id = salesOrderItemLevelHistoryId.Id;
                                         salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItemDetails[i].Id;
-                                        //salesOrderItemLevelHistory.ShortClosedQty = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].ShortClosedQty;
+                                        salesOrderItemLevelHistory.ShortClosedQty += salesOrderItemDetails[i].ShortClosedQty;
                                         salesOrderItemLevelHistory.ShortClosedBy = _createdBy;
                                         salesOrderItemLevelHistory.ShortClosedOn = DateAndTime.Now;
                                         salesOrderItemLevelHistory.Remarks = "Item ShortClosed";
-
-                                        await _salesOrderItemLevelHistoryRepository.UpdateSalesOrderItemLevelHistory(salesOrderItemLevelHistory);
+                                        SalesOrderItemLevelHistoryList.Add(salesOrderItemLevelHistory);
+                                        salesOrderMainLevelHistory.SalesOrderItemLevelHistory = SalesOrderItemLevelHistoryList;
 
                                     }
                                     else
                                     {
-                                        var salesOrderItemLevelHistory = _mapper.Map(salesOrderItems, exsitingSalesOrderItemLevelHistory);
-                                        salesOrderItemLevelHistory.Id = 0;
+                                        var salesOrderItemLevelHistory = _mapper.Map<SalesOrderItemLevelHistory>(salesOrderItems[i]);
+                                        salesOrderItemLevelHistory.Id = 0; 
                                         salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItemDetails[i].Id;
-                                        //salesOrderItemLevelHistory.ShortClosedQty = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].ShortClosedQty;
+                                        salesOrderItemLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
                                         salesOrderItemLevelHistory.ShortClosedBy = _createdBy;
-                                        salesOrderItemLevelHistory.ShortClosedOn = DateAndTime.Now;
+                                        salesOrderItemLevelHistory.ShortClosedOn = DateTime.Now;
                                         salesOrderItemLevelHistory.Remarks = "Item ShortClosed";
+                                        salesOrderItemLevelHistory.SalesOrderMainLevelHistoryId = salesOrderMainLevelHistoryId;
 
                                         if (salesOrderItems[i].ScheduleDates != null && salesOrderItems[i].ScheduleDates.Count > 0)
                                         {
-                                            for (int j = 0; j < salesOrderItems[i].ScheduleDates.Count; j++)
+                                            for(int j = 0; j < salesOrderItems[i].ScheduleDates.Count; j++)
                                             {
-                                                SalesOrderScheduleDateHistory salesOrderScheduleDateHistory = _mapper.Map<SalesOrderScheduleDateHistory>(salesOrderItems[i].ScheduleDates);
-                                                salesOrderScheduleDateHistory.Id = 0;
+                                                var salesOrderScheduleDateHistory = _mapper.Map<SalesOrderScheduleDateHistory>(salesOrderItems[i].ScheduleDates[j]);
+                                                salesOrderScheduleDateHistory.Id = 0; 
                                                 salesOrderScheduleDateHistory.SOScheduleDateId = salesOrderItemDetails[i].ScheduleDates[j].Id;
                                                 SalesOrderScheduleDateHistoryList.Add(salesOrderScheduleDateHistory);
                                             }
                                         }
+
                                         salesOrderItemLevelHistory.SalesOrderScheduleDateHistory = SalesOrderScheduleDateHistoryList;
 
                                         await _salesOrderItemLevelHistoryRepository.CreateSalesOrderItemLevelHistory(salesOrderItemLevelHistory);
+                                        _salesOrderItemLevelHistoryRepository.SaveAsync();
+
 
                                     }
-
-                                    _salesOrderItemLevelHistoryRepository.SaveChanges();
                                 }
                             }
                         }
 
-
+                        salesOrderMainLevelHistory.SOAdditionalChargesHistory = SOAdditionalChargesHistoryList;
                         await _salesOrderMainLevelHistoryRepository.UpdateSalesOrderMainLevelHistory(salesOrderMainLevelHistory);
-                        _salesOrderMainLevelHistoryRepository.SaveChanges();
+                        _salesOrderMainLevelHistoryRepository.SaveAsync();
                     }
                 }
-                serviceResponse.Data = null;
-                serviceResponse.Message = "ShortClose SalesOrderHistory Successfully Created";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
 
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ShortClose SalesOrderHistory Successfully Created";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                
 
             }
             catch (Exception ex)

@@ -70,6 +70,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal BinningQty { get; set; }
 
     }
+    public class ODOQuantityDto
+    {
+        public string? ItemNumber { get; set; }
+        public decimal ODOQty { get; set; }
+
+    }
     public class CoverageReportDtoForChildItem
     {
         public string? ItemNumber { get; set; }
@@ -95,6 +101,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? Stock { get; set; }
         public decimal? WipQty { get; set; }
         public decimal? OpenPoQty { get; set; }
+        public decimal? ODOQty { get; set; }
         public decimal? BalanceToOrder { get; set; }
 
     }
