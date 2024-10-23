@@ -223,7 +223,6 @@ namespace Tips.Production.Api.Controllers
                     inventoryTranction.PartNumber = ItemNo;
                     inventoryTranction.LotNumber = newinv.LotNumber;
                     inventoryTranction.MftrPartNumber = newinv.MftrPartNumber;
-                    inventoryTranction.LotNumber = newinv.LotNumber;
                     inventoryTranction.Description = Desc;
                     inventoryTranction.ProjectNumber = ProjectNo;
                     inventoryTranction.PartType = ItemType;

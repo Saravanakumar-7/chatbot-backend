@@ -17,11 +17,11 @@ namespace Tips.Purchase.Api.Entities
         [Precision(13, 3)]
         public decimal AmountAgainstPO { get; set; }
         public DateTime? Date { get; set; }
+        public DateTime? NextPayment { get; set; }
         public string? ReferenceNO { get; set; }
         public decimal Amount { get; set; }
         public string? PaymentTerms { get; set; }
         public string? OtherRemarks { get; set; }
-
         public int POCollectionTrackerForAviId { get; set; }
         public POCollectionTrackerForAvi? POCollectionTrackerForAvi { get; set; }
     }

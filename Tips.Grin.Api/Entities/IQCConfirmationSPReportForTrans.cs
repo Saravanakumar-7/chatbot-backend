@@ -5,10 +5,12 @@
         public string? GrinNumber { get; set; }
         public string? VendorName { get; set; }
         public string? InvoiceNumber { get; set; }
+        public DateTime? IqcClearedDate { get; set; }
         public DateTime? InvoiceDate { get; set; }
         public decimal? InvoiceValue { get; set; }
         public string? PONumber { get; set; }
         public string? ItemDescription { get; set; }
+        public string? GrinPartNo { get; set; }
         public string? MftrItemNumber { get; set; }
         public string? ManufactureBatchNumber { get; set; }
         public string? LotNumber { get; set; }

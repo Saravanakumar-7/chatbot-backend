@@ -47,7 +47,8 @@ namespace Tips.Production.Api.Entities
         [DefaultValue(false)]
         public bool IsShortClosed { get; set; } = false;
         public string? ShortClosedBy { get; set; }
-        public DateTime? ShortClosedOn { get; set; }     
+        public DateTime? ShortClosedOn { get; set; }
+        public string? Remarks { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

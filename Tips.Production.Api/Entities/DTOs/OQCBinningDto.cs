@@ -113,7 +113,6 @@ namespace Tips.Production.Api.Entities.DTOs
         public string PartNumber { get; set; }
         public string LotNumber { get; set; }
         public string MftrPartNumber { get; set; }
-        public string? LotNumber { get; set; }
         public string Description { get; set; }
         public string ProjectNumber { get; set; }
         public decimal Balance_Quantity { get; set; }

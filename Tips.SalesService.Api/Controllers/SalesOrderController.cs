@@ -4933,6 +4933,8 @@ namespace Tips.SalesService.Api.Controllers
                         var salesOrderMainLevelHistory = _mapper.Map<SalesOrderMainLevelHistory>(salesOrderDtoUpdate);
                         salesOrderMainLevelHistory.Id = 0;
                         salesOrderMainLevelHistory.SalesOrderId = salesOrder.Id;
+                        salesOrderMainLevelHistory.SalesOrderNumber = salesOrder.SalesOrderNumber;
+                        salesOrderMainLevelHistory.RevisionNumber = salesOrderDtoUpdate.QuoteRevisionNumber;
                         salesOrderMainLevelHistory.IsShortClosed = true;
                         salesOrderMainLevelHistory.CreatedBy = _createdBy;
                         salesOrderMainLevelHistory.CreatedOn = DateTime.Now;
@@ -5021,6 +5023,8 @@ namespace Tips.SalesService.Api.Controllers
                         var salesOrderMainLevelHistory = _mapper.Map(salesOrderDtoUpdate, exsitingSalesOrderHistory);
                         salesOrderMainLevelHistory.Id = salesOrderMainLevelHistoryId;
                         salesOrderMainLevelHistory.SalesOrderId = salesOrder.Id;
+                        salesOrderMainLevelHistory.SalesOrderNumber = salesOrder.SalesOrderNumber;
+                        salesOrderMainLevelHistory.RevisionNumber = salesOrderDtoUpdate.QuoteRevisionNumber;
                         salesOrderMainLevelHistory.LastModifiedBy = _createdBy;
                         salesOrderMainLevelHistory.LastModifiedOn = DateTime.Now;
 
@@ -5562,44 +5566,44 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpGet]
-        public async Task<IActionResult> GetSalesOrderNoDetailsByCustomerId(string Customerid)
-        {
-            ServiceResponse<IEnumerable<ListofSalesOrderDetails>> serviceResponse = new ServiceResponse<IEnumerable<ListofSalesOrderDetails>>();
+        //[HttpGet]
+        //public async Task<IActionResult> GetSalesOrderNoDetailsByCustomerId(string Customerid)
+        //{
+        //    ServiceResponse<IEnumerable<ListofSalesOrderDetails>> serviceResponse = new ServiceResponse<IEnumerable<ListofSalesOrderDetails>>();
 
-            try
-            {
-                var getSalesDetailByCustomerId = await _repository.GetSalesOrderNoDetailsByCustomerId(Customerid);
-                if (getSalesDetailByCustomerId == null)
-                {
-                    _logger.LogError($"SalesOrderDetail with id: {Customerid}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"SalesOrderDetail with id: {Customerid}, hasn't been found in db.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
-                }
-                else
-                {
-                    _logger.LogInfo($"Returned SalesOrderDetail with id: {Customerid}");
-                    var result = _mapper.Map<IEnumerable<ListofSalesOrderDetails>>(getSalesDetailByCustomerId);
-                    serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Something went wrong inside GetSalesOrderNoDetailsByCustomerId action: {ex.Message}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
+        //    try
+        //    {
+        //        var getSalesDetailByCustomerId = await _repository.GetSalesOrderNoDetailsByCustomerId(Customerid);
+        //        if (getSalesDetailByCustomerId == null)
+        //        {
+        //            _logger.LogError($"SalesOrderDetail with id: {Customerid}, hasn't been found in db.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"SalesOrderDetail with id: {Customerid}, hasn't been found in db.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            return NotFound(serviceResponse);
+        //        }
+        //        else
+        //        {
+        //            _logger.LogInfo($"Returned SalesOrderDetail with id: {Customerid}");
+        //            var result = _mapper.Map<IEnumerable<ListofSalesOrderDetails>>(getSalesDetailByCustomerId);
+        //            serviceResponse.Data = result;
+        //            serviceResponse.Message = "Success";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(serviceResponse);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Something went wrong inside GetSalesOrderNoDetailsByCustomerId action: {ex.Message}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Inter server error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
     }
 
 

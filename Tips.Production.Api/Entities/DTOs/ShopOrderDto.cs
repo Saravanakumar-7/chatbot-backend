@@ -36,6 +36,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? ShortClosedOn { get; set; }
         [Required]
         public decimal BomRevisionNo { get; set; }
+        public string? Remarks { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
@@ -61,6 +62,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal BomRevisionNo { get; set; }
         [Precision(13, 3)]
         public decimal? CanCreateQty { get; set; }
+        public string? Remarks { get; set; }
 
         public List<ShopOrderItemPostDto>? ShopOrderItems { get; set; }
     }
@@ -84,6 +86,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal BomRevisionNo { get; set; }
         [Precision(13, 3)]
         public decimal? CanCreateQty { get; set; }
+        public string? Remarks { get; set; }
         public string? Unit { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }

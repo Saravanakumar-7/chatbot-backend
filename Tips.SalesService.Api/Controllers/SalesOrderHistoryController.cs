@@ -9,6 +9,9 @@ using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities.DTOs;
 using Tips.SalesService.Api.Entities;
 using Tips.SalesService.Api.Repository;
+using Newtonsoft.Json;
+using Tips.SalesService.Api.Entities.Dto;
+using NPOI.SS.Formula.Functions;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -162,27 +165,34 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {
-                var soHistoryRevNoDetailBySOIdAndRevNo = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryBySalesOrderHistoryId(SalesOrderHistoryId);
-                if (soHistoryRevNoDetailBySOIdAndRevNo == null)
+                string items, addit;
+                items = product.SalesOrdersItems;
+                addit = product.SalesOrderAdditionalCharges;
+                product.SalesOrdersItems = null;
+                product.SalesOrderAdditionalCharges = null;
+                var result = _mapper.Map<SalesOrderDto>(product);
+                if (items != null)
                 {
-                    _logger.LogError($"SalesOrderHistoryDetail with id: {SalesOrderHistoryId}, hasn't been found in db.");
+                    result.SalesOrdersItems = JsonConvert.DeserializeObject<List<SalesOrderItemsDto>>(items);
+                }
+                if (addit != null)
+                {
+                    result.SalesOrderAdditionalCharges = JsonConvert.DeserializeObject<List<SalesOrderAdditionalChargesDto>>(addit);
+                }
+                if (result == null)
+                {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"SalesOrderHistoryDetail with id: {SalesOrderHistoryId}, hasn't been found in db.";
+                    serviceResponse.Message = $"GetSalesOrderDetialsById_SP hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesOrderMonthlyConsumptionSPReport hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned GetSalesOrderMainLevelHistoryDetialsBySOHistoryIdAndRevNo with id: {SalesOrderHistoryId}");
-                    soHistoryRevNoDetailBySOIdAndRevNo.SOAdditionalChargesHistory.ForEach(x => x.SalesOrderMainLevelHistory = null);
-                    soHistoryRevNoDetailBySOIdAndRevNo.SalesOrderItemLevelHistory.ForEach(x =>
-                    {
-                        x.SalesOrderMainLevelHistory = null;
-                        x.SalesOrderScheduleDateHistory.ForEach(z => z.SalesOrderItemLevelHistory = null);
-                    });
-                    serviceResponse.Data = soHistoryRevNoDetailBySOIdAndRevNo;
-                    serviceResponse.Message = "Success";
+
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned GetSalesOrderDetialsById_SP Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -193,6 +203,57 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError($"Something went wrong inside GetSalesOrderMainLevelHistoryDetialsBySOHistoryIdAndRevNo action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSalesOrderMainLevelHistoryDetialsBySOHistoryId(int SalesOrderHistoryId)
+        {
+            ServiceResponse<SalesOrderDto> serviceResponse = new ServiceResponse<SalesOrderDto>();
+            try
+            {
+                var product = await _repository.GetSalesOrderDetialsById_SP(id);
+                string items, addit;
+                items = product.SalesOrdersItems;
+                addit = product.SalesOrderAdditionalCharges;
+                product.SalesOrdersItems = null;
+                product.SalesOrderAdditionalCharges = null;
+                var result = _mapper.Map<SalesOrderDto>(product);
+                if (items != null)
+                {
+                    result.SalesOrdersItems = JsonConvert.DeserializeObject<List<SalesOrderItemsDto>>(items);
+                }
+                if (addit != null)
+                {
+                    result.SalesOrderAdditionalCharges = JsonConvert.DeserializeObject<List<SalesOrderAdditionalChargesDto>>(addit);
+                }
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"GetSalesOrderDetialsById_SP hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesOrderMonthlyConsumptionSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned GetSalesOrderDetialsById_SP Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetSalesOrderDetialsById_SP action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

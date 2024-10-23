@@ -10,6 +10,7 @@
         public decimal PendingValue { get; set; }
         public decimal AmountAgainstPO { get; set; }
         public DateTime? Date { get; set; }
+        public DateTime? NextPayment { get; set; }
         public string? ReferenceNO { get; set; }
         public decimal Amount { get; set; }
         public string? PaymentTerms { get; set; }
@@ -24,6 +25,7 @@
         public decimal PendingValue { get; set; }
         public decimal AmountAgainstPO { get; set; }
         public DateTime? Date { get; set; }
+        public DateTime? NextPayment { get; set; }
         public string? ReferenceNO { get; set; }
         public decimal Amount { get; set; }
         public string? PaymentTerms { get; set; }
@@ -39,6 +41,7 @@
         public decimal PendingValue { get; set; }
         public decimal AmountAgainstPO { get; set; }
         public DateTime? Date { get; set; }
+        public DateTime? NextPayment { get; set; }
         public string? ReferenceNO { get; set; }
         public decimal Amount { get; set; }
         public string? PaymentTerms { get; set; }

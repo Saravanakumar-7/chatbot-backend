@@ -13,6 +13,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> UpdateSalesOrderMainLevelHistory(SalesOrderMainLevelHistory salesOrderMainLevelHistory);
         Task<List<SOHistoryRevNoListDto>> GetSalesOrderMainLevelHistoryRevNoListBySalesOrderIdAndRevNo(int salesOrderId, int RevNo);
         Task<SalesOrderMainLevelHistory> GetSalesOrderMainLevelHistoryBySalesOrderHistoryId(int SalesOrderHistoryId);
+        Task<SalesOrderMainLevelHistory> GetSalesOrderMainLevelHistoryBySalesOrderHistoryId_SP(int id);
         Task<int> GetSalesOrderMainLevelHistoryIdBySalesOrderIdAndRevNo(int soid, int? revNo);
     }
 }
