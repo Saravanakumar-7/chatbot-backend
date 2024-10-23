@@ -146,7 +146,7 @@ namespace Tips.Warehouse.Api.Repository
                     };
                     
                     shopOrderMaterialIssueTracker[i].IssuedQty = record.ConvertedToFgQty;
-                    var qty=returnedQty-wipQty;
+                    var qty=wipQty;
                     if (record.MRNumber == "NULL")
                     {
                         MaterialIssueData materialIssueData = new MaterialIssueData

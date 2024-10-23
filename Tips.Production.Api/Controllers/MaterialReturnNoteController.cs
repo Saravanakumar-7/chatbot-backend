@@ -513,6 +513,7 @@ namespace Tips.Production.Api.Controllers
                         .ForMember(dest => dest.PartNumber, opt => opt.MapFrom(src => src.PartNumber))
                         .ForMember(dest => dest.ProjectNumber, opt => opt.MapFrom(src => src.ProjectNumber))
                         .ForMember(dest => dest.ShopOrderNumber, opt => opt.MapFrom(src => src.ShopOrderNumber))
+
                         .ForMember(dest => dest.MRNDetails, opt => opt.MapFrom(src => src.MRNWarehouseList.Select(detail => new MRNInventoryUpdateDto
                         {
                             Warehouse = detail.Warehouse,
@@ -525,6 +526,7 @@ namespace Tips.Production.Api.Controllers
 
                 var mapper = mapperConfiguration.CreateMapper();
                 var materialReturnNoteDetails = materialReturnNoteItemList.Select(item => mapper.Map<MRNUpdateInventoryBalanceQty>(item)).ToList();
+                materialReturnNoteDetails.ForEach(item => item.MRNNumber = materialReturnNoteDetail.MRNNumber);
                 var json = JsonConvert.SerializeObject(materialReturnNoteDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                 //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialReturnNoteInventoryBalanceQty"), data);
@@ -573,7 +575,7 @@ namespace Tips.Production.Api.Controllers
 
                 }
                 string result = await _materialReturnNoteRepository.UpdateMaterialReturnNote(updateMaterialReturnNoteItem);
-                if (changeddata.Data.mIDetailsfromMRN != null)
+                if (changeddata.Data.mIDetailsfromMRN.Count() > 0)
                 {
                     var MIdetails = await _materialIssueRepository.GetMaterialIssueByShopOrderNo(changeddata.Data.ShopOrderNumber);
                     foreach (var newMi in changeddata.Data.mIDetailsfromMRN)
@@ -585,7 +587,7 @@ namespace Tips.Production.Api.Controllers
                     await _materialIssueRepository.UpdateMaterialIssue(MIdetails);
                 }
 
-                if (changeddata.Data.mRDetailsfromMRN != null)
+                if (changeddata.Data.mRDetailsfromMRN.Count() > 0)
                 {
                     foreach (var mrs in changeddata.Data.mRDetailsfromMRN)
                     {
@@ -603,8 +605,8 @@ namespace Tips.Production.Api.Controllers
                 if (updateMaterialReturnNoteResp == HttpStatusCode.OK)
                 {
                     _materialReturnNoteRepository.SaveAsync();
-                    if (changeddata.Data.mIDetailsfromMRN != null) _materialIssueRepository.SaveAsync();
-                    if (changeddata.Data.mRDetailsfromMRN != null) _materialRequestRepository.SaveAsync();                    
+                    if (changeddata.Data.mIDetailsfromMRN.Count() > 0) _materialIssueRepository.SaveAsync();
+                    if (changeddata.Data.mRDetailsfromMRN.Count() > 0) _materialRequestRepository.SaveAsync();
                 }
                 else
                 {

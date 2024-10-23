@@ -1673,6 +1673,7 @@ namespace Tips.Warehouse.Api.Controllers
                     }
                     else
                     {
+                        inventoryDetails[i].ReferenceID = shopOrderNumber;
                         inventoryDetails[i].Balance_Quantity -= disQty;
 
                         lotNoWiseIssuedQty = disQty;
@@ -2291,6 +2292,7 @@ namespace Tips.Warehouse.Api.Controllers
                     var itemNumber = materialReturnQty.PartNumber;
                     var projectNumber = materialReturnQty.ProjectNumber;
                     var shopOrderNumber = materialReturnQty.ShopOrderNumber;
+                    var MRNNumber= materialReturnQty.MRNNumber;
                     foreach (var Location in materialReturnQty.MRNDetails)
                     {
                         if (Location.IsMRNIssueDone != true)
@@ -2366,7 +2368,7 @@ namespace Tips.Warehouse.Api.Controllers
                                                 inventoryPost.Warehouse = Location.Warehouse;
                                                 inventoryPost.Location = Location.Location;
                                                 inventoryPost.PartType = inventoryDetail.PartType;
-                                                inventoryPost.ReferenceID = inventoryDetail.ReferenceID;
+                                                inventoryPost.ReferenceID = MRNNumber;
                                                 inventoryPost.LotNumber = inventoryDetail.LotNumber;
                                                 inventoryPost.ReferenceIDFrom = "Material Return Note";
                                                 await _inventoryRepository.CreateInventory(inventoryPost);
@@ -2528,7 +2530,7 @@ namespace Tips.Warehouse.Api.Controllers
                                                 inventoryPost.Warehouse = Location.Warehouse;
                                                 inventoryPost.Location = Location.Location;
                                                 inventoryPost.PartType = inventoryDetail.PartType;
-                                                inventoryPost.ReferenceID = inventoryDetail.ReferenceID;
+                                                inventoryPost.ReferenceID = MRNNumber;
                                                 inventoryPost.LotNumber = inventoryDetail.LotNumber;
                                                 inventoryPost.ReferenceIDFrom = "Material Return Note";
                                                 await _inventoryRepository.CreateInventory(inventoryPost);

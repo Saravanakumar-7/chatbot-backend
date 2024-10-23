@@ -386,7 +386,8 @@ namespace Tips.Production.Api.Controllers
                         LastModifiedBy = group.First().LastModifiedBy,
                         LastModifiedOn = group.First().LastModifiedOn,
                         MaterialIssuedStatus = group.First().MaterialIssuedStatus,
-                        MaterialIssueId = group.First().MaterialIssueId
+                        MaterialIssueId = group.First().MaterialIssueId,
+                        MRNQty=group.First().MRNQty
                     })
             .ToList();
 
