@@ -73,10 +73,10 @@ namespace Tips.SalesService.Api.Repository
 
             return salesOrderHistorybyId;
         }
-        public async Task<SalesOrderMainLevelHistory> GetSalesOrderMainLevelHistoryBySalesOrderHistoryIdAndRevNo(int SalesOrderHistoryId, int RevNo)
+        public async Task<SalesOrderMainLevelHistory> GetSalesOrderMainLevelHistoryBySalesOrderHistoryId(int SalesOrderHistoryId)
         {
             var salesOrderHistorybyId = await _tipsSalesServiceDbContexts.SalesOrderMainLevelHistories
-                            .Where(x => x.Id == SalesOrderHistoryId && x.RevisionNumber == RevNo)
+                            .Where(x => x.Id == SalesOrderHistoryId)
                              .Include(t => t.SalesOrderItemLevelHistory)
                                   .ThenInclude(p => p.SalesOrderScheduleDateHistory)
                                     .Include(o => o.SOAdditionalChargesHistory)

@@ -156,13 +156,13 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetSalesOrderMainLevelHistoryDetialsBySOHistoryIdAndRevNo(int SalesOrderHistoryId, int RevNo)
+        public async Task<IActionResult> GetSalesOrderMainLevelHistoryDetialsBySOHistoryId(int SalesOrderHistoryId)
         {
             ServiceResponse<SalesOrderMainLevelHistory> serviceResponse = new ServiceResponse<SalesOrderMainLevelHistory>();
 
             try
             {
-                var soHistoryRevNoDetailBySOIdAndRevNo = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryBySalesOrderHistoryIdAndRevNo(SalesOrderHistoryId, RevNo);
+                var soHistoryRevNoDetailBySOIdAndRevNo = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryBySalesOrderHistoryId(SalesOrderHistoryId);
                 if (soHistoryRevNoDetailBySOIdAndRevNo == null)
                 {
                     _logger.LogError($"SalesOrderHistoryDetail with id: {SalesOrderHistoryId}, hasn't been found in db.");
