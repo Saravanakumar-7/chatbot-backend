@@ -37,7 +37,7 @@ namespace Tips.Grin.Api.Repository
         {
             iQCConfirmation.CreatedBy = _createdBy;
             iQCConfirmation.CreatedOn = DateTime.Now;
-            iQCConfirmation.IQCConfirmationItems.Where(x=>x.CreatedBy!=null && x.CreatedOn!=null).ToList().ForEach(x => { x.CreatedBy = _createdBy; x.CreatedOn = DateTime.Now; });
+            iQCConfirmation.IQCConfirmationItems.Where(x=>x.CreatedBy==null && x.CreatedOn==null).ToList().ForEach(x => { x.CreatedBy = _createdBy; x.CreatedOn = DateTime.Now; });
             iQCConfirmation.Unit = _unitname;
             var result = await Create(iQCConfirmation);
             return result.Id;
@@ -175,6 +175,7 @@ namespace Tips.Grin.Api.Repository
         {
             iQCConfirmation.LastModifiedBy = _createdBy;
             iQCConfirmation.LastModifiedOn = DateTime.Now;
+            iQCConfirmation.IQCConfirmationItems.Where(x => x.CreatedBy == null && x.CreatedOn == null).ToList().ForEach(x => { x.CreatedBy = _createdBy; x.CreatedOn = DateTime.Now; });
             Update(iQCConfirmation);
             string result = $"IQC details of {iQCConfirmation.Id} is updated successfully!";
             return result;

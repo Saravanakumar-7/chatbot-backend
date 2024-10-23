@@ -22,7 +22,7 @@ namespace Tips.Production.Api.Entities
 
         [Precision(13, 3)]
         public decimal? RequiredQty { get; set; }
-
+        public decimal? MRNQty { get; set; }
         public int? MaterialRequestId { get; set; }
         public MaterialRequests? MaterialRequest { get; set; }
 

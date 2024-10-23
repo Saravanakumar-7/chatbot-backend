@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Net.Http;
 using System.Text;
 using AutoMapper;
 using Contracts;
@@ -179,8 +180,10 @@ namespace Tips.Production.Api.Controllers
                 var json = JsonConvert.SerializeObject(shopOrderConfirmationPostDto.shopOrderItemConfirmations);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                 //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "UpdateInventoryOnShopOrderConfirmation"), data);
+                
 
                 var client1 = _clientFactory.CreateClient();
+                client1.Timeout = TimeSpan.FromMinutes(5);
                 var token1 = HttpContext.Request.Headers["Authorization"].ToString();
                 var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
                 "UpdateInventoryOnShopOrderConfirmation"))

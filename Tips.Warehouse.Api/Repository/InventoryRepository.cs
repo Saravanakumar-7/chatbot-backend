@@ -1747,6 +1747,13 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<List<Inventory>> GetWipInventoryDetailsByLotNumber(string itemNumber, string lotNumber,string shopNo)
         {
             var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber
+            && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.LotNumber == lotNumber && x.shopOrderNo == shopNo && x.ReferenceIDFrom== "Material Issue")
+                          .ToListAsync();
+            return inventoryDetail;
+        }
+        public async Task<List<Inventory>> GetWipInventoryDetailsByLotNumberofMR(string itemNumber, string lotNumber,string shopNo,string mrnumber)
+        {
+            var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.ReferenceID==mrnumber
             && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.LotNumber == lotNumber && x.shopOrderNo == shopNo)
                           .ToListAsync();
             return inventoryDetail;

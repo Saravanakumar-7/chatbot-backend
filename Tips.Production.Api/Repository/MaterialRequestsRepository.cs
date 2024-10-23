@@ -177,10 +177,10 @@ namespace Tips.Production.Api.Repository
         public async Task<MaterialRequests> GetMaterialReqByMRNumber(string MRnumber)
         {
             var getMaterialReqbyMRNo = await _tipsProductionDbContext.MaterialRequests
-
-            .Include(t => t.MaterialRequestItems)
-            .ThenInclude(v => v.MRStockDetails).Where(x => x.MRNumber == MRnumber)
+                .Where(x => x.MRNumber == MRnumber).Include(t => t.MaterialRequestItems)
+            .ThenInclude(v => v.MRStockDetails)
                     .FirstOrDefaultAsync();
+            
             return getMaterialReqbyMRNo;
         }
         public async Task<MaterialRequests> GetMaterialReqByShopOrderNumber(string ShopOrderNo)

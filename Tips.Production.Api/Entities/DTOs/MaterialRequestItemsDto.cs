@@ -22,7 +22,7 @@ namespace Tips.Production.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? RequiredQty { get; set; }
         public int? MaterialRequestId {  get; set; }
-
+        public decimal? MRNQty { get; set; }
         public List<MRStockDetailsDto> MRStockDetails { get; set; }
 
 
