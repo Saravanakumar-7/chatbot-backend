@@ -1,11 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel;
 
 namespace Tips.SalesService.Api.Entities.DTOs
 {
     public class SalesOrderItemLevelHistoryDto
     {
-        [Key]
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public int SalesOrderItemId { get; set; }
@@ -59,8 +59,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime RequestedDate { get; set; }
         public string? PriceList { get; set; }
         public string? Remarks { get; set; }
-        public int SalesOrderMainLevelHistoryId { get; set; }
-        public SalesOrderMainLevelHistoryDto? SalesOrderMainLevelHistory { get; set; }
-        public List<SalesOrderScheduleDateHistory>? SalesOrderScheduleDateHistory { get; set; }
+        public List<SalesOrderScheduleDateHistoryDto>? SalesOrderScheduleDateHistory { get; set; }
     }
 }

@@ -124,6 +124,7 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<SOAdditionalChargesHistory> SOAdditionalChargesHistories { get; set; }
         public DbSet<SalesOrderItemLevelHistory> SalesOrderItemLevelHistories { get; set; }
         public DbSet<SalesOrderScheduleDateHistory> SalesOrderScheduleDateHistories { get; set; }
+        public DbSet<SalesOrderMainLevelHistorySP> SalesOrderMainLevelHistorySP { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RecievableCustomer>().HasNoKey();

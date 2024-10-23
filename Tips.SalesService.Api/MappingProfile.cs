@@ -316,6 +316,8 @@ namespace Tips.SalesService.Api
             CreateMap<SalesOrderItemsUpdateDto, SalesOrderItemLevelHistory>().ReverseMap();
             CreateMap<ScheduleDateUpdateDto, SalesOrderScheduleDateHistory>().ReverseMap();
             CreateMap<SalesOrderAdditionalChargesUpdateDto, SOAdditionalChargesHistory>().ReverseMap();
+
+            CreateMap<SalesOrderMainLevelHistorySP, SalesOrderMainLevelHistoryDto>().ReverseMap();
         }
     }
 }

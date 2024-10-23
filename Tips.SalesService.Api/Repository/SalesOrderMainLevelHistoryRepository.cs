@@ -84,10 +84,10 @@ namespace Tips.SalesService.Api.Repository
 
             return salesOrderHistorybyId;
         }
-        public async Task<SalesOrderMainLevelHistory> GetSalesOrderMainLevelHistoryBySalesOrderHistoryId_SP(int id)
+        public async Task<SalesOrderMainLevelHistorySP> GetSalesOrderMainLevelHistoryBySalesOrderHistoryId_SP(int id)
         {
             var result =  _tipsSalesServiceDbContexts
-            .Set<SalesOrderMainLevelHistory>()
+            .Set<SalesOrderMainLevelHistorySP>()
             .FromSqlInterpolated($"CALL SalesOrderHistory_by_Id({id})").ToList();
 
             return result[0];
