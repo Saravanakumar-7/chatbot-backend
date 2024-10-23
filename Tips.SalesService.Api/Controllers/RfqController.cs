@@ -21,6 +21,8 @@ using System.Linq;
 using Microsoft.AspNetCore.StaticFiles;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -4054,6 +4056,189 @@ namespace Tips.SalesService.Api.Controllers
             }
 
         }
+
+        [HttpPost] 
+        public async Task<IActionResult> GetRFQSalesorderConfirmationSPReportWithParamForTrans([FromBody] RFQSalesorderConfirmationSPReportDTO salesOrderSPResport)
+
+        {
+            ServiceResponse<IEnumerable<RFQSalesorderConfirmationSPReport>> serviceResponse = new ServiceResponse<IEnumerable<RFQSalesorderConfirmationSPReport>>();
+            try
+            {
+                var products = await _rfqRepository.GetRFQSalesorderConfirmationSPReportWithParamForTrans(salesOrderSPResport.CustomerName, salesOrderSPResport.SalesOrderNumber, 
+                                                                                                        salesOrderSPResport.KPN, salesOrderSPResport.SOStatus,salesOrderSPResport.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RFQSalesorderConfirmation hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RFQSalesorderConfirmation hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RFQSalesorderConfirmationSPReportWithParamForTrans Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRFQSalesorderConfirmationSPReportWithParamForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] 
+        public async Task<IActionResult> GetRFQSalesorderConfirmationSPReportWithDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<RFQSalesorderConfirmationSPReport>> serviceResponse = new ServiceResponse<IEnumerable<RFQSalesorderConfirmationSPReport>>();
+            try
+            {
+                var products = await _rfqRepository.GetRFQSalesorderConfirmationSPReportWithDateForTrans(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RFQSalesorderConfirmation hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RFQSalesorderConfirmation hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned GetRFQSalesorderConfirmationSPReportWithDateForTrans Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetRFQSalesorderConfirmationSPReportWithDateForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportRFQSalesorderConfirmationSPReportToExcel([FromBody] RFQSalesorderConfirmationSPReportDTO salesOrderSPResport)
+        {
+            try
+            {
+
+                var salesOrderConfirmationDetails = await _rfqRepository.GetRFQSalesorderConfirmationSPReportWithParamForTrans(salesOrderSPResport.CustomerName, salesOrderSPResport.SalesOrderNumber,
+                                                                                                        salesOrderSPResport.KPN, salesOrderSPResport.SOStatus, salesOrderSPResport.ProjectNumber);
+
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("RFQSalesorderConfirmation");
+
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Sales Order Number");
+                headerRow.CreateCell(1).SetCellValue("SO Status");
+                headerRow.CreateCell(2).SetCellValue("Project Number");
+                headerRow.CreateCell(3).SetCellValue("Customer ID");
+                headerRow.CreateCell(4).SetCellValue("Customer Name");
+                headerRow.CreateCell(5).SetCellValue("Lead ID");
+                headerRow.CreateCell(6).SetCellValue("Order Type");
+                headerRow.CreateCell(7).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(8).SetCellValue("Product Type");
+                headerRow.CreateCell(9).SetCellValue("Material Group");
+                headerRow.CreateCell(10).SetCellValue("Item Type");
+                headerRow.CreateCell(11).SetCellValue("Sales Person");
+                headerRow.CreateCell(12).SetCellValue("SO Date");
+                headerRow.CreateCell(13).SetCellValue("KPN");
+                headerRow.CreateCell(14).SetCellValue("KPN Description");
+                headerRow.CreateCell(15).SetCellValue("UOC");
+                headerRow.CreateCell(16).SetCellValue("UOM");
+                headerRow.CreateCell(17).SetCellValue("Price List");
+                headerRow.CreateCell(18).SetCellValue("Unit Price");
+                headerRow.CreateCell(19).SetCellValue("Basic Amount");
+                headerRow.CreateCell(20).SetCellValue("Discount Type");
+                headerRow.CreateCell(21).SetCellValue("Discount");
+                headerRow.CreateCell(22).SetCellValue("SGST");
+                headerRow.CreateCell(23).SetCellValue("CGST");
+                headerRow.CreateCell(24).SetCellValue("IGST");
+                headerRow.CreateCell(25).SetCellValue("UTGST");
+                headerRow.CreateCell(26).SetCellValue("Item Price List");
+                headerRow.CreateCell(27).SetCellValue("Total Amount");
+                headerRow.CreateCell(28).SetCellValue("Order Qty");
+                headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(30).SetCellValue("Balance Qty");
+                headerRow.CreateCell(31).SetCellValue("Requested Date");
+                headerRow.CreateCell(32).SetCellValue("Confirmation Date");
+                headerRow.CreateCell(33).SetCellValue("Confirmation Qty");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in salesOrderConfirmationDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.SalesOrderNumber);
+                    row.CreateCell(1).SetCellValue(item.SOStatus.HasValue ? Enum.GetName(typeof(OrderStatus), item.SOStatus) : "");
+                    row.CreateCell(2).SetCellValue(item.ProjectNumber ?? "");
+                    row.CreateCell(3).SetCellValue(item.CustomerId);
+                    row.CreateCell(4).SetCellValue(item.CustomerName);
+                    row.CreateCell(5).SetCellValue(item.LeadId);
+                    row.CreateCell(6).SetCellValue(item.OrderType);
+                    row.CreateCell(7).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(8).SetCellValue(item.ProductType);
+                    row.CreateCell(9).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(10).SetCellValue(item.ItemType ?? "");
+                    row.CreateCell(11).SetCellValue(item.SalesPerson);
+                    row.CreateCell(12).SetCellValue(item.SODate.HasValue ? item.SODate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(13).SetCellValue(item.KPN);
+                    row.CreateCell(14).SetCellValue(item.KPNDescription);
+                    row.CreateCell(15).SetCellValue(item.UOC);
+                    row.CreateCell(16).SetCellValue(item.UOM);
+                    row.CreateCell(17).SetCellValue(item.PriceList);
+                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.UnitPrice));
+                    row.CreateCell(19).SetCellValue(Convert.ToDouble(item.BasicAmount));
+                    row.CreateCell(20).SetCellValue(item.DiscountType);
+                    row.CreateCell(21).SetCellValue(item.Discount);
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.SGST));
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.CGST));
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.IGST));
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.UTGST));
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.ItemPriceList));
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.TotalAmount));
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.OrderQty));
+                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty));
+                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty));
+                    row.CreateCell(31).SetCellValue(item.RequestedDate.HasValue ? item.RequestedDate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(32).SetCellValue(item.ConfirmationDate.HasValue ? item.ConfirmationDate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(33).SetCellValue(Convert.ToDouble(item.ConfirmationQty));
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "RFQSalesorderConfirmationReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
 
     }
 

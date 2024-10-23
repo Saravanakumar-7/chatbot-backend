@@ -242,7 +242,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal LocationStock { get; set; }
-       public bool IsMRIssueDone { get; set; }
+        public bool IsMRIssueDone { get; set; }
     }
 
     public class MRNUpdateInventoryBalanceQty
@@ -381,6 +381,12 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ProjectNumber { get; set; }
         public decimal BalanceQuantity { get; set; }
         public decimal WipQuantity { get; set; }
+
+    }
+    public class coverageInventoryByMultipleProjectDto
+    {
+        public List<string> itemNumberList { get; set; }
+        public List<string> projectNo { get; set; }
 
     }
     public class InventoryBalanceQtyMaterialIssue
@@ -536,5 +542,20 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public DateTime ToDate { get; set; }
         public string? PartNumber { get; set; }
     }
-
+    public class MRNIssueDetailsofMIandMR
+    {
+        public string ShopOrderNumber { get; set; }
+        public List<MIDetailsfromMRN>? mIDetailsfromMRN { get; set; }
+        public List<MRDetailsfromMRN>? mRDetailsfromMRN { get; set; }
+    }
+    public class MIDetailsfromMRN
+    {
+        public string PartNumber { get; set; }
+        public decimal? QtyUsed { get; set; }
+    }
+    public class MRDetailsfromMRN
+    {       
+        public string MRNumber { get; set; }
+        public List<MIDetailsfromMRN>? items { get; set; } 
+    }
 }

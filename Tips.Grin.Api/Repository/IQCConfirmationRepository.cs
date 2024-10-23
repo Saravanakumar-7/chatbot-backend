@@ -20,7 +20,7 @@ namespace Tips.Grin.Api.Repository
     public class IQCConfirmationRepository : RepositoryBase<IQCConfirmation>, IIQCConfirmationRepository
     {
         private TipsGrinDbContext _tipsGrinDbContext;
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor _httpContextAccessor;       
         private readonly String _createdBy;
         private readonly String _unitname;
         public IQCConfirmationRepository(TipsGrinDbContext tipsGrinDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsGrinDbContext)
@@ -37,6 +37,7 @@ namespace Tips.Grin.Api.Repository
         {
             iQCConfirmation.CreatedBy = _createdBy;
             iQCConfirmation.CreatedOn = DateTime.Now;
+            iQCConfirmation.IQCConfirmationItems.Where(x=>x.CreatedBy==null && x.CreatedOn==null).ToList().ForEach(x => { x.CreatedBy = _createdBy; x.CreatedOn = DateTime.Now; });
             iQCConfirmation.Unit = _unitname;
             var result = await Create(iQCConfirmation);
             return result.Id;
@@ -149,13 +150,13 @@ namespace Tips.Grin.Api.Repository
         public async Task<PagedList<IQCConfirmation>> GetAllIqcDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
         {
             var getallIQCList = FindAll()
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || (inv.GrinNumber != null && inv.GrinNumber.Contains(searchParams.SearchValue)) 
-                ||(inv.Id != null && inv.Id.ToString().Contains(searchParams.SearchValue)
+                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue)
+                || (inv.GrinNumber != null && inv.GrinNumber.Contains(searchParams.SearchValue))
+                || (inv.Id != null && inv.Id.ToString().Contains(searchParams.SearchValue))
                    || (inv.VendorName != null && inv.VendorName.Contains(searchParams.SearchValue))
-                    || (inv.VendorNumber != null && inv.VendorName.Contains(searchParams.SearchValue)) ||
-                   (inv.VendorId != null && inv.VendorId.ToString().Contains(searchParams.SearchValue))
-                )))).OrderByDescending(x=>x.Id);
-                 
+                    || (inv.VendorNumber != null && inv.VendorNumber.Contains(searchParams.SearchValue))
+                   || (inv.VendorId != null && inv.VendorId.Contains(searchParams.SearchValue))))).OrderByDescending(x => x.Id);
+
 
             return PagedList<IQCConfirmation>.ToPagedList(getallIQCList, pagingParameter.PageNumber, pagingParameter.PageSize);
 
@@ -174,6 +175,7 @@ namespace Tips.Grin.Api.Repository
         {
             iQCConfirmation.LastModifiedBy = _createdBy;
             iQCConfirmation.LastModifiedOn = DateTime.Now;
+            iQCConfirmation.IQCConfirmationItems.Where(x => x.CreatedBy == null && x.CreatedOn == null).ToList().ForEach(x => { x.CreatedBy = _createdBy; x.CreatedOn = DateTime.Now; });
             Update(iQCConfirmation);
             string result = $"IQC details of {iQCConfirmation.Id} is updated successfully!";
             return result;
@@ -223,11 +225,16 @@ namespace Tips.Grin.Api.Repository
     public class IQCConfirmationItemsRepository : RepositoryBase<IQCConfirmationItems>, IIQCConfirmationItemsRepository
     {
         private TipsGrinDbContext _tipsGrinDbContext;
-
-        public IQCConfirmationItemsRepository(TipsGrinDbContext tipsGrinDbContext) : base(tipsGrinDbContext)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public IQCConfirmationItemsRepository(TipsGrinDbContext tipsGrinDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsGrinDbContext)
         {
             _tipsGrinDbContext = tipsGrinDbContext;
-
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         //public async Task<PagedList<IQCConfirmationItems>> GetAllIQCConfirmationItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
@@ -247,6 +254,8 @@ namespace Tips.Grin.Api.Repository
         }
         public async Task<int?> CreateIqcItem(IQCConfirmationItems iQCConfirmationItems)
         {
+           iQCConfirmationItems.CreatedBy = _createdBy;
+           iQCConfirmationItems.CreatedOn = DateTime.Now;
             var result = await Create(iQCConfirmationItems);
             return result.Id;
         }

@@ -1026,6 +1026,27 @@ namespace Tips.SalesService.Api.Repository
             return openSalesOrderQty;
 
         }
+        public async Task<List<SalesOrderFGandBalanceQtyByCustomerName>> GetAllSalesOrderFGOrTGItemDetailsByCustomerId(string customerId)
+        {
+            var salesOrderIds = await _tipsSalesServiceDbContexts.SalesOrders
+                .Where(so => (so.SalesOrderStatus == SalesOrderStatus.BuildToPrint || so.SalesOrderStatus == SalesOrderStatus.Forecast) &&
+                             (so.SOStatus == OrderStatus.Open || so.SOStatus == OrderStatus.PartiallyClosed) &&
+                             so.IsShortClosed == false && so.CustomerId == customerId // && //so.ConfirmStatus == true && so.ApproveStatus == true
+                             ).Select(x => x.Id).ToListAsync();
+
+            var openSalesOrderQty = await _tipsSalesServiceDbContexts.SalesOrdersItems
+                .Where(x =>
+                            (x.StatusEnum == OrderStatus.Open || x.StatusEnum == OrderStatus.PartiallyClosed) &&
+                            x.BalanceQty > 0 && salesOrderIds.Contains(x.SalesOrderId))
+                .GroupBy(x => new { x.ProjectNumber })
+                .Select(group => new SalesOrderFGandBalanceQtyByCustomerName
+                {
+                    ProjectNumber = group.Key.ProjectNumber
+                }).ToListAsync();
+
+            return openSalesOrderQty;
+
+        }
         public async Task<List<SalesOrderFGandBalanceQtyByProjectNo>> GetAllSalesOrderFGOrTGItemDetailsByProjectNoAndItemNo(string projectNo, string itemNumber)
         {
             var salesOrderIdList = await _tipsSalesServiceDbContexts.SalesOrders

@@ -1722,7 +1722,32 @@ namespace Tips.Grin.Api.Controllers
 
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> GetListOfBinningQtyByItemNo(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<BinningQuantityDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningQuantityDto>>();
+            try
+            {
+                var revNumberDetailsbyPONumber = await _binningLocationRepository.GetListOfBinningQtyByItemNo(itemNumber);
 
+
+                var result = _mapper.Map<IEnumerable<BinningQuantityDto>>(revNumberDetailsbyPONumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned  BinningQty  By ItemNo";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetListOfBinningQtyByItemNo action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> GetListOfBinningQtyByItemNoListByProjectNo(string projectNo, string itemNumber)
         {
@@ -1750,12 +1775,13 @@ namespace Tips.Grin.Api.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> GetListOfBinningQtyByItemNoListByMultipleProjectNo(string itemNumber, List<string> projectNo)
+        public async Task<IActionResult> GetListOfBinningQtyByItemNoListByMultipleProjectNo(coverageBinningByMultipleProjectDto coverageBinningByMultipleProjectDto)
         {
             ServiceResponse<IEnumerable<BinningQuantityDto>> serviceResponse = new ServiceResponse<IEnumerable<BinningQuantityDto>>();
             try
             {
-                var revNumberDetailsbyPONumber = await _binningLocationRepository.GetListOfBinningQtyByItemNoListByMultipleProjectNo(itemNumber,projectNo);
+                var revNumberDetailsbyPONumber = await _binningLocationRepository.GetListOfBinningQtyByItemNoListByMultipleProjectNo(coverageBinningByMultipleProjectDto.ItemNumber,
+                                                                                                                                        coverageBinningByMultipleProjectDto.projectNo);
 
 
                 var result = _mapper.Map<IEnumerable<BinningQuantityDto>>(revNumberDetailsbyPONumber);

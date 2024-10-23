@@ -14,6 +14,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using MySqlX.XDevAPI;
 using NuGet.Common;
+using NPOI.Util;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -105,21 +106,21 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogInfo($"Returned rfqsourcing with id: {id}");
 
-                   
+
 
                     RfqSourcingDto rfqSourceDto = _mapper.Map<RfqSourcingDto>(rfqSourcings);
-                   
-                    
-                    List<RfqSourcingItemsDto> rfqSourceItemDtos = new List<RfqSourcingItemsDto>();            
 
 
-                        foreach (var rfqSourceItemDetails in rfqSourcings.RfqSourcingItems)
-                        {
-                            RfqSourcingItemsDto rfqSourceItemDto = _mapper.Map<RfqSourcingItemsDto>(rfqSourceItemDetails);
-                            rfqSourceItemDto.RfqSourcingVendorDtos = _mapper.Map<List<RfqSourcingVendorDto>>(rfqSourceItemDetails.RfqSourcingVendors);
-                            rfqSourceItemDtos.Add(rfqSourceItemDto);
-                        }
-                    
+                    List<RfqSourcingItemsDto> rfqSourceItemDtos = new List<RfqSourcingItemsDto>();
+
+
+                    foreach (var rfqSourceItemDetails in rfqSourcings.RfqSourcingItems)
+                    {
+                        RfqSourcingItemsDto rfqSourceItemDto = _mapper.Map<RfqSourcingItemsDto>(rfqSourceItemDetails);
+                        rfqSourceItemDto.RfqSourcingVendorDtos = _mapper.Map<List<RfqSourcingVendorDto>>(rfqSourceItemDetails.RfqSourcingVendors);
+                        rfqSourceItemDtos.Add(rfqSourceItemDto);
+                    }
+
 
                     rfqSourceDto.RfqSourcingItemsDtos = rfqSourceItemDtos;
                     serviceResponse.Data = rfqSourceDto;
@@ -354,14 +355,41 @@ namespace Tips.SalesService.Api.Controllers
                 createRfqSource.RfqSourcingItems = sourceItemList;
                 await _repository.CreateRfqSourcing(createRfqSource);
                 _rfqRepository.Update(rfqIsSourcingUpdate);
-
+                _logger.LogInfo("Before Json");
+                var sourcingData = _mapper.Map<RfqSourcing>(rfqSourcingPostDto);
+                var sourceItemList_1 = new List<RfqSourcingItems>();
+                if (rfqSourceDto != null)
+                {
+                    for (int i = 0; i < rfqSourceDto.Count; i++)
+                    {
+                        RfqSourcingItems rfqSourcingItems = _mapper.Map<RfqSourcingItems>(rfqSourceDto[i]);
+                        rfqSourcingItems.RfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(rfqSourceDto[i].RfqSourcingVendorDtos);
+                        sourceItemList_1.Add(rfqSourcingItems);
+                    }
+                }
+                sourcingData.RfqSourcingItems = sourceItemList_1;
+                // RfqSourcing sourcingData = createRfqSource;
+                //var sourcingData = new RfqSourcing
+                //{
+                //    Id = createRfqSource.Id,
+                //    RFQId = createRfqSource.RFQId,
+                //    RFQNumber = createRfqSource.RFQNumber,
+                //    CustomerName = createRfqSource.CustomerName,
+                //    Unit = createRfqSource.Unit,
+                //    CreatedBy = createRfqSource.CreatedBy,
+                //    CreatedOn = createRfqSource.CreatedOn,
+                //    LastModifiedBy = createRfqSource.LastModifiedBy,
+                //    LastModifiedOn = createRfqSource.LastModifiedOn,
+                //    RfqSourcingItems = createRfqSource.RfqSourcingItems
+                //};
+                _logger.LogInfo("After Json");
                 // LandedPrice and MoqCost Calculation
                 int rfqId = rfqSourcingPostDto.RFQId;
                 //Taking the Sourcing PP And is Primary Vendor Details 
                 List<RfqSourcingPPdetails> rfqSourcingPPdetailsList = new List<RfqSourcingPPdetails>();
-                foreach (var ppinsource in createRfqSource.RfqSourcingItems)
-                {                   
-                    if (ppinsource.RfqSourcingVendors != null && ppinsource.RfqSourcingVendors.Count!=0)
+                foreach (var ppinsource in sourcingData.RfqSourcingItems)
+                {
+                    if (ppinsource.RfqSourcingVendors != null && ppinsource.RfqSourcingVendors.Count != 0)
                     {
                         RfqSourcingPPdetails rfqSourcingPPdetails = new RfqSourcingPPdetails();
                         rfqSourcingPPdetails.PPItemNumber = ppinsource.ItemNumber;
@@ -385,7 +413,7 @@ namespace Tips.SalesService.Api.Controllers
                                     //var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={ppvendor.Currency}");
                                     var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
                                     var vendorUOC = JsonConvert.DeserializeObject<RfqSourcingConvertionrateDto>(rfqCustomerIdString);
-                                    if (vendorUOC.Data == null || vendorUOC.Data.ConvertionRate == 0)
+                                    if (vendorUOC.Data.ConvertionRate == 0)
                                     {
                                         _logger.LogError($"Currency was not present for {ppvendor.Currency} for the Vendor {ppvendor.Vendor} for the ItemNumber{ppinsource.ItemNumber}");
                                         serviceResponse.Data = null;
@@ -420,7 +448,7 @@ namespace Tips.SalesService.Api.Controllers
                     var encodedItemnumber = Uri.EscapeDataString(fgitemnumber.ItemNumber);
                     var request1 = new HttpRequestMessage(HttpMethod.Post, $"{rfqApiUrl}GetEngganditsPP?FGItemNumber={encodedItemnumber}&FGRevno={fgitemnumber.CostingBomVersionNo}")
                     {
-                        Content= content
+                        Content = content
                     };
                     request1.Headers.Add("Authorization", token);
 
@@ -431,7 +459,7 @@ namespace Tips.SalesService.Api.Controllers
                     //var rfqEnggItemsDetails = await _rfqRepository.GetRfqEnggItemByItemNumber(rfqCustomerIdObjectData.data.fgItemNumber);
                     fgitemnumber.LandedPrice = rfqCustomerIdObjectData.data.finalLandindPrice;
                     fgitemnumber.MOQCost = rfqCustomerIdObjectData.data.finalMoqcost;
-                    await _rfqEnggItemRepository.UpdateRfqEnggItemLandedandMOQ(fgitemnumber);                    
+                    await _rfqEnggItemRepository.UpdateRfqEnggItemLandedandMOQ(fgitemnumber);
                 }
                 _repository.SaveAsync();
                 _rfqEnggItemRepository.SaveAsync();
@@ -485,14 +513,14 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
-                }                
+                }
                 var updateRfqSourcing = _mapper.Map<RfqSourcing>(rfqSourcingUpdateDto);
                 var rfqSourceData = updateRfqSourcing.RFQNumber;
                 var rfqIsSourcingUpdate = await _rfqRepository.RfqSourcingByRfqNumbers(rfqSourceData);
                 rfqIsSourcingUpdate.IsSourcing = true;
                 var sourceItemtemDto = rfqSourcingUpdateDto.RfqSourcingItemsUpdateDtos;
                 var rfqSourceItemList = new List<RfqSourcingItems>();
-                if (sourceItemtemDto !=null) 
+                if (sourceItemtemDto != null)
                 {
                     for (int i = 0; i < sourceItemtemDto.Count; i++)
                     {
@@ -506,14 +534,30 @@ namespace Tips.SalesService.Api.Controllers
                 //updateData.RfqSourcingItems = rfqSourceItemList;          
                 string result = await _repository.UpdateRfqSourcing(updateData);
                 _rfqRepository.Update(rfqIsSourcingUpdate);
+                _logger.LogInfo("Before Json");
+                //var sourcingData = new RfqSourcing
+                //{
+                //    Id = updateData.Id,
+                //    RFQId = updateData.RFQId,
+                //    RFQNumber = updateData.RFQNumber,
+                //    CustomerName = updateData.CustomerName,
+                //    Unit = updateData.Unit,
+                //    CreatedBy = updateData.CreatedBy,
+                //    CreatedOn = updateData.CreatedOn,
+                //    LastModifiedBy = updateData.LastModifiedBy,
+                //    LastModifiedOn = updateData.LastModifiedOn,
+                //    RfqSourcingItems = updateData.RfqSourcingItems
+                //};
+                var sourcingData = _mapper.Map<RfqSourcing, RfqSourcing>(updateData);
 
+                _logger.LogInfo("After Json");
                 // LandedPrice and MoqCost Calculation
                 int rfqId = rfqSourcingUpdateDto.RFQId;
                 //Taking the Sourcing PP And is Primary Vendor Details 
                 List<RfqSourcingPPdetails> rfqSourcingPPdetailsList = new List<RfqSourcingPPdetails>();
-                foreach (var ppinsource in updateData.RfqSourcingItems)
-                {                   
-                    if (ppinsource.RfqSourcingVendors != null && ppinsource.RfqSourcingVendors.Count!=0)
+                foreach (var ppinsource in sourcingData.RfqSourcingItems)
+                {
+                    if (ppinsource.RfqSourcingVendors != null && ppinsource.RfqSourcingVendors.Count != 0)
                     {
                         RfqSourcingPPdetails rfqSourcingPPdetails = new RfqSourcingPPdetails();
                         rfqSourcingPPdetails.PPItemNumber = ppinsource.ItemNumber;
@@ -521,6 +565,8 @@ namespace Tips.SalesService.Api.Controllers
                         {
                             if (ppvendor.Primary == true)
                             {
+                                var LP = ppvendor.LandingPrice;
+                                var MC = ppvendor.MoqCost;
                                 if (ppvendor.Currency != "INR")
                                 {
                                     var httpClientHandler = new HttpClientHandler();
@@ -537,7 +583,7 @@ namespace Tips.SalesService.Api.Controllers
                                     //var rfqCustomerIdResponse = await _httpClient.GetAsync($"{rfqApiUrl}GetLatestConvertionrateByUOC?currency={ppvendor.Currency}");
                                     var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
                                     var vendorUOC = JsonConvert.DeserializeObject<RfqSourcingConvertionrateDto>(rfqCustomerIdString);
-                                    if(vendorUOC.Data==null || vendorUOC.Data.ConvertionRate == 0)
+                                    if (vendorUOC.Data.ConvertionRate == 0)
                                     {
                                         _logger.LogError($"Currency was not present for {ppvendor.Currency} for the Vendor {ppvendor.Vendor} for the ItemNumber{ppinsource.ItemNumber}");
                                         serviceResponse.Data = null;
@@ -546,11 +592,11 @@ namespace Tips.SalesService.Api.Controllers
                                         serviceResponse.StatusCode = HttpStatusCode.NotFound;
                                         return NotFound(serviceResponse);
                                     }
-                                    ppvendor.LandingPrice = ppvendor.LandingPrice * vendorUOC.Data.ConvertionRate;
-                                    ppvendor.MoqCost = ppvendor.MoqCost * vendorUOC.Data.ConvertionRate;
+                                    LP = LP * vendorUOC.Data.ConvertionRate;
+                                    MC = MC * vendorUOC.Data.ConvertionRate;
                                 }
-                                rfqSourcingPPdetails.VLandindPrice = ppvendor.LandingPrice;
-                                rfqSourcingPPdetails.VMoqcost = ppvendor.MoqCost;
+                                rfqSourcingPPdetails.VLandindPrice = LP;
+                                rfqSourcingPPdetails.VMoqcost = MC;
                             }
                         }
                         rfqSourcingPPdetailsList.Add(rfqSourcingPPdetails);
@@ -583,8 +629,8 @@ namespace Tips.SalesService.Api.Controllers
                     //var rfqEnggItemsDetails = await _rfqRepository.GetRfqEnggItemByItemNumber(rfqCustomerIdObjectData.data.fgItemNumber);
                     fgitemnumber.LandedPrice = rfqCustomerIdObjectData.data.finalLandindPrice;
                     fgitemnumber.MOQCost = rfqCustomerIdObjectData.data.finalMoqcost;
-                    await _rfqEnggItemRepository.UpdateRfqEnggItemLandedandMOQ(fgitemnumber);                    
-                }               
+                    await _rfqEnggItemRepository.UpdateRfqEnggItemLandedandMOQ(fgitemnumber);
+                }
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 _rfqEnggItemRepository.SaveAsync();
@@ -645,7 +691,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRfqSourcingVendorDetails(string ProjectNumber,string ItemNumber, string VendorId)
+        public async Task<IActionResult> GetRfqSourcingVendorDetails(string ProjectNumber, string ItemNumber, string VendorId)
         {
             ServiceResponse<RfqSourcingVendorDetailsDto> serviceResponse = new ServiceResponse<RfqSourcingVendorDetailsDto>();
             try

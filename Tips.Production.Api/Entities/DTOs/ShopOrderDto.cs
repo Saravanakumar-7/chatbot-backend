@@ -24,7 +24,6 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal OqcQty { get; set; }
 
         public decimal ScrapQty { get; set; }
-
         public OrderStatus FGDoneStatus { get; set; }
         public bool IsDeleted { get; set; } = false;
 

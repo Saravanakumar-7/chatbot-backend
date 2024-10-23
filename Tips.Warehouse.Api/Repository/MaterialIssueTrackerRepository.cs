@@ -8,7 +8,7 @@ using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Repository
 {
-    public class MaterialIssueTrackerRepository : RepositoryBase<ShopOrderMaterialIssueTracker>,IMaterialIssueTrackerRepository
+    public class MaterialIssueTrackerRepository : RepositoryBase<ShopOrderMaterialIssueTracker>, IMaterialIssueTrackerRepository
     {
         private readonly string _connectionString;
         private readonly MySqlConnection _connection;
@@ -27,7 +27,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var date = DateTime.Now;
             shopOrderMaterialIssueTracker.CreatedBy = _createdBy;
-            shopOrderMaterialIssueTracker.CreatedOn = date.Date;  
+            shopOrderMaterialIssueTracker.CreatedOn = date.Date;
             var result = await Create(shopOrderMaterialIssueTracker);
             return result.Id;
         }
@@ -41,7 +41,7 @@ namespace Tips.Warehouse.Api.Repository
             return result.Id;
         }
         public async Task<string> UpdateMaterialIssueTracker(ShopOrderMaterialIssueTracker shopOrderMaterialIssue)
-        { 
+        {
             Update(shopOrderMaterialIssue);
             string result = $"materialIssue of Detail {shopOrderMaterialIssue.Id} is updated successfully!";
             return result;
@@ -50,7 +50,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var resultList = (from st in _tipsWarehouseDbContext.ShopOrderMaterialIssueTrackers
                               where st.ShopOrderNumber == ShopOrderNo && st.IssuedQty > 0
-                              group st by new { st.PartNumber,st.MRNumber, st.Description,st.Bomversion, st.ShopOrderNumber, st.DataFrom } into g
+                              group st by new { st.PartNumber, st.MRNumber, st.Description, st.Bomversion, st.ShopOrderNumber, st.DataFrom } into g
                               select new ShopOrderMaterialIssueTrackerDto
                               {
                                   PartNumber = g.Key.PartNumber,
@@ -67,24 +67,34 @@ namespace Tips.Warehouse.Api.Repository
             return resultList;
         }
 
-            public async Task<List<ShopOrderMaterialIssueTracker>> GetDetailsByShopOrderNOItemNoLotNo(string PartNumber, string ShopOrderNumber, string LotNumber)
+        public async Task<List<ShopOrderMaterialIssueTracker>> GetDetailsByShopOrderNOItemNoLotNo(string PartNumber, string ShopOrderNumber, string LotNumber)
         {
             var shopOrderMaterialIssueTracker = await _tipsWarehouseDbContext.ShopOrderMaterialIssueTrackers
-                .Where(x => x.PartNumber == PartNumber && x.ShopOrderNumber == ShopOrderNumber && x.LotNumber == LotNumber 
-                    && x.IssuedQty > x.ConvertedToFgQty)
-                          .ToListAsync();
+                .Where(x => x.PartNumber == PartNumber && x.ShopOrderNumber == ShopOrderNumber && x.LotNumber == LotNumber
+                    && x.IssuedQty > x.ConvertedToFgQty).ToListAsync();
 
             return shopOrderMaterialIssueTracker;
         }
 
-        public async Task<List<MRNIssueTrackerDto>> GetWipQtyFromMaterialIssueTracker(string shopOrderNo, string partNumber,decimal returnedQty)
+        public async Task<List<MRNIssueTrackerDto>> GetWipQtyFromMaterialIssueTracker(string shopOrderNo, string partNumber, decimal returnedQty)
         {
             List<MRNIssueTrackerDto> mRNIssueTrackerDtos = new List<MRNIssueTrackerDto>();
             var shopOrderMaterialIssueTracker = await _tipsWarehouseDbContext.ShopOrderMaterialIssueTrackers
-                .Where(x => x.PartNumber == partNumber && x.ShopOrderNumber == shopOrderNo 
-                && (x.IssuedQty-x.ConvertedToFgQty) > 0).ToListAsync();
+                .Where(x => x.PartNumber == partNumber && x.ShopOrderNumber == shopOrderNo && (x.MRNumber != "NULL")
+                && (x.IssuedQty - x.ConvertedToFgQty) > 0).ToListAsync();
+
+            shopOrderMaterialIssueTracker.Sort((x, y) => x.CreatedOn?.CompareTo(y.CreatedOn) ?? 1);
+
+            var shopOrderMaterialIssueTracker_1 = await _tipsWarehouseDbContext.ShopOrderMaterialIssueTrackers
+                .Where(x => x.PartNumber == partNumber && x.ShopOrderNumber == shopOrderNo && (x.MRNumber == "NULL")
+                && (x.IssuedQty - x.ConvertedToFgQty) > 0).ToListAsync();
+
+            shopOrderMaterialIssueTracker_1.Sort((x, y) => x.CreatedOn?.CompareTo(y.CreatedOn) ?? 1);
+
             // Sort the records by CreatedOn date in descending order (LIFO).
-            shopOrderMaterialIssueTracker.Sort((x, y) => y.CreatedOn?.CompareTo(x.CreatedOn) ?? 1);
+            //shopOrderMaterialIssueTracker.Sort((x, y) => y.CreatedOn?.CompareTo(x.CreatedOn) ?? 1);
+
+            shopOrderMaterialIssueTracker.AddRange(shopOrderMaterialIssueTracker_1);
 
             // Iterate through the records and add the lot number and quantity to the list.
             for (int i = 0; i < shopOrderMaterialIssueTracker.Count; i++)
@@ -99,11 +109,32 @@ namespace Tips.Warehouse.Api.Repository
                         PartNumber = partNumber,
                         WipQty = returnedQty,
                         LotNumber = record.LotNumber
-                        
-                    };
+                    };                    
+                    var qty = returnedQty;
+                    shopOrderMaterialIssueTracker[i].IssuedQty = shopOrderMaterialIssueTracker[i].IssuedQty - returnedQty;
+                    if (record.MRNumber == "NULL")
+                    {
+                        MaterialIssueData materialIssueData = new MaterialIssueData
+                        {
+                            PartNumber = partNumber,
+                            ShopOrderNumber = shopOrderNo,
+                            QtyUsed = qty
+                        };
+                        mRNIssueTrackerDto.MaterialIssueData = materialIssueData;
+                    }
+                    if (record.MRNumber != "NULL")
+                    {
+                        MaterialRequestData materialRequestData = new MaterialRequestData
+                        {
+                            PartNumber = partNumber,
+                            ShopOrderNumber = shopOrderNo,
+                            QtyUsed = qty,
+                            MRNumber = shopOrderMaterialIssueTracker[i].MRNumber
+                        };
+                        mRNIssueTrackerDto.MaterialRequestData = materialRequestData;
+                    }
                     mRNIssueTrackerDtos.Add(mRNIssueTrackerDto);
-                    shopOrderMaterialIssueTracker[i].IssuedQty -= returnedQty;
-                    returnedQty = 0;                    
+                    returnedQty = 0;
                 }
                 else
                 {
@@ -113,8 +144,31 @@ namespace Tips.Warehouse.Api.Repository
                         WipQty = wipQty,
                         LotNumber = record.LotNumber
                     };
-                    mRNIssueTrackerDtos.Add(mRNIssueTrackerDto);
+                    
                     shopOrderMaterialIssueTracker[i].IssuedQty = record.ConvertedToFgQty;
+                    var qty=returnedQty-wipQty;
+                    if (record.MRNumber == "NULL")
+                    {
+                        MaterialIssueData materialIssueData = new MaterialIssueData
+                        {
+                            PartNumber = partNumber,
+                            ShopOrderNumber = shopOrderNo,
+                            QtyUsed = qty
+                        };
+                        mRNIssueTrackerDto.MaterialIssueData = materialIssueData;
+                    }
+                    if (record.MRNumber != "NULL")
+                    {
+                        MaterialRequestData materialRequestData = new MaterialRequestData
+                        {
+                            PartNumber = partNumber,
+                            ShopOrderNumber = shopOrderNo,
+                            QtyUsed = qty,
+                            MRNumber = shopOrderMaterialIssueTracker[i].MRNumber
+                        };
+                        mRNIssueTrackerDto.MaterialRequestData = materialRequestData;
+                    }
+                    mRNIssueTrackerDtos.Add(mRNIssueTrackerDto);
                     returnedQty -= wipQty;
                 }
                 _tipsWarehouseDbContext.Update(shopOrderMaterialIssueTracker[i]);

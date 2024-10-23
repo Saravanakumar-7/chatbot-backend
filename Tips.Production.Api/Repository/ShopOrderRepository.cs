@@ -387,7 +387,7 @@ namespace Tips.Production.Api.Repository
 
         public async Task<ShopOrder> GetShopOrderDetailsByShopOrderNo(string shopOrderNo)
         {
-            var shopOrderById = await _tipsProductionDbContext.ShopOrders.Where(x => x.ShopOrderNumber == shopOrderNo)
+            var shopOrderById = await _tipsProductionDbContext.ShopOrders.Where(x => x.ShopOrderNumber == shopOrderNo).Include(x=>x.ShopOrderItems)
 
                           .FirstOrDefaultAsync();
 

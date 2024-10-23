@@ -44,6 +44,20 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string PartNumber { get; set; }
         public decimal WipQty { get; set; }
         public string LotNumber { get; set; }
-
+        public MaterialIssueData? MaterialIssueData { get; set; }
+        public MaterialRequestData? MaterialRequestData { get; set; }
+    }
+    public class MaterialIssueData
+    {
+        public string PartNumber { get; set; }
+        public string ShopOrderNumber { get; set; }
+        public decimal QtyUsed { get; set; }
+    }
+    public class MaterialRequestData
+    {
+        public string PartNumber { get; set; }
+        public string ShopOrderNumber { get; set; }
+        public decimal QtyUsed { get; set; }
+        public string MRNumber {  get; set; }
     }
 }

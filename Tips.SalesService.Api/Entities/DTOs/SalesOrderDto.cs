@@ -50,6 +50,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         public DateTime? ShortClosedOn { get; set; }
 
+        [DefaultValue(false)]
+        public bool IsDODone { get; set; }
+
+        [DefaultValue(false)]
+        public bool NowShortClosed { get; set; }
         public decimal? Total { get; set; }
         public string? ReasonForModification { get; set; }
 
@@ -253,12 +258,16 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SpecialDiscountType { get; set; }
         public SalesOrderStatus SalesOrderStatus { get; set; }
         public OrderStatus SOStatus { get; set; }
+        [DefaultValue(false)]
+        public bool IsDODone { get; set; }
         [Precision(18, 3)]
         public decimal? SpecialDiscountAmount { get; set; }
         [Precision(18, 3)]
         public decimal? TotalAmount { get; set; }
         [Precision(18, 3)]
         public decimal TotalFinalAmount { get; set; }
+        [DefaultValue(false)]
+        public bool NowShortClosed { get; set; }
 
         [Required]
         public string Unit { get; set; }
@@ -513,5 +522,19 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? QuoteRef { get; set; }
         public string? SalesOrdersItems { get; set; }
         public string? SalesOrderAdditionalCharges { get; set; }
+    }
+    public class SOHistoryRevNoListDto
+    {
+        public int Id { get; set; }
+        public int? RevisionNumber { get; set; }
+
+    }
+    public class SOHisDetailsDto
+    {
+        public int Id { get; set; }
+        public decimal? ShortClosedQty { get; set; }
+        public decimal BalanceQty { get; set; }
+        public decimal DispatchQty { get; set; }
+
     }
 }

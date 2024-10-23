@@ -27,7 +27,8 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public IssuedStatus MaterialIssuedStatus { get; set; } 
+        public IssuedStatus MaterialIssuedStatus { get; set; }
+        public decimal? MRNQty { get; set; }
         public int MaterialIssueId { get; set; }
         public List<MaterialIssueLocationDto>? MaterialIssueLocationDto { get; set; }
 
@@ -220,6 +221,6 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
         public IssuedStatus MaterialIssuedStatus { get; set; }
         public int MaterialIssueId { get; set; }
-
+        public decimal? MRNQty { get; set; }
     }
 }

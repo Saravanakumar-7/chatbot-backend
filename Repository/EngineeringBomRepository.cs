@@ -287,7 +287,7 @@ namespace Repository
         public async Task<IEnumerable<EnggBomItemDto>> GetAllEnggBOMItemNumber()
         {
             IEnumerable<EnggBomItemDto> getAllEnggBomItems = await _tipsMasterDbContext.EnggBoms
-                .Where (x=>x.IsActive == true)
+                .Where(x => x.IsActive == true)
             .Select(c => new EnggBomItemDto()
             {
                 ItemNumber = c.ItemNumber,
@@ -420,18 +420,43 @@ namespace Repository
             //                .FirstOrDefaultAsync();
 
             var fgbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == bomId && x.IsActive == true).OrderByDescending(x => x.PartType).ToListAsync();
-                if (fgbomdetails != null)
+            if (fgbomdetails != null)
+            {
+                foreach (var childofFG in fgbomdetails)
                 {
-                    foreach (var childofFG in fgbomdetails)
+                    if (childofFG.PartType == PartType.PurchasePart)
                     {
-                        if (childofFG.PartType == PartType.PurchasePart)
+                        int flag = 0;
+                        foreach (var existingPP in enggBomFGItemNumberWithQtyDtos)
+                        {
+                            if (existingPP.ItemNumber == childofFG.ItemNumber)
+                            {
+                                existingPP.QtyReq = existingPP.QtyReq + (childofFG.Quantity);
+                                flag = 1;
+                                break;
+                            }
+                        }
+                        if (flag == 0)
+                        {
+                            EnggBomFGCostItemNumberWithQtyDto addPP = new EnggBomFGCostItemNumberWithQtyDto();
+                            addPP.FGItemNumber = fgItemMaster;
+                            addPP.ItemNumber = childofFG.ItemNumber;
+                            addPP.ItemDescription = childofFG.Description;
+                            addPP.QtyReq = childofFG.Quantity;
+                            enggBomFGItemNumberWithQtyDtos.Add(addPP);
+                        }
+                    }
+                    if (childofFG.PartType == PartType.SA)
+                    {
+                        var subSA = await GetSABomItemsChildDetails(childofFG.ItemNumber, childofFG.Quantity);
+                        foreach (var existingpp in subSA)
                         {
                             int flag = 0;
                             foreach (var existingPP in enggBomFGItemNumberWithQtyDtos)
                             {
-                                if (existingPP.ItemNumber == childofFG.ItemNumber)
+                                if (existingpp.ItemNumber == existingPP.ItemNumber)
                                 {
-                                    existingPP.QtyReq = existingPP.QtyReq + (childofFG.Quantity);
+                                    existingPP.QtyReq = existingPP.QtyReq + (existingpp.QtyReq);
                                     flag = 1;
                                     break;
                                 }
@@ -440,41 +465,16 @@ namespace Repository
                             {
                                 EnggBomFGCostItemNumberWithQtyDto addPP = new EnggBomFGCostItemNumberWithQtyDto();
                                 addPP.FGItemNumber = fgItemMaster;
-                                addPP.ItemNumber = childofFG.ItemNumber;
-                                addPP.ItemDescription = childofFG.Description;
-                                addPP.QtyReq = childofFG.Quantity;
+                                addPP.ItemNumber = existingpp.ItemNumber;
+                                addPP.ItemDescription = existingpp.ItemDescription;
+                                addPP.QtyReq = existingpp.QtyReq;
                                 enggBomFGItemNumberWithQtyDtos.Add(addPP);
-                            }
-                        }
-                        if (childofFG.PartType == PartType.SA)
-                        {
-                            var subSA = await GetSABomItemsChildDetails(childofFG.ItemNumber, childofFG.Quantity);
-                            foreach (var existingpp in subSA)
-                            {
-                                int flag = 0;
-                                foreach (var existingPP in enggBomFGItemNumberWithQtyDtos)
-                                {
-                                    if (existingpp.ItemNumber == existingPP.ItemNumber)
-                                    {
-                                        existingPP.QtyReq = existingPP.QtyReq + (existingpp.QtyReq );
-                                        flag = 1;
-                                        break;
-                                    }
-                                }
-                                if (flag == 0)
-                                {
-                                    EnggBomFGCostItemNumberWithQtyDto addPP = new EnggBomFGCostItemNumberWithQtyDto();
-                                    addPP.FGItemNumber = fgItemMaster;
-                                    addPP.ItemNumber = existingpp.ItemNumber;
-                                    addPP.ItemDescription = existingpp.ItemDescription;
-                                    addPP.QtyReq = existingpp.QtyReq;
-                                    enggBomFGItemNumberWithQtyDtos.Add(addPP);
-                                }
                             }
                         }
                     }
                 }
-            
+            }
+
             return enggBomFGItemNumberWithQtyDtos;
         }
         public async Task<List<EnggBomFGItemNumberWithQtyDto>> GetSABomItemsChildDetails(string SAitemnumber, decimal SAQty)//, string SAversion)
@@ -745,7 +745,7 @@ namespace Repository
             // Replace this with the actual SA child item number you want to find the parent FG item number for
 
             var fgParentItemNumbers = await _tipsMasterDbContext.EnggChildItems
-      .Where(x => x.ItemNumber == itemNumber && x.PartType == PartType.SA && x.IsActive == true )
+      .Where(x => x.ItemNumber == itemNumber && x.PartType == PartType.SA && x.IsActive == true)
       .Join(
           _tipsMasterDbContext.EnggChildItems,
           childBomId => childBomId.EnggBomId,
@@ -866,7 +866,7 @@ namespace Repository
         public async Task<IEnumerable<EngineeringBom>> GetAllEnggBomVersionListByItemNumber(string itemNumber)
         {
             var enggBomDetails = await _tipsMasterDbContext.EngineeringBoms
-                .Where(x => x.ItemNumber == itemNumber )
+                .Where(x => x.ItemNumber == itemNumber)
                 .ToListAsync();
 
             return enggBomDetails;
@@ -1096,13 +1096,13 @@ namespace Repository
 
         //    return latestReleaseVersionsCount;
         //}
-        public async Task<Dictionary<string,decimal>> GetSAsAndLatestVersion()
+        public async Task<Dictionary<string, decimal>> GetSAsAndLatestVersion()
         {
-            return await _tipsMasterDbContext.ProductionBoms.Where(x=>x.ItemType==PartType.SA).GroupBy(p => p.ItemNumber).Select(g => new
-        {
-            ItemNumber = g.Key,
-            LatestVersion = g.Max(p => p.ReleaseVersion) 
-        })
+            return await _tipsMasterDbContext.ProductionBoms.Where(x => x.ItemType == PartType.SA).GroupBy(p => p.ItemNumber).Select(g => new
+            {
+                ItemNumber = g.Key,
+                LatestVersion = g.Max(p => p.ReleaseVersion)
+            })
         .ToDictionaryAsync(x => x.ItemNumber, x => x.LatestVersion);
         }
 
@@ -1222,7 +1222,16 @@ namespace Repository
             return maxRevisionNumber;
         }
 
+        public async Task<IEnumerable<ReleaseProductionBomSPReport>> GetBOMReleaseSPReportWithParamForTrans(string? ItemNumber)
+        {
+            var result = _tipsMasterDbContext
+            .Set<ReleaseProductionBomSPReport>()
+            .FromSqlInterpolated($"CALL BomRelease_data({ItemNumber})")
+            .ToList();
 
+            return result;
+
+        }
 
         public async Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber)
         {
@@ -1387,9 +1396,9 @@ namespace Repository
                     .ToListAsync();
 
                 var result = fgParents
-            .GroupBy(item => item.ItemNumber)
-            .Select(group => group.OrderByDescending(item => item.RevisionNumber).First())
-            .ToList();
+                    .GroupBy(item => item.ItemNumber)
+                    .Select(group => group.OrderByDescending(item => item.RevisionNumber).First())
+                    .ToList();
                 foreach (var fgitem in result)
                 {
                     Dictionary<int, PartType> bomIdWithItemTypeDict = new Dictionary<int, PartType>();

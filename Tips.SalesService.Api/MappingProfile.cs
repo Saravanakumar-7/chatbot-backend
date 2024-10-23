@@ -306,6 +306,16 @@ namespace Tips.SalesService.Api
             CreateMap<DocumentUpload, DocumentUploadDto>().ReverseMap();
             CreateMap<DocumentUpload, DocumentUploadPostDto>().ReverseMap();
             CreateMap<DocumentUpload, DocumentUploadUpdateDto>().ReverseMap();
+
+            CreateMap<SalesOrder, SalesOrderMainLevelHistory>().ReverseMap();
+            CreateMap<SalesOrderItems, SalesOrderItemLevelHistory>().ReverseMap();
+            CreateMap<ScheduleDate, SalesOrderScheduleDateHistory>().ReverseMap();
+            CreateMap<SalesOrderAdditionalCharges, SOAdditionalChargesHistory>().ReverseMap();
+
+            CreateMap<SalesOrderUpdateDto, SalesOrderMainLevelHistory>().ReverseMap();
+            CreateMap<SalesOrderItemsUpdateDto, SalesOrderItemLevelHistory>().ReverseMap();
+            CreateMap<ScheduleDateUpdateDto, SalesOrderScheduleDateHistory>().ReverseMap();
+            CreateMap<SalesOrderAdditionalChargesUpdateDto, SOAdditionalChargesHistory>().ReverseMap();
         }
     }
 }

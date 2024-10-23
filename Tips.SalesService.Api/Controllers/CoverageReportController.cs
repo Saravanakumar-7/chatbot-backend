@@ -48,6 +48,8 @@ namespace Tips.SalesService.Api.Controllers
             _salesOrderItemsRepository = salesOrderItemsRepository;
             _clientFactory = clientFactory;
         }
+
+        //GenerateCoverageFGLevelReport
         [HttpGet]
         public async Task<IActionResult> GenerateCoverageFGLevelReport()
         {
@@ -75,6 +77,417 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        private async Task<List<OpenSalesCoverageReport>> FGLevelCoverageReport()
+        {
+            List<OpenSalesCoverageReport> openSalesCoverageReports = new List<OpenSalesCoverageReport>();
+            try
+            {
+                var salesOrders = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGItemDetails();
+
+
+                //List<(string?, decimal?)> itemNumberList = salesOrders.Select(x => (x.FGItemNumber, x.Balance_Qty)).ToList();
+
+                List<string?> itemNumberList = salesOrders.Select(x => x.FGItemNumber).ToList();
+                //change
+                var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
+                var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                // var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemMasterPartTypeAndMinByItemNumber"), itemNoListString);
+                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ItemMasterMainAPI"],
+                             "GetItemMasterPartTypeAndMinByItemNumber"))
+                {
+                    Content = itemNoListString
+                };
+                request.Headers.Add("Authorization", token);
+
+                var responses = await client.SendAsync(request);
+                var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
+                dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
+                //List<ItemNoWithPartTypeDto> itemNoWithPartType = (List<ItemNoWithPartTypeDto>)itemNoPartTypeData.data;
+
+                List<ItemNoWithPartTypeAndMinDto> itemNoWithPartTypeAndMin = new List<ItemNoWithPartTypeAndMinDto>();
+
+                //for this loop we need to check
+                foreach (var item in itemNoPartTypeData.data)
+                {
+                    ItemNoWithPartTypeAndMinDto dto = JsonConvert.DeserializeObject<ItemNoWithPartTypeAndMinDto>(item.ToString());
+                    itemNoWithPartTypeAndMin.Add(dto);
+                }
+
+                var salesOrderItemListjson = JsonConvert.SerializeObject(itemNumberList);
+                var salesOrderItemDetailsString = new StringContent(salesOrderItemListjson, Encoding.UTF8, "application/json");
+                var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                            "GetConsumptionInventoryByItemNotest1"))
+                {
+                    Content = salesOrderItemDetailsString
+                };
+                request1.Headers.Add("Authorization", token);
+
+                var response = await client.SendAsync(request1);
+                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionInventoryByItemNotest1"), salesOrderItemDetailsString);
+                var inventoryObjectString = await response.Content.ReadAsStringAsync();
+                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                dynamic inventoryObject = inventoryObjectData.data;
+
+                foreach (var salesOrderDetails in salesOrders)
+                {
+                    if (inventoryObject != null && inventoryObject.Count > 0)
+                    {
+                        foreach (var Inventory in inventoryObject)
+                        {
+                            if (salesOrderDetails.FGItemNumber == Inventory["partNumber"]?.ToString())
+                            {
+                                if (Inventory != null)
+                                {
+                                    if (salesOrderDetails.FGItemNumber != null && salesOrderDetails.Balance_Qty != 0)
+                                    {
+                                        var coverageReport = new OpenSalesCoverageReport
+                                        {
+                                            ItemNumber = salesOrderDetails.FGItemNumber,
+                                            TotalRequiredQty = salesOrderDetails.Balance_Qty,
+                                            PartType = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
+                                            MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault(),
+                                            UOM = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.UOM).FirstOrDefault()
+                                        };
+
+                                        decimal balanceQuantity = (decimal)Inventory.balance_Quantity; ; // Convert to decimal
+                                        coverageReport.Stock = balanceQuantity;
+
+
+
+                                        PartType itemPartType = coverageReport.PartType;
+
+
+                                        if (itemPartType == PartType.TG)
+                                        {
+                                            // Calculate OpenPoQty
+                                            //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
+                                            //              "GetOpenPOTGDetailsByItemForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber));
+
+                                            var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
+                                            var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemForCoverage?itemNumber={encodedItemNumber}"));
+                                            request2.Headers.Add("Authorization", token);
+
+                                            var purchaseObjectResult = await client.SendAsync(request2);
+                                            if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
+                                            {
+                                                var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
+                                                dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
+                                                dynamic purchaseObject = purchaseObjectData.data;
+
+                                                if (purchaseObject != null)
+                                                {
+                                                    decimal OpenPoQty = (decimal)purchaseObject.balanceQty;
+                                                    coverageReport.OpenPoQty = OpenPoQty;
+                                                }
+                                                else
+                                                {
+                                                    coverageReport.OpenPoQty = 0;
+                                                }
+                                            }
+                                        }
+                                        //Calculate OpenRetailSOQty
+                                        var fGItemNumber = salesOrderDetails.FGItemNumber;
+
+                                        var salesOrderRetailDetails = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGRetailItemDetails(fGItemNumber);
+                                        if (salesOrderRetailDetails != null)
+                                        {
+                                            coverageReport.OpenRetailSOQty = salesOrderRetailDetails.Balance_Qty;
+                                        }
+                                        else
+                                        {
+                                            coverageReport.OpenRetailSOQty = 0;
+                                        }
+                                        // Calculate OpenSOQty
+                                        coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
+                                        // Calculate BalanceToOrder
+
+                                        var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
+
+                                        coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
+
+
+                                        //var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
+                                        //coverageReport.BalanceToOrder = balanceToOrderQty.HasValue && balanceToOrderQty.Value > 0 ? balanceToOrderQty.Value : 0;
+
+                                        openSalesCoverageReports.Add(coverageReport);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (salesOrderDetails.FGItemNumber != null && salesOrderDetails.Balance_Qty != 0)
+                        {
+                            var coverageReport = new OpenSalesCoverageReport
+                            {
+                                ItemNumber = salesOrderDetails.FGItemNumber,
+                                TotalRequiredQty = salesOrderDetails.Balance_Qty,
+                                PartType = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
+                                MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault(),
+                                UOM = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.UOM).FirstOrDefault()
+                            };
+
+                            decimal balanceQuantity = 0;
+                            coverageReport.Stock = 0;
+
+                            // Calculate OpenSOQty
+                            coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
+
+                            //Calculate OpenRetailSOQty
+                            var fGItemNumber = salesOrderDetails.FGItemNumber;
+
+                            var salesOrderRetailDetails = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGRetailItemDetails(fGItemNumber);
+                            coverageReport.OpenRetailSOQty = salesOrderRetailDetails.Balance_Qty;
+
+                            PartType itemPartType = coverageReport.PartType;
+
+
+                            if (itemPartType == PartType.TG)
+                            {
+                                // Calculate OpenPoQty
+                                //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
+                                //              "GetOpenPOTGDetailsByItemForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber));
+                                var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
+                                var request3 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemForCoverage?itemNumber={encodedItemNumber}"));
+                                request3.Headers.Add("Authorization", token);
+
+                                var purchaseObjectResult = await client.SendAsync(request3);
+                                if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
+                                {
+                                    var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
+                                    dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
+                                    dynamic purchaseObject = purchaseObjectData.data;
+
+                                    if (purchaseObject != null)
+                                    {
+                                        decimal OpenPoQty = (decimal)purchaseObject.balanceQty;
+                                        coverageReport.OpenPoQty = OpenPoQty;
+                                    }
+                                    else
+                                    {
+                                        coverageReport.OpenPoQty = 0;
+                                    }
+                                }
+
+                            }
+
+                            // Calculate BalanceToOrder
+
+                            var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
+
+                            coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
+
+                            openSalesCoverageReports.Add(coverageReport);
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return openSalesCoverageReports;
+        }
+        [HttpGet]
+        public async Task<IActionResult> GenerateCoverageReportForFgChildIt()
+        {
+            ServiceResponse<List<CoverageReportDtoForChildItem>> serviceResponse = new ServiceResponse<List<CoverageReportDtoForChildItem>>();
+
+            try
+            {
+                List<CoverageReportDtoForChildItem> coverageReportDtoForChildItemList = new List<CoverageReportDtoForChildItem>();
+                List<OpenSalesCoverageReport> openSalesCoverageReports = await FGLevelCoverageReport();
+
+                if (openSalesCoverageReports != null && openSalesCoverageReports.Count() != 0)
+                {
+                    List<OpenSalesCoverageReport> openFGCoverageDetails = openSalesCoverageReports
+                        .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
+                    if (openFGCoverageDetails != null && openFGCoverageDetails.Count() != 0)
+                    {
+                        // Child Item Required Qty from BOM
+                        List<CoverageReportChildItemReqQtyDataDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBom(openFGCoverageDetails);
+
+                        if (childItemReqQtyDtos != null && childItemReqQtyDtos.Count() != 0)
+                        {
+                            List<string?> itemNumberList = childItemReqQtyDtos.Select(x => x.ItemNumber).ToList();
+
+
+                            var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
+                            var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
+
+                            //Open Stock with WIP Quantity
+                            List<ChildItemStockWithWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItems(itemNoListString);
+
+                            //Open PO Qty for Child Items
+                            List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItems(itemNoListString);
+
+
+                            foreach (var item in childItemReqQtyDtos)
+                            {
+                                CoverageReportDtoForChildItem coverageDetailOfChildItem = new CoverageReportDtoForChildItem
+                                {
+                                    ItemNumber = item.ItemNumber,
+                                    PartType = item.PartType,
+                                    RequiredQty = item.RequiredQty,
+                                    UOM = item.UOM,
+                                    Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
+                                    WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
+                                    OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
+                                };
+
+                                //test
+
+
+
+                                decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
+                                   + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
+
+                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : balanceRequiredQty;
+
+                                coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
+                            }
+
+
+                        }
+                    }
+                }
+                serviceResponse.Data = coverageReportDtoForChildItemList;
+                serviceResponse.Message = $"Returned Child Item CoverageReport Successfully in GenerateCoverageReportForFgChildItems ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItems action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        private async Task<List<CoverageReportChildItemReqQtyDataDto>> GetChildItemRequiredQtyFromBom(List<OpenSalesCoverageReport> openFGCoverageDetails)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
+            var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
+            //var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsForCoverageReport"), openFGCoverageDetailsString);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"],
+                           "GetBomDetailsForCoverageReport"))
+            {
+                Content = openFGCoverageDetailsString
+            };
+            request.Headers.Add("Authorization", token);
+
+            var response = await client.SendAsync(request);
+            var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
+            dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
+
+            List<CoverageReportChildItemReqQtyDataDto> childItemReqQtyDtos = new List<CoverageReportChildItemReqQtyDataDto>();
+
+            foreach (var item in childItemRequiredQtyData.data)
+            {
+                CoverageReportChildItemReqQtyDataDto dto = JsonConvert.DeserializeObject<CoverageReportChildItemReqQtyDataDto>(item.ToString());
+                childItemReqQtyDtos.Add(dto);
+            }
+
+            return childItemReqQtyDtos;
+
+
+        }
+
+        private async Task<List<ChildItemStockWithWipDto>> GetStockWithWipQtyForChildItems(StringContent itemNoListString)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                           "GetConsumptionChildItemStockWithWipQty"))
+            {
+                Content = itemNoListString
+            };
+            request.Headers.Add("Authorization", token);
+
+            var responses = await client.SendAsync(request);
+            //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQty"), itemNoListString);
+            var itemStockWithWipString = await responses.Content.ReadAsStringAsync();
+            dynamic itemStockWithWipData = JsonConvert.DeserializeObject(itemStockWithWipString);
+            //List<ChildItemStockWithWipDto> itemStockWithWipList = (List<ChildItemStockWithWipDto>)itemStockWithWipData.data;
+
+
+            List<ChildItemStockWithWipDto> childItemStockWithWipQty = new List<ChildItemStockWithWipDto>();
+
+            foreach (var item in itemStockWithWipData.data)
+            {
+                ChildItemStockWithWipDto dto = JsonConvert.DeserializeObject<ChildItemStockWithWipDto>(item.ToString());
+                childItemStockWithWipQty.Add(dto);
+            }
+
+            return childItemStockWithWipQty;
+        }
+
+        private async Task<List<OpenPoQuantityDto>> GetOpenPoQtyForChildItems(StringContent itemNoListString)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
+                           "GetListOfOpenPOQtyByItemNoList"))
+            {
+                Content = itemNoListString
+            };
+            request.Headers.Add("Authorization", token);
+
+            var openPoQtyResponse = await client.SendAsync(request);
+            //var openPoQtyResponse = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"],
+            //                                "GetListOfOpenPOQtyByItemNoList"), itemNoListString);
+            var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
+            dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
+            //List<OpenPoQuantityDto> openPoQtyList = (List<OpenPoQuantityDto>)openPoQtyData.data;
+            List<OpenPoQuantityDto> openPoQtyList = new List<OpenPoQuantityDto>();
+
+            foreach (var item in openPoQtyData.data)
+            {
+                OpenPoQuantityDto dto = JsonConvert.DeserializeObject<OpenPoQuantityDto>(item.ToString());
+                openPoQtyList.Add(dto);
+            }
+
+            return openPoQtyList;
+        }
+
+        private async Task<List<BinningQuantityDto>> GetBinningQtyForChildItemsByItemNo(string itemNumber)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            //var encodedProjectNo = Uri.EscapeDataString(projectNo);
+            var encodedItemNo = Uri.EscapeDataString(itemNumber);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["BinningAPI"], $"GetListOfBinningQtyByItemNo?ItemNumber={encodedItemNo}"));
+
+            request.Headers.Add("Authorization", token);
+
+            var openPoQtyResponse = await client.SendAsync(request);
+            var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
+            dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
+            List<BinningQuantityDto> openPoQtyList = new List<BinningQuantityDto>();
+
+            foreach (var item in openPoQtyData.data)
+            {
+                BinningQuantityDto dto = JsonConvert.DeserializeObject<BinningQuantityDto>(item.ToString());
+                openPoQtyList.Add(dto);
+            }
+
+            return openPoQtyList;
+        }
+        //GenerateCoverageFGLevelReport
+
+
+        //GenerateCoverageFGLevelReportByProjectNumber
         [HttpGet]
         public async Task<IActionResult> GenerateCoverageFGLevelReportByProjectNumber(string projectNumber)
         {
@@ -86,60 +499,7 @@ namespace Tips.SalesService.Api.Controllers
                 List<OpenSalesCoverageReportByProjectNumber> openSalesCoverageReportsByprojectNo = await FGLevelCoverageReportByProjectNumber(projectNumber);
 
                 serviceResponse.Data = openSalesCoverageReportsByprojectNo;
-                serviceResponse.Message = $"Returned CoverageReportByProjectNumber Successfully ";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Something went wrong inside GenerateCoverageFGLevelReportByProjectNumber action: {ex.Message}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
-        [HttpPost]
-        public async Task<IActionResult> GenerateCoverageFGLevelReportByMultipleProjectNumber([FromBody] CoverageReportProjectDto coverageReportProjectDto)
-        {
-
-            ServiceResponse<List<OpenSalesCoverageReportByProjectNumber>> serviceResponse = new ServiceResponse<List<OpenSalesCoverageReportByProjectNumber>>();
-
-            try
-            {
-                List<OpenSalesCoverageReportByProjectNumber> openSalesCoverageReportsByprojectNo = await FGLevelCoverageReportByMultipleProjectNumber(coverageReportProjectDto);
-
-                serviceResponse.Data = openSalesCoverageReportsByprojectNo;
-                serviceResponse.Message = $"Returned CoverageReportByProjectNumber Successfully ";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Something went wrong inside GenerateCoverageFGLevelReportByProjectNumber action: {ex.Message}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GenerateCoverageFGLevelReportByProjectNumberAndItemNo(string projectNumber, string ItemNumber)
-        {
-
-            ServiceResponse<List<OpenSalesCoverageReportByProjectNumber>> serviceResponse = new ServiceResponse<List<OpenSalesCoverageReportByProjectNumber>>();
-
-            try
-            {
-                List<OpenSalesCoverageReportByProjectNumber> openSalesCoverageReportsByprojectNo = await FGLevelCoverageReportByProjectNumberAndItemNo(projectNumber, ItemNumber);
-
-                serviceResponse.Data = openSalesCoverageReportsByprojectNo;
-                serviceResponse.Message = $"Returned CoverageReportByProjectNumber Successfully ";
+                serviceResponse.Message = $"Returned GenerateCoverageFGLevelReportByProjectNumber Successfully ";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -361,6 +721,303 @@ namespace Tips.SalesService.Api.Controllers
             }
             return openSalesCoverageReports;
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GenerateCoverageReportForFgChildItByProjectNumber(string projectNumber)
+        {
+            ServiceResponse<List<CoverageReportByProjectNumberDtoForChildItem>> serviceResponse = new ServiceResponse<List<CoverageReportByProjectNumberDtoForChildItem>>();
+
+            try
+            {
+                List<CoverageReportByProjectNumberDtoForChildItem> coverageReportDtoForChildItemList = new List<CoverageReportByProjectNumberDtoForChildItem>();
+                List<OpenSalesCoverageReportByProjectNumber> openSalesCoverageReportsByProjectNo = await FGLevelCoverageReportByProjectNumber(projectNumber);
+
+
+                if (openSalesCoverageReportsByProjectNo != null && openSalesCoverageReportsByProjectNo.Count() != 0)
+                {
+                    List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails = openSalesCoverageReportsByProjectNo
+                        .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
+                    if (openFGCoverageDetails != null && openFGCoverageDetails.Count() != 0)
+                    {
+                        // Child Item Required Qty from BOM
+                        List<CoverageReportChildItemReqQtyDataByProjectNoDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBomByProjectNo(openFGCoverageDetails);
+
+                        if (childItemReqQtyDtos != null && childItemReqQtyDtos.Count() != 0)
+                        {
+                            List<string?> itemNumberList = childItemReqQtyDtos.Select(x => x.ItemNumber).ToList();
+
+
+                            var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
+                            var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
+                            var client = _clientFactory.CreateClient();
+                            var token = HttpContext.Request.Headers["Authorization"].ToString();
+                            // var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"), itemNoListString);
+                            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"))
+                            {
+                                Content = itemNoListString
+                            };
+                            request.Headers.Add("Authorization", token);
+
+                            var responses = await client.SendAsync(request);
+                            var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
+                            dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
+
+                            List<ItemNoWithPartTypeDto> itemNoWithPartType = new List<ItemNoWithPartTypeDto>();
+
+                            //for this loop we need to check
+                            foreach (var item in itemNoPartTypeData.data)
+                            {
+                                ItemNoWithPartTypeDto dto = JsonConvert.DeserializeObject<ItemNoWithPartTypeDto>(item.ToString());
+                                itemNoWithPartType.Add(dto);
+                            }
+
+                            //Open Stock with WIP Quantity
+                            List<ChildItemStockWithWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItemsByProjectNo(itemNoListString, projectNumber);
+
+                            //Open PO Qty for Child Items
+                            List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItemsByProjectNo(itemNoListString, projectNumber);
+
+
+                            foreach (var item in childItemReqQtyDtos)
+                            {
+                                CoverageReportByProjectNumberDtoForChildItem coverageDetailOfChildItem = new CoverageReportByProjectNumberDtoForChildItem
+                                {
+                                    ItemNumber = item.ItemNumber,
+                                    MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
+                                    Version = item.Version,
+                                    Description = item.Description,
+                                    ProjectNumber = projectNumber,
+                                    UOM = item.UOM,
+                                    PartType = item.PartType,
+                                    RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
+                                    Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
+                                    WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
+                                    //OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
+                                };
+
+                                //Binning Qty 
+                                List<BinningQuantityDto> binningQtyList = await GetBinningQtyForChildItemsByProjectNo(item.ItemNumber, projectNumber);
+
+                                var OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault();
+                                var binningQty = binningQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.BinningQty).FirstOrDefault();
+
+                                //Open PoQty Calculate
+                                if (binningQtyList != null && binningQtyList.Count() > 0)
+                                {
+                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
+                                }
+                                else
+                                {
+                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
+                                }
+
+                                //ODO Qty Calculate
+                                List<ODOQuantityDto> odoQtyList = await GetODOQtyForChildItemsByItemNoAndProjectNo(item.ItemNumber);
+
+                                coverageDetailOfChildItem.ODOQty = odoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.ODOQty).FirstOrDefault();
+
+                                
+                                    decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
+                                       + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty)-coverageDetailOfChildItem.ODOQty;
+
+
+                                    coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
+                                
+
+
+                                coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
+                            }
+
+
+                        }
+                    }
+                }
+                serviceResponse.Data = coverageReportDtoForChildItemList;
+                serviceResponse.Message = $"Returned Child Item CoverageReport Successfully in GenerateCoverageReportForFgChildItByProjectNumber ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItByProjectNumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        private async Task<List<CoverageReportChildItemReqQtyDataByProjectNoDto>> GetChildItemRequiredQtyFromBomByProjectNo(List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails)
+        {
+            var client = _clientFactory.CreateClient();
+            //client.Timeout = TimeSpan.FromMinutes(10); // Set to 5 minutes, or whatever duration you need
+
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
+            var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
+            //var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsByProjectNoForCoverageReport"),
+            //                                                                                                                openFGCoverageDetailsString);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsByProjectNoForCoverageReport"))
+            {
+                Content = openFGCoverageDetailsString
+            };
+            request.Headers.Add("Authorization", token);
+
+            var response = await client.SendAsync(request);
+            var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
+            dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
+
+            List<CoverageReportChildItemReqQtyDataByProjectNoDto> childItemReqQtyDtos = new List<CoverageReportChildItemReqQtyDataByProjectNoDto>();
+
+            foreach (var item in childItemRequiredQtyData.data)
+            {
+                CoverageReportChildItemReqQtyDataByProjectNoDto dto = JsonConvert.DeserializeObject<CoverageReportChildItemReqQtyDataByProjectNoDto>(item.ToString());
+                childItemReqQtyDtos.Add(dto);
+            }
+
+            return childItemReqQtyDtos;
+
+
+        }
+
+        private async Task<List<ChildItemStockWithWipDto>> GetStockWithWipQtyForChildItemsByProjectNo(StringContent itemNoListString, string projectno)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var encodedProjectNo = Uri.EscapeDataString(projectno);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"], $"GetConsumptionChildItemStockWithWipQtyByProjectNo?ProjectNo={encodedProjectNo}"))
+            {
+                Content = itemNoListString
+            };
+            request.Headers.Add("Authorization", token);
+
+            var responses = await client.SendAsync(request);
+            //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQtyByProjectNo?",
+            //                                                                            "ProjectNo=", projectno), itemNoListString);
+            var itemStockWithWipString = await responses.Content.ReadAsStringAsync();
+            dynamic itemStockWithWipData = JsonConvert.DeserializeObject(itemStockWithWipString);
+            //List<ChildItemStockWithWipDto> itemStockWithWipList = (List<ChildItemStockWithWipDto>)itemStockWithWipData.data;
+
+
+            List<ChildItemStockWithWipDto> childItemStockWithWipQty = new List<ChildItemStockWithWipDto>();
+
+            foreach (var item in itemStockWithWipData.data)
+            {
+                ChildItemStockWithWipDto dto = JsonConvert.DeserializeObject<ChildItemStockWithWipDto>(item.ToString());
+                childItemStockWithWipQty.Add(dto);
+            }
+
+            return childItemStockWithWipQty;
+        }
+
+        private async Task<List<OpenPoQuantityDto>> GetOpenPoQtyForChildItemsByProjectNo(StringContent itemNoListString, string projectNo)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var encodedProjectNo = Uri.EscapeDataString(projectNo);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"], $"GetListOfOpenPOQtyByItemNoListByProjectNo?ProjectNo={encodedProjectNo}"))
+            {
+                Content = itemNoListString
+            };
+            request.Headers.Add("Authorization", token);
+
+            var openPoQtyResponse = await client.SendAsync(request);
+            //var openPoQtyResponse = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"],
+            //                                "GetListOfOpenPOQtyByItemNoListByProjectNo?", "ProjectNo=", projectNo), itemNoListString);
+            var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
+            dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
+            //List<OpenPoQuantityDto> openPoQtyList = (List<OpenPoQuantityDto>)openPoQtyData.data;
+            List<OpenPoQuantityDto> openPoQtyList = new List<OpenPoQuantityDto>();
+
+            foreach (var item in openPoQtyData.data)
+            {
+                OpenPoQuantityDto dto = JsonConvert.DeserializeObject<OpenPoQuantityDto>(item.ToString());
+                openPoQtyList.Add(dto);
+            }
+
+            return openPoQtyList;
+        }
+
+        private async Task<List<BinningQuantityDto>> GetBinningQtyForChildItemsByProjectNo(string itemNumber, string projectNo)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var encodedProjectNo = Uri.EscapeDataString(projectNo);
+            var encodedItemNo = Uri.EscapeDataString(itemNumber);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["BinningAPI"], $"GetListOfBinningQtyByItemNoListByProjectNo?ProjectNo={encodedProjectNo}&ItemNumber={encodedItemNo}"));
+
+            request.Headers.Add("Authorization", token);
+
+            var openPoQtyResponse = await client.SendAsync(request);
+            var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
+            dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
+            List<BinningQuantityDto> openPoQtyList = new List<BinningQuantityDto>();
+
+            foreach (var item in openPoQtyData.data)
+            {
+                BinningQuantityDto dto = JsonConvert.DeserializeObject<BinningQuantityDto>(item.ToString());
+                openPoQtyList.Add(dto);
+            }
+
+            return openPoQtyList;
+        }
+
+        private async Task<List<ODOQuantityDto>> GetODOQtyForChildItemsByItemNoAndProjectNo(string itemNumber)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var encodedItemNo = Uri.EscapeDataString(itemNumber);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ODOAPI"], $"GetListOfODOQtyByItemNo?ItemNumber={encodedItemNo}"));
+
+            request.Headers.Add("Authorization", token);
+
+            var openODOQtyResponse = await client.SendAsync(request);
+            var openODOQtyString = await openODOQtyResponse.Content.ReadAsStringAsync();
+            dynamic openODOQtyData = JsonConvert.DeserializeObject(openODOQtyString);
+            List<ODOQuantityDto> openODOQtyList = new List<ODOQuantityDto>();
+
+            foreach (var item in openODOQtyData.data)
+            {
+                ODOQuantityDto dto = JsonConvert.DeserializeObject<ODOQuantityDto>(item.ToString());
+                openODOQtyList.Add(dto);
+            }
+
+            return openODOQtyList;
+        }
+        //GenerateCoverageFGLevelReportByProjectNumber
+
+
+        //GenerateCoverageFGLevelReportByMultipleProjectNumber
+        [HttpPost]
+        public async Task<IActionResult> GenerateCoverageFGLevelReportByMultipleProjectNumber([FromBody] CoverageReportProjectDto coverageReportProjectDto)
+        {
+
+            ServiceResponse<List<OpenSalesCoverageReportByProjectNumber>> serviceResponse = new ServiceResponse<List<OpenSalesCoverageReportByProjectNumber>>();
+
+            try
+            {
+                List<OpenSalesCoverageReportByProjectNumber> openSalesCoverageReportsByprojectNo = await FGLevelCoverageReportByMultipleProjectNumber(coverageReportProjectDto);
+
+                serviceResponse.Data = openSalesCoverageReportsByprojectNo;
+                serviceResponse.Message = $"Returned GenerateCoverageFGLevelReportByMultipleProjectNumber Successfully ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GenerateCoverageFGLevelReportByMultipleProjectNumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         private async Task<List<OpenSalesCoverageReportByProjectNumber>> FGLevelCoverageReportByMultipleProjectNumber(CoverageReportProjectDto coverageReportProjectDto)
         {
             List<OpenSalesCoverageReportByProjectNumber> openSalesCoverageReports = new List<OpenSalesCoverageReportByProjectNumber>();
@@ -579,6 +1236,420 @@ namespace Tips.SalesService.Api.Controllers
             return openSalesCoverageReports;
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> GenerateCoverageReportForFgChildItByCustomerId(string customerId)
+        {
+            ServiceResponse<List<CoverageReportByMultipleProjectNoForChildItemDto>> serviceResponse = new ServiceResponse<List<CoverageReportByMultipleProjectNoForChildItemDto>>();
+
+            try
+            {
+                List<CoverageReportByMultipleProjectNoForChildItemDto> coverageReportDtoForChildItemList = new List<CoverageReportByMultipleProjectNoForChildItemDto>();
+
+                var salesOrderProjectNoDetails = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGItemDetailsByCustomerId(customerId);
+
+                var coverageReportProjectDto = new CoverageReportProjectDto
+                {
+                    ProjectNumber = salesOrderProjectNoDetails.Select(p => p.ProjectNumber).ToList()
+                };
+
+                List<OpenSalesCoverageReportByProjectNumber> openSalesCoverageReports = await FGLevelCoverageReportByMultipleProjectNumber(coverageReportProjectDto);
+
+                if (openSalesCoverageReports != null && openSalesCoverageReports.Count() != 0)
+                {
+                    List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails = openSalesCoverageReports
+                        .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
+                    if (openFGCoverageDetails != null && openFGCoverageDetails.Count() != 0)
+                    {
+                        // Child Item Required Qty from BOM
+                        List<CoverageReportChildItemReqQtyDataByProjectNoDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBomByMultipleProjectNo(openFGCoverageDetails);
+
+                        if (childItemReqQtyDtos != null && childItemReqQtyDtos.Count() != 0)
+                        {
+                            List<string?> itemNumberList = childItemReqQtyDtos.Select(x => x.ItemNumber).ToList();
+
+                            var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
+                            var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
+                            var client = _clientFactory.CreateClient();
+                            var token = HttpContext.Request.Headers["Authorization"].ToString();
+                            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"))
+                            {
+                                Content = itemNoListString
+                            };
+                            request.Headers.Add("Authorization", token);
+
+                            var responses = await client.SendAsync(request);
+                            var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
+                            dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
+
+                            List<ItemNoWithPartTypeDto> itemNoWithPartType = new List<ItemNoWithPartTypeDto>();
+
+                            //for this loop we need to check
+                            foreach (var item in itemNoPartTypeData.data)
+                            {
+                                ItemNoWithPartTypeDto dto = JsonConvert.DeserializeObject<ItemNoWithPartTypeDto>(item.ToString());
+                                itemNoWithPartType.Add(dto);
+                            }
+
+                            //Open Stock with WIP Quantity
+                            List<ChildItemStockWithProjectListWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItemsByMultipleProjectNo(itemNumberList, coverageReportProjectDto.ProjectNumber);
+
+                            //Open PO Qty for Child Items
+                            List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItemsByMultipleProjectNo(itemNumberList, coverageReportProjectDto.ProjectNumber); 
+
+
+                            foreach (var item in childItemReqQtyDtos)
+                            {
+                                CoverageReportByMultipleProjectNoForChildItemDto coverageDetailOfChildItem = new CoverageReportByMultipleProjectNoForChildItemDto
+                                {
+                                    ItemNumber = item.ItemNumber,
+                                    MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
+                                    Version = item.Version,
+                                    Description = item.Description,
+                                    UOM = item.UOM,
+                                    PartType = item.PartType,
+                                    RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
+                                    Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
+                                    WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
+                                    //OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
+                                };
+
+                                //test
+
+                                //Binning Qty 
+                                List<BinningQuantityDto> binningQtyList = await GetBinningQtyForChildItemsByMultipleProjectNo(item.ItemNumber, coverageReportProjectDto.ProjectNumber);
+
+                                var OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault();
+                                var binningQty = binningQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.BinningQty).FirstOrDefault();
+
+                                //Open PoQty Calculate
+                                if (binningQtyList != null && binningQtyList.Count() > 0)
+                                {
+                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
+                                }
+                                else
+                                {
+                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
+                                }
+
+                                decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
+                                   + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
+
+                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : balanceRequiredQty;
+
+                                coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
+                            }
+
+
+                        }
+                    }
+                }
+                serviceResponse.Data = coverageReportDtoForChildItemList;
+                serviceResponse.Message = $"Returned Child Item CoverageReport Successfully in GenerateCoverageReportForFgChildItByCustomerId ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItByCustomerId action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> GenerateCoverageReportForFgChildItByMultipleProjectNumber([FromBody] CoverageReportProjectDto coverageReportProjectDto)
+        {
+            ServiceResponse<List<CoverageReportByProjectNumberDtoForChildItem>> serviceResponse = new ServiceResponse<List<CoverageReportByProjectNumberDtoForChildItem>>();
+
+            try
+            {
+                List<CoverageReportByProjectNumberDtoForChildItem> coverageReportDtoForChildItemList = new List<CoverageReportByProjectNumberDtoForChildItem>();
+                List<OpenSalesCoverageReportByProjectNumber> openSalesCoverageReportsByProjectNo = await FGLevelCoverageReportByMultipleProjectNumber(coverageReportProjectDto);
+
+
+                if (openSalesCoverageReportsByProjectNo != null && openSalesCoverageReportsByProjectNo.Count() != 0)
+                {
+                    List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails = openSalesCoverageReportsByProjectNo
+                        .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
+                    if (openFGCoverageDetails != null && openFGCoverageDetails.Count() != 0)
+                    {
+                        // Child Item Required Qty from BOM
+                        List<CoverageReportChildItemReqQtyDataByProjectNoDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBomByMultipleProjectNo(openFGCoverageDetails);
+
+                        if (childItemReqQtyDtos != null && childItemReqQtyDtos.Count() != 0)
+                        {
+                            List<string?> itemNumberList = childItemReqQtyDtos.Select(x => x.ItemNumber).ToList();
+
+
+                            var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
+                            var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
+                            var client = _clientFactory.CreateClient();
+                            var token = HttpContext.Request.Headers["Authorization"].ToString();
+                            // var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"), itemNoListString);
+                            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"))
+                            {
+                                Content = itemNoListString
+                            };
+                            request.Headers.Add("Authorization", token);
+
+                            var responses = await client.SendAsync(request);
+                            var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
+                            dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
+
+                            List<ItemNoWithPartTypeDto> itemNoWithPartType = new List<ItemNoWithPartTypeDto>();
+
+                            //for this loop we need to check
+                            foreach (var item in itemNoPartTypeData.data)
+                            {
+                                ItemNoWithPartTypeDto dto = JsonConvert.DeserializeObject<ItemNoWithPartTypeDto>(item.ToString());
+                                itemNoWithPartType.Add(dto);
+                            }
+
+                            //Open Stock with WIP Quantity
+                            List<ChildItemStockWithProjectListWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItemsByMultipleProjectNo(itemNumberList, coverageReportProjectDto.ProjectNumber);
+
+                            //Open PO Qty for Child Items
+                            List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItemsByMultipleProjectNo(itemNumberList, coverageReportProjectDto.ProjectNumber);
+
+
+                            foreach (var item in childItemReqQtyDtos)
+                            {
+                                CoverageReportByProjectNumberDtoForChildItem coverageDetailOfChildItem = new CoverageReportByProjectNumberDtoForChildItem
+                                {
+                                    ItemNumber = item.ItemNumber,
+                                    MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
+                                    Version = item.Version,
+                                    Description = item.Description,
+                                    ProjectNumber = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.ProjectNumber).FirstOrDefault(),
+                                    UOM = item.UOM,
+                                    PartType = item.PartType,
+                                    RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
+                                    Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
+                                    WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
+                                    //OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
+                                };
+
+                                //Binning Qty 
+                                List<BinningQuantityDto> binningQtyList = await GetBinningQtyForChildItemsByMultipleProjectNo(item.ItemNumber, coverageReportProjectDto.ProjectNumber);
+
+                                var OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault();
+                                var binningQty = binningQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.BinningQty).FirstOrDefault();
+
+                                //Open PoQty Calculate
+                                if (binningQtyList != null && binningQtyList.Count() > 0)
+                                {
+                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
+                                }
+                                else
+                                {
+                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
+                                }
+
+                                decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
+                                   + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
+
+                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
+
+                                coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
+                            }
+
+
+                        }
+                    }
+                }
+                serviceResponse.Data = coverageReportDtoForChildItemList;
+                serviceResponse.Message = $"Returned Child Item CoverageReport Successfully in GenerateCoverageReportForFgChildItByMultipleProjectNumber ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItByMultipleProjectNumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        private async Task<List<CoverageReportChildItemReqQtyDataByProjectNoDto>> GetChildItemRequiredQtyFromBomByMultipleProjectNo(List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
+            var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
+            //var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsForCoverageReport"), openFGCoverageDetailsString);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"],
+                           "GetBomDetailsByProjectNoForCoverageReport"))
+            {
+                Content = openFGCoverageDetailsString
+            };
+            request.Headers.Add("Authorization", token);
+
+            var response = await client.SendAsync(request);
+            var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
+            dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
+
+            List<CoverageReportChildItemReqQtyDataByProjectNoDto> childItemReqQtyDtos = new List<CoverageReportChildItemReqQtyDataByProjectNoDto>();
+
+            foreach (var item in childItemRequiredQtyData.data)
+            {
+                CoverageReportChildItemReqQtyDataByProjectNoDto dto = JsonConvert.DeserializeObject<CoverageReportChildItemReqQtyDataByProjectNoDto>(item.ToString());
+                childItemReqQtyDtos.Add(dto);
+            }
+
+            return childItemReqQtyDtos;
+        }
+    
+        private async Task<List<ChildItemStockWithProjectListWipDto>> GetStockWithWipQtyForChildItemsByMultipleProjectNo(List<string> itemNumberList, List<string> projectNoList)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+            // Serialize the lists into a single JSON object
+            var requestData = new
+            {
+                itemNumberList = itemNumberList,
+                projectNo = projectNoList
+            };
+            var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQtyByMultipleProjectNo"))
+            {
+                Content = content
+            };
+            request.Headers.Add("Authorization", token);
+
+            var responses = await client.SendAsync(request);
+            //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQtyByProjectNo?",
+            //                                                                            "ProjectNo=", projectno), itemNoListString);
+            var itemStockWithWipString = await responses.Content.ReadAsStringAsync();
+            dynamic itemStockWithWipData = JsonConvert.DeserializeObject(itemStockWithWipString);
+            //List<ChildItemStockWithWipDto> itemStockWithWipList = (List<ChildItemStockWithWipDto>)itemStockWithWipData.data;
+
+
+            List<ChildItemStockWithProjectListWipDto> childItemStockWithWipQty = new List<ChildItemStockWithProjectListWipDto>();
+
+            foreach (var item in itemStockWithWipData.data)
+            {
+                ChildItemStockWithProjectListWipDto dto = JsonConvert.DeserializeObject<ChildItemStockWithProjectListWipDto>(item.ToString());
+                childItemStockWithWipQty.Add(dto);
+            }
+
+            return childItemStockWithWipQty;
+        }
+
+        private async Task<List<OpenPoQuantityDto>> GetOpenPoQtyForChildItemsByMultipleProjectNo(List<string> itemNumberList, List<string> projectNoList)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+            var requestData = new 
+            {
+                itemNumberList = itemNumberList,
+                projectNo = projectNoList
+            };
+
+            var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"], $"GetListOfOpenPOQtyByItemNoListByMultipleProjectNo"))
+            {
+                Content = content
+            };
+            request.Headers.Add("Authorization", token);
+
+            var openPoQtyResponse = await client.SendAsync(request);
+            //var openPoQtyResponse = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"],
+            //                                "GetListOfOpenPOQtyByItemNoListByProjectNo?", "ProjectNo=", projectNo), itemNoListString);
+            var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
+            dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
+            //List<OpenPoQuantityDto> openPoQtyList = (List<OpenPoQuantityDto>)openPoQtyData.data;
+            List<OpenPoQuantityDto> openPoQtyList = new List<OpenPoQuantityDto>();
+
+            foreach (var item in openPoQtyData.data)
+            {
+                OpenPoQuantityDto dto = JsonConvert.DeserializeObject<OpenPoQuantityDto>(item.ToString());
+                openPoQtyList.Add(dto);
+            }
+
+            return openPoQtyList;
+        }
+
+        private async Task<List<BinningQuantityDto>> GetBinningQtyForChildItemsByMultipleProjectNo(string itemNumber, List<string> projectNoList)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+            var requestData = new
+            {
+                ItemNumber = itemNumber,
+                projectNo = projectNoList
+            };
+
+            var content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, "application/json");
+
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["BinningAPI"], "GetListOfBinningQtyByItemNoListByMultipleProjectNo"))
+            {
+                Content = content
+            };
+
+            request.Headers.Add("Authorization", token);
+
+            var openPoQtyResponse = await client.SendAsync(request);
+            var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
+            dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
+            List<BinningQuantityDto> openPoQtyList = new List<BinningQuantityDto>();
+
+            foreach (var item in openPoQtyData.data)
+            {
+                BinningQuantityDto dto = JsonConvert.DeserializeObject<BinningQuantityDto>(item.ToString());
+                openPoQtyList.Add(dto);
+            }
+
+            return openPoQtyList;
+        }
+        //GenerateCoverageFGLevelReportByMultipleProjectNumber
+
+
+
+        //GenerateCoverageFGLevelReportByProjectNumberAndItemNo
+        [HttpGet]
+        public async Task<IActionResult> GenerateCoverageFGLevelReportByProjectNumberAndItemNo(string projectNumber, string ItemNumber)
+        {
+
+            ServiceResponse<List<OpenSalesCoverageReportByProjectNumber>> serviceResponse = new ServiceResponse<List<OpenSalesCoverageReportByProjectNumber>>();
+
+            try
+            {
+                List<OpenSalesCoverageReportByProjectNumber> openSalesCoverageReportsByprojectNo = await FGLevelCoverageReportByProjectNumberAndItemNo(projectNumber, ItemNumber);
+
+                serviceResponse.Data = openSalesCoverageReportsByprojectNo;
+                serviceResponse.Message = $"Returned CoverageReportByProjectNumber Successfully ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GenerateCoverageFGLevelReportByProjectNumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         private async Task<List<OpenSalesCoverageReportByProjectNumber>> FGLevelCoverageReportByProjectNumberAndItemNo(string projectNumber, string itemNumber)
         {
             List<OpenSalesCoverageReportByProjectNumber> openSalesCoverageReports = new List<OpenSalesCoverageReportByProjectNumber>();
@@ -786,462 +1857,6 @@ namespace Tips.SalesService.Api.Controllers
             return openSalesCoverageReports;
         }
 
-        private async Task<List<OpenSalesCoverageReport>> FGLevelCoverageReport()
-        {
-            List<OpenSalesCoverageReport> openSalesCoverageReports = new List<OpenSalesCoverageReport>();
-            try
-            {
-                var salesOrders = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGItemDetails();
-
-
-                //List<(string?, decimal?)> itemNumberList = salesOrders.Select(x => (x.FGItemNumber, x.Balance_Qty)).ToList();
-
-                List<string?> itemNumberList = salesOrders.Select(x => x.FGItemNumber).ToList();
-                //change
-                var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
-                var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
-                var client = _clientFactory.CreateClient();
-                var token = HttpContext.Request.Headers["Authorization"].ToString();
-                // var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemMasterPartTypeAndMinByItemNumber"), itemNoListString);
-                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ItemMasterMainAPI"],
-                             "GetItemMasterPartTypeAndMinByItemNumber"))
-                {
-                    Content = itemNoListString
-                };
-                request.Headers.Add("Authorization", token);
-
-                var responses = await client.SendAsync(request);
-                var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
-                dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
-                //List<ItemNoWithPartTypeDto> itemNoWithPartType = (List<ItemNoWithPartTypeDto>)itemNoPartTypeData.data;
-
-                List<ItemNoWithPartTypeAndMinDto> itemNoWithPartTypeAndMin = new List<ItemNoWithPartTypeAndMinDto>();
-
-                //for this loop we need to check
-                foreach (var item in itemNoPartTypeData.data)
-                {
-                    ItemNoWithPartTypeAndMinDto dto = JsonConvert.DeserializeObject<ItemNoWithPartTypeAndMinDto>(item.ToString());
-                    itemNoWithPartTypeAndMin.Add(dto);
-                }
-
-                var salesOrderItemListjson = JsonConvert.SerializeObject(itemNumberList);
-                var salesOrderItemDetailsString = new StringContent(salesOrderItemListjson, Encoding.UTF8, "application/json");
-                var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
-                            "GetConsumptionInventoryByItemNotest1"))
-                {
-                    Content = salesOrderItemDetailsString
-                };
-                request1.Headers.Add("Authorization", token);
-
-                var response = await client.SendAsync(request1);
-                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionInventoryByItemNotest1"), salesOrderItemDetailsString);
-                var inventoryObjectString = await response.Content.ReadAsStringAsync();
-                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                dynamic inventoryObject = inventoryObjectData.data;
-
-                foreach (var salesOrderDetails in salesOrders)
-                {
-                    if (inventoryObject != null && inventoryObject.Count > 0)
-                    {
-                        foreach (var Inventory in inventoryObject)
-                        {
-                            if (salesOrderDetails.FGItemNumber == Inventory["partNumber"]?.ToString())
-                            {
-                                if (Inventory != null)
-                                {
-                                    if (salesOrderDetails.FGItemNumber != null && salesOrderDetails.Balance_Qty != 0)
-                                    {
-                                        var coverageReport = new OpenSalesCoverageReport
-                                        {
-                                            ItemNumber = salesOrderDetails.FGItemNumber,
-                                            TotalRequiredQty = salesOrderDetails.Balance_Qty,
-                                            PartType = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
-                                            MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault(),
-                                            UOM = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.UOM).FirstOrDefault()
-                                        };
-
-                                        decimal balanceQuantity = (decimal)Inventory.balance_Quantity; ; // Convert to decimal
-                                        coverageReport.Stock = balanceQuantity;
-
-
-
-                                        PartType itemPartType = coverageReport.PartType;
-
-
-                                        if (itemPartType == PartType.TG)
-                                        {
-                                            // Calculate OpenPoQty
-                                            //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
-                                            //              "GetOpenPOTGDetailsByItemForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber));
-
-                                            var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
-                                            var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemForCoverage?itemNumber={encodedItemNumber}"));
-                                            request2.Headers.Add("Authorization", token);
-
-                                            var purchaseObjectResult = await client.SendAsync(request2);
-                                            if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
-                                            {
-                                                var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
-                                                dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
-                                                dynamic purchaseObject = purchaseObjectData.data;
-
-                                                if (purchaseObject != null)
-                                                {
-                                                    decimal OpenPoQty = (decimal)purchaseObject.balanceQty;
-                                                    coverageReport.OpenPoQty = OpenPoQty;
-                                                }
-                                                else
-                                                {
-                                                    coverageReport.OpenPoQty = 0;
-                                                }
-                                            }
-                                        }
-                                        //Calculate OpenRetailSOQty
-                                        var fGItemNumber = salesOrderDetails.FGItemNumber;
-
-                                        var salesOrderRetailDetails = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGRetailItemDetails(fGItemNumber);
-                                        if (salesOrderRetailDetails != null)
-                                        {
-                                            coverageReport.OpenRetailSOQty = salesOrderRetailDetails.Balance_Qty;
-                                        }
-                                        else
-                                        {
-                                            coverageReport.OpenRetailSOQty = 0;
-                                        }
-                                        // Calculate OpenSOQty
-                                        coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
-                                        // Calculate BalanceToOrder
-
-                                        var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
-
-                                        coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
-
-
-                                        //var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
-                                        //coverageReport.BalanceToOrder = balanceToOrderQty.HasValue && balanceToOrderQty.Value > 0 ? balanceToOrderQty.Value : 0;
-
-                                        openSalesCoverageReports.Add(coverageReport);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (salesOrderDetails.FGItemNumber != null && salesOrderDetails.Balance_Qty != 0)
-                        {
-                            var coverageReport = new OpenSalesCoverageReport
-                            {
-                                ItemNumber = salesOrderDetails.FGItemNumber,
-                                TotalRequiredQty = salesOrderDetails.Balance_Qty,
-                                PartType = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
-                                MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault(),
-                                UOM = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.UOM).FirstOrDefault()
-                            };
-
-                            decimal balanceQuantity = 0;
-                            coverageReport.Stock = 0;
-
-                            // Calculate OpenSOQty
-                            coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
-
-                            //Calculate OpenRetailSOQty
-                            var fGItemNumber = salesOrderDetails.FGItemNumber;
-
-                            var salesOrderRetailDetails = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGRetailItemDetails(fGItemNumber);
-                            coverageReport.OpenRetailSOQty = salesOrderRetailDetails.Balance_Qty;
-
-                            PartType itemPartType = coverageReport.PartType;
-
-
-                            if (itemPartType == PartType.TG)
-                            {
-                                // Calculate OpenPoQty
-                                //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
-                                //              "GetOpenPOTGDetailsByItemForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber));
-                                var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
-                                var request3 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemForCoverage?itemNumber={encodedItemNumber}"));
-                                request3.Headers.Add("Authorization", token);
-
-                                var purchaseObjectResult = await client.SendAsync(request3);
-                                if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
-                                {
-                                    var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
-                                    dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
-                                    dynamic purchaseObject = purchaseObjectData.data;
-
-                                    if (purchaseObject != null)
-                                    {
-                                        decimal OpenPoQty = (decimal)purchaseObject.balanceQty;
-                                        coverageReport.OpenPoQty = OpenPoQty;
-                                    }
-                                    else
-                                    {
-                                        coverageReport.OpenPoQty = 0;
-                                    }
-                                }
-
-                            }
-
-                            // Calculate BalanceToOrder
-
-                            var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
-
-                            coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
-
-                            openSalesCoverageReports.Add(coverageReport);
-                        }
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-
-            }
-            return openSalesCoverageReports;
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> GenerateCoverageReportForFgChildItByProjectNumber(string projectNumber)
-        {
-            ServiceResponse<List<CoverageReportByProjectNumberDtoForChildItem>> serviceResponse = new ServiceResponse<List<CoverageReportByProjectNumberDtoForChildItem>>();
-
-            try
-            {
-                List<CoverageReportByProjectNumberDtoForChildItem> coverageReportDtoForChildItemList = new List<CoverageReportByProjectNumberDtoForChildItem>();
-                List<OpenSalesCoverageReportByProjectNumber> openSalesCoverageReportsByProjectNo = await FGLevelCoverageReportByProjectNumber(projectNumber);
-
-
-                if (openSalesCoverageReportsByProjectNo != null && openSalesCoverageReportsByProjectNo.Count() != 0)
-                {
-                    List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails = openSalesCoverageReportsByProjectNo
-                        .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
-                    if (openFGCoverageDetails != null && openFGCoverageDetails.Count() != 0)
-                    {
-                        // Child Item Required Qty from BOM
-                        List<CoverageReportChildItemReqQtyDataByProjectNoDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBomByProjectNo(openFGCoverageDetails);
-
-                        if (childItemReqQtyDtos != null && childItemReqQtyDtos.Count() != 0)
-                        {
-                            List<string?> itemNumberList = childItemReqQtyDtos.Select(x => x.ItemNumber).ToList();
-
-
-                            var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
-                            var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
-                            var client = _clientFactory.CreateClient();
-                            var token = HttpContext.Request.Headers["Authorization"].ToString();
-                            // var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"), itemNoListString);
-                            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"))
-                            {
-                                Content = itemNoListString
-                            };
-                            request.Headers.Add("Authorization", token);
-
-                            var responses = await client.SendAsync(request);
-                            var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
-                            dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
-
-                            List<ItemNoWithPartTypeDto> itemNoWithPartType = new List<ItemNoWithPartTypeDto>();
-
-                            //for this loop we need to check
-                            foreach (var item in itemNoPartTypeData.data)
-                            {
-                                ItemNoWithPartTypeDto dto = JsonConvert.DeserializeObject<ItemNoWithPartTypeDto>(item.ToString());
-                                itemNoWithPartType.Add(dto);
-                            }
-
-                            //Open Stock with WIP Quantity
-                            List<ChildItemStockWithWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItemsByProjectNo(itemNoListString, projectNumber);
-
-                            //Open PO Qty for Child Items
-                            List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItemsByProjectNo(itemNoListString, projectNumber);
-
-
-                            foreach (var item in childItemReqQtyDtos)
-                            {
-                                CoverageReportByProjectNumberDtoForChildItem coverageDetailOfChildItem = new CoverageReportByProjectNumberDtoForChildItem
-                                {
-                                    ItemNumber = item.ItemNumber,
-                                    MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
-                                    Version = item.Version,
-                                    Description = item.Description,
-                                    ProjectNumber = projectNumber,
-                                    UOM = item.UOM,
-                                    PartType = item.PartType,
-                                    RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
-                                    Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
-                                    WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
-                                    //OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
-                                };
-
-                                //Binning Qty 
-                                List<BinningQuantityDto> binningQtyList = await GetBinningQtyForChildItemsByProjectNo(item.ItemNumber, projectNumber);
-                                
-                                var OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault();
-                                var binningQty = binningQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.BinningQty).FirstOrDefault();
-
-                                //Open PoQty Calculate
-                                if (binningQtyList != null && binningQtyList.Count() > 0)
-                                {
-                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
-                                }
-                                else
-                                {
-                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
-                                }
-
-                                decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
-                                   + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
-
-                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
-
-                                coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
-                            }
-
-
-                        }
-                    }
-                }
-                serviceResponse.Data = coverageReportDtoForChildItemList;
-                serviceResponse.Message = $"Returned Child Item CoverageReport Successfully in GenerateCoverageReportForFgChildItByProjectNumber ";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-
-                _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItByProjectNumber action: {ex.Message}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> GenerateCoverageReportForFgChildItByMultipleProjectNumber([FromBody] CoverageReportProjectDto coverageReportProjectDto)
-        {
-            ServiceResponse<List<CoverageReportByProjectNumberDtoForChildItem>> serviceResponse = new ServiceResponse<List<CoverageReportByProjectNumberDtoForChildItem>>();
-
-            try
-            {
-                List<CoverageReportByProjectNumberDtoForChildItem> coverageReportDtoForChildItemList = new List<CoverageReportByProjectNumberDtoForChildItem>();
-                List<OpenSalesCoverageReportByProjectNumber> openSalesCoverageReportsByProjectNo = await FGLevelCoverageReportByMultipleProjectNumber(coverageReportProjectDto);
-
-
-                if (openSalesCoverageReportsByProjectNo != null && openSalesCoverageReportsByProjectNo.Count() != 0)
-                {
-                    List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails = openSalesCoverageReportsByProjectNo
-                        .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
-                    if (openFGCoverageDetails != null && openFGCoverageDetails.Count() != 0)
-                    {
-                        // Child Item Required Qty from BOM
-                        List<CoverageReportChildItemReqQtyDataByProjectNoDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBomByProjectNo(openFGCoverageDetails);
-
-                        if (childItemReqQtyDtos != null && childItemReqQtyDtos.Count() != 0)
-                        {
-                            List<string?> itemNumberList = childItemReqQtyDtos.Select(x => x.ItemNumber).ToList();
-
-
-                            var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
-                            var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
-                            var client = _clientFactory.CreateClient();
-                            var token = HttpContext.Request.Headers["Authorization"].ToString();
-                            // var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"), itemNoListString);
-                            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"))
-                            {
-                                Content = itemNoListString
-                            };
-                            request.Headers.Add("Authorization", token);
-
-                            var responses = await client.SendAsync(request);
-                            var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
-                            dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
-
-                            List<ItemNoWithPartTypeDto> itemNoWithPartType = new List<ItemNoWithPartTypeDto>();
-
-                            //for this loop we need to check
-                            foreach (var item in itemNoPartTypeData.data)
-                            {
-                                ItemNoWithPartTypeDto dto = JsonConvert.DeserializeObject<ItemNoWithPartTypeDto>(item.ToString());
-                                itemNoWithPartType.Add(dto);
-                            }
-                            var projNoListJson = JsonConvert.SerializeObject(coverageReportProjectDto.ProjectNumber);
-                            var projNoListString = new StringContent(projNoListJson, Encoding.UTF8, "application/json");
-
-                            //Open Stock with WIP Quantity
-                            List<ChildItemStockWithProjectListWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItemsByMultipleProjectNo(itemNoListString, projNoListString);
-
-                            //Open PO Qty for Child Items
-                            List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItemsByMultipleProjectNo(itemNoListString, projNoListString);
-
-
-                            foreach (var item in childItemReqQtyDtos)
-                            {
-                                CoverageReportByProjectNumberDtoForChildItem coverageDetailOfChildItem = new CoverageReportByProjectNumberDtoForChildItem
-                                {
-                                    ItemNumber = item.ItemNumber,
-                                    MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
-                                    Version = item.Version,
-                                    Description = item.Description,
-                                    ProjectNumber = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.ProjectNumber).FirstOrDefault(),
-                                    UOM = item.UOM,
-                                    PartType = item.PartType,
-                                    RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
-                                    Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
-                                    WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
-                                    //OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
-                                };
-
-                                //Binning Qty 
-                                List<BinningQuantityDto> binningQtyList = await GetBinningQtyForChildItemsByMultipleProjectNo(item.ItemNumber, projNoListString);
-
-                                var OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault();
-                                var binningQty = binningQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.BinningQty).FirstOrDefault();
-
-                                //Open PoQty Calculate
-                                if (binningQtyList != null && binningQtyList.Count() > 0)
-                                {
-                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
-                                }
-                                else
-                                {
-                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
-                                }
-
-                                decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
-                                   + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
-
-                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
-
-                                coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
-                            }
-
-
-                        }
-                    }
-                }
-                serviceResponse.Data = coverageReportDtoForChildItemList;
-                serviceResponse.Message = $"Returned Child Item CoverageReport Successfully in GenerateCoverageReportForFgChildItByProjectNumber ";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-
-                _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItByProjectNumber action: {ex.Message}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
-
         [HttpGet]
         public async Task<IActionResult> GenerateCoverageReportForFgChildItByProjectNumberAndItemNo(string projectNumber, string itemNumber)
         {
@@ -1347,405 +1962,9 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //GenerateCoverageFGLevelReportByProjectNumberAndItemNo
 
-        [HttpGet]
-        public async Task<IActionResult> GenerateCoverageReportForFgChildIt()
-        {
-            ServiceResponse<List<CoverageReportDtoForChildItem>> serviceResponse = new ServiceResponse<List<CoverageReportDtoForChildItem>>();
 
-            try
-            {
-                List<CoverageReportDtoForChildItem> coverageReportDtoForChildItemList = new List<CoverageReportDtoForChildItem>();
-                List<OpenSalesCoverageReport> openSalesCoverageReports = await FGLevelCoverageReport();
-                //List<OpenSalesCoverageReport> openSalesCoverageReports = new List<OpenSalesCoverageReport>();
-                //OpenSalesCoverageReport openSalesCoverageReport = new OpenSalesCoverageReport
-                //{
-                //    ItemNumber = "1002370",
-                //    PartType = PartType.FG,
-                //    OpenSOQty = 100,
-                //    TotalRequiredQty = 80,
-                //    Stock = 40,
-                //    OpenPoQty = 20,
-                //    BalanceToOrder = 20,
-
-                //};
-                //OpenSalesCoverageReport openSalesCoverageReport1 = new OpenSalesCoverageReport
-                //{
-                //    ItemNumber = "102010038069",
-                //    PartType = PartType.FG,
-                //    OpenSOQty = 100,
-                //    TotalRequiredQty = 80,
-                //    Stock = 40,
-                //    OpenPoQty = 20,
-                //    BalanceToOrder = 20,
-                //};
-                //openSalesCoverageReports.Add(openSalesCoverageReport1);
-                //openSalesCoverageReports.Add(openSalesCoverageReport);
-
-                if (openSalesCoverageReports != null && openSalesCoverageReports.Count() != 0)
-                {
-                    List<OpenSalesCoverageReport> openFGCoverageDetails = openSalesCoverageReports
-                        .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
-                    if (openFGCoverageDetails != null && openFGCoverageDetails.Count() != 0)
-                    {
-                        // Child Item Required Qty from BOM
-                        List<CoverageReportChildItemReqQtyDataDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBom(openFGCoverageDetails);
-
-                        if (childItemReqQtyDtos != null && childItemReqQtyDtos.Count() != 0)
-                        {
-                            List<string?> itemNumberList = childItemReqQtyDtos.Select(x => x.ItemNumber).ToList();
-
-
-                            var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
-                            var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
-
-                            //Open Stock with WIP Quantity
-                            List<ChildItemStockWithWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItems(itemNoListString);
-
-                            //Open PO Qty for Child Items
-                            List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItems(itemNoListString);
-
-
-                            foreach (var item in childItemReqQtyDtos)
-                            {
-                                CoverageReportDtoForChildItem coverageDetailOfChildItem = new CoverageReportDtoForChildItem
-                                {
-                                    ItemNumber = item.ItemNumber,
-                                    PartType = item.PartType,
-                                    RequiredQty = item.RequiredQty,
-                                    UOM = item.UOM,
-                                    Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
-                                    WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
-                                    OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
-                                };
-
-                                //test
-
-
-
-                                decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
-                                   + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
-
-                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : balanceRequiredQty;
-
-                                coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
-                            }
-
-
-                        }
-                    }
-                }
-                serviceResponse.Data = coverageReportDtoForChildItemList;
-                serviceResponse.Message = $"Returned Child Item CoverageReport Successfully in GenerateCoverageReportForFgChildItems ";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-
-                _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItems action: {ex.Message}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
-
-        private async Task<List<ChildItemStockWithWipDto>> GetStockWithWipQtyForChildItems(StringContent itemNoListString)
-        {
-            var client = _clientFactory.CreateClient();
-            var token = HttpContext.Request.Headers["Authorization"].ToString();
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
-                           "GetConsumptionChildItemStockWithWipQty"))
-            {
-                Content = itemNoListString
-            };
-            request.Headers.Add("Authorization", token);
-
-            var responses = await client.SendAsync(request);
-            //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQty"), itemNoListString);
-            var itemStockWithWipString = await responses.Content.ReadAsStringAsync();
-            dynamic itemStockWithWipData = JsonConvert.DeserializeObject(itemStockWithWipString);
-            //List<ChildItemStockWithWipDto> itemStockWithWipList = (List<ChildItemStockWithWipDto>)itemStockWithWipData.data;
-
-
-            List<ChildItemStockWithWipDto> childItemStockWithWipQty = new List<ChildItemStockWithWipDto>();
-
-            foreach (var item in itemStockWithWipData.data)
-            {
-                ChildItemStockWithWipDto dto = JsonConvert.DeserializeObject<ChildItemStockWithWipDto>(item.ToString());
-                childItemStockWithWipQty.Add(dto);
-            }
-
-            return childItemStockWithWipQty;
-        }
-
-        private async Task<List<ChildItemStockWithWipDto>> GetStockWithWipQtyForChildItemsByProjectNo(StringContent itemNoListString, string projectno)
-        {
-            var client = _clientFactory.CreateClient();
-            var token = HttpContext.Request.Headers["Authorization"].ToString();
-            var encodedProjectNo = Uri.EscapeDataString(projectno);
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"], $"GetConsumptionChildItemStockWithWipQtyByProjectNo?ProjectNo={encodedProjectNo}"))
-            {
-                Content = itemNoListString
-            };
-            request.Headers.Add("Authorization", token);
-
-            var responses = await client.SendAsync(request);
-            //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQtyByProjectNo?",
-            //                                                                            "ProjectNo=", projectno), itemNoListString);
-            var itemStockWithWipString = await responses.Content.ReadAsStringAsync();
-            dynamic itemStockWithWipData = JsonConvert.DeserializeObject(itemStockWithWipString);
-            //List<ChildItemStockWithWipDto> itemStockWithWipList = (List<ChildItemStockWithWipDto>)itemStockWithWipData.data;
-
-
-            List<ChildItemStockWithWipDto> childItemStockWithWipQty = new List<ChildItemStockWithWipDto>();
-
-            foreach (var item in itemStockWithWipData.data)
-            {
-                ChildItemStockWithWipDto dto = JsonConvert.DeserializeObject<ChildItemStockWithWipDto>(item.ToString());
-                childItemStockWithWipQty.Add(dto);
-            }
-
-            return childItemStockWithWipQty;
-        }
-
-        private async Task<List<ChildItemStockWithProjectListWipDto>> GetStockWithWipQtyForChildItemsByMultipleProjectNo(StringContent itemNoListString, StringContent projectnoListString)
-        {
-            var client = _clientFactory.CreateClient();
-            var token = HttpContext.Request.Headers["Authorization"].ToString();
-            //var encodedProjectNo = Uri.EscapeDataString(projectno);
-            var content = new MultipartFormDataContent();
-
-            content.Add(itemNoListString, "itemNoList");
-
-            content.Add(projectnoListString, "projectnoList");
-
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"], $"GetConsumptionChildItemStockWithWipQtyByMultipleProjectNo?"))
-            {
-                Content = content
-            };
-            request.Headers.Add("Authorization", token);
-
-            var responses = await client.SendAsync(request);
-            //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionChildItemStockWithWipQtyByProjectNo?",
-            //                                                                            "ProjectNo=", projectno), itemNoListString);
-            var itemStockWithWipString = await responses.Content.ReadAsStringAsync();
-            dynamic itemStockWithWipData = JsonConvert.DeserializeObject(itemStockWithWipString);
-            //List<ChildItemStockWithWipDto> itemStockWithWipList = (List<ChildItemStockWithWipDto>)itemStockWithWipData.data;
-
-
-            List<ChildItemStockWithProjectListWipDto> childItemStockWithWipQty = new List<ChildItemStockWithProjectListWipDto>();
-
-            foreach (var item in itemStockWithWipData.data)
-            {
-                ChildItemStockWithProjectListWipDto dto = JsonConvert.DeserializeObject<ChildItemStockWithProjectListWipDto>(item.ToString());
-                childItemStockWithWipQty.Add(dto);
-            }
-
-            return childItemStockWithWipQty;
-        }
-
-        private async Task<List<OpenPoQuantityDto>> GetOpenPoQtyForChildItems(StringContent itemNoListString)
-        {
-            var client = _clientFactory.CreateClient();
-            var token = HttpContext.Request.Headers["Authorization"].ToString();
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
-                           "GetListOfOpenPOQtyByItemNoList"))
-            {
-                Content = itemNoListString
-            };
-            request.Headers.Add("Authorization", token);
-
-            var openPoQtyResponse = await client.SendAsync(request);
-            //var openPoQtyResponse = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"],
-            //                                "GetListOfOpenPOQtyByItemNoList"), itemNoListString);
-            var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
-            dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
-            //List<OpenPoQuantityDto> openPoQtyList = (List<OpenPoQuantityDto>)openPoQtyData.data;
-            List<OpenPoQuantityDto> openPoQtyList = new List<OpenPoQuantityDto>();
-
-            foreach (var item in openPoQtyData.data)
-            {
-                OpenPoQuantityDto dto = JsonConvert.DeserializeObject<OpenPoQuantityDto>(item.ToString());
-                openPoQtyList.Add(dto);
-            }
-
-            return openPoQtyList;
-        }
-        private async Task<List<OpenPoQuantityDto>> GetOpenPoQtyForChildItemsByProjectNo(StringContent itemNoListString, string projectNo)
-        {
-            var client = _clientFactory.CreateClient();
-            var token = HttpContext.Request.Headers["Authorization"].ToString();
-            var encodedProjectNo = Uri.EscapeDataString(projectNo);
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"], $"GetListOfOpenPOQtyByItemNoListByProjectNo?ProjectNo={encodedProjectNo}"))
-            {
-                Content = itemNoListString
-            };
-            request.Headers.Add("Authorization", token);
-
-            var openPoQtyResponse = await client.SendAsync(request);
-            //var openPoQtyResponse = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"],
-            //                                "GetListOfOpenPOQtyByItemNoListByProjectNo?", "ProjectNo=", projectNo), itemNoListString);
-            var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
-            dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
-            //List<OpenPoQuantityDto> openPoQtyList = (List<OpenPoQuantityDto>)openPoQtyData.data;
-            List<OpenPoQuantityDto> openPoQtyList = new List<OpenPoQuantityDto>();
-
-            foreach (var item in openPoQtyData.data)
-            {
-                OpenPoQuantityDto dto = JsonConvert.DeserializeObject<OpenPoQuantityDto>(item.ToString());
-                openPoQtyList.Add(dto);
-            }
-
-            return openPoQtyList;
-        }
-
-        private async Task<List<OpenPoQuantityDto>> GetOpenPoQtyForChildItemsByMultipleProjectNo(StringContent itemNoListString, StringContent projectnoListString)
-        {
-            var client = _clientFactory.CreateClient();
-            var token = HttpContext.Request.Headers["Authorization"].ToString();
-            //var encodedProjectNo = Uri.EscapeDataString(projectNo);
-            var content = new MultipartFormDataContent();
-
-            content.Add(itemNoListString, "itemNoList");
-
-            content.Add(projectnoListString, "projectnoList");
-
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"], $"GetListOfOpenPOQtyByItemNoListByMultipleProjectNo?"))
-            {
-                Content = content
-            };
-            request.Headers.Add("Authorization", token);
-
-            var openPoQtyResponse = await client.SendAsync(request);
-            //var openPoQtyResponse = await _httpClient.PostAsync(string.Concat(_config["PurchaseAPI"],
-            //                                "GetListOfOpenPOQtyByItemNoListByProjectNo?", "ProjectNo=", projectNo), itemNoListString);
-            var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
-            dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
-            //List<OpenPoQuantityDto> openPoQtyList = (List<OpenPoQuantityDto>)openPoQtyData.data;
-            List<OpenPoQuantityDto> openPoQtyList = new List<OpenPoQuantityDto>();
-
-            foreach (var item in openPoQtyData.data)
-            {
-                OpenPoQuantityDto dto = JsonConvert.DeserializeObject<OpenPoQuantityDto>(item.ToString());
-                openPoQtyList.Add(dto);
-            }
-
-            return openPoQtyList;
-        }
-
-        private async Task<List<BinningQuantityDto>> GetBinningQtyForChildItemsByProjectNo(string itemNumber, string projectNo)
-        {
-            var client = _clientFactory.CreateClient();
-            var token = HttpContext.Request.Headers["Authorization"].ToString();
-            var encodedProjectNo = Uri.EscapeDataString(projectNo);
-            var encodedItemNo = Uri.EscapeDataString(itemNumber);
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["BinningAPI"], $"GetListOfBinningQtyByItemNoListByProjectNo?ProjectNo={encodedProjectNo}&ItemNumber={encodedItemNo}"));
-
-            request.Headers.Add("Authorization", token);
-
-            var openPoQtyResponse = await client.SendAsync(request);
-            var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
-            dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
-            List<BinningQuantityDto> openPoQtyList = new List<BinningQuantityDto>();
-
-            foreach (var item in openPoQtyData.data)
-            {
-                BinningQuantityDto dto = JsonConvert.DeserializeObject<BinningQuantityDto>(item.ToString());
-                openPoQtyList.Add(dto);
-            }
-
-            return openPoQtyList;
-        }
-        private async Task<List<BinningQuantityDto>> GetBinningQtyForChildItemsByMultipleProjectNo(string itemNumber, StringContent projectnoListString)
-        {
-            var client = _clientFactory.CreateClient();
-            var token = HttpContext.Request.Headers["Authorization"].ToString();
-            //var encodedProjectNo = Uri.EscapeDataString(projectNo);
-            var encodedItemNo = Uri.EscapeDataString(itemNumber);
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["BinningAPI"], $"GetListOfBinningQtyByItemNoListByMultipleProjectNo?ItemNumber={encodedItemNo}"))
-            {
-                Content = projectnoListString
-            }; 
-
-            request.Headers.Add("Authorization", token);
-
-            var openPoQtyResponse = await client.SendAsync(request);
-            var openPoQtyString = await openPoQtyResponse.Content.ReadAsStringAsync();
-            dynamic openPoQtyData = JsonConvert.DeserializeObject(openPoQtyString);
-            List<BinningQuantityDto> openPoQtyList = new List<BinningQuantityDto>();
-
-            foreach (var item in openPoQtyData.data)
-            {
-                BinningQuantityDto dto = JsonConvert.DeserializeObject<BinningQuantityDto>(item.ToString());
-                openPoQtyList.Add(dto);
-            }
-
-            return openPoQtyList;
-        }
-        private async Task<List<CoverageReportChildItemReqQtyDataDto>> GetChildItemRequiredQtyFromBom(List<OpenSalesCoverageReport> openFGCoverageDetails)
-        {
-            var client = _clientFactory.CreateClient();
-            var token = HttpContext.Request.Headers["Authorization"].ToString();
-            var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
-            var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
-            //var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsForCoverageReport"), openFGCoverageDetailsString);
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"],
-                           "GetBomDetailsForCoverageReport"))
-            {
-                Content = openFGCoverageDetailsString
-            };
-            request.Headers.Add("Authorization", token);
-
-            var response = await client.SendAsync(request);
-            var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
-            dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
-
-            List<CoverageReportChildItemReqQtyDataDto> childItemReqQtyDtos = new List<CoverageReportChildItemReqQtyDataDto>();
-
-            foreach (var item in childItemRequiredQtyData.data)
-            {
-                CoverageReportChildItemReqQtyDataDto dto = JsonConvert.DeserializeObject<CoverageReportChildItemReqQtyDataDto>(item.ToString());
-                childItemReqQtyDtos.Add(dto);
-            }
-
-            return childItemReqQtyDtos;
-
-
-        }
-        private async Task<List<CoverageReportChildItemReqQtyDataByProjectNoDto>> GetChildItemRequiredQtyFromBomByProjectNo(List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails)
-        {
-            var client = _clientFactory.CreateClient();
-            var token = HttpContext.Request.Headers["Authorization"].ToString();
-            var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
-            var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
-            //var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsByProjectNoForCoverageReport"),
-            //                                                                                                                openFGCoverageDetailsString);
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsByProjectNoForCoverageReport"))
-            {
-                Content = openFGCoverageDetailsString
-            };
-            request.Headers.Add("Authorization", token);
-
-            var response = await client.SendAsync(request);
-            var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
-            dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
-
-            List<CoverageReportChildItemReqQtyDataByProjectNoDto> childItemReqQtyDtos = new List<CoverageReportChildItemReqQtyDataByProjectNoDto>();
-
-            foreach (var item in childItemRequiredQtyData.data)
-            {
-                CoverageReportChildItemReqQtyDataByProjectNoDto dto = JsonConvert.DeserializeObject<CoverageReportChildItemReqQtyDataByProjectNoDto>(item.ToString());
-                childItemReqQtyDtos.Add(dto);
-            }
-
-            return childItemReqQtyDtos;
-
-
-        }
         //test consumption report
         [HttpGet]
         public async Task<List<CoverageReport>> GenerateCoverageReportAsync()

@@ -19,6 +19,8 @@ namespace Tips.Grin.Api.Entities
         public string? Remarks { get; set; }
         public bool IsIqcCompleted { get; set; }
         public bool IsBinningCompleted { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
         public int IQCConfirmationId { get; set; }
         public IQCConfirmation? IQCConfirmation { get; set; }
 

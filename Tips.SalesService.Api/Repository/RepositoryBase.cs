@@ -47,7 +47,7 @@ namespace Tips.SalesService.Api.Repository
         }
         public void SaveAsync()
         {
-            _tipsSalesServiceDbContext.SaveChangesAsync();
+            _tipsSalesServiceDbContext.SaveChanges();
         }
     }
 }

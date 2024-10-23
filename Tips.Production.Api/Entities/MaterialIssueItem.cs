@@ -26,6 +26,7 @@ namespace Tips.Production.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public IssuedStatus MaterialIssuedStatus { get; set; } = IssuedStatus.Open;
+        public decimal? MRNQty { get; set; }
         public int MaterialIssueId { get; set; }
         public MaterialIssue MaterialIssue { get; set; }
         public List<MaterialIssueLocation>? MaterialIssueLocations { get; set; }

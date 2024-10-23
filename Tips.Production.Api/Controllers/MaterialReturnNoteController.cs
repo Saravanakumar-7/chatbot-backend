@@ -10,6 +10,7 @@ using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
+using Tips.Production.Api.Repository;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,15 +24,19 @@ namespace Tips.Production.Api.Controllers
     public class MaterialReturnNoteController : ControllerBase
     {
         private IMaterialReturnNoteRepository _materialReturnNoteRepository;
+        private IMaterialIssueRepository _materialIssueRepository;
+        private IMaterialRequestsRepository _materialRequestRepository;
         private IMapper _mapper;
         private ILoggerManager _logger;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
 
-        public MaterialReturnNoteController(IHttpClientFactory clientFactory,IConfiguration config, HttpClient httpClient, IMaterialReturnNoteRepository materialReturnNoteRepository, IMapper mapper, ILoggerManager logger)
+        public MaterialReturnNoteController(IHttpClientFactory clientFactory, IConfiguration config, HttpClient httpClient, IMaterialRequestsRepository materialRequestRepository, IMaterialIssueRepository materialIssueRepository, IMaterialReturnNoteRepository materialReturnNoteRepository, IMapper mapper, ILoggerManager logger)
         {
             _materialReturnNoteRepository = materialReturnNoteRepository;
+            _materialIssueRepository = materialIssueRepository;
+            _materialRequestRepository = materialRequestRepository;
             _mapper = mapper;
             _logger = logger;
             _httpClient = httpClient;
@@ -484,7 +489,7 @@ namespace Tips.Production.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                 
+
                 var materialReturnNotesItemDto = materialReturnNoteUpdateDto.MaterialReturnNoteItems;
                 var materialReturnNoteItemList = new List<MaterialReturnNoteItem>();
                 HttpStatusCode updateMaterialReturnNoteResp = HttpStatusCode.OK;
@@ -516,15 +521,16 @@ namespace Tips.Production.Api.Controllers
                             LocationStock = detail.LocationStock,
                             IsMRNIssueDone = detail.IsMRNIssueDone,
                         }).ToList()));
-                });  
+                });
 
                 var mapper = mapperConfiguration.CreateMapper();
                 var materialReturnNoteDetails = materialReturnNoteItemList.Select(item => mapper.Map<MRNUpdateInventoryBalanceQty>(item)).ToList();
-                 var json = JsonConvert.SerializeObject(materialReturnNoteDetails);
+                var json = JsonConvert.SerializeObject(materialReturnNoteDetails);
                 var data = new StringContent(json, Encoding.UTF8, "application/json");
                 //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "MaterialReturnNoteInventoryBalanceQty"), data);
 
                 var client1 = _clientFactory.CreateClient();
+                client1.Timeout = TimeSpan.FromMinutes(5);
                 var token1 = HttpContext.Request.Headers["Authorization"].ToString();
 
                 var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
@@ -535,7 +541,8 @@ namespace Tips.Production.Api.Controllers
                 request1.Headers.Add("Authorization", token1);
 
                 var response = await client1.SendAsync(request1);
-
+                var inventoryObjectString = await response.Content.ReadAsStringAsync();
+                var changeddata = JsonConvert.DeserializeObject<MRNInventoryChanges>(inventoryObjectString);
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     updateMaterialReturnNoteResp = response.StatusCode;
@@ -566,10 +573,38 @@ namespace Tips.Production.Api.Controllers
 
                 }
                 string result = await _materialReturnNoteRepository.UpdateMaterialReturnNote(updateMaterialReturnNoteItem);
+                if (changeddata.Data.mIDetailsfromMRN != null)
+                {
+                    var MIdetails = await _materialIssueRepository.GetMaterialIssueByShopOrderNo(changeddata.Data.ShopOrderNumber);
+                    foreach (var newMi in changeddata.Data.mIDetailsfromMRN)
+                    {
+                        var item = MIdetails.materialIssueItems.Where(x => x.PartNumber == newMi.PartNumber).FirstOrDefault();
+                        if (item.MRNQty != null) item.MRNQty += newMi.QtyUsed;
+                        else item.MRNQty = newMi.QtyUsed;
+                    }
+                    await _materialIssueRepository.UpdateMaterialIssue(MIdetails);
+                }
+
+                if (changeddata.Data.mRDetailsfromMRN != null)
+                {
+                    foreach (var mrs in changeddata.Data.mRDetailsfromMRN)
+                    {
+                        var MRdetails = await _materialRequestRepository.GetMaterialReqByMRNumber(mrs.MRNumber);
+                        foreach (var mritem in mrs.items)
+                        {
+                            var item = MRdetails.MaterialRequestItems.Where(x => x.PartNumber == mritem.PartNumber).FirstOrDefault();
+                            if (item.MRNQty != null) item.MRNQty += mritem.QtyUsed;
+                            else item.MRNQty = mritem.QtyUsed;
+                        }
+                        await _materialRequestRepository.UpdateMaterialRequest(MRdetails);
+                    }
+                }
 
                 if (updateMaterialReturnNoteResp == HttpStatusCode.OK)
                 {
                     _materialReturnNoteRepository.SaveAsync();
+                    if (changeddata.Data.mIDetailsfromMRN != null) _materialIssueRepository.SaveAsync();
+                    if (changeddata.Data.mRDetailsfromMRN != null) _materialRequestRepository.SaveAsync();                    
                 }
                 else
                 {

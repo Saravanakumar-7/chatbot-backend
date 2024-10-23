@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Tips.Warehouse.Api.Entities.DTOs;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
+using MathNet.Numerics;
 
 namespace Tips.Warehouse.Api.Repository
 {
@@ -257,7 +258,22 @@ namespace Tips.Warehouse.Api.Repository
 
             return getOpenDeliveryOrderDetailsById;
         }
+        public async Task<List<ODOQuantityDto>> GetListOfODOQtyByItemNo( string itemNumber)
+        {
+            var openDeliveryOrderId = await _tipsWarehouseDbContext.OpenDeliveryOrders.Where (x=>x.DOType == "returnable").Select(o=>o.Id).ToListAsync();
 
+            List<ODOQuantityDto> binningQuantityList = await _tipsWarehouseDbContext.OpenDeliveryOrderParts
+                .Where(x =>  x.ItemNumber == itemNumber && openDeliveryOrderId.Contains(x.OpenDeliveryOrderId) && x.DispatchQty > 0)
+                .GroupBy(x => new { x.ItemNumber})
+                .Select(gr => new ODOQuantityDto
+                {
+                    ItemNumber = gr.Key.ItemNumber,
+                    ODOQty = gr.Sum(x => x.DispatchQty)
+                })
+                .ToListAsync();
+
+            return binningQuantityList;
+        }
 
         public async Task<ODODetailsDto> GetODODetailsByItemNo(string itemNumber)
         {

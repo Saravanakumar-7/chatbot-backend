@@ -1267,6 +1267,32 @@ namespace Tips.Warehouse.Api.Controllers
             }
 
         }
+        [HttpPost]
+        public async Task<IActionResult> GetListOfODOQtyByItemNo(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<ODOQuantityDto>> serviceResponse = new ServiceResponse<IEnumerable<ODOQuantityDto>>();
+            try
+            {
+                var revNumberDetailsbyPONumber = await _repository.GetListOfODOQtyByItemNo(itemNumber);
+
+
+                var result = _mapper.Map<IEnumerable<ODOQuantityDto>>(revNumberDetailsbyPONumber);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned  ODOQty  By ItemNo List";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetListOfODOQtyByItemNo action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
     }
 }

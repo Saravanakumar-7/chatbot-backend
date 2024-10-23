@@ -65,11 +65,11 @@ namespace Tips.Production.Api.Repository
             return result;
         }
         public async Task<IEnumerable<MaterialRequestSpReportForTrans>> GetMaterialRequestSPReportWithParamForTrans(string? mRNumber, string? projectNo, string? Itemnumber,
-                                                                                                  string? shoporderNo)
+                                                                                                  string? shoporderNo, string? IssuedStatus)
         {
             var result = _tipsProductionDbContext
             .Set<MaterialRequestSpReportForTrans>()
-            .FromSqlInterpolated($"Material_Request_ReportWithParameter_tras({mRNumber},{projectNo},{Itemnumber},{shoporderNo})")
+            .FromSqlInterpolated($"Material_Request_ReportWithParameter_tras({mRNumber},{projectNo},{Itemnumber},{shoporderNo},{IssuedStatus})")
             .ToList();
 
             return result;
@@ -92,10 +92,10 @@ namespace Tips.Production.Api.Repository
 
             return results;
         }
-        public async Task<IEnumerable<MaterialRequestSpReportForTrans>> GetMaterialRequestSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        public async Task<IEnumerable<MaterialRequestSpReportForTrans>> GetMaterialRequestSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate, string? IssuedStatus)
         {
             var results = _tipsProductionDbContext.Set<MaterialRequestSpReportForTrans>()
-                      .FromSqlInterpolated($"Material_Request_ReportWithParameter_withdate_tras({FromDate},{ToDate})")
+                      .FromSqlInterpolated($"Material_Request_ReportWithParameter_withdate_tras({FromDate},{ToDate},{IssuedStatus})")
                       .ToList();
 
             return results;
@@ -177,10 +177,10 @@ namespace Tips.Production.Api.Repository
         public async Task<MaterialRequests> GetMaterialReqByMRNumber(string MRnumber)
         {
             var getMaterialReqbyMRNo = await _tipsProductionDbContext.MaterialRequests
-
-            .Include(t => t.MaterialRequestItems)
-            .ThenInclude(v => v.MRStockDetails).Where(x => x.MRNumber == MRnumber)
+                .Where(x => x.MRNumber == MRnumber).Include(t => t.MaterialRequestItems)
+            .ThenInclude(v => v.MRStockDetails)
                     .FirstOrDefaultAsync();
+            
             return getMaterialReqbyMRNo;
         }
         public async Task<MaterialRequests> GetMaterialReqByShopOrderNumber(string ShopOrderNo)

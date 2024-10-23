@@ -1427,42 +1427,66 @@ namespace Tips.Warehouse.Api.Repository
             return itemStock;
         }
 
+        ////public async Task<List<ConsumptionChildItemForProjectListInventoryDto>> GetConsumptionChildItemStockWithWipQtyByMultipleProjectNo(List<string> itemNumberList, List<string> projectNo)
+
+        //{
+        //    var partTypes = new PartType[] { PartType.PurchasePart };
+        //    string[] skipWareHouse = { "Reject", "Scrap", "Rework", "FG", "IQC", "GRIN", "OPGIQC", "OPGGRIN" };
+
+        //    string wipWarehouse = "WIP";
+
+        //    var itemStock = new List<ConsumptionChildItemForProjectListInventoryDto>();
+
+        //    foreach (var itemNo in  itemNumberList)
+        //    {
+        //        var consumptionChildItemForProjectListInventoryDto = await _tipsWarehouseDbContext.Inventories
+        //        .Where(x => x.PartNumber == itemNo && x.IsStockAvailable == true && x.Balance_Quantity > 0 &&
+        //                    partTypes.Contains(x.PartType) && !skipWareHouse.Contains(x.Warehouse) && projectNo.Contains(x.ProjectNumber))
+        //        .GroupBy(x => x.PartNumber)
+        //        .Select(group => new ConsumptionChildItemForProjectListInventoryDto
+        //        {
+        //            PartNumber = group.Key,
+        //            BalanceQuantity = group.Any(x => x.Warehouse != wipWarehouse)
+        //                ? group.Where(x => x.Warehouse != wipWarehouse).Sum(x => x.Balance_Quantity)
+        //                : 0, // Sum Balance_Quantity only when Warehouse is not "WIP"
+        //            WipQuantity = group.Any(x => x.Warehouse == wipWarehouse)
+        //                ? group.Where(x => x.Warehouse == wipWarehouse).Sum(x => x.Balance_Quantity)
+        //                : 0 // Set WIPQty based on presence of WIP warehouse
+        //        })
+        //        .ToListAsync();
+
+        //        itemStock.Add(consumptionChildItemForProjectListInventoryDto);
+        //    }
+
+        //    return itemStock;
+
+        //}
         public async Task<List<ConsumptionChildItemForProjectListInventoryDto>> GetConsumptionChildItemStockWithWipQtyByMultipleProjectNo(List<string> itemNumberList, List<string> projectNo)
         {
             var partTypes = new PartType[] { PartType.PurchasePart };
             string[] skipWareHouse = { "Reject", "Scrap", "Rework", "FG", "IQC", "GRIN", "OPGIQC", "OPGGRIN" };
-
             string wipWarehouse = "WIP";
 
-            //return itemStock;
-            var itemStock = new List<ConsumptionChildItemForProjectListInventoryDto>();
-            int batchSize = 100; // Adjust batch size as per your needs
-            int totalCount = itemNumberList.Count;
-            for (int i = 0; i < totalCount; i += batchSize)
-            {
-                var batchItemNumbers = itemNumberList.Skip(i).Take(batchSize).ToList();
-                var batchQuery = await _tipsWarehouseDbContext.Inventories
-                    .Where(x => batchItemNumbers.Contains(x.PartNumber) && projectNo.Contains( x.ProjectNumber) && x.IsStockAvailable == true && x.Balance_Quantity > 0 &&
-                                partTypes.Contains(x.PartType) && !skipWareHouse.Contains(x.Warehouse))
-                    .GroupBy(x => new {x.PartNumber,x.ProjectNumber})
-                    .Select(group => new ConsumptionChildItemForProjectListInventoryDto
-                    {
-                        PartNumber = group.Key.PartNumber,
-                        ProjectNumber = group.Key.ProjectNumber,
-                        BalanceQuantity = group.Any(x => x.Warehouse != wipWarehouse)
-                            ? group.Where(x => x.Warehouse != wipWarehouse).Sum(x => x.Balance_Quantity)
-                            : 0,
-                        WipQuantity = group.Any(x => x.Warehouse == wipWarehouse)
-                            ? group.Where(x => x.Warehouse == wipWarehouse).Sum(x => x.Balance_Quantity)
-                            : 0
-                    })
-                    .ToListAsync();
+            // Fetch all relevant inventories in a single query
+            var inventories = await _tipsWarehouseDbContext.Inventories
+                .Where(x => itemNumberList.Contains(x.PartNumber) && x.IsStockAvailable && x.Balance_Quantity > 0 &&
+                            partTypes.Contains(x.PartType) && !skipWareHouse.Contains(x.Warehouse) && projectNo.Contains(x.ProjectNumber))
+                .ToListAsync();
 
-                itemStock.AddRange(batchQuery);
+            // Group by PartNumber and calculate quantities
+            var itemStock = inventories
+                .GroupBy(x => x.PartNumber)
+                .Select(group => new ConsumptionChildItemForProjectListInventoryDto
+                {
+                    PartNumber = group.Key,
+                    BalanceQuantity = group.Where(x => x.Warehouse != wipWarehouse).Sum(x => x.Balance_Quantity),
+                    WipQuantity = group.Where(x => x.Warehouse == wipWarehouse).Sum(x => x.Balance_Quantity)
+                })
+                .ToList();
 
-            }
             return itemStock;
         }
+
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandPartTypes(string ItemNumber)
         {
             var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true)
@@ -1580,8 +1604,10 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<List<Inventory>> GetInventoryStockByItemAndShopOrderNo(string itemNumber, string shopordernumber)
         {
+            string[] WareLoc = { "FG", "SA" };
+
             var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.shopOrderNo == shopordernumber
-                                            && x.IsStockAvailable == true && x.Warehouse == "FG" && x.Location == "FG")
+                                            && x.IsStockAvailable == true && WareLoc.Contains(x.Warehouse) && WareLoc.Contains(x.Location))
                                             .ToListAsync();
 
             return getInventoryById;
@@ -1723,6 +1749,13 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<List<Inventory>> GetWipInventoryDetailsByLotNumber(string itemNumber, string lotNumber,string shopNo)
         {
             var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber
+            && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.LotNumber == lotNumber && x.shopOrderNo == shopNo && x.ReferenceIDFrom== "Material Issue")
+                          .ToListAsync();
+            return inventoryDetail;
+        }
+        public async Task<List<Inventory>> GetWipInventoryDetailsByLotNumberofMR(string itemNumber, string lotNumber,string shopNo,string mrnumber)
+        {
+            var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.ReferenceID==mrnumber
             && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.LotNumber == lotNumber && x.shopOrderNo == shopNo)
                           .ToListAsync();
             return inventoryDetail;

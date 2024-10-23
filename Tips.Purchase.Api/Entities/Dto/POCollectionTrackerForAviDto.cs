@@ -404,4 +404,34 @@ namespace Tips.Purchase.Api.Entities.Dto
         public bool IsIqcForServiceItemsCompleted { get; set; }
         public int IQCForServiceItemsId { get; set; }
     }
+
+    public class PayableSPReportWithParamDTO
+    {
+        public string? PONumber { get; set; }
+        public string? VendorName { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
+    public class PayableSPReport
+    {
+        public string? PONumber { get; set; }
+        public int? RevisionNumber { get; set; }
+        public DateTime? POCreationDate { get; set; }
+        public DateTime? PODeliveryDate { get; set; }
+        public string? VendorNumber { get; set; }
+        public string? VendorName { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
+        public decimal? Qty { get; set; }
+        public string? UOC { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public decimal? SumOfAmount { get; set; }
+        public string? GrinNumber { get; set; }
+        public decimal? GrinQty { get; set; }
+        public string? IQCNumber { get; set; }
+        public decimal? IqcQty { get; set; }
+        public decimal? POValue { get; set; }
+        public decimal? TotalPaidSumofAmount { get; set; }
+        public decimal? TotalBalanceSumOfAmountToBePaid { get; set; }
+    }
 }

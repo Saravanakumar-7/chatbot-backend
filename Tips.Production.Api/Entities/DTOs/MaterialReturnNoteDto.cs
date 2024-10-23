@@ -1,5 +1,6 @@
 ﻿using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.Net;
 using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities.DTOs
@@ -33,7 +34,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
     public class MaterialReturnNoteUpdateDto
     {
-        public int? Id { get; set; }
+        public int Id { get; set; }
         public string? ProjectNumber { get; set; }
         public PartType ShopOrderType { get; set; }
         public string? ShopOrderNumber { get; set; }
@@ -74,5 +75,28 @@ namespace Tips.Production.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal LocationStock { get; set; }
         public bool IsMRNIssueDone { get; set; }
+    }
+    public class MRNInventoryChanges
+    {
+        public MRNIssueDetailsofMIandMR? Data { get; set; }
+        public string? Message { get; set; }
+        public bool Success { get; set; }
+        public HttpStatusCode StatusCode { get; set; }
+    }
+    public class MRNIssueDetailsofMIandMR
+    {
+        public string ShopOrderNumber { get; set; }
+        public List<MIDetailsfromMRN>? mIDetailsfromMRN { get; set; }
+        public List<MRDetailsfromMRN>? mRDetailsfromMRN { get; set; }
+    }
+    public class MIDetailsfromMRN
+    {
+        public string PartNumber { get; set; }
+        public decimal? QtyUsed { get; set; }
+    }
+    public class MRDetailsfromMRN
+    {
+        public string MRNumber { get; set; }
+        public List<MIDetailsfromMRN>? items { get; set; }
     }
 }

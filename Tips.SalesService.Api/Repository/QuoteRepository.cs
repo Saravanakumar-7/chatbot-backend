@@ -316,7 +316,7 @@ namespace Tips.SalesService.Api.Repository
                 foreach (var priceListName in latestPriceListName)
                 {
                     itemPriceList = _tipsSalesServiceDbContext.ItemPriceLists
-                        .Where(d => d.ItemNumber == rfqItem.ItemNumber && d.PriceListName == priceListName)
+                        .Where(d => d.ItemNumber == rfqItem.ItemNumber && d.PriceListName == priceListName && d.IsActive==true)
                         .OrderByDescending(d => d.CreatedOn)
                         .FirstOrDefault();
                     if (itemPriceList != null)

@@ -79,4 +79,15 @@ namespace Entities.DTOs
         public decimal BomQuantity { get; set; }
 
     }
+    public class ReleaseProductionBomSPReport
+    {
+        public string? ItemNumber { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public string? ItemType { get; set; }
+        public decimal? ReleaseVersion { get; set; }
+    }
+    public class ReleaseProductionBomSPReportDto
+    {
+        public string? ItemNumber { get; set; }
+    }
 }
