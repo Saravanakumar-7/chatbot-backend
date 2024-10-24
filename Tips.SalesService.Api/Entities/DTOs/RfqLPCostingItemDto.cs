@@ -38,24 +38,21 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqLPCostingItemDtoPost
     {
-       
-        [StringLength(500, ErrorMessage = "ItemNumber can't be longer than 500 characters")]
-
         public string? ItemNumber { get; set; }
-        [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
+       
         public string? CustomerItemNumber { get; set; }
 
         public string? Description { get; set; }
-        [Precision(13, 3)]
+       
         public decimal? TotalCost { get; set; }
-        [Precision(13, 3)]
+       
         public decimal? MaterialCost { get; set; }
-        [Precision(13, 3)]       
+          
         public decimal? MarkUpForMaterial { get; set; }
         public string? MarkUpForProcessSteps { get; set; }
-        [Precision(13, 3)]
+       
         public decimal? LandedPrice { get; set; }
-        [Precision(13, 3)]
+       
         public decimal? MOQCost { get; set; }
 
         public List<RfqLPCostingProcessDtoPost>? RfqLPCostingProcesses { get; set; }

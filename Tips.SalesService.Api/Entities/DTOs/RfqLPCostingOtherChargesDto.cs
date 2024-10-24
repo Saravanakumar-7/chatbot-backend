@@ -22,11 +22,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqLPCostingOtherChargesDtoPost
     {
-        [StringLength(500, ErrorMessage = "NameOfLable can't be longer than 500 characters")]
-
-        public string? NameOfLable { get; set; }       
-        
-        [Precision(13, 8)]
+       public string? NameOfLable { get; set; }       
+                
         public decimal? CostOfLable { get; set; }
        
       

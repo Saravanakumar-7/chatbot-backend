@@ -21,7 +21,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class RfqLPCostingNREConsumableDtoPost
     {
         public int? NREQty { get; set; }
-        [Precision(13, 3)]
+       
         public decimal? NRECost { get; set; }
        
     }
