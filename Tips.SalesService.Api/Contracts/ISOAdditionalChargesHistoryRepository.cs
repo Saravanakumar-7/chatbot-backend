@@ -6,5 +6,6 @@ namespace Tips.SalesService.Api.Contracts
     {
         Task<SOAdditionalChargesHistory> CreateSOAdditionalChargesHistory(SOAdditionalChargesHistory soAdditionalChargesHistory);
         Task<string> UpdateSOAdditionalChargesHistory(SOAdditionalChargesHistory soAdditionalChargesHistory);
+        Task<SOAdditionalChargesHistory> GetSOAdditionalChargesDetailsById(int salesAdditionalChargeId);
     }
 }

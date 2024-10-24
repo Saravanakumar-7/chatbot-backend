@@ -143,7 +143,7 @@ builder.Services.AddScoped<IQuoteEmailsDetailsRepository, QuoteEmailsDetailsRepo
 builder.Services.AddScoped<ISalesOrderEmailsDetailsRepository, SalesOrderEmailsDetailsRepository>();
 builder.Services.AddScoped<ISalesOrderMainLevelHistoryRepository, SalesOrderMainLevelHistoryRepository>();
 builder.Services.AddScoped<ISalesOrderItemLevelHistoryRepository, SalesOrderItemLevelHistoryRepository>();
-
+builder.Services.AddScoped<ISOAdditionalChargesHistoryRepository, SOAdditionalChargesHistoryRepository>();
 //builder.Services.AddScoped<IRfqCustomerSupportNotesRepository, RfqCustomerSupportNotes>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

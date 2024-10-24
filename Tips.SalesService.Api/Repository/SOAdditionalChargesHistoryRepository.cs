@@ -1,4 +1,5 @@
-﻿using Tips.SalesService.Api.Contracts;
+﻿using Microsoft.EntityFrameworkCore;
+using Tips.SalesService.Api.Contracts;
 using Tips.SalesService.Api.Entities;
 
 namespace Tips.SalesService.Api.Repository
@@ -22,6 +23,16 @@ namespace Tips.SalesService.Api.Repository
             Update(soAdditionalChargesHistory);
             string result = $"soAdditionalChargesHistory of Detail {soAdditionalChargesHistory.Id} is updated successfully!";
             return result;
+        }
+        public async Task<SOAdditionalChargesHistory> GetSOAdditionalChargesDetailsById(int salesAdditionalChargeId)
+        {
+
+            var salesAdditionalChargesDetailsById = await _tipsSalesServiceDbContexts.SOAdditionalChargesHistories
+                 .Where(x => x.SOAdditionalChargeId == salesAdditionalChargeId)
+                          .FirstOrDefaultAsync();
+
+            return salesAdditionalChargesDetailsById;
+
         }
 
     }
