@@ -2148,24 +2148,24 @@ namespace Tips.SalesService.Api.Controllers
                     await _repository.UpdateSalesOrderShortClose(salesdetails);
                     _repository.SaveAsync();
                 }
-                else
-                {
-                    foreach (var item in soAdditionalChargeUpdateDto)
-                    {
-                        var salesAdditionalCharges = await _salesAdditionalChargesRepository.GetSalesAdditionalChargesById(item.SalesOrderId, item.SalesAdditionalChargeId);
-                        if (salesAdditionalCharges != null)
-                        {
-                            var soAdditionalChargeHistory = await _sOAdditionalChargesHistoryRepository.GetSOAdditionalChargesDetailsById(salesAdditionalCharges.Id);
-                            if (soAdditionalChargeHistory != null)
-                            {
-                                soAdditionalChargeHistory.InvoicedValue = salesAdditionalCharges.InvoicedValue;
-                                soAdditionalChargeHistory.SOAdditionalStatus = salesAdditionalCharges.SOAdditionalStatus;
-                                await _sOAdditionalChargesHistoryRepository.UpdateSOAdditionalChargesHistory(soAdditionalChargeHistory);
-                            }
-                        }
-                    }
-                    _sOAdditionalChargesHistoryRepository.SaveAsync();
-                }
+                //else
+                //{
+                //    foreach (var item in soAdditionalChargeUpdateDto)
+                //    {
+                //        var salesAdditionalCharges = await _salesAdditionalChargesRepository.GetSalesAdditionalChargesById(item.SalesOrderId, item.SalesAdditionalChargeId);
+                //        if (salesAdditionalCharges != null)
+                //        {
+                //            var soAdditionalChargeHistory = await _sOAdditionalChargesHistoryRepository.GetSOAdditionalChargesDetailsById(salesAdditionalCharges.Id);
+                //            if (soAdditionalChargeHistory != null)
+                //            {
+                //                soAdditionalChargeHistory.InvoicedValue = salesAdditionalCharges.InvoicedValue;
+                //                soAdditionalChargeHistory.SOAdditionalStatus = salesAdditionalCharges.SOAdditionalStatus;
+                //                await _sOAdditionalChargesHistoryRepository.UpdateSOAdditionalChargesHistory(soAdditionalChargeHistory);
+                //            }
+                //        }
+                //    }
+                //    _sOAdditionalChargesHistoryRepository.SaveAsync();
+                //}
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SalesOrder Successfully Updated";
                 serviceResponse.Success = true;
@@ -2252,24 +2252,24 @@ namespace Tips.SalesService.Api.Controllers
                     _repository.SaveAsync();
                 }
                 
-                    else
-                    {
-                        foreach (var item in soAdditionalChargeUpdateDto) 
-                        {
-                            var salesAdditionalCharges = await _salesAdditionalChargesRepository.GetSalesAdditionalChargesById(item.SalesOrderId, item.SalesAdditionalChargeId);
-                            if (salesAdditionalCharges != null)
-                            {
-                                var soAdditionalChargeHistory = await _sOAdditionalChargesHistoryRepository.GetSOAdditionalChargesDetailsById(salesAdditionalCharges.Id);
-                                if (soAdditionalChargeHistory != null)
-                                {
-                                    soAdditionalChargeHistory.InvoicedValue = salesAdditionalCharges.InvoicedValue;
-                                    soAdditionalChargeHistory.SOAdditionalStatus = salesAdditionalCharges.SOAdditionalStatus;
-                                    await _sOAdditionalChargesHistoryRepository.UpdateSOAdditionalChargesHistory(soAdditionalChargeHistory);
-                                }
-                            }
-                        }
-                        _sOAdditionalChargesHistoryRepository.SaveAsync();
-                    }
+                    //else
+                    //{
+                    //    foreach (var item in soAdditionalChargeUpdateDto) 
+                    //    {
+                    //        var salesAdditionalCharges = await _salesAdditionalChargesRepository.GetSalesAdditionalChargesById(item.SalesOrderId, item.SalesAdditionalChargeId);
+                    //        if (salesAdditionalCharges != null)
+                    //        {
+                    //            var soAdditionalChargeHistory = await _sOAdditionalChargesHistoryRepository.GetSOAdditionalChargesDetailsById(salesAdditionalCharges.Id);
+                    //            if (soAdditionalChargeHistory != null)
+                    //            {
+                    //                soAdditionalChargeHistory.InvoicedValue = salesAdditionalCharges.InvoicedValue;
+                    //                soAdditionalChargeHistory.SOAdditionalStatus = salesAdditionalCharges.SOAdditionalStatus;
+                    //                await _sOAdditionalChargesHistoryRepository.UpdateSOAdditionalChargesHistory(soAdditionalChargeHistory);
+                    //            }
+                    //        }
+                    //    }
+                    //    _sOAdditionalChargesHistoryRepository.SaveAsync();
+                    //}
                 
                 serviceResponse.Data = null;
                 serviceResponse.Message = "SalesOrder Successfully Updated";
