@@ -1121,7 +1121,7 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
                 //Update History Table
-                await CreateSalesOrderHistory(salesOrderDetailBeforeUpdate);
+                //await CreateSalesOrderHistory(salesOrderDetailBeforeUpdate);
                 
                 var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetailBeforeUpdate);
                 updateData.SalesOrdersItems = salesOrderItemsList;
@@ -4680,9 +4680,10 @@ namespace Tips.SalesService.Api.Controllers
                     
                     var oldSOItem = salesOrderDetailBeforeUpdate.SalesOrdersItems[i];
                     salesOrderItemsDetail.Id = oldSOItem.Id;
-                    salesOrderItemsDetail.ShortClosedQty += oldSOItem.ShortClosedQty;
+                    //salesOrderItemsDetail.ShortClosedQty += oldSOItem.ShortClosedQty;
                     if (salesOrderItemsDto[i].NowShortClosed == true)
                     {
+                        salesOrderItemsDetail.ShortClosedQty += oldSOItem.ShortClosedQty;
                         salesOrderItemsDetail.ShortClosedBy = _createdBy;
                         salesOrderItemsDetail.ShortClosedOn = DateTime.Now;
                         SalesOrderHistory salesOrderHistory = new SalesOrderHistory();
@@ -4745,11 +4746,23 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
                 
-                var salesAdditionalChargesList = _mapper.Map<List<SalesOrderAdditionalCharges>>(salesAdditionalChargesDto);
-                
-   
+                var salesAdditionalChargesList = new List<SalesOrderAdditionalCharges>();
+                if (salesAdditionalChargesDto != null)
+                {
+                    for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
+                    {
+                        SalesOrderAdditionalCharges additionalChargesDetail = _mapper.Map<SalesOrderAdditionalCharges>(salesAdditionalChargesDto[i]);
+
+                        var oldSOAddCharges = salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges[i];
+
+                        additionalChargesDetail.Id = oldSOAddCharges.Id;
+                            
+                        salesAdditionalChargesList.Add(additionalChargesDetail);
+                    }
+                }
+
                 //ShortClose History Table
-                await CreateShortCloseSalesOrderHistory(salesOrderDetailBeforeUpdate, salesOrderDtoUpdate);
+               // await CreateShortCloseSalesOrderHistory(salesOrderDetailBeforeUpdate, salesOrderDtoUpdate);
 
                 var updateData = _mapper.Map(salesOrderDtoUpdate, salesOrderDetailBeforeUpdate);
 
@@ -4826,6 +4839,7 @@ namespace Tips.SalesService.Api.Controllers
                                     salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItems[i].Id;
                                     salesOrderItemLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
                                     salesOrderItemLevelHistory.ShortClosedQty = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].ShortClosedQty;
+                                    salesOrderItemLevelHistory.StatusEnum = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].StatusEnum;
                                     salesOrderItemLevelHistory.ShortClosedBy = _createdBy;
                                     salesOrderItemLevelHistory.ShortClosedOn = DateAndTime.Now;
                                     salesOrderItemLevelHistory.Remarks = "Item ShortClosed";
@@ -4877,6 +4891,7 @@ namespace Tips.SalesService.Api.Controllers
                                         salesOrderItemLevelHistory.Id = salesOrderItemLevelHistoryId;
                                         salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItems[i].Id;    
                                         salesOrderItemLevelHistory.ShortClosedQty += salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].ShortClosedQty;
+                                        salesOrderItemLevelHistory.StatusEnum = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].StatusEnum;
                                         salesOrderItemLevelHistory.ShortClosedBy = _createdBy;
                                         salesOrderItemLevelHistory.ShortClosedOn = DateAndTime.Now;
                                         salesOrderItemLevelHistory.Remarks = "Item ShortClosed";
@@ -4891,6 +4906,7 @@ namespace Tips.SalesService.Api.Controllers
                                         salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItems[i].Id;
                                         salesOrderItemLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
                                         salesOrderItemLevelHistory.ShortClosedQty = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].ShortClosedQty;
+                                        salesOrderItemLevelHistory.StatusEnum = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].StatusEnum;
                                         salesOrderItemLevelHistory.ShortClosedBy = _createdBy;
                                         salesOrderItemLevelHistory.ShortClosedOn = DateAndTime.Now;
                                         salesOrderItemLevelHistory.Remarks = "Item ShortClosed";
@@ -4927,7 +4943,7 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderMainLevelHistory.Id = 0;
                         salesOrderMainLevelHistory.SalesOrderId = salesOrder.Id;
                         salesOrderMainLevelHistory.SalesOrderNumber = salesOrder.SalesOrderNumber;
-                        salesOrderMainLevelHistory.RevisionNumber = salesOrderDtoUpdate.QuoteRevisionNumber;
+                        salesOrderMainLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
                         salesOrderMainLevelHistory.IsShortClosed = true;
                         salesOrderMainLevelHistory.CreatedBy = _createdBy;
                         salesOrderMainLevelHistory.CreatedOn = DateTime.Now;
@@ -4961,7 +4977,8 @@ namespace Tips.SalesService.Api.Controllers
                                     SalesOrderItemLevelHistory salesOrderItemLevelHistory = _mapper.Map<SalesOrderItemLevelHistory>(salesOrderItems[i]);
                                     salesOrderItemLevelHistory.Id = 0;
                                     salesOrderItemLevelHistory.SalesOrderItemId = salesOrder.SalesOrdersItems[i].Id;
-                                    salesOrderItemLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
+                                    salesOrderItemLevelHistory.SalesOrderNumber = salesOrder.SalesOrderNumber;
+                                    salesOrderItemLevelHistory.RevisionNumber = salesOrder.RevisionNumber; 
                                     //salesOrderItemLevelHistory.ShortClosedQty = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos[i].ShortClosedQty;
                                     salesOrderItemLevelHistory.ShortClosedBy = _createdBy;
                                     salesOrderItemLevelHistory.ShortClosedOn = DateAndTime.Now;
@@ -4997,7 +5014,7 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderMainLevelHistory.Id = salesOrderMainLevelHistoryId;
                         salesOrderMainLevelHistory.SalesOrderId = salesOrder.Id;
                         salesOrderMainLevelHistory.SalesOrderNumber = salesOrder.SalesOrderNumber;
-                        salesOrderMainLevelHistory.RevisionNumber = salesOrderDtoUpdate.QuoteRevisionNumber;
+                        salesOrderMainLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
                         salesOrderMainLevelHistory.LastModifiedBy = _createdBy;
                         salesOrderMainLevelHistory.LastModifiedOn = DateTime.Now;
 
@@ -5023,8 +5040,7 @@ namespace Tips.SalesService.Api.Controllers
                         {
                             for (int i = 0; i < salesOrderItems.Count; i++)
                             {
-                                if (salesOrderItems[i].NowShortClosed == true)
-                                {
+                                
                                     var exsitingSalesOrderItemLevelHistory = await _salesOrderItemLevelHistoryRepository.GetShortCloseSalesOrderItemLevelHistoryBySalesOrderItemIdAndRevNo(salesOrderItemDetails[i].Id, salesOrder.RevisionNumber);
                                     if (exsitingSalesOrderItemLevelHistory != null)
                                     {
@@ -5033,6 +5049,8 @@ namespace Tips.SalesService.Api.Controllers
                                         var salesOrderItemLevelHistory = _mapper.Map(salesOrderItems[i], exsitingSalesOrderItemLevelHistory);
                                         salesOrderItemLevelHistory.Id = salesOrderItemLevelHistoryId.Id;
                                         salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItemDetails[i].Id;
+                                        salesOrderItemLevelHistory.SalesOrderNumber = salesOrder.SalesOrderNumber;
+                                        salesOrderItemLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
                                         salesOrderItemLevelHistory.ShortClosedQty += salesOrderItemDetails[i].ShortClosedQty;
                                         salesOrderItemLevelHistory.ShortClosedBy = _createdBy;
                                         salesOrderItemLevelHistory.ShortClosedOn = DateAndTime.Now;
@@ -5046,7 +5064,8 @@ namespace Tips.SalesService.Api.Controllers
                                         var salesOrderItemLevelHistory = _mapper.Map<SalesOrderItemLevelHistory>(salesOrderItems[i]);
                                         salesOrderItemLevelHistory.Id = 0; 
                                         salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItemDetails[i].Id;
-                                        salesOrderItemLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
+                                        salesOrderItemLevelHistory.SalesOrderNumber = salesOrder.SalesOrderNumber;
+                                        salesOrderItemLevelHistory.RevisionNumber = salesOrder.RevisionNumber; 
                                         salesOrderItemLevelHistory.ShortClosedBy = _createdBy;
                                         salesOrderItemLevelHistory.ShortClosedOn = DateTime.Now;
                                         salesOrderItemLevelHistory.Remarks = "Item ShortClosed";
@@ -5070,7 +5089,7 @@ namespace Tips.SalesService.Api.Controllers
 
 
                                     }
-                                }
+                                
                             }
                         }
 
