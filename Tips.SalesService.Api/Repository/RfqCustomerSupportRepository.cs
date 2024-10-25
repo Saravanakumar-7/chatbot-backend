@@ -1601,6 +1601,21 @@ namespace Tips.SalesService.Api.Repository
                 .FirstOrDefaultAsync();
             return getRfqEnggByRfqNumber;
         }
+        public async Task<RfqEngg> GetRfqReleasedEnggByRfqNumberRevNo(string RfqNumber)
+        {
+            var revNo = await _tipsSalesServiceDbContext.RfqEnggs
+    .Where(x => x.RFQNumber == RfqNumber)
+    .OrderByDescending(x => x.RevisionNumber)
+    .Select(x => x.RevisionNumber)
+    .FirstOrDefaultAsync();
+
+
+            var getRfqEnggByRfqNumber = await _tipsSalesServiceDbContext.RfqEnggs
+                .Where(x => x.RFQNumber == RfqNumber && x.RevisionNumber == revNo)
+                .Include(t => t.RfqEnggItems.Where(y=> y.ReleaseStatus==true))
+                .FirstOrDefaultAsync();
+            return getRfqEnggByRfqNumber;
+        }
         public Task<IEnumerable<RfqEnggItem>> GetRfqEnggItemsByRfqNumber(string rfqNumber)
         {
             throw new NotImplementedException();

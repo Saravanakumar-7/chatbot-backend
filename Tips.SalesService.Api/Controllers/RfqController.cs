@@ -922,7 +922,7 @@ namespace Tips.SalesService.Api.Controllers
 
             try
             {   
-                var rfqEnggDetails = await _rfqenggRepository.GetRfqEnggByRfqNumberRevNo(rfqNumber);
+                var rfqEnggDetails = await _rfqenggRepository.GetRfqReleasedEnggByRfqNumberRevNo(rfqNumber);
 
                 List<string?>? itemDetails = rfqEnggDetails?.RfqEnggItems?.Select(x => x.ItemNumber).ToList();
                 
