@@ -598,7 +598,9 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<List<InventoryQtyforDO>> GetInventorybyItemandProject(string itemNumber, string projectNumber)
         {
             string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN", "OPGIQC", "OPGGRIN" };
-            var invdetails = await FindAll().Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber && !skipWareHouse.Contains(x.Warehouse)).Select(x => new GetInventoryQtyforDO()
+            var invdetails = await FindAll().Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber && !skipWareHouse.Contains(x.Warehouse)
+                                                    && x.Balance_Quantity > 0)
+                .Select(x => new GetInventoryQtyforDO()
             {
                 Warehouse = x.Warehouse,
                 Location = x.Location,
@@ -657,7 +659,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN", "OPGIQC", "OPGGRIN" };
 
-            var invdetails = await FindAll().Where(x => x.PartNumber == itemNumber && !skipWareHouse.Contains(x.Warehouse))
+            var invdetails = await FindAll().Where(x => x.PartNumber == itemNumber && !skipWareHouse.Contains(x.Warehouse) && x.Balance_Quantity > 0)
                 .Select(x => new GetInventoryQtyforDO()
                 {
                     Warehouse = x.Warehouse,
