@@ -318,7 +318,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateShopOrderConfirmation action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateShopOrderConfirmation action: {ex.Message} {ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;

@@ -1298,7 +1298,7 @@ namespace Tips.Warehouse.Api.Controllers
                 {
 
                     var inventoryDetails = await _inventoryRepository
-                        .GetWIPInventoryDetailsByItemNo(item.PartNumber, item.ShopOrderNumber);
+                        .GetWIPInventoryDetailsByItemNo(item.PartNumber, item.ShopOrderNumber, item.MRNumber);
 
                     if (inventoryDetails == null || inventoryDetails.Count == 0)
                     {

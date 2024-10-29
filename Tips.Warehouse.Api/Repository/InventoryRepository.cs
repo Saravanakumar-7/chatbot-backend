@@ -1251,12 +1251,22 @@ namespace Tips.Warehouse.Api.Repository
         }
 
         //Get Inventory WIP from location and warehouse
-        public async Task<List<Inventory>> GetWIPInventoryDetailsByItemNo(string ItemNumber, string ShopOrderNumber)
+        public async Task<List<Inventory>> GetWIPInventoryDetailsByItemNo(string ItemNumber, string ShopOrderNumber, string? MRNumber)
         {
-            var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber
-            && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.shopOrderNo == ShopOrderNumber)
-                          .ToListAsync();
-            return inventoryDetail;
+            if (MRNumber == null)
+            {
+                var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber
+                && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.shopOrderNo == ShopOrderNumber && x.ReferenceIDFrom== "Material Issue")
+                              .ToListAsync();
+                return inventoryDetail;
+            }
+            else
+            {
+                var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber
+               && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.shopOrderNo == ShopOrderNumber && x.ReferenceIDFrom == "Material Request")
+                             .ToListAsync();
+                return inventoryDetail;
+            }
         }
 
 

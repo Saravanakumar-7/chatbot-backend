@@ -26,7 +26,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal ScrapQty { get; set; }
         public OrderStatus FGDoneStatus { get; set; }
         public bool IsDeleted { get; set; } = false;
-
+        public ShopOrderType ShopOrderType { get; set; }
         public OrderStatus Status { get; set; }
         public ShopOrderConformationStatus ShopOrderConfirmationStatus { get; set; }
         public ShopOrderConformationStatus OQCStatus { get; set; }
@@ -63,7 +63,7 @@ namespace Tips.Production.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? CanCreateQty { get; set; }
         public string? Remarks { get; set; }
-
+        public ShopOrderType ShopOrderType { get; set; }
         public List<ShopOrderItemPostDto>? ShopOrderItems { get; set; }
     }
 
@@ -86,6 +86,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal BomRevisionNo { get; set; }
         [Precision(13, 3)]
         public decimal? CanCreateQty { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
         public string? Remarks { get; set; }
         public string? Unit { get; set; }
         public string? LastModifiedBy { get; set; }
