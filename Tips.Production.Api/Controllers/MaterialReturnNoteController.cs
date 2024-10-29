@@ -548,6 +548,12 @@ namespace Tips.Production.Api.Controllers
                 if (response.StatusCode != HttpStatusCode.OK)
                 {
                     updateMaterialReturnNoteResp = response.StatusCode;
+                    _logger.LogError($"Something went wrong inside ReturnMaterialReturnNote action. Inventory update action MaterialReturnNoteInventoryBalanceQty failed! ");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Internal server error";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
                 }
 
                 //materialReturnNoteDetail.MaterialReturnNoteItems = materialReturnNoteItemList;
@@ -585,6 +591,7 @@ namespace Tips.Production.Api.Controllers
                         else item.MRNQty = newMi.QtyUsed;
                     }
                     await _materialIssueRepository.UpdateMaterialIssue(MIdetails);
+                    _materialIssueRepository.SaveAsync();
                 }
 
                 if (changeddata.Data.mRDetailsfromMRN.Count() > 0)
@@ -599,14 +606,13 @@ namespace Tips.Production.Api.Controllers
                             else item.MRNQty = mritem.QtyUsed;
                         }
                         await _materialRequestRepository.UpdateMaterialRequest(MRdetails);
+                        _materialRequestRepository.SaveAsync();
                     }
                 }
 
                 if (updateMaterialReturnNoteResp == HttpStatusCode.OK)
                 {
                     _materialReturnNoteRepository.SaveAsync();
-                    if (changeddata.Data.mIDetailsfromMRN.Count() > 0) _materialIssueRepository.SaveAsync();
-                    if (changeddata.Data.mRDetailsfromMRN.Count() > 0) _materialRequestRepository.SaveAsync();
                 }
                 else
                 {
