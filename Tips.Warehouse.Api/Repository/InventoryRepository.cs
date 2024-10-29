@@ -591,7 +591,7 @@ namespace Tips.Warehouse.Api.Repository
         public async Task<Inventory?> GetInventorybyItemProjectWarehouseLocation(string itemNumber, string projectNumber, string warehouse, string location, string lotNumber)
         {
             var invdetails = await _tipsWarehouseDbContext.Inventories
-                .Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber && x.Warehouse == warehouse 
+                .Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber && x.Warehouse == warehouse
                 && x.Location == location && x.LotNumber == lotNumber).FirstOrDefaultAsync();
             return invdetails;
         }
@@ -601,12 +601,12 @@ namespace Tips.Warehouse.Api.Repository
             var invdetails = await FindAll().Where(x => x.PartNumber == itemNumber && x.ProjectNumber == projectNumber && !skipWareHouse.Contains(x.Warehouse)
                                                     && x.Balance_Quantity > 0)
                 .Select(x => new GetInventoryQtyforDO()
-            {
-                Warehouse = x.Warehouse,
-                Location = x.Location,
-                BalanceQty = x.Balance_Quantity,
-                LotNumber = x.LotNumber
-            }
+                {
+                    Warehouse = x.Warehouse,
+                    Location = x.Location,
+                    BalanceQty = x.Balance_Quantity,
+                    LotNumber = x.LotNumber
+                }
             ).ToListAsync();
 
             List<InventoryQtyforDO> exists = new List<InventoryQtyforDO>();
@@ -1258,14 +1258,14 @@ namespace Tips.Warehouse.Api.Repository
             if (MRNumber == null)
             {
                 var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber
-                && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.shopOrderNo == ShopOrderNumber && x.ReferenceIDFrom== "Material Issue")
+                && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.shopOrderNo == ShopOrderNumber && x.ReferenceIDFrom == "Material Issue")
                               .ToListAsync();
                 return inventoryDetail;
             }
             else
             {
-                var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber
-               && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.shopOrderNo == ShopOrderNumber && x.ReferenceIDFrom == "Material Request")
+                var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true && x.Location == "WIP" 
+                && x.Warehouse == "WIP" && x.shopOrderNo == ShopOrderNumber && x.ReferenceIDFrom == "Material Request" && x.ReferenceID==MRNumber)
                              .ToListAsync();
                 return inventoryDetail;
             }
@@ -1758,16 +1758,16 @@ namespace Tips.Warehouse.Api.Repository
         .SumAsync(i => i.Balance_Quantity);
         }
 
-        public async Task<List<Inventory>> GetWipInventoryDetailsByLotNumber(string itemNumber, string lotNumber,string shopNo)
+        public async Task<List<Inventory>> GetWipInventoryDetailsByLotNumber(string itemNumber, string lotNumber, string shopNo)
         {
             var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber
-            && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.LotNumber == lotNumber && x.shopOrderNo == shopNo && x.ReferenceIDFrom== "Material Issue")
+            && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.LotNumber == lotNumber && x.shopOrderNo == shopNo && x.ReferenceIDFrom == "Material Issue")
                           .ToListAsync();
             return inventoryDetail;
         }
-        public async Task<List<Inventory>> GetWipInventoryDetailsByLotNumberofMR(string itemNumber, string lotNumber,string shopNo,string mrnumber)
+        public async Task<List<Inventory>> GetWipInventoryDetailsByLotNumberofMR(string itemNumber, string lotNumber, string shopNo, string mrnumber)
         {
-            var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.ReferenceID==mrnumber
+            var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.ReferenceID == mrnumber
             && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.LotNumber == lotNumber && x.shopOrderNo == shopNo)
                           .ToListAsync();
             return inventoryDetail;

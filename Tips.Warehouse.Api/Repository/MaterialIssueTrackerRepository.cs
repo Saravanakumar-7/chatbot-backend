@@ -67,13 +67,24 @@ namespace Tips.Warehouse.Api.Repository
             return resultList;
         }
 
-        public async Task<List<ShopOrderMaterialIssueTracker>> GetDetailsByShopOrderNOItemNoLotNo(string PartNumber, string ShopOrderNumber, string LotNumber)
+        public async Task<List<ShopOrderMaterialIssueTracker>> GetDetailsByShopOrderNOItemNoLotNo(string PartNumber, string ShopOrderNumber, string LotNumber,string? MRNumber)
         {
-            var shopOrderMaterialIssueTracker = await _tipsWarehouseDbContext.ShopOrderMaterialIssueTrackers
-                .Where(x => x.PartNumber == PartNumber && x.ShopOrderNumber == ShopOrderNumber && x.LotNumber == LotNumber
-                    && x.IssuedQty > x.ConvertedToFgQty).ToListAsync();
+            if (MRNumber == null)
+            {
+                var shopOrderMaterialIssueTracker = await _tipsWarehouseDbContext.ShopOrderMaterialIssueTrackers
+                    .Where(x => x.PartNumber == PartNumber && x.ShopOrderNumber == ShopOrderNumber && x.LotNumber == LotNumber && x.MRNumber== "NULL"
+                        && x.IssuedQty > x.ConvertedToFgQty).ToListAsync();
 
-            return shopOrderMaterialIssueTracker;
+                return shopOrderMaterialIssueTracker;
+            }
+            else
+            {
+                var shopOrderMaterialIssueTracker = await _tipsWarehouseDbContext.ShopOrderMaterialIssueTrackers
+                    .Where(x => x.PartNumber == PartNumber && x.ShopOrderNumber == ShopOrderNumber && x.LotNumber == LotNumber && x.MRNumber==MRNumber
+                        && x.IssuedQty > x.ConvertedToFgQty).ToListAsync();
+
+                return shopOrderMaterialIssueTracker;
+            }
         }
 
         public async Task<List<MRNIssueTrackerDto>> GetWipQtyFromMaterialIssueTracker(string shopOrderNo, string partNumber, decimal returnedQty)
