@@ -125,7 +125,16 @@ namespace Tips.Purchase.Api.Repository
 
             return getDownloadDetails;
         }
+        public async Task<IEnumerable<PurchaseOrderDashboardSPReport>> GetPurchaseOrderDashboardSPReportWithParam(string Bucket_Id)
+        {
+            var result = _tipsPurchaseDbContext
+            .Set<PurchaseOrderDashboardSPReport>()
+            .FromSqlInterpolated($"CALL PurchaseOrder_Dashboard({Bucket_Id})")
+            .ToList();
 
+            return result;
+
+        }
         //public async Task<IEnumerable<PurchaseOrder>> GetAllPurchaseOrderWithItems(PurchaseOrderSearchDto purchaseOrderSearch, PoVersion poVersion)
         //{
         //    using (var context = _tipsPurchaseDbContext)

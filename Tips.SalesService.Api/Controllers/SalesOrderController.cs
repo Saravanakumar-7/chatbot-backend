@@ -2505,6 +2505,123 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet] 
+        public async Task<IActionResult> GetSalesOrderDashboardSPReportWithParam(string Bucket_Id)
+
+        {
+            ServiceResponse<IEnumerable<SalesOrderDashboardSPReport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDashboardSPReport>>();
+            try
+            {
+                var products = await _repository.GetSalesOrderDashboardSPReportWithParam(Bucket_Id);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesOrder hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned SalesOrderDashboardSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetSalesOrderDashboardSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] 
+        public async Task<IActionResult> GetTransactionDashboardSPReportWithParam(string Bucket_Id)
+
+        {
+            ServiceResponse<IEnumerable<TransactionDashboardSPReport>> serviceResponse = new ServiceResponse<IEnumerable<TransactionDashboardSPReport>>();
+            try
+            {
+                var products = await _repository.GetTransactionDashboardSPReportWithParam(Bucket_Id);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Transaction hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Transaction hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned TransactionDashboardSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetTransactionDashboardSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] 
+        public async Task<IActionResult> GetFinancialYearDashboardSPReportWithParam(string Bucket_Id)
+
+        {
+            ServiceResponse<IEnumerable<FinancialYearDashboardSPReport>> serviceResponse = new ServiceResponse<IEnumerable<FinancialYearDashboardSPReport>>();
+            try
+            {
+                var products = await _repository.GetFinancialYearDashboardSPReportWithParam(Bucket_Id);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"FinancialYear hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"FinancialYear hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned FinancialYearDashboardSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetFinancialYearDashboardSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetSOSummarySPReportWithParam([FromBody] SOSummarySPResportDTO soSummarySPResportDTO)
 

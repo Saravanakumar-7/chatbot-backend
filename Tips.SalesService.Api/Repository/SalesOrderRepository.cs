@@ -113,7 +113,36 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
+        public async Task<IEnumerable<SalesOrderDashboardSPReport>> GetSalesOrderDashboardSPReportWithParam(string Bucket_Id)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SalesOrderDashboardSPReport>()
+            .FromSqlInterpolated($"CALL SalesOrder_Dashboard({Bucket_Id})")
+            .ToList();
 
+            return result;
+
+        }
+        public async Task<IEnumerable<TransactionDashboardSPReport>> GetTransactionDashboardSPReportWithParam(string Bucket_Id)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<TransactionDashboardSPReport>()
+            .FromSqlInterpolated($"CALL Transaction_Dashboard({Bucket_Id})")
+            .ToList();
+
+            return result;
+
+        }
+        public async Task<IEnumerable<FinancialYearDashboardSPReport>> GetFinancialYearDashboardSPReportWithParam(string Bucket_Id)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<FinancialYearDashboardSPReport>()
+            .FromSqlInterpolated($"CALL Financial_Year_Dashboard({Bucket_Id})")
+            .ToList();
+
+            return result;
+
+        }
         public async Task<IEnumerable<SalesOrderSPReport>> GetSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsSalesServiceDbContext.Set<SalesOrderSPReport>()

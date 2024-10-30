@@ -701,7 +701,44 @@ namespace Tips.Purchase.Api.Controllers
 
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetPurchaseOrderDashboardSPReportWithParam(string Bucket_Id)
 
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderDashboardSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderDashboardSPReport>>();
+            try
+            {
+                var products = await _repository.GetPurchaseOrderDashboardSPReportWithParam(Bucket_Id);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseOrderDashboard hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseOrderDashboard hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseOrderDashboardSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseOrderDashboardSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetPurchaseOrderSPReportWithParam([FromBody] PurchaseOrderSPReportWithParamDTO purchaseOrderSPReport)

@@ -469,4 +469,11 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public int Id { get; set; }
         public string? PONumber { get; set; }
     }
+    public class PurchaseOrderDashboardSPReport
+    {
+        public string? PORange { get; set; }
+        public int? NoOfCount{ get; set; }
+        public decimal? POValue { get; set; }
+
+    }
 }

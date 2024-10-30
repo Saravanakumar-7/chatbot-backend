@@ -3554,6 +3554,79 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet] 
+        public async Task<IActionResult> GetInventoryDashboardSPReportsWithParam(string Bucket_Id)
+        {
+            ServiceResponse<IEnumerable<InventoryDashboardSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventoryDashboardSPReport>>();
+            try
+            {
+                var products = await _inventoryRepository.GetInventoryDashboardSPReportsWithParam(Bucket_Id);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventoryDashboardSPReportsWithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"InventoryDashboardSPReportsWithParam hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InventoryDashboardSPReportsWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetInventoryDashboardSPReportsWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetInventoryDashboardLastWeekSPReportsWithParam(string Bucket_Id)
+        {
+            ServiceResponse<IEnumerable<InventoryDashboardSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventoryDashboardSPReport>>();
+            try
+            {
+                var products = await _inventoryRepository.GetInventoryDashboardLastWeekSPReportsWithParam(Bucket_Id);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventoryDashboardLastWeekSPReportsWithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"InventoryDashboardLastWeekSPReportsWithParam hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InventoryDashboardLastWeekSPReportsWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetInventoryDashboardLastWeekSPReportsWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> GetInventorySPReportForAvision([FromBody] GetInventorySPReportForAviDto getInventorySPReportForAviDto)
         {

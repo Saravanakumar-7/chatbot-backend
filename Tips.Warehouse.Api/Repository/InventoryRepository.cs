@@ -910,6 +910,24 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<InventoryDashboardSPReport>> GetInventoryDashboardSPReportsWithParam(string Bucket_Id)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<InventoryDashboardSPReport>()
+            .FromSqlInterpolated($"CALL Inventory_Dashboard({Bucket_Id})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<InventoryDashboardSPReport>> GetInventoryDashboardLastWeekSPReportsWithParam(string Bucket_Id)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<InventoryDashboardSPReport>()
+            .FromSqlInterpolated($"CALL inventory_Dashboard_lastweek({Bucket_Id})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<TrascationKPNWSPReport>> GetTrascationKPNWSPReportsWithParam(string KPN)
         {
             var result = _tipsWarehouseDbContext

@@ -125,6 +125,10 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<SalesOrderItemLevelHistory> SalesOrderItemLevelHistories { get; set; }
         public DbSet<SalesOrderScheduleDateHistory> SalesOrderScheduleDateHistories { get; set; }
         public DbSet<SalesOrderMainLevelHistorySP> SalesOrderMainLevelHistorySP { get; set; }
+        public DbSet<SalesOrderDashboardSPReport> SalesOrderDashboardSPReports { get; set; }
+        public DbSet<TransactionDashboardSPReport> TransactionDashboardSPReports { get; set; }
+        public DbSet<FinancialYearDashboardSPReport> FinancialYearDashboardSPReports { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<RecievableCustomer>().HasNoKey();
@@ -150,6 +154,9 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<CustomerWiseTransactionSPReport>().HasNoKey();
             modelBuilder.Entity<SalesOrderId_SP>().HasNoKey();
             modelBuilder.Entity<RFQSalesorderConfirmationSPReport>().HasNoKey();
+            modelBuilder.Entity<SalesOrderDashboardSPReport>().HasNoKey();
+            modelBuilder.Entity<TransactionDashboardSPReport>().HasNoKey();
+            modelBuilder.Entity<FinancialYearDashboardSPReport>().HasNoKey();
         }
 
     }

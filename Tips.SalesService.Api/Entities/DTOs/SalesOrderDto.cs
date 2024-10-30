@@ -537,4 +537,28 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal DispatchQty { get; set; }
 
     }
+    public class SalesOrderDashboardSPReport
+    {
+        public string? SORange
+        { get; set; }
+        public int? NoOfCount
+        { get; set; }
+        public decimal? SOValue
+        { get; set; }
+
+    }
+    public class TransactionDashboardSPReport
+    {
+        public string? ServiceGrin { get; set; }
+        public int? NoOfCount { get; set; }
+        public decimal? ServiceValue { get; set; }
+
+    }
+    public class FinancialYearDashboardSPReport
+    {
+        public string? FinancialYear { get; set; }
+        public int? NoOfCount { get; set; }
+        public decimal? Value { get; set; }
+
+    }
 }

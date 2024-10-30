@@ -49,6 +49,7 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PurchaseRequisitionSPReportForTrans> PurchaseRequisitionSPReportForTrans { get; set; }
         public DbSet<PurchaseOrderSPReportForAvision> PurchaseOrderSPReportForAvisions { get; set; }
         public DbSet<PoProjectSPReport> PoProjectSPReports { get; set; }
+        public DbSet<PurchaseOrderDashboardSPReport> PurchaseOrderDashboardSPReports { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PurchaseOrderSPReport>().HasNoKey();
@@ -66,6 +67,7 @@ namespace Tips.Purchase.Api.Entities
             modelBuilder.Entity<PurchaseRequisitionSPReportForAvision>().HasNoKey();
             modelBuilder.Entity<PurchaseOrderUnitListSPReportWithParamForTrans>().HasNoKey();
             modelBuilder.Entity<PayableSPReport>().HasNoKey();
+            modelBuilder.Entity<PurchaseOrderDashboardSPReport>().HasNoKey();
 
         }
     }

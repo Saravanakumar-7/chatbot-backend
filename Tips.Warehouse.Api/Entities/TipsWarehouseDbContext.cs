@@ -68,6 +68,8 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<ReturnInvoiceAdditionalCharge> ReturnInvoiceAdditionalCharges { get; set; }
         public DbSet<StockMovementHistorySPReport> StockMovementHistorySPReports { get; set; }
         public DbSet<InventoryBySumOfFilteringDatesSPReport> InventoryBySumOfFilteringDatesSPReports { get; set; }
+        public DbSet<InventoryDashboardSPReport> InventoryDashboardSPReports { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ConsumptionReport>().HasNoKey();
@@ -97,7 +99,7 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<InvoiceSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<GetInventorySPReportForAvi>().HasNoKey();
             modelBuilder.Entity<InventoryBySumOfFilteringDatesSPReport>().HasNoKey();
-
+            modelBuilder.Entity<InventoryDashboardSPReport>().HasNoKey();
             base.OnModelCreating(modelBuilder);
         }
         
