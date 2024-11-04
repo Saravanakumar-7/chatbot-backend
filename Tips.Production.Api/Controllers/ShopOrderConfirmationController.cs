@@ -169,7 +169,7 @@ namespace Tips.Production.Api.Controllers
                 var shopOrderDetail = await _shopOrderRepo.GetShopOrderDetailsByShopOrderNo(shopOrderNumber);
                 shopOrderDetail.WipQty = shopOrderDetail.WipQty + shopOrderConfirmation.WipConfirmedQty;
                 if (shopOrderDetail.TotalSOReleaseQty == shopOrderDetail.WipQty) shopOrderDetail.ShopOrderConfirmationStatus = ShopOrderConformationStatus.FullyDone;
-                if (shopOrderDetail.TotalSOReleaseQty > shopOrderDetail.WipQty) shopOrderDetail.ShopOrderConfirmationStatus = ShopOrderConformationStatus.PartiallyDone;
+                else if (shopOrderDetail.TotalSOReleaseQty > shopOrderDetail.WipQty) shopOrderDetail.ShopOrderConfirmationStatus = ShopOrderConformationStatus.PartiallyDone;
                 await _shopOrderRepo.UpdateShopOrder(shopOrderDetail);
                 await _shopOrderConfirmationRepository.CreateShopOrderConfirmation(shopOrderConfirmation);
 
