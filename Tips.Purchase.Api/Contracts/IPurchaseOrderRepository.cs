@@ -82,21 +82,21 @@ namespace Tips.Purchase.Api.Contracts
         Task<PagedList<PurchaseOrder>> GetAllLastestPendingPOApprovalIVListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams);
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllLatestRevNoPurchaseOrderNameList();
         Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType);
-        Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationLimitSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval,
+        Task<IEnumerable<poconfirmation_report_with_pagination_Dto>> GetPoConfirmationLimitSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval,
                                                                                                                             string? RecordType, int? Offset, int? Limit);
         Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliveryScheduleSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType);
-        Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliveryScheduleLimitSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval,
+        Task<IEnumerable<podeliveryschedule_report_with_parameters_with_pagination_Dto>> GetPoDeliveryScheduleLimitSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval,
                                                                                                             string? RecordType, int? Offset, int? Limit);
         Task<IEnumerable<PoProjectSPReport>> GetPoProjectSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType);
         Task<IEnumerable<PoProjectSPReport>> GetPoProjectLimitSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType
                                                                                                     , int? Offset, int? Limit);
         Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
                                                                                                        , string? Approval, string? RecordType);
-        Task<IEnumerable<poconfirmation_report_Dto>> GetPoConfirmationLimitSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
+        Task<IEnumerable<poconfirmation_report_with_pagination_Dto>> GetPoConfirmationLimitSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
                                                                                                       , string? Approval, string? RecordType, int? Offset, int? Limit);
         Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliverySchedulewithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
                                                                                                       , string? Approval, string? RecordType);
-        Task<IEnumerable<podeliveryschedule_report_Dto>> GetPoDeliveryScheduleLimitwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
+        Task<IEnumerable<podeliveryschedule_report_with_parameters_with_pagination_Dto>> GetPoDeliveryScheduleLimitwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
                                                                                                        , string? Approval, string? RecordType, int? Offset, int? Limit);
         Task<IEnumerable<PoProjectSPReport>> GetPoProjectSPReportwithParam(string? ItemNumber, string? PONumber, string? VendorName, string? POStatus
                                                                                                        , string? Approval, string? ProjectNumber, string? RecordType);
