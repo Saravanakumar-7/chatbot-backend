@@ -554,14 +554,19 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? QtyUsed { get; set; }
     }
     public class MRDetailsfromMRN
-    {       
+    {
         public string MRNumber { get; set; }
-        public List<MIDetailsfromMRN>? items { get; set; } 
+        public List<MIDetailsfromMRN>? items { get; set; }
     }
     public class InventoryDashboardSPReport
     {
         public string? Inventory { get; set; }
         public int? NumberOfCount { get; set; }
         public decimal? Value { get; set; }
+    }
+    public class InventoryDashboardSPReport_Details
+    {
+        public string Title { get; set; }
+        public List<InventoryDashboardSPReport> Items { get; set; }
     }
 }

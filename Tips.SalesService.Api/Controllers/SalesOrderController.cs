@@ -2506,15 +2506,28 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet] 
-        public async Task<IActionResult> GetSalesOrderDashboardSPReportWithParam(string Bucket_Id)
-
+        public async Task<IActionResult> GetSalesOrderDashboardSPReportWithParam()
         {
-            ServiceResponse<IEnumerable<SalesOrderDashboardSPReport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDashboardSPReport>>();
+            ServiceResponse<List<SalesOrderDashboardSPReport_Details>> serviceResponse = new ServiceResponse<List<SalesOrderDashboardSPReport_Details>>();
             try
             {
-                var products = await _repository.GetSalesOrderDashboardSPReportWithParam(Bucket_Id);
+                List<SalesOrderDashboardSPReport_Details> salesOrderDashboardSPReport_Details = new List<SalesOrderDashboardSPReport_Details>();
+                List<string> Bucket_Id = new List<string>();
+                Bucket_Id[0] = "bucket_Id1";
+                Bucket_Id[1] = "bucket_Id2";
+                Bucket_Id[2] = "bucket_Id3";
+                Bucket_Id[3] = "bucket_Id4";
 
-                if (products == null)
+                foreach (var buck in Bucket_Id)
+                {
+                    SalesOrderDashboardSPReport_Details salesOrderDashboardSPReport =new SalesOrderDashboardSPReport_Details();
+                    salesOrderDashboardSPReport.Title = buck;
+                    salesOrderDashboardSPReport.Items = await _repository.GetSalesOrderDashboardSPReportWithParam(buck);
+                    salesOrderDashboardSPReport_Details.Add(salesOrderDashboardSPReport);
+                }
+                
+
+                if (salesOrderDashboardSPReport_Details == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"SalesOrder hasn't been found.";
@@ -2526,7 +2539,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
 
-                    serviceResponse.Data = products;
+                    serviceResponse.Data = salesOrderDashboardSPReport_Details;
                     serviceResponse.Message = "Returned SalesOrderDashboardSPReportWithParam Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -2545,15 +2558,28 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet] 
-        public async Task<IActionResult> GetTransactionDashboardSPReportWithParam(string Bucket_Id)
-
+        public async Task<IActionResult> GetTransactionDashboardSPReportWithParam()
         {
-            ServiceResponse<IEnumerable<TransactionDashboardSPReport>> serviceResponse = new ServiceResponse<IEnumerable<TransactionDashboardSPReport>>();
+            ServiceResponse<List<TransactionDashboardSPReport_Details>> serviceResponse = new ServiceResponse<List<TransactionDashboardSPReport_Details>>();
             try
             {
-                var products = await _repository.GetTransactionDashboardSPReportWithParam(Bucket_Id);
+                List<TransactionDashboardSPReport_Details> transactionDashboardSPReport_Details = new List<TransactionDashboardSPReport_Details>();
+                List<string> Bucket_Id = new List<string>();
+                Bucket_Id[0] = "bucket_Id1";
+                Bucket_Id[1] = "bucket_Id2";
+                Bucket_Id[2] = "bucket_Id3";
+                Bucket_Id[3] = "bucket_Id4";
+                Bucket_Id[4] = "bucket_Id5";
+                foreach(var buck in Bucket_Id)
+                {
+                    TransactionDashboardSPReport_Details transactionDashboardSPReport_Details1= new TransactionDashboardSPReport_Details();
+                    transactionDashboardSPReport_Details1.Title = buck;
+                    transactionDashboardSPReport_Details1.Items = await _repository.GetTransactionDashboardSPReportWithParam(buck);
+                    transactionDashboardSPReport_Details.Add(transactionDashboardSPReport_Details1);
+                }
 
-                if (products == null)
+
+                if (transactionDashboardSPReport_Details == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"Transaction hasn't been found.";
@@ -2565,7 +2591,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
 
-                    serviceResponse.Data = products;
+                    serviceResponse.Data = transactionDashboardSPReport_Details;
                     serviceResponse.Message = "Returned TransactionDashboardSPReportWithParam Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -2584,15 +2610,28 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet] 
-        public async Task<IActionResult> GetFinancialYearDashboardSPReportWithParam(string Bucket_Id)
-
+        public async Task<IActionResult> GetFinancialYearDashboardSPReportWithParam()
         {
-            ServiceResponse<IEnumerable<FinancialYearDashboardSPReport>> serviceResponse = new ServiceResponse<IEnumerable<FinancialYearDashboardSPReport>>();
+            ServiceResponse<List<FinancialYearDashboardSPReport_Details>> serviceResponse = new ServiceResponse<List<FinancialYearDashboardSPReport_Details>>();
             try
             {
-                var products = await _repository.GetFinancialYearDashboardSPReportWithParam(Bucket_Id);
+                List<FinancialYearDashboardSPReport_Details> financialYearDashboardSPReport_Details = new List<FinancialYearDashboardSPReport_Details>();
+                List<string> Bucket_Id = new List<string>();
+                Bucket_Id[0] = "bucket_Id1";
+                Bucket_Id[1] = "bucket_Id2";
+                Bucket_Id[2] = "bucket_Id3";
+                Bucket_Id[3] = "bucket_Id4";
+                Bucket_Id[4] = "bucket_Id5";
 
-                if (products == null)
+                foreach (var buck in Bucket_Id)
+                {
+                    FinancialYearDashboardSPReport_Details financialYearDashboardSPReport_Details1 = new FinancialYearDashboardSPReport_Details();
+                    financialYearDashboardSPReport_Details1.Title = buck;
+                    financialYearDashboardSPReport_Details1.Items= await _repository.GetFinancialYearDashboardSPReportWithParam(buck);
+                    financialYearDashboardSPReport_Details.Add(financialYearDashboardSPReport_Details1);
+                }
+
+                if (financialYearDashboardSPReport_Details == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"FinancialYear hasn't been found.";
@@ -2604,7 +2643,7 @@ namespace Tips.SalesService.Api.Controllers
                 else
                 {
 
-                    serviceResponse.Data = products;
+                    serviceResponse.Data = financialYearDashboardSPReport_Details;
                     serviceResponse.Message = "Returned FinancialYearDashboardSPReportWithParam Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

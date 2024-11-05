@@ -113,7 +113,7 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
-        public async Task<IEnumerable<SalesOrderDashboardSPReport>> GetSalesOrderDashboardSPReportWithParam(string Bucket_Id)
+        public async Task<List<SalesOrderDashboardSPReport>> GetSalesOrderDashboardSPReportWithParam(string Bucket_Id)
         {
             var result = _tipsSalesServiceDbContext
             .Set<SalesOrderDashboardSPReport>()
@@ -123,7 +123,7 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
-        public async Task<IEnumerable<TransactionDashboardSPReport>> GetTransactionDashboardSPReportWithParam(string Bucket_Id)
+        public async Task<List<TransactionDashboardSPReport>> GetTransactionDashboardSPReportWithParam(string Bucket_Id)
         {
             var result = _tipsSalesServiceDbContext
             .Set<TransactionDashboardSPReport>()
@@ -133,7 +133,7 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
-        public async Task<IEnumerable<FinancialYearDashboardSPReport>> GetFinancialYearDashboardSPReportWithParam(string Bucket_Id)
+        public async Task<List<FinancialYearDashboardSPReport>> GetFinancialYearDashboardSPReportWithParam(string Bucket_Id)
         {
             var result = _tipsSalesServiceDbContext
             .Set<FinancialYearDashboardSPReport>()

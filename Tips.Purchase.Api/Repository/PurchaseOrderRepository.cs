@@ -125,7 +125,7 @@ namespace Tips.Purchase.Api.Repository
 
             return getDownloadDetails;
         }
-        public async Task<IEnumerable<PurchaseOrderDashboardSPReport>> GetPurchaseOrderDashboardSPReportWithParam(string Bucket_Id)
+        public async Task<List<PurchaseOrderDashboardSPReport>> GetPurchaseOrderDashboardSPReportWithParam(string Bucket_Id)
         {
             var result = _tipsPurchaseDbContext
             .Set<PurchaseOrderDashboardSPReport>()

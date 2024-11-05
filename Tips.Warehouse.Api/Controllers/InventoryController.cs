@@ -3555,14 +3555,28 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet] 
-        public async Task<IActionResult> GetInventoryDashboardSPReportsWithParam(string Bucket_Id)
+        public async Task<IActionResult> GetInventoryDashboardSPReportsWithParam()
         {
-            ServiceResponse<IEnumerable<InventoryDashboardSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventoryDashboardSPReport>>();
+            ServiceResponse<List<InventoryDashboardSPReport_Details>> serviceResponse = new ServiceResponse<List<InventoryDashboardSPReport_Details>>();
             try
             {
-                var products = await _inventoryRepository.GetInventoryDashboardSPReportsWithParam(Bucket_Id);
+                List<InventoryDashboardSPReport_Details> inventoryDashboardSPReport_Details1 = new List<InventoryDashboardSPReport_Details>();
+                List<string> Bucket_Id = new List<string>();
+                Bucket_Id[0] = "bucket_Id1";
+                Bucket_Id[1] = "bucket_Id2";
+                Bucket_Id[2] = "bucket_Id3";
+                Bucket_Id[3] = "bucket_Id4";
 
-                if (products == null)
+                foreach (var buck in Bucket_Id)
+                {
+                    InventoryDashboardSPReport_Details inventoryDashboardSPReport_Details = new InventoryDashboardSPReport_Details();
+                    inventoryDashboardSPReport_Details.Title = buck;
+                    inventoryDashboardSPReport_Details.Items = await _inventoryRepository.GetInventoryDashboardSPReportsWithParam(buck);
+                    inventoryDashboardSPReport_Details1.Add(inventoryDashboardSPReport_Details);
+                }
+
+
+                if (inventoryDashboardSPReport_Details1 == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"InventoryDashboardSPReportsWithParam hasn't been found.";
@@ -3573,7 +3587,7 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 else
                 {
-                    serviceResponse.Data = products;
+                    serviceResponse.Data = inventoryDashboardSPReport_Details1;
                     serviceResponse.Message = "Returned InventoryDashboardSPReportsWithParam Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -3591,14 +3605,28 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> GetInventoryDashboardLastWeekSPReportsWithParam(string Bucket_Id)
+        public async Task<IActionResult> GetInventoryDashboardLastWeekSPReportsWithParam()
         {
-            ServiceResponse<IEnumerable<InventoryDashboardSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventoryDashboardSPReport>>();
+            ServiceResponse<List<InventoryDashboardSPReport_Details>> serviceResponse = new ServiceResponse<List<InventoryDashboardSPReport_Details>>();
             try
             {
-                var products = await _inventoryRepository.GetInventoryDashboardLastWeekSPReportsWithParam(Bucket_Id);
+                List<InventoryDashboardSPReport_Details> inventoryDashboardSPReport_Details1=new List<InventoryDashboardSPReport_Details>();
+                List<string> Bucket_Id = new List<string>();
+                Bucket_Id[0] = "bucket_Id1";
+                Bucket_Id[1] = "bucket_Id2";
+                Bucket_Id[2] = "bucket_Id3";
+                Bucket_Id[3] = "bucket_Id4";
 
-                if (products == null)
+                foreach (var buck in Bucket_Id)
+                {
+                    InventoryDashboardSPReport_Details inventoryDashboardSPReport_Details = new InventoryDashboardSPReport_Details();
+                    inventoryDashboardSPReport_Details.Title = buck;
+                    inventoryDashboardSPReport_Details.Items= await _inventoryRepository.GetInventoryDashboardLastWeekSPReportsWithParam(buck);
+                    inventoryDashboardSPReport_Details1.Add(inventoryDashboardSPReport_Details);
+                }
+                    
+
+                if (inventoryDashboardSPReport_Details1 == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"InventoryDashboardLastWeekSPReportsWithParam hasn't been found.";
@@ -3609,7 +3637,7 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 else
                 {
-                    serviceResponse.Data = products;
+                    serviceResponse.Data = inventoryDashboardSPReport_Details1;
                     serviceResponse.Message = "Returned InventoryDashboardLastWeekSPReportsWithParam Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

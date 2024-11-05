@@ -702,15 +702,28 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPurchaseOrderDashboardSPReportWithParam(string Bucket_Id)
+        public async Task<IActionResult> GetPurchaseOrderDashboardSPReportWithParam()
 
         {
-            ServiceResponse<IEnumerable<PurchaseOrderDashboardSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderDashboardSPReport>>();
+            ServiceResponse<List<PurchaseOrderDashboardSPReport_Details>> serviceResponse = new ServiceResponse<List<PurchaseOrderDashboardSPReport_Details>>();
             try
             {
-                var products = await _repository.GetPurchaseOrderDashboardSPReportWithParam(Bucket_Id);
+                List<PurchaseOrderDashboardSPReport_Details> purchaseOrderDashboardSPReport_Details = new List<PurchaseOrderDashboardSPReport_Details>();
+                List<string> Bucket_Id = new List<string>();
+                Bucket_Id[0] = "bucket_Id1";
+                Bucket_Id[1] = "bucket_Id2";
+                Bucket_Id[2] = "bucket_Id3";
+                Bucket_Id[3] = "bucket_Id4";
+                foreach (var buck in Bucket_Id)
+                {
+                    PurchaseOrderDashboardSPReport_Details purchaseOrderDashboardSPReport_Details1 = new PurchaseOrderDashboardSPReport_Details();
+                    purchaseOrderDashboardSPReport_Details1.Title = buck;
+                    purchaseOrderDashboardSPReport_Details1.Items = await _repository.GetPurchaseOrderDashboardSPReportWithParam(buck);
+                    purchaseOrderDashboardSPReport_Details.Add(purchaseOrderDashboardSPReport_Details1);
+                }
 
-                if (products == null)
+
+                if (purchaseOrderDashboardSPReport_Details == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"PurchaseOrderDashboard hasn't been found.";
@@ -722,7 +735,7 @@ namespace Tips.Purchase.Api.Controllers
                 else
                 {
 
-                    serviceResponse.Data = products;
+                    serviceResponse.Data = purchaseOrderDashboardSPReport_Details;
                     serviceResponse.Message = "Returned PurchaseOrderDashboardSPReportWithParam Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;

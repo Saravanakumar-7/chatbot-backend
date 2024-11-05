@@ -539,13 +539,15 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class SalesOrderDashboardSPReport
     {
-        public string? SORange
-        { get; set; }
-        public int? NoOfCount
-        { get; set; }
-        public decimal? SOValue
-        { get; set; }
+        public string? SORange { get; set; }
+        public int? NoOfCount { get; set; }
+        public decimal? SOValue { get; set; }
 
+    }
+    public class SalesOrderDashboardSPReport_Details
+    {
+        public string Title { get; set; }
+        public List<SalesOrderDashboardSPReport> Items { get; set; }
     }
     public class TransactionDashboardSPReport
     {
@@ -554,11 +556,22 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? ServiceValue { get; set; }
 
     }
+    public class TransactionDashboardSPReport_Details
+    {
+        public string Title { get; set; }
+        public List<TransactionDashboardSPReport> Items { get; set; }
+    }
+
     public class FinancialYearDashboardSPReport
     {
         public string? FinancialYear { get; set; }
         public int? NoOfCount { get; set; }
         public decimal? Value { get; set; }
 
+    }
+    public class FinancialYearDashboardSPReport_Details
+    {
+        public string Title { get; set; }
+        public List<FinancialYearDashboardSPReport> Items { get; set; }
     }
 }

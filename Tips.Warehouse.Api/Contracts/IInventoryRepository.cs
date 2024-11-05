@@ -94,8 +94,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<InventorySPReport>> GetInventorySPReportsWithParam(string PartNumber, string Description, string Warehouse,
                                                                                                    string Location, string ProjectNumber);
         Task<IEnumerable<TrascationKPNWSPReport>> GetTrascationKPNWSPReportsWithParam(string KPN);
-        Task<IEnumerable<InventoryDashboardSPReport>> GetInventoryDashboardSPReportsWithParam(string Bucket_Id);
-        Task<IEnumerable<InventoryDashboardSPReport>> GetInventoryDashboardLastWeekSPReportsWithParam(string Bucket_Id);
+        Task<List<InventoryDashboardSPReport>> GetInventoryDashboardSPReportsWithParam(string Bucket_Id);
+        Task<List<InventoryDashboardSPReport>> GetInventoryDashboardLastWeekSPReportsWithParam(string Bucket_Id);
         Task<IEnumerable<InventoryBySumOfFilteringDatesSPReport>> GetInventoryBySumOfFilteringDatesSPReportsWithParam(DateTime fromDate, DateTime toDate, string partNumber);
         Task<IEnumerable<StockMovementSPReport>> GetStockMovementSPReports();
         Task<IEnumerable<Inventory>> GetInventoryWarehouseReport(string PartNumber, string Description, string Warehouse, string Location, string ProjectNumber);
