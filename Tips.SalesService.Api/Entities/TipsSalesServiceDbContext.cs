@@ -157,6 +157,10 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<SalesOrderDashboardSPReport>().HasNoKey();
             modelBuilder.Entity<TransactionDashboardSPReport>().HasNoKey();
             modelBuilder.Entity<FinancialYearDashboardSPReport>().HasNoKey();
+            modelBuilder.Entity<TransactionDashboardSPReport_bucketId1>().HasNoKey();
+            modelBuilder.Entity<TransactionDashboardSPReport_bucketId2>().HasNoKey();
+            modelBuilder.Entity<TransactionDashboardSPReport_bucketId3>().HasNoKey();
+            modelBuilder.Entity<TransactionDashboardSPReport_bucketId5>().HasNoKey();
         }
 
     }

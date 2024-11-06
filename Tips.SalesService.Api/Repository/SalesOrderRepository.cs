@@ -123,16 +123,57 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
-        public async Task<List<TransactionDashboardSPReport>> GetTransactionDashboardSPReportWithParam(string Bucket_Id)
+        public async Task<List<TransactionDashboardSPReport>> GetTransactionDashboardSPReportWithParam()
         {
             var result = _tipsSalesServiceDbContext
             .Set<TransactionDashboardSPReport>()
-            .FromSqlInterpolated($"CALL Transaction_Dashboard({Bucket_Id})")
+            .FromSqlInterpolated($"CALL Transaction_Dashboard('bucket_Id4')")
             .ToList();
 
             return result;
 
         }
+        public async Task<List<TransactionDashboardSPReport_bucketId1>> GetTransactionDashboardSPReportWithParam_bucketId1()
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<TransactionDashboardSPReport_bucketId1>()
+            .FromSqlInterpolated($"CALL Transaction_Dashboard('bucket_Id1')")
+            .ToList();
+
+            return result;
+
+        }
+        public async Task<List<TransactionDashboardSPReport_bucketId2>> GetTransactionDashboardSPReportWithParam_bucketId2()
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<TransactionDashboardSPReport_bucketId2>()
+            .FromSqlInterpolated($"CALL Transaction_Dashboard('bucket_Id2')")
+            .ToList();
+
+            return result;
+
+        }
+        public async Task<List<TransactionDashboardSPReport_bucketId3>> GetTransactionDashboardSPReportWithParam_bucketId3()
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<TransactionDashboardSPReport_bucketId3>()
+            .FromSqlInterpolated($"CALL Transaction_Dashboard('bucket_Id3')")
+            .ToList();
+
+            return result;
+
+        }
+        public async Task<List<TransactionDashboardSPReport_bucketId5>> GetTransactionDashboardSPReportWithParam_bucketId5()
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<TransactionDashboardSPReport_bucketId5>()
+            .FromSqlInterpolated($"CALL Transaction_Dashboard('bucket_Id5')")
+            .ToList();
+
+            return result;
+
+        }
+        
         public async Task<List<FinancialYearDashboardSPReport>> GetFinancialYearDashboardSPReportWithParam(string Bucket_Id)
         {
             var result = _tipsSalesServiceDbContext

@@ -3562,10 +3562,10 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 List<InventoryDashboardSPReport_Details> inventoryDashboardSPReport_Details1 = new List<InventoryDashboardSPReport_Details>();
                 List<string> Bucket_Id = new List<string>();
-                Bucket_Id[0] = "bucket_Id1";
-                Bucket_Id[1] = "bucket_Id2";
-                Bucket_Id[2] = "bucket_Id3";
-                Bucket_Id[3] = "bucket_Id4";
+                Bucket_Id.Add("bucket_Id1");
+                Bucket_Id.Add("bucket_Id2");
+                Bucket_Id.Add("bucket_Id3");
+                Bucket_Id.Add("bucket_Id4");
 
                 foreach (var buck in Bucket_Id)
                 {
@@ -3612,10 +3612,10 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 List<InventoryDashboardSPReport_Details> inventoryDashboardSPReport_Details1=new List<InventoryDashboardSPReport_Details>();
                 List<string> Bucket_Id = new List<string>();
-                Bucket_Id[0] = "bucket_Id1";
-                Bucket_Id[1] = "bucket_Id2";
-                Bucket_Id[2] = "bucket_Id3";
-                Bucket_Id[3] = "bucket_Id4";
+                Bucket_Id.Add("bucket_Id1");
+                Bucket_Id.Add("bucket_Id2");
+                Bucket_Id.Add("bucket_Id3");
+                Bucket_Id.Add("bucket_Id4");
 
                 foreach (var buck in Bucket_Id)
                 {

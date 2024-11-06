@@ -710,10 +710,10 @@ namespace Tips.Purchase.Api.Controllers
             {
                 List<PurchaseOrderDashboardSPReport_Details> purchaseOrderDashboardSPReport_Details = new List<PurchaseOrderDashboardSPReport_Details>();
                 List<string> Bucket_Id = new List<string>();
-                Bucket_Id[0] = "bucket_Id1";
-                Bucket_Id[1] = "bucket_Id2";
-                Bucket_Id[2] = "bucket_Id3";
-                Bucket_Id[3] = "bucket_Id4";
+                Bucket_Id.Add("bucket_Id1");
+                Bucket_Id.Add("bucket_Id2");
+                Bucket_Id.Add("bucket_Id3");
+                Bucket_Id.Add("bucket_Id4");
                 foreach (var buck in Bucket_Id)
                 {
                     PurchaseOrderDashboardSPReport_Details purchaseOrderDashboardSPReport_Details1 = new PurchaseOrderDashboardSPReport_Details();

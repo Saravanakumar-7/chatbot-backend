@@ -243,9 +243,9 @@ namespace Tips.SalesService.Api.Controllers
                         }
                         else
                         {
-                            _logger.LogError($"Something went wrong inside Create GetQuoteById action: ItemMaster PartType is not avaivable");
+                            _logger.LogError($"Something went wrong inside Create GetQuoteById action: ItemMaster Item: {ItemNumber} is not avaivable");
                             serviceResponse.Data = null;
-                            serviceResponse.Message = "ItemMaster Details is null";
+                            serviceResponse.Message = $"ItemMaster Details is null for Item: {ItemNumber}";
                             serviceResponse.Success = false;
                             serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                             return StatusCode(500, serviceResponse);
