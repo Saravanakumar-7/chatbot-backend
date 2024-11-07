@@ -824,7 +824,7 @@ namespace Tips.SalesService.Api.Repository
         {
             var date = DateTime.Now;
             rfq.CreatedBy = _createdBy;
-            rfq.CreatedOn = date.Date;
+            rfq.CreatedOn = date;
             var version = 1;
             rfq.RevisionNumber = version;
             rfq.Unit = _unitname;

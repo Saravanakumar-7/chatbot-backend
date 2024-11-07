@@ -37,7 +37,7 @@ namespace Tips.Grin.Api.Repository
         {
             var date = DateTime.Now;
             openGrinForGrins.CreatedBy = _createdBy;
-            openGrinForGrins.CreatedOn = date.Date;
+            openGrinForGrins.CreatedOn = date;
             openGrinForGrins.Unit = _unitname;
 
             var result = await Create(openGrinForGrins);

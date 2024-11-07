@@ -27,7 +27,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var date = DateTime.Now;
             shopOrderMaterialIssueTracker.CreatedBy = _createdBy;
-            shopOrderMaterialIssueTracker.CreatedOn = date.Date;
+            shopOrderMaterialIssueTracker.CreatedOn = date;
             var result = await Create(shopOrderMaterialIssueTracker);
             return result.Id;
         }

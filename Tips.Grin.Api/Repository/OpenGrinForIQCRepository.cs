@@ -74,7 +74,7 @@ namespace Tips.Grin.Api.Repository
         {
             var date = DateTime.Now;
             openGrinForIQC.CreatedBy = _createdBy;
-            openGrinForIQC.CreatedOn = date.Date;
+            openGrinForIQC.CreatedOn = date;
             openGrinForIQC.Unit = _unitname;
 
             var result = await Create(openGrinForIQC);

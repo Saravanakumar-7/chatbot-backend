@@ -28,7 +28,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             var date = DateTime.Now;
             deliveryOrder.CreatedBy = _createdBy;
-            deliveryOrder.CreatedOn = date.Date;
+            deliveryOrder.CreatedOn = date;
             deliveryOrder.Unit = _unitname;
             //Guid deliveryOrderNumber = Guid.NewGuid();
             //deliveryOrder.DeliveryOrderNumber = " DO-" + deliveryOrderNumber.ToString();
