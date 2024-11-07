@@ -258,13 +258,31 @@ namespace Tips.Warehouse.Api.Repository
 
             return getOpenDeliveryOrderDetailsById;
         }
-        public async Task<List<ODOQuantityDto>> GetListOfODOQtyByItemNo( string itemNumber)
+        public async Task<ODOQuantityDto> GetListOfSAODOQtyByItemNo(string saItemNumber)
         {
-            var openDeliveryOrderId = await _tipsWarehouseDbContext.OpenDeliveryOrders.Where (x=>x.DOType == "returnable").Select(o=>o.Id).ToListAsync();
+            var openDeliveryOrderId = await _tipsWarehouseDbContext.OpenDeliveryOrders.Where (x=>x.DOType.ToLower() == "returnable" && x.ModifiedStatus == false
+                                                    && x.IsDeleted == false).Select(o=>  o.Id).ToListAsync();
+
+            var binningQuantityList = await _tipsWarehouseDbContext.OpenDeliveryOrderParts
+                .Where(x => x.ItemNumber == saItemNumber &&  openDeliveryOrderId.Contains(x.OpenDeliveryOrderId) && x.DispatchQty > 0)
+                .GroupBy(x => new { x.ItemNumber})
+                .Select(gr => new ODOQuantityDto
+                {
+                    ItemNumber = gr.Key.ItemNumber,
+                    ODOQty = gr.Sum(x => x.DispatchQty)
+                })
+                .FirstOrDefaultAsync();
+
+            return binningQuantityList;
+        }
+
+        public async Task<IEnumerable<ODOQuantityDto>> GetListOfODOQtyByItemNo(List<string> itemNumberList)
+        {
+            var openDeliveryOrderId = await _tipsWarehouseDbContext.OpenDeliveryOrders.Where(x => x.DOType == "returnable").Select(o => o.Id).ToListAsync();
 
             List<ODOQuantityDto> binningQuantityList = await _tipsWarehouseDbContext.OpenDeliveryOrderParts
-                .Where(x =>  x.ItemNumber == itemNumber && openDeliveryOrderId.Contains(x.OpenDeliveryOrderId) && x.DispatchQty > 0)
-                .GroupBy(x => new { x.ItemNumber})
+                .Where(x => itemNumberList.Contains( x.ItemNumber) && openDeliveryOrderId.Contains(x.OpenDeliveryOrderId) && x.DispatchQty > 0)
+                .GroupBy(x => new { x.ItemNumber })
                 .Select(gr => new ODOQuantityDto
                 {
                     ItemNumber = gr.Key.ItemNumber,

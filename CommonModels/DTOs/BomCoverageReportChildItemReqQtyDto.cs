@@ -57,4 +57,17 @@ namespace Entities.DTOs
         public PartType PartType { get; set; }
         public decimal? TotalRequiredQty { get; set; }
     }
+    public class ODOItemDetailsForBomDto
+    {
+        public Data? data { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
+        public int statusCode { get; set; }
+    }
+    public class Data
+    {
+        public string? ItemNumber { get; set; }
+        public decimal ODOQty { get; set; }
+
+    }
 }

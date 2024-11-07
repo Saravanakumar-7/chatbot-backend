@@ -21,5 +21,6 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PayableSPReport>> GetPayableSPReportWithParam(string PONumber, string VendorName, string ProjectNumber);
         Task<IEnumerable<PayableSPReport>> GetPayableSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<List<POCollectionTrackerForAvi>> GetAllPOCollectionTrackersForAviByPonumber(string Ponumber);
+        Task<IEnumerable<PaymentSPReport>> GetPaymentSPReportWithParam(string PONumber, string VendorName, string ProjectNumber);
     }
 }

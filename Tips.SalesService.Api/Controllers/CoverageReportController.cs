@@ -325,6 +325,8 @@ namespace Tips.SalesService.Api.Controllers
                             //Open PO Qty for Child Items
                             List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItems(itemNoListString);
 
+                            //ODO Qty Calculate
+                            //List<ODOQuantityDto> odoQtyList = await GetODOQtyForChildItemsByItemNo(itemNoListString);
 
                             foreach (var item in childItemReqQtyDtos)
                             {
@@ -336,7 +338,8 @@ namespace Tips.SalesService.Api.Controllers
                                     UOM = item.UOM,
                                     Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
                                     WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
-                                    OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
+                                    OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault(),
+                                    //ODOQty = odoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.ODOQty).FirstOrDefault()
                                 };
 
                                 //test
@@ -344,7 +347,7 @@ namespace Tips.SalesService.Api.Controllers
 
 
                                 decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
-                                   + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
+                                   + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty /*+ coverageDetailOfChildItem.ODOQty*/);
 
                                 coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : balanceRequiredQty;
 
@@ -777,6 +780,8 @@ namespace Tips.SalesService.Api.Controllers
                             //Open PO Qty for Child Items
                             List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItemsByProjectNo(itemNoListString, projectNumber);
 
+                            //ODO Qty Calculate
+                            List<ODOQuantityDto> odoQtyList = await GetODOQtyForChildItemsByItemNo(itemNoListString);
 
                             foreach (var item in childItemReqQtyDtos)
                             {
@@ -792,6 +797,7 @@ namespace Tips.SalesService.Api.Controllers
                                     RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
                                     Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
                                     WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
+                                    ODOQty = odoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.ODOQty).FirstOrDefault()
                                     //OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
                                 };
 
@@ -811,17 +817,12 @@ namespace Tips.SalesService.Api.Controllers
                                     coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
                                 }
 
-                                //ODO Qty Calculate
-                                List<ODOQuantityDto> odoQtyList = await GetODOQtyForChildItemsByItemNoAndProjectNo(item.ItemNumber);
-
-                                coverageDetailOfChildItem.ODOQty = odoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.ODOQty).FirstOrDefault();
-
                                 
-                                    decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
-                                       + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty)-coverageDetailOfChildItem.ODOQty;
+                                decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
+                                                             + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty + coverageDetailOfChildItem.ODOQty);
 
 
-                                    coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
+                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
                                 
 
 
@@ -965,12 +966,14 @@ namespace Tips.SalesService.Api.Controllers
             return openPoQtyList;
         }
 
-        private async Task<List<ODOQuantityDto>> GetODOQtyForChildItemsByItemNoAndProjectNo(string itemNumber)
+        private async Task<List<ODOQuantityDto>> GetODOQtyForChildItemsByItemNo(StringContent itemNoListString)
         {
             var client = _clientFactory.CreateClient();
             var token = HttpContext.Request.Headers["Authorization"].ToString();
-            var encodedItemNo = Uri.EscapeDataString(itemNumber);
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ODOAPI"], $"GetListOfODOQtyByItemNo?ItemNumber={encodedItemNo}"));
+            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ODOAPI"], $"GetListOfODOQtyByItemNo?"))
+            {
+                Content = itemNoListString
+            }; 
 
             request.Headers.Add("Authorization", token);
 

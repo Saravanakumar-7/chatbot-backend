@@ -557,5 +557,44 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetPaymentSPReportWithParam([FromBody] PaymentSPReportDto paymentSPReportDto)
+
+        {
+            ServiceResponse<IEnumerable<PaymentSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PaymentSPReport>>();
+            try
+            {
+                var paymentSPReports = await _repository.GetPaymentSPReportWithParam(paymentSPReportDto.PONumber, paymentSPReportDto.VendorName,
+                                                                                                    paymentSPReportDto.ProjectNumber);
+
+                if (paymentSPReports == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Payment SPResport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Payment SPResport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = paymentSPReports;
+                    serviceResponse.Message = "Returned Payment SPResport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPaymentSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

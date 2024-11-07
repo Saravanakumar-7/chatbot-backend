@@ -2,6 +2,7 @@
 using Entities;
 using Entities.Helper;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tips.Warehouse.Api.Entities;
 using Tips.Warehouse.Api.Entities.DTOs;
@@ -37,7 +38,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<OpenDeliveryOrderSPReportForTrans>> OpenDeliveryOrderSPReportDateForTrans(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<ODOMonthlyConsumptionSPReport>> GetODOMonthlyConsumptionSPReportWithParam(string CustomerId);
         Task<IEnumerable<ODOMonthlyConsumptionSPReport>> GetODOMonthlyConsumptionSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
-        Task<List<ODOQuantityDto>> GetListOfODOQtyByItemNo(string itemNumber);
+        Task<ODOQuantityDto> GetListOfSAODOQtyByItemNo(string saItemNumber);
+        Task<IEnumerable<ODOQuantityDto>> GetListOfODOQtyByItemNo(List<string> itemNumberList);
 
     }
 
