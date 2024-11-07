@@ -907,7 +907,7 @@ namespace Tips.SalesService.Api.Controllers
                 parameter1.Type = "text";
                 parameter2.Type = "text";
                 parameter3.Type = "text";
-                parameter1.Text = quoteDetails.LeadId; parameter2.Text = quoteDetails.QuoteNumber; parameter3.Text = "Valued Customer";
+                parameter1.Text = quoteDetails.LeadId; parameter2.Text = quoteDetails.QuoteNumber; parameter3.Text = "Client";
 
                 parameters.Add(parameter1); parameters.Add(parameter2); parameters.Add(parameter3);
 
