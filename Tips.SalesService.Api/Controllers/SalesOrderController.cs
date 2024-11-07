@@ -5470,26 +5470,29 @@ namespace Tips.SalesService.Api.Controllers
                 if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation")
                 {
                     emaildetails = $"Your Confirmed Keus Automation Sales Order - {salesorderDetails.SalesOrderNumber}: Version - {salesorderDetails.RevisionNumber}";
+                    //whatsapptemplate = "advait_sale_closed_automation";
+                    whatsapptemplate = "new_revised_lights_salesorder\r\n";
                     FileName = "SalesOrder_Automation_Book";
-                    whatsapptemplate = "advait_sale_closed_automation";
                 }
                 else if (salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
                 {
                     emaildetails = $"Your Confirmed Keus Accessories Sales Order - {salesorderDetails.SalesOrderNumber}: Version - {salesorderDetails.RevisionNumber}";
-                    whatsapptemplate = "advait_quote_automaiton";
+                    whatsapptemplate = "new_revised_lights_salesorder";
+                    //whatsapptemplate = "advait_quote_automaiton";
                     FileName = "SalesOrder_Accessories_Book";
                 }
                 else
                 {
                     emaildetails = $"Your Confirmed Keus Lights Sales Order - {salesorderDetails.SalesOrderNumber}: Version - {salesorderDetails.RevisionNumber}";
-                    whatsapptemplate = "advait_saleclosed_light";
+                    whatsapptemplate = "new_revised_salesorder_ardeo";
+                    //whatsapptemplate = "advait_saleclosed_light";
                     FileName = "SalesOrder_Lights_Book";
                 }
                 if (emaildetails.IsNullOrEmpty())
                 {
                     _logger.LogError($"The Subject of the Email is Empty as the Type of Solution has not matched any Type Of Solution");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Something went wrong ,try again";
+                    serviceResponse.Message = $"The Subject of the Email is Empty as the Type of Solution has not matched any Type Of Solution";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(500, serviceResponse);
@@ -5498,7 +5501,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogError($"The Template for Whatsapp is Empty as the Type of Solution has not matched any Type Of Solution");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Something went wrong ,try again";
+                    serviceResponse.Message = $"The Template for Whatsapp is Empty as the Type of Solution has not matched any Type Of Solution";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(500, serviceResponse);
@@ -5537,7 +5540,7 @@ namespace Tips.SalesService.Api.Controllers
                     body = System.IO.File.ReadAllText(htmlFilePath);
                     body = body.Replace("{{Customer Name}}", salesorderDetails.CustomerName);
                 }
-                string base64;
+                string base64 ;
                 var builder = new BodyBuilder();
                 builder.HtmlBody = body;
                 using (HttpClient client1 = new HttpClient())
@@ -5566,6 +5569,22 @@ namespace Tips.SalesService.Api.Controllers
                 WhatsAppMessagePayload whatsAppMessagePayload = JsonConvert.DeserializeObject<WhatsAppMessagePayload>(jsonpayload);
                 whatsAppMessagePayload.Template.Name = whatsapptemplate;
                 whatsAppMessagePayload.Template.Components[0].Parameters[0].Document.Filename = FileName;
+                Component component = new Component();
+                List<Tips.SalesService.Api.Entities.DTOs.Parameter> parameters = new List<Tips.SalesService.Api.Entities.DTOs.Parameter>();
+
+                Entities.DTOs.Parameter parameter1 = new Entities.DTOs.Parameter();
+                Entities.DTOs.Parameter parameter2 = new Entities.DTOs.Parameter();
+                Entities.DTOs.Parameter parameter3 = new Entities.DTOs.Parameter();
+                parameter1.Type = "text";
+                parameter2.Type = "text";
+                parameter3.Type = "text";
+                parameter1.Text = salesorderDetails.LeadId; parameter2.Text = salesorderDetails.SalesOrderNumber; parameter3.Text = "Valued Customer";
+
+                parameters.Add(parameter1); parameters.Add(parameter2); parameters.Add(parameter3);
+
+                component.Type = "body";
+                component.Parameters = parameters;
+                whatsAppMessagePayload.Template.Components.Add(component);
                 whatsAppMessagePayload.Metadata.Media.Content = base64;
                 WhatsAppCreateTokenResponse whatsAppCreateTokenResponse;
 
