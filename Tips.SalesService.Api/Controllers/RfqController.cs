@@ -466,8 +466,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var getAllActiveRfqNos = await _rfqRepository.GetAllActiveRfqNumberList();
-
-                var result = _mapper.Map<IEnumerable<RfqNumberListDto>>(getAllActiveRfqNos);
+                var result = _mapper.Map<IEnumerable<RfqNumberListDto>>(getAllActiveRfqNos);                
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Success";
                 serviceResponse.Success = true;

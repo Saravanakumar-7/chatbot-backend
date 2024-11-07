@@ -539,13 +539,28 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class SalesOrderDashboardSPReport
     {
-        public string? SORange
-        { get; set; }
-        public int? NoOfCount
-        { get; set; }
-        public decimal? SOValue
-        { get; set; }
+        public string? SORange { get; set; }
+        public int? NoOfCount { get; set; }
+        public decimal? SOValue { get; set; }
 
+    }
+    public class SalesOrderDashboardSPReport_Details
+    {
+        public string Title { get; set; }
+        public List<SalesOrderDashboardSPReport> Items { get; set; }
+    }   
+
+    public class FinancialYearDashboardSPReport
+    {
+        public string? FinancialYear { get; set; }
+        public int? NoOfCount { get; set; }
+        public decimal? Value { get; set; }
+
+    }
+    public class FinancialYearDashboardSPReport_Details
+    {
+        public string Title { get; set; }
+        public List<FinancialYearDashboardSPReport> Items { get; set; }
     }
     public class TransactionDashboardSPReport
     {
@@ -554,11 +569,36 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? ServiceValue { get; set; }
 
     }
-    public class FinancialYearDashboardSPReport
+    public class TransactionDashboardSPReport_bucketId1
     {
-        public string? FinancialYear { get; set; }
+        public string? SORange { get; set; }
         public int? NoOfCount { get; set; }
-        public decimal? Value { get; set; }
-
+        public decimal? SOValue { get; set; }
+    }
+    public class TransactionDashboardSPReport_bucketId2
+    {
+        public string? PORange { get; set; }
+        public int? NoOfCount { get; set; }
+        public decimal? POValue { get; set; }
+    }
+    public class TransactionDashboardSPReport_bucketId3
+    {
+        public string? POGrin { get; set; }
+        public int? NoOfCount { get; set; }
+        public decimal? GRINValue { get; set; }
+    } 
+    public class TransactionDashboardSPReport_bucketId5
+    {
+        public string? OpenGrin { get; set; }
+        public int? NoOfCount { get; set; }
+    }
+    public class TransactionDashboardSPReport_Details
+    {
+        public string Title { get; set; }
+        public List<TransactionDashboardSPReport_bucketId1>? Items1 { get; set; }
+        public List<TransactionDashboardSPReport_bucketId2>? Items2 { get; set; }
+        public List<TransactionDashboardSPReport_bucketId3>? Items3 { get; set; }
+        public List<TransactionDashboardSPReport>? Items4 { get; set; }
+        public List<TransactionDashboardSPReport_bucketId5>? Items5 { get; set; }
     }
 }

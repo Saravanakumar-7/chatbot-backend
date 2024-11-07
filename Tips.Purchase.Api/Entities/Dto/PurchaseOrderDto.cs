@@ -472,8 +472,13 @@ namespace Tips.Purchase.Api.Entities.DTOs
     public class PurchaseOrderDashboardSPReport
     {
         public string? PORange { get; set; }
-        public int? NoOfCount{ get; set; }
+        public int? NoOfCount { get; set; }
         public decimal? POValue { get; set; }
 
+    }
+    public class PurchaseOrderDashboardSPReport_Details
+    {
+        public string Title { get; set; }
+        public List<PurchaseOrderDashboardSPReport> Items { get; set; }
     }
 }

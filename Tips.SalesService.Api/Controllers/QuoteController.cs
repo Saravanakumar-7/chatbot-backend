@@ -243,9 +243,9 @@ namespace Tips.SalesService.Api.Controllers
                         }
                         else
                         {
-                            _logger.LogError($"Something went wrong inside Create GetQuoteById action: ItemMaster PartType is not avaivable");
+                            _logger.LogError($"Something went wrong inside Create GetQuoteById action: ItemMaster Item: {ItemNumber} is not avaivable");
                             serviceResponse.Data = null;
-                            serviceResponse.Message = "ItemMaster Details is null";
+                            serviceResponse.Message = $"ItemMaster Details is null for Item: {ItemNumber}";
                             serviceResponse.Success = false;
                             serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                             return StatusCode(500, serviceResponse);
@@ -795,19 +795,22 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     emaildetails = "Your Keus Automation Quotation";
                     FileName = "Quote_Automation_Book";
-                    whatsapptemplate = "advait_quote_automaiton";
+                    whatsapptemplate = "new_revised_automation_quote";
+                   // whatsapptemplate = "advait_quote_automaiton";
                 }
                 else if (quoteDetails.TypeOfSolution == "Accessories" || quoteDetails.TypeOfSolution == "Lock")
                 {
                     emaildetails = "Your Keus Accessories Quotation";
                     FileName = "Quote_Accessories_Book";
-                    whatsapptemplate = "quotation_sent";
+                    whatsapptemplate = "new_revised_automation_quote";
+                    //whatsapptemplate = "quotation_sent";
                 }
                 else
                 {
                     emaildetails = "Your Keus Lights Quotation";
                     FileName = "Quote_Lights_Book";
-                    whatsapptemplate = "advait_quote_light";
+                    whatsapptemplate = "new_revised_lights_quote";
+                    //whatsapptemplate = "advait_quote_light";
                 }
                 if (emaildetails.IsNullOrEmpty())
                 {
@@ -894,6 +897,25 @@ namespace Tips.SalesService.Api.Controllers
                 WhatsAppMessagePayload whatsAppMessagePayload = JsonConvert.DeserializeObject<WhatsAppMessagePayload>(jsonpayload);
                 whatsAppMessagePayload.Template.Name = whatsapptemplate;
                 whatsAppMessagePayload.Template.Components[0].Parameters[0].Document.Filename = FileName;
+
+                Component component = new Component();
+                List<Tips.SalesService.Api.Entities.DTOs.Parameter> parameters = new List<Tips.SalesService.Api.Entities.DTOs.Parameter>();
+
+                Entities.DTOs.Parameter parameter1 = new Entities.DTOs.Parameter();
+                Entities.DTOs.Parameter parameter2 = new Entities.DTOs.Parameter();
+                Entities.DTOs.Parameter parameter3 = new Entities.DTOs.Parameter();
+                parameter1.Type = "text";
+                parameter2.Type = "text";
+                parameter3.Type = "text";
+                parameter1.Text = quoteDetails.LeadId; parameter2.Text = quoteDetails.QuoteNumber; parameter3.Text = "Client";
+
+                parameters.Add(parameter1); parameters.Add(parameter2); parameters.Add(parameter3);
+
+                component.Type = "body";
+                component.Parameters = parameters;
+                whatsAppMessagePayload.Template.Components.Add(component);
+
+
                 whatsAppMessagePayload.Metadata.Media.Content = base64;
                 WhatsAppCreateTokenResponse whatsAppCreateTokenResponse;
 

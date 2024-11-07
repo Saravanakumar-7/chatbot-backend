@@ -99,7 +99,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? CustomerId { get; set; }
         public decimal? RevisionNumber { get; set; }
-
+        public CsRelease IsEnggReleased { get; set; }
     }
     public class RevNumberByRfqNumberListDto
     {

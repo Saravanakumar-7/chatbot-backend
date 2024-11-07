@@ -69,6 +69,9 @@ namespace Tips.Purchase.Api.Entities
             modelBuilder.Entity<PurchaseOrderUnitListSPReportWithParamForTrans>().HasNoKey();
             modelBuilder.Entity<PayableSPReport>().HasNoKey();
             modelBuilder.Entity<PurchaseOrderDashboardSPReport>().HasNoKey();
+            modelBuilder.Entity<podeliveryschedule_report_with_parameters_with_pagination_Dto>().HasNoKey();
+            modelBuilder.Entity<poconfirmation_report_with_pagination_Dto>().HasNoKey();
+
             modelBuilder.Entity<PaymentSPReport>().HasNoKey();
         }
     }

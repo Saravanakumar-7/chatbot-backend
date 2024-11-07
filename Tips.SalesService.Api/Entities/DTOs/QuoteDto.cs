@@ -587,7 +587,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string Type { get; set; }
 
         [JsonProperty("document")]
-        public Document Document { get; set; }
+        public Document? Document { get; set; }
+        [JsonProperty("text")]
+        public string? Text { get; set; } = null;
     }
 
     public class Document

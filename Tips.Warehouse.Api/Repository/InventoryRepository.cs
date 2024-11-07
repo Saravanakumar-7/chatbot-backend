@@ -910,7 +910,7 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
-        public async Task<IEnumerable<InventoryDashboardSPReport>> GetInventoryDashboardSPReportsWithParam(string Bucket_Id)
+        public async Task<List<InventoryDashboardSPReport>> GetInventoryDashboardSPReportsWithParam(string Bucket_Id)
         {
             var result = _tipsWarehouseDbContext
             .Set<InventoryDashboardSPReport>()
@@ -919,7 +919,7 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
-        public async Task<IEnumerable<InventoryDashboardSPReport>> GetInventoryDashboardLastWeekSPReportsWithParam(string Bucket_Id)
+        public async Task<List<InventoryDashboardSPReport>> GetInventoryDashboardLastWeekSPReportsWithParam(string Bucket_Id)
         {
             var result = _tipsWarehouseDbContext
             .Set<InventoryDashboardSPReport>()

@@ -125,7 +125,7 @@ namespace Tips.Grin.Api.Repository
         {
             var date = DateTime.Now;
             grinsForServiceItems.CreatedBy = _createdBy;
-            grinsForServiceItems.CreatedOn = date.Date;
+            grinsForServiceItems.CreatedOn = date;
             grinsForServiceItems.Unit = _unitname;
 
             var result = await Create(grinsForServiceItems);

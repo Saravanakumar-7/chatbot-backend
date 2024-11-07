@@ -702,15 +702,28 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetPurchaseOrderDashboardSPReportWithParam(string Bucket_Id)
+        public async Task<IActionResult> GetPurchaseOrderDashboardSPReportWithParam()
 
         {
-            ServiceResponse<IEnumerable<PurchaseOrderDashboardSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderDashboardSPReport>>();
+            ServiceResponse<List<PurchaseOrderDashboardSPReport_Details>> serviceResponse = new ServiceResponse<List<PurchaseOrderDashboardSPReport_Details>>();
             try
             {
-                var products = await _repository.GetPurchaseOrderDashboardSPReportWithParam(Bucket_Id);
+                List<PurchaseOrderDashboardSPReport_Details> purchaseOrderDashboardSPReport_Details = new List<PurchaseOrderDashboardSPReport_Details>();
+                List<string> Bucket_Id = new List<string>();
+                Bucket_Id.Add("bucket_Id1");
+                Bucket_Id.Add("bucket_Id2");
+                Bucket_Id.Add("bucket_Id3");
+                Bucket_Id.Add("bucket_Id4");
+                foreach (var buck in Bucket_Id)
+                {
+                    PurchaseOrderDashboardSPReport_Details purchaseOrderDashboardSPReport_Details1 = new PurchaseOrderDashboardSPReport_Details();
+                    purchaseOrderDashboardSPReport_Details1.Title = buck;
+                    purchaseOrderDashboardSPReport_Details1.Items = await _repository.GetPurchaseOrderDashboardSPReportWithParam(buck);
+                    purchaseOrderDashboardSPReport_Details.Add(purchaseOrderDashboardSPReport_Details1);
+                }
 
-                if (products == null)
+
+                if (purchaseOrderDashboardSPReport_Details == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"PurchaseOrderDashboard hasn't been found.";
@@ -722,7 +735,7 @@ namespace Tips.Purchase.Api.Controllers
                 else
                 {
 
-                    serviceResponse.Data = products;
+                    serviceResponse.Data = purchaseOrderDashboardSPReport_Details;
                     serviceResponse.Message = "Returned PurchaseOrderDashboardSPReportWithParam Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -4465,7 +4478,7 @@ namespace Tips.Purchase.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetPoConfirmationSPReportwithParam([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderLimitSPReportDto paramsforPurchase)
         {
-            ServiceResponse<IEnumerable<poconfirmation_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_Dto>>();
+            ServiceResponse<IEnumerable<poconfirmation_report_with_pagination_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_with_pagination_Dto>>();
             try
             {
                 var result = await _repository.GetPoConfirmationLimitSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName,
@@ -4515,7 +4528,7 @@ namespace Tips.Purchase.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetPoConfirmationSPReportwithDate([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderDateLimitSPReportDto purchaseOrderDate_ReportGetDto)
         {
-            ServiceResponse<IEnumerable<poconfirmation_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_Dto>>();
+            ServiceResponse<IEnumerable<poconfirmation_report_with_pagination_Dto>> serviceResponse = new ServiceResponse<IEnumerable<poconfirmation_report_with_pagination_Dto>>();
             try
             {
                 var result = await _repository.GetPoConfirmationLimitSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
@@ -4750,7 +4763,7 @@ namespace Tips.Purchase.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetPoDeliverySchedulewithParam([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderLimitSPReportDto paramsforPurchase)
         {
-            ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>>();
+            ServiceResponse<IEnumerable<podeliveryschedule_report_with_parameters_with_pagination_Dto>> serviceResponse = new ServiceResponse<IEnumerable<podeliveryschedule_report_with_parameters_with_pagination_Dto>>();
             try
             {
                 var result = await _repository.GetPoDeliveryScheduleLimitwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName,
@@ -4800,7 +4813,7 @@ namespace Tips.Purchase.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetPoDeliveryScheduleSPReportwithDate([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderDateLimitSPReportDto purchaseOrderDate_ReportGetDto)
         {
-            ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>> serviceResponse = new ServiceResponse<IEnumerable<podeliveryschedule_report_Dto>>();
+            ServiceResponse<IEnumerable<podeliveryschedule_report_with_parameters_with_pagination_Dto>> serviceResponse = new ServiceResponse<IEnumerable<podeliveryschedule_report_with_parameters_with_pagination_Dto>>();
             try
             {
                 var result = await _repository.GetPoDeliveryScheduleLimitSPReportwithDate(purchaseOrderDate_ReportGetDto.FromDate, purchaseOrderDate_ReportGetDto.ToDate,
