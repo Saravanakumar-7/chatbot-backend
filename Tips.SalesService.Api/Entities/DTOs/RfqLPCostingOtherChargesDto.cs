@@ -30,7 +30,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqLPCostingOtherChargesDtoUpdate
     {
-        [StringLength(500, ErrorMessage = "NameOfLable can't be longer than 500 characters")]
+        public int Id { get; set; }
 
         public string? NameOfLable { get; set; }      
        

@@ -2513,8 +2513,9 @@ namespace Tips.SalesService.Api.Controllers
 
                     }
                 }
+               
                 var updateData = _mapper.Map(rfqLPCostingDtoUpdate, updateRfqlpCosting);
-
+                updateData.RfqLPCostingItems = rfqlpcostingitemList;
                 string result = await _rfqlpcostingRepository.UpdateRfqLPCosting(updateData);
                 _logger.LogInfo(result);
                 _rfqlpcostingRepository.SaveAsync();
