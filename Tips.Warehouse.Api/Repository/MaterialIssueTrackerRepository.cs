@@ -69,7 +69,7 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<List<ShopOrderMaterialIssueTracker>> GetDetailsByShopOrderNOItemNoLotNo(string PartNumber, string ShopOrderNumber, string LotNumber,string? MRNumber)
         {
-            if (MRNumber == null)
+            if (MRNumber == "NULL")
             {
                 var shopOrderMaterialIssueTracker = await _tipsWarehouseDbContext.ShopOrderMaterialIssueTrackers
                     .Where(x => x.PartNumber == PartNumber && x.ShopOrderNumber == ShopOrderNumber && x.LotNumber == LotNumber && x.MRNumber== "NULL"
