@@ -2632,6 +2632,26 @@ namespace Tips.Master.Api.Controllers
                             decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
                             decimal newRequiredQtySA = requiredQtySA - openSAQty;
                             newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
+
+                            //Get SA Stock from ODO
+                            //var client1 = _clientFactory.CreateClient();
+                            //var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                            //var encodedSAItemNumber = Uri.EscapeDataString(saItemNumber);
+
+                            //var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ODOAPI"], $"GetListOfSAODOQtyByItemNo?saItemNumber={encodedSAItemNumber}"));
+                            //request1.Headers.Add("Authorization", token1);
+
+                            //var inventoryObjectResult1 = await client1.SendAsync(request1);
+
+                            //var inventoryObjectString1 = await inventoryObjectResult1.Content.ReadAsStringAsync();
+                            //var inventoryObjectData1 = JsonConvert.DeserializeObject<ODOItemDetailsForBomDto>(inventoryObjectString1);
+                            //var inventoryObject1 = inventoryObjectData1.data;
+                            //if (inventoryObject1.ODOQty> 0)
+                            //{
+                            //    newRequiredQtySA -= inventoryObject1.ODOQty;
+                            //}
+
                             decimal newOpenSAQty = requiredQtySA >= openSAQty ? 0 : (openSAQty - requiredQtySA);
                             if (saItemOpenStock.ContainsKey(saItemNumber))
                             {
@@ -2821,6 +2841,29 @@ namespace Tips.Master.Api.Controllers
                                 decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
                                 decimal newRequiredQtySA = requiredQtySA - openSAStock;
                                 newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
+
+                                //Get SA Stock from ODO
+                                var client1 = _clientFactory.CreateClient();
+                                var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                                var encodedSAItemNumber = Uri.EscapeDataString(saItemNumber);
+
+                                var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ODOAPI"], $"GetListOfSAODOQtyByItemNo?saItemNumber={encodedSAItemNumber}"));
+                                request1.Headers.Add("Authorization", token1);
+
+                                var oDOObjectResult1 = await client1.SendAsync(request1);
+
+                                var oDOObjectString1 = await oDOObjectResult1.Content.ReadAsStringAsync();
+                                var oDOObjectData1 = JsonConvert.DeserializeObject<ODOItemDetailsForBomDto>(oDOObjectString1);
+                                if (oDOObjectData1.data != null)
+                                {
+                                    var oDOObject1 = oDOObjectData1.data;
+                                    if( oDOObject1.ODOQty > 0)
+                                    {
+                                        newRequiredQtySA -= oDOObject1.ODOQty;
+                                    }
+                                }
+
                                 decimal newOpenSAStock = requiredQtySA >= openSAStock ? 0 : (openSAStock - requiredQtySA);
                                 if (saItemOpenStock.ContainsKey(saItemNumber))
                                 {

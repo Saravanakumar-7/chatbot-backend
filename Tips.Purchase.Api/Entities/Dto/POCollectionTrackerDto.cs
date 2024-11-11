@@ -79,5 +79,27 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public List<string> VendorName { get; set; }
         public List<string>? Remarks { get; set; }
     }
+    public class PaymentSPReportDto
+    {
+        public string? PONumber { get; set; }
+        public string? VendorName { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
+    public class PaymentSPReport
+    {
+        public string? PONumber { get; set; } 
+        public int? RevisionNumber { get; set; } 
+        public DateTime? PODate { get; set; } 
+        public DateTime? DeliveryDate { get; set; } 
+        public string? VendorNumber { get; set; } 
+        public string? VendorName { get; set; } 
+        public string? ProjectNumber { get; set; } 
+        public string? UOC { get; set; } 
+        public decimal? SumOfPOAmount { get; set; } 
+        public decimal? TotalPaidSumofAmount { get; set; } 
+        public decimal? TotalBalanceSumOfAmount { get; set; } 
+        public DateTime? DateofNextPayment { get; set; } 
+        public string? Remarks { get; set; } 
+    }
 
 }

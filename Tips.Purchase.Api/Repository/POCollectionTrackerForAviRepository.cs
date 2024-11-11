@@ -183,6 +183,18 @@ namespace Tips.Purchase.Api.Repository
 
             return results;
         }
+
+        public async Task<IEnumerable<PaymentSPReport>> GetPaymentSPReportWithParam(string PONumber, string VendorName, string ProjectNumber)
+        {
+
+            var result = _tipsPurchaseDbContext
+            .Set<PaymentSPReport>()
+            .FromSqlInterpolated($"CALL payment_Report_with_parameter({PONumber},{VendorName},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+
         public async Task<POCollectionTrackerForAviDetailsDto> GetPOCollectionTrackerForAviByVendorId(string vendorId)
         {
             //var purchaseOrderTotalValue = _tipsPurchaseDbContext.PurchaseOrders

@@ -12,6 +12,7 @@ using System.Security.Claims;
 using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 using System.Data;
 using Microsoft.AspNetCore.Authorization;
+using System.Text;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -1267,17 +1268,42 @@ namespace Tips.Warehouse.Api.Controllers
             }
 
         }
-        [HttpPost]
-        public async Task<IActionResult> GetListOfODOQtyByItemNo(string itemNumber)
+
+        [HttpGet]
+        public async Task<IActionResult> GetListOfSAODOQtyByItemNo( string saItemNumber)
+        {
+            ServiceResponse<ODOQuantityDto> serviceResponse = new ServiceResponse<ODOQuantityDto>();
+            try
+            {
+                var odoItemNoList = await _repository.GetListOfSAODOQtyByItemNo(saItemNumber);
+
+
+                serviceResponse.Data = odoItemNoList;
+                serviceResponse.Message = "Returned  ODOQty  By ItemNo List";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetListOfODOQtyByItemNo action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetListOfODOQtyByItemNo(List<string> itemNumberList)
         {
             ServiceResponse<IEnumerable<ODOQuantityDto>> serviceResponse = new ServiceResponse<IEnumerable<ODOQuantityDto>>();
             try
             {
-                var revNumberDetailsbyPONumber = await _repository.GetListOfODOQtyByItemNo(itemNumber);
+                var odoItemNoList = await _repository.GetListOfODOQtyByItemNo(itemNumberList);
 
-
-                var result = _mapper.Map<IEnumerable<ODOQuantityDto>>(revNumberDetailsbyPONumber);
-                serviceResponse.Data = result;
+                serviceResponse.Data = odoItemNoList;
                 serviceResponse.Message = "Returned  ODOQty  By ItemNo List";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
