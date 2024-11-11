@@ -34,7 +34,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class RfqLPCostingDtoUpdate
     {
-       // public int Id { get; set; }
+        public int Id { get; set; }
         public string? RfqNumber { get; set; }
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
 
