@@ -38,11 +38,12 @@ namespace Repository
 
             List<long> itemIds = itemIdNoList.Select(x=>x.Id).ToList();
 
-            IEnumerable<ItemMasterRouting> itemMasterRoutings = await TipsMasterDbContext.ItemMasterRoutings
-                               .Where(x => itemIds.Contains(x.ItemMasterId)).ToListAsync();
+           // IEnumerable<ItemMasterRouting> itemMasterRoutings = await TipsMasterDbContext.ItemMasterRoutings
+                               //.Where(x => itemIds.Contains(x.ItemMasterId)).ToListAsync();
 
 
-            var getItemsRoutingDetailsForLpCosting = itemMasterRoutings
+            List<ItemMasterRoutingListDto> getItemsRoutingDetailsForLpCosting = await TipsMasterDbContext.ItemMasterRoutings
+                               .Where(x => itemIds.Contains(x.ItemMasterId))
                                .Select(c => new ItemMasterRoutingListDto()
                                {
                                    ProcessSteps = c.ProcessStep,
@@ -51,12 +52,35 @@ namespace Repository
                                    ItemNumber = itemIdNoList.Where(x => x.Id == c.ItemMasterId)
                                    .Select(x => x.ItemNumber).FirstOrDefault()
                                })
-                               .ToList();
+                               .ToListAsync();
 
             return getItemsRoutingDetailsForLpCosting;
 
 
-        } 
+        }
+
+        public async Task<List<ItemMasterRoutingListDto>> GetItemsRoutingDetailsForLpCosting(string itemNumber)
+        {
+            var itemIdNo = await TipsMasterDbContext.ItemMasters
+                .Where(im =>im.ItemNumber == itemNumber)
+                .Select(x => new { x.Id, x.ItemNumber }).FirstOrDefaultAsync();
+
+
+            List<ItemMasterRoutingListDto> getItemsRoutingDetailsForLpCosting = await TipsMasterDbContext.ItemMasterRoutings
+                               .Where(x => x.ItemMasterId == itemIdNo.Id)
+                               .Select(c => new ItemMasterRoutingListDto()
+                               {
+                                   ProcessSteps = c.ProcessStep,
+                                   MachineHrs = c.MachineHours,
+                                   LabourHrs = c.LaborHours,
+                                   ItemNumber = itemIdNo.ItemNumber
+                               })
+                               .ToListAsync();
+
+            return getItemsRoutingDetailsForLpCosting;
+
+
+        }
 
         public Task<ItemMasterRouting> GetItemMasterRoutingById(int id)
         {
