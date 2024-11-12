@@ -400,6 +400,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? FirstQuoteSentGeneralDiscountType { get; set; }
         public decimal? FirstQuoteSentTaxedValue { get; set; }
         public decimal? FirstQuoteSentUntaxedValue { get; set; }
+        public decimal? FirstQuoteEmailSentOn { get; set; }
         public string? LatestQuoteSentNumber { get; set; }
         public decimal? LatestQuoteSentRevisionNumber { get; set; }
         public DateTime? LatestQuoteSentCreatedOn { get; set; }

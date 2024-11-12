@@ -4,6 +4,7 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -18,12 +19,16 @@ namespace Tips.Master.Api.Controllers
     public class ItemMasterRoutingController : ControllerBase
     {
         private IRepositoryWrapperForMaster _repository;
+        private IReleaseProductBomRepository _releaseProductBomRepository;
+        private IEnggBomRepository _enggBomRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
 
-        public ItemMasterRoutingController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
+        public ItemMasterRoutingController(IEnggBomRepository enggBomRepository, IReleaseProductBomRepository releaseProductBomRepository, IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
+            _enggBomRepository = enggBomRepository;
+            _releaseProductBomRepository = releaseProductBomRepository;
             _logger = logger;
             _mapper = mapper;
         }
@@ -92,8 +97,15 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                 
-                itemMasterRouting = await _repository.ItemMasterRoutingRepository.GetItemsRoutingDetailsForLpCosting(itemNumber);
+
+                List<ItemMasterRoutingListDto> itemMasterRoutingList = new List<ItemMasterRoutingListDto>();
+
+                //foreach (var item in itemNumber)
+                //{
+                //    await ChildItemRequiredQtyForItemRoutingByItemNo(itemMasterRoutingList, item);
+                //}
+
+                    itemMasterRouting = await _repository.ItemMasterRoutingRepository.GetItemsRoutingDetailsForLpCosting(itemNumber);
                 List<ItemMasterRoutingListDto> rfqCSDto = _mapper.Map<List<ItemMasterRoutingListDto>>(itemMasterRouting);
                 //rfqCSDto = itemMasterRouting;
                 serviceResponse.Data = rfqCSDto;
@@ -112,6 +124,59 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        ////private async Task ChildItemRequiredQtyForItemRoutingByItemNo(List<ItemMasterRoutingListDto> itemMasterRoutingList, string itemNumber)
+        //{
+        //    try
+        //    {
+        //        var productionBomMaxVersion = await _releaseProductBomRepository
+        //                                    .GetLatestProductionBomByItemNumber(itemNumber);
+
+        //        if (productionBomMaxVersion >= 0)
+        //        {
+        //            var enggBomDetail = await _enggBomRepository
+        //                  .GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);
+
+        //            if (enggBomDetail != null)
+        //            {
+        //                foreach (var enggChildItem in enggBomDetail?.EnggChildItems)
+        //                {
+        //                    if (enggChildItem.PartType == PartType.SA)
+        //                    {
+
+        //                        ItemMasterRoutingListDto bomCoverageReportChildItemReqQty = new ItemMasterRoutingListDto
+        //                        {
+        //                            ItemNumber = enggChildItem.ItemNumber,
+        //                            Version = enggChildItem.Version,
+        //                            MftrItemNumber = enggChildItem.MftrItemNumbers,
+        //                            Description = enggChildItem.Description,
+        //                            UOM = enggChildItem.UOM,
+        //                            PartType = enggChildItem.PartType,
+        //                            RequiredQty = requiredQuantity
+
+        //                        };
+
+        //                        itemMasterRoutingList.Add(bomCoverageReportChildItemReqQty);
+
+        //                        if (newRequiredQtySA <= 0)
+        //                        {
+        //                            continue;
+        //                        }
+        //                        await ChildItemRequiredQtyForItemRoutingByItemNo(bomCoverageList, enggChildItem.ItemNumber);
+        //                    }
+        //                    else
+        //                    {
+        //                    }
+
+        //                }
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //    }
+        //}
 
 
     }
