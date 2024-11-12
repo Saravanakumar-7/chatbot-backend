@@ -1002,6 +1002,7 @@ namespace Tips.Production.Api.Controllers
                         .ForMember(dest => dest.PartNumber, opt => opt.MapFrom(src => src.PartNumber))
                         .ForMember(dest => dest.MRNWarehouseList, opt => opt.MapFrom(src => src.MRStockDetails.Select(detail => new InventoryUpdateDtoForMRWarehouse
                         {
+                            LotNumber = detail.LotNumber,
                             Warehouse = detail.Warehouse,
                             Location = detail.Location,
                             LocationStock = detail.LocationStock,
