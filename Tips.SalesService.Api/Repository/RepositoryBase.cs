@@ -43,11 +43,12 @@ namespace Tips.SalesService.Api.Repository
         {
 
             _tipsSalesServiceDbContext.Set<T>().Remove(entity);
-            
+
         }
         public void SaveAsync()
         {
             _tipsSalesServiceDbContext.SaveChanges();
         }
+        
     }
 }

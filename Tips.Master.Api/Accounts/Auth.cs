@@ -49,6 +49,10 @@ namespace Accounts
             {
                 return (LoginResult.InvalidUnit, null, 0, null);
             }
+            if (userDetail.IsActive == false)
+            {
+                return (LoginResult.InvalidEntry,null,0,null);
+            }
 
             var key = _configuration["Jwt:key"];
             var tokenHandler = new JwtSecurityTokenHandler();

@@ -2485,7 +2485,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var getRfqLpCostingByid = await _rfqlpcostingRepository.GetRfqLPCostingById(id);
+                var getRfqLpCostingByid = await _rfqlpcostingRepository.GetRfqLPCostingByIdNoTracking(id);
                 if (getRfqLpCostingByid is null)
                 {
                     _logger.LogError($"RfqLPCosting with id: {id}, hasn't been found in db.");
@@ -2513,8 +2513,8 @@ namespace Tips.SalesService.Api.Controllers
 
                     }
                 }
-               
-                var updateData = _mapper.Map(rfqLPCostingDtoUpdate, updateRfqlpCosting);
+
+                var updateData = _mapper.Map(rfqLPCostingDtoUpdate, getRfqLpCostingByid);
                 updateData.RfqLPCostingItems = rfqlpcostingitemList;
                 string result = await _rfqlpcostingRepository.UpdateRfqLPCosting(updateData);
                 _logger.LogInfo(result);
