@@ -90,7 +90,6 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? PONumber { get; set; } 
         public int? RevisionNumber { get; set; } 
         public DateTime? PODate { get; set; } 
-        public DateTime? DeliveryDate { get; set; } 
         public string? VendorNumber { get; set; } 
         public string? VendorName { get; set; } 
         public string? ProjectNumber { get; set; } 
