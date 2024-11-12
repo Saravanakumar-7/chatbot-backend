@@ -15,6 +15,5 @@ namespace Tips.SalesService.Api.Contracts
         void Update(T entity);
         void Delete(T entity);
         public void SaveAsync();
-
     }
 }

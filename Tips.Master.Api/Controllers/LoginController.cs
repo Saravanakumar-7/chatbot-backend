@@ -88,6 +88,11 @@ namespace Tips.Master.Api.Controllers
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.NotFound;
                         break;
+                    case LoginResult.InvalidEntry:
+                        serviceResponse.Message = "User has been Deactivated";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NonAuthoritativeInformation;
+                        break;
 
                     default: // LoginResult.InvalidEntry
                         serviceResponse.Message = "Invalid entry";

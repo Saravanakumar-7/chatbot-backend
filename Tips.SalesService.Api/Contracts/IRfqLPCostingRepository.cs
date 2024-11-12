@@ -14,6 +14,7 @@ namespace Tips.SalesService.Api.Contracts
     {
         Task<PagedList<RfqLPCosting>> GetAllRfqLPCosting(PagingParameter pagingParameter, SearchParammes searchParammes);
         Task<RfqLPCosting> GetRfqLPCostingById(int id);
+        Task<RfqLPCosting> GetRfqLPCostingByIdNoTracking(int id);
         Task<int?> CreateRfqLPCosting(RfqLPCosting rfqLPCosting);
         Task<string> UpdateRfqLPCosting(RfqLPCosting rfqLPCosting);
         Task<string> DeleteRfqLPCosting(RfqLPCosting rfqLPCosting);

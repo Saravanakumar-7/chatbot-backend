@@ -1837,6 +1837,19 @@ namespace Tips.SalesService.Api.Repository
 
             return rfqLPCosting;
         }
+        public async Task<RfqLPCosting> GetRfqLPCostingByIdNoTracking(int id)
+        {
+            var rfqLPCosting = await _tipsSalesServiceDbContext.RfqLPCostings.AsNoTracking().Where(x => x.Id == id)
+                 .Include(x => x.RfqLPCostingItems)
+                 .ThenInclude(u => u.RfqLPCostingProcesses)
+                 .Include(x => x.RfqLPCostingItems)
+                 .ThenInclude(v => v.RfqLPCostingNREConsumables)
+                 .Include(x => x.RfqLPCostingItems)
+                 .ThenInclude(w => w.RfqLPCostingOtherCharges)
+                          .FirstOrDefaultAsync();
+
+            return rfqLPCosting;
+        }
 
 
         public async Task<string> UpdateRfqLPCosting(RfqLPCosting rfqLPCosting)
