@@ -1978,7 +1978,7 @@ namespace Tips.Warehouse.Api.Controllers
                         {
                             decimal issuedQty = Location.Qty;
                             decimal lotNoWiseIssuedQty = 0;
-                            IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNoandLocationandwarehouse(materialIssueQty.PartNumber, Location.Location, Location.Warehouse, materialIssueQty.ProjectNumber, Location.LotNumber);
+                            IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNoandLocationandwarehouse(materialIssueQty.PartNumber, Location.Location, Location.Warehouse, materialIssueQty.ProjectNumber/*, Location.LotNumber*/);
                             foreach (var invItem in inventories)
                             {
                                 invItem.shopOrderNo = updateInventoryBalanceQty[0].ShopOrderNumber;
