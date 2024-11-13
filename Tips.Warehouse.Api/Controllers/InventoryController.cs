@@ -1298,7 +1298,7 @@ namespace Tips.Warehouse.Api.Controllers
                 {
 
                     var inventoryDetails = await _inventoryRepository
-                        .GetWIPInventoryDetailsByItemNo(item.PartNumber, item.ShopOrderNumber);
+                        .GetWIPInventoryDetailsByItemNo(item.PartNumber, item.ShopOrderNumber, item.MRNumber);
 
                     if (inventoryDetails == null || inventoryDetails.Count == 0)
                     {
@@ -1373,7 +1373,7 @@ namespace Tips.Warehouse.Api.Controllers
                         string result = await _inventoryRepository.UpdateInventory(inventoryDetails[i]);
 
                         /*********************************** Update data to Material Issue Tracker *************************/
-                        await UpdateDataToMaterialIssueTracker(item, inventoryDetails[i], lotNoWiseProducedQty);
+                        await UpdateDataToMaterialIssueTracker(item, inventoryDetails[i], lotNoWiseProducedQty, item.MRNumber);
                         /*********************************** End of Add data to Material Issue Tracker *************************/
 
                         //Add InventoryTransaction
@@ -1427,12 +1427,12 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        private async Task UpdateDataToMaterialIssueTracker(InventoryDtoForShopOrderConfirmation item, Inventory inventoryDetail, decimal lotNoWiseProducedQty)
+        private async Task UpdateDataToMaterialIssueTracker(InventoryDtoForShopOrderConfirmation item, Inventory inventoryDetail, decimal lotNoWiseProducedQty, string? MRNumber)
         {
             // Retrieve the existing entry from the repository based on the ShopOrderNumber, PartNumber, and LotNumber
 
             List<ShopOrderMaterialIssueTracker> materialIssueTrackerList = await _materialIssueTrackerRepository
-                                .GetDetailsByShopOrderNOItemNoLotNo(inventoryDetail.PartNumber, inventoryDetail.shopOrderNo, inventoryDetail.LotNumber);
+                                .GetDetailsByShopOrderNOItemNoLotNo(inventoryDetail.PartNumber, inventoryDetail.shopOrderNo, inventoryDetail.LotNumber,MRNumber);
 
             if (materialIssueTrackerList != null || materialIssueTrackerList.Count > 0)
             {
@@ -1978,7 +1978,7 @@ namespace Tips.Warehouse.Api.Controllers
                         {
                             decimal issuedQty = Location.Qty;
                             decimal lotNoWiseIssuedQty = 0;
-                            IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNoandLocationandwarehouse(materialIssueQty.PartNumber, Location.Location, Location.Warehouse, materialIssueQty.ProjectNumber);
+                            IEnumerable<Inventory> inventories = await _inventoryRepository.GetInventoryDetailsByItemNoandLocationandwarehouse(materialIssueQty.PartNumber, Location.Location, Location.Warehouse, materialIssueQty.ProjectNumber/*, Location.LotNumber*/);
                             foreach (var invItem in inventories)
                             {
                                 invItem.shopOrderNo = updateInventoryBalanceQty[0].ShopOrderNumber;

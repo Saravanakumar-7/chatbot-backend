@@ -477,7 +477,7 @@ namespace Tips.Warehouse.Api.Controllers
             // Retrieve the existing entry from the repository based on the ShopOrderNumber, PartNumber, and LotNumber
 
             List<ShopOrderMaterialIssueTracker> materialIssueTrackerList = await _materialIssueTrackerRepository
-                                .GetDetailsByShopOrderNOItemNoLotNo(inventoryTranctionDetail.PartNumber, inventoryTranctionDetail.shopOrderNo, inventoryTranctionDetail.LotNumber);
+                                .GetDetailsByShopOrderNOItemNoLotNo(inventoryTranctionDetail.PartNumber, inventoryTranctionDetail.shopOrderNo, inventoryTranctionDetail.LotNumber,"");
 
             if (materialIssueTrackerList != null || materialIssueTrackerList.Count > 0)
             {
