@@ -17,6 +17,7 @@ using MySqlX.XDevAPI.Common;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using NLog.Fluent;
+using Org.BouncyCastle.Utilities;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -564,6 +565,213 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
+                var enggBomList = _mapper.Map<EnggBom>(enggBomPostDto);
+
+                enggBomList.RevisionNumber = 1;
+
+                var enggNre = enggBomPostDto.BomNREConsumablePostDto;
+                var nreList = new List<NREConsumable>();
+                for (int i = 0; i < enggNre.Count; i++)
+                {
+                    NREConsumable enggChildItemDetails = _mapper.Map<NREConsumable>(enggNre[i]);
+                    nreList.Add(enggChildItemDetails);
+
+                }
+                enggBomList.NREConsumable = nreList;
+
+                var enggChildItemDto = enggBomPostDto.EnggChildItemPosts;
+
+                var enggChildItemList = new List<EnggChildItem>();
+                if (enggChildItemDto != null)
+                {
+                    for (int i = 0; i < enggChildItemDto.Count; i++)
+                    {
+                        EnggChildItem enggChildItemDetail = _mapper.Map<EnggChildItem>(enggChildItemDto[i]);
+                        enggChildItemDetail.EnggAlternates = _mapper.Map<List<EnggAlternates>>(enggChildItemDto[i].EnggAlternatesPostDtos);
+                        enggChildItemList.Add(enggChildItemDetail);
+                    }
+                }
+                else
+                {
+                    _logger.LogError("Engineering Bom Item object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Engineering Bom Items Object is Empty.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                enggBomList.EnggChildItems = enggChildItemList;
+
+                await _repository.EnggBomRepository.CreateEnggBom(enggBomList);
+
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateEnggBom action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreateEnggBomWithValidation([FromBody] EnggBomPostDtoWithValidation enggBomPostDto)
+        {
+            ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
+
+            try
+            {
+                if (enggBomPostDto is null)
+                {
+                    _logger.LogError("Engineering Bom object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Engineering Bom object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid Engineering Bom object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid Engineering Bom object.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (enggBomPostDto.EnggChildItemPosts.Count()<1)
+                {
+                    _logger.LogError("Atleast 1 Child Item Is Required");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Atleast 1 Child Item Is Required";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                    return StatusCode(406, serviceResponse);
+                }
+                var bomitem = enggBomPostDto.EnggChildItemPosts.Where(x=>x.ItemNumber== enggBomPostDto.ItemNumber).Count();
+                if (bomitem > 0)
+                {
+                    _logger.LogError($"BOM can't contain itself");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"BOM can't contain itself";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                    return StatusCode(406, serviceResponse);
+                }
+                var activeitems= enggBomPostDto.EnggChildItemPosts.Where(x => x.IsActive==true).Count();
+                if (activeitems < 1)
+                {
+                    _logger.LogError($"Atleast 1 Active BOM Item Is Required");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Atleast 1 Active BOM Item Is Required";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                    return StatusCode(406, serviceResponse);
+                }
+                var duplicates = enggBomPostDto.EnggChildItemPosts.GroupBy(str => str.ItemNumber).Where(group => group.Count() > 1).Select(group => group.Key).ToList();
+                if (duplicates.Count() > 0)
+                {
+                    string? items = null;
+                    foreach (var item in duplicates)
+                    {
+                        if(items==null) items=item;
+                        else items = items+","+item;
+                    }
+                    _logger.LogError($"BOM Items : {items} Can't Repeat");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"BOM Items : {items} Can't Repeat";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                    return StatusCode(406, serviceResponse);
+                }
+                var lowQtyitems= enggBomPostDto.EnggChildItemPosts.Where(x=>x.Quantity<=0).ToList();
+                if (lowQtyitems.Count() > 0)
+                {
+                    string? items = null;
+                    foreach (var item in lowQtyitems)
+                    {
+                        if(items==null) items = item.ItemNumber;
+                        else items = items+","+ item.ItemNumber;
+                    }
+                    _logger.LogError($"BOM Items : {items} should have Quantity greater then 0");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"BOM Items : {items} should have Quantity greater then 0";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                    return StatusCode(406, serviceResponse);
+                }
+
+                var ExistingBom = await _repository.EnggBomRepository.CheckEnggBomByItemNumber(enggBomPostDto.ItemNumber);
+                if (ExistingBom)
+                {
+                    _logger.LogError($"BOM: {enggBomPostDto.ItemNumber} already Exists");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"BOM: {enggBomPostDto.ItemNumber} already Exists";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                    return StatusCode(406, serviceResponse);
+                }
+                var itemmasterDetails = await _repository.ItemMasterRepository.GetItemMasterByItemNumber(enggBomPostDto.ItemNumber);
+                if (itemmasterDetails==null)
+                {
+                    _logger.LogError($"BOM: {enggBomPostDto.ItemNumber} Doesnot Exists in ItemMater");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"BOM: {enggBomPostDto.ItemNumber} Doesnot Exists in ItemMater";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                    return StatusCode(406, serviceResponse);
+                }
+                if (itemmasterDetails.ItemType!=PartType.FG && itemmasterDetails.ItemType!=PartType.SA)
+                {
+                    _logger.LogError($"BOM ItemType must be FinishedGood or SubAssembly");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"BOM ItemType must be FinishedGood or SubAssembly";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                    return StatusCode(406, serviceResponse);
+                }
+                string? nonexistantitems = null;
+                string? wrongTypeitems = null;
+                foreach (var items in enggBomPostDto.EnggChildItemPosts)
+                {
+                    var childdetails = await _repository.ItemMasterRepository.GetItemMasterByItemNumber(items.ItemNumber);
+                    if (childdetails == null)
+                    {
+                        if (nonexistantitems == null) nonexistantitems = items.ItemNumber;  
+                        else nonexistantitems = nonexistantitems+","+ items.ItemNumber;
+                    }
+                    else if (childdetails.ItemType != PartType.PurchasePart && childdetails.ItemType != PartType.SA)
+                    {
+                        if (wrongTypeitems == null) wrongTypeitems = items.ItemNumber;
+                        else wrongTypeitems = wrongTypeitems + "," + items.ItemNumber;
+                    }
+                }
+                if (nonexistantitems!=null)
+                {
+                    _logger.LogError($"Item: {nonexistantitems} Doesnot Exists in ItemMater");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Item: {nonexistantitems} Doesnot Exists in ItemMater";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                    return StatusCode(406, serviceResponse);
+                }
+                if (wrongTypeitems!=null)
+                {
+                    _logger.LogError($"Item: {wrongTypeitems} ItemType must be PurchasePart or SubAssembly");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Item: {wrongTypeitems} ItemType must be PurchasePart or SubAssembly";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                    return StatusCode(406, serviceResponse);
+                }
                 var enggBomList = _mapper.Map<EnggBom>(enggBomPostDto);
 
                 enggBomList.RevisionNumber = 1;

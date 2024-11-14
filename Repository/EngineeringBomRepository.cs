@@ -593,6 +593,13 @@ namespace Repository
 
             return getAllBomGroupList;
         }
+        public async Task<bool> CheckEnggBomByItemNumber(string itemNumber)
+        {
+
+            var getAllBomGroupList = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == itemNumber).CountAsync();
+
+            return getAllBomGroupList>0;
+        }
 
         public async Task<IEnumerable<EnggChildBomDetailsDto>> GetAllEnggChildBomDetailsByItemNumber(string itemNumber)
         {

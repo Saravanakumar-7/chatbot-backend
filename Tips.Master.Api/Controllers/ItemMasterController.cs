@@ -1232,112 +1232,9 @@ namespace Tips.Master.Api.Controllers
                 var itemMasterEntity = _mapper.Map<ItemMaster>(itemMasterDtoPost);
                 var itemMasterAlternate = _mapper.Map<IEnumerable<ItemmasterAlternate>>(itemMasterDtoPost.ItemmasterAlternate);
                 var itemMasterApprovedVendor = _mapper.Map<IEnumerable<ItemMasterApprovedVendor>>(itemMasterDtoPost.ItemMasterApprovedVendor);
-                //var itemMasterFileUpload = _mapper.Map<IEnumerable<ItemMasterFileUpload>>(itemMasterDtoPost.ItemMasterFileUpload);
                 var itemMasterRouting = _mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoPost.ItemMasterRouting);
                 var itemMasterWarehouse = _mapper.Map<IEnumerable<ItemMasterWarehouse>>(itemMasterDtoPost.ItemMasterWarehouse);
 
-
-
-                //single file upload 
-                //var imageUploadDtoList = new ImageUpload();
-
-
-                //var ImageUploadDetail = itemMasterDtoPost.ImageUpload;
-
-                ////foreach (var ImageUploadDetail in ImageUploadDetails)
-                ////{
-
-                //    byte[] imageContent = Convert.FromBase64String(ImageUploadDetail.FileByte);
-                //    var itemNumbers = itemMasterDtoPost.ItemNumber;
-                //    string imageName = ImageUploadDetail.FileName + "." + ImageUploadDetail.FileExtension;
-                //    string imageExt = Path.GetExtension(imageName).ToUpper();
-                //    if (imageExt == ".PNG" || imageExt == ".JPG" || imageExt == ".JPEG" || imageExt == ".GIF")
-                //    {
-                //        //Guid guid = Guid.NewGuid();
-                //        string imagePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ImageUpload", /*/ guid.ToString() + "_" +/*/ imageName);
-                //        using (MemoryStream ms = new MemoryStream(imageContent))
-                //        {
-                //            ms.Position = 0;
-                //            using (var fileStream = new FileStream(imagePath, FileMode.Create, FileAccess.Write))
-                //            {
-                //                ms.WriteTo(fileStream);
-                //            }
-                //            var uploadedFiles = new ImageUpload
-                //            {
-                //                FileName = imageName,
-                //                FileExtension = imageExt,
-                //                FilePath = $"{Request.Scheme}://{Request.Host}/api/ItemMaster/Upload/ImageUpload/{imageName}",
-                //                ParentId = itemNumbers,
-                //                DocumentFrom = "ItemMaster Image Document",
-                //                FileByte = ImageUploadDetail.FileByte
-                //            };
-                //            _repository.ImageUploadRepository.ImageUploadDocument(uploadedFiles);
-                //            _repository.SaveAsync();
-                //            if (uploadedFiles != null)
-                //            {
-                //                ImageUpload itemmasterImageDetails = _mapper.Map<ImageUpload>(uploadedFiles);
-                //                imageUploadDtoList=itemmasterImageDetails;
-                //            }
-
-                //        }
-                //    }
-
-                //    else
-                //    {
-                //        _logger.LogError("Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....");
-                //        serviceResponse.Data = null;
-                //        serviceResponse.Message = "Invalid Image Format ..Please Use this JPG,JPEG,PNG,GIF....";
-                //        serviceResponse.Success = false;
-                //        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                //        return BadRequest(serviceResponse);
-                //    }
-
-                //}
-                //var fileUploadDtoList = new List<FileUpload>();
-
-                //////multiple file upload
-
-
-                //var FileUploadDetails = itemMasterDtoPost.FileUpload;
-                //foreach (var FileUploadDetail in FileUploadDetails)
-                //{
-                //    byte[] fileContent = Convert.FromBase64String(FileUploadDetail.FileByte);
-                //    var itemNumber = itemMasterDtoPost.ItemNumber;
-                //    string fileName = FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
-                //    string FileExt = Path.GetExtension(fileName).ToUpper();
-
-                //    //Guid guids = Guid.NewGuid();
-                //    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload",/*guids.ToString() + "_" +*/ fileName);
-                //    using (MemoryStream ms = new MemoryStream(fileContent))
-                //    {
-                //        ms.Position = 0;
-                //        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
-                //        {
-                //            ms.WriteTo(fileStream);
-                //        }
-                //        var uploadedFile = new FileUpload
-                //        {
-                //            FileName = fileName,
-                //            FileExtension = FileExt,
-                //            FilePath = filePath,
-                //            ParentId = itemNumber,
-                //            DocumentFrom = "ItemMaster File Document",
-                //            FileByte = FileUploadDetail.FileByte
-                //        };
-                //        _repository.FileUploadRepository.CreateFileUploadDocument(uploadedFile);
-                //        _repository.SaveAsync();
-                //        if (uploadedFile != null)
-                //        {
-                //            FileUpload itemmasterFileDetails = _mapper.Map<FileUpload>(uploadedFile);
-                //            fileUploadDtoList.Add(itemmasterFileDetails);
-                //        }
-
-                //    }
-
-                //}
-
-                //itemMasterEntity.FileUpload = fileUploadDtoList;
-                //itemMasterEntity.ImageUpload = imageUploadDtoList;
                 _repository.ItemMasterRepository.CreateItemMaster(itemMasterEntity);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -1356,7 +1253,92 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> CreateItemMasterWithValidation([FromBody] ItemMasterDtoPostWithValidation itemMasterDtoPost)
+        {
+            ServiceResponse<ItemMasterDto> serviceResponse = new ServiceResponse<ItemMasterDto>();
 
+            try
+            {
+                if (itemMasterDtoPost is null)
+                {
+                    _logger.LogError("ItemMaster object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ItemMaster object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid ItemMaster object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                var ExistingItemMaster = await _repository.ItemMasterRepository.CheckItemMasterExists(itemMasterDtoPost.ItemNumber);
+                if (ExistingItemMaster)
+                {
+                    _logger.LogError($"ItemMaster: {itemMasterDtoPost.ItemNumber} Already Exists");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ItemMaster: {itemMasterDtoPost.ItemNumber} Already Exists";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                    return StatusCode(406, serviceResponse);
+                }
+                if (itemMasterDtoPost.ItemmasterAlternate.Count()<=0)
+                {
+                    _logger.LogError($"Atleast 1 Alternate Is Required");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Atleast 1 Alternate Is Required";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                    return StatusCode(406, serviceResponse);
+                }
+                var alts= itemMasterDtoPost.ItemmasterAlternate.Where(x=>x.IsDefault==true).Count();
+                if (alts > 1) {
+                    _logger.LogError($"More then 1 Default Alternates are not allowed");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"More then 1 Default Alternates are not allowed";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                    return StatusCode(406, serviceResponse);
+                }
+                if (alts < 1) {
+                    _logger.LogError($"Atleast 1 Default Alternates is Required");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Atleast 1 Default Alternates is Required";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                    return StatusCode(406, serviceResponse);
+                }
+
+                var itemMasterEntity = _mapper.Map<ItemMaster>(itemMasterDtoPost);
+                var itemMasterAlternate = _mapper.Map<IEnumerable<ItemmasterAlternate>>(itemMasterDtoPost.ItemmasterAlternate);
+                var itemMasterApprovedVendor = _mapper.Map<IEnumerable<ItemMasterApprovedVendor>>(itemMasterDtoPost.ItemMasterApprovedVendor);
+                var itemMasterRouting = _mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoPost.ItemMasterRouting);
+                var itemMasterWarehouse = _mapper.Map<IEnumerable<ItemMasterWarehouse>>(itemMasterDtoPost.ItemMasterWarehouse);
+
+                _repository.ItemMasterRepository.CreateItemMaster(itemMasterEntity);
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "ItemMaster Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Created("GetItemMasterById", serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateItemMaster action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateItemMaster(int id, [FromBody] ItemMasterDtoUpdate itemMasterDtoUpdate)

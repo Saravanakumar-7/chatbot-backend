@@ -28,6 +28,7 @@ namespace Contracts
         Task<IEnumerable<ItemMasterIdNoListDto>> GetAllItemMasterIdNoList();
         Task<List<ItemWithPartTypeDto>> GetItemPartTypeByItemNo(List<string> ItemNumberList);
         Task<ItemMaster> GetItemMasterByItemNumber(string shopOrderNo);
+        Task<bool> CheckItemMasterExists(string itemnumber);
         Task<List<ItemMasterMtrPartNoDto>> GetItemMasterByPartNo(string partNumber);
         Task<IEnumerable<ItemMaster>> SearchItemMasterDate(SearchDateParamess searchDateParam);
         Task<IEnumerable<ItemMaster>> GetAllItemMasterWithItems(ItemMasterSearchDto itemMasterSearch);

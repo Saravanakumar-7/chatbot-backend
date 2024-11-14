@@ -58,28 +58,47 @@ namespace Entities.DTOs
 
         [Required(ErrorMessage = "Quantity is required")]
         [Precision(13, 3)]
-        public decimal Quantity { get; set; }
-
-        [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
+        public decimal Quantity { get; set; }       
         public string? Description { get; set; }
-
         public PartType PartType { get; set; }
-
-        [StringLength(500, ErrorMessage = "Remark can't be longer than 500 characters")]
         public string? Remarks { get; set; }
-
         public string? Version { get; set; }
-
         public string? ScrapAllowance { get; set; }
-
         public string? ScrapAllowanceType { get; set; }
         public string? CustomFields { get; set; }
         public string? Designator { get; set; }
         public string? FootPrint { get; set; }
         [DefaultValue(true)]
         public bool IsActive { get; set; }
-
         public List<EnggAlternatesPostDto>? EnggAlternatesPostDtos { get; set; }
+
+    }
+    public class EnggChildItemPostDtoWithValidation
+    {
+        [Required(ErrorMessage = "ItemNumber is required")]
+        public string ItemNumber { get; set; }
+        [Required(ErrorMessage = "MftrItemNumbers is required")]
+        public string MftrItemNumbers { get; set; }
+        [Required(ErrorMessage = "UOM is required")]
+        public string UOM { get; set; }
+
+        [Required(ErrorMessage = "Quantity is required")]
+        [Precision(13, 3)]
+        public decimal Quantity { get; set; }
+        [Required(ErrorMessage = "Description is required")]
+        public string Description { get; set; }
+        [Required(ErrorMessage = "PartType is required")]
+        public PartType PartType { get; set; }
+        public string? Remarks { get; set; }
+        public string? Version { get; set; }
+        public string? ScrapAllowance { get; set; }
+        public string? ScrapAllowanceType { get; set; }
+        public string? CustomFields { get; set; }
+        public string? Designator { get; set; }
+        public string? FootPrint { get; set; }
+        [DefaultValue(true)]
+        public bool IsActive { get; set; }
+        public List<EnggChildItemPostDtoWithValidation>? EnggAlternatesPostDtos { get; set; }
 
     }
     public class EnggChildItemUpdateDto
