@@ -172,6 +172,7 @@ namespace Tips.Master.Api
             CreateMap<ItemMaster, ItemMasterDto>().ReverseMap();
             CreateMap<ItemMaster, ItemMasterDtoPost>().ReverseMap();
             CreateMap<ItemMaster, ItemMasterDtoUpdate>().ReverseMap();
+            CreateMap<ItemMaster, ItemMasterDtoPostWithValidation>().ReverseMap();
 
             CreateMap<ItemmasterAlternate, ItemmasterAlternateDto>().ReverseMap();
             CreateMap<ItemmasterAlternate, ItemmasterAlternateDtoPost>().ReverseMap();
@@ -286,6 +287,7 @@ namespace Tips.Master.Api
 
             CreateMap<EnggBom, EnggBomDto>().ReverseMap();
             CreateMap<EnggBom, EnggBomPostDto>().ReverseMap();
+            CreateMap<EnggBom, EnggBomPostDtoWithValidation>().ReverseMap();
 
             CreateMap<EnggBom, EnggBomUpdateDto>().ReverseMap();
 
@@ -294,6 +296,7 @@ namespace Tips.Master.Api
             CreateMap<EnggChildItem, EnggChildItemDto>().ReverseMap();
             CreateMap<EnggChildItem, EnggChildItemPostDto>().ReverseMap();
             CreateMap<EnggChildItem, EnggChildItemUpdateDto>().ReverseMap();
+            CreateMap<EnggChildItem, EnggChildItemPostDtoWithValidation>().ReverseMap();
 
             CreateMap<EnggAlternates, EnggAlternatesDto>().ReverseMap();
             CreateMap<EnggAlternates, EnggAlternatesPostDto>().ReverseMap();

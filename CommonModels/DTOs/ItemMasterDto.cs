@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Entities.Enums;
+using System.Runtime.CompilerServices;
 
 namespace Entities.DTOs
 {
@@ -123,37 +124,37 @@ namespace Entities.DTOs
     public class ItemMasterDtoPost
     {
         [Required(ErrorMessage = "ItemNumber is required")]
-        [MaxLength(100)]
+       
         public string? ItemNumber { get; set; }
         [Required(ErrorMessage = "Description is required")]
-        [MaxLength(500)]
+       
         public string? Description { get; set; }
         [DefaultValue(true)]
         public bool IsActive { get; set; }
         [DefaultValue(false)]
         public bool IsObsolete { get; set; }
         public PartType ItemType { get; set; }
-        [MaxLength(20)]
+       
         public string? Uom { get; set; }
-        [MaxLength(50)]
+        
         public string? Commodity { get; set; }
-        [MaxLength(50)]
+       
         public string? Hsn { get; set; }
-        [MaxLength(100)]
+       
         public string? MaterialGroup { get; set; }
         
         public DateTime? ValidFrom { get; set; }
         
         public DateTime? ValidTo { get; set; }
-        [MaxLength(50)]
+       
         public string? PurchaseGroup { get; set; }
-        [MaxLength(50)]
+        
         public string? Department { get; set; }
-        [MaxLength(100)]
+        
         public string? CustomerPartReference { get; set; }
         [DefaultValue(true)]
         public bool IsPRRequired { get; set; }
-        [MaxLength(50)]
+       
         public string? PoMaterialType { get; set; }
         [DefaultValue(false)]
         public bool OpenGrin { get; set; }
@@ -214,9 +215,97 @@ namespace Entities.DTOs
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
         public string? RemarksToVendor { get; set; }
-
-
         public List<ItemmasterAlternateDtoPost>? ItemmasterAlternate { get; set; }
+        public List<ItemMasterWarehouseDtoPost>? ItemMasterWarehouse { get; set; }
+        public List<ItemMasterApprovedVendorDtoPost>? ItemMasterApprovedVendor { get; set; }
+        //public List<ItemMasterFileUploadDtoPost>? ItemMasterFileUpload { get; set; }
+        public List<ItemMasterRoutingDtoPost>? ItemMasterRouting { get; set; }
+    }
+    
+    public class ItemMasterDtoPostWithValidation
+    {
+        [Required(ErrorMessage = "ItemNumber is required")]        
+        public string ItemNumber { get; set; }
+        [Required(ErrorMessage = "Description is required")]        
+        public string Description { get; set; }
+        [DefaultValue(true)]
+        public bool IsActive { get; set; }
+        [DefaultValue(false)]
+        public bool IsObsolete { get; set; }
+        [Required(ErrorMessage ="ItemType is required")]
+        public PartType ItemType { get; set; }
+        [Required(ErrorMessage = "UOM is required")]
+        public string Uom { get; set; }
+        public string? Commodity { get; set; }
+        public string? Hsn { get; set; }
+        public string? MaterialGroup { get; set; }        
+        public DateTime? ValidFrom { get; set; }        
+        public DateTime? ValidTo { get; set; }
+        public string? PurchaseGroup { get; set; }
+        public string? Department { get; set; }
+        public string? CustomerPartReference { get; set; }
+        public bool IsPRRequired { get; set; }
+        public string? PoMaterialType { get; set; }
+        [DefaultValue(false)]
+        public bool OpenGrin { get; set; }
+        public bool IsCustomerSuppliedItem { get; set; }
+        public string? DrawingNo { get; set; }
+        public string? DocRet { get; set; }
+        public string? RevNo { get; set; }
+        [DefaultValue(false)]
+        public bool IsCocRequired { get; set; }
+        [DefaultValue(false)]
+        public bool IsRohsItem { get; set; }
+        [DefaultValue(false)]
+        public bool IsShelfLife { get; set; }
+        [DefaultValue(false)]
+        public bool IsReachItem { get; set; }
+
+        public string? FileUpload { get; set; }
+
+        public int? ImageUpload { get; set; }
+
+        public decimal NetWeight { get; set; }
+        public string? NetUom { get; set; }
+        public decimal GrossWeight { get; set; }
+        public string? GrossUom { get; set; }
+        public bool Tolerance { get; set; } = false;
+        public decimal Volume { get; set; }
+        public string? VolumeUom { get; set; }
+        public decimal Size { get; set; }
+        public string? FootPrint { get; set; }
+        public decimal Min { get; set; }
+        public decimal Max { get; set; }
+        public string? LeadTime { get; set; }
+        public string? Reorder { get; set; }
+        public string? TwoBin { get; set; }
+        public bool Kanban { get; set; }
+        [DefaultValue(false)]
+        public bool IsEsd { get; set; }
+        [DefaultValue(false)]
+        public bool IsFifo { get; set; }
+        [DefaultValue(false)]
+        public bool IsLifo { get; set; }
+        [DefaultValue(false)]
+        public bool IsCycleCount { get; set; }
+        [DefaultValue(false)]
+        public bool IsHazardousMaterial { get; set; }
+        public string? Expiry { get; set; }
+        public string? InspectionInterval { get; set; }
+        public string? SpecialInstructions { get; set; }
+        public string? ShippingInstruction { get; set; }
+        [DefaultValue(false)]
+        public bool IsIQCRequired { get; set; }
+        public int GrProcessing { get; set; }
+        public string? BatchSize { get; set; }
+        public string? CostCenter { get; set; }
+        public decimal StdCost { get; set; }
+        public string? CostingMethod { get; set; }
+        public bool Valuation { get; set; }
+        public bool Depreciation { get; set; }
+        public bool Pfo { get; set; }
+        public string? RemarksToVendor { get; set; }
+        public List<ItemmasterAlternateDtoPost> ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouseDtoPost>? ItemMasterWarehouse { get; set; }
         public List<ItemMasterApprovedVendorDtoPost>? ItemMasterApprovedVendor { get; set; }
         //public List<ItemMasterFileUploadDtoPost>? ItemMasterFileUpload { get; set; }

@@ -44,24 +44,25 @@ namespace Entities.DTOs
     {
         [Required(ErrorMessage = "ItemNumber is required")]
         public string ItemNumber { get; set; }
-
-        [StringLength(500, ErrorMessage = "ItemDescription can't be longer than 500 characters")]
         public string? ItemDescription { get; set; }
-
         public PartType ItemType { get; set; }
-
-
         [DefaultValue(true)]
         public bool IsActive { get; set; }
-
-
-
         public List<EnggChildItemPostDto>? EnggChildItemPosts { get; set; }
-
         public List<BomNREConsumablePostDto>? BomNREConsumablePostDto { get; set; }
-
-
-
+    } 
+    public class EnggBomPostDtoWithValidation
+    {
+        [Required(ErrorMessage = "ItemNumber is required")]
+        public string ItemNumber { get; set; }
+        [Required(ErrorMessage = "ItemDescription is required")]
+        public string ItemDescription { get; set; }
+        [Required(ErrorMessage = "ItemType is required")]
+        public PartType ItemType { get; set; }
+        [DefaultValue(true)]
+        public bool IsActive { get; set; }
+        public List<EnggChildItemPostDtoWithValidation> EnggChildItemPosts { get; set; }
+        public List<BomNREConsumablePostDto>? BomNREConsumablePostDto { get; set; }
     }
     public class EnggBomUpdateDto
     {

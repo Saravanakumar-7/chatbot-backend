@@ -526,6 +526,11 @@ namespace Repository
                              .FirstOrDefaultAsync();
             return getItemMasterByItemNo;
         }
+        public async Task<bool> CheckItemMasterExists(string itemnumber)
+        {
+            var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == itemnumber).FirstOrDefaultAsync();
+            return getItemMasterByItemNo != null ;
+        }
         public async Task<Dictionary<string, int?>> GetItemsImageIds(List<string> ItemNumbers)
         {
             Dictionary<string, int?> imageIds = await FindAll().Where(x => ItemNumbers.Contains(x.ItemNumber) &&x.IsActive==true && x.ImageUpload != null).Select(x => new { x.ItemNumber, x.ImageUpload }).ToDictionaryAsync(x => x.ItemNumber, x => x.ImageUpload);
