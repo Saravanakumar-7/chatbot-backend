@@ -35,5 +35,7 @@
         public decimal? BalanceQty { get; set; }
         public DateTime? scheduledate { get; set; }
         public decimal? scheduleqnty { get; set; }
+        public DateTime? RequestedDate { get; set; }
+
     }
 }

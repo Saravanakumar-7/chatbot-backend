@@ -12,6 +12,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? MftrPartNumber { get; set; }
         public PartType PartType { get; set; }
         public decimal? ReturnQty { get; set; }
+        public string? ReasonForReturnQty { get; set; }
         public MaterialStatus MrnStatus { get; set; }
         public decimal? ScrapQty { get; set; }
         public string? Remarks { get; set; }
@@ -26,6 +27,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public PartType PartType { get; set; }
         [Precision(13, 3)]
         public decimal ReturnQty { get; set; }
+        public string? ReasonForReturnQty { get; set; }
         public decimal? ScrapQty { get; set; }
         public string? Remarks { get; set; }
         public List<MRNWarehouseDetailsPostDto> MRNWarehouseList { get; set; }
@@ -40,6 +42,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public PartType PartType { get; set; }
         [Precision(13, 3)]
         public decimal ReturnQty { get; set; }
+        public string? ReasonForReturnQty { get; set; }
         public MaterialStatus MrnStatus { get; set; }
         public decimal? ScrapQty { get; set; }
         public string? Remarks { get; set; }

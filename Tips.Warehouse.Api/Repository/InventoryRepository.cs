@@ -910,6 +910,17 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
+
+        public async Task<IEnumerable<InventorySPReport>> GetWareproInventoryWithLocationTranferSPReportsWithParam(string PartNumber, string Description, string Warehouse,
+                                                                                                  string Location, string ProjectNumber)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<InventorySPReport>()
+            .FromSqlInterpolated($"CALL warepro_inventory_with_locationtranfer_parameter({PartNumber},{Description},{Warehouse},{Location},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
         public async Task<List<InventoryDashboardSPReport>> GetInventoryDashboardSPReportsWithParam(string Bucket_Id)
         {
             var result = _tipsWarehouseDbContext

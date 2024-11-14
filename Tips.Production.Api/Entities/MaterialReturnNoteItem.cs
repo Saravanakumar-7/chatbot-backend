@@ -21,6 +21,7 @@ namespace Tips.Production.Api.Entities
         public PartType PartType { get; set; }
         [Precision(13, 3)]
         public decimal ReturnQty { get; set; }
+        public string? ReasonForReturnQty { get; set; }
         public MaterialStatus MrnStatus { get; set; }
         public decimal? ScrapQty { get; set; }
         public string? Remarks { get; set; }
