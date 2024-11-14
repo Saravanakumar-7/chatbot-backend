@@ -40,6 +40,7 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         [Required] 
         public string ShopOrderNumber { get; set; }
+       
         [Required]
         public string ItemNumber { get; set; }
         public string? Description { get; set; }
@@ -57,9 +58,9 @@ namespace Tips.Production.Api.Entities.DTOs
         
 
     }
-
     public class ShopOrderConfirmationUpdateDto
     {
+       
         [Required]
         public int Id { get; set; }
         [Required]

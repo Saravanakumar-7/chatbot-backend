@@ -116,6 +116,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
     public class InventoryUpdateDtoForMRWarehouse
     {
+       // public string? LotNumber { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
 

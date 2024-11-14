@@ -124,7 +124,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public IssuedStatus MaterialIssuedStatus { get; set; }
-
+        public bool IsShopOrderconfirmed { get; set; } = false;
         public List<MaterialIssueItemsDto> materialIssueItems { get; set; }
     }
     public class MaterialIssueReportWithParamDto

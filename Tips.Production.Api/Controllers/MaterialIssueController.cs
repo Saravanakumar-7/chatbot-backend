@@ -16,7 +16,7 @@ using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
-using Tips.Production.Api.Repository; 
+using Tips.Production.Api.Repository;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -39,7 +39,7 @@ namespace Tips.Production.Api.Controllers
         private readonly IHttpClientFactory _clientFactory;
 
         public MaterialIssueController(IMaterialIssueItemRepository materialIssueItemRepository, IHttpClientFactory clientFactory,
-            IMaterialIssueHistoryRepository materialIssueHistoryRepository, IMaterialIssueRepository materialIssueRepository, 
+            IMaterialIssueHistoryRepository materialIssueHistoryRepository, IMaterialIssueRepository materialIssueRepository,
             ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, IShopOrderRepository shopOrderRepository)
         {
             _materialIssueItemRepository = materialIssueItemRepository;
@@ -308,8 +308,8 @@ namespace Tips.Production.Api.Controllers
             {
                 return "keus";
             }
-            else if(serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
-            { 
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
                 return "avision";
             }
             else
@@ -341,12 +341,12 @@ namespace Tips.Production.Api.Controllers
         public async Task<IActionResult> GetMaterialIssueById(int id)
         {
             ServiceResponse<MaterialIssuesDto> serviceResponse = new ServiceResponse<MaterialIssuesDto>();
-             try
+            try
             {
                 string serverKey = GetServerKey();// Set the server key here dynamically based on your logic
 
                 var materialIssueDetailById = await _materialIssueRepository.GetMaterialIssueById(id);
-
+                var shoporder = await _shopOrderRepository.GetShopOrderDetailsByShopOrderNo(materialIssueDetailById.ShopOrderNumber);
                 if (materialIssueDetailById == null)
                 {
                     serviceResponse.Data = null;
@@ -360,11 +360,12 @@ namespace Tips.Production.Api.Controllers
                 {
                     _logger.LogInfo($"Returned owner with id: {id}");
                     var materialIssueDetails = _mapper.Map<MaterialIssuesDto>(materialIssueDetailById);
+                    if (shoporder.ShopOrderConfirmationStatus== ShopOrderConformationStatus.FullyDone) materialIssueDetails.IsShopOrderconfirmed = true;
                     List<string> MaterialIssueItemProjectNumbers = await _materialIssueItemRepository.GetMaterialIssueItemProjectNumbersById(materialIssueDetailById.Id);
                     if (MaterialIssueItemProjectNumbers.Count > 0)
                     {
                         materialIssueDetails.ProjectNumber = string.Join(",", MaterialIssueItemProjectNumbers);
-                    } 
+                    }
                     List<MaterialIssueItemsDto> materialIssueItemDtos = materialIssueDetails.materialIssueItems;
 
                     var groupedMaterialIssueItemDtoList = materialIssueItemDtos
@@ -387,20 +388,20 @@ namespace Tips.Production.Api.Controllers
                         LastModifiedOn = group.First().LastModifiedOn,
                         MaterialIssuedStatus = group.First().MaterialIssuedStatus,
                         MaterialIssueId = group.First().MaterialIssueId,
-                        MRNQty=group.First().MRNQty
+                        MRNQty = group.First().MRNQty
                     })
             .ToList();
 
                     List<MaterialIssueItemsDto> groupedMaterialIssueItemList = new List<MaterialIssueItemsDto>();
                     for (int i = 0; i < groupedMaterialIssueItemDtoList.Count(); i++)
-                        {
-                            decimal balanceQuantity = 0;
+                    {
+                        decimal balanceQuantity = 0;
                         //var partnumber = materialIssueDetailById.materialIssueItems[i].PartNumber;
                         //var projectnumber = materialIssueDetailById.materialIssueItems[i].ProjectNumber;
                         //var partnumber = Uri.EscapeDataString(groupedMaterialIssueItemDtoList[i].PartNumber);
                         //var projectnumber = Uri.EscapeDataString(groupedMaterialIssueItemDtoList[i].ProjectNumber);
-                         //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
-                         //     "GetInventoryStockByItemAndProjectNo?", "itemNumber=", partnumber, "&projectNumber=", projectnumber));
+                        //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                        //     "GetInventoryStockByItemAndProjectNo?", "itemNumber=", partnumber, "&projectNumber=", projectnumber));
 
                         var client = _clientFactory.CreateClient();
                         var token = HttpContext.Request.Headers["Authorization"].ToString();
@@ -435,8 +436,8 @@ namespace Tips.Production.Api.Controllers
                         groupedMaterialIssueItemDtoList[i].AvailableQty = balanceQuantity;
 
                         groupedMaterialIssueItemList.Add(groupedMaterialIssueItemDtoList[i]);
-                        
-                    } 
+
+                    }
 
                     //} 
                     materialIssueDetails.materialIssueItems = groupedMaterialIssueItemList;
@@ -686,7 +687,7 @@ namespace Tips.Production.Api.Controllers
                 //dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
                 //dynamic itemMasterObject = itemMasterObjectData.data;
 
-                if(allMaterialIssueItems == null)
+                if (allMaterialIssueItems == null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Internal Server Error!";
@@ -698,7 +699,7 @@ namespace Tips.Production.Api.Controllers
 
                 ShopOrder shopOrderDetail = await _shopOrderRepository.GetShopOrderByShopOrderNo(materialIssueDetailsById.ShopOrderNumber);
                 decimal bomRevNo = shopOrderDetail.BomRevisionNo;
-                HttpStatusCode updateMaterialIssueResp= HttpStatusCode.OK;
+                HttpStatusCode updateMaterialIssueResp = HttpStatusCode.OK;
                 List<MaterialIssueItemUpdateDto> materialIssueItemDtos = materialIssueUpdateDto.MaterialIssueItems;
                 foreach (var updatedItem in materialIssueItemDtos)
                 {
@@ -709,9 +710,9 @@ namespace Tips.Production.Api.Controllers
 
                         if (existingItem != null)
                         {
-                           
+
                             existingItem.IssuedQty += updatedItem.NewIssueQty;
-                            
+
                             var projectNo = existingItem.ProjectNumber;
                             decimal newIssuedQty = updatedItem.NewIssueQty;
                             var partnumber = updatedItem.PartNumber;
@@ -762,7 +763,7 @@ namespace Tips.Production.Api.Controllers
 
 
                             await _materialIssueItemRepository.UpdateMaterialIssueItem(existingItem);
-                            
+
                         }
                     }
                 }

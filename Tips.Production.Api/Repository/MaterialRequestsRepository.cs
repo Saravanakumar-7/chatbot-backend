@@ -3,6 +3,7 @@ using Entities.Helper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 using System.Security.Claims;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
@@ -140,8 +141,10 @@ namespace Tips.Production.Api.Repository
         }
         public async Task<PagedList<MaterialRequests>> GetAllMROpenwithPartialStatus(PagingParameter pagingParameter, SearchParamess searchParammes)
         {
+            var shoporders = await _tipsProductionDbContext.ShopOrders.Where(x => x.ShopOrderConfirmationStatus != ShopOrderConformationStatus.FullyDone).Select(y => y.ShopOrderNumber).ToListAsync();
+
             var materialRequestDetails = FindAll().OrderByDescending(x => x.Id)
-                .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.MRNumber.Contains(searchParammes.SearchValue) || inv.ShopOrderNumber.Contains(searchParammes.SearchValue)
+                .Where(inv => (shoporders.Contains(inv.ShopOrderNumber)) && ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.MRNumber.Contains(searchParammes.SearchValue) || inv.ShopOrderNumber.Contains(searchParammes.SearchValue)
               || inv.ProjectNumber.Contains(searchParammes.SearchValue))) && (inv.MrStatus == MaterialStatus.Open || inv.MrStatus == MaterialStatus.PartiallyClosed))
                 .Include(s => s.MaterialRequestItems)
                 .ThenInclude(m => m.MRStockDetails);

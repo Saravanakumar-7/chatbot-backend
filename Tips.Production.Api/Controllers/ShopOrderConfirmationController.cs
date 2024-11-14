@@ -169,7 +169,7 @@ namespace Tips.Production.Api.Controllers
                 var shopOrderDetail = await _shopOrderRepo.GetShopOrderDetailsByShopOrderNo(shopOrderNumber);
                 shopOrderDetail.WipQty = shopOrderDetail.WipQty + shopOrderConfirmation.WipConfirmedQty;
                 if (shopOrderDetail.TotalSOReleaseQty == shopOrderDetail.WipQty) shopOrderDetail.ShopOrderConfirmationStatus = ShopOrderConformationStatus.FullyDone;
-                if (shopOrderDetail.TotalSOReleaseQty > shopOrderDetail.WipQty) shopOrderDetail.ShopOrderConfirmationStatus = ShopOrderConformationStatus.PartiallyDone;
+                else if (shopOrderDetail.TotalSOReleaseQty > shopOrderDetail.WipQty) shopOrderDetail.ShopOrderConfirmationStatus = ShopOrderConformationStatus.PartiallyDone;
                 await _shopOrderRepo.UpdateShopOrder(shopOrderDetail);
                 await _shopOrderConfirmationRepository.CreateShopOrderConfirmation(shopOrderConfirmation);
 
@@ -318,7 +318,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateShopOrderConfirmation action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside CreateShopOrderConfirmation action: {ex.Message} {ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;

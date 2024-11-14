@@ -6,7 +6,7 @@ namespace Tips.Production.Api.Entities.DTOs
     {
 
         public int Id { get; set; }
-
+        //public string? LotNumber { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
 
@@ -22,7 +22,7 @@ namespace Tips.Production.Api.Entities.DTOs
     public class MRStockDetailsPostDto
     {
 
-
+        //public string? LotNumber { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
 
@@ -36,7 +36,7 @@ namespace Tips.Production.Api.Entities.DTOs
     }
     public class MRStockDetailsUpdateDto
     {
-
+       // public string? LotNumber { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
 
@@ -49,7 +49,7 @@ namespace Tips.Production.Api.Entities.DTOs
     }
     public class IssueMRStockDetailsUpdateDto
     {
-
+        //public string LotNumber { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
 
