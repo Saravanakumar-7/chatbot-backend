@@ -937,6 +937,15 @@ namespace Tips.SalesService.Api.Controllers
                     request.Headers.Add("Authorization", token);
 
                     var inventoryObjectResult = await client.SendAsync(request);
+                    if (!inventoryObjectResult.IsSuccessStatusCode)
+                    {
+                        _logger.LogError($"ItemMaster Routing Details not found for Engg Released Items in RFQ: {rfqNumber}");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"ItemMaster Routing Details not found for Engg Released Items in RFQ: {rfqNumber}";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        return StatusCode(404, serviceResponse);
+                    }
                     // var inventoryObjectResult = await _httpClient.PostAsync(string.Concat(_config["ItemMasterAPI"], "GetItemsRoutingDetailsForLpCosting"), content);
                     var itemsRoutingDetailsJsonString = await inventoryObjectResult.Content.ReadAsStringAsync();
                     dynamic itemsRoutingDetailsJson = JsonConvert.DeserializeObject(itemsRoutingDetailsJsonString);
