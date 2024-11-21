@@ -109,7 +109,16 @@ namespace Tips.SalesService.Api.Repository
 
             return rfqSourcingVendorDetails;
         }
+        public async Task<IEnumerable<SourcingSPReport>> GetSourcingSPReportWithParam(string Vendor)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SourcingSPReport>()
+            .FromSqlInterpolated($"CALL Sourcing({Vendor})")
+            .ToList();
 
+            return result;
+
+        }
         public async Task<string> UpdateRfqSourcing(RfqSourcing rfqSourcing)
         {
             rfqSourcing.LastModifiedBy = _createdBy;

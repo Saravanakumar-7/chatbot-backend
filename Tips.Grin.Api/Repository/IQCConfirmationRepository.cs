@@ -70,6 +70,18 @@ namespace Tips.Grin.Api.Repository
 
             return result;
         }
+
+        public async Task<IEnumerable<IQCPendingReportWithParamForTrans>> GetIQCPendingSPReportWithParamForTrans(string? GrinNumber, string? VendorName, string? PONumber, string? ItemNumber,
+                                                                                                    string? MPN, string? ProjectNumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<IQCPendingReportWithParamForTrans>()
+            .FromSqlInterpolated($"CALL IQC_Pending_Report_withparameter_tras({GrinNumber},{VendorName},{PONumber},{ItemNumber},{MPN},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+
         public async Task<IEnumerable<IQCConfirmationSPReportForTrans>> GetIQCConfirmationSPReportWithParamForTrans(string? GrinNumber, string? itemNo, string? ProjectNumber)
         {
             var result = _tipsGrinDbContext

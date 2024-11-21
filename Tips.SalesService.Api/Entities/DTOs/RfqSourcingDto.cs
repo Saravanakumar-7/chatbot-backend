@@ -59,4 +59,19 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? VLandindPrice { get; set; }
         public decimal? VMoqcost { get; set; }
     }
+
+    public class SourcingSPReportDto
+    {
+        public string Vendor { get; set; }
+    }
+    public class SourcingSPReport
+    {
+        public string Vendor { get; set; }
+        public decimal TotalCost { get; set; }
+        public decimal Cost { get; set; }
+        public decimal Percent { get; set; }
+        public decimal CumulativePercent { get; set; }
+        public string Grade { get; set; }
+    }
+
 }

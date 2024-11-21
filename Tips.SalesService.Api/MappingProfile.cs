@@ -318,6 +318,8 @@ namespace Tips.SalesService.Api
             CreateMap<SalesOrderAdditionalChargesUpdateDto, SOAdditionalChargesHistory>().ReverseMap();
 
             CreateMap<SalesOrderMainLevelHistorySP, SalesOrderMainLevelHistoryDto>().ReverseMap();
+
+            CreateMap<SoConfirmationDate, SoItemConfirmationDateDto>().ReverseMap();
         }
     }
 }

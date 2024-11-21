@@ -3050,27 +3050,6 @@ namespace Tips.Master.Api.Controllers
                                 decimal newRequiredQtySA = requiredQtySA - openSAStock;
                                 newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
 
-                                //Get SA Stock from ODO
-                                var client1 = _clientFactory.CreateClient();
-                                var token1 = HttpContext.Request.Headers["Authorization"].ToString();
-
-                                var encodedSAItemNumber = Uri.EscapeDataString(saItemNumber);
-
-                                var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ODOAPI"], $"GetListOfSAODOQtyByItemNo?saItemNumber={encodedSAItemNumber}"));
-                                request1.Headers.Add("Authorization", token1);
-
-                                var oDOObjectResult1 = await client1.SendAsync(request1);
-
-                                var oDOObjectString1 = await oDOObjectResult1.Content.ReadAsStringAsync();
-                                var oDOObjectData1 = JsonConvert.DeserializeObject<ODOItemDetailsForBomDto>(oDOObjectString1);
-                                if (oDOObjectData1.data != null)
-                                {
-                                    var oDOObject1 = oDOObjectData1.data;
-                                    if( oDOObject1.ODOQty > 0)
-                                    {
-                                        newRequiredQtySA -= oDOObject1.ODOQty;
-                                    }
-                                }
 
                                 decimal newOpenSAStock = requiredQtySA >= openSAStock ? 0 : (openSAStock - requiredQtySA);
                                 if (saItemOpenStock.ContainsKey(saItemNumber))
@@ -3098,6 +3077,214 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogError(ex.Message);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GetSABomDetailsByProjectNoForCoverageReport(List<OpenSalesCoverageReportByprojectNoDto> openFGCoverageDetails)
+        {
+            ServiceResponse<List<BomCoverageReportSAChildItemReqQtyByProjectNoDto>> serviceResponse = new ServiceResponse<List<BomCoverageReportSAChildItemReqQtyByProjectNoDto>>();
+            try
+            {
+                if (openFGCoverageDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Data Not found in this coverageReportChildItemReqQtyDtos Method.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Data Not found in this coverageReportChildItemReqQtyDtos Method");
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "coverageReportChildItemReqQtyDtosr object sent from the client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid coverageReportChildItemReqQtyDtos object sent from the client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<BomCoverageReportSAChildItemReqQtyByProjectNoDto> bomCoverageList = new List<BomCoverageReportSAChildItemReqQtyByProjectNoDto>();
+                if (openFGCoverageDetails != null)
+                {
+
+                    foreach (var item in openFGCoverageDetails)
+                    {
+                        var itemNo = item.ItemNumber;
+                        var productionBomMaxVersion = await _releaseProductBomRepository.GetLatestProBomCountByItemNumber(itemNo);
+
+                        //var enggDetail = _enggBomRepository.GetAllLatestRevBOMIsReleaseEnggBom(itemNo);
+                        if (productionBomMaxVersion != null)
+                        {
+                            await SAChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, item.ItemNumber, item.BalanceToOrder, item.ProjectNumber);
+                        }
+                    }
+                    //changed
+
+                }
+                var itemsRequiredQtyGrouped = bomCoverageList
+                        .GroupBy(item => item.ItemNumber)
+                        .Select(group => new BomCoverageReportSAChildItemReqQtyByProjectNoDto
+                        {
+                            ItemNumber = group.Key,
+                            MftrItemNumber = group.Key,
+                            Version = group.First().Version,
+                            Description = group.First().Description,
+                            UOM = group.First().UOM,
+                            PartType = group.First().PartType,
+                            RequiredQty = group.Sum(item => item.RequiredQty),
+                            ODOQty = group.Sum(item => item.ODOQty)
+                        })
+                        .ToList();
+
+                serviceResponse.Data = itemsRequiredQtyGrouped;
+                serviceResponse.Message = "Returned all ChildItemRequiredQtys";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetBomDetailsForCoverageReport {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllProductionBomSAListByItemNumber action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        private async Task SAChildItemRequiredQtyForCoverageReportByProjectNo(List<BomCoverageReportSAChildItemReqQtyByProjectNoDto> bomCoverageList, string itemNumber, decimal requiredQty, string projectNo)
+        {
+            try
+            {
+                var productionBomMaxVersion = await _releaseProductBomRepository
+                                            .GetLatestProductionBomByItemNumber(itemNumber);
+                Dictionary<string, decimal> saItemOpenStock = new Dictionary<string, decimal>();
+                if (productionBomMaxVersion >= 0)
+                {
+                    var enggBomDetail = await _enggBomRepository
+                          .GetLatestEnggBomVersionDetailByItemNumber(itemNumber, productionBomMaxVersion);
+                    if (enggBomDetail != null)
+                    {
+                        foreach (var enggChildItem in enggBomDetail?.EnggChildItems)
+                        {
+                            if (enggChildItem.PartType == PartType.SA)
+                            { 
+                                decimal openSAStock = 0;
+                                string saItemNumber = enggChildItem.ItemNumber;
+                                if (saItemOpenStock.ContainsKey(saItemNumber))
+                                {
+                                    openSAStock = saItemOpenStock[saItemNumber];
+                                }
+                                else
+                                {
+                                    //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
+                                    //  "GetTotalStockOfSAItemNumberAndProjectNo?", "itemNumber=", saItemNumber, "&ProjectNumber=", projectNo));
+
+                                    var client = _clientFactory.CreateClient();
+                                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                                    var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
+                                    var encodedProjectNumber = Uri.EscapeDataString(projectNo);
+
+                                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                                        $"GetTotalStockOfSAItemNumberAndProjectNo?saItemNumber={encodedItemNumber}&ProjectNumber={encodedProjectNumber}"));
+                                    request.Headers.Add("Authorization", token);
+
+                                    var inventoryObjectResult = await client.SendAsync(request);
+
+                                    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                                    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                                    dynamic inventoryObject = inventoryObjectData.data;
+                                    openSAStock = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
+                                }
+
+                                // get stock from inventory
+                                decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
+                                decimal newRequiredQtySA = requiredQtySA - openSAStock;
+                                newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
+
+                                //Get SA Stock from ODO
+                                var client1 = _clientFactory.CreateClient();
+                                var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                                var encodedSAItemNumber = Uri.EscapeDataString(saItemNumber);
+                                var encodedSAProjectNumber = Uri.EscapeDataString(projectNo);
+
+                                var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ODOAPI"], $"GetListOfSAODOQtyByItemNo?saItemNumber={encodedSAItemNumber}&projectNumber={encodedSAProjectNumber}"));
+                                request1.Headers.Add("Authorization", token1);
+
+                                var oDOObjectResult1 = await client1.SendAsync(request1);
+
+                                var oDOObjectString1 = await oDOObjectResult1.Content.ReadAsStringAsync();
+                                var oDOObjectData1 = JsonConvert.DeserializeObject<ODOItemDetailsForBomDto>(oDOObjectString1);
+                                if (oDOObjectData1.data != null)
+                                {
+                                    var oDOObject1 = oDOObjectData1.data;
+                                    if (oDOObject1.ODOQty > 0)
+                                    {
+
+                                        BomCoverageReportSAChildItemReqQtyByProjectNoDto bomCoverageReportChildItemReqQty = new BomCoverageReportSAChildItemReqQtyByProjectNoDto
+                                        {
+                                            ItemNumber = enggChildItem.ItemNumber,
+                                            PartType = enggChildItem.PartType,
+                                            Version = enggChildItem.Version,
+                                            MftrItemNumber = enggChildItem.MftrItemNumbers,
+                                            Description = enggChildItem.Description,
+                                            UOM = enggChildItem.UOM,
+                                            RequiredQty = newRequiredQtySA,
+                                            ODOQty = oDOObject1.ODOQty,
+
+                                        };
+
+                                        bomCoverageList.Add(bomCoverageReportChildItemReqQty);
+                                    }
+                                }
+                                else
+                                {
+                                    BomCoverageReportSAChildItemReqQtyByProjectNoDto bomCoverageReportChildItemReqQty = new BomCoverageReportSAChildItemReqQtyByProjectNoDto
+                                    {
+                                        ItemNumber = enggChildItem.ItemNumber,
+                                        PartType = enggChildItem.PartType,
+                                        Version = enggChildItem.Version,
+                                        MftrItemNumber = enggChildItem.MftrItemNumbers,
+                                        Description = enggChildItem.Description,
+                                        UOM = enggChildItem.UOM,
+                                        RequiredQty = newRequiredQtySA,
+                                        ODOQty = 0,
+
+                                    };
+
+                                    bomCoverageList.Add(bomCoverageReportChildItemReqQty);
+                                }
+
+                                decimal newOpenSAStock = requiredQtySA >= openSAStock ? 0 : (openSAStock - requiredQtySA);
+                                if (saItemOpenStock.ContainsKey(saItemNumber))
+                                {
+                                    saItemOpenStock[saItemNumber] = newOpenSAStock;
+                                }
+                                else
+                                {
+                                    saItemOpenStock.Add(saItemNumber, newOpenSAStock);
+                                }
+
+                                if (newRequiredQtySA <= 0)
+                                {
+                                    continue;
+                                }
+                                await SAChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA, projectNo);
+                            }
+
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+            }
+        }
+
 
         //[HttpPost]
         //public async Task<IActionResult> GetBomDetailsForCoverageReportByCustomerId(List<OpenSalesCoverageReportByprojectNoDto> openFGCoverageDetails)

@@ -402,6 +402,9 @@ namespace Tips.SalesService.Api.Entities.Dto
         public int SalesOrderItemsId { get; set; }
         public DateTime ConfirmationDate { get; set; }
         public decimal Qty { get; set; }
+
+        [DefaultValue(false)]
+        public bool IsInitialConfirmationDateDone { get; set; }
     }
 
     public class ProjectDetailDto

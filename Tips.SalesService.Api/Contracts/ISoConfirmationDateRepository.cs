@@ -7,5 +7,6 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<long>> CreateSoConfirmationDateList(List<SoConfirmationDate> soConfirmationDates);
         Task<IEnumerable<SoConfirmationDate>> GetSoConfirmationDateDetailsById(int soItemId);
         Task<IEnumerable<string>> DeleteSoConfirmationDateList(IEnumerable<SoConfirmationDate> soConfirmationDates);
+        Task<IEnumerable<string>> UpdateSoConfirmationDate(IEnumerable<SoConfirmationDate> soConfirmationDates);
     }
 }

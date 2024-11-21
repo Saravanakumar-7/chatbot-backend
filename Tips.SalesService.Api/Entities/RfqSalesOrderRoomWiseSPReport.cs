@@ -33,5 +33,8 @@
         public decimal? BalanceQty { get; set; }
         public decimal? indent_qnty { get; set; }
         public decimal? InstallationCharges { get; set; }
+        public string? City { get; set; }
+        public string? State { get; set; }
+        public string? ArchitectName { get; set; }
     }
 }

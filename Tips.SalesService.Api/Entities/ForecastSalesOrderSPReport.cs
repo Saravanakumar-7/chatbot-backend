@@ -38,5 +38,8 @@
         public decimal? StdCost { get; set; }
         public decimal? SValue { get; set; }
         public decimal? InstallationCharges { get; set; }
+        public string? City { get; set; }
+        public string? State { get; set; }
+        public string? ArchitectName { get; set; }
     }
 }

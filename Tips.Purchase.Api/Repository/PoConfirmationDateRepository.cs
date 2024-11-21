@@ -42,6 +42,17 @@ namespace Tips.Purchase.Api.Repository
             }
             return poConfirmationDateList;
         }
+        public async Task<IEnumerable<string>> UpdatePoConfirmationDate(IEnumerable<PoConfirmationDate> poConfirmationDates)
+        {
+            List<string> poConfirmationDateList = new List<string>();
+            foreach (var poConfirmationDate in poConfirmationDates)
+            {
+                Update(poConfirmationDate);
+                string result = $"PoConfirmationDate of Detail {poConfirmationDate.Id} is updated successfully!";
+                poConfirmationDateList.Add(result);
+            }
+            return poConfirmationDateList;
+        }
 
     }
 }
