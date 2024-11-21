@@ -33,7 +33,7 @@ namespace Accounts
         public async Task<(LoginResult Result, string Token, int UserId, string UserName)> GetToken(LoginDto loginDto)
         {
             var userDetail = await _tipsMasterDbContext.RegistrationForms
-                .Where(m => m.EmailId == loginDto.UserName)
+                .Where(m => m.EmailId == loginDto.UserName || m.UserName==loginDto.UserName)
                 .FirstOrDefaultAsync();
 
             if (userDetail == null)
@@ -62,7 +62,7 @@ namespace Accounts
                 Subject = new ClaimsIdentity(
                     new Claim[]
                     {
-                new Claim(ClaimTypes.Name, userDetail.UserName),
+                new Claim(ClaimTypes.Name, (userDetail.FirstName + " " + userDetail.LastName)),
                 new Claim(ClaimTypes.Email, userDetail.EmailId),
                 new Claim("UnitName", userDetail.Unit), 
                 new Claim("UserId", userDetail.Id.ToString()),
@@ -73,7 +73,7 @@ namespace Accounts
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return (LoginResult.Success, tokenHandler.WriteToken(token), userDetail.Id, userDetail.UserName);
+            return (LoginResult.Success, tokenHandler.WriteToken(token), userDetail.Id, (userDetail.FirstName + " " + userDetail.LastName));
         }
     //    public async Task<(string token, int userId)> GetToken(string userName, string password)
 
