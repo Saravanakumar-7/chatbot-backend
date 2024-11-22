@@ -2487,13 +2487,9 @@ namespace Tips.Purchase.Api.Controllers
                                 }
 
                                 var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
-                                if (prItemClosedStatusCount == 0)
-                                {
-                                    var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
-                                    prDetail.PrStatus = PrStatus.Closed;
-                                    await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
-
-                                }
+                                var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
+                                prDetail.PrStatus = prItemClosedStatusCount;
+                                await _purchaseRequisitionRepository.UpdatePurchaseRequisition_ForApproval(prDetail);
                             }
                         }
                     }
