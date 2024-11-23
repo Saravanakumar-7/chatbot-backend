@@ -42,5 +42,16 @@ namespace Tips.SalesService.Api.Repository
             }
             return soConfirmationDateList;
         }
+        public async Task<IEnumerable<string>> UpdateSoConfirmationDate(IEnumerable<SoConfirmationDate> soConfirmationDates)
+        {
+            List<string> soConfirmationDateList = new List<string>();
+            foreach (var soConfirmationDate in soConfirmationDates)
+            {
+                Update(soConfirmationDate);
+                string result = $"SoConfirmationDate of Detail {soConfirmationDate.Id} is updated successfully!";
+                soConfirmationDateList.Add(result);
+            }
+            return soConfirmationDateList;
+        }
     }
 }

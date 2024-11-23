@@ -182,7 +182,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     public class ODOQuantityDto
     {
         public string? ItemNumber { get; set; }
-        public decimal ODOQty { get; set; }
+        public decimal? ODOQty { get; set; }
 
     }
 

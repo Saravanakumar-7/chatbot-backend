@@ -1270,12 +1270,12 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetListOfSAODOQtyByItemNo( string saItemNumber)
+        public async Task<IActionResult> GetListOfSAODOQtyByItemNo( string saItemNumber, string projectNumber)
         {
             ServiceResponse<ODOQuantityDto> serviceResponse = new ServiceResponse<ODOQuantityDto>();
             try
             {
-                var odoItemNoList = await _repository.GetListOfSAODOQtyByItemNo(saItemNumber);
+                var odoItemNoList = await _repository.GetListOfSAODOQtyByItemNo(saItemNumber, projectNumber);
 
 
                 serviceResponse.Data = odoItemNoList;

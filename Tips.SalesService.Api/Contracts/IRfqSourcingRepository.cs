@@ -20,6 +20,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<int?> CreateRfqSourcing(RfqSourcing rfqSourcing);
         Task<string> UpdateRfqSourcing(RfqSourcing rfqSourcing);
         Task<string> DeleteRfqSourcing(RfqSourcing rfqSourcing);
+        Task<IEnumerable<SourcingSPReport>> GetSourcingSPReportWithParam(string Vendor);
         public void SaveAsync();
     }
 }

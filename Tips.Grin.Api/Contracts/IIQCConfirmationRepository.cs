@@ -26,6 +26,8 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<IQCConfirmation>> SearchIQCConfirmationDate([FromQuery] SearchDateParames searchParames);
         Task<PagedList<IQCConfirmation_SPReport>> GetIQCConfirmationSPReport(PagingParameter pagingParameter);
         Task<IEnumerable<IQCConfirmation_SPReport>> GetIQCConfirmationSPReportWithParam(string? GrinNumber, string? itemNo);
+        Task<IEnumerable<IQCPendingReportWithParamForTrans>> GetIQCPendingSPReportWithParamForTrans(string? GrinNumber, string? VendorName, string? PONumber, string? ItemNumber,
+                                                                                                    string? MPN, string? ProjectNumber);
         Task<IEnumerable<IQCConfirmationSPReportForTrans>> GetIQCConfirmationSPReportWithParamForTrans(string? GrinNumber, string? itemNo, string? ProjectNumber);
         Task<IEnumerable<IQCConfirmation_SPReport>> GetIQCConfirmationSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<IQCConfirmationSPReportForTrans>> GetIQCConfirmationSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);

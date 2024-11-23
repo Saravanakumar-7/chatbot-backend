@@ -388,12 +388,25 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal RequiredQty { get; set; }
 
     }
+    public class CoverageReportSAChildItemReqQtyDataByProjectNoDto
+    {
+        public string ItemNumber { get; set; }
+        public string MftrItemNumber { get; set; }
+        public string Version { get; set; }
+        public string Description { get; set; }
+        public string UOM { get; set; }
+        public PartType PartType { get; set; }
+        public decimal RequiredQty { get; set; }
+        public decimal ODOQty { get; set; }
+
+    }
 
     public class SalesOrderSPResportDTO
     {
         public string? CustomerName { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string? KPN { get; set; }
+        public string? CustomerId { get; set; }
     }
     public class SOSummarySPResportDTO
     {
@@ -429,6 +442,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SalesOrderNumber { get; set; }
         public string? KPN { get; set; }
         public string? SOStatus { get; set; }
+        public string? CustomerId { get; set; }
     }
     public class RfqSalesOrderSPResportDTOForTrans
     {
@@ -444,6 +458,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SalesOrderNumber { get; set; }
         public string? KPN { get; set; }
         public string? SOStatus { get; set; }
+        public string? CustomerId { get; set; }
     }
     public class ForecastSalesOrderSPResportDTOForTrans
     {
@@ -600,5 +615,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public List<TransactionDashboardSPReport_bucketId3>? Items3 { get; set; }
         public List<TransactionDashboardSPReport>? Items4 { get; set; }
         public List<TransactionDashboardSPReport_bucketId5>? Items5 { get; set; }
+    }
+    public class ReceivableReportsForMultiCustomerIdDto
+    {
+        public string? CustomerId { get; set; }
     }
 }

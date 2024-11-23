@@ -60,12 +60,13 @@ namespace Tips.Purchase.Api.Controllers
         private IPoAddprojectRepository _poAddprojectRepository;
         private readonly IHttpClientFactory _clientFactory;
         private IPoItemHistoryRepository _poItemHistoryRepository;
+        private IPOInitialConfirmationDateHistoryRepository _poInitialConfirmationDateHistoryRepository;
         public static IWebHostEnvironment _webHostEnvironment { get; set; }
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly String _createdBy;
         private readonly String _unitname;
         private readonly HttpClient _httpClient;
-        public PurchaseOrderController(IPrItemsRepository purchaseRequisitionItemRepository, IPoItemHistoryRepository poItemHistoryRepository, IHttpClientFactory clientFactory, HttpClient httpClient, IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository, IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository, IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IPoAddprojectRepository poAddprojectRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
+        public PurchaseOrderController(IPOInitialConfirmationDateHistoryRepository poInitialConfirmationDateHistoryRepository, IPrItemsRepository purchaseRequisitionItemRepository, IPoItemHistoryRepository poItemHistoryRepository, IHttpClientFactory clientFactory, HttpClient httpClient, IPRItemsDocumentUploadRepository pRItemsDocumentUploadRepository, IHttpContextAccessor httpContextAccessor, IPoConfirmationDateRepository poConfirmationDateRepository, IPurchaseRequisitionRepository purchaseRequisitionRepository, IPoConfirmationHistoryRepository poConfirmationHistoryRepository, IPoConfirmationDateHistoryRepository poConfirmationDateHistoryRepository, IPurchaseOrderRepository repository, IWebHostEnvironment webHostEnvironment, IPoItemsRepository poItemsRepository, IPoAddprojectRepository poAddprojectRepository, IDocumentUploadRepository documentUploadRepository, ILoggerManager logger, IMapper mapper, IConfiguration config)
         {
             _repository = repository;
             _httpClient = httpClient;
@@ -82,6 +83,7 @@ namespace Tips.Purchase.Api.Controllers
             _purchaseRequisitionItemRepository = purchaseRequisitionItemRepository;
             _poAddprojectRepository = poAddprojectRepository;
             _poItemHistoryRepository = poItemHistoryRepository;
+            _poInitialConfirmationDateHistoryRepository = poInitialConfirmationDateHistoryRepository;
             _config = config;
             _clientFactory = clientFactory;
             _httpContextAccessor = httpContextAccessor;
@@ -2512,13 +2514,9 @@ namespace Tips.Purchase.Api.Controllers
                                 }
 
                                 var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
-                                if (prItemClosedStatusCount == 0)
-                                {
-                                    var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
-                                    prDetail.PrStatus = PrStatus.Closed;
-                                    await _purchaseRequisitionRepository.UpdatePurchaseRequisition(prDetail);
-
-                                }
+                                var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
+                                prDetail.PrStatus = prItemClosedStatusCount;
+                                await _purchaseRequisitionRepository.UpdatePurchaseRequisition_ForApproval(prDetail);
                             }
                         }
                     }
@@ -4171,7 +4169,7 @@ namespace Tips.Purchase.Api.Controllers
                                 })
                                 .ToList();
 
-                            await _poConfirmationDateRepository.CreatePoConfirmationDateList(poConfirmationDateDtoDetails);
+                        await _poConfirmationDateRepository.CreatePoConfirmationDateList(poConfirmationDateDtoDetails);
                             _poConfirmationDateRepository.SaveAsync();
                         }
                         else
@@ -4222,6 +4220,25 @@ namespace Tips.Purchase.Api.Controllers
                             await _poConfirmationHistoryRepository.CreatePoConfirmationHistory(poConfirmationHistory);
                         }
                         _poConfirmationHistoryRepository.SaveAsync();
+                    }
+
+                    //Update PoConfirmationStatus in POInitialConfirmationDateHistory Table
+                    foreach (var poConfirmationDate in poItemConfirmationDateSet)
+                    {
+                        if (poConfirmationDate.IsInitialConfirmationDateDone == true)
+                        {
+                            var purchaseOrderItemDetailById = await _poItemsRepository.GetPoItemDetailsById(poConfirmationDate.POItemDetailId);
+
+                            POInitialConfirmationDateHistory poInitialConfirmationDateHistory = new POInitialConfirmationDateHistory();
+                            poInitialConfirmationDateHistory.PoId = purchaseOrderItemDetailById.PurchaseOrderId;
+                            poInitialConfirmationDateHistory.POItemDetailId = purchaseOrderItemDetailById.Id;
+                            poInitialConfirmationDateHistory.PONumber = purchaseOrderItemDetailById.PONumber;
+                            poInitialConfirmationDateHistory.InitialConfirmationDate = poConfirmationDate.ConfirmationDate;
+                            poInitialConfirmationDateHistory.InitialQty = poConfirmationDate.Qty;
+
+                            await _poInitialConfirmationDateHistoryRepository.CreatePOInitialConfirmationDate(poInitialConfirmationDateHistory);
+                            _poInitialConfirmationDateHistoryRepository.SaveAsync();
+                        }
                     }
 
                     //Update PoConfirmationStatus in PurchaseOrder Table
@@ -4305,6 +4322,7 @@ namespace Tips.Purchase.Api.Controllers
                     smtp.Disconnect(true);
 
                 }
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "PoConfirmationStatus have been Updated";
                 serviceResponse.Success = true;

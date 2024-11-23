@@ -1,6 +1,7 @@
 ﻿using Entities;
 //using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using Tips.Purchase.Api.Entities.DTOs;
 using Tips.Purchase.Api.Entities.Enums;
 
@@ -305,5 +306,8 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         [Precision(13, 3)]
         public decimal Qty { get; set; }
+
+        [DefaultValue(false)]
+        public bool IsInitialConfirmationDateDone { get; set; }
     }
 }

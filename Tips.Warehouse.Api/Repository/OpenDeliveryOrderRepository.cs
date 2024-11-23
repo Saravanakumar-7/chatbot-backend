@@ -258,13 +258,16 @@ namespace Tips.Warehouse.Api.Repository
 
             return getOpenDeliveryOrderDetailsById;
         }
-        public async Task<ODOQuantityDto> GetListOfSAODOQtyByItemNo(string saItemNumber)
+        public async Task<ODOQuantityDto> GetListOfSAODOQtyByItemNo(string saItemNumber , string projectNumber)
         {
             var openDeliveryOrderId = await _tipsWarehouseDbContext.OpenDeliveryOrders.Where (x=>x.DOType.ToLower() == "returnable" && x.ModifiedStatus == false
                                                     && x.IsDeleted == false).Select(o=>  o.Id).ToListAsync();
 
+            var openDeliveryOrderPartsId = await _tipsWarehouseDbContext.OpenDeliveryOrderPartsQtyDistribution
+                                                    .Where(x => x.ProjectNumber == projectNumber).Select(s=>s.OpenDeliveryOrderPartsId).ToListAsync();
+
             var binningQuantityList = await _tipsWarehouseDbContext.OpenDeliveryOrderParts
-                .Where(x => x.ItemNumber == saItemNumber &&  openDeliveryOrderId.Contains(x.OpenDeliveryOrderId) && x.DispatchQty > 0)
+                .Where(x => x.ItemNumber == saItemNumber &&  openDeliveryOrderId.Contains(x.OpenDeliveryOrderId) && x.DispatchQty > 0 && openDeliveryOrderPartsId.Contains(x.Id))
                 .GroupBy(x => new { x.ItemNumber})
                 .Select(gr => new ODOQuantityDto
                 {

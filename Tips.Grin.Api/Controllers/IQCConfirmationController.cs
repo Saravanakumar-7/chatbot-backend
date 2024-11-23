@@ -176,6 +176,49 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetIQCPendingSPReportWithParamForTrans([FromBody] IQCPendingReportWithParamForTransDto iQCPendingReportWithParamForTransDto)
+        {
+            ServiceResponse<IEnumerable<IQCPendingReportWithParamForTrans>> serviceResponse = new ServiceResponse<IEnumerable<IQCPendingReportWithParamForTrans>>();
+            try
+            {
+                var products = await _iQCConfirmationRepository.GetIQCPendingSPReportWithParamForTrans(iQCPendingReportWithParamForTransDto.GrinNumber,
+                                                                                                                    iQCPendingReportWithParamForTransDto.VendorName,
+                                                                                                                    iQCPendingReportWithParamForTransDto.PONumber,
+                                                                                                                    iQCPendingReportWithParamForTransDto.ItemNumber,
+                                                                                                                    iQCPendingReportWithParamForTransDto.MPN,
+                                                                                                                    iQCPendingReportWithParamForTransDto.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"IQCPending hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"IQCPending hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned IQCPendingSPReportWithParamForTrans Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetIQCPendingSPReportWithParamForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetIQCConfirmationSPReportForTrans([FromQuery] PagingParameter pagingParameter)
         {

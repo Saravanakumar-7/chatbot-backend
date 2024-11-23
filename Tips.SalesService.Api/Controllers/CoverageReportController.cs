@@ -785,50 +785,80 @@ namespace Tips.SalesService.Api.Controllers
 
                             foreach (var item in childItemReqQtyDtos)
                             {
-                                CoverageReportByProjectNumberDtoForChildItem coverageDetailOfChildItem = new CoverageReportByProjectNumberDtoForChildItem
+                                if (item.PartType == PartType.SA)
                                 {
-                                    ItemNumber = item.ItemNumber,
-                                    MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
-                                    Version = item.Version,
-                                    Description = item.Description,
-                                    ProjectNumber = projectNumber,
-                                    UOM = item.UOM,
-                                    PartType = item.PartType,
-                                    RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
-                                    Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
-                                    WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
-                                    ODOQty = odoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.ODOQty).FirstOrDefault()
-                                    //OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
-                                };
+                                    CoverageReportByProjectNumberDtoForChildItem coverageDetailOfSAChildItem = new CoverageReportByProjectNumberDtoForChildItem
+                                    {
+                                        ItemNumber = item.ItemNumber,
+                                        MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
+                                        Version = item.Version,
+                                        Description = item.Description,
+                                        ProjectNumber = projectNumber,
+                                        UOM = item.UOM,
+                                        PartType = item.PartType,
+                                        RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
+                                        Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
+                                        WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
+                                        ODOQty = odoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.ODOQty).FirstOrDefault()
+                                    };
 
-                                //Binning Qty 
-                                List<BinningQuantityDto> binningQtyList = await GetBinningQtyForChildItemsByProjectNo(item.ItemNumber, projectNumber);
+                                    decimal? balanceRequiredQty = coverageDetailOfSAChildItem.RequiredQty - (coverageDetailOfSAChildItem.Stock
+                                                               + coverageDetailOfSAChildItem.WipQty + coverageDetailOfSAChildItem.ODOQty);
 
-                                var OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault();
-                                var binningQty = binningQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.BinningQty).FirstOrDefault();
 
-                                //Open PoQty Calculate
-                                if (binningQtyList != null && binningQtyList.Count() > 0)
-                                {
-                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
+                                    coverageDetailOfSAChildItem.BalanceToManufacture = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
+
+
+                                    coverageReportDtoForChildItemList.Add(coverageDetailOfSAChildItem);
                                 }
                                 else
                                 {
-                                    coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
+                                    CoverageReportByProjectNumberDtoForChildItem coverageDetailOfChildItem = new CoverageReportByProjectNumberDtoForChildItem
+                                    {
+                                        ItemNumber = item.ItemNumber,
+                                        MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
+                                        Version = item.Version,
+                                        Description = item.Description,
+                                        ProjectNumber = projectNumber,
+                                        UOM = item.UOM,
+                                        PartType = item.PartType,
+                                        RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
+                                        Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
+                                        WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
+                                        ODOQty = odoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.ODOQty).FirstOrDefault()
+                                    };
+
+                                    //Binning Qty 
+                                    List<BinningQuantityDto> binningQtyList = await GetBinningQtyForChildItemsByProjectNo(item.ItemNumber, projectNumber);
+
+                                    var OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault();
+                                    var binningQty = binningQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.BinningQty).FirstOrDefault();
+
+                                    //Open PoQty Calculate
+                                    if (binningQtyList != null && binningQtyList.Count() > 0)
+                                    {
+                                        coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
+                                    }
+                                    else
+                                    {
+                                        coverageDetailOfChildItem.OpenPoQty = OpenPoQty - binningQty;
+                                    }
+
+
+                                    decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
+                                                                 + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty + coverageDetailOfChildItem.ODOQty);
+
+
+                                    coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
+
+
+                                    coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
                                 }
-
-                                
-                                decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
-                                                             + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty + coverageDetailOfChildItem.ODOQty);
-
-
-                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
-                                
-
-
-                                coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
                             }
 
+                            coverageReportDtoForChildItemList = coverageReportDtoForChildItemList
+                                                                        .OrderBy(item => item.PartType)
+                                                                                .ToList();
 
                         }
                     }
@@ -843,6 +873,110 @@ namespace Tips.SalesService.Api.Controllers
             {
 
                 _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItByProjectNumber action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GenerateCoverageReportForSAChildItemByProjectNumber(string projectNumber)
+        {
+            ServiceResponse<List<CoverageReportByProjectNumberDtoForSAChildItem>> serviceResponse = new ServiceResponse<List<CoverageReportByProjectNumberDtoForSAChildItem>>();
+
+            try
+            {
+                List<CoverageReportByProjectNumberDtoForSAChildItem> coverageReportDtoForChildItemList = new List<CoverageReportByProjectNumberDtoForSAChildItem>();
+                List<OpenSalesCoverageReportByProjectNumber> openSalesCoverageReportsByProjectNo = await FGLevelCoverageReportByProjectNumber(projectNumber);
+
+
+                if (openSalesCoverageReportsByProjectNo != null && openSalesCoverageReportsByProjectNo.Count() != 0)
+                {
+                    List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails = openSalesCoverageReportsByProjectNo
+                        .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
+                    if (openFGCoverageDetails != null && openFGCoverageDetails.Count() != 0)
+                    {
+                        // Child Item Required Qty from BOM
+                        List<CoverageReportSAChildItemReqQtyDataByProjectNoDto> childItemReqQtyDtos = await GetSAChildItemRequiredQtyFromBomByProjectNo(openFGCoverageDetails);
+
+                        if (childItemReqQtyDtos != null && childItemReqQtyDtos.Count() != 0)
+                        {
+                            List<string?> itemNumberList = childItemReqQtyDtos.Select(x => x.ItemNumber).ToList();
+
+
+                            var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
+                            var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
+                            var client = _clientFactory.CreateClient();
+                            var token = HttpContext.Request.Headers["Authorization"].ToString();
+                            // var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"), itemNoListString);
+                            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ItemMasterMainAPI"], "GetItemPartTypeByItemNumber"))
+                            {
+                                Content = itemNoListString
+                            };
+                            request.Headers.Add("Authorization", token);
+
+                            var responses = await client.SendAsync(request);
+                            var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
+                            dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
+
+                            List<ItemNoWithPartTypeDto> itemNoWithPartType = new List<ItemNoWithPartTypeDto>();
+
+                            //for this loop we need to check
+                            foreach (var item in itemNoPartTypeData.data)
+                            {
+                                ItemNoWithPartTypeDto dto = JsonConvert.DeserializeObject<ItemNoWithPartTypeDto>(item.ToString());
+                                itemNoWithPartType.Add(dto);
+                            }
+
+                            //Open Stock with WIP Quantity
+                            List<ChildItemStockWithWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItemsByProjectNo(itemNoListString, projectNumber);
+
+
+                            foreach (var item in childItemReqQtyDtos)
+                            {
+                                if (item.PartType == PartType.SA)
+                                {
+                                    CoverageReportByProjectNumberDtoForSAChildItem coverageDetailOfSAChildItem = new CoverageReportByProjectNumberDtoForSAChildItem
+                                    {
+                                        ItemNumber = item.ItemNumber,
+                                        MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
+                                        Version = item.Version,
+                                        Description = item.Description,
+                                        ProjectNumber = projectNumber,
+                                        UOM = item.UOM,
+                                        PartType = item.PartType,
+                                        RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
+                                        Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
+                                        WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
+                                        ODOQty = item.ODOQty
+                                    };
+
+                                    decimal? balanceRequiredQty = coverageDetailOfSAChildItem.RequiredQty - (coverageDetailOfSAChildItem.Stock
+                                                               + coverageDetailOfSAChildItem.WipQty + coverageDetailOfSAChildItem.ODOQty);
+
+
+                                    coverageDetailOfSAChildItem.BalanceToManufacture = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
+
+
+                                    coverageReportDtoForChildItemList.Add(coverageDetailOfSAChildItem);
+                                }
+                            }
+
+                        }
+                    }
+                }
+                serviceResponse.Data = coverageReportDtoForChildItemList;
+                serviceResponse.Message = $"Returned  SA Child Item CoverageReport Successfully in GenerateCoverageReportForSAChildItByProjectNumber ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Something went wrong inside GenerateCoverageReportForSAChildItByProjectNumber action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
@@ -876,6 +1010,38 @@ namespace Tips.SalesService.Api.Controllers
             foreach (var item in childItemRequiredQtyData.data)
             {
                 CoverageReportChildItemReqQtyDataByProjectNoDto dto = JsonConvert.DeserializeObject<CoverageReportChildItemReqQtyDataByProjectNoDto>(item.ToString());
+                childItemReqQtyDtos.Add(dto);
+            }
+
+            return childItemReqQtyDtos;
+
+
+        }
+        private async Task<List<CoverageReportSAChildItemReqQtyDataByProjectNoDto>> GetSAChildItemRequiredQtyFromBomByProjectNo(List<OpenSalesCoverageReportByProjectNumber> openFGCoverageDetails)
+        {
+            var client = _clientFactory.CreateClient();
+            //client.Timeout = TimeSpan.FromMinutes(10); // Set to 5 minutes, or whatever duration you need
+
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var openFGCoverageDetailsJson = JsonConvert.SerializeObject(openFGCoverageDetails);
+            var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
+            //var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsByProjectNoForCoverageReport"),
+            //                                                                                                                openFGCoverageDetailsString);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"], "GetSABomDetailsByProjectNoForCoverageReport"))
+            {
+                Content = openFGCoverageDetailsString
+            };
+            request.Headers.Add("Authorization", token);
+
+            var response = await client.SendAsync(request);
+            var childItemRequiredQtyString = await response.Content.ReadAsStringAsync();
+            dynamic childItemRequiredQtyData = JsonConvert.DeserializeObject(childItemRequiredQtyString);
+
+            List<CoverageReportSAChildItemReqQtyDataByProjectNoDto> childItemReqQtyDtos = new List<CoverageReportSAChildItemReqQtyDataByProjectNoDto>();
+
+            foreach (var item in childItemRequiredQtyData.data)
+            {
+                CoverageReportSAChildItemReqQtyDataByProjectNoDto dto = JsonConvert.DeserializeObject<CoverageReportSAChildItemReqQtyDataByProjectNoDto>(item.ToString());
                 childItemReqQtyDtos.Add(dto);
             }
 
@@ -990,6 +1156,7 @@ namespace Tips.SalesService.Api.Controllers
 
             return openODOQtyList;
         }
+
         //GenerateCoverageFGLevelReportByProjectNumber
 
 

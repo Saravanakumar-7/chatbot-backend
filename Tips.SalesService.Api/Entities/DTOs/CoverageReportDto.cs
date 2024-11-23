@@ -72,8 +72,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
     }
     public class ODOQuantityDto
     {
-        public string ItemNumber { get; set; }
-        public decimal ODOQty { get; set; }
+        public string? ItemNumber { get; set; }
+        public decimal? ODOQty { get; set; }
 
     }
     public class CoverageReportDtoForChildItem
@@ -104,6 +104,24 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? OpenPoQty { get; set; }
         public decimal? ODOQty { get; set; }
         public decimal? BalanceToOrder { get; set; }
+        public decimal? BalanceToManufacture { get; set; }
+
+    }
+
+    public class CoverageReportByProjectNumberDtoForSAChildItem
+    {
+        public string? ItemNumber { get; set; }
+        public string? MftrItemNumber { get; set; }
+        public string? Version { get; set; }
+        public string? Description { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? UOM { get; set; }
+        public PartType PartType { get; set; }
+        public decimal? RequiredQty { get; set; }
+        public decimal? Stock { get; set; }
+        public decimal? WipQty { get; set; }
+        public decimal? ODOQty { get; set; }
+        public decimal? BalanceToManufacture { get; set; }
 
     }
     public class CoverageReportByMultipleProjectNoForChildItemDto

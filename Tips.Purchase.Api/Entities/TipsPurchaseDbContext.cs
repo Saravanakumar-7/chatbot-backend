@@ -51,6 +51,7 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PoProjectSPReport> PoProjectSPReports { get; set; }
         public DbSet<PurchaseOrderDashboardSPReport> PurchaseOrderDashboardSPReports { get; set; }
         public DbSet<PaymentSPReport> PaymentSPReports { get; set; }
+        public DbSet<POInitialConfirmationDateHistory> POInitialConfirmationDateHistories { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PurchaseOrderSPReport>().HasNoKey();

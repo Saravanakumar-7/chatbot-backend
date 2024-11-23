@@ -92,6 +92,25 @@ namespace Tips.SalesService.Api.Repository
             }
         }
 
+        public async Task<IEnumerable<RecievableCustomer>> GetReceivableReportsForMultiCustomerID(string CustomerId)
+        {
+
+            try
+            {
+                var results = await _tipsSalesServiceDbContext.Set<RecievableCustomer>()
+                    .FromSqlInterpolated($"CALL Recievable_Report_forMultiCustomer({CustomerId})")
+                    .ToListAsync();
+
+                return results;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine($"An error occurred while executing the stored procedure: {ex.Message}");
+                return Enumerable.Empty<RecievableCustomer>();
+            }
+        }
+
 
         public async Task<PagedList<SalesOrderSPReport>> GetSalesOrderSPReport(PagingParameter pagingParameter)
         {
@@ -213,21 +232,21 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
-        public async Task<IEnumerable<RfqSalesOrderSPReport>> GetRfqSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus)
+        public async Task<IEnumerable<RfqSalesOrderSPReport>> GetRfqSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus, string CustomerId)
         {
             var result = _tipsSalesServiceDbContext
             .Set<RfqSalesOrderSPReport>()
-            .FromSqlInterpolated($"CALL RFQ_salesorder_Kpnwise_withparameter_Report({CustomerName},{SalesOrderNumber},{KPN},{SOStatus})")
+            .FromSqlInterpolated($"CALL RFQ_salesorder_Kpnwise_withparameter_Report({CustomerName},{SalesOrderNumber},{KPN},{SOStatus},{CustomerId})")
             .ToList();
 
             return result;
 
         }
-        public async Task<IEnumerable<RfqSalesOrderRoomWiseSPReport>> GetRfqSalesOrderRoomWiseSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN)
+        public async Task<IEnumerable<RfqSalesOrderRoomWiseSPReport>> GetRfqSalesOrderRoomWiseSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN, string CustomerId)
         {
             var result = _tipsSalesServiceDbContext
             .Set<RfqSalesOrderRoomWiseSPReport>()
-            .FromSqlInterpolated($"CALL RFQ_salesorder_withRoomwise_withparameter({CustomerName},{SalesOrderNumber},{KPN})")
+            .FromSqlInterpolated($"CALL RFQ_salesorder_withRoomwise_withparameter({CustomerName},{SalesOrderNumber},{KPN},{CustomerId})")
             .ToList();
 
             return result;
@@ -282,11 +301,11 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
-        public async Task<IEnumerable<ForecastSalesOrderSPReport>> GetForecastSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus)
+        public async Task<IEnumerable<ForecastSalesOrderSPReport>> GetForecastSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus, string CustomerId)
         {
             var result = _tipsSalesServiceDbContext
             .Set<ForecastSalesOrderSPReport>()
-            .FromSqlInterpolated($"CALL Forecast_salesorder_with_parameter({CustomerName},{SalesOrderNumber},{KPN},{SOStatus})")
+            .FromSqlInterpolated($"CALL Forecast_salesorder_with_parameter({CustomerName},{SalesOrderNumber},{KPN},{SOStatus},{SOStatus},{CustomerId})")
             .ToList();
 
             return result;

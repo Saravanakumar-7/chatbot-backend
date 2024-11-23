@@ -1249,12 +1249,12 @@ namespace Tips.Warehouse.Api.Repository
 
             return getInventoryDetailsByItemAndLoc;
         }
-        public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandLocationandwarehouse(string ItemNumber, string Location, string Warehouse, string projectNumber/*, string lotNumber*/)
+        public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandLocationandwarehouse(string ItemNumber, string Location, string Warehouse, string projectNumber, string lotNumber)
 
         {
             var getInventoryDetailsByItemAndLoc = await _tipsWarehouseDbContext.Inventories
                 .Where(x => x.PartNumber == ItemNumber && x.Location == Location && x.Warehouse == Warehouse
-                && x.IsStockAvailable == true && x.ProjectNumber == projectNumber /*&& x.LotNumber == lotNumber*/).ToListAsync();
+                && x.IsStockAvailable == true && x.ProjectNumber == projectNumber && x.LotNumber == lotNumber).ToListAsync();
 
             return getInventoryDetailsByItemAndLoc;
         }
@@ -1423,7 +1423,7 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<List<ConsumptionChildItemInventoryDto>> GetConsumptionChildItemStockWithWipQtyByProjectNo(string projectNo, List<string> itemNumberList)
         {
-            var partTypes = new PartType[] { PartType.PurchasePart };
+            var partTypes = new PartType[] { PartType.PurchasePart,PartType.SA };
             string[] skipWareHouse = { "Reject", "Scrap", "Rework", "FG", "IQC", "GRIN", "OPGIQC", "OPGGRIN" };
 
             string wipWarehouse = "WIP";
@@ -1525,6 +1525,7 @@ namespace Tips.Warehouse.Api.Repository
                 .Select(group => new ConsumptionChildItemForProjectListInventoryDto
                 {
                     PartNumber = group.Key,
+                    ProjectNumber = group.First().ProjectNumber,
                     BalanceQuantity = group.Where(x => x.Warehouse != wipWarehouse).Sum(x => x.Balance_Quantity),
                     WipQuantity = group.Where(x => x.Warehouse == wipWarehouse).Sum(x => x.Balance_Quantity)
                 })

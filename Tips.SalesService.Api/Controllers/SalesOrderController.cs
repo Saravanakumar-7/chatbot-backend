@@ -51,6 +51,7 @@ namespace Tips.SalesService.Api.Controllers
         private ISalesOrderMainLevelHistoryRepository _salesOrderMainLevelHistoryRepository;
         private ISalesOrderItemLevelHistoryRepository _salesOrderItemLevelHistoryRepository;
         private ISOAdditionalChargesHistoryRepository _sOAdditionalChargesHistoryRepository;
+        private ISOInitialConfirmationDateHistoryRepository _sOInitialConfirmationDateHistoryRepository;
         private IQuoteRepository _quoteRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
@@ -61,7 +62,7 @@ namespace Tips.SalesService.Api.Controllers
         private readonly String _createdBy;
         private readonly String _unitname;
         private readonly IHttpClientFactory _clientFactory;
-        public SalesOrderController(ISOAdditionalChargesHistoryRepository sOAdditionalChargesHistoryRepository, ISalesOrderItemLevelHistoryRepository salesOrderItemLevelHistoryRepository, ISalesOrderMainLevelHistoryRepository salesOrderMainLevelHistoryRepository, ISalesOrderEmailsDetailsRepository salesOrderEmailsDetailsRepository, ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, IHttpClientFactory clientFactory, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
+        public SalesOrderController(ISOInitialConfirmationDateHistoryRepository sOInitialConfirmationDateHistoryRepository, ISOAdditionalChargesHistoryRepository sOAdditionalChargesHistoryRepository, ISalesOrderItemLevelHistoryRepository salesOrderItemLevelHistoryRepository, ISalesOrderMainLevelHistoryRepository salesOrderMainLevelHistoryRepository, ISalesOrderEmailsDetailsRepository salesOrderEmailsDetailsRepository, ISalesOrderAdditionalChargesHistoryRepository salesOrderAdditionalChargesHistoryRepository, IHttpClientFactory clientFactory, IScheduleDateHistoryRepository scheduleDateHistoryRepository, ISoConfirmationDateHistoryRepository soConfirmationDateHistoryRepository, ISoConfirmationDateRepository soConfirmationDateRepository, IConfiguration config, HttpClient httpClient, ISalesAdditionalChargesRepository salesAdditionalChargesRepository,
             ISalesOrderRepository repository, ISalesOrderHistoryRepository salesOrderHistoryRepository, IQuoteRepository quoteRepository, IHttpContextAccessor httpContextAccessor,
             ISalesOrderItemsRepository salesOrderItemsRepository, ILoggerManager logger, IMapper mapper)
         {
@@ -80,6 +81,7 @@ namespace Tips.SalesService.Api.Controllers
             _salesOrderMainLevelHistoryRepository = salesOrderMainLevelHistoryRepository;
             _salesOrderItemLevelHistoryRepository = salesOrderItemLevelHistoryRepository;
             _sOAdditionalChargesHistoryRepository = sOAdditionalChargesHistoryRepository;
+            _sOInitialConfirmationDateHistoryRepository = sOInitialConfirmationDateHistoryRepository;
             _quoteRepository = quoteRepository;
             _httpClient = httpClient;
             _config = config;
@@ -2924,7 +2926,8 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var products = await _repository.GetRfqSalesOrderSPReportWithParam(rfqSalesOrderSPResportDTO.CustomerName, rfqSalesOrderSPResportDTO.SalesOrderNumber,
-                                                                                                                        rfqSalesOrderSPResportDTO.KPN, rfqSalesOrderSPResportDTO.SOStatus);
+                                                                                                                        rfqSalesOrderSPResportDTO.KPN, rfqSalesOrderSPResportDTO.SOStatus,
+                                                                                                                        rfqSalesOrderSPResportDTO.CustomerId);
 
                 if (products == null)
                 {
@@ -3002,7 +3005,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var products = await _repository.GetRfqSalesOrderRoomWiseSPReportWithParam(rfqSalesOrderRoomWiseSPResportDTO.CustomerName, rfqSalesOrderRoomWiseSPResportDTO.SalesOrderNumber,
-                                                                                                                        rfqSalesOrderRoomWiseSPResportDTO.KPN);
+                                                                                                                        rfqSalesOrderRoomWiseSPResportDTO.KPN, rfqSalesOrderRoomWiseSPResportDTO.CustomerId);
 
                 if (products == null)
                 {
@@ -3197,7 +3200,8 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var products = await _repository.GetForecastSalesOrderSPReportWithParam(forecastSalesOrderSPResportDTO.CustomerName,
-                                                                             forecastSalesOrderSPResportDTO.SalesOrderNumber, forecastSalesOrderSPResportDTO.KPN, forecastSalesOrderSPResportDTO.SOStatus);
+                                                                             forecastSalesOrderSPResportDTO.SalesOrderNumber, forecastSalesOrderSPResportDTO.KPN, forecastSalesOrderSPResportDTO.SOStatus,
+                                                                             forecastSalesOrderSPResportDTO.CustomerId);
 
                 if (products == null)
                 {
@@ -3484,7 +3488,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 // Get data from repository using stored procedure
-                var salesOrderSPReportDetails = await _repository.GetRfqSalesOrderSPReportWithParam(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus);
+                var salesOrderSPReportDetails = await _repository.GetRfqSalesOrderSPReportWithParam(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus, salesOrderSPReport.CustomerId);
 
                 // Create a new Excel workbook
                 IWorkbook workbook = new XSSFWorkbook();
@@ -3527,6 +3531,11 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(32).SetCellValue("RequestedDate");
                 headerRow.CreateCell(33).SetCellValue("MSL");
                 headerRow.CreateCell(34).SetCellValue("StdCost");
+                headerRow.CreateCell(35).SetCellValue("SValue");
+                headerRow.CreateCell(36).SetCellValue("InstallationCharges");
+                headerRow.CreateCell(3).SetCellValue("City");
+                headerRow.CreateCell(36).SetCellValue("State");
+                headerRow.CreateCell(37).SetCellValue("ArchitectName");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -3568,6 +3577,11 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(32).SetCellValue(item.RequestedDate.HasValue ? item.RequestedDate.Value.ToString("MM/dd/yyyy") : "");
                     row.CreateCell(33).SetCellValue(Convert.ToDouble(item.MSL)); // Assuming BalanceQty is decimal
                     row.CreateCell(34).SetCellValue(Convert.ToDouble(item.StdCost)); // Assuming BalanceQty is decimal
+                    row.CreateCell(35).SetCellValue(Convert.ToDouble(item.SValue)); // Assuming BalanceQty is decimal
+                    row.CreateCell(36).SetCellValue(Convert.ToDouble(item.InstallationCharges)); // Assuming BalanceQty is decimal
+                    row.CreateCell(37).SetCellValue(item.City);
+                    row.CreateCell(38).SetCellValue(item.State);
+                    row.CreateCell(39).SetCellValue(item.ArchitectName);
                 }
 
 
@@ -3593,7 +3607,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 // Get data from repository using stored procedure
-                var salesOrderSPReportDetails = await _repository.GetRfqSalesOrderRoomWiseSPReportWithParam(rfqRoomWiseSPReport.CustomerName, rfqRoomWiseSPReport.SalesOrderNumber, rfqRoomWiseSPReport.KPN);
+                var salesOrderSPReportDetails = await _repository.GetRfqSalesOrderRoomWiseSPReportWithParam(rfqRoomWiseSPReport.CustomerName, rfqRoomWiseSPReport.SalesOrderNumber, rfqRoomWiseSPReport.KPN, rfqRoomWiseSPReport.CustomerId);
 
                 // Create a new Excel workbook
                 IWorkbook workbook = new XSSFWorkbook();
@@ -3631,6 +3645,10 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(27).SetCellValue("Dispatch Qty");
                 headerRow.CreateCell(28).SetCellValue("Balance Qty");
                 headerRow.CreateCell(29).SetCellValue("Indent Qnty");
+                headerRow.CreateCell(30).SetCellValue("InstallationCharges");
+                headerRow.CreateCell(31).SetCellValue("City");
+                headerRow.CreateCell(32).SetCellValue("State");
+                headerRow.CreateCell(33).SetCellValue("ArchitectName");
 
 
                 // Populate data rows
@@ -3668,6 +3686,10 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(27).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
                     row.CreateCell(28).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
                     row.CreateCell(29).SetCellValue(Convert.ToDouble(item.indent_qnty)); // Assuming BalanceQty is decimal
+                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.InstallationCharges)); // Assuming BalanceQty is decimal
+                    row.CreateCell(31).SetCellValue(item.City);
+                    row.CreateCell(32).SetCellValue(item.State);
+                    row.CreateCell(33).SetCellValue(item.ArchitectName);
                 }
 
 
@@ -3905,7 +3927,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 // Get data from repository using stored procedure
-                var salesOrderSPReportDetails = await _repository.GetForecastSalesOrderSPReportWithParam(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus);
+                var salesOrderSPReportDetails = await _repository.GetForecastSalesOrderSPReportWithParam(salesOrderSPReport.CustomerName, salesOrderSPReport.SalesOrderNumber, salesOrderSPReport.KPN, salesOrderSPReport.SOStatus, salesOrderSPReport.CustomerId);
 
                 // Create a new Excel workbook
                 IWorkbook workbook = new XSSFWorkbook();
@@ -3945,6 +3967,13 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(29).SetCellValue("Dispatch Qty");
                 headerRow.CreateCell(30).SetCellValue("Balance Qty");
                 headerRow.CreateCell(31).SetCellValue("RequestedDate");
+                headerRow.CreateCell(32).SetCellValue("MSL");
+                headerRow.CreateCell(33).SetCellValue("StdCost");
+                headerRow.CreateCell(34).SetCellValue("SValue");
+                headerRow.CreateCell(35).SetCellValue("InstallationCharges");
+                headerRow.CreateCell(36).SetCellValue("City");
+                headerRow.CreateCell(37).SetCellValue("State");
+                headerRow.CreateCell(38).SetCellValue("ArchitectName");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -3983,6 +4012,13 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(29).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
                     row.CreateCell(30).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
                     row.CreateCell(31).SetCellValue(item.RequestedDate.HasValue ? item.RequestedDate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(32).SetCellValue(Convert.ToDouble(item.MSL)); // Assuming BalanceQty is decimal
+                    row.CreateCell(33).SetCellValue(Convert.ToDouble(item.StdCost)); // Assuming BalanceQty is decimal
+                    row.CreateCell(34).SetCellValue(Convert.ToDouble(item.SValue)); // Assuming BalanceQty is decimal
+                    row.CreateCell(35).SetCellValue(Convert.ToDouble(item.InstallationCharges)); // Assuming BalanceQty is decimal
+                    row.CreateCell(36).SetCellValue(item.City);
+                    row.CreateCell(37).SetCellValue(item.State);
+                    row.CreateCell(38).SetCellValue(item.ArchitectName);
                 }
 
                 // Save Excel workbook to a memory stream
@@ -4246,6 +4282,43 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetReceivableReportsWithCustomerID action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetReceivableReportsForMultiCustomerID(ReceivableReportsForMultiCustomerIdDto receivableReportsForMultiCustomerIdDto)
+        {
+            ServiceResponse<IEnumerable<RecievableCustomer>> serviceResponse = new ServiceResponse<IEnumerable<RecievableCustomer>>();
+            try
+            {
+                var products = await _repository.GetReceivableReportsForMultiCustomerID(receivableReportsForMultiCustomerIdDto.CustomerId);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"CustomerId hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"CustomerId hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ReceivableReportsForMultiCustomerID Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetReceivableReportsForMultiCustomerID action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -4713,13 +4786,13 @@ namespace Tips.SalesService.Api.Controllers
                         if (soItemConfirmationDateDtoList.Count() == 0)
                         {
                             var soConfirmationDateDtoDetails = soItemConfirmationDateSet
-                                .Select(soConfirmationDate => new SoConfirmationDate
-                                {
-                                    ConfirmationDate = soConfirmationDate.ConfirmationDate,
-                                    Qty = soConfirmationDate.Qty,
-                                    SalesOrderItemsId = soConfirmationDate.SalesOrderItemsId
-                                })
-                                .ToList();
+                                    .Select(soConfirmationDate => new SoConfirmationDate
+                                    {
+                                        ConfirmationDate = soConfirmationDate.ConfirmationDate,
+                                        Qty = soConfirmationDate.Qty,
+                                        SalesOrderItemsId = soConfirmationDate.SalesOrderItemsId
+                                    })
+                                    .ToList();
 
                             await _soConfirmationDateRepository.CreateSoConfirmationDateList(soConfirmationDateDtoDetails);
                             _soConfirmationDateRepository.SaveAsync();
@@ -4742,6 +4815,14 @@ namespace Tips.SalesService.Api.Controllers
                         foreach (var soConfirmationDate in soItemConfirmationDateDetails)
                         {
                             var purchaseOrderItemDetailById = await _salesOrderItemsRepository.GetSalesOrderItemDetailsById(firstItemInSet.SalesOrderItemsId);
+
+                            SOInitialConfirmationDateHistory soInitialConfirmationDateHistory = new SOInitialConfirmationDateHistory();
+                            soInitialConfirmationDateHistory.SalesOrderId = purchaseOrderItemDetailById.SalesOrderId;
+                            soInitialConfirmationDateHistory.SalesOrderItemsId = purchaseOrderItemDetailById.Id;
+                            soInitialConfirmationDateHistory.InitialConfirmationDate = soConfirmationDate.ConfirmationDate;
+                            soInitialConfirmationDateHistory.InitialQty = soConfirmationDate.Qty;
+
+
                             SoConfirmationDateHistory soConfirmationDateHistory = new SoConfirmationDateHistory();
                             soConfirmationDateHistory.ItemNumber = purchaseOrderItemDetailById.ItemNumber;
                             soConfirmationDateHistory.Description = purchaseOrderItemDetailById.Description;
@@ -4777,10 +4858,30 @@ namespace Tips.SalesService.Api.Controllers
                         _soConfirmationDateHistoryRepository.SaveAsync();
                     }
 
+
+                    //Update SoConfirmationStatus in SOInitialConfirmationDateHistory Table
+                    foreach (var soConfirmationDate in soItemConfirmationDateSet)
+                    {
+                        if (soConfirmationDate.IsInitialConfirmationDateDone == true)
+                        {
+                            var salesOrderItemDetailById = await _salesOrderItemsRepository.GetSalesOrderItemDetailsById(soConfirmationDate.SalesOrderItemsId);
+
+                            SOInitialConfirmationDateHistory soInitialConfirmationDateHistory = new SOInitialConfirmationDateHistory();
+                            soInitialConfirmationDateHistory.SalesOrderId = salesOrderItemDetailById.SalesOrderId;
+                            soInitialConfirmationDateHistory.SalesOrderItemsId = salesOrderItemDetailById.Id;
+                            soInitialConfirmationDateHistory.SalesOrderNumber = salesOrderItemDetailById.SalesOrderNumber;
+                            soInitialConfirmationDateHistory.InitialConfirmationDate = soConfirmationDate.ConfirmationDate;
+                            soInitialConfirmationDateHistory.InitialQty = soConfirmationDate.Qty;
+
+                            await _sOInitialConfirmationDateHistoryRepository.CreateSOInitialConfirmationDate(soInitialConfirmationDateHistory);
+                            _sOInitialConfirmationDateHistoryRepository.SaveAsync();
+                        }
+                    }
+
                     //Update SoConfirmationStatus in SalesOrder Table
 
                     salesOrderDetailById.SoConfirmationStatus = true;
-                    string result = await _repository.UpdateSalesOrder(salesOrderDetailById);
+                    string result = await _repository.UpdateSalesOrderShortClose(salesOrderDetailById);
                     _repository.SaveAsync();
                 }
                 serviceResponse.Data = null;
