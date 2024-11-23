@@ -595,6 +595,11 @@ namespace Tips.Warehouse.Api.Repository
                 && x.Location == location && x.LotNumber == lotNumber).FirstOrDefaultAsync();
             return invdetails;
         }
+        public async Task<List<Inventory>> GetRejectInventorybyGrinNo(string GrinNo)
+        {
+            var Invdetails = await FindAll().Where(x => x.Warehouse == "Reject" && x.ReferenceID == GrinNo && x.IsStockAvailable==true).ToListAsync();
+            return Invdetails;
+        }
         public async Task<List<InventoryQtyforDO>> GetInventorybyItemandProject(string itemNumber, string projectNumber)
         {
             string[] skipWareHouse = { "WIP", "Reject", "Scrap", "Rework", "IQC", "GRIN", "OPGIQC", "OPGGRIN" };

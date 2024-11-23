@@ -40,11 +40,11 @@ namespace Tips.Grin.Api.Entities
         public bool IsIqcCompleted { get; set; }
         public bool IsBinningCompleted { get; set; }
         [Required]
-        [Precision(18,3)]
+        [Precision(18, 3)]
         public decimal UnitPrice { get; set; }
 
         [Required]
-        [Precision(13,3)]
+        [Precision(13, 3)]
         public decimal POOrderQty { get; set; }
 
         [Required]
@@ -62,6 +62,8 @@ namespace Tips.Grin.Api.Entities
         public decimal RejectedQty { get; set; }
         [Precision(13, 3)]
         public decimal? AverageCost { get; set; }
+        [Precision(13, 3)]
+        public decimal RejectRecoveryQty { get; set; }
 
         [Required]
         public string UOM { get; set; }
@@ -82,7 +84,7 @@ namespace Tips.Grin.Api.Entities
 
         [Precision(13, 3)]
         public decimal? IGST { get; set; }
-        
+
         [Precision(13, 3)]
         public decimal? CGST { get; set; }
 

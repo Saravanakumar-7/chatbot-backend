@@ -652,8 +652,6 @@ namespace Tips.Grin.Api.Controllers
                 await _repository.CreateGrin(grins);
                 _repository.SaveAsync();
 
-
-
                 if (grins.GrinParts != null)
                 {
                     foreach (var grinPart in grins.GrinParts)

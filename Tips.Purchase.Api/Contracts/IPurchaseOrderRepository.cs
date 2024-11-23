@@ -12,6 +12,7 @@ namespace Tips.Purchase.Api.Contracts
 {
     public interface IPurchaseOrderRepository : IRepositoryBase<PurchaseOrder>
     {
+        Task<List<PurchaseOrder>> GetLatestPurchaseOrdersByPONumbers(List<string> Ponumbers);
         Task<PagedList<PurchaseOrder>> GetAllPurchaseOrders(PagingParameter pagingParameter, SearchParamess searchParamess);
         Task<PagedList<PurchaseOrder>> GetAllLastestPurchaseOrders(PagingParameter pagingParameter, SearchParamess searchParams);
         Task<PurchaseOrder> GetPurchaseOrderById(int id);

@@ -128,7 +128,34 @@ namespace Tips.Purchase.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+        } 
+        [HttpPost]
+        public async Task<IActionResult> GetLatestPurchaseOrdersByPONumbers([FromBody] List<string> Ponumbers)
+        {
+            ServiceResponse<List<PurchaseOrder>> serviceResponse = new ServiceResponse<List<PurchaseOrder>>();
+            try
+            {
+                var purchaseOrderDetails = await _repository.GetLatestPurchaseOrdersByPONumbers(Ponumbers);
+
+                purchaseOrderDetails.ForEach(x => x.POItems.ForEach(z => { z.PurchaseOrder = null; z.POAddprojects.ForEach(c => c.POItemDetail = null); }));
+
+                serviceResponse.Data = purchaseOrderDetails;
+                serviceResponse.Message = "Returned all PurchaseOrders";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
         }
+
         [HttpGet]
         public async Task<IActionResult> GetPurchaseOrderTillPoBreakDownByPoNumber(string PONumber)
         {

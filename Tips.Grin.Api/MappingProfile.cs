@@ -9,7 +9,7 @@ namespace Tips.Grin.Api
     {
         public MappingProfile()
         {
-           
+
             CreateMap<Grins, GrinIQCConfirmationSaveDto>().ReverseMap();
             CreateMap<GrinParts, GrinIQCConfirmationItemsSaveDto>().ReverseMap();
 
@@ -43,7 +43,7 @@ namespace Tips.Grin.Api
             CreateMap<GrinsForServiceItemsPartsPostDto, GrinsForServiceItemsUpdateQtyDetailsDto>().ReverseMap();
             CreateMap<GrinsForServiceItemsPartsPostDto, GrinsForServiceItemsQtyPoStatusUpdateDto>().ReverseMap();
             CreateMap<GrinsForServiceItemsPartsUpdateDto, GrinsForServiceItemsPartscalculationofAvgcost>().ReverseMap();
-            
+
             CreateMap<GrinsForServiceItemsProjectNumbers, GrinsForServiceItemsProjectNumbersDto>().ReverseMap();
             CreateMap<GrinsForServiceItemsProjectNumbers, GrinsForServiceItemsProjectNumbersPostDto>().ReverseMap();
             CreateMap<GrinsForServiceItemsProjectNumbers, GrinsForServiceItemsProjectNumbersUpdateDto>().ReverseMap();
@@ -73,7 +73,7 @@ namespace Tips.Grin.Api
             CreateMap<Grins, GrinUpdateDto>().ReverseMap();
             CreateMap<Grins, GrinNumberListDto>().ReverseMap();
             CreateMap<Grins, GrinItemMasterEnggDto>().ReverseMap();
-            
+
             CreateMap<GrinParts, GrinPartsDto>().ReverseMap();
             CreateMap<GrinParts, GrinPartsPostDto>().ReverseMap();
             CreateMap<GrinParts, GrinPartsUpdateDto>().ReverseMap();
@@ -81,7 +81,7 @@ namespace Tips.Grin.Api
             CreateMap<GrinParts, GrinPartscalculationofAvgcost>().ReverseMap();
             CreateMap<GrinPartsPostDto, GrinPartscalculationofAvgcost>().ReverseMap();
             CreateMap<GrinPartsUpdateDto, GrinPartscalculationofAvgcost>().ReverseMap();
-            
+
             CreateMap<ProjectNumbers, ProjectNumbersDto>().ReverseMap();
             CreateMap<ProjectNumbers, ProjectNumbersDtoPost>().ReverseMap();
             CreateMap<ProjectNumbers, ProjectNumbersDtoUpdate>().ReverseMap();
@@ -159,7 +159,7 @@ namespace Tips.Grin.Api
             CreateMap<ReturnGrinParts, ReturnGrinPartsDto>().ReverseMap();
             CreateMap<ReturnGrinParts, ReturnGrinPartsDtoPost>().ReverseMap();
             CreateMap<ReturnGrinParts, ReturnGrinPartsListDto>().ReverseMap();
-        
+
 
             CreateMap<ReturnGrinDocumentUpload, ReturnGrinDocumentUploadDto>().ReverseMap();
             CreateMap<ReturnGrinDocumentUpload, ReturnGrinDocumentUploadDtoPost>().ReverseMap();
@@ -196,6 +196,8 @@ namespace Tips.Grin.Api
             CreateMap<OpenGrinDetails, OpenGrinDetailsDto>().ReverseMap();
             CreateMap<OpenGrinDetails, OpenGrinDetailsPostDto>().ReverseMap();
             CreateMap<OpenGrinDetails, OpenGrinDetailsUpdateDto>().ReverseMap();
+
+            CreateMap<Datum, InventoryUpdateDto>().ReverseMap();
         }
     }
 }

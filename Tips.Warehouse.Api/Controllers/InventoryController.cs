@@ -53,6 +53,40 @@ namespace Tips.Warehouse.Api.Controllers
             _materialIssueTrackerRepository = materialIssueTrackerRepository;
             _clientFactory = clientFactory;
         }
+        [HttpGet]
+        public async Task<IActionResult> GetRejectInventorybyGrinNo(string GrinNo)
+        {
+            ServiceResponse<List<InventoryDto>> serviceResponse = new ServiceResponse<List<InventoryDto>>();
+            try
+            {
+                var getinventorydetails = await _inventoryRepository.GetRejectInventorybyGrinNo(GrinNo);
+                if (getinventorydetails == null)
+                {
+                    _logger.LogError($"No Rejected Inventory is present for the GrinNo: {GrinNo}");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"No Rejected Inventory is present for the GrinNo: {GrinNo}";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return StatusCode(404, serviceResponse);
+                }
+                _logger.LogInfo($"Returned Rejected Inventory is present for the GrinNo: {GrinNo}");
+                var result = _mapper.Map<List<InventoryDto>>(getinventorydetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = $"Returned Rejected Inventory is present for the GrinNo: {GrinNo}";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message + "\n" + ex.InnerException);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetInventorybyItemandProject([FromQuery] string itemNumber, [FromQuery] string projectNumber)
@@ -1432,7 +1466,7 @@ namespace Tips.Warehouse.Api.Controllers
             // Retrieve the existing entry from the repository based on the ShopOrderNumber, PartNumber, and LotNumber
 
             List<ShopOrderMaterialIssueTracker> materialIssueTrackerList = await _materialIssueTrackerRepository
-                                .GetDetailsByShopOrderNOItemNoLotNo(inventoryDetail.PartNumber, inventoryDetail.shopOrderNo, inventoryDetail.LotNumber,MRNumber);
+                                .GetDetailsByShopOrderNOItemNoLotNo(inventoryDetail.PartNumber, inventoryDetail.shopOrderNo, inventoryDetail.LotNumber, MRNumber);
 
             if (materialIssueTrackerList != null || materialIssueTrackerList.Count > 0)
             {
@@ -2292,7 +2326,7 @@ namespace Tips.Warehouse.Api.Controllers
                     var itemNumber = materialReturnQty.PartNumber;
                     var projectNumber = materialReturnQty.ProjectNumber;
                     var shopOrderNumber = materialReturnQty.ShopOrderNumber;
-                    var MRNNumber= materialReturnQty.MRNNumber;
+                    var MRNNumber = materialReturnQty.MRNNumber;
                     foreach (var Location in materialReturnQty.MRNDetails)
                     {
                         if (Location.IsMRNIssueDone != true)
@@ -3593,7 +3627,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        [HttpGet] 
+        [HttpGet]
         public async Task<IActionResult> GetInventoryDashboardSPReportsWithParam()
         {
             ServiceResponse<List<InventoryDashboardSPReport_Details>> serviceResponse = new ServiceResponse<List<InventoryDashboardSPReport_Details>>();
@@ -3649,7 +3683,7 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<List<InventoryDashboardSPReport_Details>> serviceResponse = new ServiceResponse<List<InventoryDashboardSPReport_Details>>();
             try
             {
-                List<InventoryDashboardSPReport_Details> inventoryDashboardSPReport_Details1=new List<InventoryDashboardSPReport_Details>();
+                List<InventoryDashboardSPReport_Details> inventoryDashboardSPReport_Details1 = new List<InventoryDashboardSPReport_Details>();
                 List<string> Bucket_Id = new List<string>();
                 Bucket_Id.Add("bucket_Id1");
                 Bucket_Id.Add("bucket_Id2");
@@ -3660,10 +3694,10 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     InventoryDashboardSPReport_Details inventoryDashboardSPReport_Details = new InventoryDashboardSPReport_Details();
                     inventoryDashboardSPReport_Details.Title = buck;
-                    inventoryDashboardSPReport_Details.Items= await _inventoryRepository.GetInventoryDashboardLastWeekSPReportsWithParam(buck);
+                    inventoryDashboardSPReport_Details.Items = await _inventoryRepository.GetInventoryDashboardLastWeekSPReportsWithParam(buck);
                     inventoryDashboardSPReport_Details1.Add(inventoryDashboardSPReport_Details);
                 }
-                    
+
 
                 if (inventoryDashboardSPReport_Details1 == null)
                 {

@@ -33,7 +33,11 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient();
 //builder.Services.AddDbContext<DbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Server=DESKTOP-EFBBM74;Database=TipsSalesService;Trusted_Connection=True;Trusted_Connection=SSPI;Encrypt=false;TrustServerCertificate=true;")));
 builder.Services.AddControllers();
-
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.KeepAliveTimeout = TimeSpan.FromMinutes(15);
+    options.Limits.RequestHeadersTimeout = TimeSpan.FromMinutes(15);
+});
 builder.Services.Configure<KestrelServerOptions>(option =>
 {
     option.Limits.MaxRequestBodySize = 1073741824;

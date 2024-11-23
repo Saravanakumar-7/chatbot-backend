@@ -1183,7 +1183,15 @@ namespace Tips.Purchase.Api.Repository
 
             return results;
         }
+        public async Task<List<PurchaseOrder>> GetLatestPurchaseOrdersByPONumbers(List<string> Ponumbers)
+        {
+            var POs = await _tipsPurchaseDbContext.PurchaseOrders.Where(x => Ponumbers.Contains(x.PONumber) && (
+                                        (x.ApprovalCount == 4 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == true) ||
+                                        (x.ApprovalCount == 2 && x.POApprovalI == true && x.POApprovalII == true)
+                                     )).Include(y => y.POItems).ThenInclude(z => z.POAddprojects).ToListAsync();
 
+            return POs;
+        }
         public async Task<PagedList<PurchaseOrder>> GetAllPurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams)
         {
             int? searchrev;

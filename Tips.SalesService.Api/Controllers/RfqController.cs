@@ -2717,7 +2717,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                Rfq oldversionRFQdetails = await _rfqRepository.RfqDetailsById(rfqCustomerSupportUpdateDto.Id);
+                Rfq oldversionRFQdetails = await _rfqRepository.RfqDetailsByRfqNumbers(rfqCustomerSupportUpdateDto.RfqNumber);
                 oldversionRFQdetails.RfqNumber = rfqCustomerSupportUpdateDto.RfqNumber;
                 oldversionRFQdetails.RevisionNumber = rfqCustomerSupportUpdateDto.RevisionNumber;
                 oldversionRFQdetails.CustomerId = rfqCustomerSupportUpdateDto.CustomerId;

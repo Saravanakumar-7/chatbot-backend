@@ -33,27 +33,29 @@ namespace Repository
         public async Task<List<ItemMasterRoutingListDto>> GetItemsRoutingDetailsForLpCosting(List<string> itemNumberList)
         {
             var itemIdNoList = await TipsMasterDbContext.ItemMasters
-                .Where(im => itemNumberList.Contains(im.ItemNumber))
-                .Select(x => new { x.Id,x.ItemNumber}).ToListAsync();
+    .Where(im => itemNumberList.Contains(im.ItemNumber))
+    .Select(x => new { x.Id, x.ItemNumber })
+    .ToListAsync();
 
-            List<long> itemIds = itemIdNoList.Select(x=>x.Id).ToList();
+            // Step 2: Extract the list of item IDs
+            List<long> itemIds = itemIdNoList.Select(x => x.Id).ToList();
 
-           // IEnumerable<ItemMasterRouting> itemMasterRoutings = await TipsMasterDbContext.ItemMasterRoutings
-                               //.Where(x => itemIds.Contains(x.ItemMasterId)).ToListAsync();
+            // Step 3: Fetch routing details for the filtered item IDs
+            var itemMasterRoutings = await TipsMasterDbContext.ItemMasterRoutings
+                .Where(x => itemIds.Contains(x.ItemMasterId))
+                .ToListAsync();
 
-
-            List<ItemMasterRoutingListDto> getItemsRoutingDetailsForLpCosting = await TipsMasterDbContext.ItemMasterRoutings
-                               .Where(x => itemIds.Contains(x.ItemMasterId))
-                               .Select(c => new ItemMasterRoutingListDto()
-                               {
-                                   ProcessSteps = c.ProcessStep,
-                                   MachineHrs = c.MachineHours,
-                                   LabourHrs = c.LaborHours,
-                                   ItemNumber = itemIdNoList.Where(x => x.Id == c.ItemMasterId)
-                                   .Select(x => x.ItemNumber).FirstOrDefault()
-                               })
-                               .ToListAsync();
-
+            // Step 4: Perform in-memory mapping to the DTO
+            List<ItemMasterRoutingListDto> getItemsRoutingDetailsForLpCosting = itemMasterRoutings
+                .Select(c => new ItemMasterRoutingListDto()
+                {
+                    ProcessSteps = c.ProcessStep,
+                    MachineHrs = c.MachineHours,
+                    LabourHrs = c.LaborHours,
+                    ItemNumber = itemIdNoList
+                        .FirstOrDefault(x => x.Id == c.ItemMasterId)?.ItemNumber
+                })
+                .ToList();
             return getItemsRoutingDetailsForLpCosting;
 
 

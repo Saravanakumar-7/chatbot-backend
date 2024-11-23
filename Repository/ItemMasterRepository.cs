@@ -301,7 +301,7 @@ namespace Repository
                                     id = c.Id,
                                     ItemNumber = c.ItemNumber,
                                     Description = c.Description,
-
+                                    PartType=c.ItemType
                                 })
                               .ToListAsync();
 
