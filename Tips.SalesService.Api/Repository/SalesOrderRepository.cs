@@ -796,12 +796,12 @@ namespace Tips.SalesService.Api.Repository
             var projectNumbers = await _tipsSalesServiceDbContext.SalesOrdersItems
                 .Where(x => fgItemNumbers.Contains(x.ItemNumber))
                 .Select(m => m.ProjectNumber)
-                .Distinct()
+                .Distinct().AsNoTracking()
                 .ToListAsync();
 
             var projectSODetails = await _tipsSalesServiceDbContext.SalesOrders
                 .Where(m => projectNumbers.Contains(m.ProjectNumber)
-                            && m.SOStatus != OrderStatus.Closed && m.IsShortClosed == false)
+                            && m.SOStatus != OrderStatus.Closed && m.IsShortClosed == false).AsNoTracking()
                 .Select(s => new ProjectSOSADetailDto()
                 {
                     ProjectNumber = s.ProjectNumber,
