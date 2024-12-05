@@ -552,7 +552,8 @@ namespace Repository
                 {
                     ItemNumber = s.ItemNumber,
                     PartType = s.ItemType,
-                    MftrItemNumber = a.ManufacturerPartNo
+                    MftrItemNumber = a.ManufacturerPartNo,
+                    MaterialGroup = s.MaterialGroup
                 }))
                 .ToListAsync();
 

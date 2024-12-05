@@ -255,7 +255,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string ProjectNumber { get; set; }
         public decimal Issued_Quantity { get; set; }
         public string? UOM { get; set; }
-
+        public DateTime Issued_DateTime { get; set; }
+        public string? Issued_By { get; set; }
         public string? Warehouse { get; set; }
         public string? From_Location { get; set; }
         public string? TO_Location { get; set; }
@@ -266,6 +267,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ReferenceID { get; set; }
         public string? ReferenceIDFrom { get; set; }
         public string? ShopOrderNo { get; set; }
+        public string? Remarks { get; set; }
 
     }
     public class grinInventoryTrasactionPostDto
@@ -453,7 +455,9 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public string? GrinNumber { get; set; }
         public int GrinId { get; set; }
-
+        public string VendorName { get; set; }
+        public string VendorId { get; set; }
+        public string? VendorNumber { get; set; }
         public GrinIQCConfirmationItemsSaveDto GrinIQCConfirmationItemsPostDtos { get; set; }
 
     }

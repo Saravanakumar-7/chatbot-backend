@@ -130,6 +130,7 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<FinancialYearDashboardSPReport> FinancialYearDashboardSPReports { get; set; }
         public DbSet<SourcingSPReport> SourcingSPReports { get; set; }
         public DbSet<SOInitialConfirmationDateHistory> SOInitialConfirmationDateHistories { get; set; }
+        public DbSet<FGSalesOrderSPReport> FGSalesOrderSPReports { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -164,6 +165,7 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<TransactionDashboardSPReport_bucketId3>().HasNoKey();
             modelBuilder.Entity<TransactionDashboardSPReport_bucketId5>().HasNoKey();
             modelBuilder.Entity<SourcingSPReport>().HasNoKey();
+            modelBuilder.Entity<FGSalesOrderSPReport>().HasNoKey();
         }
 
     }

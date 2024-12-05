@@ -55,6 +55,7 @@ namespace Tips.Grin.Api.Entities
         public DbSet<OpenGrinForBinning> OpenGrinForBinnings { get; set; }
         public DbSet<OpenGrinForBinningItems> OpenGrinForBinningItems { get; set; }
         public DbSet<OpenGrinForBinningLocations> OpenGrinForBinningLocations { get; set; }
+        public DbSet<IQCPendingReportWithParamForTrans> IQCPendingReportWithParamForTrans { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -68,6 +69,8 @@ namespace Tips.Grin.Api.Entities
             modelBuilder.Entity<IQCForServiceItemsSPReport>().HasNoKey();
             modelBuilder.Entity<OpenGrinForGrinSPReport>().HasNoKey();
             modelBuilder.Entity<OpenGrinForIQCSPReport>().HasNoKey();
+            modelBuilder.Entity<IQCPendingReportWithParamForTrans>().HasNoKey();
+            
 
         }
 

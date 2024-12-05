@@ -10,6 +10,7 @@ using Tips.Grin.Api.Entities.DTOs;
 using Tips.Grin.Api.Entities;
 using Tips.Grin.Api.Repository;
 using Entities;
+using System.Security.Claims;
 
 namespace Tips.Grin.Api.Controllers
 {
@@ -28,6 +29,9 @@ namespace Tips.Grin.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
         public OpenGrinForBinningController(IOpenGrinForIQCItemRepository openGrinForIQCItemRepository, IOpenGrinForIQCRepository openGrinForIQCRepository, IOpenGrinForGrinItemRepository openGrinForGrinItemRepository, IOpenGrinForGrinRepository openGrinForGrinRepository, IOpenGrinForBinningItemsRepository openGrinForBinningItemsRepository, IOpenGrinForBinningRepository openGrinForBinningRepository, IBinningLocationRepository binningLocationRepository, IHttpClientFactory clientFactory, IIQCConfirmationItemsRepository iQCConfirmationItemsRepository, IIQCConfirmationRepository iQCConfirmationRepository, IGrinPartsRepository grinPartsRepository, IGrinRepository grinRepository, IBinningRepository binningRepository, IBinningItemsRepository binningItemsRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
@@ -41,6 +45,10 @@ namespace Tips.Grin.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _clientFactory = clientFactory;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
         }
 
         [HttpGet]
@@ -184,6 +192,7 @@ namespace Tips.Grin.Api.Controllers
                 HttpStatusCode createInv = HttpStatusCode.OK;
                 HttpStatusCode getItemMas = HttpStatusCode.OK;
                 HttpStatusCode createInvTrans = HttpStatusCode.OK;
+                HttpStatusCode createInvTrans1 = HttpStatusCode.OK;
 
                 var existingOpenGrinForBinningDetails = await _openGrinForBinningRepository.GetExistingOpenGrinForBinningDetailsByOpenGrinNo(openGrinNumber);
                 if (existingOpenGrinForBinningDetails != null)
@@ -337,16 +346,19 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
                                     iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
                                     iqcInventoryTranctionDto.UOM = inventoryObject.uom;
+                                    iqcInventoryTranctionDto.Issued_By = _createdBy;
+                                    iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                     iqcInventoryTranctionDto.Warehouse = inventoryObject.warehouse;
-                                    iqcInventoryTranctionDto.From_Location = inventoryObject.location;
+                                    iqcInventoryTranctionDto.From_Location = "OPGIQC";
                                     iqcInventoryTranctionDto.TO_Location = inventoryObject.location;
                                     iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; 
                                     iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
                                     iqcInventoryTranctionDto.PartType = inventoryObject.partType;
                                     iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                     iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
-                                    iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
+                                    iqcInventoryTranctionDto.GrinMaterialType = "OPGBinning";
                                     iqcInventoryTranctionDto.ShopOrderNo = "";
+                                    iqcInventoryTranctionDto.Remarks = "OpenGrinForBinning Done";
 
                                     var jsonss = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
                                     var datass = new StringContent(jsonss, Encoding.UTF8, "application/json");
@@ -362,7 +374,7 @@ namespace Tips.Grin.Api.Controllers
 
                                     var responses1 = await client10.SendAsync(request10);
 
-                                    if (responses1.StatusCode != HttpStatusCode.OK) createInvTrans = responses1.StatusCode;
+                                    if (responses1.StatusCode != HttpStatusCode.OK) createInvTrans1 = responses1.StatusCode;
 
                                     //j++;
                                 }
@@ -409,11 +421,14 @@ namespace Tips.Grin.Api.Controllers
 
                                     BinningInventoryTranctionDto inventoryTranctionObjectNew = new BinningInventoryTranctionDto();
                                     inventoryTranctionObjectNew.PartNumber = inventoryObjectNew.PartNumber;
+                                    inventoryTranctionObjectNew.LotNumber = inventoryObjectNew.LotNumber;
                                     inventoryTranctionObjectNew.MftrPartNumber = inventoryObjectNew.MftrPartNumber;
                                     inventoryTranctionObjectNew.Description = inventoryObjectNew.Description;
                                     inventoryTranctionObjectNew.ProjectNumber = inventoryObjectNew.ProjectNumber;
                                     inventoryTranctionObjectNew.Issued_Quantity = inventoryObjectNew.Balance_Quantity;
                                     inventoryTranctionObjectNew.UOM = inventoryObjectNew.UOM;
+                                    inventoryTranctionObjectNew.Issued_By = _createdBy;
+                                    inventoryTranctionObjectNew.Issued_DateTime = DateTime.Now;
                                     inventoryTranctionObjectNew.Warehouse = inventoryObjectNew.Warehouse;
                                     inventoryTranctionObjectNew.From_Location = "OPGNIQC";
                                     inventoryTranctionObjectNew.TO_Location = inventoryObjectNew.Location;
@@ -422,6 +437,9 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryTranctionObjectNew.PartType = inventoryObjectNew.PartType; // we have to take parttype from grinparts model;
                                     inventoryTranctionObjectNew.ReferenceID = inventoryObjectNew.ReferenceID;
                                     inventoryTranctionObjectNew.ReferenceIDFrom = inventoryObjectNew.ReferenceIDFrom;
+                                    inventoryTranctionObjectNew.GrinMaterialType = "OPGBinning";
+                                    inventoryTranctionObjectNew.ShopOrderNo = "";
+                                    inventoryTranctionObjectNew.Remarks = "OpenGrinForBinning Done";
 
                                     var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
                                     var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
@@ -445,7 +463,7 @@ namespace Tips.Grin.Api.Controllers
                             }
                         }
                     }
-                    if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK && createInvTrans == HttpStatusCode.OK
+                    if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK && createInvTrans1 == HttpStatusCode.OK && createInvTrans == HttpStatusCode.OK
                                                                                                                                     && getItemMas == HttpStatusCode.OK)
                     {
                         _openGrinForIQCRepository.SaveAsync();
@@ -584,6 +602,8 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
                                     iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
                                     iqcInventoryTranctionDto.UOM = inventoryObject.uom;
+                                    iqcInventoryTranctionDto.Issued_By = _createdBy;
+                                    iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                     iqcInventoryTranctionDto.Warehouse = inventoryObject.warehouse;
                                     iqcInventoryTranctionDto.From_Location = inventoryObject.location;
                                     iqcInventoryTranctionDto.TO_Location = inventoryObject.location;
@@ -591,9 +611,10 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
                                     iqcInventoryTranctionDto.PartType = inventoryObject.partType;
                                     iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
-                                    iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
-                                    iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
+                                    iqcInventoryTranctionDto.ReferenceIDFrom = "OPGBinning";
+                                    iqcInventoryTranctionDto.GrinMaterialType = "OPGBinning";
                                     iqcInventoryTranctionDto.ShopOrderNo = "";
+                                    iqcInventoryTranctionDto.Remarks = "OpenGrinForBinning Done";
 
                                     var jsonss = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
                                     var datass = new StringContent(jsonss, Encoding.UTF8, "application/json");
@@ -609,7 +630,7 @@ namespace Tips.Grin.Api.Controllers
 
                                     var responses1 = await client10.SendAsync(request10);
 
-                                    if (responses1.StatusCode != HttpStatusCode.OK) createInvTrans = responses1.StatusCode;
+                                    if (responses1.StatusCode != HttpStatusCode.OK) createInvTrans1 = responses1.StatusCode;
 
                                     //j++;
                                 }
@@ -631,7 +652,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObjectNew.GrinPartId = OpenGrinForGrinItemId;
                                     inventoryObjectNew.PartType = openGrinForGrinItemsDetails.ItemType; // we have to take parttype from grinparts model;
                                     inventoryObjectNew.ReferenceID = openGrinForBinningDetail.OpenGrinNumber;
-                                    inventoryObjectNew.ReferenceIDFrom = "OPGGRIN";
+                                    inventoryObjectNew.ReferenceIDFrom = "OPGBinning";
                                     inventoryObjectNew.LotNumber = openGrinForGrinItemsDetails.LotNumber;
 
                                     var json = JsonConvert.SerializeObject(inventoryObjectNew);
@@ -655,11 +676,14 @@ namespace Tips.Grin.Api.Controllers
 
                                     BinningInventoryTranctionDto inventoryTranctionObjectNew = new BinningInventoryTranctionDto();
                                     inventoryTranctionObjectNew.PartNumber = inventoryObjectNew.PartNumber;
+                                    inventoryTranctionObjectNew.LotNumber = inventoryObjectNew.LotNumber;
                                     inventoryTranctionObjectNew.MftrPartNumber = inventoryObjectNew.MftrPartNumber;
                                     inventoryTranctionObjectNew.Description = inventoryObjectNew.Description;
                                     inventoryTranctionObjectNew.ProjectNumber = inventoryObjectNew.ProjectNumber;
                                     inventoryTranctionObjectNew.Issued_Quantity = inventoryObjectNew.Balance_Quantity;
                                     inventoryTranctionObjectNew.UOM = inventoryObjectNew.UOM;
+                                    inventoryTranctionObjectNew.Issued_By = _createdBy;
+                                    inventoryTranctionObjectNew.Issued_DateTime = DateTime.Now;
                                     inventoryTranctionObjectNew.Warehouse = inventoryObjectNew.Warehouse;
                                     inventoryTranctionObjectNew.From_Location = "OPGNIQC";
                                     inventoryTranctionObjectNew.TO_Location = inventoryObjectNew.Location;
@@ -668,6 +692,9 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryTranctionObjectNew.PartType = inventoryObjectNew.PartType; // we have to take parttype from grinparts model;
                                     inventoryTranctionObjectNew.ReferenceID = inventoryObjectNew.ReferenceID;
                                     inventoryTranctionObjectNew.ReferenceIDFrom = inventoryObjectNew.ReferenceIDFrom;
+                                    inventoryTranctionObjectNew.GrinMaterialType = "OPGBinning";
+                                    inventoryTranctionObjectNew.ShopOrderNo = "";
+                                    inventoryTranctionObjectNew.Remarks = "OpenGrinForBinning Done";
 
                                     var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
                                     var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
@@ -707,7 +734,7 @@ namespace Tips.Grin.Api.Controllers
                     openGrinForIQCDetails.IsOpenGrinForBinningCompleted = true;
                     await _openGrinForIQCRepository.UpdateOpenGrinForIQC(openGrinForIQCDetails);
 
-                    if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK && getItemMas == HttpStatusCode.OK
+                    if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK && getItemMas == HttpStatusCode.OK && createInvTrans1 == HttpStatusCode.OK
                                                                                                                             && createInvTrans == HttpStatusCode.OK)
                     {
                         _openGrinForGrinRepository.SaveAsync();
@@ -786,6 +813,7 @@ namespace Tips.Grin.Api.Controllers
                 HttpStatusCode createInv = HttpStatusCode.OK;
                 HttpStatusCode getItemMas = HttpStatusCode.OK;
                 HttpStatusCode createInvTrans = HttpStatusCode.OK;
+                HttpStatusCode createInvTrans1 = HttpStatusCode.OK;
 
                 var openGrinForBinningItemsDto = openGrinForBinningSaveDto.OpenGrinForBinningItems;
                 var openGrinForBinningItems = openGrinForBinningDetail.OpenGrinForBinningItems[0];
@@ -931,16 +959,19 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
                                 iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
                                 iqcInventoryTranctionDto.UOM = inventoryObject.uom;
+                                iqcInventoryTranctionDto.Issued_By = _createdBy;
+                                iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDto.Warehouse = inventoryObject.warehouse;
-                                iqcInventoryTranctionDto.From_Location = inventoryObject.location;
+                                iqcInventoryTranctionDto.From_Location = "OPGIQC"; 
                                 iqcInventoryTranctionDto.TO_Location = inventoryObject.location;
                                 iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; ;
                                 iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
                                 iqcInventoryTranctionDto.PartType = inventoryObject.partType;
                                 iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                 iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
-                                iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
+                                iqcInventoryTranctionDto.GrinMaterialType = "OPGBinning";
                                 iqcInventoryTranctionDto.ShopOrderNo = "";
+                                iqcInventoryTranctionDto.Remarks = "OpenGrinForBinningItem Done";
 
                                 var jsonss = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
                                 var datass = new StringContent(jsonss, Encoding.UTF8, "application/json");
@@ -956,7 +987,7 @@ namespace Tips.Grin.Api.Controllers
 
                                 var responses1 = await client10.SendAsync(request10);
 
-                                if (responses1.StatusCode != HttpStatusCode.OK) createInvTrans = responses1.StatusCode;
+                                if (responses1.StatusCode != HttpStatusCode.OK) createInvTrans1 = responses1.StatusCode;
                                 //j++;
                             }
                             else
@@ -1002,11 +1033,14 @@ namespace Tips.Grin.Api.Controllers
                                 
                                 BinningInventoryTranctionDto inventoryTranctionObjectNew = new BinningInventoryTranctionDto();
                                 inventoryTranctionObjectNew.PartNumber = inventoryObjectNew.PartNumber;
+                                inventoryTranctionObjectNew.LotNumber = inventoryObjectNew.LotNumber;
                                 inventoryTranctionObjectNew.MftrPartNumber = inventoryObjectNew.MftrPartNumber;
                                 inventoryTranctionObjectNew.Description = inventoryObjectNew.Description;
                                 inventoryTranctionObjectNew.ProjectNumber = inventoryObjectNew.ProjectNumber;
                                 inventoryTranctionObjectNew.Issued_Quantity = inventoryObjectNew.Balance_Quantity;
                                 inventoryTranctionObjectNew.UOM = inventoryObjectNew.UOM;
+                                inventoryTranctionObjectNew.Issued_By = _createdBy;
+                                inventoryTranctionObjectNew.Issued_DateTime = DateTime.Now;
                                 inventoryTranctionObjectNew.Warehouse = inventoryObjectNew.Warehouse;
                                 inventoryTranctionObjectNew.From_Location = "OPGNIQC";
                                 inventoryTranctionObjectNew.TO_Location = inventoryObjectNew.Location;
@@ -1015,6 +1049,9 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryTranctionObjectNew.PartType = inventoryObjectNew.PartType; // we have to take parttype from grinparts model;
                                 inventoryTranctionObjectNew.ReferenceID = inventoryObjectNew.ReferenceID;
                                 inventoryTranctionObjectNew.ReferenceIDFrom = inventoryObjectNew.ReferenceIDFrom;
+                                inventoryTranctionObjectNew.GrinMaterialType = "OPGBinning";
+                                inventoryTranctionObjectNew.ShopOrderNo = "";
+                                inventoryTranctionObjectNew.Remarks = "OpenGrinForBinningItem Done";
 
                                 var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
                                 var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
@@ -1037,7 +1074,7 @@ namespace Tips.Grin.Api.Controllers
                         }
 
                     }
-                    if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK && getItemMas == HttpStatusCode.OK
+                    if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK && getItemMas == HttpStatusCode.OK && createInvTrans1 == HttpStatusCode.OK
                                                                                                                                 && createInvTrans == HttpStatusCode.OK)
                     {
                         _openGrinForIQCRepository.SaveAsync();

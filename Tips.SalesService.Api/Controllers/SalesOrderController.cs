@@ -5828,6 +5828,47 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetFGSalesOrderSPReportWithParam([FromBody] FGSalesOrderSPReportDto fgSalesOrder)
+
+        {
+            ServiceResponse<IEnumerable<FGSalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<FGSalesOrderSPReport>>();
+            try
+            {
+                var products = await _repository.GetFGSalesOrderSPReportWithParam(fgSalesOrder.SalesOrderNumber,
+                                                                             fgSalesOrder.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"FGSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"FGSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned FGSalesOrderSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetFGSalesOrderSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //[HttpGet]
         //public async Task<IActionResult> GetSalesOrderNoDetailsByCustomerId(string Customerid)
         //{

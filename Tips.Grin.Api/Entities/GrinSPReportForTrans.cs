@@ -49,5 +49,6 @@ namespace Tips.Grin.Api.Entities
         public string? Remarks { get; set; }
         public decimal? ProjectQty{ get; set; }
         public bool? TallyStatus { get; set; }
+        public string? BENumber { get; set; }    
     }
 }

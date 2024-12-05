@@ -589,6 +589,7 @@ namespace Entities.DTOs
 
         public PartType PartType { get; set; }
         public string MftrItemNumber {  get; set; }
+        public string? MaterialGroup { get; set; }
     }
     public class ItemWithPartTypeAndMinDto
     {

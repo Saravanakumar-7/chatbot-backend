@@ -18,5 +18,8 @@ namespace Tips.Production.Api.Entities
         public string? Uom { get; set; }
         public string? IssuedBy { get; set; }
         public string? CreatedBy { get; set; }
+        public string? LotNumber { get; set; }
+        
+
     }
 }

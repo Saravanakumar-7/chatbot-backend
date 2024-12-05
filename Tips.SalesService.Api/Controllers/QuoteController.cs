@@ -1301,6 +1301,117 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> ExportSoSummaryQuotationToExcel()
+        {
+            try
+            {
+                var soSummaryQuotationDtos = await _repository.GetSoSummaryQuotationSPReport();
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("SoSummaryQuotation");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Lead ID");
+                headerRow.CreateCell(1).SetCellValue("Customer Name");
+                headerRow.CreateCell(2).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(3).SetCellValue("Product Type");
+                headerRow.CreateCell(4).SetCellValue("First Quote Number");
+                headerRow.CreateCell(5).SetCellValue("First Quote Revision Number");
+                headerRow.CreateCell(6).SetCellValue("First Quote Created On");
+                headerRow.CreateCell(7).SetCellValue("First Quote Total Final Amount");
+                headerRow.CreateCell(8).SetCellValue("First Quote Sent Number");
+                headerRow.CreateCell(9).SetCellValue("First Quote Sent Revision Number");
+                headerRow.CreateCell(10).SetCellValue("First Quote Sent Created On");
+                headerRow.CreateCell(11).SetCellValue("First Quote Sent General Discount");
+                headerRow.CreateCell(12).SetCellValue("First Quote Sent General Discount Type");
+                headerRow.CreateCell(13).SetCellValue("First Quote Sent Taxed Value");
+                headerRow.CreateCell(14).SetCellValue("First Quote Sent Untaxed Value");
+                headerRow.CreateCell(15).SetCellValue("First Quote Email Sent On");
+                headerRow.CreateCell(16).SetCellValue("Latest Quote Sent Number");
+                headerRow.CreateCell(17).SetCellValue("Latest Quote Sent Revision Number");
+                headerRow.CreateCell(18).SetCellValue("Latest Quote Sent Created On");
+                headerRow.CreateCell(19).SetCellValue("Latest Quote Sent General Discount");
+                headerRow.CreateCell(20).SetCellValue("Latest Quote Sent General Discount Type");
+                headerRow.CreateCell(21).SetCellValue("Latest Quote Sent Taxed Value");
+                headerRow.CreateCell(22).SetCellValue("Latest Quote Sent Untaxed Value");
+                headerRow.CreateCell(23).SetCellValue("First Sales Order Sent Number");
+                headerRow.CreateCell(24).SetCellValue("First SO Sent Revision Number");
+                headerRow.CreateCell(25).SetCellValue("First SO Sent Created On");
+                headerRow.CreateCell(26).SetCellValue("First SO Sent Discount");
+                headerRow.CreateCell(27).SetCellValue("First SO Sent Discount Type");
+                headerRow.CreateCell(28).SetCellValue("First SO Sent Taxed Value");
+                headerRow.CreateCell(29).SetCellValue("First SO Sent Untaxed Value");
+                headerRow.CreateCell(30).SetCellValue("Latest Sales Order Sent Number");
+                headerRow.CreateCell(31).SetCellValue("Latest SO Sent Revision Number");
+                headerRow.CreateCell(32).SetCellValue("Latest SO Sent Created On");
+                headerRow.CreateCell(33).SetCellValue("Latest SO Sent Discount");
+                headerRow.CreateCell(34).SetCellValue("Latest SO Sent Discount Type");
+                headerRow.CreateCell(35).SetCellValue("Latest SO Sent Taxed Value");
+                headerRow.CreateCell(36).SetCellValue("Latest SO Sent Untaxed Value");
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in soSummaryQuotationDtos)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.LeadId ?? "");
+                    row.CreateCell(1).SetCellValue(item.CustomerName ?? "");
+                    row.CreateCell(2).SetCellValue(item.TypeOfSolution ?? "");
+                    row.CreateCell(3).SetCellValue(item.ProductType ?? "");
+                    row.CreateCell(4).SetCellValue(item.FirstQuoteNumber ?? "");
+                    row.CreateCell(5).SetCellValue((double?)item.FirstQuoteRevisionNumber ?? 0);
+                    row.CreateCell(6).SetCellValue(item.FirstQuoteCreatedOn?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(7).SetCellValue((double?)item.FirstQuoteTotalFinalAmount ?? 0);
+                    row.CreateCell(8).SetCellValue(item.FirstQuoteSentNumber ?? "");
+                    row.CreateCell(9).SetCellValue((double?)item.FirstQuoteSentRevisionNumber ?? 0);
+                    row.CreateCell(10).SetCellValue(item.FirstQuoteSentCreatedOn?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(11).SetCellValue((double?)item.FirstQuoteSentGeneralDiscount ?? 0);
+                    row.CreateCell(12).SetCellValue(item.FirstQuoteSentGeneralDiscountType ?? "");
+                    row.CreateCell(13).SetCellValue((double?)item.FirstQuoteSentTaxedValue ?? 0);
+                    row.CreateCell(14).SetCellValue((double?)item.FirstQuoteSentUntaxedValue ?? 0);
+                    row.CreateCell(15).SetCellValue(item.FirstQuoteEmailSentOn?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(16).SetCellValue(item.LatestQuoteSentNumber ?? "");
+                    row.CreateCell(17).SetCellValue((double?)item.LatestQuoteSentRevisionNumber ?? 0);
+                    row.CreateCell(18).SetCellValue(item.LatestQuoteSentCreatedOn?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(19).SetCellValue((double?)item.LatestQuoteSentGeneralDiscount ?? 0);
+                    row.CreateCell(20).SetCellValue(item.LatestQuoteSentGeneralDiscountType ?? "");
+                    row.CreateCell(21).SetCellValue((double?)item.LatestQuoteSentTaxedValue ?? 0);
+                    row.CreateCell(22).SetCellValue((double?)item.LatestQuoteSentUntaxedValue ?? 0);
+                    row.CreateCell(23).SetCellValue(item.FirstSalesOrderSentNumber ?? "");
+                    row.CreateCell(24).SetCellValue((double?)item.FirstSOSentRevisionNumber ?? 0);
+                    row.CreateCell(25).SetCellValue(item.FirstSOSentCreatedOn?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(26).SetCellValue((double?)item.FirstSOSentDiscount ?? 0);
+                    row.CreateCell(27).SetCellValue(item.FirstSOSentDiscountType ?? "");
+                    row.CreateCell(28).SetCellValue((double?)item.FirstSOSentTaxedValue ?? 0);
+                    row.CreateCell(29).SetCellValue((double?)item.FirstSOSentUntaxedValue ?? 0);
+                    row.CreateCell(30).SetCellValue(item.LatestSalesOrderSentNumber ?? "");
+                    row.CreateCell(31).SetCellValue((double?)item.LatestSOSentRevisionNumber ?? 0);
+                    row.CreateCell(32).SetCellValue(item.LatestSOSentCreatedOn?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(33).SetCellValue((double?)item.LatestSOSentDiscount ?? 0);
+                    row.CreateCell(34).SetCellValue(item.LatestSOSentDiscountType ?? "");
+                    row.CreateCell(35).SetCellValue((double?)item.LatestSOSentTaxedValue ?? 0);
+                    row.CreateCell(36).SetCellValue((double?)item.LatestSOSentUntaxedValue ?? 0);
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "SoSummaryQuotation.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+        [HttpGet]
         public async Task<IActionResult> GetAllQuoteNumberList()
         {
             ServiceResponse<IEnumerable<QuoteNoDto>> serviceResponse = new ServiceResponse<IEnumerable<QuoteNoDto>>();
