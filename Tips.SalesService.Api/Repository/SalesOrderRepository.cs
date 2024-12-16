@@ -3,10 +3,12 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Entities.Helper;
+using MailKit.Search;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Mysqlx.Crud;
+using NPOI.SS.Formula.Functions;
 using NuGet.Protocol.Core.Types;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Tls.Crypto.Impl.BC;
@@ -968,6 +970,15 @@ namespace Tips.SalesService.Api.Repository
             .SumAsync(soi => soi.BalanceQty);
         }
 
+        public async Task<IEnumerable<SalesOrderQtyDetailsDto>> GetSalesOrderQtySPReportWithParam(string itemNo, decimal bomQty)
+        {
+            var result = _tipsSalesServiceDbContext
+             .Set<SalesOrderQtyDetailsDto>()
+             .FromSqlInterpolated($"CALL SalesOrder_QuantityDetails({itemNo},{bomQty})")
+             .ToList();
+
+            return result;
+        }
     }
     public class SalesOrderItemRepository : RepositoryBase<SalesOrderItems>, ISalesOrderItemsRepository
     {

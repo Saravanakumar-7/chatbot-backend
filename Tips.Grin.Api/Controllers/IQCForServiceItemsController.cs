@@ -62,7 +62,7 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"IQCForServiceItems data not found in db");
-                    return NotFound(serviceResponse);
+                    return Ok(serviceResponse);
                 }
                 var metadata = new
                 {

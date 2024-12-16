@@ -129,10 +129,22 @@ namespace Repository
         private IConvertionrateRepository? _convertionrateRepository;
         private IEnggChildItemsRepository? _enggChildItemsRepository;
         private IWeightedAvgRateRepository? _weightedAvgRateRepository;
+        private IFieldInformationRepository? _fieldInformationRepository;
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
             _httpContextAccessor = httpContextAccessor;
+        }
+        public IFieldInformationRepository FieldInformationRepository
+        {
+            get
+            {
+                if (_fieldInformationRepository == null)
+                {
+                    _fieldInformationRepository = new FieldInformationRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _fieldInformationRepository;
+            }
         }
         public I_FG_Weighted_AvgCostRepository FG_Weighted_AvgCostRepository
         {

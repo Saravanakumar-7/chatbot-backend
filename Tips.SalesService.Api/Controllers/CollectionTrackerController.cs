@@ -376,6 +376,17 @@ namespace Tips.SalesService.Api.Controllers
                 string result = await _repository.UpdateCollectionTracker(collectionTracker);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
+
+                //var collectionTrackerItems = _mapper.Map<IEnumerable<SOBreakDown>>(collectionTrackerUpdateDto.SOBreakDown);
+                //collectionTrackerById.SOBreakDown = null;
+                //var collectionTracker = _mapper.Map(collectionTrackerUpdateDto, collectionTrackerById);
+
+                //collectionTracker.SOBreakDown = collectionTrackerItems.ToList();
+
+                //string result = await _repository.UpdateCollectionTracker(collectionTracker);
+                //_logger.LogInfo(result);
+                //_repository.SaveAsync();
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = " CollectionTracker Successfully Updated"; ;
                 serviceResponse.Success = true;

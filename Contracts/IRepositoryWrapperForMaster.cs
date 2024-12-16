@@ -154,6 +154,7 @@ namespace Contracts
         IConvertionrateRepository ConvertionrateRepository { get; }
         IEnggChildItemsRepository EnggChildItemsRepository { get; }
         IWeightedAvgRateRepository WeightedAvgRateRepository { get; }
+        IFieldInformationRepository FieldInformationRepository { get; }
         void SaveAsync();
         void Save();
     }

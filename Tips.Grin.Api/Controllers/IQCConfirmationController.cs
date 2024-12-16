@@ -1010,7 +1010,7 @@ namespace Tips.Grin.Api.Controllers
                                 IQCInventoryTranctionDto iqcInventoryTranctionDto = new IQCInventoryTranctionDto();
                                 iqcInventoryTranctionDto.PartNumber = inventoryObject.partNumber;
                                 iqcInventoryTranctionDto.LotNumber = inventoryObject.lotNumber;
-                                iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrItemNumber;
+                                iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
                                 iqcInventoryTranctionDto.Description = inventoryObject.description;
                                 iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
                                 iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
@@ -1452,7 +1452,7 @@ namespace Tips.Grin.Api.Controllers
                                 IQCInventoryTranctionDto iqcInventoryTranctionDto = new IQCInventoryTranctionDto();
                                 iqcInventoryTranctionDto.PartNumber = inventoryObject.partNumber;
                                 iqcInventoryTranctionDto.LotNumber = inventoryObject.lotNumber;
-                                iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrItemNumber;
+                                iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
                                 iqcInventoryTranctionDto.Description = inventoryObject.description;
                                 iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
                                 iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
@@ -2408,7 +2408,7 @@ namespace Tips.Grin.Api.Controllers
                             IQCInventoryTranctionDto iqcInventoryTranctionDto = new IQCInventoryTranctionDto();
                             iqcInventoryTranctionDto.PartNumber = inventoryObject.partNumber;
                             iqcInventoryTranctionDto.LotNumber = inventoryObject.lotNumber;
-                            iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrItemNumber;
+                            iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
                             iqcInventoryTranctionDto.Description = inventoryObject.description;
                             iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
                             iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
@@ -2787,7 +2787,7 @@ namespace Tips.Grin.Api.Controllers
                             IQCInventoryTranctionDto iqcInventoryTranctionDto = new IQCInventoryTranctionDto();
                             iqcInventoryTranctionDto.PartNumber = inventoryObject.partNumber;
                             iqcInventoryTranctionDto.LotNumber = inventoryObject.lotNumber;
-                            iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrItemNumber;
+                            iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
                             iqcInventoryTranctionDto.Description = inventoryObject.description;
                             iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
                             iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;

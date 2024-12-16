@@ -312,6 +312,18 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string FgItemNumber { get; set; }
         public string ProjectNumber { get; set; }
     }
+    public class SalesOrderQtyDetailsDto
+    {
+        public string? ProjectNumber { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerId { get; set; }
+        public string? SalesOrderNo { get; set; }
+        public decimal  SalesOrderQty { get; set; }
+        public decimal OpenSalesOrderQty { get; set; }
+        public decimal RequiredQty { get; set; }
+        public string? Description { get; set; }
+        public string? FgItemNumber { get; set; }
+    }
     public class SalesOrderItemsReportDto
     {
         public int Id { get; set; }

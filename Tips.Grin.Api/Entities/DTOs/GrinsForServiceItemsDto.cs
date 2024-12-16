@@ -183,6 +183,9 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public string? GrinsForServiceItemsNumber { get; set; }
         public int GrinsForServiceItemsId { get; set; }
+        public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
 
         public GrinsForServiceItemsIQCForServiceItems_ItemsSaveDto GrinsForServiceItemsIQCForServiceItems_ItemsSaveDto { get; set; }
 

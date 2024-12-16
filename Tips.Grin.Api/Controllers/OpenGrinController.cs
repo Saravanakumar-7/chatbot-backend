@@ -41,6 +41,7 @@ namespace Tips.Grin.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _clientFactory = clientFactory;
+            _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
@@ -652,6 +653,7 @@ namespace Tips.Grin.Api.Controllers
 
                                 inventoryTranction.PartNumber = openGrinParts.ItemNumber;
                                 inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                inventoryTranction.LotNumber = inventory.LotNumber;
                                 inventoryTranction.Description = openGrinParts.Description;
                                 inventoryTranction.ProjectNumber = openGrinParts.ReferenceSONumber;
                                 inventoryTranction.Issued_Quantity = openGrinParts.Qty;

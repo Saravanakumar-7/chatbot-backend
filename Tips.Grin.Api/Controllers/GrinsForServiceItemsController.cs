@@ -38,6 +38,7 @@ namespace Tips.Grin.Api.Controllers
             _mapper = mapper;
             _logger = logger;
             _config = config;
+            _httpContextAccessor = httpContextAccessor;
             _clientFactory = clientFactory;
             _grinPartsRepository = grinPartsRepository;
             _iQCForServiceItemsRepository = iQCForServiceItemsRepository;
@@ -144,7 +145,7 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"GrinsForServiceItems data not found in db");
-                    return NotFound(serviceResponse);
+                    return Ok(serviceResponse);
                 }
                 var metadata = new
                 {
@@ -692,6 +693,9 @@ namespace Tips.Grin.Api.Controllers
                                             var iqcGrinDetails = _mapper.Map<GrinsForServiceItemsIQCForServiceItemsSaveDto>(grinsForServiceItems);
                                             iqcGrinDetails.GrinsForServiceItemsId = grinsForServiceItems.Id;
                                             iqcGrinDetails.GrinsForServiceItemsNumber = grinsForServiceItems.GrinsForServiceItemsNumber;
+                                            iqcGrinDetails.VendorNumber = grinsForServiceItems.VendorNumber;
+                                            iqcGrinDetails.VendorId = grinsForServiceItems.VendorId;
+                                            iqcGrinDetails.VendorName = grinsForServiceItems.VendorName;
 
                                             GrinsForServiceItemsIQCForServiceItems_ItemsSaveDto grinIQCForServiceItemsItemsSaveDto = _mapper.Map<GrinsForServiceItemsIQCForServiceItems_ItemsSaveDto>(grinsForServiceItems.GrinsForServiceItemsParts[i]);
                                             grinIQCForServiceItemsItemsSaveDto.ItemNumber = grinsForServiceItems.GrinsForServiceItemsParts[i].ItemNumber;
