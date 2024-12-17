@@ -4372,8 +4372,8 @@ namespace Tips.SalesService.Api.Controllers
                 //Dictionary<string, decimal> fgItemNumberWithSqBomQty = jsonArray.ToObject<Dictionary<string, decimal>>();
                 //List<string> fgItemNoList= fgItemNumberWithSqBomQty.Select(x=>x.Key).ToList();
                 SARevisionNumber itemDetailsDto = new SARevisionNumber();
-                List<ProjectSOSADetailDto>? projectSOSADetailDtos = new List<ProjectSOSADetailDto>();
-                //List<ProjectSOSADetailDto>? projectSOSADetailsDtos = new List<ProjectSOSADetailDto>();
+                //List<ProjectSOSADetailDto>? projectSOSADetailDtos = new List<ProjectSOSADetailDto>();
+                List<ProjectSOSADetailDto>? projectSOSADetailsDtos = new List<ProjectSOSADetailDto>();
                 itemDetailsDto.ItemNumber = saFgItemDetailWithBomQty.itemNumber;
                 itemDetailsDto.FGItemNumber = fgItemNoList;
                 itemDetailsDto.ItemType = saFgItemDetailWithBomQty.itemType;
@@ -4383,44 +4383,44 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     string fgItemNumber = fgItemNo.Key;
                     decimal BomQty = fgItemNo.Value;
-                    var projectSODetails = await _repository.GetProjectDetailsBySAItemNo(fgItemNo.Key);
-                    foreach (var project in projectSODetails)
-                    {
-                        project.SalesOrderQtyDetails = await _repository.GetSASalesOrderQtyDetailsByItemNo(fgItemNo.Key, project.ProjectNumber, BomQty);
-                        // itemDetailsDto.ProjectSODetails = projectSODetails;
-                        projectSOSADetailDtos.Add(project);
-                    }
+                    //var projectSODetails = await _repository.GetProjectDetailsBySAItemNo(fgItemNo.Key);
+                    //foreach (var project in projectSODetails)
+                    //{
+                    //    project.SalesOrderQtyDetails = await _repository.GetSASalesOrderQtyDetailsByItemNo(fgItemNo.Key, project.ProjectNumber, BomQty);
+                    //    // itemDetailsDto.ProjectSODetails = projectSODetails;
+                    //    projectSOSADetailDtos.Add(project);
+                    //}
 
-                    //var soQtydetails = await _repository.GetSalesOrderQtySPReportWithParam(fgItemNumber, BomQty);
+                    var soQtydetails = await _repository.GetSalesOrderQtySPReportWithParam(fgItemNumber, BomQty);
 
-                    //var salesOrderQtyDetails = soQtydetails
-                    //    .GroupBy(x => new { x.ProjectNumber, x.CustomerId, x.CustomerName })
-                    //    .Select(group => new ProjectSOSADetailDto
-                    //    {
-                    //        ProjectNumber = group.Key.ProjectNumber,
-                    //        CustomerId = group.Key.CustomerId,
-                    //        CustomerName = group.Key.CustomerName,
-                    //        SalesOrderQtyDetails = group.GroupBy(g => g.SalesOrderNo)
-                    //            .Select(so => new SalesOrderQtyForSADto
-                    //            {
-                    //                SalesOrderNo = so.Key,
-                    //                SalesOrderQty = so.First().SalesOrderQty,
-                    //                OpenSalesOrderQty = so.First().OpenSalesOrderQty,
-                    //                RequiredQty = so.First().RequiredQty,
-                    //                Description = so.First().Description,
-                    //                FgItemNumber = fgItemNumber,
-                    //                ProjectNumber = group.Key.ProjectNumber
-                    //            })
-                    //            .ToList()
-                    //    })
-                    //    .ToList();
+                    var salesOrderQtyDetails = soQtydetails
+                        .GroupBy(x => new { x.ProjectNumber, x.CustomerId, x.CustomerName })
+                        .Select(group => new ProjectSOSADetailDto
+                        {
+                            ProjectNumber = group.Key.ProjectNumber,
+                            CustomerId = group.Key.CustomerId,
+                            CustomerName = group.Key.CustomerName,
+                            SalesOrderQtyDetails = group.GroupBy(g => g.SalesOrderNo)
+                                 .Select(so => new SalesOrderQtyForSADto
+                                 {
+                                     SalesOrderNo = so.Key,
+                                     SalesOrderQty = so.Sum(x => x.SalesOrderQty),
+                                     OpenSalesOrderQty = so.Sum(x => x.OpenSalesOrderQty),
+                                     RequiredQty = so.Sum(x => x.RequiredQty),
+                                     Description = so.FirstOrDefault()?.Description,  
+                                     FgItemNumber = fgItemNumber,
+                                     ProjectNumber = group.Key.ProjectNumber
+                                 })
+                                .ToList()
+                        })
+                        .ToList();
 
-                    //projectSOSADetailsDtos.AddRange(salesOrderQtyDetails);
+                    projectSOSADetailsDtos.AddRange(salesOrderQtyDetails);
 
                 }
 
-                List<ProjectSOSADetailDto>? projectSOSADetailUniq = new List<ProjectSOSADetailDto>();
-                //List<ProjectSOSADetailDto>? projectSOSADetailsUniq = new List<ProjectSOSADetailDto>();
+                //List<ProjectSOSADetailDto>? projectSOSADetailUniq = new List<ProjectSOSADetailDto>();
+                List<ProjectSOSADetailDto>? projectSOSADetailsUniq = new List<ProjectSOSADetailDto>();
                 //foreach (var pros in projectSOSADetailDtos)
                 //{
                 //    int flag = 0;
@@ -4438,33 +4438,33 @@ namespace Tips.SalesService.Api.Controllers
                 //    }
                 //}
 
-                projectSOSADetailDtos.ForEach(pros =>
-                {
-                    var existingProj = projectSOSADetailUniq.FirstOrDefault(proj => proj.ProjectNumber == pros.ProjectNumber);
-                    if (existingProj != null)
-                    {
-                        existingProj.SalesOrderQtyDetails.AddRange(pros.SalesOrderQtyDetails);
-                    }
-                    else
-                    {
-                        projectSOSADetailUniq.Add(pros);
-                    }
-                });
-
-                //projectSOSADetailsDtos.ForEach(pros =>
+                //projectSOSADetailDtos.ForEach(pros =>
                 //{
-                //    var existingProj = projectSOSADetailsUniq.FirstOrDefault(proj => proj.ProjectNumber == pros.ProjectNumber);
+                //    var existingProj = projectSOSADetailUniq.FirstOrDefault(proj => proj.ProjectNumber == pros.ProjectNumber);
                 //    if (existingProj != null)
                 //    {
                 //        existingProj.SalesOrderQtyDetails.AddRange(pros.SalesOrderQtyDetails);
                 //    }
                 //    else
                 //    {
-                //        projectSOSADetailsUniq.Add(pros);
+                //        projectSOSADetailUniq.Add(pros);
                 //    }
                 //});
 
-                itemDetailsDto.ProjectSODetails = projectSOSADetailUniq;
+                projectSOSADetailsDtos.ForEach(pros =>
+                {
+                    var existingProj = projectSOSADetailsUniq.FirstOrDefault(proj => proj.ProjectNumber == pros.ProjectNumber);
+                    if (existingProj != null)
+                    {
+                        existingProj.SalesOrderQtyDetails.AddRange(pros.SalesOrderQtyDetails);
+                    }
+                    else
+                    {
+                        projectSOSADetailsUniq.Add(pros);
+                    }
+                });
+
+                itemDetailsDto.ProjectSODetails = projectSOSADetailsUniq;
                 serviceResponse.Data = itemDetailsDto;
                 serviceResponse.Message = "Returned all SalesOrderSADetails";
                 serviceResponse.Success = true;
