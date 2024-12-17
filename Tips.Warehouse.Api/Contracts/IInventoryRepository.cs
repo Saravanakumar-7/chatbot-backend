@@ -12,6 +12,7 @@ namespace Tips.Warehouse.Api.Contracts
 {
     public interface IInventoryRepository : IRepositoryBase<Inventory>
     {
+        Task<List<string>?> GetRejectQtyGRINNumbers();
         Task<PagedList<Inventory>> GetAllInventory(PagingParameter pagingParameter, SearchParams searchParams);
         Task<List<Inventory>> GetInventoryStockByItemAndShopOrderNo(string itemNumber, string shopordernumber);
         Task<int?> CreateInventory(Inventory inventory);

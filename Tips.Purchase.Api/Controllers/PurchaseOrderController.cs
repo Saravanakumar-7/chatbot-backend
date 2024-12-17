@@ -130,7 +130,7 @@ namespace Tips.Purchase.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
-        } 
+        }
         [HttpPost]
         public async Task<IActionResult> GetLatestPurchaseOrdersByPONumbers([FromBody] List<string> Ponumbers)
         {
@@ -2401,7 +2401,111 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPut]
+        public async Task<IActionResult> ReturnToVendorPOs([FromBody] List<PurchaseOrderReturns> purchaseOrderReturns)
+        {
+            ServiceResponse<List<PurchaseOrderReturnsBackDto>> serviceResponse = new ServiceResponse<List<PurchaseOrderReturnsBackDto>>();
+            try
+            {
+                if (purchaseOrderReturns is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "PurchaseOrderReturns object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("PurchaseOrderReturns object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseOrderReturns object.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseOrderReturns object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<PurchaseOrderReturnsBackDto> purchaseOrderReturnsBackDtos = new List<PurchaseOrderReturnsBackDto>();
+                foreach (var po in purchaseOrderReturns)
+                {
+                    var PurchaseOrder = await _repository.GetLastestPurchaseOrderByPONumber(po.PurchaseOrderNo);
+                    if (PurchaseOrder==null)
+                    {
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"In ReturnToVendorPOs: PONumber: {po.PurchaseOrderNo} was not Found";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                        _logger.LogError($"In ReturnToVendorPOs: PONumber: {po.PurchaseOrderNo} was not Found");
+                        return BadRequest(serviceResponse);
+                    }
+                    PurchaseOrderReturnsBackDto purchaseOrderReturnsBackDto = new PurchaseOrderReturnsBackDto()
+                    {
+                        PurchaseOrderNo = po.PurchaseOrderNo,
+                        purchaseOrderItems = new List<PurchaseOrderReturnItemsBackDto>()
+                    };
+                    foreach (var poitem in po.purchaseOrderItems)
+                    {
 
+                        var projects = new PurchaseOrderReturnItemsBackDto { 
+
+                            ItemNumber = poitem.ItemNumber,
+                            ReturnQty = poitem.ReturnQty,
+                            purchaseOrderReturnProjectBackDtos = new List<PurchaseOrderReturnProjectBackDto>()
+                        };
+                        var POChild = PurchaseOrder.POItems.Where(x => x.ItemNumber == poitem.ItemNumber).FirstOrDefault();
+                        POChild.BalanceQty += poitem.ReturnQty;
+                        POChild.ReceivedQty -= poitem.ReturnQty;
+                        if (POChild.Qty == POChild.BalanceQty) POChild.PoStatus = PoStatus.Open;
+                        else POChild.PoStatus = PoStatus.PartiallyClosed;
+                        List<PurchaseOrderReturnProjectBackDto> purchaseOrderReturnProject = new List<PurchaseOrderReturnProjectBackDto>();
+                        foreach (var prj in POChild.POAddprojects)
+                        {
+                            var returnqty = poitem.ReturnQty;
+                            PurchaseOrderReturnProjectBackDto purchaseOrderReturnProjectBackDto = new PurchaseOrderReturnProjectBackDto();
+                            if (prj.ProjectQty <= returnqty)
+                            {
+                                prj.BalanceQty = prj.ProjectQty;
+                                prj.ReceivedQty = 0;
+                                returnqty -= prj.ProjectQty;
+                                prj.PoAddProjectStatus = false;
+                                purchaseOrderReturnProjectBackDto.ProjectNo = prj.ProjectNumber;
+                                purchaseOrderReturnProjectBackDto.ReturnQty = prj.ProjectQty;
+                                if (returnqty == 0) break;
+                            }
+                            else
+                            {
+                                prj.BalanceQty += returnqty;
+                                prj.ReceivedQty -= returnqty;
+                                prj.PoAddProjectStatus = false;
+                                purchaseOrderReturnProjectBackDto.ProjectNo = prj.ProjectNumber;
+                                purchaseOrderReturnProjectBackDto.ReturnQty = returnqty;
+                                returnqty = 0;
+                                break;
+                            }
+                            purchaseOrderReturnProject.Add(purchaseOrderReturnProjectBackDto);
+                        }
+                        projects.purchaseOrderReturnProjectBackDtos = purchaseOrderReturnProject;
+                        purchaseOrderReturnsBackDto.purchaseOrderItems.Add(projects);
+                    }
+                    await _repository.UpdatePurchaseOrder_ForApproval(PurchaseOrder);
+                }
+                _repository.SaveAsync();
+                serviceResponse.Data = purchaseOrderReturnsBackDtos;
+                serviceResponse.Message = $"In ReturnToVendorPOs: POs are returned Sucessfully";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return StatusCode(200, serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside ReturnToVendorPOs action: {ex.Message} :\n {ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside ReturnToVendorPOs";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpPut]
         public async Task<IActionResult> UpdatePurchaseOrder([FromBody] PurchaseOrderUpdateDto purchaseOrderUpdateDto)
         {
@@ -4169,7 +4273,7 @@ namespace Tips.Purchase.Api.Controllers
                                 })
                                 .ToList();
 
-                        await _poConfirmationDateRepository.CreatePoConfirmationDateList(poConfirmationDateDtoDetails);
+                            await _poConfirmationDateRepository.CreatePoConfirmationDateList(poConfirmationDateDtoDetails);
                             _poConfirmationDateRepository.SaveAsync();
                         }
                         else

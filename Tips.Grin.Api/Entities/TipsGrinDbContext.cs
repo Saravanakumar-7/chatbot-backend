@@ -12,6 +12,8 @@ namespace Tips.Grin.Api.Entities
         {
 
         }
+        public DbSet<IQCReturnToVendor> IQCReturnToVendor { get; set; }
+        public DbSet<IQCReturnToVendorItems> IQCReturnToVendorItems { get; set; }
         public DbSet<IQCForServiceItems_Items> IQCForServiceItems_Items { get; set; }
         public DbSet<IQCForServiceItems> IQCForServiceItems { get; set; }
         public DbSet<GrinsForServiceItemsNumber> GrinsForServiceItemsNumber { get; set; }

@@ -384,11 +384,12 @@ namespace Tips.SalesService.Api.Repository
 
             
 
-        public async Task<string> UpdateCollectionTracker(CollectionTracker collectionTracker)
+        public async Task<string> UpdateCollectionTracker(CollectionTracker collectionTracker, List<SOBreakDown> sOBreakDowns)
         {
             collectionTracker.LastModifiedBy = _createdBy;
             collectionTracker.LastModifiedOn = DateTime.Now;
             Update(collectionTracker);
+            _tipsSalesServiceDbContext.SOBreakDowns.RemoveRange(sOBreakDowns);
             string result = $"CollectionTracker details of {collectionTracker.Id} is updated successfully!";
             return result;
         }

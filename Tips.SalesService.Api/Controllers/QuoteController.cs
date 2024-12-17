@@ -776,9 +776,9 @@ namespace Tips.SalesService.Api.Controllers
             {
                 if (quoteEmailPostDto.WhatsAppPhoneNos.IsNullOrEmpty())
                 {
-                    _logger.LogError($"The WhatsApp Numbers is Empty these are required");
+                    _logger.LogError($"The WhatsApp Numbers is Empty these are required. For the QuoteId:{quoteEmailPostDto.Quoteid}");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Something went wrong ,try again";
+                    serviceResponse.Message = $"The WhatsApp Numbers is Empty these are required. For the QuoteId:{quoteEmailPostDto.Quoteid}";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(400, serviceResponse);
@@ -814,18 +814,18 @@ namespace Tips.SalesService.Api.Controllers
                 }
                 if (emaildetails.IsNullOrEmpty())
                 {
-                    _logger.LogError($"The Subject of the Email is Empty as the Type of Solution has not matched any Type Of Solution");
+                    _logger.LogError($"The Subject of the Email is Empty as the Type of Solution has not matched any Type Of Solution. For the Quote: {quoteDetails.QuoteNumber} and RevisionNo: {quoteDetails.RevisionNumber}");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Something went wrong ,try again";
+                    serviceResponse.Message = $"The Subject of the Email is Empty as the Type of Solution has not matched any Type Of Solution. For the Quote: {quoteDetails.QuoteNumber} and RevisionNo: {quoteDetails.RevisionNumber}";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(500, serviceResponse);
                 }
                 if (whatsapptemplate.IsNullOrEmpty())
                 {
-                    _logger.LogError($"The Template for Whatsapp is Empty as the Type of Solution has not matched any Type Of Solution");
+                    _logger.LogError($"The Template for Whatsapp is Empty as the Type of Solution has not matched any Type Of Solution. For the Quote: {quoteDetails.QuoteNumber} and RevisionNo: {quoteDetails.RevisionNumber}");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Something went wrong ,try again";
+                    serviceResponse.Message = $"The Template for Whatsapp is Empty as the Type of Solution has not matched any Type Of Solution. For the Quote: {quoteDetails.QuoteNumber} and RevisionNo: {quoteDetails.RevisionNumber}";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(500, serviceResponse);
@@ -930,9 +930,9 @@ namespace Tips.SalesService.Api.Controllers
                 whatsAppCreateTokenResponse = JsonConvert.DeserializeObject<WhatsAppCreateTokenResponse>(await response.Content.ReadAsStringAsync());
                 if (!response.IsSuccessStatusCode)
                 {
-                    _logger.LogError($"Unable to Generate Token for Whatsapp Message");
+                    _logger.LogError($"Unable to Generate Token for Whatsapp Message. For the Quote: {quoteDetails.QuoteNumber} and RevisionNo: {quoteDetails.RevisionNumber}");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Something went wrong ,try again";
+                    serviceResponse.Message = $"Unable to Generate Token for Whatsapp Message. For the Quote: {quoteDetails.QuoteNumber} and RevisionNo: {quoteDetails.RevisionNumber}";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(500, serviceResponse);
@@ -952,35 +952,35 @@ namespace Tips.SalesService.Api.Controllers
                 var response3 = await client.SendAsync(request3);
                 if (!response3.IsSuccessStatusCode)
                 {
-                    _logger.LogError($"Unable to OptinNumbers for Whatsapp Message");
+                    _logger.LogError($"Unable to OptinNumbers for Whatsapp Message. For the Quote: {quoteDetails.QuoteNumber} and RevisionNo: {quoteDetails.RevisionNumber}");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Something went wrong ,try again";
+                    serviceResponse.Message = $"Unable to OptinNumbers for Whatsapp Message. For the Quote: {quoteDetails.QuoteNumber} and RevisionNo: {quoteDetails.RevisionNumber}";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(500, serviceResponse);
                 }
 
-                foreach (var number in whatsappNumbers)
-                {
-                    whatsAppMessagePayload.To = number;
-                    var whatsappCreate = JsonConvert.SerializeObject(whatsAppMessagePayload);
-                    var data4 = new StringContent(whatsappCreate, Encoding.UTF8, "application/json");
-                    var request4 = new HttpRequestMessage(HttpMethod.Post, "https://api.aclwhatsapp.com/pull-platform-receiver/v2/wa/messages")
-                    {
-                        Content = data4
-                    };
-                    request4.Headers.Add("Authorization", "Bearer " + whatsAppCreateTokenResponse.AccessToken);
-                    var response4 = await client.SendAsync(request4);
-                    if (!response4.IsSuccessStatusCode)
-                    {
-                        _logger.LogError($"Unable to Create a Whatsapp Message");
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = $"Something went wrong ,try again";
-                        serviceResponse.Success = false;
-                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                        return StatusCode(500, serviceResponse);
-                    }
-                }
+                //foreach (var number in whatsappNumbers)
+                //{
+                //    whatsAppMessagePayload.To = number;
+                //    string whatsappCreate = JsonConvert.SerializeObject(whatsAppMessagePayload, Formatting.None);
+                //    var data4 = new StringContent(whatsappCreate, Encoding.UTF8, "application/json");
+                //    var request4 = new HttpRequestMessage(HttpMethod.Post, "https://api.aclwhatsapp.com/pull-platform-receiver/v2/wa/messages")
+                //    {
+                //        Content = data4
+                //    };
+                //    request4.Headers.Add("Authorization", "Bearer " + whatsAppCreateTokenResponse.AccessToken);
+                //    var response4 = await client.SendAsync(request4);
+                //    if (!response4.IsSuccessStatusCode)
+                //    {
+                //        _logger.LogError($"Unable to Create a Whatsapp Message");
+                //        serviceResponse.Data = null;
+                //        serviceResponse.Message = $"Something went wrong ,try again";
+                //        serviceResponse.Success = false;
+                //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                //        return StatusCode(500, serviceResponse);
+                //    }
+                //}
 
 
                 QuoteEmailsDetails quoteEmailsDetails = new QuoteEmailsDetails()
@@ -1013,9 +1013,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside SendEmailforQuote action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside SendEmailforQuote. For the QuoteId:{quoteEmailPostDto.Quoteid}, action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Something went wrong inside SendEmailforQuote. For the QuoteId:{quoteEmailPostDto.Quoteid}, action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

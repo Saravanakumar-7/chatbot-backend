@@ -18,6 +18,7 @@ namespace Tips.Grin.Api.Contracts
         Task<PagedList<IQCConfirmation>> GetAllIqcDetails( PagingParameter pagingParameter, SearchParams searchParams);
         Task<IQCConfirmation> GetIqcDetailsbyGrinNo(string grinNumber);
         Task<string> UpdateIqc(IQCConfirmation iQCConfirmation);
+        Task<string> UpdateIqcDetails(IQCConfirmation iQCConfirmation);
         Task<IEnumerable<IQCConfirmationIdNameListDto>> GetAllActiveIQCConfirmationNameList();
         Task<IQCConfirmation> GetIqcDetailsbyId(int id);              
         Task<int?> CreateIqc(IQCConfirmation iQCConfirmation);

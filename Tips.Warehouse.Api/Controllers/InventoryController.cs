@@ -24,6 +24,7 @@ using Microsoft.AspNetCore.Authorization;
 using NPOI.SS.Formula.Functions;
 using MySqlX.XDevAPI;
 using MathNet.Numerics.LinearAlgebra.Factorization;
+using MySqlX.XDevAPI.Common;
 
 namespace Tips.Warehouse.Api.Controllers
 {
@@ -79,7 +80,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + "\n" + ex.InnerException);
+                _logger.LogError($"Error in GetRejectInventorybyGrinNo for: {GrinNo}\n" + ex.Message + "\n" + ex.InnerException);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong,try again";
                 serviceResponse.Success = false;
@@ -87,7 +88,38 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
+        [HttpGet]
+        public async Task<IActionResult> GetAllRejectQtyGRINNumbers()
+        {
+            ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
+            try
+            {
+                List<string>? GRINs = await _inventoryRepository.GetRejectQtyGRINNumbers();
+                if (GRINs.Count() < 1 || GRINs==null)
+                {
+                    _logger.LogError("There are no GRINs that have Reject");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"There are no GRINs that have Reject";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+                serviceResponse.Data = GRINs;
+                serviceResponse.Message = $"Returned Rejected Inventory is present for the GrinNo.";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error Occured in GetRejectQtyGRINNumbers API:\n" + ex.Message + "\n" + ex.InnerException);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> GetInventorybyItemandProject([FromQuery] string itemNumber, [FromQuery] string projectNumber)
         {

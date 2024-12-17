@@ -192,6 +192,12 @@ namespace Tips.Grin.Api.Repository
             string result = $"IQC details of {iQCConfirmation.Id} is updated successfully!";
             return result;
         }
+        public async Task<string>UpdateIqcDetails(IQCConfirmation iQCConfirmation)
+        {            
+            Update(iQCConfirmation);
+            string result = $"IQC details of {iQCConfirmation.Id} is updated successfully!";
+            return result;
+        }
 
 
         public async Task<IQCConfirmation> GetIqcDetailsbyId(int id)
