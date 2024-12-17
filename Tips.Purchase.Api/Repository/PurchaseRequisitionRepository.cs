@@ -381,11 +381,11 @@ namespace Tips.Purchase.Api.Repository
                 getOldPRDetails.LastModifiedOn = DateTime.Now;
                 Update(getOldPRDetails);
             }
-            purchaseRequisition.CreatedBy = _createdBy;
-            purchaseRequisition.CreatedOn = DateTime.Now;
-            // purchaseRequisition.LastModifiedBy = _createdBy;
-            // purchaseRequisition.LastModifiedOn = 
-            var getOldRevisionNumber = _tipsPurchaseDbContext.PurchaseRequisitions
+            purchaseRequisition.CreatedBy = getOldPRDetails.CreatedBy;
+            purchaseRequisition.CreatedOn = getOldPRDetails.CreatedOn;
+            //purchaseRequisition.LastModifiedBy = _createdBy;
+            //purchaseRequisition.LastModifiedOn = DateTime.Now;
+           var getOldRevisionNumber = _tipsPurchaseDbContext.PurchaseRequisitions
             .Where(x => x.PrNumber == purchaseRequisition.PrNumber)
             .OrderByDescending(x => x.Id)
             .Select(x => x.RevisionNumber)

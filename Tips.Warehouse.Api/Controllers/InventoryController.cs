@@ -24,7 +24,7 @@ using Microsoft.AspNetCore.Authorization;
 using NPOI.SS.Formula.Functions;
 using MySqlX.XDevAPI;
 using MathNet.Numerics.LinearAlgebra.Factorization;
-using MySqlX.XDevAPI.Common;
+using System.Security.Claims;
 
 namespace Tips.Warehouse.Api.Controllers
 {
@@ -41,18 +41,24 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
-
-        public InventoryController(IConfiguration config, IInventoryTranctionRepository inventoryTranctionRepository, HttpClient httpClient, IInventoryRepository inventoryRepository,
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public InventoryController(IHttpContextAccessor httpContextAccessor, IConfiguration config, IInventoryTranctionRepository inventoryTranctionRepository, HttpClient httpClient, IInventoryRepository inventoryRepository,
            IHttpClientFactory clientFactory, ILoggerManager logger, IMapper mapper, IMaterialIssueTrackerRepository materialIssueTrackerRepository)
         {
             _inventoryRepository = inventoryRepository;
             _logger = logger;
             _mapper = mapper;
             _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
             _inventoryTranctionRepository = inventoryTranctionRepository;
             _config = config;
             _materialIssueTrackerRepository = materialIssueTrackerRepository;
             _clientFactory = clientFactory;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
         [HttpGet]
         public async Task<IActionResult> GetRejectInventorybyGrinNo(string GrinNo)
@@ -1558,6 +1564,7 @@ namespace Tips.Warehouse.Api.Controllers
                 {
                     decimal balanceqty = inventoryDetails[i].Balance_Quantity;
                     decimal lotNoWiseIssuedQty = 0;
+                    var fromLocation = inventoryDetails[i].Location;
                     if (inventoryDetails[i].Balance_Quantity <= issuedQty)
                     {
 
@@ -1569,12 +1576,13 @@ namespace Tips.Warehouse.Api.Controllers
                         int transactionId = await _materialIssueTrackerRepository.AddDataToMaterialIssueTracker(shopOrderMaterialIssueTracker);
 
                         /*********************************** End of Add data to Material Issue Tracker *************************/
-
+                       
                         inventoryDetails[i].Warehouse = "WIP";
                         inventoryDetails[i].Location = "WIP";
                         inventoryDetails[i].shopOrderNo = shopOrderNumber;
                         inventoryDetails[i].IsStockAvailable = true;
                         inventoryDetails[i].ReferenceIDFrom = "Material Issue";
+                        inventoryDetails[i].ReferenceID = shopOrderNumber;
 
                         /** Dont Change the Position of IssuedQty and BalanceQty Code in this Method .it should be always last ***********************/
                         issuedQty -= balanceqty;
@@ -1600,12 +1608,12 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTransaction1.Issued_Quantity = wipInventory.Balance_Quantity;
                         inventoryTransaction1.UOM = wipInventory.UOM;
                         inventoryTransaction1.Issued_DateTime = DateTime.Now;
-                        // inventoryTransaction1.Issued_By = 
+                        inventoryTransaction1.Issued_By = _createdBy;
                         inventoryTransaction1.ReferenceID = wipInventory.ReferenceID;
                         inventoryTransaction1.ReferenceIDFrom = wipInventory.ReferenceIDFrom;
                         inventoryTransaction1.BOM_Version_No = 0;
                         inventoryTransaction1.IsStockAvailable = wipInventory.IsStockAvailable;
-                        inventoryTransaction1.From_Location = wipInventory.Location;
+                        inventoryTransaction1.From_Location = fromLocation;
                         inventoryTransaction1.TO_Location = wipInventory.Location;
                         inventoryTransaction1.Unit = wipInventory.Unit;
                         inventoryTransaction1.GrinMaterialType = wipInventory.GrinMaterialType;
@@ -1644,11 +1652,12 @@ namespace Tips.Warehouse.Api.Controllers
                     inventoryTransaction.Issued_Quantity = inventoryDetails[i].Balance_Quantity;
                     inventoryTransaction.UOM = inventoryDetails[i].UOM;
                     inventoryTransaction.Issued_DateTime = DateTime.Now;
+                    inventoryTransaction.Issued_By = _createdBy;
                     inventoryTransaction.ReferenceID = inventoryDetails[i].ReferenceID;
                     inventoryTransaction.ReferenceIDFrom = inventoryDetails[i].ReferenceIDFrom;
                     inventoryTransaction.BOM_Version_No = 0;
                     inventoryTransaction.IsStockAvailable = inventoryDetails[i].IsStockAvailable;
-                    inventoryTransaction.From_Location = inventoryDetails[i].Location;
+                    inventoryTransaction.From_Location = fromLocation;
                     inventoryTransaction.TO_Location = inventoryDetails[i].Location;
                     inventoryTransaction.Unit = inventoryDetails[i].Unit;
                     inventoryTransaction.GrinMaterialType = inventoryDetails[i].GrinMaterialType;
@@ -1714,6 +1723,7 @@ namespace Tips.Warehouse.Api.Controllers
                 for (int i = 0; i < inventoryDetails.Count(); i++)
                 {
                     decimal balanceqty = inventoryDetails[i].Balance_Quantity;
+                    var fromLocation = inventoryDetails[i].Location;
                     decimal lotNoWiseIssuedQty = 0;
                     if (inventoryDetails[i].Balance_Quantity <= disQty)
                     {
@@ -1758,12 +1768,12 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTransaction1.Issued_Quantity = wipInventory.Balance_Quantity;
                         inventoryTransaction1.UOM = wipInventory.UOM;
                         inventoryTransaction1.Issued_DateTime = DateTime.Now;
-                        // inventoryTransaction1.Issued_By = 
+                        inventoryTransaction1.Issued_By = _createdBy;
                         inventoryTransaction1.ReferenceID = wipInventory.ReferenceID;
                         inventoryTransaction1.ReferenceIDFrom = wipInventory.ReferenceIDFrom;
                         inventoryTransaction1.BOM_Version_No = 0;
                         inventoryTransaction1.IsStockAvailable = wipInventory.IsStockAvailable;
-                        inventoryTransaction1.From_Location = wipInventory.Location;
+                        inventoryTransaction1.From_Location = fromLocation;
                         inventoryTransaction1.TO_Location = wipInventory.Location;
                         inventoryTransaction1.Unit = wipInventory.Unit;
                         inventoryTransaction1.GrinMaterialType = wipInventory.GrinMaterialType;
@@ -1802,12 +1812,12 @@ namespace Tips.Warehouse.Api.Controllers
                     inventoryTransaction.Issued_Quantity = inventoryDetails[i].Balance_Quantity;
                     inventoryTransaction.UOM = inventoryDetails[i].UOM;
                     inventoryTransaction.Issued_DateTime = DateTime.Now;
-                    inventoryTransaction.Issued_By = inventoryDetails[i].LastModifiedBy;
+                    inventoryTransaction.Issued_By = _createdBy;
                     inventoryTransaction.ReferenceID = inventoryDetails[i].ReferenceID;
                     inventoryTransaction.ReferenceIDFrom = inventoryDetails[i].ReferenceIDFrom;
                     inventoryTransaction.BOM_Version_No = 0;
                     inventoryTransaction.IsStockAvailable = inventoryDetails[i].IsStockAvailable;
-                    inventoryTransaction.From_Location = inventoryDetails[i].Location;
+                    inventoryTransaction.From_Location = fromLocation;
                     inventoryTransaction.TO_Location = inventoryDetails[i].Location;
                     inventoryTransaction.Unit = inventoryDetails[i].Unit;
                     inventoryTransaction.GrinMaterialType = inventoryDetails[i].GrinMaterialType;

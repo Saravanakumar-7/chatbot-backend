@@ -620,4 +620,18 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public string? CustomerId { get; set; }
     }
+    public class FGSalesOrderSPReport
+    {
+        public string? SalesOrderNumber { get; set; } 
+        public string? ProjectNumber { get; set; } 
+        public decimal? ProjectOrderQty { get; set; } 
+        public string? CustomerName { get; set; } 
+        public string? City { get; set; } 
+        public DateTime ProjectYear { get; set; } 
+    }
+    public class FGSalesOrderSPReportDto
+    {
+        public string? SalesOrderNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
 }

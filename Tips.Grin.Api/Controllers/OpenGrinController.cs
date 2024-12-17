@@ -1,5 +1,6 @@
 ﻿using System.Dynamic;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using AutoMapper;
 using Azure;
@@ -28,8 +29,11 @@ namespace Tips.Grin.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public OpenGrinController(IHttpClientFactory clientFactory, IOpenGrinRepository openGrinRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        public OpenGrinController(IHttpContextAccessor httpContextAccessor, IHttpClientFactory clientFactory, IOpenGrinRepository openGrinRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _openGrinRepository = openGrinRepository;
             _logger = logger;
@@ -37,6 +41,10 @@ namespace Tips.Grin.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _clientFactory = clientFactory;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
         [HttpGet]
         public async Task<IActionResult> GetAllOpenGrinDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
@@ -645,21 +653,25 @@ namespace Tips.Grin.Api.Controllers
 
                                 inventoryTranction.PartNumber = openGrinParts.ItemNumber;
                                 inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                inventoryTranction.LotNumber = inventory.LotNumber;
                                 inventoryTranction.Description = openGrinParts.Description;
                                 inventoryTranction.ProjectNumber = openGrinParts.ReferenceSONumber;
                                 inventoryTranction.Issued_Quantity = openGrinParts.Qty;
                                 inventoryTranction.IsStockAvailable = true;
                                 inventoryTranction.UOM = openGrinParts.UOM;
+                                inventoryTranction.Issued_By = _createdBy;
+                                inventoryTranction.Issued_DateTime = DateTime.Now;
                                 inventoryTranction.Warehouse = openGrinDetail.Warehouse;
                                 inventoryTranction.From_Location = openGrinDetail.Location;
                                 inventoryTranction.TO_Location = openGrinDetail.Location;
                                 inventoryTranction.GrinNo = openGrinDetails.OpenGrinNumber;
                                 inventoryTranction.GrinPartId = 0;
                                 inventoryTranction.PartType = openGrinParts.ItemType; // we have to take parttype from grinparts model;
-                                inventoryTranction.GrinMaterialType = "";
+                                inventoryTranction.GrinMaterialType = "OpenGrin";
                                 inventoryTranction.ReferenceID = Convert.ToString(openGrinParts.Id);
                                 inventoryTranction.ReferenceIDFrom = "OpenGrin";
                                 inventoryTranction.ShopOrderNo = "";
+                                inventoryTranction.Remarks = "OpenGrin Done";
 
 
                                 var jsons = JsonConvert.SerializeObject(inventoryTranction);

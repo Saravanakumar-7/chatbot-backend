@@ -41,6 +41,7 @@ namespace Entities
         public string? SalesManagerCode { get; set; }
         public string? Region { get; set; }
         public string? CustomerApprove { get; set; }
+        public string? SFT { get; set; }
 
         //RelatedLink
 
@@ -49,7 +50,7 @@ namespace Entities
         //public string? RelatedCustomerAlias { get; set; }
 
         //public string? NatureOfRelationship { get; set; }
-    
+
         //Dispatch
 
         public bool PartialDispatch { get; set; } = true;

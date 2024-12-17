@@ -354,14 +354,26 @@ namespace Repository
         }
         public async Task<IEnumerable<ItemMaster>> GetAllSAPurchasePartItems()
         {
-            var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id).Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart) && inv.IsActive == true)
-            .Include(t => t.ItemmasterAlternate)
-            .Include(t => t.ItemMasterApprovedVendor)
-            //.Include(t => t.ItemMasterFileUpload)
-            .Include(d => d.ItemMasterRouting)
-            .Include(d => d.ItemMasterWarehouse);
+            //var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id).Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart) && inv.IsActive == true)
+            //.Include(t => t.ItemmasterAlternate)
+            //.Include(t => t.ItemMasterApprovedVendor)
+            ////.Include(t => t.ItemMasterFileUpload)
+            //.Include(d => d.ItemMasterRouting)
+            //.Include(d => d.ItemMasterWarehouse);
+            //return itemmasterFgDetails;
+
+            var itemmasterFgDetails = await TipsMasterDbContext.ItemMasters
+       .Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart) && inv.IsActive)
+       .OrderByDescending(a => a.Id)
+       .Include(t => t.ItemmasterAlternate)
+       .Include(t => t.ItemMasterApprovedVendor)
+       .Include(d => d.ItemMasterRouting)
+       .Include(d => d.ItemMasterWarehouse)
+       .ToListAsync();  // Ensure the query is executed asynchronously
+
             return itemmasterFgDetails;
         }
+
 
 
         public async Task<IEnumerable<ItemMaster>> GetAllSAItems()
@@ -552,7 +564,8 @@ namespace Repository
                 {
                     ItemNumber = s.ItemNumber,
                     PartType = s.ItemType,
-                    MftrItemNumber = a.ManufacturerPartNo
+                    MftrItemNumber = a.ManufacturerPartNo,
+                    MaterialGroup = s.MaterialGroup
                 }))
                 .ToListAsync();
 

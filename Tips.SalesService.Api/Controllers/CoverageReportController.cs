@@ -589,6 +589,7 @@ namespace Tips.SalesService.Api.Controllers
                                         {
                                             ItemNumber = salesOrderDetails.FGItemNumber,
                                             MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
+                                            MaterialGroup = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.MaterialGroup).FirstOrDefault(),
                                             Description = salesOrderDetails.Description,
                                             ProjectNumber = salesOrderDetails.ProjectNumber,
                                             UOM = salesOrderDetails.UOM,
@@ -658,6 +659,7 @@ namespace Tips.SalesService.Api.Controllers
                             {
                                 ItemNumber = salesOrderDetails.FGItemNumber,
                                 MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
+                                MaterialGroup = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.MaterialGroup).FirstOrDefault(),
                                 Description = salesOrderDetails.Description,
                                 ProjectNumber = salesOrderDetails.ProjectNumber,
                                 UOM = salesOrderDetails.UOM,
@@ -785,38 +787,12 @@ namespace Tips.SalesService.Api.Controllers
 
                             foreach (var item in childItemReqQtyDtos)
                             {
-                                if (item.PartType == PartType.SA)
-                                {
-                                    CoverageReportByProjectNumberDtoForChildItem coverageDetailOfSAChildItem = new CoverageReportByProjectNumberDtoForChildItem
-                                    {
-                                        ItemNumber = item.ItemNumber,
-                                        MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
-                                        Version = item.Version,
-                                        Description = item.Description,
-                                        ProjectNumber = projectNumber,
-                                        UOM = item.UOM,
-                                        PartType = item.PartType,
-                                        RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
-                                        Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
-                                        WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
-                                        ODOQty = odoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.ODOQty).FirstOrDefault()
-                                    };
 
-                                    decimal? balanceRequiredQty = coverageDetailOfSAChildItem.RequiredQty - (coverageDetailOfSAChildItem.Stock
-                                                               + coverageDetailOfSAChildItem.WipQty + coverageDetailOfSAChildItem.ODOQty);
-
-
-                                    coverageDetailOfSAChildItem.BalanceToManufacture = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
-
-
-                                    coverageReportDtoForChildItemList.Add(coverageDetailOfSAChildItem);
-                                }
-                                else
-                                {
                                     CoverageReportByProjectNumberDtoForChildItem coverageDetailOfChildItem = new CoverageReportByProjectNumberDtoForChildItem
                                     {
                                         ItemNumber = item.ItemNumber,
                                         MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
+                                        MaterialGroup = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MaterialGroup).FirstOrDefault(),
                                         Version = item.Version,
                                         Description = item.Description,
                                         ProjectNumber = projectNumber,
@@ -825,7 +801,7 @@ namespace Tips.SalesService.Api.Controllers
                                         RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
                                         Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
                                         WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
-                                        ODOQty = odoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.ODOQty).FirstOrDefault()
+                                        ODOQty = odoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.ODOQty).FirstOrDefault() ?? 0
                                     };
 
                                     //Binning Qty 
@@ -853,12 +829,8 @@ namespace Tips.SalesService.Api.Controllers
 
 
                                     coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
-                                }
+                                
                             }
-
-                            coverageReportDtoForChildItemList = coverageReportDtoForChildItemList
-                                                                        .OrderBy(item => item.PartType)
-                                                                                .ToList();
 
                         }
                     }

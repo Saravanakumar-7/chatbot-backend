@@ -229,6 +229,30 @@ namespace Entities.DTOs
         public string? ShopOrderNumber { get; set; }
         
     }
+    public class BOMSPReportDto
+    {
+        public string? Itemnumber { get; set; }
+
+    }
+    public class BomSPReport
+    {
+        public int? BOMId { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ItemDescription { get; set; }
+        public int? ItemType { get; set; }
+        public decimal? RevisionNumber { get; set; }
+        public bool? IsActive { get; set; }
+        public string? Unit { get; set; }
+        public bool? IsEnggBomRelease { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public string? Remarks { get; set; }
+        public string? EnggChildItems { get; set; }
+        public string? BomNREConsumableDto { get; set; }
+    }
+
 
 
 }

@@ -220,8 +220,8 @@ namespace Tips.SalesService.Api.Repository
             var convertversionnumber = Convert.ToDecimal(increaseVersionNumber);
             var version = getOldRevisionNumber.RevisionNumber + convertversionnumber;
             quote.RevisionNumber = Convert.ToDecimal(version);
-            quote.CreatedBy = _createdBy;
-            quote.CreatedOn = DateTime.Now;
+            quote.CreatedBy = getOldRevisionNumber.CreatedBy;
+            quote.CreatedOn = getOldRevisionNumber.CreatedOn;
             quote.Unit = _unitname;
             var result = await Create(quote);
             return result;

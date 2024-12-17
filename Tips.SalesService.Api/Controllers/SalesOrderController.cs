@@ -1180,6 +1180,10 @@ namespace Tips.SalesService.Api.Controllers
                     var salesOrderMainLevelHistory = _mapper.Map<SalesOrderMainLevelHistory>(salesOrder);
                     salesOrderMainLevelHistory.Id = 0;
                     salesOrderMainLevelHistory.SalesOrderId = salesOrder.Id;
+                    salesOrderMainLevelHistory.SoCreatedBy = salesOrder.CreatedBy;
+                    salesOrderMainLevelHistory.SoCreatedOn = salesOrder.CreatedOn;
+                    salesOrderMainLevelHistory.SoLastModifiedBy = salesOrder.LastModifiedBy;
+                    salesOrderMainLevelHistory.SoLastModifiedOn = salesOrder.LastModifiedOn;
                     salesOrderMainLevelHistory.CreatedBy = _createdBy;
                     salesOrderMainLevelHistory.CreatedOn = DateTime.Now;
                     salesOrderMainLevelHistory.LastModifiedBy = null;
@@ -1236,9 +1240,17 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     var salesOrderMainLevelHistoryId = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryIdBySalesOrderIdAndRevNo(salesOrder.Id, salesOrder.RevisionNumber);
 
+                    var salesOrderMainLevelHistoryDetails = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryBySalesOrderIdAndRevNo(salesOrder.Id, salesOrder.RevisionNumber);
+
                     var salesOrderMainLevelHistory = _mapper.Map(salesOrder, exsitingSalesOrderHistory);
                     salesOrderMainLevelHistory.Id = salesOrderMainLevelHistoryId;
                     salesOrderMainLevelHistory.SalesOrderId = salesOrder.Id;
+                    salesOrderMainLevelHistory.SoCreatedBy = salesOrder.CreatedBy;
+                    salesOrderMainLevelHistory.SoCreatedOn = salesOrder.CreatedOn;
+                    salesOrderMainLevelHistory.SoLastModifiedBy = salesOrder.LastModifiedBy;
+                    salesOrderMainLevelHistory.SoLastModifiedOn = salesOrder.LastModifiedOn;
+                    salesOrderMainLevelHistory.CreatedBy = salesOrderMainLevelHistoryDetails.CreatedBy;
+                    salesOrderMainLevelHistory.CreatedOn = salesOrderMainLevelHistoryDetails.CreatedOn;
                     salesOrderMainLevelHistory.LastModifiedBy = _createdBy;
                     salesOrderMainLevelHistory.LastModifiedOn = DateTime.Now;
 
@@ -4361,6 +4373,7 @@ namespace Tips.SalesService.Api.Controllers
                 //List<string> fgItemNoList= fgItemNumberWithSqBomQty.Select(x=>x.Key).ToList();
                 SARevisionNumber itemDetailsDto = new SARevisionNumber();
                 List<ProjectSOSADetailDto>? projectSOSADetailDtos = new List<ProjectSOSADetailDto>();
+                //List<ProjectSOSADetailDto>? projectSOSADetailsDtos = new List<ProjectSOSADetailDto>();
                 itemDetailsDto.ItemNumber = saFgItemDetailWithBomQty.itemNumber;
                 itemDetailsDto.FGItemNumber = fgItemNoList;
                 itemDetailsDto.ItemType = saFgItemDetailWithBomQty.itemType;
@@ -4368,6 +4381,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 foreach (var fgItemNo in fgItemNumberWithSqBomQty)
                 {
+                    string fgItemNumber = fgItemNo.Key;
                     decimal BomQty = fgItemNo.Value;
                     var projectSODetails = await _repository.GetProjectDetailsBySAItemNo(fgItemNo.Key);
                     foreach (var project in projectSODetails)
@@ -4376,25 +4390,80 @@ namespace Tips.SalesService.Api.Controllers
                         // itemDetailsDto.ProjectSODetails = projectSODetails;
                         projectSOSADetailDtos.Add(project);
                     }
+
+                    //var soQtydetails = await _repository.GetSalesOrderQtySPReportWithParam(fgItemNumber, BomQty);
+
+                    //var salesOrderQtyDetails = soQtydetails
+                    //    .GroupBy(x => new { x.ProjectNumber, x.CustomerId, x.CustomerName })
+                    //    .Select(group => new ProjectSOSADetailDto
+                    //    {
+                    //        ProjectNumber = group.Key.ProjectNumber,
+                    //        CustomerId = group.Key.CustomerId,
+                    //        CustomerName = group.Key.CustomerName,
+                    //        SalesOrderQtyDetails = group.GroupBy(g => g.SalesOrderNo)
+                    //            .Select(so => new SalesOrderQtyForSADto
+                    //            {
+                    //                SalesOrderNo = so.Key,
+                    //                SalesOrderQty = so.First().SalesOrderQty,
+                    //                OpenSalesOrderQty = so.First().OpenSalesOrderQty,
+                    //                RequiredQty = so.First().RequiredQty,
+                    //                Description = so.First().Description,
+                    //                FgItemNumber = fgItemNumber,
+                    //                ProjectNumber = group.Key.ProjectNumber
+                    //            })
+                    //            .ToList()
+                    //    })
+                    //    .ToList();
+
+                    //projectSOSADetailsDtos.AddRange(salesOrderQtyDetails);
+
                 }
-                var allProj = projectSOSADetailDtos.DistinctBy(x => x.ProjectNumber).ToList();
+
                 List<ProjectSOSADetailDto>? projectSOSADetailUniq = new List<ProjectSOSADetailDto>();
-                foreach (var pros in projectSOSADetailDtos)
+                //List<ProjectSOSADetailDto>? projectSOSADetailsUniq = new List<ProjectSOSADetailDto>();
+                //foreach (var pros in projectSOSADetailDtos)
+                //{
+                //    int flag = 0;
+                //    foreach (var proj in projectSOSADetailUniq)
+                //    {
+                //        if (proj.ProjectNumber == pros.ProjectNumber)
+                //        {
+                //            flag = 1;
+                //            proj.SalesOrderQtyDetails.AddRange(pros.SalesOrderQtyDetails);
+                //        }
+                //    }
+                //    if (flag == 0)
+                //    {
+                //        projectSOSADetailUniq.Add(pros);
+                //    }
+                //}
+
+                projectSOSADetailDtos.ForEach(pros =>
                 {
-                    int flag = 0;
-                    foreach (var proj in projectSOSADetailUniq)
+                    var existingProj = projectSOSADetailUniq.FirstOrDefault(proj => proj.ProjectNumber == pros.ProjectNumber);
+                    if (existingProj != null)
                     {
-                        if (proj.ProjectNumber == pros.ProjectNumber)
-                        {
-                            flag = 1;
-                            proj.SalesOrderQtyDetails.AddRange(pros.SalesOrderQtyDetails);
-                        }
+                        existingProj.SalesOrderQtyDetails.AddRange(pros.SalesOrderQtyDetails);
                     }
-                    if (flag == 0)
+                    else
                     {
                         projectSOSADetailUniq.Add(pros);
                     }
-                }
+                });
+
+                //projectSOSADetailsDtos.ForEach(pros =>
+                //{
+                //    var existingProj = projectSOSADetailsUniq.FirstOrDefault(proj => proj.ProjectNumber == pros.ProjectNumber);
+                //    if (existingProj != null)
+                //    {
+                //        existingProj.SalesOrderQtyDetails.AddRange(pros.SalesOrderQtyDetails);
+                //    }
+                //    else
+                //    {
+                //        projectSOSADetailsUniq.Add(pros);
+                //    }
+                //});
+
                 itemDetailsDto.ProjectSODetails = projectSOSADetailUniq;
                 serviceResponse.Data = itemDetailsDto;
                 serviceResponse.Message = "Returned all SalesOrderSADetails";
@@ -4734,9 +4803,9 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 string serverKey = GetServerKey();
-                var soid_1 = soItemConfirmationDateDto.First();
-                var SoId = soid_1.First();
-                var SODetails = await _repository.GetSalesOrderById(SoId.SalesOrderId);
+                //var soid_1 = soItemConfirmationDateDto.First();
+                //var SoId = soid_1.First();
+                //var SODetails = await _repository.GetSalesOrderById(SoId.SalesOrderId);
                 foreach (var soItemConfirmationDateSet in soItemConfirmationDateDto)
                 {
                     if (!soItemConfirmationDateSet.Any())
@@ -5076,6 +5145,10 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderMainLevelHistory.Id = 0;
                         salesOrderMainLevelHistory.SalesOrderId = salesOrder.Id;
                         salesOrderMainLevelHistory.IsShortClosed = true;
+                        salesOrderMainLevelHistory.SoCreatedBy = salesOrder.CreatedBy;
+                        salesOrderMainLevelHistory.SoCreatedOn = salesOrder.CreatedOn;
+                        salesOrderMainLevelHistory.SoLastModifiedBy = salesOrder.LastModifiedBy;
+                        salesOrderMainLevelHistory.SoLastModifiedOn = salesOrder.LastModifiedOn;
                         salesOrderMainLevelHistory.CreatedBy = _createdBy;
                         salesOrderMainLevelHistory.CreatedOn = DateTime.Now;
                         salesOrderMainLevelHistory.LastModifiedBy = null;
@@ -5215,6 +5288,10 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderMainLevelHistory.SalesOrderNumber = salesOrder.SalesOrderNumber;
                         salesOrderMainLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
                         salesOrderMainLevelHistory.IsShortClosed = true;
+                        salesOrderMainLevelHistory.SoCreatedBy = salesOrder.CreatedBy;
+                        salesOrderMainLevelHistory.SoCreatedOn = salesOrder.CreatedOn;
+                        salesOrderMainLevelHistory.SoLastModifiedBy = salesOrder.LastModifiedBy;
+                        salesOrderMainLevelHistory.SoLastModifiedOn = salesOrder.LastModifiedOn;
                         salesOrderMainLevelHistory.CreatedBy = _createdBy;
                         salesOrderMainLevelHistory.CreatedOn = DateTime.Now;
                         salesOrderMainLevelHistory.LastModifiedBy = null;
@@ -5258,7 +5335,7 @@ namespace Tips.SalesService.Api.Controllers
                                     {
                                         for (int j = 0; j < salesOrderItems[i].ScheduleDates.Count; j++)
                                         {
-                                            SalesOrderScheduleDateHistory salesOrderScheduleDateHistory = _mapper.Map<SalesOrderScheduleDateHistory>(salesOrderItems[i].ScheduleDates);
+                                            SalesOrderScheduleDateHistory salesOrderScheduleDateHistory = _mapper.Map<SalesOrderScheduleDateHistory>(salesOrderItems[i].ScheduleDates[j]);
                                             salesOrderScheduleDateHistory.Id = 0;
                                             salesOrderScheduleDateHistory.SOScheduleDateId = salesOrderItemDetails[i].ScheduleDates[j].Id;
                                             SalesOrderScheduleDateHistoryList.Add(salesOrderScheduleDateHistory);
@@ -5280,11 +5357,19 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         var salesOrderMainLevelHistoryId = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryIdBySalesOrderIdAndRevNo(salesOrder.Id, salesOrder.RevisionNumber);
 
+                        var salesOrderMainLevelHistoryDetials = await _salesOrderMainLevelHistoryRepository.GetSalesOrderMainLevelHistoryBySalesOrderIdAndRevNo(salesOrder.Id, salesOrder.RevisionNumber);
+
                         var salesOrderMainLevelHistory = _mapper.Map(salesOrderDtoUpdate, exsitingSalesOrderHistory);
                         salesOrderMainLevelHistory.Id = salesOrderMainLevelHistoryId;
                         salesOrderMainLevelHistory.SalesOrderId = salesOrder.Id;
                         salesOrderMainLevelHistory.SalesOrderNumber = salesOrder.SalesOrderNumber;
                         salesOrderMainLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
+                        salesOrderMainLevelHistory.SoCreatedBy = salesOrder.CreatedBy;
+                        salesOrderMainLevelHistory.SoCreatedOn = salesOrder.CreatedOn;
+                        salesOrderMainLevelHistory.SoLastModifiedBy = salesOrder.LastModifiedBy;
+                        salesOrderMainLevelHistory.SoLastModifiedOn = salesOrder.LastModifiedOn;
+                        salesOrderMainLevelHistory.CreatedBy = salesOrderMainLevelHistoryDetials.CreatedBy;
+                        salesOrderMainLevelHistory.CreatedOn = salesOrderMainLevelHistoryDetials.CreatedOn;
                         salesOrderMainLevelHistory.LastModifiedBy = _createdBy;
                         salesOrderMainLevelHistory.LastModifiedOn = DateTime.Now;
 
@@ -5828,6 +5913,47 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetFGSalesOrderSPReportWithParam([FromBody] FGSalesOrderSPReportDto fgSalesOrder)
+
+        {
+            ServiceResponse<IEnumerable<FGSalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<FGSalesOrderSPReport>>();
+            try
+            {
+                var products = await _repository.GetFGSalesOrderSPReportWithParam(fgSalesOrder.SalesOrderNumber,
+                                                                             fgSalesOrder.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"FGSalesOrderSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"FGSalesOrderSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned FGSalesOrderSPReportWithParam Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetFGSalesOrderSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //[HttpGet]
         //public async Task<IActionResult> GetSalesOrderNoDetailsByCustomerId(string Customerid)
         //{

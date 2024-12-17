@@ -3,10 +3,12 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Entities.Helper;
+using MailKit.Search;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Mysqlx.Crud;
+using NPOI.SS.Formula.Functions;
 using NuGet.Protocol.Core.Types;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Tls.Crypto.Impl.BC;
@@ -305,7 +307,7 @@ namespace Tips.SalesService.Api.Repository
         {
             var result = _tipsSalesServiceDbContext
             .Set<ForecastSalesOrderSPReport>()
-            .FromSqlInterpolated($"CALL Forecast_salesorder_with_parameter({CustomerName},{SalesOrderNumber},{KPN},{SOStatus},{SOStatus},{CustomerId})")
+            .FromSqlInterpolated($"CALL Forecast_salesorder_with_parameter({CustomerName},{SalesOrderNumber},{KPN},{SOStatus},{CustomerId})")
             .ToList();
 
             return result;
@@ -389,6 +391,16 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
+        public async Task<IEnumerable<FGSalesOrderSPReport>> GetFGSalesOrderSPReportWithParam(string? SalesOrderNumber, string? ProjectNumber)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<FGSalesOrderSPReport>()
+            .FromSqlInterpolated($"CALL All_Fgs_salesorder_Report({SalesOrderNumber},{ProjectNumber})")
+            .ToList();
+
+            return result;
+
+        }
         public async Task<string> DeleteSalesOrder(SalesOrder salesOrder)
         {
             Delete(salesOrder);
@@ -777,14 +789,18 @@ namespace Tips.SalesService.Api.Repository
             salesOrder.CreatedOn = salesOrder.CreatedOn;
             salesOrder.LastModifiedBy = _createdBy;
             salesOrder.LastModifiedOn = DateTime.Now;
+
             var oldRevisionNumber = _tipsSalesServiceDbContext.SalesOrders
                .Where(x => x.SalesOrderNumber == salesOrder.SalesOrderNumber)
                .OrderByDescending(x => x.Id)
-               .Select(x => x.RevisionNumber)
                .FirstOrDefault();
 
+            oldRevisionNumber.LastModifiedBy = _createdBy;
+            oldRevisionNumber.LastModifiedOn = DateTime.Now;
+            Update(oldRevisionNumber);
+
             var increaseVersionNumber = 1;
-            var version = oldRevisionNumber + increaseVersionNumber;
+            var version = oldRevisionNumber.RevisionNumber + increaseVersionNumber;
             salesOrder.RevisionNumber = (version);
             Update(salesOrder);
             string result = $"SalesOrder of Detail {salesOrder.Id} is updated successfully!";
@@ -954,6 +970,15 @@ namespace Tips.SalesService.Api.Repository
             .SumAsync(soi => soi.BalanceQty);
         }
 
+        public async Task<IEnumerable<SalesOrderQtyDetailsDto>> GetSalesOrderQtySPReportWithParam(string itemNo, decimal bomQty)
+        {
+            var result = _tipsSalesServiceDbContext
+             .Set<SalesOrderQtyDetailsDto>()
+             .FromSqlInterpolated($"CALL SalesOrder_QuantityDetails({itemNo},{bomQty})")
+             .ToList();
+
+            return result;
+        }
     }
     public class SalesOrderItemRepository : RepositoryBase<SalesOrderItems>, ISalesOrderItemsRepository
     {

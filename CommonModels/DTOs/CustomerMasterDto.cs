@@ -42,6 +42,7 @@ namespace Entities.DTOs
 
         public string? Region { get; set; }
         public string? ShippingMode { get; set; }
+        public string? SFT { get; set; }
 
 
         //RelatedLink
@@ -169,7 +170,7 @@ namespace Entities.DTOs
         public string? SalesManagerCode { get; set; }
         public string? Region { get; set; }
         public string? ShippingMode { get; set; }
-
+        public string? SFT { get; set; }
 
         //RelatedLink
 
@@ -293,7 +294,7 @@ namespace Entities.DTOs
         public string? SalesManagerCode { get; set; }
         public string? Region { get; set; }
         public string? ShippingMode { get; set; }
-
+        public string? SFT { get; set; }
 
         //RelatedLink
 

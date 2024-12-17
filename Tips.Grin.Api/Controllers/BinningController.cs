@@ -23,6 +23,7 @@ using System.Web;
 using Azure;
 using Mysqlx.Crud;
 using Microsoft.VisualBasic;
+using System.Security.Claims;
 
 namespace Tips.Grin.Api.Controllers
 {
@@ -44,6 +45,8 @@ namespace Tips.Grin.Api.Controllers
         private IIQCConfirmationItemsRepository _iQCConfirmationItemsRepository;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private IBinningLocationRepository _binningLocationRepository;
+        private readonly String _createdBy;
+        private readonly String _unitname;
         public BinningController(IBinningLocationRepository binningLocationRepository, IHttpClientFactory clientFactory, IIQCConfirmationItemsRepository iQCConfirmationItemsRepository, IIQCConfirmationRepository iQCConfirmationRepository, IGrinPartsRepository grinPartsRepository, IGrinRepository grinRepository, IBinningRepository binningRepository, IBinningItemsRepository binningItemsRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, IHttpContextAccessor httpContextAccessor)
         {
             _logger = logger;
@@ -59,6 +62,9 @@ namespace Tips.Grin.Api.Controllers
             _httpContextAccessor = httpContextAccessor;
             _binningLocationRepository = binningLocationRepository;
             _clientFactory = clientFactory;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         [HttpGet]
@@ -530,6 +536,7 @@ namespace Tips.Grin.Api.Controllers
                 HttpStatusCode createInv = HttpStatusCode.OK;
                 HttpStatusCode getItemMas = HttpStatusCode.OK;
                 HttpStatusCode createInvTrans = HttpStatusCode.OK;
+                HttpStatusCode createInvTrans1 = HttpStatusCode.OK;
 
                 var existingBinningDetails = await _binningRepository.GetExistingBinningDetailsByGrinNo(grinNumber);
                 if (existingBinningDetails != null)
@@ -674,12 +681,48 @@ namespace Tips.Grin.Api.Controllers
                                     var response = await client5.SendAsync(request5);
 
                                     if (response.StatusCode != HttpStatusCode.OK) updateInv = response.StatusCode;
-                                    //    j++;
+
+                                    //InventoryTranction Update Code
+
+                                    BinningInventoryTranctionDto iqcInventoryTranctionDto = new BinningInventoryTranctionDto();
+                                    iqcInventoryTranctionDto.PartNumber = inventoryObject.partNumber;
+                                    iqcInventoryTranctionDto.LotNumber = inventoryObject.lotNumber;
+                                    iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
+                                    iqcInventoryTranctionDto.Description = inventoryObject.description;
+                                    iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
+                                    iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                                    iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
+                                    iqcInventoryTranctionDto.Issued_By = _createdBy;
+                                    iqcInventoryTranctionDto.UOM = inventoryObject.uom;
+                                    iqcInventoryTranctionDto.Warehouse = inventoryObject.warehouse;
+                                    iqcInventoryTranctionDto.From_Location = "IQC";
+                                    iqcInventoryTranctionDto.TO_Location = inventoryObject.location;
+                                    iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo;
+                                    iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
+                                    iqcInventoryTranctionDto.PartType = inventoryObject.partType;
+                                    iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;/* Convert.ToString(grinPartsDetails.Id);*/
+                                    iqcInventoryTranctionDto.ReferenceIDFrom = "Binning";
+                                    iqcInventoryTranctionDto.GrinMaterialType = "GRIN";
+                                    iqcInventoryTranctionDto.ShopOrderNo = "";
+                                    iqcInventoryTranctionDto.Remarks = "Binning Done";
+
+                                    string rfqSourcingPPdetailsJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
+                                    var contents = new StringContent(rfqSourcingPPdetailsJsons, Encoding.UTF8, "application/json");
+                                    var client7 = _clientFactory.CreateClient();
+                                    var token7 = HttpContext.Request.Headers["Authorization"].ToString();
+                                    var request7 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                                    "CreateInventoryTranction"))
+                                    {
+                                        Content = contents
+                                    };
+                                    request7.Headers.Add("Authorization", token7);
+
+                                    var inventoryTransResponses = await client7.SendAsync(request7);
+
+                                    if (inventoryTransResponses.StatusCode != HttpStatusCode.OK) createInvTrans1 = inventoryTransResponses.StatusCode;
                                 }
                                 else
                                 {
-
-
                                     var grinPartsDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinId);
                                     BinningInventoryDtoPost inventoryObjectNew = new BinningInventoryDtoPost();
                                     inventoryObjectNew.PartNumber = binningsItem.ItemNumber;
@@ -712,51 +755,51 @@ namespace Tips.Grin.Api.Controllers
 
                                     var response = await client6.SendAsync(request6);
                                     if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
+
+                                    BinningInventoryTranctionDto inventoryTranctionObjectNew = new BinningInventoryTranctionDto();
+                                    inventoryTranctionObjectNew.PartNumber = inventoryObjectNew.PartNumber;
+                                    inventoryTranctionObjectNew.LotNumber = inventoryObjectNew.LotNumber;
+                                    inventoryTranctionObjectNew.MftrPartNumber = inventoryObjectNew.MftrPartNumber;
+                                    inventoryTranctionObjectNew.Description = inventoryObjectNew.Description;
+                                    inventoryTranctionObjectNew.ProjectNumber = inventoryObjectNew.ProjectNumber;
+                                    inventoryTranctionObjectNew.Issued_Quantity = inventoryObjectNew.Balance_Quantity;
+                                    inventoryTranctionObjectNew.UOM = inventoryObjectNew.UOM;
+                                    inventoryTranctionObjectNew.Issued_DateTime = DateTime.Now;
+                                    inventoryTranctionObjectNew.Issued_By = _createdBy;
+                                    inventoryTranctionObjectNew.Warehouse = inventoryObjectNew.Warehouse;
+                                    inventoryTranctionObjectNew.From_Location = "IQC";
+                                    inventoryTranctionObjectNew.TO_Location = inventoryObjectNew.Location;
+                                    inventoryTranctionObjectNew.GrinNo = inventoryObjectNew.GrinNo;
+                                    inventoryTranctionObjectNew.GrinPartId = inventoryObjectNew.GrinPartId;
+                                    inventoryTranctionObjectNew.PartType = inventoryObjectNew.PartType; // we have to take parttype from grinparts model;
+                                    inventoryTranctionObjectNew.ReferenceID = inventoryObjectNew.GrinNo;
+                                    inventoryTranctionObjectNew.ReferenceIDFrom = "Binning";
+                                    inventoryTranctionObjectNew.GrinMaterialType = "GRIN";
+                                    inventoryTranctionObjectNew.ShopOrderNo = "";
+                                    inventoryTranctionObjectNew.Remarks = "Binning Done";
+
+                                    var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
+                                    var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                                    //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datas);
+                                    var client7 = _clientFactory.CreateClient();
+                                    var token7 = HttpContext.Request.Headers["Authorization"].ToString();
+                                    var request7 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                                    "CreateInventoryTranction"))
+                                    {
+                                        Content = datas
+                                    };
+                                    request7.Headers.Add("Authorization", token7);
+
+                                    var responses = await client7.SendAsync(request7);
+
+                                    if (responses.StatusCode != HttpStatusCode.OK) createInvTrans = responses.StatusCode;
                                 }
-
-
-
-
-                                //InventoryTranction Update Code
-
-                                var grinPartDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinId);
-                                BinningInventoryTranctionDto inventoryTranctionObjectNew = new BinningInventoryTranctionDto();
-                                inventoryTranctionObjectNew.PartNumber = binningsItem.ItemNumber;
-                                inventoryTranctionObjectNew.MftrPartNumber = grinPartDetails.MftrItemNumber;
-                                inventoryTranctionObjectNew.Description = grinPartDetails.ItemDescription;
-                                inventoryTranctionObjectNew.ProjectNumber = location.ProjectNumber;
-                                inventoryTranctionObjectNew.Issued_Quantity = location.Qty;
-                                inventoryTranctionObjectNew.UOM = grinPartDetails.UOM;
-                                inventoryTranctionObjectNew.Warehouse = location.Warehouse;
-                                inventoryTranctionObjectNew.From_Location = location.Location;
-                                inventoryTranctionObjectNew.TO_Location = location.Location;
-                                inventoryTranctionObjectNew.GrinNo = binningDetail.GrinNumber;
-                                inventoryTranctionObjectNew.GrinPartId = grinId;
-                                inventoryTranctionObjectNew.PartType = grinPartDetails.ItemType; // we have to take parttype from grinparts model;
-                                inventoryTranctionObjectNew.ReferenceID = binningDetail.GrinNumber;
-                                inventoryTranctionObjectNew.ReferenceIDFrom = "Binning";
-
-                                var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
-                                var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                                //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datas);
-                                var client7 = _clientFactory.CreateClient();
-                                var token7 = HttpContext.Request.Headers["Authorization"].ToString();
-                                var request7 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
-                                "CreateInventoryTranction"))
-                                {
-                                    Content = datas
-                                };
-                                request7.Headers.Add("Authorization", token7);
-
-                                var responses = await client7.SendAsync(request7);
-
-                                if (responses.StatusCode != HttpStatusCode.OK) createInvTrans = responses.StatusCode;
 
                             }
                         }
                     }
                     if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK && createInvTrans == HttpStatusCode.OK
-                                                                                                                                    && getItemMas == HttpStatusCode.OK)
+                                                                                                                                   && createInvTrans1 == HttpStatusCode.OK && getItemMas == HttpStatusCode.OK)
                     {
                         _iQCConfirmationRepository.SaveAsync();
                         _binningRepository.SaveAsync();
@@ -885,6 +928,45 @@ namespace Tips.Grin.Api.Controllers
                                     var response = await client5.SendAsync(request5);
                                     if (response.StatusCode != HttpStatusCode.OK) updateInv = response.StatusCode;
 
+                                    //InventoryTranction Update Code
+
+                                    BinningInventoryTranctionDto iqcInventoryTranctionDto = new BinningInventoryTranctionDto();
+                                    iqcInventoryTranctionDto.PartNumber = inventoryObject.partNumber;
+                                    iqcInventoryTranctionDto.LotNumber = inventoryObject.lotNumber;
+                                    iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
+                                    iqcInventoryTranctionDto.Description = inventoryObject.description;
+                                    iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
+                                    iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                                    iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
+                                    iqcInventoryTranctionDto.Issued_By = _createdBy;
+                                    iqcInventoryTranctionDto.UOM = inventoryObject.uom;
+                                    iqcInventoryTranctionDto.Warehouse = inventoryObject.warehouse;
+                                    iqcInventoryTranctionDto.From_Location = "IQC";
+                                    iqcInventoryTranctionDto.TO_Location = inventoryObject.location;
+                                    iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo;
+                                    iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
+                                    iqcInventoryTranctionDto.PartType = inventoryObject.partType;
+                                    iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;/* Convert.ToString(grinPartsDetails.Id);*/
+                                    iqcInventoryTranctionDto.ReferenceIDFrom = "Binning";
+                                    iqcInventoryTranctionDto.GrinMaterialType = "GRIN";
+                                    iqcInventoryTranctionDto.ShopOrderNo = "";
+                                    iqcInventoryTranctionDto.Remarks = "Binning Done";
+
+                                    string rfqSourcingPPdetailsJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
+                                    var contents = new StringContent(rfqSourcingPPdetailsJsons, Encoding.UTF8, "application/json");
+                                    var client7 = _clientFactory.CreateClient();
+                                    var token7 = HttpContext.Request.Headers["Authorization"].ToString();
+                                    var request7 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                                    "CreateInventoryTranction"))
+                                    {
+                                        Content = contents
+                                    };
+                                    request7.Headers.Add("Authorization", token7);
+
+                                    var inventoryTransResponses = await client7.SendAsync(request7);
+
+                                    if (inventoryTransResponses.StatusCode != HttpStatusCode.OK) createInvTrans1 = inventoryTransResponses.StatusCode;
+
                                 }
                                 else
                                 {
@@ -919,42 +1001,47 @@ namespace Tips.Grin.Api.Controllers
 
                                     var response = await client6.SendAsync(request6);
                                     if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
+
+                                    BinningInventoryTranctionDto inventoryTranctionObjectNew = new BinningInventoryTranctionDto();
+                                    inventoryTranctionObjectNew.PartNumber = inventoryObjectNew.PartNumber;
+                                    inventoryTranctionObjectNew.LotNumber = inventoryObjectNew.LotNumber;
+                                    inventoryTranctionObjectNew.MftrPartNumber = inventoryObjectNew.MftrPartNumber;
+                                    inventoryTranctionObjectNew.Description = inventoryObjectNew.Description;
+                                    inventoryTranctionObjectNew.ProjectNumber = inventoryObjectNew.ProjectNumber;
+                                    inventoryTranctionObjectNew.Issued_Quantity = inventoryObjectNew.Balance_Quantity;
+                                    inventoryTranctionObjectNew.UOM = inventoryObjectNew.UOM;
+                                    inventoryTranctionObjectNew.Issued_DateTime = DateTime.Now;
+                                    inventoryTranctionObjectNew.Issued_By = _createdBy;
+                                    inventoryTranctionObjectNew.Warehouse = inventoryObjectNew.Warehouse;
+                                    inventoryTranctionObjectNew.From_Location = "IQC";
+                                    inventoryTranctionObjectNew.TO_Location = inventoryObjectNew.Location;
+                                    inventoryTranctionObjectNew.GrinNo = inventoryObjectNew.GrinNo;
+                                    inventoryTranctionObjectNew.GrinPartId = inventoryObjectNew.GrinPartId;
+                                    inventoryTranctionObjectNew.PartType = inventoryObjectNew.PartType; // we have to take parttype from grinparts model;
+                                    inventoryTranctionObjectNew.ReferenceID = inventoryObjectNew.GrinNo;
+                                    inventoryTranctionObjectNew.ReferenceIDFrom = "Binning";
+                                    inventoryTranctionObjectNew.GrinMaterialType = "GRIN";
+                                    inventoryTranctionObjectNew.ShopOrderNo = "";
+                                    inventoryTranctionObjectNew.Remarks = "Binning Done";
+
+                                    var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
+                                    var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                                    //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datas);
+                                    var client7 = _clientFactory.CreateClient();
+                                    var token7 = HttpContext.Request.Headers["Authorization"].ToString();
+                                    var request7 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                                    "CreateInventoryTranction"))
+                                    {
+                                        Content = datas
+                                    };
+                                    request7.Headers.Add("Authorization", token7);
+
+                                    var responses = await client7.SendAsync(request7);
+
+                                    if (responses.StatusCode != HttpStatusCode.OK) createInvTrans = responses.StatusCode;
                                 }
 
-                                //InventoryTranction Update Code
-
-                                var grinPartDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinId);
-                                BinningInventoryTranctionDto inventoryTranctionObjectNew = new BinningInventoryTranctionDto();
-                                inventoryTranctionObjectNew.PartNumber = binningsItem.ItemNumber;
-                                inventoryTranctionObjectNew.MftrPartNumber = grinPartDetails.MftrItemNumber;
-                                inventoryTranctionObjectNew.Description = grinPartDetails.ItemDescription;
-                                inventoryTranctionObjectNew.ProjectNumber = location.ProjectNumber;
-                                inventoryTranctionObjectNew.Issued_Quantity = location.Qty;
-                                inventoryTranctionObjectNew.UOM = grinPartDetails.UOM;
-                                inventoryTranctionObjectNew.Warehouse = location.Warehouse;
-                                inventoryTranctionObjectNew.From_Location = location.Location;
-                                inventoryTranctionObjectNew.TO_Location = location.Location;
-                                inventoryTranctionObjectNew.GrinNo = binningDetail.GrinNumber;
-                                inventoryTranctionObjectNew.GrinPartId = grinId;
-                                inventoryTranctionObjectNew.PartType = grinPartDetails.ItemType; // we have to take parttype from grinparts model;
-                                inventoryTranctionObjectNew.ReferenceID = binningDetail.GrinNumber;
-                                inventoryTranctionObjectNew.ReferenceIDFrom = "Binning";
-
-                                var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
-                                var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                                //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datas);
-                                var client7 = _clientFactory.CreateClient();
-                                var token7 = HttpContext.Request.Headers["Authorization"].ToString();
-                                var request7 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
-                                "CreateInventoryTranction"))
-                                {
-                                    Content = datas
-                                };
-                                request7.Headers.Add("Authorization", token7);
-
-                                var responses = await client7.SendAsync(request7);
-
-                                if (responses.StatusCode != HttpStatusCode.OK) createInvTrans = responses.StatusCode;
+                              
                             }
                         }
                     }
@@ -978,7 +1065,8 @@ namespace Tips.Grin.Api.Controllers
                     await _iQCConfirmationRepository.UpdateIqc(iqcDetails);
 
                     if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK && getItemMas == HttpStatusCode.OK
-                                                                                                                            && createInvTrans == HttpStatusCode.OK)
+                                                                                                                            && createInvTrans == HttpStatusCode.OK
+                                                                                                                            && createInvTrans1 == HttpStatusCode.OK)
                     {
                         _grinRepository.SaveAsync();
                         _iQCConfirmationRepository.SaveAsync();
@@ -1255,6 +1343,7 @@ namespace Tips.Grin.Api.Controllers
                 HttpStatusCode createInv = HttpStatusCode.OK;
                 HttpStatusCode getItemMas = HttpStatusCode.OK;
                 HttpStatusCode createInvTrans = HttpStatusCode.OK;
+                HttpStatusCode createInvTrans1 = HttpStatusCode.OK;
 
                 var binningsItemsDto = binningSaveDto.BinningItems;
                 var binningItems = binningDetail.BinningItems[0];
@@ -1344,9 +1433,6 @@ namespace Tips.Grin.Api.Controllers
                         //int k = 0;
                         foreach (var location in binningLocations)
                         {
-
-
-
                             var client1 = _clientFactory.CreateClient();
                             var token1 = HttpContext.Request.Headers["Authorization"].ToString();
 
@@ -1387,6 +1473,45 @@ namespace Tips.Grin.Api.Controllers
                                 var response = await client5.SendAsync(request5);
                                 if (response.StatusCode != HttpStatusCode.OK) updateInv = response.StatusCode;
 
+                                //InventoryTranction Update Code
+
+                                BinningInventoryTranctionDto iqcInventoryTranctionDto = new BinningInventoryTranctionDto();
+                                iqcInventoryTranctionDto.PartNumber = inventoryObject.partNumber;
+                                iqcInventoryTranctionDto.LotNumber = inventoryObject.lotNumber;
+                                iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
+                                iqcInventoryTranctionDto.Description = inventoryObject.description;
+                                iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
+                                iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                                iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
+                                iqcInventoryTranctionDto.Issued_By = _createdBy;
+                                iqcInventoryTranctionDto.UOM = inventoryObject.uom;
+                                iqcInventoryTranctionDto.Warehouse = inventoryObject.warehouse;
+                                iqcInventoryTranctionDto.From_Location = "IQC";
+                                iqcInventoryTranctionDto.TO_Location = inventoryObject.location;
+                                iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo;
+                                iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
+                                iqcInventoryTranctionDto.PartType = inventoryObject.partType;
+                                iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;/* Convert.ToString(grinPartsDetails.Id);*/
+                                iqcInventoryTranctionDto.ReferenceIDFrom = "Binning";
+                                iqcInventoryTranctionDto.GrinMaterialType = "GRIN";
+                                iqcInventoryTranctionDto.ShopOrderNo = "";
+                                iqcInventoryTranctionDto.Remarks = "BinningItem Done";
+
+                                string rfqSourcingPPdetailsJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
+                                var contents = new StringContent(rfqSourcingPPdetailsJsons, Encoding.UTF8, "application/json");
+                                var client7 = _clientFactory.CreateClient();
+                                var token7 = HttpContext.Request.Headers["Authorization"].ToString();
+                                var request7 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                                "CreateInventoryTranction"))
+                                {
+                                    Content = contents
+                                };
+                                request7.Headers.Add("Authorization", token7);
+
+                                var inventoryTransResponses = await client7.SendAsync(request7);
+
+                                if (inventoryTransResponses.StatusCode != HttpStatusCode.OK) createInvTrans1 = inventoryTransResponses.StatusCode;
+
                             }
                             else
                             {
@@ -1423,46 +1548,55 @@ namespace Tips.Grin.Api.Controllers
                                 request6.Headers.Add("Authorization", token6);
                                 var response = await client6.SendAsync(request6);
                                 if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
+
+                                //InventoryTranction Update Code
+
+                                BinningInventoryTranctionDto inventoryTranctionObjectNew = new BinningInventoryTranctionDto();
+                                inventoryTranctionObjectNew.PartNumber = inventoryObjectNew.PartNumber;
+                                inventoryTranctionObjectNew.LotNumber = inventoryObjectNew.LotNumber;
+                                inventoryTranctionObjectNew.MftrPartNumber = inventoryObjectNew.MftrPartNumber;
+                                inventoryTranctionObjectNew.Description = inventoryObjectNew.Description;
+                                inventoryTranctionObjectNew.ProjectNumber = inventoryObjectNew.ProjectNumber;
+                                inventoryTranctionObjectNew.Issued_Quantity = inventoryObjectNew.Balance_Quantity;
+                                inventoryTranctionObjectNew.Issued_DateTime = DateTime.Now;
+                                inventoryTranctionObjectNew.Issued_By = _createdBy;
+                                inventoryTranctionObjectNew.UOM = inventoryObjectNew.UOM;
+                                inventoryTranctionObjectNew.Warehouse = inventoryObjectNew.Warehouse;
+                                inventoryTranctionObjectNew.From_Location = "IQC";
+                                inventoryTranctionObjectNew.TO_Location = inventoryObjectNew.Location;
+                                inventoryTranctionObjectNew.GrinNo = inventoryObjectNew.GrinNo;
+                                inventoryTranctionObjectNew.GrinPartId = inventoryObjectNew.GrinPartId;
+                                inventoryTranctionObjectNew.PartType = inventoryObjectNew.PartType; 
+                                inventoryTranctionObjectNew.ReferenceID = inventoryObjectNew.ReferenceID;
+                                inventoryTranctionObjectNew.ReferenceIDFrom = "Binning";
+                                inventoryTranctionObjectNew.GrinMaterialType = "GRIN";
+                                inventoryTranctionObjectNew.ShopOrderNo = "";
+                                inventoryTranctionObjectNew.Remarks = "Binning Done";
+
+                                var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
+                                var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                                //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datas);
+
+                                var client7 = _clientFactory.CreateClient();
+                                var token7 = HttpContext.Request.Headers["Authorization"].ToString();
+                                var request7 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                                "CreateInventoryTranction"))
+                                {
+                                    Content = datas
+                                };
+                                request7.Headers.Add("Authorization", token7);
+
+                                var responses = await client7.SendAsync(request7);
+                                if (responses.StatusCode != HttpStatusCode.OK) createInvTrans = responses.StatusCode;
                             }
 
-                            //InventoryTranction Update Code
-
-                            BinningInventoryTranctionDto inventoryTranctionObjectNew = new BinningInventoryTranctionDto();
-                            inventoryTranctionObjectNew.PartNumber = binningsItemsDto.ItemNumber;
-                            inventoryTranctionObjectNew.MftrPartNumber = grinPartDetails.MftrItemNumber;
-                            inventoryTranctionObjectNew.Description = grinPartDetails.ItemDescription;
-                            inventoryTranctionObjectNew.ProjectNumber = location.ProjectNumber;
-                            inventoryTranctionObjectNew.Issued_Quantity = location.Qty;
-                            inventoryTranctionObjectNew.UOM = grinPartDetails.UOM;
-                            inventoryTranctionObjectNew.Warehouse = location.Warehouse;
-                            inventoryTranctionObjectNew.From_Location = location.Location;
-                            inventoryTranctionObjectNew.TO_Location = location.Location;
-                            inventoryTranctionObjectNew.GrinNo = binningDetail.GrinNumber;
-                            inventoryTranctionObjectNew.GrinPartId = grinId;
-                            inventoryTranctionObjectNew.PartType = grinPartDetails.ItemType; // we have to take parttype from grinparts model;
-                            inventoryTranctionObjectNew.ReferenceID = binningDetail.GrinNumber;
-                            inventoryTranctionObjectNew.ReferenceIDFrom = "Binning";
-
-                            var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
-                            var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                            //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datas);
-
-                            var client7 = _clientFactory.CreateClient();
-                            var token7 = HttpContext.Request.Headers["Authorization"].ToString();
-                            var request7 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
-                            "CreateInventoryTranction"))
-                            {
-                                Content = datas
-                            };
-                            request7.Headers.Add("Authorization", token7);
-
-                            var responses = await client7.SendAsync(request7);
-                            if (responses.StatusCode != HttpStatusCode.OK) createInvTrans = responses.StatusCode;
+                            
                         }
 
                     }
                     if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK && getItemMas == HttpStatusCode.OK
-                                                                                                                                && createInvTrans == HttpStatusCode.OK)
+                                                                                                                                && createInvTrans == HttpStatusCode.OK
+                                                                                                                                && createInvTrans1 == HttpStatusCode.OK)
                     {
                         _iQCConfirmationRepository.SaveAsync();
                         _binningRepository.SaveAsync();
@@ -1569,9 +1703,6 @@ namespace Tips.Grin.Api.Controllers
                         //int k = 0;
                         foreach (var location in binningLocations)
                         {
-
-
-
                             var client1 = _clientFactory.CreateClient();
                             var token1 = HttpContext.Request.Headers["Authorization"].ToString();
 
@@ -1611,7 +1742,46 @@ namespace Tips.Grin.Api.Controllers
 
                                 var response = await client5.SendAsync(request5);
                                 if (response.StatusCode != HttpStatusCode.OK) updateInv = response.StatusCode;
-                                
+
+                                //InventoryTranction Update Code
+
+                                BinningInventoryTranctionDto iqcInventoryTranctionDto = new BinningInventoryTranctionDto();
+                                iqcInventoryTranctionDto.PartNumber = inventoryObject.partNumber;
+                                iqcInventoryTranctionDto.LotNumber = inventoryObject.lotNumber;
+                                iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
+                                iqcInventoryTranctionDto.Description = inventoryObject.description;
+                                iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
+                                iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                                iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
+                                iqcInventoryTranctionDto.Issued_By = _createdBy;
+                                iqcInventoryTranctionDto.UOM = inventoryObject.uom;
+                                iqcInventoryTranctionDto.Warehouse = inventoryObject.warehouse;
+                                iqcInventoryTranctionDto.From_Location = "IQC";
+                                iqcInventoryTranctionDto.TO_Location = inventoryObject.location;
+                                iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo;
+                                iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
+                                iqcInventoryTranctionDto.PartType = inventoryObject.partType;
+                                iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;/* Convert.ToString(grinPartsDetails.Id);*/
+                                iqcInventoryTranctionDto.ReferenceIDFrom = "Binning";
+                                iqcInventoryTranctionDto.GrinMaterialType = "GRIN";
+                                iqcInventoryTranctionDto.ShopOrderNo = "";
+                                iqcInventoryTranctionDto.Remarks = "BinningItem Done";
+
+                                string rfqSourcingPPdetailsJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
+                                var contents = new StringContent(rfqSourcingPPdetailsJsons, Encoding.UTF8, "application/json");
+                                var client7 = _clientFactory.CreateClient();
+                                var token7 = HttpContext.Request.Headers["Authorization"].ToString();
+                                var request7 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                                "CreateInventoryTranction"))
+                                {
+                                    Content = contents
+                                };
+                                request7.Headers.Add("Authorization", token7);
+
+                                var inventoryTransResponses = await client7.SendAsync(request7);
+
+                                if (inventoryTransResponses.StatusCode != HttpStatusCode.OK) createInvTrans1 = inventoryTransResponses.StatusCode;
+
                             }
                             else
                             {
@@ -1649,45 +1819,55 @@ namespace Tips.Grin.Api.Controllers
 
                                 var response = await client6.SendAsync(request6);
                                 if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
+
+                                BinningInventoryTranctionDto inventoryTranctionObjectNew = new BinningInventoryTranctionDto();
+                                inventoryTranctionObjectNew.PartNumber = inventoryObjectNew.PartNumber;
+                                inventoryTranctionObjectNew.LotNumber = inventoryObjectNew.LotNumber;
+                                inventoryTranctionObjectNew.MftrPartNumber = inventoryObjectNew.MftrPartNumber;
+                                inventoryTranctionObjectNew.Description = inventoryObjectNew.Description;
+                                inventoryTranctionObjectNew.ProjectNumber = inventoryObjectNew.ProjectNumber;
+                                inventoryTranctionObjectNew.Issued_Quantity = inventoryObjectNew.Balance_Quantity;
+                                inventoryTranctionObjectNew.UOM = inventoryObjectNew.UOM;
+                                inventoryTranctionObjectNew.Issued_DateTime = DateTime.Now;
+                                inventoryTranctionObjectNew.Issued_By = _createdBy;
+                                inventoryTranctionObjectNew.Warehouse = inventoryObjectNew.Warehouse;
+                                inventoryTranctionObjectNew.From_Location = "IQC";
+                                inventoryTranctionObjectNew.TO_Location = inventoryObjectNew.Location;
+                                inventoryTranctionObjectNew.GrinNo = inventoryObjectNew.GrinNo;
+                                inventoryTranctionObjectNew.GrinPartId = inventoryObjectNew.GrinPartId;
+                                inventoryTranctionObjectNew.PartType = inventoryObjectNew.PartType; 
+                                inventoryTranctionObjectNew.ReferenceID = inventoryObjectNew.GrinNo;
+                                inventoryTranctionObjectNew.ReferenceIDFrom = "Binning";
+                                inventoryTranctionObjectNew.GrinMaterialType = "GRIN";
+                                inventoryTranctionObjectNew.ShopOrderNo = "";
+                                inventoryTranctionObjectNew.Remarks = "BinningItem Done";
+
+                                var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
+                                var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
+                                //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datas);
+                                var client7 = _clientFactory.CreateClient();
+                                var token7 = HttpContext.Request.Headers["Authorization"].ToString();
+                                var request7 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                                "CreateInventoryTranction"))
+                                {
+                                    Content = datas
+                                };
+                                request7.Headers.Add("Authorization", token7);
+
+                                var responses = await client7.SendAsync(request7);
+
+                                if (responses.StatusCode != HttpStatusCode.OK) createInvTrans = responses.StatusCode;
                             }
 
                             //InventoryTranction Update Code
 
-                            BinningInventoryTranctionDto inventoryTranctionObjectNew = new BinningInventoryTranctionDto();
-                            inventoryTranctionObjectNew.PartNumber = binningsItemsDto.ItemNumber;
-                            inventoryTranctionObjectNew.MftrPartNumber = grinPartDetails.MftrItemNumber;
-                            inventoryTranctionObjectNew.Description = grinPartDetails.ItemDescription;
-                            inventoryTranctionObjectNew.ProjectNumber = location.ProjectNumber;
-                            inventoryTranctionObjectNew.Issued_Quantity = location.Qty;
-                            inventoryTranctionObjectNew.UOM = grinPartDetails.UOM;
-                            inventoryTranctionObjectNew.Warehouse = location.Warehouse;
-                            inventoryTranctionObjectNew.From_Location = location.Location;
-                            inventoryTranctionObjectNew.TO_Location = location.Location;
-                            inventoryTranctionObjectNew.GrinNo = binningDetail.GrinNumber;
-                            inventoryTranctionObjectNew.GrinPartId = grinId;
-                            inventoryTranctionObjectNew.PartType = grinPartDetails.ItemType; // we have to take parttype from grinparts model;
-                            inventoryTranctionObjectNew.ReferenceID = Convert.ToString(grinId);
-                            inventoryTranctionObjectNew.ReferenceIDFrom = "Binning";
-
-                            var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
-                            var datas = new StringContent(jsons, Encoding.UTF8, "application/json");
-                            //var responses = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), datas);
-                            var client7 = _clientFactory.CreateClient();
-                            var token7 = HttpContext.Request.Headers["Authorization"].ToString();
-                            var request7 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
-                            "CreateInventoryTranction"))
-                            {
-                                Content = datas
-                            };
-                            request7.Headers.Add("Authorization", token7);
-
-                            var responses = await client7.SendAsync(request7);
-                            if (responses.StatusCode != HttpStatusCode.OK) createInvTrans = responses.StatusCode;
+                            
                         }
 
                     }
                     if (getInvGrinId == HttpStatusCode.OK && updateInv == HttpStatusCode.OK && createInv == HttpStatusCode.OK && getItemMas == HttpStatusCode.OK
-                                                                                                                                 && createInvTrans == HttpStatusCode.OK)
+                                                                                                                                 && createInvTrans == HttpStatusCode.OK
+                                                                                                                                 && createInvTrans1 == HttpStatusCode.OK)
                     {
                         _iQCConfirmationRepository.SaveAsync();
                         _binningRepository.SaveAsync();

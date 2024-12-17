@@ -153,7 +153,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public bool IsStockAvailable { get; set; }
         public string Description { get; set; }
 
-
+        public DateTime Issued_DateTime { get; set; }
+        public string? Issued_By { get; set; }
         public string ProjectNumber { get; set; }
         public decimal Issued_Quantity { get; set; }
         public string? UOM { get; set; }
@@ -168,6 +169,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ReferenceID { get; set; }
         public string? ReferenceIDFrom { get; set; }
         public string? ShopOrderNo { get; set; }
+        public string? Remarks { get; set; }
 
     }
     public class IQCConfirmationReportWithParamDto
