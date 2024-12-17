@@ -4386,7 +4386,7 @@ namespace Tips.SalesService.Api.Controllers
                     //var projectSODetails = await _repository.GetProjectDetailsBySAItemNo(fgItemNo.Key);
                     //foreach (var project in projectSODetails)
                     //{
-                    //    project.SalesOrderQtyDetails = await _repository.GetSASalesOrderQtyDetailsByItemNo(fgItemNo.Key, project.ProjectNumber, BomQty);
+                       //project.SalesOrderQtyDetails = await _repository.GetSASalesOrderQtyDetailsByItemNo(fgItemNo.Key, project.ProjectNumber, BomQty);
                     //    // itemDetailsDto.ProjectSODetails = projectSODetails;
                     //    projectSOSADetailDtos.Add(project);
                     //}
@@ -4400,16 +4400,16 @@ namespace Tips.SalesService.Api.Controllers
                             ProjectNumber = group.Key.ProjectNumber,
                             CustomerId = group.Key.CustomerId,
                             CustomerName = group.Key.CustomerName,
-                            SalesOrderQtyDetails = group.GroupBy(g => g.SalesOrderNo)
+                            SalesOrderQtyDetails = group
                                  .Select(so => new SalesOrderQtyForSADto
                                  {
-                                     SalesOrderNo = so.Key,
-                                     SalesOrderQty = so.Sum(x => x.SalesOrderQty),
-                                     OpenSalesOrderQty = so.Sum(x => x.OpenSalesOrderQty),
-                                     RequiredQty = so.Sum(x => x.RequiredQty),
-                                     Description = so.FirstOrDefault()?.Description,  
-                                     FgItemNumber = fgItemNumber,
-                                     ProjectNumber = group.Key.ProjectNumber
+                                     SalesOrderNo = so.SalesOrderNo,
+                                     SalesOrderQty = so.SalesOrderQty,
+                                     OpenSalesOrderQty = so.OpenSalesOrderQty,
+                                     RequiredQty = so.RequiredQty,
+                                     Description = so.Description,  
+                                     FgItemNumber = so.FgItemNumber,
+                                     ProjectNumber = so.ProjectNumber
                                  })
                                 .ToList()
                         })
