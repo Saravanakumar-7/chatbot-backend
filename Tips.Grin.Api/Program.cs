@@ -111,6 +111,7 @@ builder.Services.AddScoped<IOpenGrinForIQCRepository, OpenGrinForIQCRepository>(
 builder.Services.AddScoped<IOpenGrinForIQCItemRepository, OpenGrinForIQCItemRepository>();
 builder.Services.AddScoped<IOpenGrinForBinningRepository, OpenGrinForBinningRepository>();
 builder.Services.AddScoped<IOpenGrinForBinningItemsRepository, OpenGrinForBinningItemsRepository>();
+builder.Services.AddScoped<IIQCReturnToVendorRepository, IQCReturnToVendorRepository>();
 
 var app = builder.Build();
 app.UseSwagger();

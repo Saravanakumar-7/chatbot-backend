@@ -13,7 +13,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<CollectionTrackerDetailsDto> GetSOCollectionTrackerByCustomerId(string customerId);
         Task<List<OpenSalesOrderDetailsForKeusDto>> GetOpenSODetailsByCustomerIdForKeus(string salesOrderNumber);
         Task<int?> CreateCollectionTracker(CollectionTracker collectionTracker);
-        Task<string> UpdateCollectionTracker(CollectionTracker collectionTracker);
+        Task<string> UpdateCollectionTracker(CollectionTracker collectionTracker,List<SOBreakDown> sOBreakDowns);
         Task<string> DeleteCollectionTracker(CollectionTracker collectionTracker);
         Task<List<OpenSalesOrderDetailsDto>> GetOpenSODetailsByCustomerId(string customerId);
         Task<IEnumerable<CollectionTracker>> SearchCollectionTracker([FromQuery] SearchParammes searchParammes);

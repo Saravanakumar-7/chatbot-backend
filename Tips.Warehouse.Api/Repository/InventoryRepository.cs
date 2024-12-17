@@ -597,8 +597,13 @@ namespace Tips.Warehouse.Api.Repository
         }
         public async Task<List<Inventory>> GetRejectInventorybyGrinNo(string GrinNo)
         {
-            var Invdetails = await FindAll().Where(x => x.Warehouse == "Reject" && x.ReferenceID == GrinNo && x.IsStockAvailable==true).ToListAsync();
+            var Invdetails = await FindAll().Where(x => x.Warehouse == "Reject" && x.GrinNo == GrinNo && x.IsStockAvailable==true && x.ReferenceIDFrom=="IQC").ToListAsync();
             return Invdetails;
+        }
+        public async Task<List<string>?> GetRejectQtyGRINNumbers()
+        {
+            List<string>? GRINs = await FindAll().Where(x => x.Warehouse == "Reject" && x.IsStockAvailable == true && x.ReferenceIDFrom == "IQC").Select(y => y.GrinNo).Distinct().ToListAsync();
+            return GRINs;
         }
         public async Task<List<InventoryQtyforDO>> GetInventorybyItemandProject(string itemNumber, string projectNumber)
         {

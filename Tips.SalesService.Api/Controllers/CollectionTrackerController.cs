@@ -366,14 +366,14 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-
+                var remove = collectionTrackerById.SOBreakDown.Where(x => !collectionTrackerUpdateDto.SOBreakDown.Any(y=>y.Id==x.Id)).ToList();
                 var collectionTrackerItems = _mapper.Map<IEnumerable<SOBreakDown>>(collectionTrackerUpdateDto.SOBreakDown);
-
+                
                 var collectionTracker = _mapper.Map(collectionTrackerUpdateDto, collectionTrackerById);
 
                 collectionTracker.SOBreakDown = collectionTrackerItems.ToList();
-
-                string result = await _repository.UpdateCollectionTracker(collectionTracker);
+                string result = await _repository.UpdateCollectionTracker(collectionTracker,remove);
+                
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
 

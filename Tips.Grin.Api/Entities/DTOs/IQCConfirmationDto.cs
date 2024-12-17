@@ -215,5 +215,28 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? TotalInvoiceValue { get; set; }
 
     }
+    public class RejectIQCDetails
+    {
+        public string POnumber { get; set; }
+        public List<RejectIQCItemDetails> Items { get; set; }
+    }
+    public class RejectIQCItemDetails
+    {
+        public string? ItemNumber { get; set; }
+        public string ItemDescription { get; set; }
+        public string MftrItemNumber { get; set; }
+        public string UOM { get; set; }
+        public decimal RejectedQty { get; set; }
+    }
+    public class RejectIQC
+    {
 
+        public string? IQCNumber { get; set; }
+        public string? GrinNumber { get; set; }
+        public int GrinId { get; set; }
+        public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
+        public List<RejectIQCDetails> RejectIQCDetails { get; set; }
+    }
 }
