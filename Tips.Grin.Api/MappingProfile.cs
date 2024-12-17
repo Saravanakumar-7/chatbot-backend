@@ -200,6 +200,8 @@ namespace Tips.Grin.Api
             CreateMap<Datum, InventoryUpdateDto>().ReverseMap();
             CreateMap<IQCReturnToVendor, IQCReturnToVendorPostDto>().ReverseMap();
             CreateMap<IQCReturnToVendorItems, IQCReturnToVendorItemsPostDto>().ReverseMap();
+            CreateMap<IQCReturnToVendorItems, IQCReturnToVendorItemsDto>().ReverseMap();
+            CreateMap<IQCReturnToVendor, IQCReturnToVendorDto>().ReverseMap();
         }
     }
 }

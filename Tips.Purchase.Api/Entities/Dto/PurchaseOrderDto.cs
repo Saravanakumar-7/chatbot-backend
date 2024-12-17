@@ -481,16 +481,16 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string Title { get; set; }
         public List<PurchaseOrderDashboardSPReport> Items { get; set; }
     }
-    public class PurchaseOrderReturns
-    {
-        public string PurchaseOrderNo { get; set; }
-        public List<PurchaseOrderReturnItems> purchaseOrderItems { get; set; }
-    }
-    public class PurchaseOrderReturnItems
-    {
-        public string ItemNumber { get; set; }
-        public decimal ReturnQty { get; set; }
-    }
+    //public class PurchaseOrderReturns
+    //{
+    //    public string PurchaseOrderNo { get; set; }
+    //    public List<PurchaseOrderReturnItems> purchaseOrderItems { get; set; }
+    //}
+    //public class PurchaseOrderReturnItems
+    //{
+    //    public string ItemNumber { get; set; }
+    //    public decimal ReturnQty { get; set; }
+    //}
     public class PurchaseOrderReturnsBackDto
     {
         public string PurchaseOrderNo { get; set; }

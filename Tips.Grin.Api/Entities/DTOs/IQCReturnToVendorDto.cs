@@ -16,7 +16,22 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string VendorNumber { get; set; }
         public List<IQCReturnToVendorItemsPostDto> iQCReturnToVendorItemsPostDtos { get; set; }
     }
-
+    public class IQCReturnToVendorDto
+    {
+        public int Id { get; set; }
+        public string? IQCNumber { get; set; }
+        public string GrinNumber { get; set; }
+        public int GrinId { get; set; }
+        public string VendorId { get; set; }
+        public string VendorName { get; set; }
+        public string VendorNumber { get; set; }
+        public string Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }        
+        public List<IQCReturnToVendorItemsDto> IQCReturnToVendorItemsDto { get; set; }
+    }
     public class InventoryDtoDetails
     {
         public List<Datum> data { get; set; }
@@ -76,18 +91,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? SerialNo { get; set; }
         public string Unit { get; set; }
     }
-
-    public class PurchaseOrderReturns
-    {
-        public string PurchaseOrderNo { get; set; }
-        public List<PurchaseOrderItems> purchaseOrderItems { get; set; }    
-    }
-    public class PurchaseOrderItems
-    {
-        public string ItemNumber { get; set; }
-        public decimal ReturnQty { get; set; }
-    }
-
     public class PurchaseOrderDtoDetails
     {
         public List<PurchaseOrderReturnsBackDto> data { get; set; }

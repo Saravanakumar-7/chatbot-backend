@@ -226,7 +226,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string ItemDescription { get; set; }
         public string MftrItemNumber { get; set; }
         public string UOM { get; set; }
-        public decimal RejectedQty { get; set; }
+        public decimal RemainingRejectedQty { get; set; }
     }
     public class RejectIQC
     {

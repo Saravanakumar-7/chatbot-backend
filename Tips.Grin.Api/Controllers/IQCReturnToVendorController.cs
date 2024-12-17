@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Contracts;
+using Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Mysqlx.Crud;
@@ -42,7 +43,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateIQCReturnToVendor([FromBody] IQCReturnToVendorPostDto iQCRejectRecoveryPostDto)
         {
-            ServiceResponse<List<PurchaseOrderReturns>> serviceResponse = new ServiceResponse<List<PurchaseOrderReturns>>();
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
             try
             {
                 if (iQCRejectRecoveryPostDto == null)
@@ -103,214 +104,278 @@ namespace Tips.Grin.Api.Controllers
                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                 var inventoryObjectData = JsonConvert.DeserializeObject<InventoryDtoDetails>(inventoryObjectString);
                 var inventoryObject = inventoryObjectData.data;
+                
+                var purchaseOrders = new List<PurchaseOrderReturnsBackDto>();
+                foreach (var Item in iQCRejectRecoveryPostDto.iQCReturnToVendorItemsPostDtos)
+                {
+                    var returnqty = Item.ReturnQty;
+                    foreach (var Inv in inventoryObject.Where(x=>x.GrinPartId== Item.GrinPartId).ToList())
+                    {
+                        if (returnqty >= Inv.Balance_Quantity)
+                        {
+                            var grinitem = Grindetails.GrinParts.Where(x => x.Id == Inv.GrinPartId).FirstOrDefault();
+                            var iqcitem = Iqcdetails.IQCConfirmationItems.Where(x => x.GrinPartId == Inv.GrinPartId).FirstOrDefault();
+                            var project = grinitem.ProjectNumbers.Where(x => x.ProjectNumber == Inv.ProjectNumber).FirstOrDefault();
+                            grinitem.RejectReturnQty += Inv.Balance_Quantity;
+                            iqcitem.RejectReturnQty += Inv.Balance_Quantity;
+                            project.RejectReturnQty = Inv.Balance_Quantity;
 
-                //foreach (var item in inventoryObject) 
-                //{
-                //    var grinitem = Grindetails.GrinParts.Where(x => x.Id == item.GrinPartId).FirstOrDefault();
-                //    var project = grinitem.ProjectNumbers.Where(x => x.ProjectNumber == item.ProjectNumber).FirstOrDefault();
-                //    project.RejectReturnQty = item.Balance_Quantity;
+                            var existingPurchaseOrder = purchaseOrders.FirstOrDefault(po => po.PurchaseOrderNo == grinitem.PONumber);
 
-                //}
+                            if (existingPurchaseOrder == null)
+                            {
+                                existingPurchaseOrder = new PurchaseOrderReturnsBackDto
+                                {
+                                    PurchaseOrderNo = grinitem.PONumber,
+                                    purchaseOrderItems = new List<PurchaseOrderReturnItemsBackDto>()
+                                };
+                                purchaseOrders.Add(existingPurchaseOrder);
+                            }
 
-                //List<PurchaseOrderReturns> purchaseOrderReturns = new List<PurchaseOrderReturns>();
+                            var existingItem = existingPurchaseOrder.purchaseOrderItems
+                                .FirstOrDefault(item => item.ItemNumber == grinitem.ItemNumber);
 
-                //foreach (var items in iQCRejectRecoveryPostDto.iQCReturnToVendorItemsPostDtos)
-                //{
-                //    var existingPO = purchaseOrderReturns.FirstOrDefault(q => q.PurchaseOrderNo == items.PONumber);
+                            if (existingItem == null)
+                            {
+                                existingItem = new PurchaseOrderReturnItemsBackDto
+                                {
+                                    ItemNumber = grinitem.ItemNumber,
+                                    ReturnQty = Inv.Balance_Quantity,
+                                    purchaseOrderReturnProjectBackDtos = new List<PurchaseOrderReturnProjectBackDto>()
+                                };
+                                existingPurchaseOrder.purchaseOrderItems.Add(existingItem);
+                            }
+                            else
+                            {
+                                existingItem.ReturnQty += Inv.Balance_Quantity;
+                            }
 
-                //    if (existingPO != null)
-                //    {
-                //        if (existingPO.purchaseOrderItems == null)
-                //        {
-                //            existingPO.purchaseOrderItems = new List<PurchaseOrderItems>();
-                //        }
+                            var existingProject = existingItem.purchaseOrderReturnProjectBackDtos
+                                .FirstOrDefault(proj => proj.ProjectNo == project.ProjectNumber);
 
-                //        existingPO.purchaseOrderItems.Add(new PurchaseOrderItems
-                //        {
-                //            ItemNumber = items.ItemNumber,
-                //            ReturnQty = items.ReturnQty
-                //        });
-                //    }
-                //    else
-                //    {
-                //        var newPurchaseOrderReturns = new PurchaseOrderReturns
-                //        {
-                //            PurchaseOrderNo = items.PONumber,
-                //            purchaseOrderItems = new List<PurchaseOrderItems>
-                //             {
-                //                new PurchaseOrderItems
-                //                   {
-                //                      ItemNumber = items.ItemNumber,
-                //                      ReturnQty = items.ReturnQty
-                //                   }
-                //              }
-                //        };
+                            if (existingProject == null)
+                            {
+                                existingItem.purchaseOrderReturnProjectBackDtos.Add(new PurchaseOrderReturnProjectBackDto
+                                {
+                                    ProjectNo = project.ProjectNumber,
+                                    ReturnQty = Inv.Balance_Quantity
+                                });
+                            }
+                            else
+                            {
+                                existingProject.ReturnQty += Inv.Balance_Quantity;
+                            }
+                            returnqty -= Inv.Balance_Quantity;
+                            Inv.Balance_Quantity = 0;
+                            var updateInv = _mapper.Map<InventoryUpdateDto>(Inv);
+                            var json = JsonConvert.SerializeObject(updateInv);
+                            var data1 = new StringContent(json, Encoding.UTF8, "application/json");
+                            var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["WarehouseService"],
+                            "Inventory/UpdateInventory?id=", Inv.Id))
+                            {
+                                Content = data1
+                            };
+                            request5.Headers.Add("Authorization", token1);
 
-                //        purchaseOrderReturns.Add(newPurchaseOrderReturns);
-                //    }
-                //}
-                //if (purchaseOrderReturns.Count < 1)
-                //{
-                //    _logger.LogError($"In CreateIQCReturnToVendor: no PurchaseOrders were not Found for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber}");
-                //    serviceResponse.Data = null;
-                //    serviceResponse.Message = $"In CreateIQCReturnToVendor: no PurchaseOrders were not Found for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber}";
-                //    serviceResponse.Success = false;
-                //    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                //    return NotFound(serviceResponse);
-                //}
-                //// _logger.LogError($"Some PurchaseOrders were not found");
+                            var response = await client1.SendAsync(request5);
+                            if (response.StatusCode != HttpStatusCode.OK)
+                            {
+                                _logger.LogError($"In CreateIQCReturnToVendor: An Error Occured in UpdateInventory for InvID: {Inv.Id} for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber} and ItemNumber: {Inv.PartNumber}, ProjectNo: {Inv.ProjectNumber}");
+                                serviceResponse.Data = null;
+                                serviceResponse.Message = $"In CreateIQCReturnToVendor: An Error Occured in UpdateInventory for InvID: {Inv.Id} for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber} and ItemNumber: {Inv.PartNumber}, ProjectNo: {Inv.ProjectNumber}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                return StatusCode(500, serviceResponse);
+                            }
+                            IQCInventoryTranctionDto iqcInventoryTranctionDtos = new IQCInventoryTranctionDto();
+                            iqcInventoryTranctionDtos.PartNumber = Inv.PartNumber;
+                            iqcInventoryTranctionDtos.LotNumber = Inv.LotNumber;
+                            iqcInventoryTranctionDtos.MftrPartNumber = Inv.MftrPartNumber;
+                            iqcInventoryTranctionDtos.Description = Inv.Description;
+                            iqcInventoryTranctionDtos.ProjectNumber = Inv.ProjectNumber;
+                            iqcInventoryTranctionDtos.Issued_Quantity = Inv.Balance_Quantity;
+                            iqcInventoryTranctionDtos.UOM = Inv.UOM;
+                            iqcInventoryTranctionDtos.Warehouse = Inv.Warehouse;
+                            iqcInventoryTranctionDtos.From_Location = Inv.Location;
+                            iqcInventoryTranctionDtos.TO_Location = Inv.Location;
+                            iqcInventoryTranctionDtos.GrinNo = Inv.GrinNo; ;
+                            iqcInventoryTranctionDtos.GrinPartId = Inv.GrinPartId;
+                            iqcInventoryTranctionDtos.PartType = Inv.PartType;
+                            iqcInventoryTranctionDtos.ReferenceID = Inv.GrinNo;
+                            iqcInventoryTranctionDtos.ReferenceIDFrom = "IQCRejectRecovery";
+                            iqcInventoryTranctionDtos.GrinMaterialType = "GRIN";
+                            iqcInventoryTranctionDtos.ShopOrderNo = "";
+                            string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
+                            var contents1 = new StringContent(iqcInventoryTranctionDtoJsons, Encoding.UTF8, "application/json");
+                            var request8 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["WarehouseService"],
+                            "InventoryTranction/CreateInventoryTranction"))
+                            {
+                                Content = contents1
+                            };
+                            request8.Headers.Add("Authorization", token1);
 
+                            var inventoryTransResponses1 = await client1.SendAsync(request8);
+                            if (inventoryTransResponses1.StatusCode != HttpStatusCode.OK)
+                            {
+                                _logger.LogError($"In CreateIQCReturnToVendor: An Error Occured in CreateInventoryTranction for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber} and ItemNumber: {Inv.PartNumber}, ProjectNo: {project.ProjectNumber}");
+                                serviceResponse.Data = null;
+                                serviceResponse.Message = $"In CreateIQCReturnToVendor: An Error Occured in CreateInventoryTranction for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber} and ItemNumber: {Inv.PartNumber}, ProjectNo: {project.ProjectNumber}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                return StatusCode(500, serviceResponse);
+                            }                                                        
+                        }
+                        else
+                        {
+                            var grinitem = Grindetails.GrinParts.Where(x => x.Id == Inv.GrinPartId).FirstOrDefault();
+                            var iqcitem = Iqcdetails.IQCConfirmationItems.Where(x => x.GrinPartId == Inv.GrinPartId).FirstOrDefault();
+                            var project = grinitem.ProjectNumbers.Where(x => x.ProjectNumber == Inv.ProjectNumber).FirstOrDefault();
+                            grinitem.RejectReturnQty += returnqty;
+                            iqcitem.RejectReturnQty += returnqty;
+                            project.RejectReturnQty = returnqty;
 
-                ////var PoList = iQCRejectRecoveryPostDto.iQCReturnToVendorItemsPostDtos.Select(x => x.PONumber).Distinct().ToList();
-                //var POchanges = JsonConvert.SerializeObject(purchaseOrderReturns);
-                //var data = new StringContent(POchanges, Encoding.UTF8, "application/json");
-                //var request2 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["PurchaseService"],
-                // $"PurchaseOrder/ReturnToVendorPOs"))
-                //{
-                //    Content = data
-                //};
-                //request2.Headers.Add("Authorization", token1);
-                //var responce = await client1.SendAsync(request2);
-                //if (responce.StatusCode != HttpStatusCode.OK)
-                //{
-                //    _logger.LogError($"In CreateIQCReturnToVendor: There was an Error in ReturnToVendorPOs API Call for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber}");
-                //    serviceResponse.Data = null;
-                //    serviceResponse.Message = $"In CreateIQCReturnToVendor: There was an Error in ReturnToVendorPOs API Call for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber}";
-                //    serviceResponse.Success = false;
-                //    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                //    return NotFound(serviceResponse);
-                //}
-                //var PODetailsObjectString = await responce.Content.ReadAsStringAsync();
-                //var PODetailsObjectData = JsonConvert.DeserializeObject<PurchaseOrderDtoDetails>(PODetailsObjectString);
-                //var PODetailsObject = PODetailsObjectData.data;
+                            var existingPurchaseOrder = purchaseOrders.FirstOrDefault(po => po.PurchaseOrderNo == grinitem.PONumber);
 
-                //List<PurchaseOrderReturnItemsBackDto> purchaseOrderReturnItemsBackDtos = PODetailsObject.SelectMany(dto=>dto.purchaseOrderItems).GroupBy(item=>item.ItemNumber)
-                //    .Select(group=>new PurchaseOrderReturnItemsBackDto {       
-                //                ItemNumber = group.Key,
-                //                ReturnQty = group.Sum(item => item.ReturnQty),
-                //                purchaseOrderReturnProjectBackDtos = group
-                //                .SelectMany(item => item.purchaseOrderReturnProjectBackDtos)
-                //                .GroupBy(project => project.ProjectNo)
-                //                .Select(projectGroup => new PurchaseOrderReturnProjectBackDto
-                //                {
-                //                    ProjectNo = projectGroup.Key,
-                //                    ReturnQty = projectGroup.Sum(project => project.ReturnQty)
-                //                })
-                //                .ToList()
-                //     })
-                //    .ToList();
+                            if (existingPurchaseOrder == null)
+                            {
+                                existingPurchaseOrder = new PurchaseOrderReturnsBackDto
+                                {
+                                    PurchaseOrderNo = grinitem.PONumber,
+                                    purchaseOrderItems = new List<PurchaseOrderReturnItemsBackDto>()
+                                };
+                                purchaseOrders.Add(existingPurchaseOrder);
+                            }
 
+                            var existingItem = existingPurchaseOrder.purchaseOrderItems
+                                .FirstOrDefault(item => item.ItemNumber == grinitem.ItemNumber);
 
+                            if (existingItem == null)
+                            {
+                                existingItem = new PurchaseOrderReturnItemsBackDto
+                                {
+                                    ItemNumber = grinitem.ItemNumber,
+                                    ReturnQty = returnqty,
+                                    purchaseOrderReturnProjectBackDtos = new List<PurchaseOrderReturnProjectBackDto>()
+                                };
+                                existingPurchaseOrder.purchaseOrderItems.Add(existingItem);
+                            }
+                            else
+                            {
+                                existingItem.ReturnQty += returnqty;
+                            }
 
-                ////  List<PurchaseOrderDetails> POsUpdated = new List<PurchaseOrderDetails>();
-                //foreach (var item in purchaseOrderReturnItemsBackDtos)
-                //{
-                //    var invitem = inventoryObject.Where(x => x.PartNumber == item.ItemNumber).ToList();
+                            var existingProject = existingItem.purchaseOrderReturnProjectBackDtos
+                                .FirstOrDefault(proj => proj.ProjectNo == project.ProjectNumber);
 
-                //    foreach (var project in item.purchaseOrderReturnProjectBackDtos)
-                //    {
-                //        var invitemProject = invitem.Where(y => y.ProjectNumber == project.ProjectNo).ToList();
-                //        var removingQty = project.ReturnQty;
-                //        foreach (var prjInv in invitemProject)
-                //        {
-                //            if (prjInv.Balance_Quantity > removingQty)
-                //            {
-                //                prjInv.Balance_Quantity -= removingQty;
-                //                removingQty = 0;
-                //            }
-                //            else if (prjInv.Balance_Quantity <= removingQty)
-                //            {
-                //                removingQty -= prjInv.Balance_Quantity;
-                //                prjInv.Balance_Quantity = 0;
-                //                prjInv.IsStockAvailable = false;
-                //            }
-                //            var updateInv = _mapper.Map<InventoryUpdateDto>(prjInv);
-                //            var json = JsonConvert.SerializeObject(updateInv);
-                //            var data1 = new StringContent(json, Encoding.UTF8, "application/json");
-                //            var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["WarehouseService"],
-                //            "Inventory/UpdateInventory?id=", prjInv.Id))
-                //            {
-                //                Content = data1
-                //            };
-                //            request5.Headers.Add("Authorization", token1);
+                            if (existingProject == null)
+                            {
+                                existingItem.purchaseOrderReturnProjectBackDtos.Add(new PurchaseOrderReturnProjectBackDto
+                                {
+                                    ProjectNo = project.ProjectNumber,
+                                    ReturnQty = returnqty
+                                });
+                            }
+                            else
+                            {
+                                existingProject.ReturnQty += returnqty;
+                            }
+                            returnqty = 0;
+                            Inv.Balance_Quantity -= Inv.Balance_Quantity;
+                            var updateInv = _mapper.Map<InventoryUpdateDto>(Inv);
+                            var json = JsonConvert.SerializeObject(updateInv);
+                            var data1 = new StringContent(json, Encoding.UTF8, "application/json");
+                            var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["WarehouseService"],
+                            "Inventory/UpdateInventory?id=", Inv.Id))
+                            {
+                                Content = data1
+                            };
+                            request5.Headers.Add("Authorization", token1);
 
-                //            var response = await client1.SendAsync(request5);
-                //            if (response.StatusCode != HttpStatusCode.OK)
-                //            {
-                //                _logger.LogError($"In CreateIQCReturnToVendor: An Error Occured in UpdateInventory for InvID: {prjInv.Id} for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber} and ItemNumber: {item.ItemNumber}, ProjectNo: {project.ProjectNo}");
-                //                serviceResponse.Data = null;
-                //                serviceResponse.Message = $"In CreateIQCReturnToVendor: An Error Occured in UpdateInventory for InvID: {prjInv.Id} for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber} and ItemNumber: {item.ItemNumber}, ProjectNo: {project.ProjectNo}";
-                //                serviceResponse.Success = false;
-                //                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                //                return StatusCode(500, serviceResponse);
-                //            }
-                //            IQCInventoryTranctionDto iqcInventoryTranctionDtos = new IQCInventoryTranctionDto();
-                //            iqcInventoryTranctionDtos.PartNumber = prjInv.PartNumber;
-                //            iqcInventoryTranctionDtos.LotNumber = prjInv.LotNumber;
-                //            iqcInventoryTranctionDtos.MftrPartNumber = prjInv.MftrPartNumber;
-                //            iqcInventoryTranctionDtos.Description = prjInv.Description;
-                //            iqcInventoryTranctionDtos.ProjectNumber = prjInv.ProjectNumber;
-                //            iqcInventoryTranctionDtos.Issued_Quantity = prjInv.Balance_Quantity;
-                //            iqcInventoryTranctionDtos.UOM = prjInv.UOM;
-                //            iqcInventoryTranctionDtos.Warehouse = prjInv.Warehouse;
-                //            iqcInventoryTranctionDtos.From_Location = prjInv.Location;
-                //            iqcInventoryTranctionDtos.TO_Location = prjInv.Location;
-                //            iqcInventoryTranctionDtos.GrinNo = prjInv.GrinNo; ;
-                //            iqcInventoryTranctionDtos.GrinPartId = prjInv.GrinPartId;
-                //            iqcInventoryTranctionDtos.PartType = prjInv.PartType;
-                //            iqcInventoryTranctionDtos.ReferenceID = prjInv.GrinNo;
-                //            iqcInventoryTranctionDtos.ReferenceIDFrom = "IQCRejectRecovery";
-                //            iqcInventoryTranctionDtos.GrinMaterialType = "GRIN";
-                //            iqcInventoryTranctionDtos.ShopOrderNo = "";
-                //            string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
-                //            var contents1 = new StringContent(iqcInventoryTranctionDtoJsons, Encoding.UTF8, "application/json");
-                //            var request8 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["WarehouseService"],
-                //            "InventoryTranction/CreateInventoryTranction"))
-                //            {
-                //                Content = contents1
-                //            };
-                //            request8.Headers.Add("Authorization", token1);
+                            var response = await client1.SendAsync(request5);
+                            if (response.StatusCode != HttpStatusCode.OK)
+                            {
+                                _logger.LogError($"In CreateIQCReturnToVendor: An Error Occured in UpdateInventory for InvID: {Inv.Id} for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber} and ItemNumber: {Inv.PartNumber}, ProjectNo: {Inv.ProjectNumber}");
+                                serviceResponse.Data = null;
+                                serviceResponse.Message = $"In CreateIQCReturnToVendor: An Error Occured in UpdateInventory for InvID: {Inv.Id} for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber} and ItemNumber: {Inv.PartNumber}, ProjectNo: {Inv.ProjectNumber}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                return StatusCode(500, serviceResponse);
+                            }
+                            IQCInventoryTranctionDto iqcInventoryTranctionDtos = new IQCInventoryTranctionDto();
+                            iqcInventoryTranctionDtos.PartNumber = Inv.PartNumber;
+                            iqcInventoryTranctionDtos.LotNumber = Inv.LotNumber;
+                            iqcInventoryTranctionDtos.MftrPartNumber = Inv.MftrPartNumber;
+                            iqcInventoryTranctionDtos.Description = Inv.Description;
+                            iqcInventoryTranctionDtos.ProjectNumber = Inv.ProjectNumber;
+                            iqcInventoryTranctionDtos.Issued_Quantity = returnqty;
+                            iqcInventoryTranctionDtos.UOM = Inv.UOM;
+                            iqcInventoryTranctionDtos.Warehouse = Inv.Warehouse;
+                            iqcInventoryTranctionDtos.From_Location = Inv.Location;
+                            iqcInventoryTranctionDtos.TO_Location = Inv.Location;
+                            iqcInventoryTranctionDtos.GrinNo = Inv.GrinNo; ;
+                            iqcInventoryTranctionDtos.GrinPartId = Inv.GrinPartId;
+                            iqcInventoryTranctionDtos.PartType = Inv.PartType;
+                            iqcInventoryTranctionDtos.ReferenceID = Inv.GrinNo;
+                            iqcInventoryTranctionDtos.ReferenceIDFrom = "IQCRejectRecovery";
+                            iqcInventoryTranctionDtos.GrinMaterialType = "GRIN";
+                            iqcInventoryTranctionDtos.ShopOrderNo = "";
 
-                //            var inventoryTransResponses1 = await client1.SendAsync(request8);
-                //            if (inventoryTransResponses1.StatusCode != HttpStatusCode.OK)
-                //            {
-                //                _logger.LogError($"In CreateIQCReturnToVendor: An Error Occured in CreateInventoryTranction for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber} and ItemNumber: {item.ItemNumber}, ProjectNo: {project.ProjectNo}");
-                //                serviceResponse.Data = null;
-                //                serviceResponse.Message = $"In CreateIQCReturnToVendor: An Error Occured in CreateInventoryTranction for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber} and ItemNumber: {item.ItemNumber}, ProjectNo: {project.ProjectNo}";
-                //                serviceResponse.Success = false;
-                //                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                //                return StatusCode(500, serviceResponse);
-                //            }
-                //            if (removingQty == 0) break;
-                //        }
-                //    }
-                //}
-                //foreach (var po in PODetailsObject)
-                //{
-                //    foreach (var Item in po.purchaseOrderItems)
-                //    {
-                //        var GrinItem = Grindetails.GrinParts.Where(x => x.ItemNumber == Item.ItemNumber && x.PONumber == po.PurchaseOrderNo).FirstOrDefault();
-                //        var IqcItem = Iqcdetails.IQCConfirmationItems.Where(x => x.GrinPartId == GrinItem.Id).FirstOrDefault();
-                //        IqcItem.RejectReturnQty = Item.ReturnQty;
-                //        GrinItem.RejectReturnQty = Item.ReturnQty;
-                //        foreach (var prj in Item.purchaseOrderReturnProjectBackDtos)
-                //        {
-                //            var Project = GrinItem.ProjectNumbers.Where(x => x.ProjectNumber == prj.ProjectNo).FirstOrDefault();
-                //            Project.RejectReturnQty = prj.ReturnQty;
-                //        }
-                //    }
-                //}
+                            string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
+                            var contents1 = new StringContent(iqcInventoryTranctionDtoJsons, Encoding.UTF8, "application/json");
+                            var request8 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["WarehouseService"],
+                            "InventoryTranction/CreateInventoryTranction"))
+                            {
+                                Content = contents1
+                            };
+                            request8.Headers.Add("Authorization", token1);
 
-                //var IQCReturnToVendor = _mapper.Map<IQCReturnToVendor>(iQCRejectRecoveryPostDto);
-                //IQCReturnToVendor.iQCReturnToVendorItems = _mapper.Map<List<IQCReturnToVendorItems>>(iQCRejectRecoveryPostDto.iQCReturnToVendorItemsPostDtos);
+                            var inventoryTransResponses1 = await client1.SendAsync(request8);
+                            if (inventoryTransResponses1.StatusCode != HttpStatusCode.OK)
+                            {
+                                _logger.LogError($"In CreateIQCReturnToVendor: An Error Occured in CreateInventoryTranction for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber} and ItemNumber: {Inv.PartNumber}, ProjectNo: {project.ProjectNumber}");
+                                serviceResponse.Data = null;
+                                serviceResponse.Message = $"In CreateIQCReturnToVendor: An Error Occured in CreateInventoryTranction for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber} and ItemNumber: {Inv.PartNumber}, ProjectNo: {project.ProjectNumber}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                return StatusCode(500, serviceResponse);
+                            }
 
-                //await _repository.CreateIQCReturnToVendor(IQCReturnToVendor);
-                //await _iQCConfirmationRepository.UpdateIqcDetails(Iqcdetails);
-                //await _grinrepository.UpdateGrin_ForTally(Grindetails);
+                           
+                        }
+                        if (returnqty == 0) break;
+                    }
+                    
+                }
 
-                //_grinrepository.SaveAsync();
-                //_iQCConfirmationRepository.SaveAsync();
-                //_repository.SaveAsync();
+                var POchanges = JsonConvert.SerializeObject(purchaseOrders);
+                var data = new StringContent(POchanges, Encoding.UTF8, "application/json");
+                var request2 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["PurchaseService"],
+                 $"PurchaseOrder/ReturnToVendorPOs"))
+                {
+                    Content = data
+                };
+                request2.Headers.Add("Authorization", token1);
+                var responce = await client1.SendAsync(request2);
+                if (responce.StatusCode != HttpStatusCode.OK)
+                {
+                    _logger.LogError($"In CreateIQCReturnToVendor: There was an Error in ReturnToVendorPOs API Call for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber}");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"In CreateIQCReturnToVendor: There was an Error in ReturnToVendorPOs API Call for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber}";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }                
+
+                var IQCReturnToVendor = _mapper.Map<IQCReturnToVendor>(iQCRejectRecoveryPostDto);
+                IQCReturnToVendor.iQCReturnToVendorItems = _mapper.Map<List<IQCReturnToVendorItems>>(iQCRejectRecoveryPostDto.iQCReturnToVendorItemsPostDtos);
+
+                await _repository.CreateIQCReturnToVendor(IQCReturnToVendor);
+                await _iQCConfirmationRepository.UpdateIqcDetails(Iqcdetails);
+                await _grinrepository.UpdateGrin_ForTally(Grindetails);
+
+                _grinrepository.SaveAsync();
+                _iQCConfirmationRepository.SaveAsync();
+                _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"CreateIQCReturnToVendor was Successfull";
                 serviceResponse.Success = true;
@@ -322,6 +387,93 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogError($"In CreateIQCReturnToVendor Error occored for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber}: \n" +ex.Message + "\n" + ex.InnerException);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"In CreateIQCReturnToVendor Error occored for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllIQCReturnToVendor([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        {
+            ServiceResponse<IEnumerable<IQCReturnToVendorDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCReturnToVendorDto>>();
+
+            try
+            {
+                var GetallIQCReturnToVendor = await _repository.GetAllIQCReturnToVendor(pagingParameter, searchParams);
+
+                if (GetallIQCReturnToVendor == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"IQCReturnToVendor data not found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"IQCReturnToVendor data not found in db");
+                    return NotFound(serviceResponse);
+                }
+                var metadata = new
+                {
+                    GetallIQCReturnToVendor.TotalCount,
+                    GetallIQCReturnToVendor.PageSize,
+                    GetallIQCReturnToVendor.CurrentPage,
+                    GetallIQCReturnToVendor.HasNext,
+                    GetallIQCReturnToVendor.HasPreviuos
+                };
+
+                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+
+                _logger.LogInfo("Returned all IQCReturnToVendor");
+                var result = _mapper.Map<IEnumerable<IQCReturnToVendorDto>>(GetallIQCReturnToVendor);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all IQCReturnToVendorDto Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in GetAllIQCReturnToVendor: {ex.Message} \n {ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Internal server error in GetAllIQCReturnToVendor";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }        
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetIQCReturnToVendorById(int id)
+        {
+            ServiceResponse<IQCReturnToVendorDto> serviceResponse = new ServiceResponse<IQCReturnToVendorDto>();
+
+            try
+            {
+                var IQCReturnToVendorDetailsbyId = await _repository.GetIQCReturnToVendorById(id);
+
+                if (IQCReturnToVendorDetailsbyId == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"IQCReturnToVendor with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"IQCReturnToVendor with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned GetIQCReturnToVendorById with id: {id}");
+                    IQCReturnToVendorDto iqcReturnToVendorDto = _mapper.Map<IQCReturnToVendorDto>(IQCReturnToVendorDetailsbyId);     
+                    serviceResponse.Data = iqcReturnToVendorDto;
+                    serviceResponse.Message = $"Returned IQCReturnToVendor with id: {id}";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetIQCReturnToVendorById action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

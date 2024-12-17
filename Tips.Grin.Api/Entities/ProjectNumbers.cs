@@ -9,9 +9,9 @@ namespace Tips.Grin.Api.Entities
         public int Id { get; set; }
         public string? ProjectNumber { get; set; } 
         [Precision(18, 3)]
-        public decimal? ProjectQty { get; set; }         
-        //[Precision(18, 3)]
-        //public decimal RejectRecoveryQty { get; set; }
+        public decimal? ProjectQty { get; set; }
+        [Precision(18, 3)]
+        public decimal RejectReturnQty { get; set; }
         public int GrinPartsId { get; set; }
         public GrinParts? GrinParts { get; set; }
 

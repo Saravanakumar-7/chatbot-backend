@@ -739,7 +739,7 @@ namespace Tips.Grin.Api.Controllers
                             ItemDescription = item.ItemDescription,
                             MftrItemNumber = item.MftrItemNumber,
                             UOM = item.UOM,
-                            RejectedQty = item.RejectedQty
+                            RemainingRejectedQty = item.RejectedQty - item.RejectReturnQty
                         }).ToList()
                       })
                       .ToList();

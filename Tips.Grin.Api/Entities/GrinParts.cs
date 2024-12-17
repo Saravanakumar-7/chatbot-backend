@@ -62,8 +62,8 @@ namespace Tips.Grin.Api.Entities
         public decimal RejectedQty { get; set; }
         [Precision(13, 3)]
         public decimal? AverageCost { get; set; }
-        //[Precision(13, 3)]
-        //public decimal RejectRecoveryQty { get; set; }
+        [Precision(13, 3)]
+        public decimal RejectReturnQty { get; set; }
 
         [Required]
         public string UOM { get; set; }

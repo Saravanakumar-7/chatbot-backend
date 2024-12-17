@@ -2402,7 +2402,7 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
         [HttpPut]
-        public async Task<IActionResult> ReturnToVendorPOs([FromBody] List<PurchaseOrderReturns> purchaseOrderReturns)
+        public async Task<IActionResult> ReturnToVendorPOs([FromBody] List<PurchaseOrderReturnsBackDto> purchaseOrderReturns)
         {
             ServiceResponse<List<PurchaseOrderReturnsBackDto>> serviceResponse = new ServiceResponse<List<PurchaseOrderReturnsBackDto>>();
             try
@@ -2424,8 +2424,7 @@ namespace Tips.Purchase.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid PurchaseOrderReturns object sent from client.");
                     return BadRequest(serviceResponse);
-                }
-                List<PurchaseOrderReturnsBackDto> purchaseOrderReturnsBackDtos = new List<PurchaseOrderReturnsBackDto>();
+                }                
                 foreach (var po in purchaseOrderReturns)
                 {
                     var PurchaseOrder = await _repository.GetLastestPurchaseOrderByPONumber(po.PurchaseOrderNo);
@@ -2438,59 +2437,29 @@ namespace Tips.Purchase.Api.Controllers
                         _logger.LogError($"In ReturnToVendorPOs: PONumber: {po.PurchaseOrderNo} was not Found");
                         return BadRequest(serviceResponse);
                     }
-                    PurchaseOrderReturnsBackDto purchaseOrderReturnsBackDto = new PurchaseOrderReturnsBackDto()
-                    {
-                        PurchaseOrderNo = po.PurchaseOrderNo,
-                        purchaseOrderItems = new List<PurchaseOrderReturnItemsBackDto>()
-                    };
                     foreach (var poitem in po.purchaseOrderItems)
                     {
-
-                        var projects = new PurchaseOrderReturnItemsBackDto { 
-
-                            ItemNumber = poitem.ItemNumber,
-                            ReturnQty = poitem.ReturnQty,
-                            purchaseOrderReturnProjectBackDtos = new List<PurchaseOrderReturnProjectBackDto>()
-                        };
                         var POChild = PurchaseOrder.POItems.Where(x => x.ItemNumber == poitem.ItemNumber).FirstOrDefault();
                         POChild.BalanceQty += poitem.ReturnQty;
                         POChild.ReceivedQty -= poitem.ReturnQty;
                         if (POChild.Qty == POChild.BalanceQty) POChild.PoStatus = PoStatus.Open;
                         else POChild.PoStatus = PoStatus.PartiallyClosed;
-                        List<PurchaseOrderReturnProjectBackDto> purchaseOrderReturnProject = new List<PurchaseOrderReturnProjectBackDto>();
-                        foreach (var prj in POChild.POAddprojects)
+                        foreach (var prj in poitem.purchaseOrderReturnProjectBackDtos)
                         {
-                            var returnqty = poitem.ReturnQty;
-                            PurchaseOrderReturnProjectBackDto purchaseOrderReturnProjectBackDto = new PurchaseOrderReturnProjectBackDto();
-                            if (prj.ProjectQty <= returnqty)
-                            {
-                                prj.BalanceQty = prj.ProjectQty;
-                                prj.ReceivedQty = 0;
-                                returnqty -= prj.ProjectQty;
-                                prj.PoAddProjectStatus = false;
-                                purchaseOrderReturnProjectBackDto.ProjectNo = prj.ProjectNumber;
-                                purchaseOrderReturnProjectBackDto.ReturnQty = prj.ProjectQty;
-                                if (returnqty == 0) break;
-                            }
-                            else
-                            {
-                                prj.BalanceQty += returnqty;
-                                prj.ReceivedQty -= returnqty;
-                                prj.PoAddProjectStatus = false;
-                                purchaseOrderReturnProjectBackDto.ProjectNo = prj.ProjectNumber;
-                                purchaseOrderReturnProjectBackDto.ReturnQty = returnqty;
-                                returnqty = 0;
-                                break;
-                            }
-                            purchaseOrderReturnProject.Add(purchaseOrderReturnProjectBackDto);
+                            var project = POChild.POAddprojects.Where(x => x.ProjectNumber == prj.ProjectNo).FirstOrDefault();
+                            project.BalanceQty += prj.ReturnQty;
+                            project.ReceivedQty -= prj.ReturnQty;
+                            project.PoAddProjectStatus = false;
                         }
-                        projects.purchaseOrderReturnProjectBackDtos = purchaseOrderReturnProject;
-                        purchaseOrderReturnsBackDto.purchaseOrderItems.Add(projects);
                     }
+                    if (PurchaseOrder.POItems.Where(x => x.PoStatus == PoStatus.Open).Count() == PurchaseOrder.POItems.Count()) PurchaseOrder.PoStatus = PoStatus.Open;
+                    else if (PurchaseOrder.POItems.Where(x => x.PoStatus == PoStatus.Closed).Count() == PurchaseOrder.POItems.Count()) PurchaseOrder.PoStatus = PoStatus.Closed;
+                    else if (PurchaseOrder.POItems.Where(x => x.PoStatus == PoStatus.ShortClosed).Count() == PurchaseOrder.POItems.Count()) PurchaseOrder.PoStatus = PoStatus.ShortClosed;
+                    else PurchaseOrder.PoStatus = PoStatus.PartiallyClosed;
                     await _repository.UpdatePurchaseOrder_ForApproval(PurchaseOrder);
                 }
                 _repository.SaveAsync();
-                serviceResponse.Data = purchaseOrderReturnsBackDtos;
+                serviceResponse.Data = null;
                 serviceResponse.Message = $"In ReturnToVendorPOs: POs are returned Sucessfully";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;

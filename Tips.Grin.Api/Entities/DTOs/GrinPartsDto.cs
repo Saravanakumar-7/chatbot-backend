@@ -390,7 +390,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+        [Precision(13, 3)]
+        public decimal RejectReturnQty { get; set; }
         public List<ProjectNumbersDto>? ProjectNumbers { get; set; }
         //public string? DrawingNo { get; set; }
         //public string? DocRet { get; set; }
