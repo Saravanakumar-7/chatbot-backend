@@ -322,14 +322,14 @@ namespace Tips.Purchase.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-
+                var remove = pocollectionTrackerById.POBreakDown.Where(x => !pocollectionTrackerUpdateDto.POBreakDown.Any(y => y.Id == x.Id)).ToList();
                 var pocollectionTrackerItems = _mapper.Map<IEnumerable<POBreakDown>>(pocollectionTrackerUpdateDto.POBreakDown);
 
                 var pocollectionTracker = _mapper.Map(pocollectionTrackerUpdateDto, pocollectionTrackerById);
 
                 pocollectionTracker.POBreakDown = pocollectionTrackerItems.ToList();
 
-                string result = await _repository.UpdatePOCollectionTracker(pocollectionTracker);
+                string result = await _repository.UpdatePOCollectionTracker(pocollectionTracker, remove);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
