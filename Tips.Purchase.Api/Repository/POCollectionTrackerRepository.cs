@@ -228,11 +228,12 @@ namespace Tips.Purchase.Api.Repository
             }
         }
 
-        public async Task<string> UpdatePOCollectionTracker(POCollectionTracker pocollectionTracker)
+        public async Task<string> UpdatePOCollectionTracker(POCollectionTracker pocollectionTracker, List<POBreakDown> pOBreakDowns)
         {
             pocollectionTracker.LastModifiedBy = _createdBy;
             pocollectionTracker.LastModifiedOn = DateTime.Now;
             Update(pocollectionTracker);
+            _tipsPurchaseDbContext.POBreakDowns.RemoveRange(pOBreakDowns);
             string result = $"POCollectionTracker details of {pocollectionTracker.Id} is updated successfully!";
             return result;
         }

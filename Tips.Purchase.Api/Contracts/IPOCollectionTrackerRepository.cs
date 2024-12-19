@@ -15,7 +15,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<POCollectionTracker> GetPOCollectionTrackerById(int id);
         Task<POCollectionTrackerDetailsDto> GetPOCollectionTrackerByVendorId(string vendorId);
         Task<int?> CreatePOCollectionTracker(POCollectionTracker pocollectionTracker);
-        Task<string> UpdatePOCollectionTracker(POCollectionTracker pocollectionTracker);
+        Task<string> UpdatePOCollectionTracker(POCollectionTracker pocollectionTracker, List<POBreakDown> pOBreakDowns);
         Task<string> DeletePOCollectionTracker(POCollectionTracker pocollectionTracker);
         Task<List<OpenPurchaseOrderDetailsDto>> GetOpenPODetailsByVendorId(string vendorId);
         Task<IEnumerable<POCollectionTracker>> SearchPOCollectionTracker(SearchParamess searchParamess);
