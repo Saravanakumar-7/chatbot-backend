@@ -2926,18 +2926,18 @@ namespace Tips.Master.Api.Controllers
 
                 }
                 var itemsRequiredQtyGrouped = bomCoverageList
-                        .GroupBy(item => item.ItemNumber)
-                        .Select(group => new BomCoverageReportChildItemReqQtyByProjectNoDto
-                        {
-                            ItemNumber = group.Key,
-                            MftrItemNumber = group.First().MftrItemNumber,
-                            Version = group.First().Version,
-                            Description = group.First().Description,
-                            UOM = group.First().UOM,
-                            PartType = group.First().PartType,
-                            RequiredQty = group.First().RequiredQty
-                        })
-                        .ToList();
+                          .GroupBy(item => item.ItemNumber)
+                          .Select(group => new BomCoverageReportChildItemReqQtyByProjectNoDto
+                          {
+                              ItemNumber = group.Key,
+                              MftrItemNumber = group.First().MftrItemNumber,
+                              Version = group.First().Version,
+                              Description = group.First().Description,
+                              UOM = group.First().UOM,
+                              PartType = group.First().PartType,
+                              RequiredQty = group.Sum(item => item.RequiredQty)
+                          })
+                          .ToList();
 
                 serviceResponse.Data = itemsRequiredQtyGrouped;
                 serviceResponse.Message = "Returned all ChildItemRequiredQtys";
@@ -3126,7 +3126,7 @@ namespace Tips.Master.Api.Controllers
                         .Select(group => new BomCoverageReportSAChildItemReqQtyByProjectNoDto
                         {
                             ItemNumber = group.Key,
-                            MftrItemNumber = group.Key,
+                            MftrItemNumber = group.First().MftrItemNumber,
                             Version = group.First().Version,
                             Description = group.First().Description,
                             UOM = group.First().UOM,

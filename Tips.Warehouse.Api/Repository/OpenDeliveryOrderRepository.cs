@@ -279,12 +279,16 @@ namespace Tips.Warehouse.Api.Repository
             return binningQuantityList;
         }
 
-        public async Task<IEnumerable<ODOQuantityDto>> GetListOfODOQtyByItemNo(List<string> itemNumberList)
+        public async Task<IEnumerable<ODOQuantityDto>> GetListOfODOQtyByItemNo(List<string> itemNumberList, string projectNumber)
         {
-            var openDeliveryOrderId = await _tipsWarehouseDbContext.OpenDeliveryOrders.Where(x => x.DOType == "returnable").Select(o => o.Id).ToListAsync();
+            var openDeliveryOrderId = await _tipsWarehouseDbContext.OpenDeliveryOrders.Where(x => x.DOType == "returnable" && x.ModifiedStatus == false
+                                                    && x.IsDeleted == false).Select(o => o.Id).ToListAsync();
+
+            var openDeliveryOrderPartsId = await _tipsWarehouseDbContext.OpenDeliveryOrderPartsQtyDistribution
+                                                    .Where(x => x.ProjectNumber == projectNumber).Select(s => s.OpenDeliveryOrderPartsId).ToListAsync();
 
             List<ODOQuantityDto> binningQuantityList = await _tipsWarehouseDbContext.OpenDeliveryOrderParts
-                .Where(x => itemNumberList.Contains( x.ItemNumber) && openDeliveryOrderId.Contains(x.OpenDeliveryOrderId) && x.DispatchQty > 0)
+                .Where(x => itemNumberList.Contains( x.ItemNumber) && openDeliveryOrderId.Contains(x.OpenDeliveryOrderId) && x.DispatchQty > 0 && openDeliveryOrderPartsId.Contains(x.Id))
                 .GroupBy(x => new { x.ItemNumber })
                 .Select(gr => new ODOQuantityDto
                 {

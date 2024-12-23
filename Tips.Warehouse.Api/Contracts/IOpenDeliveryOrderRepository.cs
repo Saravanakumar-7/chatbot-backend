@@ -39,7 +39,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<ODOMonthlyConsumptionSPReport>> GetODOMonthlyConsumptionSPReportWithParam(string CustomerId);
         Task<IEnumerable<ODOMonthlyConsumptionSPReport>> GetODOMonthlyConsumptionSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<ODOQuantityDto> GetListOfSAODOQtyByItemNo(string saItemNumber,string projectNumber);
-        Task<IEnumerable<ODOQuantityDto>> GetListOfODOQtyByItemNo(List<string> itemNumberList);
+        Task<IEnumerable<ODOQuantityDto>> GetListOfODOQtyByItemNo(List<string> itemNumberList, string projectNumber);
 
     }
 

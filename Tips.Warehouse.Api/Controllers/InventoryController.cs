@@ -1155,44 +1155,97 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         //passing list of item number in consumption report
+        //[HttpPost]
+        //public async Task<IActionResult> GetConsumptionInventoryByItemAndProjectNotest2(List<InventoryItemNoAndProjectNoDto> ItemNoAndProjectNoList)
+        //{
+        //    ServiceResponse<List<ConsumptionInventoryByProjectNoDto>> serviceResponse = new ServiceResponse<List<ConsumptionInventoryByProjectNoDto>>();
+
+        //    try
+        //    {
+        //        foreach (var item in ItemNoAndProjectNoList)
+        //        {
+
+        //            var InventoryDetails = await _inventoryRepository.GetConsumptionInventoryByItemNoAndProjectNotest1(item.FGItemNumber, item.ProjectNumber);
+
+        //            if (InventoryDetails == null || InventoryDetails.Count <= 0)
+        //            {
+        //                serviceResponse.Data = null;
+        //                serviceResponse.Message = $"Inventory Details hasn't been found";
+        //                serviceResponse.Success = false;
+        //                serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //                _logger.LogError($"Inventory with itemNumber and ProjectNumber is invalid");
+        //                return NotFound(serviceResponse);
+
+        //            }
+        //            else
+        //            {
+        //                _logger.LogInfo($"Returned Inventory with Itemnumber and ProjectNumber");
+        //                var result = _mapper.Map<List<ConsumptionInventoryByProjectNoDto>>(InventoryDetails);
+        //                serviceResponse.Data = result;
+        //                serviceResponse.Message = "Returned InventoryDetails with id Successfully";
+        //                serviceResponse.Success = true;
+        //                serviceResponse.StatusCode = HttpStatusCode.OK;
+        //                return Ok(serviceResponse);
+        //            }
+        //        }
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Error in inventory action GetConsumptionInventoryByItemAndProjectNotest2: {ex.Message},{ex.InnerException}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Internal Server Error";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
         [HttpPost]
         public async Task<IActionResult> GetConsumptionInventoryByItemAndProjectNotest2(List<InventoryItemNoAndProjectNoDto> ItemNoAndProjectNoList)
         {
             ServiceResponse<List<ConsumptionInventoryByProjectNoDto>> serviceResponse = new ServiceResponse<List<ConsumptionInventoryByProjectNoDto>>();
+            List<ConsumptionInventoryByProjectNoDto> consumptionInventoryByProjectNoDtos = new List<ConsumptionInventoryByProjectNoDto>();
 
             try
             {
                 foreach (var item in ItemNoAndProjectNoList)
                 {
-
                     var InventoryDetails = await _inventoryRepository.GetConsumptionInventoryByItemNoAndProjectNotest1(item.FGItemNumber, item.ProjectNumber);
 
                     if (InventoryDetails == null || InventoryDetails.Count <= 0)
                     {
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = $"Inventory Details hasn't been found";
-                        serviceResponse.Success = false;
-                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                        _logger.LogError($"Inventory with itemNumber and ProjectNumber is invalid");
-                        return NotFound(serviceResponse);
-
+                        _logger.LogError($"Inventory with itemNumber {item.FGItemNumber} and ProjectNumber {item.ProjectNumber} not found");
+                        continue;
                     }
                     else
                     {
-                        _logger.LogInfo($"Returned Inventory with Itemnumber and ProjectNumber");
+                        _logger.LogInfo($"Returned Inventory with Itemnumber {item.FGItemNumber} and ProjectNumber {item.ProjectNumber}");
                         var result = _mapper.Map<List<ConsumptionInventoryByProjectNoDto>>(InventoryDetails);
-                        serviceResponse.Data = result;
-                        serviceResponse.Message = "Returned InventoryDetails with id Successfully";
-                        serviceResponse.Success = true;
-                        serviceResponse.StatusCode = HttpStatusCode.OK;
-                        return Ok(serviceResponse);
+                        consumptionInventoryByProjectNoDtos.AddRange(result);
                     }
                 }
-                return Ok(serviceResponse);
+
+                if (consumptionInventoryByProjectNoDtos.Any())
+                {
+                    serviceResponse.Data = consumptionInventoryByProjectNoDtos;
+                    serviceResponse.Message = "Returned InventoryDetails successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "No valid Inventory Details found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error in inventory action GetConsumptionInventoryByItemAndProjectNotest2: {ex.Message},{ex.InnerException}");
+                _logger.LogError($"Error in inventory action GetConsumptionInventoryByItemAndProjectNotest2: {ex.Message}, {ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;
@@ -1200,7 +1253,6 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
 
         //consumption report by itemnumber
         [HttpGet]
