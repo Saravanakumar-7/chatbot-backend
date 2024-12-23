@@ -77,13 +77,14 @@ namespace Tips.SalesService.Api.Repository
         public async Task<IEnumerable<ItemNumberListDto>> GetAllItemNumberList()
         {
             IEnumerable<ItemNumberListDto> getAllItemNumberList = await _tipsSalesServiceDbContext.ItemPriceLists
-                                .Select(c => new ItemNumberListDto()
-                                {
-                                    ItemNumber = c.ItemNumber,
-                                    Description = c.Description
+             .GroupBy(x => x.ItemNumber)
+               .Select(g => new ItemNumberListDto
+                   {
+                      ItemNumber = g.Key,
+                      Description = g.OrderByDescending(x => x.Description).FirstOrDefault().Description
+                      })
+                  .ToListAsync();
 
-                                }).Distinct()                                
-                              .ToListAsync();
 
             return getAllItemNumberList;
         }
