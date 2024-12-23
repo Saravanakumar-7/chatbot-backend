@@ -3927,56 +3927,43 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        [HttpPost] 
-        public async Task<IActionResult> GetBomDetailsSPReportWithParam([FromBody] BOMSPReportDto bomSPReportDto)
+        //[HttpPost] 
+        //public async Task<IActionResult> GetBomDetailsSPReportWithParam([FromBody] BOMSPReportDto bomSPReportDto)
 
-        {
-            ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
-            try
-            {
-                var products = await _repository.EnggBomRepository.GetBomDetailsSPReportWithParam(bomSPReportDto.Itemnumber);
-                string bomItems, bomNRE;
-                bomItems = products.EnggChildItems;
-                bomNRE = products.BomNREConsumableDto;
-                products.EnggChildItems = null;
-                products.BomNREConsumableDto = null;
-                var result = _mapper.Map<EnggBomDto>(products);
-                if (bomItems != null)
-                {
-                    result.EnggChildItemDtos = JsonConvert.DeserializeObject<List<EnggChildItemDto>>(bomItems);
-                }
-                if (bomNRE != null)
-                {
-                    result.BomNREConsumableDto = JsonConvert.DeserializeObject<List<BomNREConsumableDto>>(bomNRE);
-                }
-                if (result == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"BOMSPReport hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"BOMSPReport hasn't been found in db.");
-                    return NotFound(serviceResponse);
-                }
-                else
-                {
+        //{
+        //    ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();
+        //    try
+        //    {
+        //        var products = await _repository.EnggBomRepository.GetBomDetailsSPReportWithParam(bomSPReportDto.Itemnumber);
+                
+        //        if (result == null)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = $"BOMSPReport hasn't been found.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            _logger.LogError($"BOMSPReport hasn't been found in db.");
+        //            return NotFound(serviceResponse);
+        //        }
+        //        else
+        //        {
 
-                    serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned BomDetailsSPReport Details";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetBomDetailsSPReportWithParam action";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
+        //            serviceResponse.Data = result;
+        //            serviceResponse.Message = "Returned BomDetailsSPReport Details";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(serviceResponse);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Something went wrong inside GetBomDetailsSPReportWithParam action";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
     }
 }
