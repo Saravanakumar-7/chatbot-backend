@@ -754,10 +754,44 @@ namespace Tips.SalesService.Api.Controllers
                                         coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
                                         coverageReport.OpenSOQty = coverageReport.OpenSOQty <= 0 ? 0 : coverageReport.OpenSOQty;
 
+                                        PartType itemPartType = coverageReport.PartType;
+
+                                        if (itemPartType == PartType.TG)
+                                        {
+
+                                            var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
+                                            var encodedProjectNo = Uri.EscapeDataString(projectNumber);
+                                            var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemAndProjecNoForCoverage?itemNumber={encodedItemNumber}&ProjectNumber={encodedProjectNo}"));
+                                            request2.Headers.Add("Authorization", token);
+                                            var purchaseObjectResult = await client.SendAsync(request2);
+                                            // Calculate OpenPoQty
+                                            //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
+                                            //"GetOpenPOTGDetailsByItemAndProjecNoForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber,
+                                            //                                                                      "&ProjectNumber=", projectNumber));
+
+                                            if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
+                                            {
+                                                var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
+                                                dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
+                                                dynamic purchaseObject = purchaseObjectData.data;
+
+                                                if (purchaseObject != null && purchaseObject.Count > 0)
+                                                {
+                                                    decimal OpenPoQty = (decimal)purchaseObject.balanceQty;
+                                                    coverageReport.OpenPoQty = OpenPoQty;
+                                                }
+                                                else
+                                                {
+                                                    coverageReport.OpenPoQty = 0;
+                                                }
+                                            }
+
+                                        }
+
                                         // Calculate BalanceToOrder
 
-                                        //var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
-                                        var balanceToOrderQty = coverageReport.OpenSOQty;
+                                        var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty);
+                                        //var balanceToOrderQty = coverageReport.OpenSOQty;
                                         coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
 
 
@@ -796,10 +830,44 @@ namespace Tips.SalesService.Api.Controllers
                             coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
                             coverageReport.OpenSOQty = coverageReport.OpenSOQty <= 0 ? 0 : coverageReport.OpenSOQty;
 
+                            PartType itemPartType = coverageReport.PartType;
+
+                            if (itemPartType == PartType.TG)
+                            {
+
+                                var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
+                                var encodedProjectNo = Uri.EscapeDataString(projectNumber);
+                                var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemAndProjecNoForCoverage?itemNumber={encodedItemNumber}&ProjectNumber={encodedProjectNo}"));
+                                request2.Headers.Add("Authorization", token);
+                                var purchaseObjectResult = await client.SendAsync(request2);
+                                // Calculate OpenPoQty
+                                //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
+                                //"GetOpenPOTGDetailsByItemAndProjecNoForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber,
+                                //                                                                      "&ProjectNumber=", projectNumber));
+
+                                if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
+                                {
+                                    var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
+                                    dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
+                                    dynamic purchaseObject = purchaseObjectData.data;
+
+                                    if (purchaseObject != null && purchaseObject.Count > 0)
+                                    {
+                                        decimal OpenPoQty = (decimal)purchaseObject.balanceQty;
+                                        coverageReport.OpenPoQty = OpenPoQty;
+                                    }
+                                    else
+                                    {
+                                        coverageReport.OpenPoQty = 0;
+                                    }
+                                }
+
+                            }
+
                             // Calculate BalanceToOrder
 
-                            //var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
-                            var balanceToOrderQty = coverageReport.OpenSOQty;
+                            var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty);
+                            //var balanceToOrderQty = coverageReport.OpenSOQty;
                             coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
 
 
