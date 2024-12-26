@@ -22,6 +22,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? SGST { get; set; }
+        public string? Remarks { get; set; }
     }
     public class QuoteAdditionalChargesPostDto
     {
@@ -43,6 +44,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? SGST { get; set; }
+        public string? Remarks { get; set; }
     }
     public class QuoteAdditionalChargesUpdateDto
     { 
@@ -63,5 +65,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal? SGST { get; set; }
+        public string? Remarks { get; set; }
     }
 }

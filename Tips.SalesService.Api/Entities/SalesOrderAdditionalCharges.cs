@@ -32,6 +32,7 @@ namespace Tips.SalesService.Api.Entities
 
         [Precision(13, 3)]
         public decimal InvoicedValue { get; set; }
+        public string? Remarks { get; set; }
 
         public int SalesOrderId { get; set; }
         public SalesOrder? SalesOrder { get; set; }

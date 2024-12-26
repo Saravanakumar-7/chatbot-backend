@@ -24,7 +24,8 @@ namespace Tips.SalesService.Api.Entities
         public decimal? UTGST { get; set; }
 
         [Precision(18, 3)]
-        public decimal? SGST { get; set; }        
+        public decimal? SGST { get; set; }
+        public string? Remarks { get; set; }
         public int QuoteId { get; set; }
         public Quote? Quote { get; set; }
     }

@@ -32,6 +32,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? SGST { get; set; }
         public SoStatus SOAdditionalStatus { get; set; }
+        public string? Remarks { get; set; }
 
     }
 
@@ -61,6 +62,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? SGST { get; set; }
         public SoStatus SOAdditionalStatus { get; set; }
+        public string? Remarks { get; set; }
 
     }
     public class SalesOrderAdditionalChargesUpdateDto
@@ -89,6 +91,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? SGST { get; set; }
         public SoStatus SOAdditionalStatus { get; set; }
+        public string? Remarks { get; set; }
 
     }
     public class SalesOrderAdditionalChargesReportDto

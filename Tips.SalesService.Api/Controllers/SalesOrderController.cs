@@ -978,7 +978,7 @@ namespace Tips.SalesService.Api.Controllers
                         SalesOrderAdditionalCharges additionalChargesDetails = _mapper.Map<SalesOrderAdditionalCharges>(salesAdditionalChargesDto[i]);
                         if (salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges != null && salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges.Count > 0)
                         {
-                            if (salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges[i] != null && i < salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges.Count)
+                            if (i <  salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges.Count && salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges[i] != null )
                             {
                                 var oldSOAddCharges = salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges[i];
                                 additionalChargesDetails.Id = oldSOAddCharges.Id;

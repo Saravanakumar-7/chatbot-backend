@@ -203,7 +203,7 @@ namespace Tips.SalesService.Api.Controllers
                                         coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
                                         // Calculate BalanceToOrder
 
-                                        var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
+                                        var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty);
 
                                         coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
 
@@ -276,7 +276,7 @@ namespace Tips.SalesService.Api.Controllers
 
                             // Calculate BalanceToOrder
 
-                            var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
+                            var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty);
 
                             coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
 
@@ -1075,6 +1075,7 @@ namespace Tips.SalesService.Api.Controllers
                                     {
                                         ItemNumber = item.ItemNumber,
                                         MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
+                                        MaterialGroup = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MaterialGroup).FirstOrDefault(),
                                         Version = item.Version,
                                         Description = item.Description,
                                         ProjectNumber = projectNumber,
