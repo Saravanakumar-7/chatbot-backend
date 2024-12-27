@@ -18,8 +18,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using NLog.Fluent;
 using Org.BouncyCastle.Utilities;
-using System.Collections.Generic;
-using static Mysqlx.Notice.Warning.Types;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -98,64 +96,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        private async Task<List<EnggBomLevelSPReport>> GetLevelSPReports(List<EnggBomLevelSPReport> SAspresent, int currentLevel)
-        {
-            var newlevel = new List<EnggBomLevelSPReport>();
-            foreach (var Sa in SAspresent)
-            {
-                var nextlevel = await _enggBomRepository.GetEnggLevelsSPReport(Sa.Child_ItemNumber);
-                nextlevel.ForEach(x => x.Level = currentLevel + 1);
-                newlevel.AddRange(nextlevel);
 
-                if (nextlevel.Where(x => x.Child_PartType == PartType.SA).Count() > 0)
-                {
-                    var otherlevels = await GetLevelSPReports(nextlevel.Where(x => x.Child_PartType == PartType.SA).ToList(), currentLevel + 1);
-                    newlevel.AddRange(otherlevels);
-                }
-            }
-            return newlevel;
-        }
-        [HttpGet]
-        public async Task<IActionResult> GetAllEnggLevelsSPReport(string ItemNumber)
-        {
-            ServiceResponse<List<EnggBomLevelSPReport>> serviceResponse = new ServiceResponse<List<EnggBomLevelSPReport>>();
-            try
-            {
-                var result = new List<EnggBomLevelSPReport>();
-                var level1 = await _enggBomRepository.GetEnggLevelsSPReport(ItemNumber);
-                if (level1.Count() == 0)
-                {
-                    _logger.LogError($"In GetAllEnggLevelsSPReport: Itemnumber: {ItemNumber} is not present in BOM");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"In GetAllEnggLevelsSPReport: Itemnumber: {ItemNumber} is not present in BOM";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500, serviceResponse);
-                }
-                level1.ForEach(x => x.Level = 1);
-                result.AddRange(level1);
-                if (level1.Where(x => x.Child_PartType == PartType.SA).Count() > 0)
-                {
-                    var otherlevels = await GetLevelSPReports(level1.Where(x => x.Child_PartType == PartType.SA).ToList(), 1);
-                    result.AddRange(otherlevels);
-                }
-                _logger.LogInfo("GetAllEnggLevelsSPReport was Successful");
-                serviceResponse.Data = result.OrderBy(x => x.Level).ToList();
-                serviceResponse.Message = $"GetAllEnggLevelsSPReport was Successful";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return StatusCode(200, serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError("Error Occured in GetAllEnggLevelsSPReport: \n" + ex.Message + $"\n {ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllEnggLevelsSPReport action";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
         [HttpPost]
         public async Task<IActionResult> GetEnggBomSPReportWithParam([FromBody] EnggBomSPReportDto enggBomSPReportDto)
         {

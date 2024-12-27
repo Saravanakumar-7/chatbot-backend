@@ -13,14 +13,13 @@ namespace Contracts
     {
         Task<PagedList<EnggBom>> GetAllEnggBOM(PagingParameter pagingParameter, SearchParames searchParams);
         Task<EnggBom> GetEnggBomById(int id);
-        Task<List<EnggBomLevelSPReport>> GetEnggLevelsSPReport(string itemNumber);
         Task<EnggBom> GetEnggBomByItemNoAndRevNo(string itemNumber,decimal revisionNumber);
         Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber);
         Task<EnggBom> GetLatestEnggBomVersionDetailByItemNumber(string fgPartNumber, decimal revisionNo);
         Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom);
         Task<IEnumerable<EnggBom>> GetAllActiveEnggBom();
         Task<IEnumerable<FGCostingSPReport>> GetFGCostingSPReportWithParam(string fgItemnumber, string shopOrderNumber);
-       // Task<BomSPReport> GetBomDetailsSPReportWithParam(string itemNumber);
+        Task<BomSPReport> GetBomDetailsSPReportWithParam(string itemNumber);
         Task<int?> CreateEnggBom(EnggBom enggBom);
         Task<string> UpdateEnggBom(EnggBom enggBom);
         Task<string> DeleteEnggBom(EnggBom enggBom);
