@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities;
+using Entities.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,20 +22,34 @@ namespace Repository
         {
             _tipsMasterDbContext = repositoryContext;
             _httpContextAccessor = httpContextAccessor;
-            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
-            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
-            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
-
         }
+        public async Task<EnggBom> GetEnggBomByItemNoAndRevNo(string itemNumber, decimal revisionNumber)
+        {
+            var EnggBomDetailsbyItemNumber = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == itemNumber && x.RevisionNumber == revisionNumber && x.IsActive == true)
+                               .Include(m => m.NREConsumable)
+                               .Include(t => t.EnggChildItems)
+                               .ThenInclude(x => x.EnggAlternates)
+                             .FirstOrDefaultAsync();
 
+            return EnggBomDetailsbyItemNumber;
+        }
+        public async Task<Dictionary<string, decimal>> GetSAsAndLatestVersion()
+        {
+            return await _tipsMasterDbContext.ProductionBoms.Where(x => x.ItemType == PartType.SA).GroupBy(p => p.ItemNumber).Select(g => new
+            {
+                ItemNumber = g.Key,
+                LatestVersion = g.Max(p => p.ReleaseVersion)
+            })
+        .ToDictionaryAsync(x => x.ItemNumber, x => x.LatestVersion);
+        }
         public async Task<List<SA_Weighted_AvgCost>> GetAllSA_Weighted_AvgCost()
         {
             var SA_Weighted_AvgCost = await _tipsMasterDbContext.SA_Weighted_AvgCost.AsNoTracking().ToListAsync();
             return SA_Weighted_AvgCost;
-        } 
+        }
         public async Task<SA_Weighted_AvgCost?> GetSA_Weighted_AvgCost(string Itemnumber)
         {
-            var SA_Weighted_AvgCost = await _tipsMasterDbContext.SA_Weighted_AvgCost.Where(x=>x.Itemnumber==Itemnumber).AsNoTracking().FirstOrDefaultAsync();
+            var SA_Weighted_AvgCost = await _tipsMasterDbContext.SA_Weighted_AvgCost.Where(x => x.Itemnumber == Itemnumber).AsNoTracking().FirstOrDefaultAsync();
             return SA_Weighted_AvgCost;
         }
         public async Task DeleteExistingData()
@@ -48,7 +63,7 @@ namespace Repository
         }
         public void CreateSA_Weighted_AvgCost(SA_Weighted_AvgCost sA_Weighted_AvgCost)
         {
-           Create(sA_Weighted_AvgCost);
+            Create(sA_Weighted_AvgCost);
         }
     }
 }

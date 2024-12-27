@@ -10,46 +10,35 @@ using System.Net;
 
 namespace Tips.Master.Api.Controllers
 {
-    [Route("api/[controller]/[action]")]
-    [ApiController]
-    [Authorize]
-    public class SA_Weighted_AvgCostController : ControllerBase
+    public class SA_Weighted_AvgCostTask: I_SA_Weighted_AvgCostTask
     {
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IRepositoryWrapperForMaster _repository;
-        public SA_Weighted_AvgCostController(ILoggerManager logger, IMapper mapper, IRepositoryWrapperForMaster repository)
+        public SA_Weighted_AvgCostTask(ILoggerManager logger, IMapper mapper, IRepositoryWrapperForMaster repository)
         {
             _repository = repository;
             _mapper = mapper;
             _logger = logger;
         }
-        [HttpPost]
-        public async Task<IActionResult> Calculate_SA_Weighted_AvgCost()
-        {
-            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+      
+        public async Task Calculate_SA_Weighted_AvgCost()
+        {         
             try
             {
                 TransferCurrent_SA_Weighted_AvgCost_TO_SA_Weighted_AvgCost_History();
-                var production_SAs = await _repository.ReleaseProductBomRepository.GetSAsAndLatestVersion();
+                var production_SAs = await _repository.SA_Weighted_AvgCostRepository.GetSAsAndLatestVersion();
                 foreach (var productinSA in production_SAs.Keys)
                 {
-                   var SAValue= await Weighted_Calculation(productinSA, production_SAs[productinSA],production_SAs);
+                    var SAValue = await Weighted_Calculation(productinSA, production_SAs[productinSA], production_SAs);
                 }
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Calculation of SA_Weighted_AvgCost Successfull";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
+                _logger.LogInfo("Calculate_SA_Weighted_AvgCost was Sucessfull ");
+                
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
+                _logger.LogError("Error Occured In Calculate_SA_Weighted_AvgCost: " + ex.Message);
+                throw;               
             }
         }
         private async void TransferCurrent_SA_Weighted_AvgCost_TO_SA_Weighted_AvgCost_History()
@@ -66,7 +55,7 @@ namespace Tips.Master.Api.Controllers
             decimal ppQtyandWeight = 0;
             if (ExistingSAWeight == null)
             {
-                var getBomDetais = await _repository.EnggBomRepository.GetEnggBomByItemNoAndRevNo(ItemNumber, Version);
+                var getBomDetais = await _repository.SA_Weighted_AvgCostRepository.GetEnggBomByItemNoAndRevNo(ItemNumber, Version);
                 foreach (var bomitems in getBomDetais.EnggChildItems)
                 {
                     if (bomitems.PartType == PartType.PurchasePart)

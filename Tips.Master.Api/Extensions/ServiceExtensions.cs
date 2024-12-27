@@ -142,8 +142,7 @@ namespace Tips.Master.Api.Extensions
         public static void ConfigureRepositoryWrapper(this IServiceCollection services)
         {
             services.AddScoped<IRepositoryWrapperForMaster, RepositoryWrapperForMaster>();
-
-
+           // services.AddHostedService<MonthlyTaskService>();
         }
     }
 }
