@@ -187,6 +187,7 @@ namespace Tips.SalesService.Api.Controllers
                                                 }
                                             }
                                         }
+
                                         //Calculate OpenRetailSOQty
                                         var fGItemNumber = salesOrderDetails.FGItemNumber;
 
@@ -284,6 +285,148 @@ namespace Tips.SalesService.Api.Controllers
                         }
                     }
                 }
+
+                //foreach (var salesOrderDetails in salesOrders)
+                //{
+                //    bool flag = false;
+
+                //    if (inventoryObject != null && inventoryObject.Count > 0)
+                //    {
+                //        foreach (var Inventory in inventoryObject)
+                //        {
+                //            // Check if the item matches
+                //            if (salesOrderDetails.FGItemNumber == Inventory["partNumber"]?.ToString())
+                //            {
+                //                flag = true;
+
+                //                if (salesOrderDetails.FGItemNumber != null && salesOrderDetails.Balance_Qty != 0)
+                //                {
+                //                    var coverageReport = new OpenSalesCoverageReport
+                //                    {
+                //                        ItemNumber = salesOrderDetails.FGItemNumber,
+                //                        TotalRequiredQty = salesOrderDetails.Balance_Qty,
+                //                        PartType = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
+                //                        MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault(),
+                //                        UOM = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.UOM).FirstOrDefault()
+                //                    };
+
+                //                    decimal balanceQuantity = (decimal)Inventory.balance_Quantity; // Convert to decimal
+                //                    coverageReport.Stock = balanceQuantity;
+
+                //                    // Calculate OpenSOQty
+                //                    coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
+                //                    coverageReport.OpenSOQty = coverageReport.OpenSOQty <= 0 ? 0 : coverageReport.OpenSOQty;
+
+
+                //                    //Calculate OpenRetailSOQty
+                //                    var fGItemNumber = salesOrderDetails.FGItemNumber;
+
+                //                    var salesOrderRetailDetails = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGRetailItemDetails(fGItemNumber);
+                //                    coverageReport.OpenRetailSOQty = salesOrderRetailDetails.Balance_Qty;
+
+                //                    PartType itemPartType = coverageReport.PartType;
+
+                //                    // Handle the TG PartType
+                //                    if (itemPartType == PartType.TG)
+                //                    {
+                //                        var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
+                //                        var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemForCoverage?itemNumber={encodedItemNumber}"));
+                //                        request2.Headers.Add("Authorization", token);
+
+                //                        var purchaseObjectResult = await client.SendAsync(request2);
+                //                        if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
+                //                        {
+                //                            var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
+                //                            dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
+                //                            dynamic purchaseObject = purchaseObjectData.data;
+
+                //                            if (purchaseObject != null)
+                //                            {
+                //                                decimal OpenPoQty = (decimal)purchaseObject.balanceQty;
+                //                                coverageReport.OpenPoQty = OpenPoQty;
+                //                            }
+                //                            else
+                //                            {
+                //                                coverageReport.OpenPoQty = 0;
+                //                            }
+                //                        }
+                //                    }
+
+                //                    // Calculate BalanceToOrder
+                //                    var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty);
+                //                    coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
+
+                //                    openSalesCoverageReports.Add(coverageReport);
+                //                }
+                //                break; // No need to continue looping once a match is found
+                //            }
+                //        }
+                //    }
+
+                //    // If no match was found in inventory, handle this case
+                //    if (!flag)
+                //    {
+                //        if (salesOrderDetails.FGItemNumber != null && salesOrderDetails.Balance_Qty != 0)
+                //        {
+                //            var coverageReport = new OpenSalesCoverageReport
+                //            {
+                //                ItemNumber = salesOrderDetails.FGItemNumber,
+                //                TotalRequiredQty = salesOrderDetails.Balance_Qty,
+                //                PartType = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
+                //                MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault(),
+                //                UOM = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.UOM).FirstOrDefault()
+                //            };
+
+                //            // Since no match was found, set stock to 0
+                //            coverageReport.Stock = 0;
+
+                //            // Calculate OpenSOQty
+                //            coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
+                //            coverageReport.OpenSOQty = coverageReport.OpenSOQty <= 0 ? 0 : coverageReport.OpenSOQty;
+
+
+                //            //Calculate OpenRetailSOQty
+                //            var fGItemNumber = salesOrderDetails.FGItemNumber;
+
+                //            var salesOrderRetailDetails = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGRetailItemDetails(fGItemNumber);
+                //            coverageReport.OpenRetailSOQty = salesOrderRetailDetails.Balance_Qty;
+
+                //            PartType itemPartType = coverageReport.PartType;
+
+                //            if (itemPartType == PartType.TG)
+                //            {
+                //                var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
+                //                var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemForCoverage?itemNumber={encodedItemNumber}"));
+                //                request2.Headers.Add("Authorization", token);
+
+                //                var purchaseObjectResult = await client.SendAsync(request2);
+                //                if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
+                //                {
+                //                    var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
+                //                    dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
+                //                    dynamic purchaseObject = purchaseObjectData.data;
+
+                //                    if (purchaseObject != null)
+                //                    {
+                //                        decimal OpenPoQty = (decimal)purchaseObject.balanceQty;
+                //                        coverageReport.OpenPoQty = OpenPoQty;
+                //                    }
+                //                    else
+                //                    {
+                //                        coverageReport.OpenPoQty = 0;
+                //                    }
+                //                }
+                //            }
+
+                //            // Calculate BalanceToOrder
+                //            var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty);
+                //            coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
+
+                //            openSalesCoverageReports.Add(coverageReport);
+                //        }
+                //    }
+                //}
+
 
             }
             catch (Exception ex)
