@@ -171,7 +171,7 @@ namespace Entities
         public DbSet<FG_Weighted_AvgCost_History> FG_Weighted_AvgCost_History { get; set; }
         public DbSet<FieldInformation>? FieldInformations { get; set; }
         public DbSet<BomSPReport>? BomSPReports { get; set; }
-        
+        public DbSet<EnggBomLevelSPReport>? EnggBomLevelSPReport { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -183,6 +183,7 @@ namespace Entities
             modelBuilder.Entity<Weighted_AvgCost_Report>().HasNoKey();
             modelBuilder.Entity<ReleaseProductionBomSPReport>().HasNoKey();
             modelBuilder.Entity<BomSPReport>().HasNoKey();
+            modelBuilder.Entity<EnggBomLevelSPReport>().HasNoKey();
         }
 
 

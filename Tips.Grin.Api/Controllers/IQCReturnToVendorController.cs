@@ -84,7 +84,7 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-                
+
 
                 var client1 = _clientFactory.CreateClient();
                 var token1 = HttpContext.Request.Headers["Authorization"].ToString();
@@ -104,12 +104,12 @@ namespace Tips.Grin.Api.Controllers
                 var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                 var inventoryObjectData = JsonConvert.DeserializeObject<InventoryDtoDetails>(inventoryObjectString);
                 var inventoryObject = inventoryObjectData.data;
-                
+
                 var purchaseOrders = new List<PurchaseOrderReturnsBackDto>();
                 foreach (var Item in iQCRejectRecoveryPostDto.iQCReturnToVendorItemsPostDtos)
                 {
                     var returnqty = Item.ReturnQty;
-                    foreach (var Inv in inventoryObject.Where(x=>x.GrinPartId== Item.GrinPartId).ToList())
+                    foreach (var Inv in inventoryObject.Where(x => x.GrinPartId == Item.GrinPartId).ToList())
                     {
                         if (returnqty >= Inv.Balance_Quantity)
                         {
@@ -223,7 +223,7 @@ namespace Tips.Grin.Api.Controllers
                                 serviceResponse.Success = false;
                                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                                 return StatusCode(500, serviceResponse);
-                            }                                                        
+                            }
                         }
                         else
                         {
@@ -279,8 +279,8 @@ namespace Tips.Grin.Api.Controllers
                             {
                                 existingProject.ReturnQty += returnqty;
                             }
+                            Inv.Balance_Quantity -= returnqty;
                             returnqty = 0;
-                            Inv.Balance_Quantity -= Inv.Balance_Quantity;
                             var updateInv = _mapper.Map<InventoryUpdateDto>(Inv);
                             var json = JsonConvert.SerializeObject(updateInv);
                             var data1 = new StringContent(json, Encoding.UTF8, "application/json");
@@ -340,11 +340,11 @@ namespace Tips.Grin.Api.Controllers
                                 return StatusCode(500, serviceResponse);
                             }
 
-                           
+
                         }
                         if (returnqty == 0) break;
                     }
-                    
+
                 }
 
                 var POchanges = JsonConvert.SerializeObject(purchaseOrders);
@@ -364,7 +364,7 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
-                }                
+                }
 
                 var IQCReturnToVendor = _mapper.Map<IQCReturnToVendor>(iQCRejectRecoveryPostDto);
                 IQCReturnToVendor.iQCReturnToVendorItems = _mapper.Map<List<IQCReturnToVendorItems>>(iQCRejectRecoveryPostDto.iQCReturnToVendorItemsPostDtos);
@@ -384,7 +384,7 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"In CreateIQCReturnToVendor Error occored for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber}: \n" +ex.Message + "\n" + ex.InnerException);
+                _logger.LogError($"In CreateIQCReturnToVendor Error occored for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber}: \n" + ex.Message + "\n" + ex.InnerException);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"In CreateIQCReturnToVendor Error occored for Grin Number: {iQCRejectRecoveryPostDto.GrinNumber}";
                 serviceResponse.Success = false;
@@ -439,7 +439,7 @@ namespace Tips.Grin.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
-        }        
+        }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetIQCReturnToVendorById(int id)
         {
@@ -461,7 +461,7 @@ namespace Tips.Grin.Api.Controllers
                 else
                 {
                     _logger.LogInfo($"Returned GetIQCReturnToVendorById with id: {id}");
-                    IQCReturnToVendorDto iqcReturnToVendorDto = _mapper.Map<IQCReturnToVendorDto>(IQCReturnToVendorDetailsbyId);     
+                    IQCReturnToVendorDto iqcReturnToVendorDto = _mapper.Map<IQCReturnToVendorDto>(IQCReturnToVendorDetailsbyId);
                     serviceResponse.Data = iqcReturnToVendorDto;
                     serviceResponse.Message = $"Returned IQCReturnToVendor with id: {id}";
                     serviceResponse.Success = true;
