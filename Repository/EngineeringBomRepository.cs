@@ -178,14 +178,24 @@ namespace Repository
             return result;
 
         }
-        public async Task<BomSPReport> GetBomDetailsSPReportWithParam(string itemNumber)
+        //public async Task<BomSPReport> GetBomDetailsSPReportWithParam(string itemNumber)
+        //{
+        //    var result = _tipsMasterDbContext
+        //    .Set<BomSPReport>()
+        //    .FromSqlInterpolated($"CALL Bom_GetBy_ItemNumber({itemNumber})")
+        //    .ToList();
+
+        //    return result[0];
+
+        //} 
+        public async Task<List<EnggBomLevelSPReport>> GetEnggLevelsSPReport(string itemNumber)
         {
             var result = _tipsMasterDbContext
-            .Set<BomSPReport>()
+            .Set<EnggBomLevelSPReport>()
             .FromSqlInterpolated($"CALL Bom_GetBy_ItemNumber({itemNumber})")
             .ToList();
 
-            return result[0];
+            return result;
 
         }
 

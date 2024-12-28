@@ -20,10 +20,6 @@ namespace Repository
         {
             _tipsMasterDbContext = repositoryContext;
             _httpContextAccessor = httpContextAccessor;
-            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
-            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
-            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
-
         }
         public async Task TranferToSAWeightedHistory(List<SA_Weighted_AvgCost_History> sA_Weighted_AvgCost_Histories)
         {

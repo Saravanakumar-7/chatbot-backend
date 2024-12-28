@@ -29,8 +29,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }        
-        public List<IQCReturnToVendorItemsDto> IQCReturnToVendorItemsDto { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public List<IQCReturnToVendorItemsDto> iQCReturnToVendorItems { get; set; }
     }
     public class InventoryDtoDetails
     {
