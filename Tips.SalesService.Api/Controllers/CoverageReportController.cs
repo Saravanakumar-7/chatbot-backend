@@ -698,6 +698,10 @@ namespace Tips.SalesService.Api.Controllers
                     itemNoWithPartType.Add(dto);
                 }
 
+                //ShopOrderConformation WIP Quantity
+                List<ShopOrderWIPQtyDto> shopOrderWIPQtyList = await GetShopOrderWipQtyForChildItemsByProjectNo(itemNoListString, projectNumber);
+
+
                 var salesOrderItemandProjList = _mapper.Map<IEnumerable<SalesOrderItemNoAndProjectNoDto>>(salesOrders);
                 var salesOrderItemandProjListjson = JsonConvert.SerializeObject(salesOrderItemandProjList);
                 var salesOrderItemandProjDetailsString = new StringContent(salesOrderItemandProjListjson, Encoding.UTF8, "application/json");
@@ -887,7 +891,8 @@ namespace Tips.SalesService.Api.Controllers
                                             ProjectNumber = salesOrderDetails.ProjectNumber,
                                             UOM = salesOrderDetails.UOM,
                                             TotalRequiredQty = salesOrderDetails.Balance_Qty,
-                                            PartType = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault()
+                                            PartType = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
+                                            ShopOrderConWipQty = shopOrderWIPQtyList?.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.WipQuantity).FirstOrDefault() ?? 0
                                         };
 
                                         decimal balanceQuantity = (decimal)Inventory.balance_Quantity;  // Convert to decimal
@@ -933,7 +938,7 @@ namespace Tips.SalesService.Api.Controllers
 
                                         // Calculate BalanceToOrder
 
-                                        var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty);
+                                        var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty + coverageReport.ShopOrderConWipQty);
                                         //var balanceToOrderQty = coverageReport.OpenSOQty;
                                         coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
 
@@ -963,7 +968,8 @@ namespace Tips.SalesService.Api.Controllers
                                 ProjectNumber = salesOrderDetails.ProjectNumber,
                                 UOM = salesOrderDetails.UOM,
                                 TotalRequiredQty = salesOrderDetails.Balance_Qty,
-                                PartType = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault()
+                                PartType = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
+                                ShopOrderConWipQty = shopOrderWIPQtyList?.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.WipQuantity).FirstOrDefault() ?? 0
                             };
 
                             // Since no match was found, set stock to 0
@@ -1009,7 +1015,7 @@ namespace Tips.SalesService.Api.Controllers
 
                             // Calculate BalanceToOrder
 
-                            var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty);
+                            var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty + coverageReport.ShopOrderConWipQty);
                             //var balanceToOrderQty = coverageReport.OpenSOQty;
                             coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
 
@@ -1209,6 +1215,9 @@ namespace Tips.SalesService.Api.Controllers
                             //Open Stock with WIP Quantity
                             List<ChildItemStockWithWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItemsByProjectNo(itemNoListString, projectNumber);
 
+                            //ShopOrderConformation WIP Quantity
+                            List<ShopOrderWIPQtyDto> shopOrderWIPQtyList = await GetShopOrderWipQtyForChildItemsByProjectNo(itemNoListString, projectNumber);
+
 
                             foreach (var item in childItemReqQtyDtos)
                             {
@@ -1227,11 +1236,12 @@ namespace Tips.SalesService.Api.Controllers
                                         RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
                                         Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
                                         WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
-                                        ODOQty = item.ODOQty
+                                        ODOQty = item.ODOQty,
+                                        ShopOrderConWipQty = shopOrderWIPQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault() ?? 0
                                     };
 
                                     decimal? balanceRequiredQty = coverageDetailOfSAChildItem.RequiredQty - (coverageDetailOfSAChildItem.Stock
-                                                               + coverageDetailOfSAChildItem.WipQty + coverageDetailOfSAChildItem.ODOQty);
+                                                               + coverageDetailOfSAChildItem.WipQty + coverageDetailOfSAChildItem.ODOQty + coverageDetailOfSAChildItem.ShopOrderConWipQty);
 
 
                                     coverageDetailOfSAChildItem.BalanceToManufacture = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
@@ -1434,6 +1444,32 @@ namespace Tips.SalesService.Api.Controllers
             }
 
             return openODOQtyList;
+        }
+
+        private async Task<List<ShopOrderWIPQtyDto>> GetShopOrderWipQtyForChildItemsByProjectNo(StringContent itemNoListString, string projectno)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var encodedProjectNo = Uri.EscapeDataString(projectno);
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ShopOrderAPI"], $"GetShopOrderWipQtyByProjectNo?ProjectNo={encodedProjectNo}"))
+            {
+                Content = itemNoListString
+            };
+            request.Headers.Add("Authorization", token);
+
+            var responses = await client.SendAsync(request);
+            var shoporderConWipQtyString = await responses.Content.ReadAsStringAsync();
+            dynamic shoporderConWipQtyWipData = JsonConvert.DeserializeObject(shoporderConWipQtyString);
+
+            List<ShopOrderWIPQtyDto> shoporderConWipQtyList = new List<ShopOrderWIPQtyDto>();
+
+            foreach (var item in shoporderConWipQtyWipData.data)
+            {
+                ShopOrderWIPQtyDto dto = JsonConvert.DeserializeObject<ShopOrderWIPQtyDto>(item.ToString());
+                shoporderConWipQtyList.Add(dto);
+            }
+
+            return shoporderConWipQtyList;
         }
 
         //GenerateCoverageFGLevelReportByProjectNumber

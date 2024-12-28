@@ -2819,27 +2819,27 @@ namespace Tips.Master.Api.Controllers
                                 //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
                                 //  "GetTotalStockOfItemNumber?", "itemNumber=", saItemNumber));
 
-                                //var client = _clientFactory.CreateClient();
-                                //var token = HttpContext.Request.Headers["Authorization"].ToString();
+                                var client = _clientFactory.CreateClient();
+                                var token = HttpContext.Request.Headers["Authorization"].ToString();
 
-                                //var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
+                                var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
 
-                                //var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                //    $"GetTotalStockOfItemNumber?itemNumber={encodedItemNumber}"));
-                                //request.Headers.Add("Authorization", token);
+                                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                                    $"GetTotalStockOfItemNumber?itemNumber={encodedItemNumber}"));
+                                request.Headers.Add("Authorization", token);
 
-                                //var inventoryObjectResult = await client.SendAsync(request);
+                                var inventoryObjectResult = await client.SendAsync(request);
 
-                                //var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                                //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                                //dynamic inventoryObject = inventoryObjectData.data;
-                                //openSAQty = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
+                                var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                                dynamic inventoryObject = inventoryObjectData.data;
+                                openSAQty = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
                             }
 
                             // get stock from inventory
                             decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
-                            //decimal newRequiredQtySA = requiredQtySA - openSAQty;
-                             decimal newRequiredQtySA = requiredQtySA <= 0 ? 0 : requiredQtySA;
+                            decimal newRequiredQtySA = requiredQtySA - openSAQty;
+                            newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
 
                             //Get SA Stock from ODO
                             //var client1 = _clientFactory.CreateClient();
@@ -3027,28 +3027,28 @@ namespace Tips.Master.Api.Controllers
                                     //var inventoryObjectResult = await _httpClient.GetAsync(string.Concat(_config["InventoryAPI"],
                                     //  "GetTotalStockOfSAItemNumberAndProjectNo?", "itemNumber=", saItemNumber, "&ProjectNumber=", projectNo));
 
-                                    //var client = _clientFactory.CreateClient();
-                                    //var token = HttpContext.Request.Headers["Authorization"].ToString();
+                                    var client = _clientFactory.CreateClient();
+                                    var token = HttpContext.Request.Headers["Authorization"].ToString();
 
-                                    //var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
-                                    //var encodedProjectNumber = Uri.EscapeDataString(projectNo);
+                                    var encodedItemNumber = Uri.EscapeDataString(saItemNumber);
+                                    var encodedProjectNumber = Uri.EscapeDataString(projectNo);
 
-                                    //var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                    //    $"GetTotalStockOfSAItemNumberAndProjectNo?saItemNumber={encodedItemNumber}&ProjectNumber={encodedProjectNumber}"));
-                                    //request.Headers.Add("Authorization", token);
+                                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                                        $"GetTotalStockOfSAItemNumberAndProjectNo?saItemNumber={encodedItemNumber}&ProjectNumber={encodedProjectNumber}"));
+                                    request.Headers.Add("Authorization", token);
 
-                                    //var inventoryObjectResult = await client.SendAsync(request);
+                                    var inventoryObjectResult = await client.SendAsync(request);
 
-                                    //var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                                    //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                                    //dynamic inventoryObject = inventoryObjectData.data;
-                                    //openSAStock = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
+                                    var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                                    dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                                    dynamic inventoryObject = inventoryObjectData.data;
+                                    openSAStock = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
                                 }
 
                                 // get stock from inventory
                                 decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
-                                //decimal newRequiredQtySA = requiredQtySA - openSAStock;
-                                decimal newRequiredQtySA = requiredQtySA <= 0 ? 0 : requiredQtySA;
+                                decimal newRequiredQtySA = requiredQtySA - openSAStock;
+                                newRequiredQtySA = newRequiredQtySA <= 0 ? 0 : newRequiredQtySA;
 
 
                                 decimal newOpenSAStock = requiredQtySA >= openSAStock ? 0 : (openSAStock - requiredQtySA);
