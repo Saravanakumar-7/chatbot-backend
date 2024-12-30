@@ -101,20 +101,36 @@ namespace Tips.Master.Api.Controllers
         }
         private async Task<List<EnggBomLevelSPReport>> GetLevelSPReports(List<EnggBomLevelSPReport> SAspresent, int currentLevel)
         {
+
             var newlevel = new List<EnggBomLevelSPReport>();
             foreach (var Sa in SAspresent)
             {
-                var nextlevel = await _enggBomRepository.GetEnggLevelsSPReport(Sa.Child_ItemNumber);
-                nextlevel.ForEach(x => x.Level = currentLevel + 1);
-                newlevel.AddRange(nextlevel);
-
-                if (nextlevel.Where(x => x.Child_PartType == PartType.SA).Count() > 0)
+                try
                 {
-                    var otherlevels = await GetLevelSPReports(nextlevel.Where(x => x.Child_PartType == PartType.SA).ToList(), currentLevel + 1);
-                    newlevel.AddRange(otherlevels);
+                    var nextlevel = await _enggBomRepository.GetEnggLevelsSPReport(Sa.Child_ItemNumber);
+                    if (!nextlevel.Any())
+                    {
+                        var message = $"Itemnumber: {Sa.Child_ItemNumber} is not present in BOM";
+                        _logger.LogError($"In GetAllEnggLevelsSPReport: {message}");
+                        throw new InvalidOperationException(message);
+                    }
+                    nextlevel.ForEach(x => x.Level = currentLevel + 1);
+                    newlevel.AddRange(nextlevel);
+
+                    if (nextlevel.Where(x => x.Child_PartType == PartType.SA).Count() > 0)
+                    {
+                        var otherlevels = await GetLevelSPReports(nextlevel.Where(x => x.Child_PartType == PartType.SA).ToList(), currentLevel + 1);
+                        newlevel.AddRange(otherlevels);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error processing item {Sa.Child_ItemNumber}: {ex.Message}");
+                    throw new InvalidOperationException($"Error with item {Sa.Child_ItemNumber}: {ex.Message}", ex);
                 }
             }
             return newlevel;
+
         }
         [HttpGet]
         public async Task<IActionResult> GetAllEnggLevelsSPReport(string ItemNumber)
@@ -130,8 +146,8 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"In GetAllEnggLevelsSPReport: Itemnumber: {ItemNumber} is not present in BOM";
                     serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                    return StatusCode(500, serviceResponse);
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return StatusCode(404, serviceResponse);
                 }
                 level1.ForEach(x => x.Level = 1);
                 result.AddRange(level1);
@@ -707,7 +723,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                if (enggBomPostDto.EnggChildItemPosts.Count()<1)
+                if (enggBomPostDto.EnggChildItemPosts.Count() < 1)
                 {
                     _logger.LogError("Atleast 1 Child Item Is Required");
                     serviceResponse.Data = null;
@@ -716,7 +732,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
                     return StatusCode(406, serviceResponse);
                 }
-                var bomitem = enggBomPostDto.EnggChildItemPosts.Where(x=>x.ItemNumber== enggBomPostDto.ItemNumber).Count();
+                var bomitem = enggBomPostDto.EnggChildItemPosts.Where(x => x.ItemNumber == enggBomPostDto.ItemNumber).Count();
                 if (bomitem > 0)
                 {
                     _logger.LogError($"BOM can't contain itself");
@@ -726,7 +742,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
                     return StatusCode(406, serviceResponse);
                 }
-                var activeitems= enggBomPostDto.EnggChildItemPosts.Where(x => x.IsActive==true).Count();
+                var activeitems = enggBomPostDto.EnggChildItemPosts.Where(x => x.IsActive == true).Count();
                 if (activeitems < 1)
                 {
                     _logger.LogError($"Atleast 1 Active BOM Item Is Required");
@@ -742,8 +758,8 @@ namespace Tips.Master.Api.Controllers
                     string? items = null;
                     foreach (var item in duplicates)
                     {
-                        if(items==null) items=item;
-                        else items = items+","+item;
+                        if (items == null) items = item;
+                        else items = items + "," + item;
                     }
                     _logger.LogError($"BOM Items : {items} Can't Repeat");
                     serviceResponse.Data = null;
@@ -752,14 +768,14 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
                     return StatusCode(406, serviceResponse);
                 }
-                var lowQtyitems= enggBomPostDto.EnggChildItemPosts.Where(x=>x.Quantity<=0).ToList();
+                var lowQtyitems = enggBomPostDto.EnggChildItemPosts.Where(x => x.Quantity <= 0).ToList();
                 if (lowQtyitems.Count() > 0)
                 {
                     string? items = null;
                     foreach (var item in lowQtyitems)
                     {
-                        if(items==null) items = item.ItemNumber;
-                        else items = items+","+ item.ItemNumber;
+                        if (items == null) items = item.ItemNumber;
+                        else items = items + "," + item.ItemNumber;
                     }
                     _logger.LogError($"BOM Items : {items} should have Quantity greater then 0");
                     serviceResponse.Data = null;
@@ -780,7 +796,7 @@ namespace Tips.Master.Api.Controllers
                     return StatusCode(406, serviceResponse);
                 }
                 var itemmasterDetails = await _repository.ItemMasterRepository.GetItemMasterByItemNumber(enggBomPostDto.ItemNumber);
-                if (itemmasterDetails==null)
+                if (itemmasterDetails == null)
                 {
                     _logger.LogError($"BOM: {enggBomPostDto.ItemNumber} Doesnot Exists in ItemMater");
                     serviceResponse.Data = null;
@@ -789,7 +805,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
                     return StatusCode(406, serviceResponse);
                 }
-                if (itemmasterDetails.ItemType!=PartType.FG && itemmasterDetails.ItemType!=PartType.SA)
+                if (itemmasterDetails.ItemType != PartType.FG && itemmasterDetails.ItemType != PartType.SA)
                 {
                     _logger.LogError($"BOM ItemType must be FinishedGood or SubAssembly");
                     serviceResponse.Data = null;
@@ -805,8 +821,8 @@ namespace Tips.Master.Api.Controllers
                     var childdetails = await _repository.ItemMasterRepository.GetItemMasterByItemNumber(items.ItemNumber);
                     if (childdetails == null)
                     {
-                        if (nonexistantitems == null) nonexistantitems = items.ItemNumber;  
-                        else nonexistantitems = nonexistantitems+","+ items.ItemNumber;
+                        if (nonexistantitems == null) nonexistantitems = items.ItemNumber;
+                        else nonexistantitems = nonexistantitems + "," + items.ItemNumber;
                     }
                     else if (childdetails.ItemType != PartType.PurchasePart && childdetails.ItemType != PartType.SA)
                     {
@@ -814,7 +830,7 @@ namespace Tips.Master.Api.Controllers
                         else wrongTypeitems = wrongTypeitems + "," + items.ItemNumber;
                     }
                 }
-                if (nonexistantitems!=null)
+                if (nonexistantitems != null)
                 {
                     _logger.LogError($"Item: {nonexistantitems} Doesnot Exists in ItemMater");
                     serviceResponse.Data = null;
@@ -823,7 +839,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
                     return StatusCode(406, serviceResponse);
                 }
-                if (wrongTypeitems!=null)
+                if (wrongTypeitems != null)
                 {
                     _logger.LogError($"Item: {wrongTypeitems} ItemType must be PurchasePart or SubAssembly");
                     serviceResponse.Data = null;
@@ -3257,7 +3273,7 @@ namespace Tips.Master.Api.Controllers
                         foreach (var enggChildItem in enggBomDetail?.EnggChildItems)
                         {
                             if (enggChildItem.PartType == PartType.SA)
-                            { 
+                            {
                                 decimal openSAStock = 0;
                                 string saItemNumber = enggChildItem.ItemNumber;
                                 if (saItemOpenStock.ContainsKey(saItemNumber))
@@ -3290,7 +3306,7 @@ namespace Tips.Master.Api.Controllers
                                 // get stock from inventory
                                 decimal requiredQtySA = enggChildItem.Quantity * requiredQty;
                                 //decimal newRequiredQtySA = requiredQtySA - openSAStock;
-                                 decimal newRequiredQtySA = requiredQtySA <= 0 ? 0 : requiredQtySA;
+                                decimal newRequiredQtySA = requiredQtySA <= 0 ? 0 : requiredQtySA;
 
                                 //Get SA Stock from ODO
                                 var client1 = _clientFactory.CreateClient();
@@ -4023,7 +4039,7 @@ namespace Tips.Master.Api.Controllers
         //    try
         //    {
         //        var products = await _repository.EnggBomRepository.GetBomDetailsSPReportWithParam(bomSPReportDto.Itemnumber);
-                
+
         //        if (result == null)
         //        {
         //            serviceResponse.Data = null;
