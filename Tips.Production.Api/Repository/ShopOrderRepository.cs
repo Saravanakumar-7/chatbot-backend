@@ -88,10 +88,28 @@ namespace Tips.Production.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<ShopOrderNumberSPReportForAvi>> GetShopOrderSPReportWithParamForAvi(string? shopOrderNo, string? projectType,
+                                                                                                 string? projectNo, string? salesOrderNo, string? KPN, string? MPN)
+        {
+            var result = _tipsProductionDbContext
+            .Set<ShopOrderNumberSPReportForAvi>()
+            .FromSqlInterpolated($"Shop_Order_Report_withparameter_new({shopOrderNo},{projectType},{projectNo},{salesOrderNo},{KPN},{MPN})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<ShopOrderNumberSPReport>> GetShopOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsProductionDbContext.Set<ShopOrderNumberSPReport>()
                       .FromSqlInterpolated($"Shop_Order_Report_withparameter_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<ShopOrderNumberSPReportForAvi>> GetShopOrderSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsProductionDbContext.Set<ShopOrderNumberSPReportForAvi>()
+                      .FromSqlInterpolated($"Shop_Order_Report_withparameter_withdate_new({FromDate},{ToDate})")
                       .ToList();
 
             return results;
@@ -449,6 +467,24 @@ namespace Tips.Production.Api.Repository
                     WipQuantity = gr.Sum(x => x.WipQty - x.OqcQty)
                 })
                 .ToListAsync();
+
+            return shopOrderConWipQtyList;
+        }
+        public async Task<ShopOrderWipQtyDto> GetSAShopOrderWipQtyByProjectNo(string itemNumber, string projectNo)
+        {
+            var shopOrderByIds = await _tipsProductionDbContext.ShopOrderItems
+                            .Where(x => x.ProjectNumber == projectNo).Select(x => x.ShopOrderId)
+                            .ToListAsync();
+
+            var shopOrderConWipQtyList = await _tipsProductionDbContext.ShopOrders
+                .Where(x => x.ItemNumber == itemNumber && shopOrderByIds.Contains(x.Id))
+                .GroupBy(x => new { x.ItemNumber })
+                .Select(gr => new ShopOrderWipQtyDto
+                {
+                    ItemNumber = gr.Key.ItemNumber,
+                    WipQuantity = gr.Sum(x => x.WipQty - x.OqcQty)
+                })
+                .FirstOrDefaultAsync();
 
             return shopOrderConWipQtyList;
         }

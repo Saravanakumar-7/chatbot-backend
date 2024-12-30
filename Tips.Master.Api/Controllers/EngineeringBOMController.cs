@@ -20,6 +20,7 @@ using NLog.Fluent;
 using Org.BouncyCastle.Utilities;
 using System.Collections.Generic;
 using static Mysqlx.Notice.Warning.Types;
+using MySqlX.XDevAPI;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -3102,6 +3103,34 @@ namespace Tips.Master.Api.Controllers
                                     dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                     dynamic inventoryObject = inventoryObjectData.data;
                                     openSAStock = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
+
+
+                                    var client1 = _clientFactory.CreateClient();
+                                    var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                                    var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ShopOrderAPI"],
+                                        $"GetSAShopOrderWipQtyByProjectNo?itemNumber={encodedItemNumber}&projectNo={encodedProjectNumber}"));
+                                    request1.Headers.Add("Authorization", token1);
+
+                                    var soConWipQtybjectResult1 = await client1.SendAsync(request1);
+
+                                    var soConWipQtybjectString1 = await soConWipQtybjectResult1.Content.ReadAsStringAsync();
+                                    var soConWipQtybjectData1 = JsonConvert.DeserializeObject<SoConWipQtyDetailsDto>(soConWipQtybjectString1);
+                                    if (soConWipQtybjectData1.data != null)
+                                    {
+                                        var soConWipQtyObject1 = soConWipQtybjectData1.data;
+                                        openSAStock = openSAStock + soConWipQtyObject1.WipQuantity;
+                                        openSAStock = openSAStock <= 0 ? 0 : openSAStock;
+                                        //if (openSAStock > soConWipQtyObject1.WipQuantity)
+                                        //{
+                                        //    openSAStock = openSAStock - soConWipQtyObject1.WipQuantity;
+                                        //}
+                                        //else
+                                        //{
+                                        //    openSAStock = soConWipQtyObject1.WipQuantity - openSAStock;
+                                        //}
+                                    }
+                                
                                 }
 
                                 // get stock from inventory
