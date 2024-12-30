@@ -51,6 +51,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal WipQuantity { get; set; }
 
     }
+    public class ShopOrderWIPQtyDto
+    {
+        public string ItemNumber { get; set; }
+        public decimal WipQuantity { get; set; }
+
+    }
     public class ChildItemStockWithProjectListWipDto
     {
         public string PartNumber { get; set; }
@@ -123,6 +129,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? Stock { get; set; }
         public decimal? WipQty { get; set; }
         public decimal? ODOQty { get; set; }
+        public decimal? ShopOrderConWipQty { get; set; }
         public decimal? BalanceToManufacture { get; set; }
 
     }

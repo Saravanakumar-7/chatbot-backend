@@ -190,4 +190,9 @@ namespace Tips.Production.Api.Entities.DTOs
         public OrderStatus Status { get; set; }
 
     }
+    public class ShopOrderWipQtyDto
+    {
+        public string ItemNumber { get; set; }
+        public decimal WipQuantity { get; set; }
+    }
 }

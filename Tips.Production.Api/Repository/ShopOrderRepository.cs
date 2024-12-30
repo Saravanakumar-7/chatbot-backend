@@ -434,7 +434,24 @@ namespace Tips.Production.Api.Repository
             return shopOrderByFGNoAndSANo;
 
         }
+        public async Task<IEnumerable<ShopOrderWipQtyDto>> GetShopOrderWipQtyByProjectNo(List<string> itemNumberList,string projectNo)
+        {
+            var shopOrderByIds = await _tipsProductionDbContext.ShopOrderItems
+                            .Where(x => x.ProjectNumber == projectNo).Select(x => x.ShopOrderId)
+                            .ToListAsync();
 
+            List<ShopOrderWipQtyDto> shopOrderConWipQtyList = await _tipsProductionDbContext.ShopOrders
+                .Where(x => itemNumberList.Contains(x.ItemNumber) && shopOrderByIds.Contains(x.Id))
+                .GroupBy(x => new { x.ItemNumber })
+                .Select(gr => new ShopOrderWipQtyDto
+                {
+                    ItemNumber = gr.Key.ItemNumber,
+                    WipQuantity = gr.Sum(x => x.WipQty - x.OqcQty)
+                })
+                .ToListAsync();
+
+            return shopOrderConWipQtyList;
+        }
         public async Task<IEnumerable<ShopOrder>> GetAllOpenShopOrders()
         {
             var getAllShopOrder = await FindByCondition(x => x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2)

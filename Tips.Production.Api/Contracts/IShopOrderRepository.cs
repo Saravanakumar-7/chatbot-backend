@@ -43,6 +43,7 @@ namespace Tips.Production.Api.Contracts
                                                                                                  string? projectNo, string? salesOrderNo, string? KPN, string? MPN);
         Task<IEnumerable<ShopOrderNumberSPReport>> GetShopOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<ShopOrderSPReportForTrans>> GetShopOrderSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<ShopOrderWipQtyDto>> GetShopOrderWipQtyByProjectNo(List<string> itemNumberList,string projectNo);
         public void SaveAsync();
     }
 }

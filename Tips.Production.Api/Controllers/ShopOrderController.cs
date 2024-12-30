@@ -1907,5 +1907,41 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> GetShopOrderWipQtyByProjectNo(List<string> itemNumberList ,string projectNo)
+        {
+            ServiceResponse<IEnumerable<ShopOrderWipQtyDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderWipQtyDto>>();
+            try
+            {
+                var shopOrderWipQtyDetails = await _shopOrderRepository.GetShopOrderWipQtyByProjectNo(itemNumberList, projectNo);
+                if (shopOrderWipQtyDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory Details hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"In GetShopOrderWipQtyByProjectNo ItemNumber List is Empty");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned shopOrder with Itemnumber List and projectNo in GetShopOrderWipQtyByProjectNo");
+                    serviceResponse.Data = shopOrderWipQtyDetails;
+                    serviceResponse.Message = "Returned ShopOrderWipQtyDetails with Itemnumber List and projectNo  Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"In GetShopOrderWipQtyByProjectNo error: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }
