@@ -36,10 +36,12 @@ public class MonthlyTaskService : BackgroundService
         using (var scope = _serviceProvider.CreateScope())
         {
             var weightedAvgCostTask = scope.ServiceProvider.GetRequiredService<I_SA_Weighted_AvgCostTask>();
-
+            var FGweightedAvgCostTask = scope.ServiceProvider.GetRequiredService<I_FG_Weighted_AvgCostTask>();
             try
             {
                 await weightedAvgCostTask.Calculate_SA_Weighted_AvgCost();
+                await Task.Delay(300000);
+                await FGweightedAvgCostTask.Calculate_FG_Weighted_AvgCost();
             }
             catch (Exception ex)
             {

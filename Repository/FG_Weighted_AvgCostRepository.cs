@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -16,18 +17,26 @@ namespace Repository
     {
         private TipsMasterDbContext _tipsMasterDbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly String _createdBy;
-        private readonly String _unitname;
+        //private readonly String _createdBy;
+        //private readonly String _unitname;
         public FG_Weighted_AvgCostRepository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsMasterDbContext = repositoryContext;
             _httpContextAccessor = httpContextAccessor;
-            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
-            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
-            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+            //var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            //_createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            //_unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
-
+        public async Task<Dictionary<string, decimal>> GetFGsAndLatestVersion()
+        {
+            return await _tipsMasterDbContext.ProductionBoms.Where(x => x.ItemType == PartType.FG).GroupBy(p => p.ItemNumber).Select(g => new
+            {
+                ItemNumber = g.Key,
+                LatestVersion = g.Max(p => p.ReleaseVersion)
+            })
+        .ToDictionaryAsync(x => x.ItemNumber, x => x.LatestVersion);
+        }
         public async Task<List<FG_Weighted_AvgCost>> GetAllFG_Weighted_AvgCost()
         {
             var FG_Weighted_AvgCost = await _tipsMasterDbContext.FG_Weighted_AvgCost.AsNoTracking().ToListAsync();

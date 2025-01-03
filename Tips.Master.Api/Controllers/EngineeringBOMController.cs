@@ -2984,6 +2984,7 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList = new List<BomCoverageReportChildItemReqQtyByProjectNoDto>();
+                Dictionary<string,Dictionary<string, decimal>> saItemOpenStockProjectwise = new Dictionary<string, Dictionary<string, decimal>>();
                 if (openFGCoverageDetails != null)
                 {
 
@@ -2995,7 +2996,9 @@ namespace Tips.Master.Api.Controllers
                         //var enggDetail = _enggBomRepository.GetAllLatestRevBOMIsReleaseEnggBom(itemNo);
                         if (productionBomMaxVersion != null)
                         {
-                            await ChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, item.ItemNumber, item.BalanceToOrder, item.ProjectNumber);
+
+                            await ChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, item.ItemNumber, item.BalanceToOrder, item.ProjectNumber,saItemOpenStockProjectwise);
+
                         }
                     }
                     //changed
@@ -3032,13 +3035,26 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        private async Task ChildItemRequiredQtyForCoverageReportByProjectNo(List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList, string itemNumber, decimal requiredQty, string projectNo)
+        private async Task ChildItemRequiredQtyForCoverageReportByProjectNo(List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList, string itemNumber, decimal requiredQty,
+                                                                                   string projectNo, Dictionary<string, Dictionary<string, decimal>> saItemOpenStockWithProject)
         {
             try
             {
                 var productionBomMaxVersion = await _releaseProductBomRepository
                                             .GetLatestProductionBomByItemNumber(itemNumber);
-                Dictionary<string, decimal> saItemOpenStock = new Dictionary<string, decimal>();
+
+                Dictionary<string, decimal> saItemOpenStock ;
+
+                if (saItemOpenStockWithProject.ContainsKey(projectNo))
+                {
+                     saItemOpenStock = saItemOpenStockWithProject[projectNo];
+                }
+                else
+                {
+                    saItemOpenStock = new Dictionary<string, decimal>();
+                }
+
+
                 if (productionBomMaxVersion >= 0)
                 {
                     var enggBomDetail = await _enggBomRepository
@@ -3137,14 +3153,6 @@ namespace Tips.Master.Api.Controllers
                                         var soConWipQtyObject1 = soConWipQtybjectData1.data;
                                         openSAStock = openSAStock + soConWipQtyObject1.WipQuantity;
                                         openSAStock = openSAStock <= 0 ? 0 : openSAStock;
-                                        //if (openSAStock > soConWipQtyObject1.WipQuantity)
-                                        //{
-                                        //    openSAStock = openSAStock - soConWipQtyObject1.WipQuantity;
-                                        //}
-                                        //else
-                                        //{
-                                        //    openSAStock = soConWipQtyObject1.WipQuantity - openSAStock;
-                                        //}
                                     }
                                 
                                 }
@@ -3159,17 +3167,27 @@ namespace Tips.Master.Api.Controllers
                                 if (saItemOpenStock.ContainsKey(saItemNumber))
                                 {
                                     saItemOpenStock[saItemNumber] = newOpenSAStock;
+                                   
                                 }
                                 else
                                 {
                                     saItemOpenStock.Add(saItemNumber, newOpenSAStock);
+                                    
                                 }
 
+                                if (saItemOpenStockWithProject.ContainsKey(projectNo))
+                                {
+                                    saItemOpenStockWithProject[projectNo] = saItemOpenStock;
+                                }
+                                else
+                                {
+                                    saItemOpenStockWithProject.Add(projectNo, saItemOpenStock);
+                                }
                                 if (newRequiredQtySA <= 0)
                                 {
                                     continue;
                                 }
-                                await ChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA, projectNo);
+                                await ChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA, projectNo, saItemOpenStockWithProject);
                             }
 
                         }

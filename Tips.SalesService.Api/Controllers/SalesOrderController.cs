@@ -1910,9 +1910,10 @@ namespace Tips.SalesService.Api.Controllers
 
                     IEnumerable<SalesOrderItems> salesOrderItems = await _salesOrderItemsRepository.GetSalesOrderItemDetailsForReturnByIdandItemNo
                                                                                                                             (item.FGPartNumber, item.SalesOrderId);
-                    SalesorderId = salesOrderItems.First().SalesOrderId;
+                    //SalesorderId = salesOrderItems.First().SalesOrderId;
                     if (salesOrderItems != null && salesOrderItems.Count() > 0)
                     {
+                        SalesorderId = salesOrderItems.First().SalesOrderId;
                         foreach (var salesOrderDetails in salesOrderItems)
                         {
                             var salesOrderDisQty = salesOrderDetails.DispatchQty;

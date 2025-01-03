@@ -69,7 +69,9 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<StockMovementHistorySPReport> StockMovementHistorySPReports { get; set; }
         public DbSet<InventoryBySumOfFilteringDatesSPReport> InventoryBySumOfFilteringDatesSPReports { get; set; }
         public DbSet<InventoryDashboardSPReport> InventoryDashboardSPReports { get; set; }
-        
+
+        public DbSet<LocationTransferPartNo> LocationTransferPartNos { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ConsumptionReport>().HasNoKey();

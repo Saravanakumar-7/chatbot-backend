@@ -14,15 +14,15 @@ namespace Repository
     {
         private TipsMasterDbContext _tipsMasterDbContext;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly String _createdBy;
-        private readonly String _unitname;
+        //private readonly String _createdBy;
+        //private readonly String _unitname;
         public FG_Weighted_AvgCost_History_Repository(TipsMasterDbContext repositoryContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext)
         {
             _tipsMasterDbContext = repositoryContext;
             _httpContextAccessor = httpContextAccessor;
-            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
-            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
-            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+            //var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            //_createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            //_unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
         public async Task TranferToFGWeightedHistory(List<FG_Weighted_AvgCost_History> fG_Weighted_AvgCost_Histories)

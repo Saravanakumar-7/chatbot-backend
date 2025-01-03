@@ -1350,7 +1350,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             List<PartType>? partTypes = new List<PartType> { PartType.FG, PartType.TG };
 
-            string[] skipWareHouse = { "Reject", "Scrap", "Rework", "FG", "IQC", "GRIN", "OPGIQC", "OPGGRIN", "WIP" };
+            string[] skipWareHouse = { "Reject", "Scrap", "Rework", /*"FG",*/ "IQC", "GRIN", "OPGIQC", "OPGGRIN", "WIP" };
 
             var inventoryDetails = await _tipsWarehouseDbContext.Inventories
             .Where(x => x.PartNumber == ItemNumber && x.ProjectNumber == projectNo && x.IsStockAvailable == true && x.Balance_Quantity > 0
