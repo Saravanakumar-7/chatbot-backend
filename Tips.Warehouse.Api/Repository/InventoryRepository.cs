@@ -1350,7 +1350,7 @@ namespace Tips.Warehouse.Api.Repository
         {
             List<PartType>? partTypes = new List<PartType> { PartType.FG, PartType.TG };
 
-            string[] skipWareHouse = { "Reject", "Scrap", "Rework", "FG", "IQC", "GRIN", "OPGIQC", "OPGGRIN", "WIP" };
+            string[] skipWareHouse = { "Reject", "Scrap", "Rework", /*"FG",*/ "IQC", "GRIN", "OPGIQC", "OPGGRIN", "WIP" };
 
             var inventoryDetails = await _tipsWarehouseDbContext.Inventories
             .Where(x => x.PartNumber == ItemNumber && x.ProjectNumber == projectNo && x.IsStockAvailable == true && x.Balance_Quantity > 0
@@ -1795,11 +1795,14 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<decimal> GetTotalStockOfSAItemNumberAndProjectNo(string itemNumber, string projectNo)
         {
-            var locationNames = new string[] { "Rework", "Scrap" };
-            return await _tipsWarehouseDbContext.Inventories
+            var locationNames = new string[] { "Rework", "Scrap" ,"Reject"};
+
+            decimal inventorySAStock =  await _tipsWarehouseDbContext.Inventories
         .Where(i => i.PartNumber == itemNumber && i.ProjectNumber == projectNo && i.IsStockAvailable == true && i.Balance_Quantity > 0
                 && !locationNames.Contains(i.Location) && i.PartType == PartType.SA)
         .SumAsync(i => i.Balance_Quantity);
+
+            return inventorySAStock;
         }
 
         public async Task<List<Inventory>> GetWipInventoryDetailsByLotNumber(string itemNumber, string lotNumber, string shopNo)

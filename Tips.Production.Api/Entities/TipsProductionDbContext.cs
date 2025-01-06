@@ -49,6 +49,8 @@ namespace Tips.Production.Api.Entities
         public DbSet<MaterialIssueAgainstMRSPReport> MaterialIssueAgainstMRSPReports { get; set; }
         public DbSet<MaterialIssueLocation> MaterialIssueLocations { get; set; }
         public DbSet<MaterialIssueSPReportForTrans> MaterialIssueSPReportForTrans { get; set; }
+        public DbSet<ShopOrderNumberSPReportForAvi> ShopOrderNumberSPReportForAvi { get; set; }
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ShopOrderNumberSPReport>().HasNoKey();
@@ -63,6 +65,7 @@ namespace Tips.Production.Api.Entities
             modelBuilder.Entity<MaterialIssueSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<MaterialRequestSpReportForTrans>().HasNoKey();
             modelBuilder.Entity<ShopOrderSPReportForTrans>().HasNoKey();
+            modelBuilder.Entity<ShopOrderNumberSPReportForAvi>().HasNoKey();
             // Other entity configurations can be added here
 
             base.OnModelCreating(modelBuilder);

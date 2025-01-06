@@ -20,6 +20,7 @@ using NLog.Fluent;
 using Org.BouncyCastle.Utilities;
 using System.Collections.Generic;
 using static Mysqlx.Notice.Warning.Types;
+using MySqlX.XDevAPI;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -2980,6 +2981,7 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList = new List<BomCoverageReportChildItemReqQtyByProjectNoDto>();
+                Dictionary<string,Dictionary<string, decimal>> saItemOpenStockProjectwise = new Dictionary<string, Dictionary<string, decimal>>();
                 if (openFGCoverageDetails != null)
                 {
 
@@ -2991,7 +2993,9 @@ namespace Tips.Master.Api.Controllers
                         //var enggDetail = _enggBomRepository.GetAllLatestRevBOMIsReleaseEnggBom(itemNo);
                         if (productionBomMaxVersion != null)
                         {
-                            await ChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, item.ItemNumber, item.BalanceToOrder, item.ProjectNumber);
+
+                            await ChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, item.ItemNumber, item.BalanceToOrder, item.ProjectNumber,saItemOpenStockProjectwise);
+
                         }
                     }
                     //changed
@@ -3028,13 +3032,26 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        private async Task ChildItemRequiredQtyForCoverageReportByProjectNo(List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList, string itemNumber, decimal requiredQty, string projectNo)
+        private async Task ChildItemRequiredQtyForCoverageReportByProjectNo(List<BomCoverageReportChildItemReqQtyByProjectNoDto> bomCoverageList, string itemNumber, decimal requiredQty,
+                                                                                   string projectNo, Dictionary<string, Dictionary<string, decimal>> saItemOpenStockWithProject)
         {
             try
             {
                 var productionBomMaxVersion = await _releaseProductBomRepository
                                             .GetLatestProductionBomByItemNumber(itemNumber);
-                Dictionary<string, decimal> saItemOpenStock = new Dictionary<string, decimal>();
+
+                Dictionary<string, decimal> saItemOpenStock ;
+
+                if (saItemOpenStockWithProject.ContainsKey(projectNo))
+                {
+                     saItemOpenStock = saItemOpenStockWithProject[projectNo];
+                }
+                else
+                {
+                    saItemOpenStock = new Dictionary<string, decimal>();
+                }
+
+
                 if (productionBomMaxVersion >= 0)
                 {
                     var enggBomDetail = await _enggBomRepository
@@ -3115,6 +3132,26 @@ namespace Tips.Master.Api.Controllers
                                     dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
                                     dynamic inventoryObject = inventoryObjectData.data;
                                     openSAStock = Convert.ToDecimal(inventoryObject) != null ? Convert.ToDecimal(inventoryObject) : 0;
+
+
+                                    var client1 = _clientFactory.CreateClient();
+                                    var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                                    var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ShopOrderAPI"],
+                                        $"GetSAShopOrderWipQtyByProjectNo?itemNumber={encodedItemNumber}&projectNo={encodedProjectNumber}"));
+                                    request1.Headers.Add("Authorization", token1);
+
+                                    var soConWipQtybjectResult1 = await client1.SendAsync(request1);
+
+                                    var soConWipQtybjectString1 = await soConWipQtybjectResult1.Content.ReadAsStringAsync();
+                                    var soConWipQtybjectData1 = JsonConvert.DeserializeObject<SoConWipQtyDetailsDto>(soConWipQtybjectString1);
+                                    if (soConWipQtybjectData1.data != null)
+                                    {
+                                        var soConWipQtyObject1 = soConWipQtybjectData1.data;
+                                        openSAStock = openSAStock + soConWipQtyObject1.WipQuantity;
+                                        openSAStock = openSAStock <= 0 ? 0 : openSAStock;
+                                    }
+                                
                                 }
 
                                 // get stock from inventory
@@ -3127,17 +3164,27 @@ namespace Tips.Master.Api.Controllers
                                 if (saItemOpenStock.ContainsKey(saItemNumber))
                                 {
                                     saItemOpenStock[saItemNumber] = newOpenSAStock;
+                                   
                                 }
                                 else
                                 {
                                     saItemOpenStock.Add(saItemNumber, newOpenSAStock);
+                                    
                                 }
 
+                                if (saItemOpenStockWithProject.ContainsKey(projectNo))
+                                {
+                                    saItemOpenStockWithProject[projectNo] = saItemOpenStock;
+                                }
+                                else
+                                {
+                                    saItemOpenStockWithProject.Add(projectNo, saItemOpenStock);
+                                }
                                 if (newRequiredQtySA <= 0)
                                 {
                                     continue;
                                 }
-                                await ChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA, projectNo);
+                                await ChildItemRequiredQtyForCoverageReportByProjectNo(bomCoverageList, enggChildItem.ItemNumber, newRequiredQtySA, projectNo, saItemOpenStockWithProject);
                             }
 
                         }

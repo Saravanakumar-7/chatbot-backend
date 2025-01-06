@@ -1184,7 +1184,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.Warehouse = grinInventoryDto.Warehouse;
                                 iqcInventoryTranctionDtos.From_Location = "OPGGRIN";
                                 iqcInventoryTranctionDtos.TO_Location = grinInventoryDto.Location;
-                                iqcInventoryTranctionDtos.GrinNo = grinInventoryDto.GrinNo; ;
+                                iqcInventoryTranctionDtos.GrinNo = grinInventoryDto.GrinNo; 
                                 iqcInventoryTranctionDtos.GrinPartId = grinInventoryDto.GrinPartId;
                                 iqcInventoryTranctionDtos.PartType = grinInventoryDto.PartType;
                                 iqcInventoryTranctionDtos.ReferenceID = grinInventoryDto.ReferenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/

@@ -10,6 +10,7 @@ namespace Contracts
 {
     public interface I_FG_Weighted_AvgCostRepository : IRepositoryBase<FG_Weighted_AvgCost>
     {
+        Task<Dictionary<string, decimal>> GetFGsAndLatestVersion();
         Task<List<FG_Weighted_AvgCost>> GetAllFG_Weighted_AvgCost();
         Task DeleteExistingData();
         Task<FG_Weighted_AvgCost?> GetFG_Weighted_AvgCost(string Itemnumber);

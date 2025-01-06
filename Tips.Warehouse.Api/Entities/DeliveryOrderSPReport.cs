@@ -28,9 +28,11 @@ namespace Tips.Warehouse.Api.Entities
         public string? UOC { get; set; }
         public string? UOM { get; set; }
         public decimal? FGOrderQty { get; set; }
-        public decimal? DODispatchQty { get; set; }
+        public decimal? OverallDispatchedQty { get; set; }
+        public decimal? LocationwiseDispatchedQty { get; set; }
         public decimal? OrderBalanceQty { get; set; }
-        public decimal? DoReturnQty { get; set; }
+        public decimal? OverallReturnDispatchedQty { get; set; }
+        public decimal? LocationwiseReturnDispatchedQty { get; set; }
         public string? SerialNo { get; set; }
         public string? Remarks { get; set; }
     }

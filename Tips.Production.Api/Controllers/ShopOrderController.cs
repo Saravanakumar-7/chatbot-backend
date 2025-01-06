@@ -200,6 +200,45 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> GetShopOrderSPReportWithParamForAvi([FromBody] ShopOrderReportWithParamDto shopOrderReportWithParamDto)
+        {
+            ServiceResponse<IEnumerable<ShopOrderNumberSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderNumberSPReportForAvi>>();
+            try
+            {
+                var products = await _shopOrderRepository.GetShopOrderSPReportWithParamForAvi(shopOrderReportWithParamDto.ShopOrderNumber,
+                                                                            shopOrderReportWithParamDto.ProjectType, shopOrderReportWithParamDto.ProjectNumber,
+                                                                            shopOrderReportWithParamDto.SalesOrderNumber, shopOrderReportWithParamDto.KPN,
+                                                                            shopOrderReportWithParamDto.MPN);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ShopOrderForAvi hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ShopOrderForAvi hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ShopOrderForAvi Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetShopOrderSPReportWithParamForAvi action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpPost]
         public async Task<IActionResult> GetShopOrderSPReportWithParamForTrans([FromBody] ShopOrderReportWithParamDtoForTrans shopOrderReportWithParamDto)
@@ -272,6 +311,42 @@ namespace Tips.Production.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetShopOrderSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetShopOrderSPReportWithDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<ShopOrderNumberSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderNumberSPReportForAvi>>();
+            try
+            {
+                var products = await _shopOrderRepository.GetShopOrderSPReportWithDateForAvi(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ShopOrderForAvi hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ShopOrderForAvi hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ShopOrderForAvi Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetShopOrderSPReportWithDateForAvi action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1935,7 +2010,7 @@ namespace Tips.Production.Api.Controllers
                 if (shopOrderWipQtyDetails == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Inventory Details hasn't been found";
+                    serviceResponse.Message = $"ShopOrderWipQtyByProjectNo Details hasn't been found";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"In GetShopOrderWipQtyByProjectNo ItemNumber List is Empty");
@@ -1954,6 +2029,43 @@ namespace Tips.Production.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"In GetShopOrderWipQtyByProjectNo error: {ex.Message},{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetSAShopOrderWipQtyByProjectNo(string itemNumber, string projectNo)
+        {
+            ServiceResponse<ShopOrderWipQtyDto> serviceResponse = new ServiceResponse<ShopOrderWipQtyDto>();
+            try
+            {
+                var shopOrderWipQtyDetails = await _shopOrderRepository.GetSAShopOrderWipQtyByProjectNo(itemNumber, projectNo);
+                if (shopOrderWipQtyDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SAShopOrderWipQtyByProjectNo Details hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"In GetSAShopOrderWipQtyByProjectNo ItemNumber List is Empty");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned SA shopOrder with Itemnumber List and projectNo in GetSAShopOrderWipQtyByProjectNo");
+                    serviceResponse.Data = shopOrderWipQtyDetails;
+                    serviceResponse.Message = "Returned SAShopOrderWipQtyDetails with Itemnumber List and projectNo  Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"In GetSAShopOrderWipQtyByProjectNo error: {ex.Message},{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal Server Error";
                 serviceResponse.Success = false;

@@ -81,4 +81,17 @@ namespace Entities.DTOs
         public decimal ODOQty { get; set; }
 
     }
+    public class SoConWipQtyDetailsDto
+    {
+        public Data1? data { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
+        public int statusCode { get; set; }
+    }
+    public class Data1
+    {
+        public string ItemNumber { get; set; }
+        public decimal WipQuantity { get; set; }
+
+    }
 }
