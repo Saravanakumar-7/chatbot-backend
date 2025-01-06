@@ -2440,6 +2440,7 @@ namespace Tips.Purchase.Api.Controllers
                     foreach (var poitem in po.purchaseOrderItems)
                     {
                         var POChild = PurchaseOrder.POItems.Where(x => x.ItemNumber == poitem.ItemNumber).FirstOrDefault();
+                        POChild.PoPartsStatus = false;
                         POChild.BalanceQty += poitem.ReturnQty;
                         POChild.ReceivedQty -= poitem.ReturnQty;
                         if (POChild.Qty == POChild.BalanceQty) POChild.PoStatus = PoStatus.Open;

@@ -445,7 +445,11 @@ namespace Tips.SalesService.Api.Repository
 
             return PagedList<SalesOrder>.ToPagedList(salesOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-
+        public async Task<List<string>> GetAllSalesOrderCustomerNames(List<string> SalesOrders)
+        {
+            var Customers = FindAll().Where(x=>SalesOrders.Contains(x.SalesOrderNumber)).OrderByDescending(x=>x.Id).Select(x=>x.CustomerName).Distinct().ToList();
+            return Customers;
+        }
         public async Task<PagedList<SalesOrder>> GetAllSalesOrderForecast([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParammes searchParammes)
         {
             var salesOrderDetails = FindAll().OrderByDescending(x => x.Id)

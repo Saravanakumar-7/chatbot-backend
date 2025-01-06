@@ -2,6 +2,7 @@
 using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Nodes;
 using AutoMapper;
 using Azure;
 using Contracts;
@@ -812,98 +813,115 @@ namespace Tips.Production.Api.Controllers
 
                     smtp.Send(email);
                     smtp.Disconnect(true);
+
+
+                    var data = JsonConvert.SerializeObject(SalesorderList);
+                    var contents1 = new StringContent(data, Encoding.UTF8, "application/json");
+                    //List<string>? CustomerNumber = new List<string>();
+                    var client2 = _clientFactory.CreateClient();
+                    var token2 = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request3 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
+                    $"GetAllSalesOrderCustomerNames"))
+                    {
+                        Content= contents1
+                    };
+                    request3.Headers.Add("Authorization", token2);
+
+                    var responses2 = await client2.SendAsync(request3);
+                    if (responses2.StatusCode != HttpStatusCode.OK) _logger.LogError($"Something went wrong inside GetAllSalesOrderCustomerNames");
+                    var SalesObjectString = await responses2.Content.ReadAsStringAsync();
+                    dynamic salesObjectData = JsonConvert.DeserializeObject(SalesObjectString);
+                    //CustomerNumber = salesObjectData.data;
+                    string CustomerName = string.Join(",", salesObjectData.data);
+                    //string? salesorderNos = null, CustomerName = null;
+                    //foreach (var item in shopOrder.ShopOrderItems)
+                    //{
+                    //    if (salesorderNos == null)
+                    //    {
+                    //        salesorderNos = item.SalesOrderNumber;
+                    //        SalesorderList.Add(item.SalesOrderNumber);
+                    //        var client2 = _clientFactory.CreateClient();
+                    //        var token2 = HttpContext.Request.Headers["Authorization"].ToString();
+                    //        var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["SalesOrderAPI"],
+                    //        $"GetSalesOrderDetialsBySalesOrderNumber?SalesOrderNumber={item.SalesOrderNumber}"));
+                    //        request2.Headers.Add("Authorization", token2);
+
+                    //        var responses2 = await client2.SendAsync(request2);
+                    //        if (responses2.StatusCode != HttpStatusCode.OK) _logger.LogError($"Something went wrong inside GetSalesOrderDetialsBySalesOrderNumber");
+                    //        var SalesObjectString = await responses2.Content.ReadAsStringAsync();
+                    //        dynamic salesObjectData = JsonConvert.DeserializeObject(SalesObjectString);
+                    //        dynamic salesObject = salesObjectData.data;
+                    //        CustomerName = salesObject.customerName;
+                    //        CustomerNumber.Add(CustomerName);
+                    //    }
+                    //    else
+                    //    {
+                    //        if (!SalesorderList.Contains(item.SalesOrderNumber))
+                    //        {
+                    //            salesorderNos = salesorderNos + "," + item.SalesOrderNumber;
+                    //            SalesorderList.Add(item.SalesOrderNumber);
+                    //        }
+                    //        var client2 = _clientFactory.CreateClient();
+                    //        var token2 = HttpContext.Request.Headers["Authorization"].ToString();
+                    //        var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["SalesOrderAPI"],
+                    //        $"GetSalesOrderDetialsBySalesOrderNumber?SalesOrderNumber={item.SalesOrderNumber}"));
+                    //        request2.Headers.Add("Authorization", token2);
+
+                    //        var responses2 = await client2.SendAsync(request2);
+                    //        if (responses2.StatusCode != HttpStatusCode.OK) _logger.LogError($"Something went wrong inside GetSalesOrderDetialsBySalesOrderNumber");
+                    //        var SalesObjectString = await responses2.Content.ReadAsStringAsync();
+                    //        dynamic salesObjectData = JsonConvert.DeserializeObject(SalesObjectString);
+                    //        dynamic salesObject = salesObjectData.data;
+                    //        string Cus = salesObject.customerName;
+                    //        if (!CustomerNumber.Contains(Cus))
+                    //        {
+
+                    //            CustomerName = CustomerName + "," + Cus;
+                    //            CustomerNumber.Add(Cus);
+                    //        }
+
+                    //    }
+
+                    //}
+                    AdvitaShopOrderDetails advitaShopOrderDetails = new AdvitaShopOrderDetails()
+                    {
+                        Shop_Order_No = shopOrder.ShopOrderNumber,
+                        Shop_Order_Type = Enum.GetName(typeof(PartType), shopOrder.ItemType),
+                        Sales_Order_No = salesorderNos,
+                        Item_Number = shopOrder.ItemNumber,
+                        Item_Description = shopOrder.Description,
+                        Shop_Order_Release_Qty = (long)Math.Round(shopOrder.TotalSOReleaseQty),
+                        Shop_Order_Completion_Date = shopOrder.SOCloseDate.ToString(),
+                        Customer_Name = CustomerName,
+                        Remarks = "Getapcs ShopOrder",
+                        Trans_Uploaded_By_Id = 8
+                    };
+                    //var jsons3 = JsonConvert.SerializeObject(advitaShopOrderDetails);
+                    //var datas3 = new StringContent(jsons3, Encoding.UTF8, "application/json");
+                    //var client3 = _clientFactory.CreateClient();
+                    //var token3 = HttpContext.Request.Headers["Authorization"].ToString();
+                    //var request3 = new HttpRequestMessage(HttpMethod.Post, "https://demo_keus.getapcs.com:8028/api/ShopOrder/" +
+                    //"CreateAdvitaShopOrderDetails")
+                    //{
+                    //    Content = datas3
+                    //};
+                    //request3.Headers.Add("Authorization", token3);
+
+                    //var responses3 = await client3.SendAsync(request3);
+
+                    //if (responses3.StatusCode != HttpStatusCode.Created)
+                    //{
+                    //    _logger.LogError($"Something went wrong inside CreateAdvitaShopOrderDetails action");
+                    //    serviceResponse.Data = null;
+                    //    serviceResponse.Message = $"Something went wrong in CreateAdvitaShopOrderDetails update";
+                    //    serviceResponse.Success = false;
+                    //    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    //    return StatusCode(500, serviceResponse);
+                    //}
+
+                    await _advitaShopOrderDetailsRepository.CreateAdvitaShopOrderDetails(advitaShopOrderDetails);
+                    _advitaShopOrderDetailsRepository.SaveAdvitaAsync();
                 }
-                //    List<string>? SalesorderList = new List<string>();
-                //    List<string>? CustomerNumber = new List<string>();
-                //    string? salesorderNos = null, CustomerName = null;
-                //    foreach (var item in shopOrder.ShopOrderItems)
-                //    {
-                //        if (salesorderNos == null)
-                //        {
-                //            salesorderNos = item.SalesOrderNumber;
-                //            SalesorderList.Add(item.SalesOrderNumber);
-                //            var client2 = _clientFactory.CreateClient();
-                //            var token2 = HttpContext.Request.Headers["Authorization"].ToString();
-                //            var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["SalesOrderAPI"],
-                //            $"GetSalesOrderDetialsBySalesOrderNumber?SalesOrderNumber={item.SalesOrderNumber}"));
-                //            request2.Headers.Add("Authorization", token2);
-
-                //            var responses2 = await client2.SendAsync(request2);
-                //            if (responses2.StatusCode != HttpStatusCode.OK) _logger.LogError($"Something went wrong inside GetSalesOrderDetialsBySalesOrderNumber");
-                //            var SalesObjectString = await responses2.Content.ReadAsStringAsync();
-                //            dynamic salesObjectData = JsonConvert.DeserializeObject(SalesObjectString);
-                //            dynamic salesObject = salesObjectData.data;
-                //            CustomerName = salesObject.customerName;
-                //            CustomerNumber.Add(CustomerName);
-                //        }
-                //        else
-                //        {
-                //            if (!SalesorderList.Contains(item.SalesOrderNumber))
-                //            {
-                //                salesorderNos = salesorderNos + "," + item.SalesOrderNumber;
-                //                SalesorderList.Add(item.SalesOrderNumber);
-                //            }
-                //            var client2 = _clientFactory.CreateClient();
-                //            var token2 = HttpContext.Request.Headers["Authorization"].ToString();
-                //            var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["SalesOrderAPI"],
-                //            $"GetSalesOrderDetialsBySalesOrderNumber?SalesOrderNumber={item.SalesOrderNumber}"));
-                //            request2.Headers.Add("Authorization", token2);
-
-                //            var responses2 = await client2.SendAsync(request2);
-                //            if (responses2.StatusCode != HttpStatusCode.OK) _logger.LogError($"Something went wrong inside GetSalesOrderDetialsBySalesOrderNumber");
-                //            var SalesObjectString = await responses2.Content.ReadAsStringAsync();
-                //            dynamic salesObjectData = JsonConvert.DeserializeObject(SalesObjectString);
-                //            dynamic salesObject = salesObjectData.data;
-                //            string Cus = salesObject.customerName;
-                //            if (!CustomerNumber.Contains(Cus))
-                //            {
-
-                //                CustomerName = CustomerName + "," + Cus;
-                //                CustomerNumber.Add(Cus);
-                //            }
-
-                //        }
-
-                //    }
-                //    AdvitaShopOrderDetails advitaShopOrderDetails = new AdvitaShopOrderDetails()
-                //    {
-                //        Shop_Order_No = shopOrder.ShopOrderNumber,
-                //        Shop_Order_Type = Enum.GetName(typeof(PartType), shopOrder.ItemType),
-                //        Sales_Order_No = salesorderNos,
-                //        Item_Number = shopOrder.ItemNumber,
-                //        Item_Description = shopOrder.Description,
-                //        Shop_Order_Release_Qty = (long)Math.Round(shopOrder.TotalSOReleaseQty),
-                //        Shop_Order_Completion_Date = shopOrder.SOCloseDate.ToString(),
-                //        Customer_Name = CustomerName,
-                //        Remarks = "Getapcs ShopOrder",
-                //        Trans_Uploaded_By_Id = 8
-                //    };
-                //var jsons3 = JsonConvert.SerializeObject(advitaShopOrderDetails);
-                //var datas3 = new StringContent(jsons3, Encoding.UTF8, "application/json");
-                //var client3 = _clientFactory.CreateClient();
-                //var token3 = HttpContext.Request.Headers["Authorization"].ToString();
-                //var request3 = new HttpRequestMessage(HttpMethod.Post, "https://demo_keus.getapcs.com:8028/api/ShopOrder/" +
-                //"CreateAdvitaShopOrderDetails")
-                //{
-                //    Content = datas3
-                //};
-                //request3.Headers.Add("Authorization", token3);
-
-                //var responses3 = await client3.SendAsync(request3);
-
-                //if (responses3.StatusCode != HttpStatusCode.Created)
-                //{
-                //    _logger.LogError($"Something went wrong inside CreateAdvitaShopOrderDetails action");
-                //    serviceResponse.Data = null;
-                //    serviceResponse.Message = $"Something went wrong in CreateAdvitaShopOrderDetails update";
-                //    serviceResponse.Success = false;
-                //    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                //    return StatusCode(500, serviceResponse);
-                //}
-                //}
-                //await _advitaShopOrderDetailsRepository.CreateAdvitaShopOrderDetails(advitaShopOrderDetails);
-                //_advitaShopOrderDetailsRepository.SaveAdvitaAsync();
-
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ShopOrder Successfully Created";
                 serviceResponse.Success = true;
@@ -1908,7 +1926,7 @@ namespace Tips.Production.Api.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> GetShopOrderWipQtyByProjectNo(List<string> itemNumberList ,string projectNo)
+        public async Task<IActionResult> GetShopOrderWipQtyByProjectNo(List<string> itemNumberList, string projectNo)
         {
             ServiceResponse<IEnumerable<ShopOrderWipQtyDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderWipQtyDto>>();
             try

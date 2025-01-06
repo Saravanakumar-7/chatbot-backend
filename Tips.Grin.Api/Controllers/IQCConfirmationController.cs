@@ -1017,8 +1017,8 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObject.location = "IQC";
                                     inventoryObject.referenceID = iQCCreate.IQCNumber;
                                     inventoryObject.referenceIDFrom = "IQC";
+                                    inventoryObject.balance_Quantity -= acceptedQty;
                                     acceptedQty -= balanceQty;
-
                                 }
                                 else if (inventoryObject.balance_Quantity > acceptedQty)
                                 {
@@ -1074,7 +1074,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
                                 iqcInventoryTranctionDto.Description = inventoryObject.description;
                                 iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
-                                iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                                iqcInventoryTranctionDto.Issued_Quantity = balanceQty;
                                 iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDto.Issued_By = _createdBy;
                                 iqcInventoryTranctionDto.UOM = inventoryObject.uom;
@@ -1130,8 +1130,8 @@ namespace Tips.Grin.Api.Controllers
 
                                     if (flag1 == 1)
                                     {
-                                        grinInventoryDto.Balance_Quantity = rejectedQty;
-
+                                        grinInventoryDto.Balance_Quantity = balanceQty;
+                                        rejectedQty -= balanceQty;
                                     }
                                     else if (flag2 == 1)
                                     {
@@ -1458,8 +1458,8 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObject.location = "IQC";
                                     inventoryObject.referenceID = iQCCreate.GrinNumber;
                                     inventoryObject.referenceIDFrom = "IQC";
+                                    inventoryObject.balance_Quantity -= acceptedQty;
                                     acceptedQty -= balanceQty;
-
                                 }
                                 else if (inventoryObject.balance_Quantity > acceptedQty)
                                 {
@@ -1471,8 +1471,6 @@ namespace Tips.Grin.Api.Controllers
                                         inventoryObject.referenceID = iQCCreate.GrinNumber;
                                         inventoryObject.referenceIDFrom = "IQC";
                                         flag1 = 1;
-
-
                                     }
                                     else
                                     {
@@ -1487,8 +1485,6 @@ namespace Tips.Grin.Api.Controllers
                                         inventoryObject.referenceID = iQCCreate.GrinNumber;
                                         inventoryObject.referenceIDFrom = "IQC";
                                         acceptedQty = 0;
-
-
                                     }
                                 }
                                 if (inventoryObject.balance_Quantity == 0) { inventoryObject.isStockAvailable = 0; }
@@ -1516,7 +1512,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
                                 iqcInventoryTranctionDto.Description = inventoryObject.description;
                                 iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
-                                iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                                iqcInventoryTranctionDto.Issued_Quantity = balanceQty;
                                 iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDto.Issued_By = _createdBy;
                                 iqcInventoryTranctionDto.UOM = inventoryObject.uom;
@@ -1572,14 +1568,13 @@ namespace Tips.Grin.Api.Controllers
 
                                     if (flag1 == 1)
                                     {
-                                        grinInventoryDto.Balance_Quantity = rejectedQty;
-
+                                        grinInventoryDto.Balance_Quantity = balanceQty;
+                                        rejectedQty -= balanceQty;
                                     }
                                     else if (flag2 == 1)
                                     {
                                         grinInventoryDto.Balance_Quantity = bal;
                                         rejectedQty -= bal;
-
                                     }
 
                                     //var httpClientHandler = new HttpClientHandler();
@@ -1671,8 +1666,6 @@ namespace Tips.Grin.Api.Controllers
                             await _grinPartsRepository.UpdateGrinQty(grinPartsData);
                             _grinPartsRepository.SaveAsync();
                         }
-
-
                     }
 
                     //Updating IQC Status in IQC
@@ -2416,7 +2409,8 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryObject.warehouse = "IQC";
                                 inventoryObject.location = "IQC";
                                 inventoryObject.referenceID = iqcConfirmation.GrinNumber;
-                                inventoryObject.referenceIDFrom = "GRIN";
+                                inventoryObject.referenceIDFrom = "IQC";
+                                inventoryObject.balance_Quantity -= acceptedQty;
                                 acceptedQty -= balanceQty;
 
                             }
@@ -2472,7 +2466,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
                             iqcInventoryTranctionDto.Description = inventoryObject.description;
                             iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
-                            iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                            iqcInventoryTranctionDto.Issued_Quantity = balanceQty;
                             iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                             iqcInventoryTranctionDto.Issued_By = _createdBy;
                             iqcInventoryTranctionDto.UOM = inventoryObject.uom;
@@ -2526,7 +2520,8 @@ namespace Tips.Grin.Api.Controllers
                                 grinInventoryDto.ShopOrderNo = "";
                                 if (flag1 == 1)
                                 {
-                                    grinInventoryDto.Balance_Quantity = rejectedQty;
+                                    grinInventoryDto.Balance_Quantity = balanceQty;
+                                    rejectedQty -= balanceQty;
                                 }
                                 else if (flag2 == 1)
                                 {
@@ -2799,7 +2794,8 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryObject.warehouse = "IQC";
                                 inventoryObject.location = "IQC";
                                 inventoryObject.referenceID = iqcConfirmation.GrinNumber;
-                                inventoryObject.referenceIDFrom = "GRIN";
+                                inventoryObject.referenceIDFrom = "IQC";
+                                inventoryObject.balance_Quantity = 0;
                                 acceptedQty -= balanceQty;
 
                             }

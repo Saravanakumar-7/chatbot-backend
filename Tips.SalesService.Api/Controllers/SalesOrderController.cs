@@ -209,6 +209,30 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> GetAllSalesOrderCustomerNames([FromBody] List<string> SalesOrders)
+        {
+            ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
+            try
+            {
+                var getAllCustomer = await _repository.GetAllSalesOrderCustomerNames(SalesOrders);
+              
+                serviceResponse.Data = getAllCustomer;
+                serviceResponse.Message = "Returned all GetAllSalesOrderCustomerNames";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInfo($"Error Occured in GetAllSalesOrderCustomerNames: {ex.Message} \n {ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = ($"Error Occured in GetAllSalesOrderCustomerNames: {ex.Message} \n {ex.InnerException}");
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> GetSalesOrderSPReport([FromQuery] PagingParameter pagingParameter)
         {

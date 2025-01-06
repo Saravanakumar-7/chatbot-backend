@@ -138,8 +138,8 @@ namespace Tips.Grin.Api.Controllers
                 var Iqcs = new Dictionary<string, List<string>>();
                 foreach (var grins in Grindetails)
                 {
-                    grins.GrinParts.ForEach(x=>x.Grins=null);
-                    grins.GrinParts.ForEach(x => x.ProjectNumbers.ForEach(z=>z.GrinParts=null));
+                    grins.GrinParts.ForEach(x => x.Grins = null);
+                    grins.GrinParts.ForEach(x => x.ProjectNumbers.ForEach(z => z.GrinParts = null));
                     grins.OtherCharges.ForEach(x => x.Grins = null);
 
                     var partNo = grins.GrinParts.Where(x => x.IsIqcCompleted == true).Select(x => x.ItemNumber).ToList();
@@ -152,7 +152,7 @@ namespace Tips.Grin.Api.Controllers
                 if (Iqcs.Count() != 0)
                 {
                     IqcDetails = await _iQCConfirmationRepository.GetIqcDetailsByGrinNoAndParts(Iqcs);
-                    IqcDetails.ForEach(x=>x.IQCConfirmationItems.ForEach(z=>z.IQCConfirmation=null));
+                    IqcDetails.ForEach(x => x.IQCConfirmationItems.ForEach(z => z.IQCConfirmation = null));
                 }
                 _logger.LogInfo($"Returned all GetGrinAndIqcsByPurchaseOrder {Ponumber}");
 
@@ -632,14 +632,16 @@ namespace Tips.Grin.Api.Controllers
                 var grinCal = _mapper.Map<List<GrinPartscalculationofAvgcost>>(grinPartsDto);
                 List<GrinParts> grinPartsList = new List<GrinParts>();
 
-                var othercosttotal = grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.Transport;
+                decimal? othercosttotal = 1;
+                if ((grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.Transport) > 1) othercosttotal = grins.Freight + grins.Insurance + grins.LoadingorUnLoading + grins.Transport;
                 decimal? conversionrate = 1;
                 if (grins.CurrencyConversion > 1) conversionrate = grins.CurrencyConversion;
                 foreach (var gPart in grinCal)
                 {
                     decimal? EP = gPart.Qty * gPart.UnitPrice;
                     decimal? Itemwithtax = gPart.SGST + gPart.IGST + gPart.CGST + gPart.UTGST + gPart.Duties;
-                    gPart.EPwithTax = (EP + (EP * (Itemwithtax / 100))) * conversionrate;
+                    if (Itemwithtax == null || Itemwithtax == 0) gPart.EPwithTax = EP * conversionrate;
+                    else gPart.EPwithTax = (EP + (EP * (Itemwithtax / 100))) * conversionrate;
                     gPart.EPforSingleQty = gPart.EPwithTax / gPart.Qty;
                 }
                 decimal? SumofEPwithtax = grinCal.Sum(x => x.EPwithTax);
@@ -648,10 +650,11 @@ namespace Tips.Grin.Api.Controllers
                     decimal? distriduteOthercostforitem = (gPart.EPwithTax / SumofEPwithtax) * othercosttotal;
                     decimal? distriduteOthercostforitemsSingleQty = distriduteOthercostforitem / gPart.Qty;
                     gPart.AverageCost = distriduteOthercostforitemsSingleQty + gPart.EPforSingleQty;
+                    if (gPart.AverageCost == null) gPart.AverageCost = 0;
                     GrinParts grinParts = _mapper.Map<GrinParts>(gPart);
                     grinPartsList.Add(grinParts);
                 }
-
+               
                 grins.GrinParts = grinPartsList;
                 grins.IsGrinCompleted = true;
 
@@ -1216,7 +1219,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.Warehouse = "IQC";
                             iqcInventoryTranctionDto.From_Location = "GRIN";
                             iqcInventoryTranctionDto.TO_Location = "IQC";
-                            iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; 
+                            iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo;
                             iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
                             iqcInventoryTranctionDto.PartType = inventoryObject.partType;
                             iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;/* Convert.ToString(grinPartsDetails.Id);*/
@@ -1301,7 +1304,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.Warehouse = grinInventoryDto.Warehouse;
                                 iqcInventoryTranctionDtos.From_Location = "GRIN";
                                 iqcInventoryTranctionDtos.TO_Location = grinInventoryDto.Location;
-                                iqcInventoryTranctionDtos.GrinNo = grinInventoryDto.GrinNo; 
+                                iqcInventoryTranctionDtos.GrinNo = grinInventoryDto.GrinNo;
                                 iqcInventoryTranctionDtos.GrinPartId = grinInventoryDto.GrinPartId;
                                 iqcInventoryTranctionDtos.PartType = grinInventoryDto.PartType;
                                 iqcInventoryTranctionDtos.ReferenceID = grinInventoryDto.GrinNo;/* Convert.ToString(grinPartsDetails.Id);*/
@@ -1327,7 +1330,7 @@ namespace Tips.Grin.Api.Controllers
                                 if (inventoryTransResponses1.StatusCode != HttpStatusCode.OK) createInvTranc = inventoryTransResponses1.StatusCode;
                             }
 
-                            
+
                         }
                     }
 
@@ -1509,7 +1512,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.Warehouse = "IQC";
                             iqcInventoryTranctionDto.From_Location = "GRIN";
                             iqcInventoryTranctionDto.TO_Location = "IQC";
-                            iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo; 
+                            iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo;
                             iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
                             iqcInventoryTranctionDto.PartType = inventoryObject.partType;
                             iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;/* Convert.ToString(grinPartsDetails.Id);*/
@@ -1587,7 +1590,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.Warehouse = grinInventoryDto.Warehouse;
                                 iqcInventoryTranctionDtos.From_Location = "GRIN";
                                 iqcInventoryTranctionDtos.TO_Location = grinInventoryDto.Location;
-                                iqcInventoryTranctionDtos.GrinNo = grinInventoryDto.GrinNo; 
+                                iqcInventoryTranctionDtos.GrinNo = grinInventoryDto.GrinNo;
                                 iqcInventoryTranctionDtos.GrinPartId = grinInventoryDto.GrinPartId;
                                 iqcInventoryTranctionDtos.PartType = grinInventoryDto.PartType;
                                 iqcInventoryTranctionDtos.ReferenceID = grinInventoryDto.GrinNo;/* Convert.ToString(grinPartsDetails.Id);*/
@@ -1612,7 +1615,7 @@ namespace Tips.Grin.Api.Controllers
                                 if (inventoryTransResponses1.StatusCode != HttpStatusCode.OK) createInvTranc = inventoryTransResponses1.StatusCode;
                             }
 
-                           
+
                         }
 
                     }
@@ -1846,14 +1849,16 @@ namespace Tips.Grin.Api.Controllers
                 var grinPartsDto = updategrin.GrinParts;
                 var grinCal = _mapper.Map<List<GrinPartscalculationofAvgcost>>(grinPartsDto);
                 var GrinpartsList = new List<GrinParts>();
-                var othercosttotal = grinList.Freight + grinList.Insurance + grinList.LoadingorUnLoading + grinList.Transport;
+                decimal? othercosttotal = 1;
+                if ((grinList.Freight + grinList.Insurance + grinList.LoadingorUnLoading + grinList.Transport) > 1) othercosttotal = grinList.Freight + grinList.Insurance + grinList.LoadingorUnLoading + grinList.Transport;
                 decimal? conversionrate = 1;
                 if (grinList.CurrencyConversion > 1) conversionrate = grinList.CurrencyConversion;
                 foreach (var gPart in grinCal)
                 {
                     decimal? EP = gPart.Qty * gPart.UnitPrice;
                     decimal? Itemwithtax = gPart.SGST + gPart.IGST + gPart.CGST + gPart.UTGST + gPart.Duties;
-                    gPart.EPwithTax = (EP + (EP * (Itemwithtax / 100))) * conversionrate;
+                    if (Itemwithtax == null || Itemwithtax == 0) gPart.EPwithTax = EP * conversionrate;
+                    else gPart.EPwithTax = (EP + (EP * (Itemwithtax / 100))) * conversionrate;
                     gPart.EPforSingleQty = gPart.EPwithTax / gPart.Qty;
                 }
                 decimal? SumofEPwithtax = grinCal.Sum(x => x.EPwithTax);
@@ -1862,6 +1867,7 @@ namespace Tips.Grin.Api.Controllers
                     decimal? distriduteOthercostforitem = (gPart.EPwithTax / SumofEPwithtax) * othercosttotal;
                     decimal? distriduteOthercostforitemsSingleQty = distriduteOthercostforitem / gPart.Qty;
                     gPart.AverageCost = distriduteOthercostforitemsSingleQty + gPart.EPforSingleQty;
+                    if (gPart.AverageCost == null) gPart.AverageCost = 0;
                     GrinParts grinParts = _mapper.Map<GrinParts>(gPart);
                     grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(gPart.ProjectNumbers);
                     GrinpartsList.Add(grinParts);
@@ -2826,6 +2832,91 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> UpdateGRINAvgCost([FromBody] List<string> GrinNumbers)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                foreach (var grin in GrinNumbers)
+                {
+                    try
+                    {
+                        var getGrindetails = await _repository.GetGrinByGrinNo(grin);
 
+
+                        var grinPartsDto = getGrindetails.GrinParts;
+                        var grinCal = _mapper.Map<List<GrinPartscalculationofAvgcost>>(grinPartsDto);
+                        var GrinpartsList = new List<GrinParts>();
+                        decimal? othercosttotal = 1;
+                        if ((getGrindetails.Freight + getGrindetails.Insurance + getGrindetails.LoadingorUnLoading + getGrindetails.Transport) > 1) othercosttotal = getGrindetails.Freight + getGrindetails.Insurance + getGrindetails.LoadingorUnLoading + getGrindetails.Transport;
+                        decimal? conversionrate = 1;
+                        if (getGrindetails.CurrencyConversion > 1) conversionrate = getGrindetails.CurrencyConversion;
+                        foreach (var gPart in grinCal)
+                        {
+                            if (gPart.Qty > 0 && gPart.UnitPrice > 0)
+                            {
+                                try
+                                {
+                                    decimal? EP = gPart.Qty * gPart.UnitPrice;
+                                    decimal? Itemwithtax = gPart.SGST + gPart.IGST + gPart.CGST + gPart.UTGST + gPart.Duties;
+                                    if (Itemwithtax == null || Itemwithtax == 0) gPart.EPwithTax = EP * conversionrate;
+                                    else gPart.EPwithTax = (EP + (EP * (Itemwithtax / 100))) * conversionrate;
+                                    gPart.EPforSingleQty = gPart.EPwithTax / gPart.Qty;
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new Exception(grin + " at " + gPart.ItemNumber + "\n" + ex);
+                                }
+                            }
+                        }
+                        decimal? SumofEPwithtax = grinCal.Where(x=>x.Qty > 0 && x.UnitPrice > 0).Sum(x => x.EPwithTax);
+                        foreach (var gPart in grinCal)
+                        {
+                            if (gPart.Qty > 0 && gPart.UnitPrice > 0)
+                            {
+                                try
+                                {
+                                    decimal? distriduteOthercostforitem = (gPart.EPwithTax / SumofEPwithtax) * othercosttotal;
+                                    decimal? distriduteOthercostforitemsSingleQty = distriduteOthercostforitem / gPart.Qty;
+                                    gPart.AverageCost = distriduteOthercostforitemsSingleQty + gPart.EPforSingleQty;
+                                   
+                                }
+                                catch (Exception ex)
+                                {
+                                    throw new Exception(grin + " at " + gPart.ItemNumber + "\n" + ex);
+                                }
+                            }
+                            GrinParts grinParts = _mapper.Map<GrinParts>(gPart);
+                            grinParts.ProjectNumbers = _mapper.Map<List<ProjectNumbers>>(gPart.ProjectNumbers);
+                            GrinpartsList.Add(grinParts);
+                        }
+                        getGrindetails.GrinParts = GrinpartsList;
+                        await _repository.UpdateGrin_ForTally(getGrindetails);
+                        _repository.SaveAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(grin + "\n" +ex);
+                    }
+                }
+                _logger.LogInfo($"Successfully UpdateGRINAvgCost API");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Successfully UpdateGRINAvgCost";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return StatusCode(200, serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside UpdateGRINAvgCost action : {ex.Message} \n {ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }
