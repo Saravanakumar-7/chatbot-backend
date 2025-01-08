@@ -146,7 +146,7 @@ namespace Tips.Master.Api.Controllers
         }
         //GET All FG&SAItems
         [HttpGet]
-        public async Task<IActionResult> GetAllFGSAItems([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        public async Task<IActionResult> GetAllFGSAItems()
         {
             ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
 

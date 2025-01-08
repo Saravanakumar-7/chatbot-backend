@@ -3660,7 +3660,7 @@ namespace Tips.Purchase.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside ActivatePurchaseOrderApprovalI action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
