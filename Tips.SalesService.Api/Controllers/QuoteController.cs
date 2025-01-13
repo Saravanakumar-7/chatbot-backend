@@ -893,10 +893,13 @@ namespace Tips.SalesService.Api.Controllers
                 smtp.Send(email);
                 smtp.Disconnect(true);
 
-                var jsonpayload = "{\r\n  \"recipient_type\": \"individual\",\r\n  \"to\": \"\",\r\n  \"type\": \"template\",\r\n  \"template\": {\r\n    \"name\": \"\",\r\n    \"language\": {\r\n      \"policy\": \"deterministic\",\r\n      \"code\": \"en\"\r\n    },\r\n    \"components\": [\r\n      {\r\n        \"type\": \"header\",\r\n        \"parameters\": [\r\n          {\r\n            \"type\": \"document\",\r\n            \"document\": {\r\n              \"filename\": \"\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  },\r\n  \"metadata\": {\r\n    \"messageId\": \"\",\r\n    \"media\": {\r\n      \"mimeType\": \"application/pdf\",\r\n      \"content\": \"\"\r\n    }\r\n  }\r\n}";
+                var jsonpayload = "{\r\n  \"recipient_type\": \"individual\",\r\n  \"to\": \"\",\r\n  \"type\": \"template\",\r\n  \"template\": {\r\n    \"name\": \"\",\r\n    \"language\": {\r\n      \"policy\": \"deterministic\",\r\n      \"code\": \"en\"\r\n    },\r\n    \"components\": [\r\n      {\r\n        \"type\": \"header\",\r\n        \"parameters\": [\r\n          {\r\n            \"type\": \"document\",\r\n            \"document\": {\r\n              \"filename\": \"\"\r\n            }\r\n          }\r\n        ]\r\n      }\r\n    ]\r\n  },\r\n  \"metadata\": {\r\n    \"messageId\": \"\",\r\n    \"media\": {\r\n      \"mimeType\": \"application/pdf\"}\r\n  }\r\n}";
                 WhatsAppMessagePayload whatsAppMessagePayload = JsonConvert.DeserializeObject<WhatsAppMessagePayload>(jsonpayload);
                 whatsAppMessagePayload.Template.Name = whatsapptemplate;
                 whatsAppMessagePayload.Template.Components[0].Parameters[0].Document.Filename = FileName;
+                string PDFLink = quoteEmailPostDto.jasperfileUrl;
+                PDFLink = PDFLink.Replace("https://", "https://jasperadmin:RMuhLgqwd9pIPb4@");
+                whatsAppMessagePayload.Template.Components[0].Parameters[0].Document.Link = PDFLink;
 
                 Component component = new Component();
                 List<Tips.SalesService.Api.Entities.DTOs.Parameter> parameters = new List<Tips.SalesService.Api.Entities.DTOs.Parameter>();
@@ -916,7 +919,7 @@ namespace Tips.SalesService.Api.Controllers
                 whatsAppMessagePayload.Template.Components.Add(component);
 
 
-                whatsAppMessagePayload.Metadata.Media.Content = base64;
+                //whatsAppMessagePayload.Metadata.Media.Content = "___BASE64___";
                 WhatsAppCreateTokenResponse whatsAppCreateTokenResponse;
 
                 
@@ -964,6 +967,7 @@ namespace Tips.SalesService.Api.Controllers
                 //{
                 //    whatsAppMessagePayload.To = number;
                 //    var whatsappCreate = JsonConvert.SerializeObject(whatsAppMessagePayload);
+                //    //whatsappCreate=whatsappCreate.Replace("___BASE64___", base64);
                 //    var data4 = new StringContent(whatsappCreate, Encoding.UTF8, "application/json");
                 //    var request4 = new HttpRequestMessage(HttpMethod.Post, "https://api.aclwhatsapp.com/pull-platform-receiver/v2/wa/messages")
                 //    {

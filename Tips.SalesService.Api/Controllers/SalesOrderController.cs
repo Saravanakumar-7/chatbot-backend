@@ -1006,6 +1006,10 @@ namespace Tips.SalesService.Api.Controllers
                             {
                                 var oldSOAddCharges = salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges[i];
                                 additionalChargesDetails.Id = oldSOAddCharges.Id;
+                                if(additionalChargesDetails.InvoicedValue == 0) additionalChargesDetails.SOAdditionalStatus = SoStatus.Open;
+                                else if (additionalChargesDetails.TotalValue > additionalChargesDetails.InvoicedValue && additionalChargesDetails.InvoicedValue > 0) additionalChargesDetails.SOAdditionalStatus = SoStatus.PartiallyClosed;
+                                else if (additionalChargesDetails.TotalValue == additionalChargesDetails.InvoicedValue) additionalChargesDetails.SOAdditionalStatus = SoStatus.Closed;
+
                             }
                         }
                         salesAdditionalChargesList.Add(additionalChargesDetails);
@@ -5796,7 +5800,7 @@ namespace Tips.SalesService.Api.Controllers
                 component.Type = "body";
                 component.Parameters = parameters;
                 whatsAppMessagePayload.Template.Components.Add(component);
-                whatsAppMessagePayload.Metadata.Media.Content = base64;
+                //whatsAppMessagePayload.Metadata.Media.Content = base64;
                 WhatsAppCreateTokenResponse whatsAppCreateTokenResponse;
 
 
