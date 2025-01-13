@@ -1504,20 +1504,25 @@ namespace Tips.Warehouse.Api.Controllers
 
                         InventoryTranction inventoryTranction = new InventoryTranction();
                         inventoryTranction.PartNumber = ItemNo;
-                        inventoryTranction.MftrPartNumber = ItemNo;
+                        inventoryTranction.LotNumber = inventoryDetails[i].LotNumber;
+                        inventoryTranction.MftrPartNumber = inventoryDetails[i].MftrPartNumber;
                         inventoryTranction.Description = Desc;
                         inventoryTranction.ProjectNumber = ProjectNo;
                         inventoryTranction.PartType = ItemType;
-                        inventoryTranction.Issued_Quantity = 0;
+                        inventoryTranction.Issued_Quantity = producedQty;
                         inventoryTranction.UOM = uom;
                         inventoryTranction.BOM_Version_No = 0;
                         inventoryTranction.Issued_DateTime = DateTime.Now;
+                        inventoryTranction.Issued_By = _createdBy;
+                        inventoryTranction.GrinPartId = inventoryDetails[i].GrinPartId;
+                        inventoryTranction.GrinNo = inventoryDetails[i].GrinNo;
                         inventoryTranction.shopOrderNo = inventoryDetails[i].shopOrderNo;
                         inventoryTranction.ReferenceID = inventoryDetails[i].ReferenceID;
-                        inventoryTranction.ReferenceIDFrom = inventoryDetails[i].ReferenceIDFrom;
-                        inventoryTranction.From_Location = inventoryDetails[i].Location;
-                        inventoryTranction.TO_Location = inventoryDetails[i].Location;
-                        inventoryTranction.Warehouse = inventoryDetails[i].Warehouse;
+                        inventoryTranction.ReferenceIDFrom = "ShopOrderConformation";
+                        inventoryTranction.From_Location = "WIP";
+                        inventoryTranction.TO_Location ="Converted FG";
+                        inventoryTranction.Warehouse = "Converted FG";
+                        inventoryTranction.Remarks = "ShopOrderConformation Done";
 
                         await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
 
@@ -2136,6 +2141,7 @@ namespace Tips.Warehouse.Api.Controllers
                                     inventoryTransaction1.Issued_Quantity = wipInventory.Balance_Quantity;
                                     inventoryTransaction1.UOM = wipInventory.UOM;
                                     inventoryTransaction1.Issued_DateTime = DateTime.Now;
+                                    inventoryTransaction1.Issued_By = _createdBy;
                                     inventoryTransaction1.ReferenceID = wipInventory.ReferenceID;
                                     inventoryTransaction1.ReferenceIDFrom = wipInventory.ReferenceIDFrom;
                                     inventoryTransaction1.BOM_Version_No = 0;
@@ -2173,6 +2179,7 @@ namespace Tips.Warehouse.Api.Controllers
                                     inventoryTransaction1.Issued_Quantity = wipInventory.Balance_Quantity;
                                     inventoryTransaction1.UOM = wipInventory.UOM;
                                     inventoryTransaction1.Issued_DateTime = DateTime.Now;
+                                    inventoryTransaction1.Issued_By = _createdBy;
                                     inventoryTransaction1.ReferenceID = wipInventory.ReferenceID;
                                     inventoryTransaction1.ReferenceIDFrom = wipInventory.ReferenceIDFrom;
                                     inventoryTransaction1.BOM_Version_No = 0;
@@ -2203,6 +2210,7 @@ namespace Tips.Warehouse.Api.Controllers
                                 inventoryTransaction.Issued_Quantity = invItem.Balance_Quantity;
                                 inventoryTransaction.UOM = invItem.UOM;
                                 inventoryTransaction.Issued_DateTime = DateTime.Now;
+                                inventoryTransaction.Issued_By = _createdBy;
                                 inventoryTransaction.ReferenceID = invItem.ReferenceID;
                                 inventoryTransaction.ReferenceIDFrom = invItem.ReferenceIDFrom;
                                 inventoryTransaction.BOM_Version_No = 0;
@@ -2449,6 +2457,7 @@ namespace Tips.Warehouse.Api.Controllers
                                         foreach (var inventoryDetail in inventories)
                                         {
                                             var wipQtyInventoryQty = inventoryDetail.Balance_Quantity;
+                                            var location = inventoryDetail.Location;
                                             if (wipQtyInventoryQty > wipQtyInIssueTracker)
                                             {
                                                 inventoryDetail.Balance_Quantity -= wipQtyInIssueTracker;
@@ -2465,9 +2474,11 @@ namespace Tips.Warehouse.Api.Controllers
                                                 inventoryTranction.Issued_Quantity = inventoryDetail.Balance_Quantity;
                                                 inventoryTranction.UOM = inventoryDetail.UOM;
                                                 inventoryTranction.Issued_DateTime = DateTime.Now;
-                                                inventoryTranction.Issued_By = "";
+                                                inventoryTranction.Issued_By = _createdBy;
                                                 inventoryTranction.ShopOrderId = "";
                                                 inventoryTranction.IsStockAvailable = inventoryDetail.IsStockAvailable;
+                                                inventoryTranction.GrinNo = inventoryDetail.GrinNo;
+                                                inventoryTranction.GrinPartId = inventoryDetail.GrinPartId;
                                                 inventoryTranction.shopOrderNo = inventoryDetail.shopOrderNo;
                                                 inventoryTranction.ReferenceID = inventoryDetail.ReferenceID;
                                                 inventoryTranction.ReferenceIDFrom = inventoryDetail.ReferenceIDFrom;
@@ -2480,6 +2491,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                                                 Inventory inventoryPost = new Inventory();
                                                 inventoryPost.PartNumber = inventoryDetail.PartNumber;
+                                                inventoryPost.LotNumber = inventoryDetail.LotNumber;
                                                 inventoryPost.MftrPartNumber = inventoryDetail.MftrPartNumber;
                                                 inventoryPost.ProjectNumber = inventoryDetail.ProjectNumber;
                                                 inventoryPost.Description = inventoryDetail.Description;
@@ -2497,7 +2509,6 @@ namespace Tips.Warehouse.Api.Controllers
                                                 inventoryPost.Location = Location.Location;
                                                 inventoryPost.PartType = inventoryDetail.PartType;
                                                 inventoryPost.ReferenceID = MRNNumber;
-                                                inventoryPost.LotNumber = inventoryDetail.LotNumber;
                                                 inventoryPost.ReferenceIDFrom = "Material Return Note";
                                                 await _inventoryRepository.CreateInventory(inventoryPost);
                                                 _inventoryRepository.SaveAsync();
@@ -2512,17 +2523,21 @@ namespace Tips.Warehouse.Api.Controllers
                                                 inventoryTranction1.ProjectNumber = inventoryPost.ProjectNumber;
                                                 inventoryTranction1.Issued_Quantity = inventoryPost.Balance_Quantity;
                                                 inventoryTranction1.UOM = inventoryPost.UOM;
+                                                inventoryTranction1.Issued_By = _createdBy;
                                                 inventoryTranction1.Issued_DateTime = DateTime.Now;
                                                 inventoryTranction1.Issued_By = inventoryPost.LastModifiedBy;
                                                 inventoryTranction1.ShopOrderId = "";
                                                 inventoryTranction1.IsStockAvailable = inventoryPost.IsStockAvailable;
+                                                inventoryTranction1.GrinNo = inventoryPost.GrinNo;
+                                                inventoryTranction1.GrinPartId = inventoryPost.GrinPartId;
                                                 inventoryTranction1.shopOrderNo = inventoryPost.shopOrderNo;
                                                 inventoryTranction1.ReferenceID = inventoryPost.ReferenceID;
                                                 inventoryTranction1.ReferenceIDFrom = inventoryPost.ReferenceIDFrom;
                                                 inventoryTranction1.BOM_Version_No = 0;
-                                                inventoryTranction1.From_Location = inventoryPost.Location;
+                                                inventoryTranction1.From_Location = location;
                                                 inventoryTranction1.TO_Location = inventoryPost.Location;
                                                 inventoryTranction1.Warehouse = inventoryPost.Warehouse;
+                                                inventoryTranction.Remarks = "Open Material Return Note";
 
                                                 await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction1);
 
@@ -2546,16 +2561,19 @@ namespace Tips.Warehouse.Api.Controllers
                                                 inventoryTranction.Issued_Quantity = inventoryDetail.Balance_Quantity;
                                                 inventoryTranction.UOM = inventoryDetail.UOM;
                                                 inventoryTranction.Issued_DateTime = DateTime.Now;
-                                                inventoryTranction.Issued_By = inventoryDetail.LastModifiedBy;
+                                                inventoryTranction.Issued_By = _createdBy;
                                                 inventoryTranction.ShopOrderId = "";
                                                 inventoryTranction.IsStockAvailable = inventoryDetail.IsStockAvailable;
+                                                inventoryTranction.GrinNo = inventoryDetail.GrinNo;
+                                                inventoryTranction.GrinPartId = inventoryDetail.GrinPartId;
                                                 inventoryTranction.shopOrderNo = inventoryDetail.shopOrderNo;
                                                 inventoryTranction.ReferenceID = inventoryDetail.ReferenceID;
                                                 inventoryTranction.ReferenceIDFrom = inventoryDetail.ReferenceIDFrom;
                                                 inventoryTranction.BOM_Version_No = 0;
-                                                inventoryTranction.From_Location = inventoryDetail.Location;
+                                                inventoryTranction.From_Location = location;
                                                 inventoryTranction.TO_Location = inventoryDetail.Location;
                                                 inventoryTranction.Warehouse = inventoryDetail.Warehouse;
+                                                inventoryTranction.Remarks = "Open Material Return Note";
 
                                                 await _inventoryTranctionRepository.Create(inventoryTranction);
 
@@ -2611,6 +2629,7 @@ namespace Tips.Warehouse.Api.Controllers
                                         foreach (var inventoryDetail in inventories)
                                         {
                                             var wipQtyInventoryQty = inventoryDetail.Balance_Quantity;
+                                            var location = inventoryDetail.Location;
                                             if (wipQtyInventoryQty > wipQtyInIssueTracker)
                                             {
                                                 inventoryDetail.Balance_Quantity -= wipQtyInIssueTracker;
@@ -2627,9 +2646,11 @@ namespace Tips.Warehouse.Api.Controllers
                                                 inventoryTranction.Issued_Quantity = inventoryDetail.Balance_Quantity;
                                                 inventoryTranction.UOM = inventoryDetail.UOM;
                                                 inventoryTranction.Issued_DateTime = DateTime.Now;
-                                                inventoryTranction.Issued_By = "";
+                                                inventoryTranction.Issued_By = _createdBy;
                                                 inventoryTranction.ShopOrderId = "";
                                                 inventoryTranction.IsStockAvailable = inventoryDetail.IsStockAvailable;
+                                                inventoryTranction.GrinNo = inventoryDetail.GrinNo;
+                                                inventoryTranction.GrinPartId = inventoryDetail.GrinPartId;
                                                 inventoryTranction.shopOrderNo = inventoryDetail.shopOrderNo;
                                                 inventoryTranction.ReferenceID = inventoryDetail.ReferenceID;
                                                 inventoryTranction.ReferenceIDFrom = inventoryDetail.ReferenceIDFrom;
@@ -2675,16 +2696,19 @@ namespace Tips.Warehouse.Api.Controllers
                                                 inventoryTranction1.Issued_Quantity = inventoryPost.Balance_Quantity;
                                                 inventoryTranction1.UOM = inventoryPost.UOM;
                                                 inventoryTranction1.Issued_DateTime = DateTime.Now;
-                                                inventoryTranction1.Issued_By = inventoryPost.LastModifiedBy;
+                                                inventoryTranction1.Issued_By = _createdBy;
                                                 inventoryTranction1.ShopOrderId = "";
                                                 inventoryTranction1.IsStockAvailable = inventoryPost.IsStockAvailable;
+                                                inventoryTranction1.GrinNo = inventoryPost.GrinNo;
+                                                inventoryTranction1.GrinPartId = inventoryPost.GrinPartId;
                                                 inventoryTranction1.shopOrderNo = inventoryPost.shopOrderNo;
                                                 inventoryTranction1.ReferenceID = inventoryPost.ReferenceID;
                                                 inventoryTranction1.ReferenceIDFrom = inventoryPost.ReferenceIDFrom;
                                                 inventoryTranction1.BOM_Version_No = 0;
-                                                inventoryTranction1.From_Location = inventoryPost.Location;
+                                                inventoryTranction1.From_Location = location;
                                                 inventoryTranction1.TO_Location = inventoryPost.Location;
                                                 inventoryTranction1.Warehouse = inventoryPost.Warehouse;
+                                                inventoryTranction1.Remarks = "Open Material Return Note";
 
                                                 await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction1);
 
@@ -2708,16 +2732,19 @@ namespace Tips.Warehouse.Api.Controllers
                                                 inventoryTranction.Issued_Quantity = inventoryDetail.Balance_Quantity;
                                                 inventoryTranction.UOM = inventoryDetail.UOM;
                                                 inventoryTranction.Issued_DateTime = DateTime.Now;
-                                                inventoryTranction.Issued_By = inventoryDetail.LastModifiedBy;
+                                                inventoryTranction.Issued_By = _createdBy;
                                                 inventoryTranction.ShopOrderId = "";
+                                                inventoryTranction.GrinNo = inventoryDetail.GrinNo;
+                                                inventoryTranction.GrinPartId = inventoryDetail.GrinPartId;
                                                 inventoryTranction.IsStockAvailable = inventoryDetail.IsStockAvailable;
                                                 inventoryTranction.shopOrderNo = inventoryDetail.shopOrderNo;
                                                 inventoryTranction.ReferenceID = inventoryDetail.ReferenceID;
                                                 inventoryTranction.ReferenceIDFrom = inventoryDetail.ReferenceIDFrom;
                                                 inventoryTranction.BOM_Version_No = 0;
-                                                inventoryTranction.From_Location = inventoryDetail.Location;
+                                                inventoryTranction.From_Location = location;
                                                 inventoryTranction.TO_Location = inventoryDetail.Location;
                                                 inventoryTranction.Warehouse = inventoryDetail.Warehouse;
+                                                inventoryTranction.Remarks = "Open Material Return Note";
 
                                                 await _inventoryTranctionRepository.Create(inventoryTranction);
 

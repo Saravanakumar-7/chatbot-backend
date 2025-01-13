@@ -2844,11 +2844,11 @@ namespace Tips.Purchase.Api.Controllers
                         }
 
                         poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
-                        for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
-                        {
-                            PoAddProject poaddproject = poItemDetails.POAddprojects[j];
-                            poaddproject.BalanceQty = poaddproject.ProjectQty;
-                        }
+                        //for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                        //{
+                        //    PoAddProject poaddproject = poItemDetails.POAddprojects[j];
+                        //    poaddproject.BalanceQty = poaddproject.ProjectQty;
+                        //}
 
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
                         poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
@@ -4183,9 +4183,25 @@ namespace Tips.Purchase.Api.Controllers
             try
             {
                 string serverKey = GetServerKey();
-                var poid_1 = poItemConfirmationDateDto.First();
-                var PoId = poid_1.First();
-                var PODetails = await _repository.GetPurchaseOrderById(PoId.PoId);
+                //var poid_1 = poItemConfirmationDateDto.First();
+                //var PoId = poid_1.First();
+                //var PODetails = await _repository.GetPurchaseOrderById(PoId.PoId);
+
+                int PoId = 0;
+
+                foreach (var poid_1 in poItemConfirmationDateDto)
+                {
+                    if (poid_1.Any())
+                    {
+                        var poItem = poid_1.First();  
+                        if (poItem != null)
+                        {
+                            PoId = poItem.PoId;  
+                            break;  
+                        }
+                    }
+                }
+                var PODetails = await _repository.GetPurchaseOrderById(PoId);
                 foreach (var poItemConfirmationDateSet in poItemConfirmationDateDto)
                 {
                     if (!poItemConfirmationDateSet.Any())

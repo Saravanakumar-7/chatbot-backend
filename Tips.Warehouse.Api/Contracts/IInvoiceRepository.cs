@@ -32,5 +32,6 @@ namespace Tips.Warehouse.Api.Contracts
                                                                                                        string? Warehouse, string? KPN, string? MPN, string? IssuedTo, string? ProjectNumber);
         Task<Invoice> GetInvoiceByInvoiceNumber(string InvoiceNumber);
         Task<Invoice> GetInvoiceByIdExceptClosed(int id);
+        Task<IEnumerable<InvoiceConceptionDto>> GetInvoiceDetialsbyDate(DateTime? FromDate, DateTime? ToDate);
     }
 }

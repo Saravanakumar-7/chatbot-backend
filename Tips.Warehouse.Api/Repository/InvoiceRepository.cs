@@ -103,6 +103,40 @@ namespace Tips.Warehouse.Api.Repository
                 throw ex;
             }
         }
+        public async Task<IEnumerable<InvoiceConceptionDto>> GetInvoiceDetialsbyDate(DateTime? FromDate, DateTime? ToDate)
+        {
+
+            var invoiceIds = await _tipsWarehouseDbContext.invoices
+                .Where(x => x.CreatedOn >= FromDate && x.CreatedOn <= ToDate)
+                .Select(x => x.Id)
+                .ToListAsync();
+
+            var invoiceConcepDetails = await _tipsWarehouseDbContext.invoiceChildItems
+                .Where(x => invoiceIds.Contains(x.InvoiceId))
+                .GroupBy(x => new { x.FGItemNumber, x.DONumber, x.InvoiceId })
+                .Select(s => new InvoiceConceptionDto
+                {
+                    InvoiceNumber = _tipsWarehouseDbContext.invoices
+                        .Where(i => i.Id == s.Key.InvoiceId)
+                        .Select(i => i.InvoiceNumber)  
+                        .FirstOrDefault(),
+
+                    InvoiceDate = _tipsWarehouseDbContext.invoices
+                        .Where(i => i.Id == s.Key.InvoiceId)
+                        .Select(i => i.CreatedOn)
+                        .FirstOrDefault(),
+
+                    invoiceItemConceptionDtos = s.Select(item => new InvoiceItemConceptionDto
+                    {
+                        DONumber = item.DONumber,
+                        FGItemNumber = item.FGItemNumber,
+                        InvoicedQty = item.InvoicedQty
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            return invoiceConcepDetails;
+        }
 
         public async Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate)
         {

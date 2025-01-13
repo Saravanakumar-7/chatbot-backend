@@ -917,18 +917,33 @@ namespace Tips.Warehouse.Api.Controllers
 
         private async Task InventoryTransactionSaveOnInvoiceCreate(Invoice invoice, List<InvoiceChildItem> invoiceChildItemsEntityList, int i, InvoiceChildItem invoiceChildItem)
         {
+            var client1 = _clientFactory.CreateClient();
+            var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+            var ItemNumber = invoiceChildItemsEntityList[i].FGItemNumber;
+            var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+
+            var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
+                $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+            request1.Headers.Add("Authorization", token1);
+
+            var itemMasterObjectResult = await client1.SendAsync(request1);
+
+            var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+            var itemMasterObjectData = JsonConvert.DeserializeObject<ReturnBTONumberInvDetails>(itemMasterObjectString);
+            var itemMasterObject = itemMasterObjectData.data;
+
             InventoryTranction inventoryTranction = new InventoryTranction();
             inventoryTranction.PartNumber = invoiceChildItemsEntityList[i].FGItemNumber;
-            inventoryTranction.MftrPartNumber = invoiceChildItemsEntityList[i].FGItemNumber;
+            inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
             inventoryTranction.Description = invoiceChildItemsEntityList[i].Description;
             inventoryTranction.Issued_Quantity = invoiceChildItem.InvoicedQty;
+            inventoryTranction.IsStockAvailable = true;
             inventoryTranction.UOM = invoiceChildItemsEntityList[i].UOM;
             inventoryTranction.Issued_DateTime = DateTime.Now;
             inventoryTranction.ReferenceID = invoice.InvoiceNumber;
             inventoryTranction.ReferenceIDFrom = "Invoice";
-            inventoryTranction.Issued_By = _createdBy;
-            inventoryTranction.CreatedBy = _createdBy;
-            inventoryTranction.CreatedOn = DateTime.Now;
+            inventoryTranction.Issued_By = _createdBy;;
             inventoryTranction.From_Location = "BTO";
             inventoryTranction.TO_Location = "Invoice";
             inventoryTranction.Warehouse = "Invoice";

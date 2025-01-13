@@ -220,4 +220,20 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public List<DoNoInvoiceAdditionalChargesDto>? InvoiceAdditionalCharges { get; set; }
 
     }
+
+    public class InvoiceConceptionDto
+    {
+        public string? InvoiceNumber { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public List<InvoiceItemConceptionDto>?  invoiceItemConceptionDtos { get; set; }
+
+    }
+    public class InvoiceItemConceptionDto
+    {
+        public string? DONumber { get; set; }
+        public string? FGItemNumber { get; set; }
+        public decimal? InvoicedQty { get; set; }
+    }
+
+
 }

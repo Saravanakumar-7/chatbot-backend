@@ -570,21 +570,21 @@ namespace Tips.Warehouse.Api.Controllers
                                 _inventoryRepository.SaveAsync();
 
                                 InventoryTranction inventoryTranction1 = new InventoryTranction();
-                                inventoryTranction1.PartNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
+                                inventoryTranction1.PartNumber = inventory.PartNumber;
                                 inventoryTranction1.LotNumber = eachbin.LotNumber;
-                                inventoryTranction1.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
-                                inventoryTranction1.Description = returnOpenDeliveryOrderPartsDtoList[i].Description;
+                                inventoryTranction1.MftrPartNumber = inventory.MftrPartNumber;
+                                inventoryTranction1.Description = inventory.Description;
                                 inventoryTranction1.Issued_Quantity = eachbin.DistributingQty;
-                                inventoryTranction1.UOM = returnOpenDeliveryOrderPartsDtoList[i].UOM;
+                                inventoryTranction1.UOM = inventory.UOM;
                                 inventoryTranction1.Issued_DateTime = DateTime.Now;
-                                inventoryTranction1.ReferenceID = returnOpenDeliveryOrderParts.ODONumber;
-                                inventoryTranction1.ReferenceIDFrom = "Return ODO Delivery Order";
                                 inventoryTranction1.Issued_By = _createdBy;
-                                inventoryTranction1.From_Location = "BTO";
+                                inventoryTranction1.ReferenceID = inventory.ReferenceID;
+                                inventoryTranction1.ReferenceIDFrom = "Return ODO Delivery Order";
+                                inventoryTranction1.From_Location = "ODO";
                                 inventoryTranction1.TO_Location = eachbin.Location;
-                                inventoryTranction1.Remarks = "Return BTO";
+                                inventoryTranction1.Remarks = "Return ODO";
                                 inventoryTranction1.Warehouse = eachbin.Warehouse;
-                                inventoryTranction1.PartType = returnOpenDeliveryOrderPartsDtoList[i].ItemType;
+                                inventoryTranction1.PartType = inventory.PartType;
 
                                 if (returnOpenDeliveryOrderPartsDtoList[i].StockAvailable != null)
                                 {
@@ -608,21 +608,22 @@ namespace Tips.Warehouse.Api.Controllers
                                 _inventoryRepository.SaveAsync();
 
                                 InventoryTranction inventoryTranction = new InventoryTranction();
-                                inventoryTranction.PartNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
+                                inventoryTranction.PartNumber = exInv.PartNumber;
                                 inventoryTranction.LotNumber = eachbin.LotNumber;
-                                inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
-                                inventoryTranction.Description = returnOpenDeliveryOrderPartsDtoList[i].Description;
+                                inventoryTranction.MftrPartNumber = exInv.MftrPartNumber;
+                                inventoryTranction.Description = exInv.Description;
                                 inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
-                                inventoryTranction.UOM = returnOpenDeliveryOrderPartsDtoList[i].UOM;
+                                inventoryTranction.UOM = exInv.UOM;
                                 inventoryTranction.Issued_DateTime = DateTime.Now;
+                                inventoryTranction.Issued_By = _createdBy;
                                 inventoryTranction.ReferenceID = returnOpenDeliveryOrderParts.ODONumber;
                                 inventoryTranction.ReferenceIDFrom = "Return ODO Delivery Order";
-                                inventoryTranction.Issued_By = _createdBy;
-                                inventoryTranction.From_Location = "BTO";
+                                inventoryTranction.From_Location = "ODO";
                                 inventoryTranction.TO_Location = eachbin.Location;
-                                inventoryTranction.Remarks = "Return BTO";
+                                inventoryTranction.Remarks = "Return ODO";
                                 inventoryTranction.Warehouse = eachbin.Warehouse;
-                                inventoryTranction.PartType = returnOpenDeliveryOrderPartsDtoList[i].ItemType;
+                                inventoryTranction.PartType = exInv.PartType;
+
                                 if (returnOpenDeliveryOrderPartsDtoList[i].StockAvailable != null)
                                 {
                                     inventoryTranction.IsStockAvailable = true;

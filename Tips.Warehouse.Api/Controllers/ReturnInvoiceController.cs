@@ -313,19 +313,20 @@ namespace Tips.Warehouse.Api.Controllers
                                 InventoryTranction inventoryTranction = new InventoryTranction();
                                 inventoryTranction.PartNumber = inventory.PartNumber;
                                 inventoryTranction.LotNumber = eachbin.LotNumber;
-                                inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                inventoryTranction.MftrPartNumber = inventory.MftrPartNumber;
                                 inventoryTranction.Description = inventory.Description;
                                 inventoryTranction.Issued_Quantity = inventory.Balance_Quantity;
+                                inventoryTranction.IsStockAvailable = true;
                                 inventoryTranction.UOM = inventory.UOM;
                                 inventoryTranction.Issued_DateTime = DateTime.Now;
+                                inventoryTranction.Issued_By = _createdBy;
                                 inventoryTranction.ReferenceID = inventory.ReferenceID;
                                 inventoryTranction.ReferenceIDFrom = inventory.ReferenceIDFrom;
-                                inventoryTranction.Issued_By = _createdBy;
                                 inventoryTranction.From_Location = inventory.Location;
                                 inventoryTranction.TO_Location = inventory.Location;
-                                inventoryTranction.Remarks = "Return Invoice";
                                 inventoryTranction.Warehouse = inventory.Warehouse;
                                 inventoryTranction.PartType = returnInvoiceItemsList[i].PartType;  /// Check this are you getting Part Type from Front End
+                                inventoryTranction.Remarks = "Return Invoice";
 
                                 await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
 
@@ -344,19 +345,20 @@ namespace Tips.Warehouse.Api.Controllers
                                 InventoryTranction inventoryTranction = new InventoryTranction();
                                 inventoryTranction.PartNumber = exInv.PartNumber;
                                 inventoryTranction.LotNumber = eachbin.LotNumber;
-                                inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                inventoryTranction.MftrPartNumber = exInv.MftrPartNumber;
                                 inventoryTranction.Description = exInv.Description;
-                                inventoryTranction.Issued_Quantity = exInv.Balance_Quantity;
+                                inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
+                                inventoryTranction.IsStockAvailable = true;
                                 inventoryTranction.UOM = exInv.UOM;
                                 inventoryTranction.Issued_DateTime = DateTime.Now;
+                                inventoryTranction.Issued_By = _createdBy;
                                 inventoryTranction.ReferenceID = exInv.ReferenceID;
                                 inventoryTranction.ReferenceIDFrom = exInv.ReferenceIDFrom;
-                                inventoryTranction.Issued_By = _createdBy;
-                                inventoryTranction.From_Location = exInv.Location;
+                                inventoryTranction.From_Location = "Invoice";
                                 inventoryTranction.TO_Location = exInv.Location;
                                 inventoryTranction.Remarks = "Return Invoice";
                                 inventoryTranction.Warehouse = exInv.Warehouse;
-                                inventoryTranction.PartType = returnInvoiceItemsList[i].PartType;  /// Check this are you getting Part Type from Front End
+                                inventoryTranction.PartType = exInv.PartType;  /// Check this are you getting Part Type from Front End
 
                                 await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
                             }
