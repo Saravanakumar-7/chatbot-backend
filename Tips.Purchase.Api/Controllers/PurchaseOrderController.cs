@@ -2440,6 +2440,7 @@ namespace Tips.Purchase.Api.Controllers
                     foreach (var poitem in po.purchaseOrderItems)
                     {
                         var POChild = PurchaseOrder.POItems.Where(x => x.ItemNumber == poitem.ItemNumber).FirstOrDefault();
+                        POChild.PoPartsStatus = false;
                         POChild.BalanceQty += poitem.ReturnQty;
                         POChild.ReceivedQty -= poitem.ReturnQty;
                         if (POChild.Qty == POChild.BalanceQty) POChild.PoStatus = PoStatus.Open;
@@ -3659,7 +3660,7 @@ namespace Tips.Purchase.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside ActivatePurchaseOrderApprovalI action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }

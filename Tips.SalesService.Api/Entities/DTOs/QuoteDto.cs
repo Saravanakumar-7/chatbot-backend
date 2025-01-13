@@ -597,6 +597,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         [JsonProperty("filename")]
         public string Filename { get; set; }
+        [JsonProperty("link")]
+        public string Link { get; set; }
     }
 
     public class Metadata
@@ -613,8 +615,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [JsonProperty("mimeType")]
         public string MimeType { get; set; }
 
-        [JsonProperty("content")]
-        public string Content { get; set; }
+        //[JsonProperty("content")]
+        //public string Content { get; set; }
     }
 
 

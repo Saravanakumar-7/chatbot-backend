@@ -209,6 +209,30 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> GetAllSalesOrderCustomerNames([FromBody] List<string> SalesOrders)
+        {
+            ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
+            try
+            {
+                var getAllCustomer = await _repository.GetAllSalesOrderCustomerNames(SalesOrders);
+              
+                serviceResponse.Data = getAllCustomer;
+                serviceResponse.Message = "Returned all GetAllSalesOrderCustomerNames";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInfo($"Error Occured in GetAllSalesOrderCustomerNames: {ex.Message} \n {ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = ($"Error Occured in GetAllSalesOrderCustomerNames: {ex.Message} \n {ex.InnerException}");
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> GetSalesOrderSPReport([FromQuery] PagingParameter pagingParameter)
         {
@@ -982,6 +1006,10 @@ namespace Tips.SalesService.Api.Controllers
                             {
                                 var oldSOAddCharges = salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges[i];
                                 additionalChargesDetails.Id = oldSOAddCharges.Id;
+                                if(additionalChargesDetails.InvoicedValue == 0) additionalChargesDetails.SOAdditionalStatus = SoStatus.Open;
+                                else if (additionalChargesDetails.TotalValue > additionalChargesDetails.InvoicedValue && additionalChargesDetails.InvoicedValue > 0) additionalChargesDetails.SOAdditionalStatus = SoStatus.PartiallyClosed;
+                                else if (additionalChargesDetails.TotalValue == additionalChargesDetails.InvoicedValue) additionalChargesDetails.SOAdditionalStatus = SoStatus.Closed;
+
                             }
                         }
                         salesAdditionalChargesList.Add(additionalChargesDetails);
@@ -5772,7 +5800,7 @@ namespace Tips.SalesService.Api.Controllers
                 component.Type = "body";
                 component.Parameters = parameters;
                 whatsAppMessagePayload.Template.Components.Add(component);
-                whatsAppMessagePayload.Metadata.Media.Content = base64;
+                //whatsAppMessagePayload.Metadata.Media.Content = base64;
                 WhatsAppCreateTokenResponse whatsAppCreateTokenResponse;
 
 

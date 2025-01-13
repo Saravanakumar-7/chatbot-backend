@@ -99,7 +99,7 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        private async Task<List<EnggBomLevelSPReport>> GetLevelSPReports(List<EnggBomLevelSPReport> SAspresent, int currentLevel)
+        private async Task<List<EnggBomLevelSPReport>?> GetLevelSPReports(List<EnggBomLevelSPReport> SAspresent, int currentLevel)
         {
 
             var newlevel = new List<EnggBomLevelSPReport>();
@@ -108,19 +108,16 @@ namespace Tips.Master.Api.Controllers
                 try
                 {
                     var nextlevel = await _enggBomRepository.GetEnggLevelsSPReport(Sa.Child_ItemNumber);
-                    if (!nextlevel.Any())
-                    {
-                        var message = $"Itemnumber: {Sa.Child_ItemNumber} is not present in BOM";
-                        _logger.LogError($"In GetAllEnggLevelsSPReport: {message}");
-                        throw new InvalidOperationException(message);
-                    }
-                    nextlevel.ForEach(x => x.Level = currentLevel + 1);
-                    newlevel.AddRange(nextlevel);
+                    if (nextlevel.Any())
+                    { 
+                        nextlevel.ForEach(x => x.Level = currentLevel + 1);
+                        newlevel.AddRange(nextlevel);
 
-                    if (nextlevel.Where(x => x.Child_PartType == PartType.SA).Count() > 0)
-                    {
-                        var otherlevels = await GetLevelSPReports(nextlevel.Where(x => x.Child_PartType == PartType.SA).ToList(), currentLevel + 1);
-                        newlevel.AddRange(otherlevels);
+                        if (nextlevel.Where(x => x.Child_PartType == PartType.SA).Count() > 0)
+                        {
+                            var otherlevels = await GetLevelSPReports(nextlevel.Where(x => x.Child_PartType == PartType.SA).ToList(), currentLevel + 1);
+                            if (otherlevels.Any()) newlevel.AddRange(otherlevels);
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -154,7 +151,7 @@ namespace Tips.Master.Api.Controllers
                 if (level1.Where(x => x.Child_PartType == PartType.SA).Count() > 0)
                 {
                     var otherlevels = await GetLevelSPReports(level1.Where(x => x.Child_PartType == PartType.SA).ToList(), 1);
-                    result.AddRange(otherlevels);
+                    if(otherlevels.Any()) result.AddRange(otherlevels);
                 }
                 _logger.LogInfo("GetAllEnggLevelsSPReport was Successful");
                 serviceResponse.Data = result.OrderBy(x => x.Level).ToList();

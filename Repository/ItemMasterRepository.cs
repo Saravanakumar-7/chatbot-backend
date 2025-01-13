@@ -388,14 +388,8 @@ namespace Repository
         }
         public async Task<IEnumerable<ItemMaster>> GetAllFgSaItems()
         {
-            var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id).Where(inv =>(inv.ItemType == PartType.SA || inv.ItemType == PartType.FG) && inv.IsActive == true)
-            .Include(c => c.FileUpload)
-            .Include(x => x.ImageUpload)
-            .Include(t => t.ItemmasterAlternate)
-            .Include(t => t.ItemMasterApprovedVendor)
-            //.Include(t => t.ItemMasterFileUpload)
-            .Include(d => d.ItemMasterRouting)
-            .Include(d => d.ItemMasterWarehouse);
+            var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id).Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.FG) && inv.IsActive == true);
+            
             return itemmasterSADetails;
         }
         //sa,fg, and fru

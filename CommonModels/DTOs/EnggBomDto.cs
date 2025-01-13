@@ -257,31 +257,31 @@ namespace Entities.DTOs
     {
         public int BOMId { get; set; }
         public string ItemNumber { get; set; }
-        public string ItemDescription { get; set; }
+        public string? ItemDescription { get; set; }
         public PartType ItemType { get; set; }
         public decimal RevisionNumber { get; set; }
         public string? Remarks { get; set; }
         public bool IsActive { get; set; }
         public string Unit { get; set; }
         public bool IsEnggBomRelease { get; set; }
-        public string CreatedBy { get; set; }
-        public DateTime CreatedOn { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public int Child_Id { get; set; }
         public string Child_ItemNumber { get; set; }
-        public string MftrItemNumbers { get; set; }
-        public string UOM { get; set; }
+        public string? MftrItemNumbers { get; set; }
+        public string? UOM { get; set; }
         public decimal Quantity { get; set; }
-        public string Child_Description { get; set; }
+        public string? Child_Description { get; set; }
         public PartType Child_PartType { get; set; }
-        public string Child_Remarks { get; set; }
-        public string Version { get; set; }
-        public string ScrapAllowance { get; set; }
-        public string ScrapAllowanceType { get; set; }
-        public string CustomFields { get; set; }
-        public string Designator { get; set; }
-        public string FootPrint { get; set; }
+        public string? Child_Remarks { get; set; }
+        public string? Version { get; set; }
+        public string? ScrapAllowance { get; set; }
+        public string? ScrapAllowanceType { get; set; }
+        public string? CustomFields { get; set; }
+        public string? Designator { get; set; }
+        public string? FootPrint { get; set; }
         public bool Child_IsActive { get; set; }
         public int? Level { get; set; }
     }
