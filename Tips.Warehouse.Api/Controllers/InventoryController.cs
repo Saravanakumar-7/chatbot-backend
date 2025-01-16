@@ -25,6 +25,9 @@ using NPOI.SS.Formula.Functions;
 using MySqlX.XDevAPI;
 using MathNet.Numerics.LinearAlgebra.Factorization;
 using System.Security.Claims;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+using Entities.Enums;
 
 namespace Tips.Warehouse.Api.Controllers
 {
@@ -3971,7 +3974,75 @@ namespace Tips.Warehouse.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+        } 
+        [HttpPost]
+        public async Task<IActionResult> GetInventoryWIPExcelReport([FromBody] InventorySPReportDto inventoryWarehouseReportDto)
+        {
+            try
+            {
+                var inv = await _inventoryRepository.GetInventoryWIPReport(inventoryWarehouseReportDto.PartNumber, inventoryWarehouseReportDto.Description,inventoryWarehouseReportDto.ProjectNumber);              
+
+                if (inv == null)
+                {                    
+                    _logger.LogError($"GetInventoryWIPExcelReport hasn't been found in db.");
+                    throw new Exception("No Data Found");
+                }
+                else
+                {
+                    IWorkbook workbook = new XSSFWorkbook();
+                    ISheet sheet = workbook.CreateSheet("InventoryWIPExcelReport");
+                    var headerRow = sheet.CreateRow(0);
+
+                    headerRow.CreateCell(0).SetCellValue("Part Number");
+                    headerRow.CreateCell(1).SetCellValue("Mftr Part Number");
+                    headerRow.CreateCell(2).SetCellValue("Description");
+                    headerRow.CreateCell(3).SetCellValue("Part Type");
+                    headerRow.CreateCell(4).SetCellValue("Project Number");
+                    headerRow.CreateCell(5).SetCellValue("UOM");
+                    headerRow.CreateCell(6).SetCellValue("Lot Number");
+                    headerRow.CreateCell(7).SetCellValue("Balance Quantity");
+                    headerRow.CreateCell(8).SetCellValue("Warehouse");
+                    headerRow.CreateCell(9).SetCellValue("Location");
+                    headerRow.CreateCell(10).SetCellValue("Max");
+                    headerRow.CreateCell(11).SetCellValue("Min");
+                    headerRow.CreateCell(12).SetCellValue("Material Group");
+
+                    int rowIndex = 1;
+                    foreach (var item in inv)
+                    {
+                        var row = sheet.CreateRow(rowIndex++);
+                        row.CreateCell(0).SetCellValue(item.PartNumber);
+                        row.CreateCell(1).SetCellValue(item.MftrPartNumber);
+                        row.CreateCell(2).SetCellValue(item.Description);
+                        row.CreateCell(3).SetCellValue(item.PartType.ToString());
+                        row.CreateCell(4).SetCellValue(item.ProjectNumber);
+                        row.CreateCell(5).SetCellValue(item.UOM);
+                        row.CreateCell(6).SetCellValue(item.LotNumber);
+                        row.CreateCell(7).SetCellValue(item.Balance_Quantity.ToString());
+                        row.CreateCell(8).SetCellValue(item.Warehouse);
+                        row.CreateCell(9).SetCellValue(item.LotNumber);
+                        row.CreateCell(10).SetCellValue(item.Max.ToString()); 
+                        row.CreateCell(11).SetCellValue(item.Min.ToString());
+                        row.CreateCell(12).SetCellValue(item.GrinMaterialType);                        
+                    }
+                                       
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        workbook.Write(memoryStream);
+                        var excelBytes = memoryStream.ToArray();
+                        
+                        return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "InventoryWIPExcelReport.xlsx");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in GetInventoryWIPExcelReport:{ex.Message} \n {ex.InnerException}");
+
+                throw ex;
+            }
         }
+
         [HttpPost]
         public async Task<IActionResult> GetInventoryGrinAndIqcReport([FromBody] InventorySPReportDto inventoryWarehouseReportDto)
         {
