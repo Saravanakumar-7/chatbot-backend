@@ -14,6 +14,7 @@ using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
+using System.Security.Claims;
 
 namespace Tips.Production.Api.Controllers
 {
@@ -32,7 +33,10 @@ namespace Tips.Production.Api.Controllers
         private IShopOrderRepository _shopOrderRepo;
         private IOQCBinningRepository _oQCBinningRepository;
         private readonly IHttpClientFactory _clientFactory;
-        public OQCController(IHttpClientFactory clientFactory, IShopOrderConfirmationRepository shopOrderConfirmationRepository, IOQCRepository oQCRepository, IOQCBinningRepository oQCBinningRepository, IShopOrderRepository shopOrderRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public OQCController(IHttpContextAccessor httpContextAccessor, IHttpClientFactory clientFactory, IShopOrderConfirmationRepository shopOrderConfirmationRepository, IOQCRepository oQCRepository, IOQCBinningRepository oQCBinningRepository, IShopOrderRepository shopOrderRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
         {
             _oQCRepository = oQCRepository;
             _logger = logger;
@@ -43,6 +47,10 @@ namespace Tips.Production.Api.Controllers
             _oQCBinningRepository = oQCBinningRepository;
             _shopOrderConfirmationRepository = shopOrderConfirmationRepository;
             _clientFactory = clientFactory;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         [HttpGet]
@@ -394,6 +402,7 @@ namespace Tips.Production.Api.Controllers
                     InventoryTranctionDto inventoryTranction = new InventoryTranctionDto();
 
                     inventoryTranction.PartNumber = ItemNo;
+                    inventoryTranction.LotNumber = oQCCreate.ShopOrderNumber;
                     inventoryTranction.MftrPartNumber = itemMasterTranctionObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); ;
                     inventoryTranction.Description = Desc;
                     inventoryTranction.ProjectNumber = projectNo;
@@ -402,13 +411,17 @@ namespace Tips.Production.Api.Controllers
                     inventoryTranction.UOM = uom;
                     inventoryTranction.BOM_Version_No = 0;
                     inventoryTranction.Issued_DateTime = DateTime.Now;
+                    inventoryTranction.Issued_By = _createdBy;
+                    inventoryTranction.GrinNo = inventory.GrinNo;
+                    inventoryTranction.GrinPartId = inventory.GrinPartId;
                     inventoryTranction.shopOrderNo = oQCCreate.ShopOrderNumber;
                     inventoryTranction.ReferenceID = oQCCreate.Id.ToString();
                     inventoryTranction.ReferenceIDFrom = "Final OQC"; ;
                     inventoryTranction.From_Location = "SA";
                     inventoryTranction.TO_Location = "SA";
                     inventoryTranction.Warehouse = "SA";
-                    inventoryTranction.LotNumber= oQCCreate.ShopOrderNumber;
+                    inventoryTranction.Remarks = "OQC Done";
+                    
                     var json2 = JsonConvert.SerializeObject(inventoryTranction);
                     var data2 = new StringContent(json2, Encoding.UTF8, "application/json");
                    // var response2 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data2);
@@ -433,6 +446,7 @@ namespace Tips.Production.Api.Controllers
                     InventoryTranctionDto inventoryTranction1 = new InventoryTranctionDto();
 
                     inventoryTranction1.PartNumber = ItemNo;
+                    inventoryTranction1.LotNumber = oQCCreate.ShopOrderNumber;
                     inventoryTranction1.MftrPartNumber = itemMasterTranctionObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); ;
                     inventoryTranction1.Description = Desc;
                     inventoryTranction1.ProjectNumber = projectNo;
@@ -441,13 +455,17 @@ namespace Tips.Production.Api.Controllers
                     inventoryTranction1.UOM = uom;
                     inventoryTranction1.BOM_Version_No = 0;
                     inventoryTranction1.Issued_DateTime = DateTime.Now;
+                    inventoryTranction1.Issued_By = _createdBy;
+                    inventoryTranction1.GrinNo = inventory1.GrinNo;
+                    inventoryTranction1.GrinPartId = inventory1.GrinPartId;
                     inventoryTranction1.shopOrderNo = oQCCreate.ShopOrderNumber;
                     inventoryTranction1.ReferenceID = oQCCreate.Id.ToString() + "-R";
                     inventoryTranction1.ReferenceIDFrom = "Final OQC"; ;
                     inventoryTranction1.From_Location = "Reject";
                     inventoryTranction1.TO_Location = "Reject";
                     inventoryTranction1.Warehouse = "Reject";
-                    inventoryTranction1.LotNumber = oQCCreate.ShopOrderNumber;
+                    inventoryTranction1.Remarks = "OQC Done";
+                   
                     var json4 = JsonConvert.SerializeObject(inventoryTranction1);
                     var data4 = new StringContent(json4, Encoding.UTF8, "application/json");
                     //var response4 = await _httpClient.PostAsync(string.Concat(_config["InventoryTranctionAPI"], "CreateInventoryTranction"), data4);
@@ -583,6 +601,7 @@ namespace Tips.Production.Api.Controllers
                     InventoryTranctionDto inventoryTranction = new InventoryTranctionDto();
 
                     inventoryTranction.PartNumber = ItemNo;
+                    inventoryTranction.LotNumber = oQCCreate.ShopOrderNumber;
                     inventoryTranction.MftrPartNumber = itemMasterTranctionObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); ;
                     inventoryTranction.Description = Desc;
                     inventoryTranction.ProjectNumber = projectNo;
@@ -591,15 +610,17 @@ namespace Tips.Production.Api.Controllers
                     inventoryTranction.UOM = uom;
                     inventoryTranction.BOM_Version_No = 0;
                     inventoryTranction.Issued_DateTime = DateTime.Now;
+                    inventoryTranction.Issued_By = _createdBy;
                     inventoryTranction.shopOrderNo = oQCCreate.ShopOrderNumber;
-                    inventoryTranction.LotNumber = oQCCreate.ShopOrderNumber;
                     inventoryTranction.ReferenceID = oQCCreate.Id.ToString();
+                    inventoryTranction.GrinNo = inventory.GrinNo;
                     inventoryTranction.GrinPartId = oQCCreate.Id;
                     inventoryTranction.GrinMaterialType = "Issue";
                     inventoryTranction.ReferenceIDFrom = "Final OQC"; 
                     inventoryTranction.From_Location = "FG";
                     inventoryTranction.TO_Location = "FG";
                     inventoryTranction.Warehouse = "FG";
+                    inventoryTranction.Remarks = "OQC Done";
 
                     var json2 = JsonConvert.SerializeObject(inventoryTranction);
                     var data2 = new StringContent(json2, Encoding.UTF8, "application/json");
@@ -633,14 +654,17 @@ namespace Tips.Production.Api.Controllers
                     inventoryTranction1.UOM = uom;
                     inventoryTranction1.BOM_Version_No = 0;
                     inventoryTranction1.Issued_DateTime = DateTime.Now;
+                    inventoryTranction1.Issued_By = _createdBy;
                     inventoryTranction1.shopOrderNo = oQCCreate.ShopOrderNumber;
                     inventoryTranction1.LotNumber = oQCCreate.ShopOrderNumber;
                     inventoryTranction1.GrinPartId = oQCCreate.Id;
+                    inventoryTranction1.GrinNo = inventory1.GrinNo;
                     inventoryTranction1.ReferenceID = oQCCreate.Id.ToString() + "-R";
-                    inventoryTranction1.ReferenceIDFrom = "Final OQC"; ;
+                    inventoryTranction1.ReferenceIDFrom = "Final OQC"; 
                     inventoryTranction1.From_Location = "Reject";
                     inventoryTranction1.TO_Location = "Reject";
                     inventoryTranction1.Warehouse = "Scrap";
+                    inventoryTranction1.Remarks = "OQC Done";
 
                     var json4 = JsonConvert.SerializeObject(inventoryTranction1);
                     var data4 = new StringContent(json4, Encoding.UTF8, "application/json");

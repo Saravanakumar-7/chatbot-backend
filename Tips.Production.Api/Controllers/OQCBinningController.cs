@@ -8,6 +8,7 @@ using Mysqlx.Crud;
 using Newtonsoft.Json;
 using System.IO;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
@@ -27,7 +28,10 @@ namespace Tips.Production.Api.Controllers
         private IMapper _mapper;
         private IOQCBinningRepository _oQCBinningRepository;
         private readonly IHttpClientFactory _clientFactory;
-        public OQCBinningController(IOQCBinningRepository oQCBinningRepository, IHttpClientFactory clientFactory, ILoggerManager logger, HttpClient httpClient, IConfiguration config, IMapper mapper)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public OQCBinningController(IHttpContextAccessor httpContextAccessor, IOQCBinningRepository oQCBinningRepository, IHttpClientFactory clientFactory, ILoggerManager logger, HttpClient httpClient, IConfiguration config, IMapper mapper)
         {
             _logger = logger;
             _httpClient = httpClient;
@@ -35,6 +39,10 @@ namespace Tips.Production.Api.Controllers
             _mapper = mapper;
             _oQCBinningRepository = oQCBinningRepository;
             _clientFactory = clientFactory;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         [HttpPost]
@@ -230,12 +238,16 @@ namespace Tips.Production.Api.Controllers
                     inventoryTranction.UOM = uom;
                     inventoryTranction.BOM_Version_No = 0;
                     inventoryTranction.Issued_DateTime = DateTime.Now;
-                    inventoryTranction.shopOrderNo = "";
+                    inventoryTranction.Issued_By = _createdBy; 
+                    inventoryTranction.GrinNo = newinv.GrinNo;
+                    inventoryTranction.GrinPartId = newinv.GrinPartId;
+                    inventoryTranction.shopOrderNo = newinv.ShopOrderNo;
                     inventoryTranction.ReferenceID = postoqcbinning.Id.ToString();
-                    inventoryTranction.ReferenceIDFrom = "OQCBinning"; ;
-                    inventoryTranction.From_Location = loc.Location;
+                    inventoryTranction.ReferenceIDFrom = "OQCBinning"; 
+                    inventoryTranction.From_Location = newinv.Location;
                     inventoryTranction.TO_Location = loc.Location;
-                    inventoryTranction.Warehouse = loc.Warehouse; ;
+                    inventoryTranction.Warehouse = loc.Warehouse;
+                    inventoryTranction.Remarks = "OQCBinning Done";
 
                     var json2 = JsonConvert.SerializeObject(inventoryTranction);
                     var data2 = new StringContent(json2, Encoding.UTF8, "application/json");

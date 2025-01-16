@@ -632,11 +632,12 @@ namespace Tips.Warehouse.Api.Controllers
                                 inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                                 inventoryTranction.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
                                 inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
+                                inventoryTranction.IsStockAvailable = true;
                                 inventoryTranction.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
                                 inventoryTranction.Issued_DateTime = DateTime.Now;
+                                inventoryTranction.Issued_By = _createdBy;
                                 inventoryTranction.ReferenceID = returnBtoDeliveryOrder.ReturnBTONumber;
                                 inventoryTranction.ReferenceIDFrom = "Return BTO Delivery Order";
-                                inventoryTranction.Issued_By = _createdBy;
                                 inventoryTranction.From_Location = "BTO";
                                 inventoryTranction.TO_Location = eachbin.Location;
                                 inventoryTranction.Remarks = "Return BTO Delivery Order";
@@ -663,6 +664,7 @@ namespace Tips.Warehouse.Api.Controllers
                                 inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                                 inventoryTranction.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
                                 inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
+                                inventoryTranction.IsStockAvailable = true;
                                 inventoryTranction.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
                                 inventoryTranction.Issued_DateTime = DateTime.Now;
                                 inventoryTranction.ReferenceID = returnBtoDeliveryOrder.ReturnBTONumber;

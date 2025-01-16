@@ -507,52 +507,43 @@ namespace Tips.Warehouse.Api.Controllers
                         //}
                         //]
 
+                        var client1 = _clientFactory.CreateClient();
+                        var token1 = HttpContext.Request.Headers["Authorization"].ToString();
+
+                        var ItemNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                        var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+
+                        var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
+                            $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+                        request1.Headers.Add("Authorization", token1);
+
+                        var itemMasterObjectResult = await client1.SendAsync(request1);
+
+                        var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                        var itemMasterObjectData = JsonConvert.DeserializeObject<ReturnBTONumberInvDetails>(itemMasterObjectString);
+                        var itemMasterObject = itemMasterObjectData.data;
+
                         ////Add BTO Detail Into Inventory transaction Table
                         foreach (var eachbin in OpenDeliveryOrderItemsDetails.QtyDistribution)
                         {
-                            //InventoryTranction inventoryTranction = new InventoryTranction();
-                            //inventoryTranction.PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
-                            //inventoryTranction.MftrPartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
-                            //inventoryTranction.Description = openDeliveryOrderItemsDtoList[i].ItemDescription;
-                            //inventoryTranction.Issued_Quantity = Convert.ToDecimal(openDeliveryOrderItemsDtoList[i].DispatchQty);
-                            //inventoryTranction.UOM = openDeliveryOrderItemsDtoList[i].UOM;
-                            //inventoryTranction.Issued_DateTime = DateTime.Now;
-                            //inventoryTranction.ReferenceID = openDeliveryorder.OpenDONumber;
-                            //inventoryTranction.ReferenceIDFrom = "Open Delivery Order";
-                            //inventoryTranction.Issued_By = "Admin";
-                            //inventoryTranction.CreatedOn = DateTime.Now;
-                            //inventoryTranction.Unit = "Bangalore";
-                            //inventoryTranction.CreatedBy = "Admin";
-                            //inventoryTranction.LastModifiedBy = "Admin";
-                            //inventoryTranction.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
-                            //inventoryTranction.LastModifiedOn = DateTime.Now;
-                            //inventoryTranction.ModifiedStatus = false;
-                            //inventoryTranction.From_Location = openDeliveryOrderItemsDtoList[i].Location;
-                            //inventoryTranction.TO_Location = "ODO";
-                            //inventoryTranction.Remarks = "Create ODO";
-
-                            //var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
-
-
-                            //await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
-                            //_inventoryTranctionRepository.SaveAsync();
                             InventoryTranction inventoryTranction = new InventoryTranction();
                             inventoryTranction.PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
-                            inventoryTranction.MftrPartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                            inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); ;
                             inventoryTranction.LotNumber = eachbin.LotNumber;
+                            inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
                             inventoryTranction.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
                             inventoryTranction.Description = openDeliveryOrderItemsDtoList[i].ItemDescription;
                             inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
+                            inventoryTranction.IsStockAvailable = true;
                             inventoryTranction.UOM = openDeliveryOrderItemsDtoList[i].UOM;
                             inventoryTranction.Issued_DateTime = DateTime.Now;
+                            inventoryTranction.Issued_By = _createdBy;
                             inventoryTranction.ReferenceID = openDeliveryOrderItemsDtoList[i].ODONumber;
                             inventoryTranction.ReferenceIDFrom = "Open Delivery Order";
-                            inventoryTranction.Issued_By = _createdBy;
                             inventoryTranction.From_Location = eachbin.Location;
                             inventoryTranction.TO_Location = "ODO";
                             inventoryTranction.Warehouse = eachbin.Warehouse;
                             inventoryTranction.Remarks = "Create ODO";
-                            inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
                             var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
 

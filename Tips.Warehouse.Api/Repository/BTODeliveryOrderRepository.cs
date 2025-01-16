@@ -402,6 +402,35 @@ namespace Tips.Warehouse.Api.Repository
 
             return btoIddNameList;
         }
+
+        public async Task<List<DoConcepDto>> GetDoDetailsbyDoNumbers(List<string> btoNumber)
+        {
+
+            var doDetails = await (from doOrder in _tipsWarehouseDbContext.bTODeliveryOrder
+                                             join doItem in _tipsWarehouseDbContext.bTODeliveryOrderItems
+                                             on doOrder.SalesOrderId equals doItem.SalesOrderId
+                                             join qtyDist in _tipsWarehouseDbContext.BtoDeliveryOrderItemQtyDistribution
+                                             on doItem.Id equals qtyDist.BTODeliveryOrderItemsId
+                                             where btoNumber.Contains(doOrder.BTONumber)
+                                             select new
+                                             {
+                                                 doOrder.SalesOrderNumber,
+                                                 qtyDist.LotNumber
+                                             })
+                                              .GroupBy(x => x.SalesOrderNumber)
+                                              .Select(group => new DoConcepDto
+                                              {
+                                                  SalesOrderNumber = group.Key,
+                                                  doItemConcepDtos = group.Select(g => new DoItemConcepDto
+                                                  {
+                                                      LotNumber = g.LotNumber
+                                                  }).ToList()
+                                              })
+                                              .ToListAsync();
+
+            return doDetails;
+        }
+
         public async Task<IEnumerable<DoLotNumberListDto>> GetDOLotNumberListByBTONoAndItemNo(string btoNumber, string itemNumber)
         {
             var btoItemIdList = await _tipsWarehouseDbContext.bTODeliveryOrderItems
