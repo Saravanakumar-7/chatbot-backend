@@ -27,6 +27,15 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public decimal PODeliveryQty { get; set; }
        
     }
+    public class PoAddDeliveryScheduleShortCloseDto
+    {
+        //public int Id { get; set; }
+        public DateTime PODeliveryDate { get; set; }
+
+        [Precision(13, 3)]
+        public decimal PODeliveryQty { get; set; }
+
+    }
     public class PoAddDeliveryScheduleReportDto
     {
         public int Id { get; set; }

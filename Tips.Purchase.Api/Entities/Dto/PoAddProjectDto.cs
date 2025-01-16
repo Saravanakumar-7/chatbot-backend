@@ -31,7 +31,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
     }
     public class PoAddProjectShortCloseDto
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string? ProjectNumber { get; set; }
 
         [Precision(13, 3)]

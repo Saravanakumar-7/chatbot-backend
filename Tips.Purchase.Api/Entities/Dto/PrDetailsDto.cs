@@ -19,4 +19,11 @@
         public decimal? Qty { get; set; }
         public List<PrDetailDocumentUploadUpdateDto>? PrDetailDocumentUploadUpdateDtos { get; set; }
     }
+    public class PrDetailsShortCloseDto
+    {
+        //public int Id { get; set; }
+        public string? PRNumber { get; set; }
+        public decimal? Qty { get; set; }
+        public List<PrDetailDocumentUploadUpdateDto>? PrDetailDocumentUploadDtos { get; set; }
+    }
 }

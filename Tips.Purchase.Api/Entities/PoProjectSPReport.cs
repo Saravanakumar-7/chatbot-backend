@@ -20,6 +20,7 @@
             public string? Currency { get; set; }
             public string? UOM { get; set; }
             public decimal? UnitPrice { get; set; }
+            public string? PaymentTerms { get; set; }
             public decimal? BalanceValue { get; set; }
             public string? POApprovedIBy { get; set; }
             public DateTime? POApprovedIDate { get; set; }
