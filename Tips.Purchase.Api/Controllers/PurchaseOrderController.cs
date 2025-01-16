@@ -1690,7 +1690,7 @@ namespace Tips.Purchase.Api.Controllers
 
                 foreach (var poItems in poItemDtoList)
                 {
-                    foreach (var prDetails in poItems.PrDetails)
+                    foreach (var prDetails in poItems.PrDetails.Where(x=>x.ToClosePR==true).ToList())
                     {
                         var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, poItems.ItemNumber);
                         if (prItemDetail != null)
@@ -2582,9 +2582,10 @@ namespace Tips.Purchase.Api.Controllers
                                 var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, poItems.ItemNumber);
                                 if (prItemDetail != null)
                                 {
-                                    prItemDetail.PrStatus = PrStatus.Closed;
+                                    if (prDetails.ToClosePR==true) prItemDetail.PrStatus = PrStatus.Closed;
+                                    else prItemDetail.PrStatus = PrStatus.Open;
                                     await _purchaseRequisitionItemRepository.UpdatePrItem(prItemDetail);
-                                    _purchaseRequisitionItemRepository.SaveAsync();
+                                        _purchaseRequisitionItemRepository.SaveAsync(); 
                                 }
 
                                 var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
