@@ -27,10 +27,12 @@ namespace Tips.Purchase.Api
             CreateMap<PoAddProject, PoAddProjectDto>().ReverseMap();
             CreateMap<PoAddProject, PoAddProjectPostDto>().ReverseMap();
             CreateMap<PoAddProject, PoAddProjectUpdateDto>().ReverseMap();
+            CreateMap<PoAddProject, PoAddProjectShortCloseDto>().ReverseMap();
 
             CreateMap<PoAddDeliverySchedule, PoAddDeliveryScheduleDto>().ReverseMap();
             CreateMap<PoAddDeliverySchedule, PoAddDeliverySchedulePostDto>().ReverseMap();
-            CreateMap<PoAddDeliverySchedule, PoAddDeliveryScheduleUpdateDto>().ReverseMap();       
+            CreateMap<PoAddDeliverySchedule, PoAddDeliveryScheduleUpdateDto>().ReverseMap();
+            CreateMap<PoAddDeliverySchedule, PoAddDeliveryScheduleShortCloseDto>().ReverseMap();
 
             CreateMap<PurchaseRequisition, PurchaseRequisitionDto>().ReverseMap();
             CreateMap<PurchaseRequisition, PurchaseRequisitionPostDto>().ReverseMap();
@@ -68,6 +70,7 @@ namespace Tips.Purchase.Api
             CreateMap<PoSpecialInstruction, PoSpecialInstructionDto>().ReverseMap();
             CreateMap<PoSpecialInstruction, PoSpecialInstructionPostDto>().ReverseMap();
             CreateMap<PoSpecialInstruction, PoSpecialInstructionUpdateDto>().ReverseMap();
+            CreateMap<PoSpecialInstruction, PoSpecialInstructionShortCloseDto>().ReverseMap();
 
             CreateMap<POCollectionTracker, POCollectionTrackerDto>().ReverseMap();
             CreateMap<POCollectionTracker, POCollectionTrackerPostDto>().ReverseMap();
@@ -88,14 +91,18 @@ namespace Tips.Purchase.Api
             CreateMap<PrDetails, PrDetailsDto>().ReverseMap();
             CreateMap<PrDetails, PrDetailsPostDto>().ReverseMap();
             CreateMap<PrDetails, PrDetailsUpdateDto>().ReverseMap();
+            CreateMap<PrDetails, PrDetailsShortCloseDto>().ReverseMap();
 
             CreateMap<PoIncoTerm, PoIncoTermDto>().ReverseMap();
             CreateMap<PoIncoTerm, PoIncoTermPostDto>().ReverseMap();
             CreateMap<PoIncoTerm, PoIncoTermUpdateDto>().ReverseMap();
+            CreateMap<PoIncoTerm, PoIncoTermShortCloseDto>().ReverseMap();
 
             CreateMap<PoConfirmationDate, PoConfirmationDateDto>().ReverseMap();
             CreateMap<PoConfirmationDate, PoConfirmationDatePostDto>().ReverseMap();
             CreateMap<PoConfirmationDate, PoConfirmationDateUpdateDto>().ReverseMap();
+            CreateMap<PoConfirmationDate, PoConfirmationDateShortCloseDto>().ReverseMap();
+
             CreateMap<PRItemsDocumentUpload, PRItemsDocumentUploadDto>().ReverseMap();
             CreateMap<PRItemsDocumentUpload, PRItemsDocumentUploadPostDto>().ReverseMap();
             CreateMap<PRItemsDocumentUpload, PRItemsDocumentUploadUpdateDto>().ReverseMap();

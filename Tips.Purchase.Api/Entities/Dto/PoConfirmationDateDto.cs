@@ -24,6 +24,14 @@ namespace Tips.Purchase.Api.Entities.Dto
         [Precision(13, 3)]
         public decimal Qty { get; set; }
     }
+    public class PoConfirmationDateShortCloseDto
+    {
+        //public int Id { get; set; }
+        public DateTime ConfirmationDate { get; set; }
+
+        [Precision(13, 3)]
+        public decimal Qty { get; set; }
+    }
     public class PoConfirmationDateReportDto
     {
         public int Id { get; set; }

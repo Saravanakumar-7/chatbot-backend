@@ -2252,8 +2252,8 @@ namespace Tips.Warehouse.Api.Controllers
                                 inventoryTransaction.UOM = invItem.UOM;
                                 inventoryTransaction.Issued_DateTime = DateTime.Now;
                                 inventoryTransaction.Issued_By = _createdBy;
-                                inventoryTransaction.ReferenceID = invItem.ReferenceID;
-                                inventoryTransaction.ReferenceIDFrom = invItem.ReferenceIDFrom;
+                                inventoryTransaction.ReferenceID = mrNumber;
+                                inventoryTransaction.ReferenceIDFrom = "Material Request";
                                 inventoryTransaction.BOM_Version_No = 0;
                                 inventoryTransaction.From_Location = invItem.Location;
                                 inventoryTransaction.TO_Location = invItem.Location;

@@ -656,7 +656,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryTranction.LotNumber = inventory.LotNumber;
                                 inventoryTranction.Description = openGrinParts.Description;
                                 inventoryTranction.ProjectNumber = openGrinParts.ReferenceSONumber;
-                                inventoryTranction.Issued_Quantity = openGrinParts.Qty;
+                                inventoryTranction.Issued_Quantity = openGrinDetail.Qty;
                                 inventoryTranction.IsStockAvailable = true;
                                 inventoryTranction.UOM = openGrinParts.UOM;
                                 inventoryTranction.Issued_By = _createdBy;

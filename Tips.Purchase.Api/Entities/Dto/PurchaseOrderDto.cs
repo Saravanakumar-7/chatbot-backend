@@ -216,7 +216,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
         public bool TallyStatus { get; set; } = false;
         public List<PoItemsShortCloseDto>? POItems { get; set; }
-        public List<PoIncoTermUpdateDto>? POIncoTerms { get; set; }
+        public List<PoIncoTermShortCloseDto>? POIncoTerms { get; set; }
 
     }
     public class PurchaseOrderIdNameListDto

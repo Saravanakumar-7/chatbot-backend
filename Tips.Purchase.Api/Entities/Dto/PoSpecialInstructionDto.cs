@@ -16,4 +16,10 @@ namespace Tips.Purchase.Api.Entities.Dto
     {
         public string? SpecialInstruction { get; set; }
     }
+    public class PoSpecialInstructionShortCloseDto
+    {
+        //[Key]
+        //public int Id { get; set; }
+        public string? SpecialInstruction { get; set; }
+    }
 }

@@ -135,6 +135,7 @@ namespace Tips.Purchase.Api.Entities.Dto
     }
     public class PoItemsShortCloseDto
     {
+        public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? MftrItemNumber { get; set; }
         public string? Description { get; set; }
@@ -170,11 +171,11 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? ReasonforShortClose { get; set; }
         public string? Remarks { get; set; }
         public string? drawingRevNo { get; set; }
-        public List<PoAddProjectUpdateDto>? POAddprojects { get; set; }
-        public List<PoAddDeliveryScheduleUpdateDto>? POAddDeliverySchedules { get; set; }
-        public List<PoConfirmationDateUpdateDto>? POConfirmationDates { get; set; }
-        public List<PoSpecialInstructionUpdateDto>? POSpecialInstructions { get; set; }
-        public List<PrDetailsUpdateDto>? PrDetails { get; set; }
+        public List<PoAddProjectShortCloseDto>? POAddprojects { get; set; }
+        public List<PoAddDeliveryScheduleShortCloseDto>? POAddDeliverySchedules { get; set; }
+        public List<PoConfirmationDateShortCloseDto>? POConfirmationDates { get; set; }
+        public List<PoSpecialInstructionShortCloseDto>? POSpecialInstructions { get; set; }
+        public List<PrDetailsShortCloseDto>? PrDetails { get; set; }
 
     }
     public class PurchaseOrderItemNoListDto
