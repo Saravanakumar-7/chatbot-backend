@@ -6,10 +6,10 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public int Id { get; set; }
         public string? ProjectNumber { get; set; }
-        
-
         [Precision(18, 3)]
         public decimal? ProjectQty { get; set; }
+        //[Precision(18, 3)]
+        //public decimal? RemainingAccptedQty { get; set; }
         [Precision(13, 3)]
         public decimal RejectReturnQty { get; set; }
         public string? CreatedBy { get; set; }
@@ -22,17 +22,17 @@ namespace Tips.Grin.Api.Entities.DTOs
     public class ProjectNumbersDtoPost
     {
         public string? ProjectNumber { get; set; }
-     
+
 
         [Precision(18, 3)]
-     
+
         public decimal? ProjectQty { get; set; }
-       
+
     }
 
     public class ProjectNumbersDtoUpdate
     {
-        
+
         public string? ProjectNumber { get; set; }
 
 
@@ -63,7 +63,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string ProjectNumber { get; set; }
         public decimal ProjectQty { get; set; }
         public int PoItemId { get; set; }
-         
+
     }
     public class ProjectNumberscalculationofAvgcostDto
     {

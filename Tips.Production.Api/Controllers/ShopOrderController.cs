@@ -890,7 +890,7 @@ namespace Tips.Production.Api.Controllers
                     smtp.Disconnect(true);
 
                     //Code to send data to Advita
-                    /*var data = JsonConvert.SerializeObject(SalesorderList);
+                    var data = JsonConvert.SerializeObject(SalesorderList);
                     var contents1 = new StringContent(data, Encoding.UTF8, "application/json");
                     
                     var client2 = _clientFactory.CreateClient();
@@ -920,12 +920,13 @@ namespace Tips.Production.Api.Controllers
                         Shop_Order_Completion_Date = shopOrder.SOCloseDate.ToString(),
                         Customer_Name = CustomerName,
                         Remarks = "Getapcs ShopOrder",
+                        Project_Name= shopOrder.ShopOrderItems[0].ProjectNumber,
                         Trans_Uploaded_By_Id = 8
                     };
                   
 
                     await _advitaShopOrderDetailsRepository.CreateAdvitaShopOrderDetails(advitaShopOrderDetails);
-                    _advitaShopOrderDetailsRepository.SaveAdvitaAsync();*/
+                    _advitaShopOrderDetailsRepository.SaveAdvitaAsync();
                 }
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ShopOrder Successfully Created";

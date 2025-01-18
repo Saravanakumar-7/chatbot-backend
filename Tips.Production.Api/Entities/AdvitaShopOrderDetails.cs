@@ -16,6 +16,7 @@ namespace Tips.Production.Api.Entities
             public string Sales_Order_No { get; set; } 
 
             public string Item_Number { get; set; } 
+            public string Project_Name { get; set; } 
 
             public string Item_Description { get; set; } 
 

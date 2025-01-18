@@ -39,6 +39,8 @@ using MimeKit.Text;
 using EmailTemplateDto = Tips.Grin.Api.Entities.DTOs.EmailTemplateDto;
 using MailKit.Security;
 using System.Security.Claims;
+using MySqlX.XDevAPI;
+using Newtonsoft.Json.Linq;
 
 //Test
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -540,6 +542,15 @@ namespace Tips.Grin.Api.Controllers
                         var client = _clientFactory.CreateClient();
                         var token = HttpContext.Request.Headers["Authorization"].ToString();
 
+                        //var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                        //           $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
+                        //request1.Headers.Add("Authorization", token);
+
+                        //var inventoryObjectResult = await client.SendAsync(request1);
+                        //var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                        //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                        //dynamic inventoryObject = inventoryObjectData.data;
+
                         var ItemNumber = grinPartsItemMasterEnggDto.ItemNumber;
                         var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
 
@@ -548,16 +559,16 @@ namespace Tips.Grin.Api.Controllers
                         request.Headers.Add("Authorization", token);
 
                         var itemMasterDetails = await client.SendAsync(request);
-                        var inventoryObjectString = await itemMasterDetails.Content.ReadAsStringAsync();
-                        dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        dynamic inventoryObject = inventoryObjectData.data;
-                        grinPartsItemMasterEnggDto.DrawingNo = inventoryObject.drawingNo;
-                        grinPartsItemMasterEnggDto.DocRet = inventoryObject.docRet;
-                        grinPartsItemMasterEnggDto.RevNo = inventoryObject.revNo;
-                        grinPartsItemMasterEnggDto.IsCocRequired = inventoryObject.isCocRequired;
-                        grinPartsItemMasterEnggDto.IsRohsItem = inventoryObject.isRohsItem;
-                        grinPartsItemMasterEnggDto.IsShelfLife = inventoryObject.isShelfLife;
-                        grinPartsItemMasterEnggDto.IsReachItem = inventoryObject.isReachItem;
+                        var ItemmasterObjectString = await itemMasterDetails.Content.ReadAsStringAsync();
+                        dynamic ItemmasterObjectData = JsonConvert.DeserializeObject(ItemmasterObjectString);
+                        dynamic ItemmasterObject = ItemmasterObjectData.data;
+                        grinPartsItemMasterEnggDto.DrawingNo = ItemmasterObject.drawingNo;
+                        grinPartsItemMasterEnggDto.DocRet = ItemmasterObject.docRet;
+                        grinPartsItemMasterEnggDto.RevNo = ItemmasterObject.revNo;
+                        grinPartsItemMasterEnggDto.IsCocRequired = ItemmasterObject.isCocRequired;
+                        grinPartsItemMasterEnggDto.IsRohsItem = ItemmasterObject.isRohsItem;
+                        grinPartsItemMasterEnggDto.IsShelfLife = ItemmasterObject.isShelfLife;
+                        grinPartsItemMasterEnggDto.IsReachItem = ItemmasterObject.isReachItem;
 
                         grinPartsItemMasterEnggList.Add(grinPartsItemMasterEnggDto);
 
