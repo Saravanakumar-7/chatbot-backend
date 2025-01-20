@@ -2916,11 +2916,12 @@ namespace Tips.Grin.Api.Controllers
                                 else if (flag2 == 1)
                                 {
                                     grinInventoryDto.Balance_Quantity = bal;
+                                    rejectedQty -= bal;
                                 }
-                                    //var httpClientHandler = new HttpClientHandler();
-                                    //httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-                                    //var httpClient = new HttpClient(httpClientHandler);
-                                    string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(grinInventoryDto);
+                                //var httpClientHandler = new HttpClientHandler();
+                                //httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
+                                //var httpClient = new HttpClient(httpClientHandler);
+                                string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(grinInventoryDto);
                                 // var rfqApiUrl = _config["InventoryAPI"];
                                 var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
                                 //var rfqCustomerIdResponse = await _httpClient.PostAsync($"{rfqApiUrl}CreateInventoryFromGrin", content);

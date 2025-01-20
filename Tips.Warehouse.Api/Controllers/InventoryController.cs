@@ -353,6 +353,44 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetIQCItemInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber)
+        {
+            ServiceResponse<List<InventoryDto>> serviceResponse = new ServiceResponse<List<InventoryDto>>();
+
+            try
+            {
+                var getInventoryDetailsByGrinNoandGrinId = await _inventoryRepository.GetIQCItemInventoryDetailsByGrinNoandGrinId(GrinNo, GrinPartsId, ItemNumber);
+                if (getInventoryDetailsByGrinNoandGrinId == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory with id: {GrinNo}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with id: {GrinNo}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with id: {GrinNo}");
+                    var result = _mapper.Map<List<InventoryDto>>(getInventoryDetailsByGrinNoandGrinId);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned Inventory with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetIQCInventoryDetailsByGrinNoandGrinId action: {ex.Message} {ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
 
         [HttpGet]
@@ -4085,9 +4123,9 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"InventoryGrinAndIqcReport hasn't been found.";
                     serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"InventoryGrinAndIqcReport hasn't been found in db.");
-                    return Ok(serviceResponse);
+                    return NotFound();
                 }
                 else
                 {

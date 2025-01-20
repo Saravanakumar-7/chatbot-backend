@@ -47,12 +47,14 @@ namespace Tips.SalesService.Api.Controllers
         private IRfqCustomerSupportItemRepository _rfqCustomerSupportItemRepository;
         private IRfqRepository _rfqRepository;
         private ILoggerManager _logger;
+        private IGoogleGCPstorageService _googlegcpservice;
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
-        public QuoteController(IQuoteRepository repository, IQuoteEmailsDetailsRepository quoteEmailsDetailsRepository, IHttpClientFactory clientFactory, HttpClient httpClient, IConfiguration config, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
+        public QuoteController(IQuoteRepository repository, IGoogleGCPstorageService googlegcpservice, IQuoteEmailsDetailsRepository quoteEmailsDetailsRepository, IHttpClientFactory clientFactory, HttpClient httpClient, IConfiguration config, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
         {
+            _googlegcpservice = googlegcpservice;
             _quoteEmailsDetailsRepository = quoteEmailsDetailsRepository;
             _repository = repository;
             _logger = logger;
@@ -883,7 +885,24 @@ namespace Tips.SalesService.Api.Controllers
                     base64 = Convert.ToBase64String(fileBytes);
                 }
 
-                email.Body = builder.ToMessageBody();
+                //Guid guids = Guid.NewGuid();
+                //byte[] fileContent = Convert.FromBase64String(base64);
+                //string fileName = guids.ToString() + "_" + FileName + ".pdf";
+               
+                
+                //string FileExt = Path.GetExtension(fileName).ToUpper();
+
+                ////Guid guids = Guid.NewGuid();
+                //string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileName);
+                //using (MemoryStream ms = new MemoryStream(fileContent))
+                //{
+                //    ms.Position = 0;
+                //    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                //    {
+                //        ms.WriteTo(fileStream);
+                //    }                    
+                    email.Body = builder.ToMessageBody();
+               // }
 
                 using var smtp = new MailKit.Net.Smtp.SmtpClient();
                 int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
@@ -897,9 +916,13 @@ namespace Tips.SalesService.Api.Controllers
                 WhatsAppMessagePayload whatsAppMessagePayload = JsonConvert.DeserializeObject<WhatsAppMessagePayload>(jsonpayload);
                 whatsAppMessagePayload.Template.Name = whatsapptemplate;
                 whatsAppMessagePayload.Template.Components[0].Parameters[0].Document.Filename = FileName;
-                string PDFLink = quoteEmailPostDto.jasperfileUrl;
-                PDFLink = PDFLink.Replace("https://", "https://jasperadmin:RMuhLgqwd9pIPb4@");
-                whatsAppMessagePayload.Template.Components[0].Parameters[0].Document.Link = PDFLink;
+                //string PDFLink = quoteEmailPostDto.jasperfileUrl;
+                //PDFLink = PDFLink.Replace("https://", "https://jasperadmin:RMuhLgqwd9pIPb4@");
+
+                //await _googlegcpservice.UploadFileAsync(filePath, fileName, "");
+                //var PDFLink = _googlegcpservice.GenerateSignedUrl(fileName, TimeSpan.FromDays(7), "");
+
+                //whatsAppMessagePayload.Template.Components[0].Parameters[0].Document.Link = PDFLink;
 
                 Component component = new Component();
                 List<Tips.SalesService.Api.Entities.DTOs.Parameter> parameters = new List<Tips.SalesService.Api.Entities.DTOs.Parameter>();
