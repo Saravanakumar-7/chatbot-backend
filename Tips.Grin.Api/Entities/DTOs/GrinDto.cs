@@ -475,6 +475,13 @@ namespace Tips.Grin.Api.Entities.DTOs
         public bool success { get; set; }
         public int statusCode { get; set; }
     }
+    public class InventoryDto
+    {
+        public List<GrinInventoryDto> data { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
+        public int statusCode { get; set; }
+    }
     public class GrinandIqcDetail
     {
         public List<Grins> grins { get; set; }

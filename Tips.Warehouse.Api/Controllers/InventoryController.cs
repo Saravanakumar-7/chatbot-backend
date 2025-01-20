@@ -383,7 +383,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetIQCInventoryDetailsByGrinNoandGrinId action: {ex.Message} {ex.InnerException}");
+                _logger.LogError($"Something went wrong inside GetIQCItemInventoryDetailsByGrinNoandGrinId action: {ex.Message} {ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Something went wrong. Please try again!";
                 serviceResponse.Success = false;

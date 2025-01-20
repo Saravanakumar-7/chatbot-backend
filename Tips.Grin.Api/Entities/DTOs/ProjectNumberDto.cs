@@ -8,8 +8,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ProjectNumber { get; set; }
         [Precision(18, 3)]
         public decimal? ProjectQty { get; set; }
-        //[Precision(18, 3)]
-        //public decimal? RemainingAccptedQty { get; set; }
+        [Precision(18, 3)]
+        public decimal? RemainingAccptedQty { get; set; }
         [Precision(13, 3)]
         public decimal RejectReturnQty { get; set; }
         public string? CreatedBy { get; set; }

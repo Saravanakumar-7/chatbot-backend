@@ -537,22 +537,24 @@ namespace Tips.Grin.Api.Controllers
 
                     foreach (var GrinpartsDetails in GrinDetailsbyId.GrinParts)
                     {
+                        var encodedgrinNo = Uri.EscapeDataString(GrinDetailsbyId.GrinNumber);
                         GrinPartsItemMasterEnggDto grinPartsItemMasterEnggDto = _mapper.Map<GrinPartsItemMasterEnggDto>(GrinpartsDetails);
                         grinPartsItemMasterEnggDto.ProjectNumbers = _mapper.Map<List<ProjectNumbersDto>>(GrinpartsDetails.ProjectNumbers);
                         var client = _clientFactory.CreateClient();
                         var token = HttpContext.Request.Headers["Authorization"].ToString();
-
-                        //var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                        //           $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
-                        //request1.Headers.Add("Authorization", token);
-
-                        //var inventoryObjectResult = await client.SendAsync(request1);
-                        //var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                        //dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
-                        //dynamic inventoryObject = inventoryObjectData.data;
-
                         var ItemNumber = grinPartsItemMasterEnggDto.ItemNumber;
                         var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+
+                        var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                                   $"GetIQCItemInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={GrinpartsDetails.Id}&ItemNumber={encodedItemNumber}"));
+                        request1.Headers.Add("Authorization", token);
+
+                        var inventoryObjectResult = await client.SendAsync(request1);
+                        var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                        var inventoryObjectData = JsonConvert.DeserializeObject<InventoryDto>(inventoryObjectString);
+                        var inventoryObject = inventoryObjectData.data;
+                        
+                        grinPartsItemMasterEnggDto.ProjectNumbers.ForEach(x=>x.RemainingAccptedQty=(inventoryObject.Where(y => y.ProjectNumber == x.ProjectNumber).Sum(z => z.Balance_Quantity)));
 
                         var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterEnggAPI"],
                             $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
