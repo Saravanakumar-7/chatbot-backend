@@ -169,6 +169,8 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<SourcingSPReport>().HasNoKey();
             modelBuilder.Entity<FGSalesOrderSPReport>().HasNoKey();
             modelBuilder.Entity<SalesOrderQtyDetailsDto>().HasNoKey();
+            modelBuilder.Entity<FGSalesOrderSPReportWithDate>().HasNoKey();
+            
         }
 
     }

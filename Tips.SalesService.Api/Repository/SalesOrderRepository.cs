@@ -401,6 +401,15 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
+        public async Task<IEnumerable<FGSalesOrderSPReportWithDate>> GetFGSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<FGSalesOrderSPReportWithDate>()
+                        .FromSqlInterpolated($"CALL All_Fgs_salesorder_Report_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
         public async Task<string> DeleteSalesOrder(SalesOrder salesOrder)
         {
             Delete(salesOrder);
