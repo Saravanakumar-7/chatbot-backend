@@ -188,11 +188,13 @@ namespace Tips.Purchase.Api.Repository
             //var purchaseOrderTotalValue = _tipsPurchaseDbContext.PurchaseOrders
             //         .Where(x => x.VendorNumber == vendorId)
             //             .Sum(s => s.TotalAmount);
-
             var purchaseOrderTotalValue = _tipsPurchaseDbContext.PurchaseOrders
-                        .Where(x => x.VendorNumber == vendorId)
-                        .OrderByDescending(x => x.CreatedOn)
+                        .Where(x => x.VendorNumber == vendorId).GroupBy(x => x.PONumber).Select(g => g.OrderByDescending(x => x.RevisionNumber ?? 1).FirstOrDefault())
                         .Sum(x => x.TotalAmount);
+            //var purchaseOrderTotalValue = _tipsPurchaseDbContext.PurchaseOrders
+            //            .Where(x => x.VendorNumber == vendorId)
+            //            .OrderByDescending(x => x.CreatedOn)
+            //            .Sum(x => x.TotalAmount);
 
             var pocollectionDetails = _tipsPurchaseDbContext.POCollectionTrackers
                 .Where(x => x.VendorId == vendorId)
