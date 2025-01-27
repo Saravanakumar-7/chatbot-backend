@@ -47,14 +47,14 @@ namespace Tips.SalesService.Api.Controllers
         private IRfqCustomerSupportItemRepository _rfqCustomerSupportItemRepository;
         private IRfqRepository _rfqRepository;
         private ILoggerManager _logger;
-        //private IGoogleGCPstorageService _googlegcpservice;
+       // private IGoogleGCPstorageService _googlegcpservice;
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
-        public QuoteController(IQuoteRepository repository, IGoogleGCPstorageService googlegcpservice, IQuoteEmailsDetailsRepository quoteEmailsDetailsRepository, IHttpClientFactory clientFactory, HttpClient httpClient, IConfiguration config, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
-        {
-           // _googlegcpservice = googlegcpservice;
+        public QuoteController(IQuoteRepository repository, IQuoteEmailsDetailsRepository quoteEmailsDetailsRepository, IHttpClientFactory clientFactory, HttpClient httpClient, IConfiguration config, IRfqCustomerSupportItemRepository rfqCustomerSupportItemRepository, IRfqRepository rfqRepository, ILoggerManager logger, IMapper mapper)
+        {//, IGoogleGCPstorageService googlegcpservice
+            //_googlegcpservice = googlegcpservice;
             _quoteEmailsDetailsRepository = quoteEmailsDetailsRepository;
             _repository = repository;
             _logger = logger;
