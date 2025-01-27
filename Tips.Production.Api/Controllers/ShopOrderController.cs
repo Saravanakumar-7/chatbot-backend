@@ -2004,5 +2004,57 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GetShopOrderComsumptionDetialsBySaleOrderNos(List<string> lotNoListString)
+        {
+            //openpurchaseorderdto
+            ServiceResponse<IEnumerable<ShopOrderComsumpDetailsDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderComsumpDetailsDto>>();
+            try
+            {
+                var shopOrderComsumDetails = await _shopOrderRepository.GetShopOrderComsumptionDetialsBySaleOrderNos(lotNoListString);
+                var result = _mapper.Map<IEnumerable<ShopOrderComsumpDetailsDto>>(shopOrderComsumDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all  ShopOrder Details By LotNo List";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetShopOrderComsumptionDetialsBySaleOrderNos action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetShopOrderComsumptionDetialsBySaItemNo(string saItemNumber, string fgItemNumber)
+        {
+            //openpurchaseorderdto
+            ServiceResponse<IEnumerable<string>> serviceResponse = new ServiceResponse<IEnumerable<string>>();
+            try
+            {
+                var shopOrderComsumDetails = await _shopOrderRepository.GetShopOrderComsumptionDetialsBySaItemNo(saItemNumber, fgItemNumber);
+                var result = _mapper.Map<IEnumerable<string>>(shopOrderComsumDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all  ShopOrder Details By LotNo List";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetShopOrderComsumptionDetialsBySaleOrderNos action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

@@ -60,4 +60,15 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal QtyUsed { get; set; }
         public string MRNumber {  get; set; }
     }
+    public class SomitConsumpDto
+    {
+        public string? PartNumber { get; set; }
+        public string? MftrPartNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        public string? LotNumber { get; set; }
+        public PartType? PartType { get; set; }
+        public string? DataFrom { get; set; }
+        public decimal ConvertedToFgQty { get; set; }
+        public DateTime? CreatedOn { get; set; }
+    }
 }

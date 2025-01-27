@@ -392,6 +392,38 @@ namespace Tips.Production.Api.Repository
             return shopOrderNoList;
         }
 
+        public async Task<List<ShopOrderComsumpDetailsDto>> GetShopOrderComsumptionDetialsBySaleOrderNos(List<string> lotNoListString)
+        {
+            var poStatus = new List<OrderStatus> { OrderStatus.Open, OrderStatus.PartiallyClosed };
+
+            var result = await _tipsProductionDbContext.ShopOrders
+                .Where(x => lotNoListString.Contains(x.ShopOrderNumber) && poStatus.Contains(x.Status))
+                .Select(s=> new ShopOrderComsumpDetailsDto
+                      {
+                          ShopOrderNumber = s.ShopOrderNumber,
+                          ItemNumber = s.ItemNumber,
+                          ReleaseQty = s.TotalSOReleaseQty,
+                          WipQty = s.WipQty 
+                      })
+                .ToListAsync();
+
+            return result;
+        }
+        public async Task<string> GetShopOrderComsumptionDetialsBySaItemNo(string saItemNo, string fgItemNumber)
+        {
+            var poStatus = new List<OrderStatus> { OrderStatus.Open, OrderStatus.PartiallyClosed };
+
+            var result = await (from shopOrder in _tipsProductionDbContext.ShopOrders
+                                join item in _tipsProductionDbContext.ShopOrderItems
+                                on shopOrder.Id equals item.ShopOrderId
+                                where shopOrder.ItemNumber == saItemNo
+                                && item.FGItemNumber == fgItemNumber
+                                && poStatus.Contains(shopOrder.Status)
+                                select shopOrder.ShopOrderNumber)
+                               .FirstOrDefaultAsync();
+
+            return result;
+        }
 
 
         public async Task<ShopOrder> GetShopOrderByShopOrderNo(string shopOrderNo)

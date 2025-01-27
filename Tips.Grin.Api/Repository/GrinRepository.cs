@@ -206,6 +206,49 @@ namespace Tips.Grin.Api.Repository
             }
         }
 
+        public async Task<List<GrinComsumpReportDto>> GetGrinComsumptionDetialsByPartNos(List<string> PartNoListString)
+        {
+            var result = await _tipsGrinDbContext.GrinParts
+                .Where(x => PartNoListString.Contains(x.ItemNumber))
+                .Select(x => new GrinComsumpReportDto
+                {
+                    GrinNumber = x.Grins.GrinNumber,
+                    GrinDate = x.Grins.CreatedOn,
+                    VendorName = x.Grins.VendorName,
+                    PONumber = x.PONumber,  
+                    GrinQty = x.AcceptedQty,
+                    GrinUnitPrice = x.UnitPrice,
+                    Tax = (x.SGST ?? 0) + (x.IGST ?? 0) + (x.CGST ?? 0) + (x.UTGST ?? 0) + (x.Duties ?? 0),
+                    OtherCosts = (x.Grins.Freight ?? 0) + (x.Grins.Insurance ?? 0) + (x.Grins.LoadingorUnLoading ?? 0) + (x.Grins.Transport ?? 0),
+                    UOM = x.UOM,
+                    UOC = x.UOC,
+                    PartNumber = x.ItemNumber 
+                })
+                .ToListAsync();
+
+            var groupedResult = result
+                .GroupBy(r => r.PartNumber)
+                .Select(group => new GrinComsumpReportDto
+                {
+                    PartNumber = group.Key, 
+                    GrinNumber = group.FirstOrDefault()?.GrinNumber,
+                    GrinDate = group.FirstOrDefault()?.GrinDate,
+                    VendorName = group.FirstOrDefault()?.VendorName,
+                    PONumber = group.FirstOrDefault()?.PONumber,
+                    GrinQty = group.Sum(x => x.GrinQty),
+                    GrinUnitPrice = group.Sum(x => x.GrinUnitPrice),
+                    Tax = group.Sum(x => x.Tax),
+                    OtherCosts = group.Sum(x => x.OtherCosts),
+                    UOM = group.FirstOrDefault()?.UOM,
+                    UOC = group.FirstOrDefault()?.UOC
+                })
+                .ToList();
+
+            return groupedResult;
+        }
+
+
+
         public async Task<IEnumerable<GetDownloadUrlDto>> GetDownloadUrlDetails(string grinNumber)
         {
 

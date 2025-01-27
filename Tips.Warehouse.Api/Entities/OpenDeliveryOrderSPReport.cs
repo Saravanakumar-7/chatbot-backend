@@ -20,12 +20,14 @@ namespace Tips.Warehouse.Api.Entities
         public string? UOM { get; set; }
         public decimal? Avg_cost { get; set; }
         public decimal? Avaliablestk { get; set; }
-        public decimal? Dispatchstk { get; set; }
-        public decimal? ReturnQty { get; set; }
+        public decimal? OverallDispatchedQty { get; set; }
+        public decimal? OverallReturnDispatchedQty { get; set; }
         public string? SerialNo { get; set; }
         public string? Remarks { get; set; }
         public DateTime? ODODate {  get; set; }
         public string? ProjectNumber { get; set; }
+        public decimal? LocationwiseReturnDispatchedQty { get; set; }
+        public decimal? LocationwiseDispatchedQty { get; set; }
 
     }
 }

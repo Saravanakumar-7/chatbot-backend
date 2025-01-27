@@ -210,13 +210,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public string LotNumber { get; set; }
     }
-    public class DoConcepDto
+    public class DoConsumpDto
     {
         public string? SalesOrderNumber { get; set; }
-        public List<DoItemConcepDto>? doItemConcepDtos { get; set; }
-    }
-    public class DoItemConcepDto
-    {
         public string? LotNumber { get; set; }
+        public string? BTONumber { get; set; }
     }
 }

@@ -480,4 +480,21 @@ namespace Tips.Grin.Api.Entities.DTOs
         public List<Grins> grins { get; set; }
         public List<IQCConfirmation>? iqcs { get; set; }
     }
+
+    public class GrinComsumpReportDto
+    {
+        public string? GrinNumber { get; set; }
+        public DateTime? GrinDate { get; set; }
+        public string? VendorName { get; set; }
+        public string? PartNumber { get; set; }
+        public string? PONumber { get; set; }
+        public decimal BOENo { get; set; }
+        public decimal? GrinQty { get; set; }
+        public decimal GrinUnitPrice { get; set; }
+        public decimal Tax { get; set; }
+        public decimal OtherCosts { get; set; }
+        public string? UOM { get; set; }
+        public string? UOC { get; set; }
+
+    }
 }

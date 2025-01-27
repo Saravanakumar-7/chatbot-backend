@@ -191,5 +191,28 @@ namespace Tips.Warehouse.Api.Repository
             await _tipsWarehouseDbContext.SaveChangesAsync();
             return mRNIssueTrackerDtos;
         }
+
+        public async Task<List<SomitConsumpDto>> GetSomitConsumpDetailsByShopOrderNumbers(string shopOrderNumber)
+        {
+            var somitConsumpDetails = await _tipsWarehouseDbContext.ShopOrderMaterialIssueTrackers
+                .Where(item => item.ShopOrderNumber == shopOrderNumber)
+                .GroupBy(item => new { item.ShopOrderNumber, item.PartNumber, item.LotNumber, item.MftrPartNumber, item.PartType, item.DataFrom, item.CreatedOn }) 
+                .Select(group => new SomitConsumpDto
+                {
+                    PartNumber = group.Key.PartNumber, 
+                    MftrPartNumber = group.Key.MftrPartNumber,
+                    ShopOrderNumber = group.Key.ShopOrderNumber,
+                    LotNumber = group.Key.LotNumber,
+                    PartType = group.Key.PartType, 
+                    DataFrom = group.Key.DataFrom, 
+                    ConvertedToFgQty = group.Sum(item => item.ConvertedToFgQty),
+                    CreatedOn = group.Key.CreatedOn,
+                })
+                .ToListAsync();
+
+            return somitConsumpDetails;
+        }
+
+
     }
 }
