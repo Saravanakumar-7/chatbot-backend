@@ -112,7 +112,24 @@ namespace Tips.SalesService.Api.Repository
                 return Enumerable.Empty<RecievableCustomer>();
             }
         }
+        public async Task<IEnumerable<RecievableDayWiseSPReportDto>> GetAllRecievableDayWiseSPReport()
+        {
 
+            try
+            {
+                var results = await _tipsSalesServiceDbContext.Set<RecievableDayWiseSPReportDto>()
+                    .FromSqlInterpolated($"CALL Recievable_day_wise_report")
+                    .ToListAsync();
+
+                return results;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine($"An error occurred while executing the stored procedure: {ex.Message}");
+                return Enumerable.Empty<RecievableDayWiseSPReportDto>();
+            }
+        }
 
         public async Task<PagedList<SalesOrderSPReport>> GetSalesOrderSPReport(PagingParameter pagingParameter)
         {

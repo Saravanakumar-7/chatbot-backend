@@ -25,6 +25,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<List<Inventory>> GetFGInventoryStockByItem(string itemNumber);
         Task<List<Inventory>> GetSAInventoryStockByItem(string itemNumber);
         Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandLocationandwarehouse(string ItemNumber, string Location, string Warehouse, string projectNumber, string lotNumber);
+        Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNumberandLotNumber(string ItemNumber, string projectNumber);
         Task<Inventory> GetInventoryDetails(string ItemNumber);
         Task<List<Inventory>> GetRejectInventorybyGrinNo(string GrinNo);
         Task<List<InventoryQtyforDO>> GetInventorybyItemandProject(string itemNumber, string projectNumber);

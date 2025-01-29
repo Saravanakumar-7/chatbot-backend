@@ -170,7 +170,8 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<FGSalesOrderSPReport>().HasNoKey();
             modelBuilder.Entity<SalesOrderQtyDetailsDto>().HasNoKey();
             modelBuilder.Entity<FGSalesOrderSPReportWithDate>().HasNoKey();
-            
+            modelBuilder.Entity<RecievableDayWiseSPReportDto>().HasNoKey();
+
         }
 
     }

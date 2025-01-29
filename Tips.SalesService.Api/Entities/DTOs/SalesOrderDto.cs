@@ -650,4 +650,16 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SalesOrderNumber { get; set; }
         public string? ProjectNumber { get; set; }
     }
+    public class RecievableDayWiseSPReportDto
+    {
+        public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? PaymentMode { get; set; }
+        public string? PaymentRefNo { get; set; }
+        public decimal? TotalSumOfSOAmount { get; set; }
+        public decimal? AlreadyRecieved { get; set; }
+        public decimal? AmountRecieved { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? TransactionDate { get; set; }
+    }
 }

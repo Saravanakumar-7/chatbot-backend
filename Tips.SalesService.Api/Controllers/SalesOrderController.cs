@@ -4329,6 +4329,43 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllRecievableDayWiseSPReport()
+        {
+            ServiceResponse<IEnumerable<RecievableDayWiseSPReportDto>> serviceResponse = new ServiceResponse<IEnumerable<RecievableDayWiseSPReportDto>>();
+            try
+            {
+                var products = await _repository.GetAllRecievableDayWiseSPReport();
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RecievableDayWise hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RecievableDayWise hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RecievableDayWise Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllRecievableDayWiseSPReport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> GetReceivableReportsForMultiCustomerID(ReceivableReportsForMultiCustomerIdDto receivableReportsForMultiCustomerIdDto)
         {

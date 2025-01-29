@@ -7,6 +7,7 @@ using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -1706,6 +1707,73 @@ namespace Tips.Master.Api.Controllers
                 _logger.LogError($"Something went wrong inside GetItemMasterByItemNumber action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Internal server error: {ex.Message}{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetItemMasterByItemNumberAndPartType(string ItemNumber,PartType partType)
+        {
+            ServiceResponse<ItemMasterDto> serviceResponse = new ServiceResponse<ItemMasterDto>();
+
+            try
+            {
+                var itemMasterDetails = await _repository.ItemMasterRepository.GetItemMasterByItemNumberAndPartType(ItemNumber, partType);
+                if (itemMasterDetails == null)
+                {
+                    _logger.LogError($"ItemMaster with ItemNumber: {ItemNumber} and PartType: {partType}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ItemMaster with ItemNumber and partType hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo("ItemMasterController" + Convert.ToString(itemMasterDetails));
+                    _logger.LogInfo($"Returned ItemMasters with ItemNumber: {ItemNumber} and PartType: {partType}");
+                    var result = _mapper.Map<ItemMasterDto>(itemMasterDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned  ItemMasterDetail";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetItemMasterByItemNumberAndPartType action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Internal server error: {ex.Message}{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveItemNumberListbyPartType( PartType partType)
+        {
+            ServiceResponse<IEnumerable<ItemNoListDtos>> serviceResponse = new ServiceResponse<IEnumerable<ItemNoListDtos>>();
+            try
+            {
+                var itemMasterDetails = await _repository.ItemMasterRepository.GetAllActiveItemNumberListbyPartType(partType);
+                _logger.LogInfo("Returned all ActiveItemNumberListbyPartTypes");
+                var result = _mapper.Map<IEnumerable<ItemNoListDtos>>(itemMasterDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ActiveItemNumberListbyPartTypes ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllActiveItemNumberListbyPartTypes action: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
