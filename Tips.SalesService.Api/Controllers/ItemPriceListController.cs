@@ -476,11 +476,8 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var GetAllItemNumber= await _repository.GetAllItemNumberList();
-
-                _logger.LogInfo("Returned all GetAllItemNumber");
-                var result = _mapper.Map<IEnumerable<ItemNumberListDto>>(GetAllItemNumber);
-
-                serviceResponse.Data = result;
+                _logger.LogInfo("Returned all GetAllItemNumber");      
+                serviceResponse.Data = GetAllItemNumber;
                 serviceResponse.Message = "Returned all ItemNumber";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
