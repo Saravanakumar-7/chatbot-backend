@@ -145,12 +145,13 @@ namespace Tips.Warehouse.Api.Repository
             string[] skipWareHouse = { "WIP","Rework", "IQC", "GRIN" };
             var inventoryDetails = await _tipsWarehouseDbContext.Inventories
                 .Where(x => x.PartNumber == itemNumber && x.Balance_Quantity>0 && !skipWareHouse.Contains(x.Warehouse))
-                .GroupBy(x => new { x.ProjectNumber, x.Location, x.Warehouse })
+                .GroupBy(x => new { x.ProjectNumber, x.Location, x.Warehouse ,x.LotNumber})
                 .Select(group => new LocationTransferFromDto
                 {
                     FromProject = group.Key.ProjectNumber,
                     FromLocation = group.Key.Location,
                     FromWarehouse = group.Key.Warehouse,
+                    FromLotNumber = group.Key.LotNumber,
                     AvailableStock = group.Sum(x => x.Balance_Quantity)
                 })
                 .ToListAsync();

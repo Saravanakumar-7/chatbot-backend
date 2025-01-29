@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Entities;
 using Entities.DTOs;
+using Entities.Enums;
 using Entities.Helper;
 
 namespace Contracts
@@ -28,12 +29,14 @@ namespace Contracts
         Task<IEnumerable<ItemMasterIdNoListDto>> GetAllItemMasterIdNoList();
         Task<List<ItemWithPartTypeDto>> GetItemPartTypeByItemNo(List<string> ItemNumberList);
         Task<ItemMaster> GetItemMasterByItemNumber(string shopOrderNo);
+        Task<ItemMaster> GetItemMasterByItemNumberAndPartType(string ItemNumber, PartType partType);
         Task<bool> CheckItemMasterExists(string itemnumber);
         Task<List<ItemMasterMtrPartNoDto>> GetItemMasterByPartNo(string partNumber);
         Task<IEnumerable<ItemMaster>> SearchItemMasterDate(SearchDateParamess searchDateParam);
         Task<IEnumerable<ItemMaster>> GetAllItemMasterWithItems(ItemMasterSearchDto itemMasterSearch);
         Task<IEnumerable<ItemMaster>> SearchItemMaster(SearchParames searchParames);
         Task<IEnumerable<FileUpload>> GetAllItemMasterFileUploadList(string itemNumber);
+        Task<IEnumerable<ItemNoListDtos>> GetAllActiveItemNumberListbyPartType(PartType partType);
         Task<IEnumerable<ItemMasterIdNoListDto>> GetAllFgTgItemMasterItemNoList();
         Task<IEnumerable<ItemNoListDtos>> GetAllPurchasePartItemNoList();
         Task<IEnumerable<ItemNoListDtos>> GetAllOnlyServiceItemsPurchasePartItemNoList();

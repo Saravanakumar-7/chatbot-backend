@@ -36,7 +36,7 @@ namespace Tips.Warehouse.Api.Repository
             var locationTransferPartNo = FindAll().OrderByDescending(x => x.Id)
              .Where(inv => ((string.IsNullOrWhiteSpace(searchParammes.SearchValue) || inv.FromPartNumber.Contains(searchParammes.SearchValue)
              || inv.FromLocation.Contains(searchParammes.SearchValue)
-             || inv.ToLocation.Contains(searchParammes.SearchValue))));
+             )));
 
             return PagedList<LocationTransferPartNo>.ToPagedList(locationTransferPartNo, pagingParameter.PageNumber, pagingParameter.PageSize);
         }

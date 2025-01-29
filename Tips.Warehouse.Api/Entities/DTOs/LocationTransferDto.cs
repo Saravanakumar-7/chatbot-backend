@@ -127,6 +127,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? FromProject { get; set; }
         public string? FromLocation { get; set; }
         public string? FromWarehouse { get; set; }
+        public string? FromLotNumber {  get; set; }
         public decimal? AvailableStock { get; set; }
 
     }

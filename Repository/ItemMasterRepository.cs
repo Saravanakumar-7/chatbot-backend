@@ -495,6 +495,20 @@ namespace Repository
             return itemMasterIdNoListDto;
         }
 
+        public async Task<IEnumerable<ItemNoListDtos>> GetAllActiveItemNumberListbyPartType(PartType partType)
+        {
+            IEnumerable<ItemNoListDtos> itemMasterNoListDto = await TipsMasterDbContext.ItemMasters
+                                .Where(x => x.ItemType == partType && x.IsActive == true)
+                                .Select(c => new ItemNoListDtos()
+                                {
+                                    ItemNumber = c.ItemNumber,
+                                    Description = c.Description
+                                })
+                              .ToListAsync();
+
+            return itemMasterNoListDto;
+        }
+
         public async Task<IEnumerable<FileUpload>> GetAllItemMasterFileUploadList(string itemNumber)
         {
             IEnumerable<FileUpload> itemMasterFileUploadList = await TipsMasterDbContext.fileUploads
@@ -532,6 +546,20 @@ namespace Repository
                              .FirstOrDefaultAsync();
             return getItemMasterByItemNo;
         }
+
+        public async Task<ItemMaster> GetItemMasterByItemNumberAndPartType(string ItemNumber,PartType partType)
+        {
+            var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == ItemNumber && x.IsActive == true && x.ItemType == partType)
+               
+                 .Include(t => t.ItemmasterAlternate)
+                                .Include(x => x.ItemMasterApprovedVendor)
+                                .Include(s => s.ItemMasterRouting)
+                                .Include(p => p.ItemMasterWarehouse)
+
+                             .FirstOrDefaultAsync();
+            return getItemMasterByItemNo;
+        }
+
         public async Task<bool> CheckItemMasterExists(string itemnumber)
         {
             var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == itemnumber).FirstOrDefaultAsync();

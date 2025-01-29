@@ -38,11 +38,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? Description { get; set; }
         public string? DOType { get; set; }
         public string? IssuedTo { get; set; }
-        public string? ReasonforIssuingStock { get; set; }
-
-
-        public List<OpenDeliveryOrderPartsDtoPost>? OpenDeliveryOrderParts { get; set; }
-
+        public string? ReasonforIssuingStock { get; set; }        
+        public List<OpenDeliveryOrderPartsDtoPost> OpenDeliveryOrderParts { get; set; }
     }
     public class OpenDeliveryOrderDtoUpdate
     {

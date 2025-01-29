@@ -83,7 +83,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        [HttpGet("{Warehouse}")]
+        [HttpGet]
         public async Task<IActionResult> GetListofLocationsByWarehouse(string Warehouse)
         {
             ServiceResponse<IEnumerable<GetListofLocationsByWarehouseDto>> serviceResponse = new ServiceResponse<IEnumerable<GetListofLocationsByWarehouseDto>>();
