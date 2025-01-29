@@ -81,8 +81,8 @@ namespace Tips.SalesService.Api.Repository
                .Select(g => new ItemNumberListDto
                {
                    ItemNumber = g.Key,
-                   Description = g.OrderByDescending(x => x.Description).FirstOrDefault().Description
-               }).AsQueryable();            
+                   Description = g.Max(x => x.Description)
+               });            
 
             return await getAllItemNumberList.ToListAsync();
         }
