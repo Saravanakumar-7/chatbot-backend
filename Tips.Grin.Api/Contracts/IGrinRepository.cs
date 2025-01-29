@@ -44,5 +44,6 @@ namespace Tips.Grin.Api.Contracts
         Task<PagedList<GrinSPReportForTrans>> GetGrinSPReportForTrans(PagingParameter pagingParameter);
         Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<GrinSPReportForTrans>> GetGrinSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
+        Task<List<GrinComsumpReportDto>> GetGrinComsumptionDetialsByPartNos(List<string> PartNoListString);
     }
 }

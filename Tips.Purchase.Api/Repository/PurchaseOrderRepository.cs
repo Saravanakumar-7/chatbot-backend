@@ -2079,16 +2079,28 @@ namespace Tips.Purchase.Api.Repository
                 .Select(x => x.POItemDetailId)
                  .ToListAsync();
 
+            var latestPONumbersIds = await _tipsPurchaseDbContext.PurchaseOrders
+                                         .Where(x => poStatus.Contains(x.PoStatus)
+                                        && (x.ApprovalCount == 4 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true
+                                        && x.POApprovalIV == true) ||
+                                        (x.ApprovalCount == 2 && x.POApprovalI == true && x.POApprovalII == true)
+                                        && x.IsDeleted == false
+                                        && x.IsModified == false)
+                                         .Select(x=>x.Id)
+                                         .ToListAsync();
+
+
             List<OpenPoQuantityDto> openPoQtyList = await _tipsPurchaseDbContext.PoItems
                 .Include(x => x.PurchaseOrder)
-                .Where(x => poStatus.Contains(x.PurchaseOrder.PoStatus)
-                && poItemIds.Contains(x.Id)
+                .Where(x => /*poStatus.Contains(x.PurchaseOrder.PoStatus)*/
+                /*&&*/ poItemIds.Contains(x.Id)
+                && latestPONumbersIds.Contains(x.PurchaseOrderId)
                 && poStatus.Contains(x.PoStatus) && itemNumberList.Contains(x.ItemNumber)
-                && (x.PurchaseOrder.ApprovalCount == 4 && x.PurchaseOrder.POApprovalI == true && x.PurchaseOrder.POApprovalII == true && x.PurchaseOrder.POApprovalIII == true
-                && x.PurchaseOrder.POApprovalIV == true) ||
-                (x.PurchaseOrder.ApprovalCount == 2 && x.PurchaseOrder.POApprovalI == true && x.PurchaseOrder.POApprovalII == true)
-                && x.PurchaseOrder.IsDeleted == false
-                && x.PurchaseOrder.IsModified == false
+                //&& (x.PurchaseOrder.ApprovalCount == 4 && x.PurchaseOrder.POApprovalI == true && x.PurchaseOrder.POApprovalII == true && x.PurchaseOrder.POApprovalIII == true
+                //&& x.PurchaseOrder.POApprovalIV == true) ||
+                //(x.PurchaseOrder.ApprovalCount == 2 && x.PurchaseOrder.POApprovalI == true && x.PurchaseOrder.POApprovalII == true)
+                //&& x.PurchaseOrder.IsDeleted == false
+                //&& x.PurchaseOrder.IsModified == false
                 && x.POAddprojects.Any(pr => pr.ProjectNumber == projectNo))
                 .GroupBy(i => new { i.ItemNumber })
                 .Select(gr => new OpenPoQuantityDto

@@ -2931,5 +2931,31 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GetGrinComsumptionDetialsByPartNos(List<string> PartNoListString)
+        {
+            //openpurchaseorderdto
+            ServiceResponse<IEnumerable<GrinComsumpReportDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinComsumpReportDto>>();
+            try
+            {
+                var shopOrderComsumDetails = await _repository.GetGrinComsumptionDetialsByPartNos(PartNoListString);
+                var result = _mapper.Map<IEnumerable<GrinComsumpReportDto>>(shopOrderComsumDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all  Grin Details By PartNo List";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetGrinComsumptionDetialsByPartNos action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

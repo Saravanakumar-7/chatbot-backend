@@ -13,6 +13,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<long?> CreateMaterialIssueTracker(ShopOrderMaterialIssueTracker shopOrderMaterialIssue);
 
         Task<List<MRNIssueTrackerDto>> GetWipQtyFromMaterialIssueTracker(string shopOrderNo, string partNumber, decimal returnedQty);
+        Task<List<SomitConsumpDto>> GetSomitConsumpDetailsByShopOrderNumbers(string shopOrderNumber);
 
     }
 }

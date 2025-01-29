@@ -226,4 +226,12 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal? ShopOrder_WIP_Pending_Qty { get; set; }
         public string? Status { get; set; }
     }
+
+    public class ShopOrderComsumpDetailsDto
+    {
+        public string? ShopOrderNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public decimal ReleaseQty { get; set; }
+        public decimal WipQty { get; set; }
+    }
 }

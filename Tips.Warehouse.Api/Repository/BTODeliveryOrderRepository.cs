@@ -403,33 +403,33 @@ namespace Tips.Warehouse.Api.Repository
             return btoIddNameList;
         }
 
-        public async Task<List<DoConcepDto>> GetDoDetailsbyDoNumbers(List<string> btoNumber)
+        public async Task<List<DoConsumpDto>> GetDoConsumpDetailsByBTONumberList(List<string> btonumberList)
         {
+            var doConsumpDetails = await _tipsWarehouseDbContext.bTODeliveryOrderItems
+                .Where(item => btonumberList.Contains(item.BTONumber)) 
+                .SelectMany(item => item.QtyDistribution) 
+                .Join(
+                    _tipsWarehouseDbContext.bTODeliveryOrderItems,
+                    distribution => distribution.BTODeliveryOrderItemsId,
+                    item => item.Id,
+                    (distribution, item) => new { distribution.LotNumber, item.BTONumber }
+                )
+                .Join(
+                    _tipsWarehouseDbContext.bTODeliveryOrder, 
+                    result => result.BTONumber,
+                    order => order.BTONumber,
+                    (result, order) => new DoConsumpDto
+                    {
+                        SalesOrderNumber = order.SalesOrderNumber,
+                        LotNumber = result.LotNumber,
+                        BTONumber = result.BTONumber
+                    }
+                )
+                .ToListAsync();
 
-            var doDetails = await (from doOrder in _tipsWarehouseDbContext.bTODeliveryOrder
-                                             join doItem in _tipsWarehouseDbContext.bTODeliveryOrderItems
-                                             on doOrder.SalesOrderId equals doItem.SalesOrderId
-                                             join qtyDist in _tipsWarehouseDbContext.BtoDeliveryOrderItemQtyDistribution
-                                             on doItem.Id equals qtyDist.BTODeliveryOrderItemsId
-                                             where btoNumber.Contains(doOrder.BTONumber)
-                                             select new
-                                             {
-                                                 doOrder.SalesOrderNumber,
-                                                 qtyDist.LotNumber
-                                             })
-                                              .GroupBy(x => x.SalesOrderNumber)
-                                              .Select(group => new DoConcepDto
-                                              {
-                                                  SalesOrderNumber = group.Key,
-                                                  doItemConcepDtos = group.Select(g => new DoItemConcepDto
-                                                  {
-                                                      LotNumber = g.LotNumber
-                                                  }).ToList()
-                                              })
-                                              .ToListAsync();
-
-            return doDetails;
+            return doConsumpDetails;
         }
+
 
         public async Task<IEnumerable<DoLotNumberListDto>> GetDOLotNumberListByBTONoAndItemNo(string btoNumber, string itemNumber)
         {
