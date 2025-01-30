@@ -11,7 +11,7 @@ namespace Tips.Production.Api.Entities
         public string? ShopOrderNumber { get; set; }
         public DateTime? ShopOrderDate { get; set; }
         public string? ItemNumber { get; set; }
-        public ProjectType ProjectType { get; set; }
+        public string? ProjectType { get; set; }
         public decimal? BomRevisionNo { get; set; }
         public PartType ItemType { get; set; }
         [Precision(13, 3)]

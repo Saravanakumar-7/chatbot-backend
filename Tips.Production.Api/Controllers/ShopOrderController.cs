@@ -1016,7 +1016,7 @@ namespace Tips.Production.Api.Controllers
                 MaterialIssue materialIssue = new MaterialIssue();
                 materialIssue.ShopOrderNumber = shopOrder.ShopOrderNumber;
                 materialIssue.ShopOrderDate = shopOrder.CreatedOn;
-                materialIssue.ProjectType = ProjectType.RFQ;
+                materialIssue.ProjectType = shopOrder.ProjectType;
                 materialIssue.ItemType = shopOrder.ItemType;
                 materialIssue.ShopOrderQty = shopOrder.TotalSOReleaseQty;
                 materialIssue.ItemNumber = shopOrder.ItemNumber;

@@ -189,7 +189,7 @@ namespace Tips.Warehouse.Api.Controllers
                         var itemObject = itemData.data;
 
                         //Add Inventory table
-                        var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLotNumber(toPartNumber, toProjectNumber);
+                        var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLotNumber(toPartNumber, toProjectNumber, fromLotnumber);
                         if (inventoryDetails != null && inventoryDetails.Count() > 0)
                         {
                             foreach (var inventoryItem in inventoryDetails)

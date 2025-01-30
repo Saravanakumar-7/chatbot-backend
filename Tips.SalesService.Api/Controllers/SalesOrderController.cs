@@ -2846,6 +2846,8 @@ namespace Tips.SalesService.Api.Controllers
                 if (items != null)
                 {
                     result.SalesOrdersItems = JsonConvert.DeserializeObject<List<SalesOrderItemsDto>>(items);
+
+                    result.SalesOrdersItems.OrderByDescending(x => x.Id).ToList();
                 }
                 if (addit != null)
                 {

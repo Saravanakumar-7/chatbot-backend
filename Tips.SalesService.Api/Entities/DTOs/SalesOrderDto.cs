@@ -661,5 +661,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? AmountRecieved { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? TransactionDate { get; set; }
+        public string? salesordernumber { get; set; }
+        public string? producttype { get; set; }
+        public string? typeofsolution { get; set; }
     }
 }

@@ -192,7 +192,7 @@ namespace Tips.Production.Api.Controllers
                         MaterialIssue materialIssue = new MaterialIssue();
                         materialIssue.ShopOrderNumber = SaShopOrder.SAShopOrderNumber;
                         materialIssue.ShopOrderDate = SaShopOrder.CreatedOn;
-                        materialIssue.ProjectType = ProjectType.RFQ;
+                        materialIssue.ProjectType = SaShopOrder.ProjectType;
                         materialIssue.ItemType = SaShopOrder.ItemType;
                         materialIssue.ShopOrderQty = SaShopOrder.TotalSOReleaseQty;
                         materialIssue.ItemNumber = SaShopOrder.SAItemNumber;
