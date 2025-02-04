@@ -66,6 +66,7 @@ namespace Tips.Production.Api.Entities
             modelBuilder.Entity<MaterialRequestSpReportForTrans>().HasNoKey();
             modelBuilder.Entity<ShopOrderSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<ShopOrderNumberSPReportForAvi>().HasNoKey();
+            modelBuilder.Entity<OQCPendingForTrans>().HasNoKey();
             // Other entity configurations can be added here
 
             base.OnModelCreating(modelBuilder);

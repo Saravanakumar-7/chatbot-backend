@@ -1231,6 +1231,44 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> GetOQCPendingSPReportWithParamForTrans([FromBody] OQCSPReportForTransDto oqcSPReportDto)
+        {
+            ServiceResponse<IEnumerable<OQCPendingForTrans>> serviceResponse = new ServiceResponse<IEnumerable<OQCPendingForTrans>>();
+            try
+            {
+                var products = await _oQCRepository.GetOQCPendingSPReportWithParamForTrans(oqcSPReportDto.ItemNumber, oqcSPReportDto.ShopOrderNumber, oqcSPReportDto.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OQCPending hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OQCPending hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OQCPending Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetOQCPendingSPReportWithParamForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        
+
+        [HttpPost]
         public async Task<IActionResult> GetOQCAndOQCBinningSPReportWithParam([FromBody] OQCSPReportDto oqcSPReportDto)
         {
             ServiceResponse<IEnumerable<OQCAndOQCBinningSPReport>> serviceResponse = new ServiceResponse<IEnumerable<OQCAndOQCBinningSPReport>>();

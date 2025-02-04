@@ -184,6 +184,19 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ProjectNumber { get; set; }
     }
 
+    public class OQCPendingForTrans
+    {
+        public string? FGNumber { get; set; }
+        public string? Description { get; set; }
+        public int? ItemType { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        public decimal? TotalSOReleaseQty { get; set; }
+        public decimal? AcceptedQty { get; set; }
+        public decimal? PendingQty { get; set; }
+        public string? ProjectNumber { get; set; }
+        public bool? status { get; set; }
+    }
+
     public class OqcItemMasterDetails
     {
         public Datas data { get; set; }

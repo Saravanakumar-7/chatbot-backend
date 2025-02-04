@@ -140,6 +140,15 @@ namespace Tips.Production.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<OQCPendingForTrans>> GetOQCPendingSPReportWithParamForTrans(string? ItemNumber, string? ShopOrderNumber, string? ProjectNumber)
+        {
+            var result = _tipsProductionDbContext
+            .Set<OQCPendingForTrans>()
+            .FromSqlInterpolated($"OQC_Pending_Report({ItemNumber},{ShopOrderNumber},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<OQCSPReport>> GetOQCSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsProductionDbContext.Set<OQCSPReport>()

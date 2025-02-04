@@ -107,7 +107,7 @@ namespace Tips.Grin.Api.Entities.DTOs
 
         public string Description { get; set; }
 
-
+        public bool IsStockAvailable { get; set; }
         public string ProjectNumber { get; set; }
         public decimal Balance_Quantity { get; set; }
         public decimal? Max { get; set; }

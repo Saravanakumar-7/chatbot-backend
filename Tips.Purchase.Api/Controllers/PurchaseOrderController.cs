@@ -2850,7 +2850,6 @@ namespace Tips.Purchase.Api.Controllers
                         {
                             PoAddProject poaddproject = poItemDetails.POAddprojects[j];
                             poaddproject.POItemDetailId = poItemDto[i].Id;
-                            poaddproject.BalanceQty = 0;
                         }
 
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);

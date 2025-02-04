@@ -911,6 +911,7 @@ namespace Tips.Grin.Api.Controllers
                                 }
                             }
 
+                            if (inventoryObject.balance_Quantity == 0) { inventoryObject.isStockAvailable = 0; }
                             var json = JsonConvert.SerializeObject(inventoryObject);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
                             var client5 = _clientFactory.CreateClient();
@@ -934,6 +935,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.Description = inventoryObject.description;
                             iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
                             iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                            iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
                             iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                             iqcInventoryTranctionDto.Issued_By = _createdBy;
                             iqcInventoryTranctionDto.UOM = inventoryObject.uom;
@@ -971,7 +973,7 @@ namespace Tips.Grin.Api.Controllers
                                 grinInventoryDto.MftrPartNumber = grinPartsDetails.MftrItemNumber;
                                 grinInventoryDto.Description = grinPartsDetails.ItemDescription;
                                 grinInventoryDto.ProjectNumber = projectNos;
-                                grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iqcConfirmationItemsDto.RejectedQty);
+                                //grinInventoryDto.Balance_Quantity = Convert.ToDecimal(iqcConfirmationItemsDto.RejectedQty);
                                 grinInventoryDto.Max = itemMasterObject.max;
                                 grinInventoryDto.Min = itemMasterObject.min;
                                 grinInventoryDto.UOM = grinPartsDetails.UOM;
@@ -1016,6 +1018,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.Description = grinInventoryDto.Description;
                                 iqcInventoryTranctionDtos.ProjectNumber = grinInventoryDto.ProjectNumber;
                                 iqcInventoryTranctionDtos.Issued_Quantity = grinInventoryDto.Balance_Quantity;
+                                iqcInventoryTranctionDtos.IsStockAvailable = grinInventoryDto.IsStockAvailable;
                                 iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDtos.Issued_By = _createdBy;
                                 iqcInventoryTranctionDtos.UOM = grinInventoryDto.UOM;

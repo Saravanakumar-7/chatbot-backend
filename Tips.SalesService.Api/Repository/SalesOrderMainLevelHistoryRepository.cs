@@ -68,7 +68,7 @@ namespace Tips.SalesService.Api.Repository
                                  {
                                     Id = s.Id,
                                     RevisionNumber = s.RevisionNumber
-                                 })
+                                 }).OrderBy(x => x.RevisionNumber)
                                  .ToListAsync();
 
             return salesOrderHistorybyId;

@@ -19,5 +19,7 @@
         public decimal? IssuedQty { get; set; }
         public decimal? BalanceIssueQnty { get; set; }
         public string? lotnumber { get; set; }
+        public string? BENumber { get; set; }
+        
     }
 }

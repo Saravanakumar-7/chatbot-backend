@@ -682,6 +682,34 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllShopOrderNoListByProjectNoForMRN(string projectNo, PartType partType)
+        {
+            ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
+
+            try
+            {
+                var shopOrderNoList = await _shopOrderRepository.GetAllShopOrderNoListByProjectNoForMRN(projectNo, partType);
+                _logger.LogInfo("Returned all ShopOrderNoList For MRN");
+
+                var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(shopOrderNoList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ShopOrderNoList For MRN Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateShopOrder([FromBody] ShopOrderPostDto shopOrderPostDto)
         {

@@ -344,7 +344,28 @@ namespace Tips.Production.Api.Repository
 
             var shopOrderNoListByProjectNo = await _tipsProductionDbContext.ShopOrders
                                 .Where(x => shopOrderItemListByProjectNo.Contains(x.Id)
-                                && x.ItemType == partType && x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2)
+                                && x.ItemType == partType && x.IsDeleted == false && x.IsShortClosed == false && x.Status != (OrderStatus)2 && x.Status != (OrderStatus)3)
+                                .Select(s => new ListOfShopOrderDto()
+                                {
+                                    Id = s.Id,
+                                    ShopOrderNumber = s.ShopOrderNumber,
+                                }).Distinct().ToListAsync();
+
+            return shopOrderNoListByProjectNo;
+
+        }
+
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetAllShopOrderNoListByProjectNoForMRN(string projectNo, PartType partType)
+        {
+            var shopOrderItemListByProjectNo = await _tipsProductionDbContext.ShopOrderItems
+                           .Where(x => x.ProjectNumber == projectNo)
+                           .Select(x => x.ShopOrderId)
+                           .Distinct().ToListAsync();
+
+
+            var shopOrderNoListByProjectNo = await _tipsProductionDbContext.ShopOrders
+                                .Where(x => shopOrderItemListByProjectNo.Contains(x.Id)
+                                && x.ItemType == partType && x.IsDeleted == false)
                                 .Select(s => new ListOfShopOrderDto()
                                 {
                                     Id = s.Id,

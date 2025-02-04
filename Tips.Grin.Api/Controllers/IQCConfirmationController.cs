@@ -1074,7 +1074,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
                                 iqcInventoryTranctionDto.Description = inventoryObject.description;
                                 iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
-                                iqcInventoryTranctionDto.Issued_Quantity = balanceQty;
+                                iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
                                 iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDto.Issued_By = _createdBy;
                                 iqcInventoryTranctionDto.UOM = inventoryObject.uom;
@@ -1169,6 +1169,7 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDtos.Description = grinInventoryDto.Description;
                                     iqcInventoryTranctionDtos.ProjectNumber = grinInventoryDto.ProjectNumber;
                                     iqcInventoryTranctionDtos.Issued_Quantity = grinInventoryDto.Balance_Quantity;
+                                    iqcInventoryTranctionDtos.IsStockAvailable = false;
                                     iqcInventoryTranctionDtos.UOM = grinInventoryDto.UOM;
                                     iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
                                     iqcInventoryTranctionDtos.Issued_By = _createdBy;
@@ -1512,7 +1513,8 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
                                 iqcInventoryTranctionDto.Description = inventoryObject.description;
                                 iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
-                                iqcInventoryTranctionDto.Issued_Quantity = balanceQty;
+                                iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                                iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
                                 iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDto.Issued_By = _createdBy;
                                 iqcInventoryTranctionDto.UOM = inventoryObject.uom;
@@ -1606,6 +1608,7 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDtos.Description = grinInventoryDto.Description;
                                     iqcInventoryTranctionDtos.ProjectNumber = grinInventoryDto.ProjectNumber;
                                     iqcInventoryTranctionDtos.Issued_Quantity = grinInventoryDto.Balance_Quantity;
+                                    iqcInventoryTranctionDtos.IsStockAvailable = false;
                                     iqcInventoryTranctionDtos.UOM = grinInventoryDto.UOM;
                                     iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
                                     iqcInventoryTranctionDtos.Issued_By = _createdBy;
@@ -2441,6 +2444,7 @@ namespace Tips.Grin.Api.Controllers
                                 }
                             }
 
+                            if (inventoryObject.balance_Quantity == 0) { inventoryObject.isStockAvailable = 0; }
                             var json = JsonConvert.SerializeObject(inventoryObject);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
                             //HttpResponseMessage response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
@@ -2466,7 +2470,8 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
                             iqcInventoryTranctionDto.Description = inventoryObject.description;
                             iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
-                            iqcInventoryTranctionDto.Issued_Quantity = balanceQty;
+                            iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                            iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
                             iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                             iqcInventoryTranctionDto.Issued_By = _createdBy;
                             iqcInventoryTranctionDto.UOM = inventoryObject.uom;
@@ -2557,6 +2562,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.Description = grinInventoryDto.Description;
                                 iqcInventoryTranctionDtos.ProjectNumber = grinInventoryDto.ProjectNumber;
                                 iqcInventoryTranctionDtos.Issued_Quantity = grinInventoryDto.Balance_Quantity;
+                                iqcInventoryTranctionDtos.IsStockAvailable = false;
                                 iqcInventoryTranctionDtos.UOM = grinInventoryDto.UOM;
                                 iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDtos.Issued_By = _createdBy;
@@ -2830,6 +2836,7 @@ namespace Tips.Grin.Api.Controllers
                                 }
                             }
 
+                            if (inventoryObject.balance_Quantity == 0) { inventoryObject.isStockAvailable = 0; }
                             var json = JsonConvert.SerializeObject(inventoryObject);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
                             //var response = await _httpClient.PutAsync(string.Concat(_config["InventoryAPI"],
@@ -2857,6 +2864,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.Description = inventoryObject.description;
                             iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
                             iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                            iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
                             iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                             iqcInventoryTranctionDto.Issued_By = _createdBy;
                             iqcInventoryTranctionDto.UOM = inventoryObject.uom;
@@ -2947,6 +2955,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.Description = grinInventoryDto.Description;
                                 iqcInventoryTranctionDtos.ProjectNumber = grinInventoryDto.ProjectNumber;
                                 iqcInventoryTranctionDtos.Issued_Quantity = grinInventoryDto.Balance_Quantity;
+                                iqcInventoryTranctionDtos.IsStockAvailable = false;
                                 iqcInventoryTranctionDtos.UOM = grinInventoryDto.UOM;
                                 iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDtos.Issued_By = _createdBy;

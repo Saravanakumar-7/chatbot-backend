@@ -691,6 +691,7 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDto.Description = inventoryObject.description;
                                     iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
                                     iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                                    iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
                                     iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                     iqcInventoryTranctionDto.Issued_By = _createdBy;
                                     iqcInventoryTranctionDto.UOM = inventoryObject.uom;
@@ -730,6 +731,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObjectNew.Description = grinPartsDetails.ItemDescription;
                                     inventoryObjectNew.ProjectNumber = location.ProjectNumber;
                                     inventoryObjectNew.Balance_Quantity = location.Qty;
+                                    inventoryObjectNew.IsStockAvailable = true;
                                     inventoryObjectNew.Max = itemMasterObject.max;
                                     inventoryObjectNew.Min = itemMasterObject.min;
                                     inventoryObjectNew.UOM = grinPartsDetails.UOM;
@@ -763,6 +765,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryTranctionObjectNew.Description = inventoryObjectNew.Description;
                                     inventoryTranctionObjectNew.ProjectNumber = inventoryObjectNew.ProjectNumber;
                                     inventoryTranctionObjectNew.Issued_Quantity = inventoryObjectNew.Balance_Quantity;
+                                    inventoryTranctionObjectNew.IsStockAvailable = inventoryObjectNew.IsStockAvailable;
                                     inventoryTranctionObjectNew.UOM = inventoryObjectNew.UOM;
                                     inventoryTranctionObjectNew.Issued_DateTime = DateTime.Now;
                                     inventoryTranctionObjectNew.Issued_By = _createdBy;
@@ -937,6 +940,7 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDto.Description = inventoryObject.description;
                                     iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
                                     iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                                    iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
                                     iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                     iqcInventoryTranctionDto.Issued_By = _createdBy;
                                     iqcInventoryTranctionDto.UOM = inventoryObject.uom;
@@ -977,6 +981,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObjectNew.Description = grinPartsDetails.ItemDescription;
                                     inventoryObjectNew.ProjectNumber = location.ProjectNumber;
                                     inventoryObjectNew.Balance_Quantity = location.Qty;
+                                    inventoryObjectNew.IsStockAvailable = true;
                                     inventoryObjectNew.Max = itemMasterObject.max;
                                     inventoryObjectNew.Min = itemMasterObject.min;
                                     inventoryObjectNew.UOM = grinPartsDetails.UOM;
@@ -1009,6 +1014,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryTranctionObjectNew.Description = inventoryObjectNew.Description;
                                     inventoryTranctionObjectNew.ProjectNumber = inventoryObjectNew.ProjectNumber;
                                     inventoryTranctionObjectNew.Issued_Quantity = inventoryObjectNew.Balance_Quantity;
+                                    inventoryTranctionObjectNew.IsStockAvailable = inventoryObjectNew.IsStockAvailable;
                                     inventoryTranctionObjectNew.UOM = inventoryObjectNew.UOM;
                                     inventoryTranctionObjectNew.Issued_DateTime = DateTime.Now;
                                     inventoryTranctionObjectNew.Issued_By = _createdBy;
@@ -1482,6 +1488,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.Description = inventoryObject.description;
                                 iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
                                 iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                                iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
                                 iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDto.Issued_By = _createdBy;
                                 iqcInventoryTranctionDto.UOM = inventoryObject.uom;
@@ -1522,6 +1529,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryObjectNew.Description = grinPartDetails.ItemDescription;
                                 inventoryObjectNew.ProjectNumber = location.ProjectNumber;
                                 inventoryObjectNew.Balance_Quantity = location.Qty;
+                                inventoryObjectNew.IsStockAvailable = true;
                                 inventoryObjectNew.Max = itemMasterObject.max;
                                 inventoryObjectNew.Min = itemMasterObject.min;
                                 inventoryObjectNew.UOM = grinPartDetails.UOM;
@@ -1558,6 +1566,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryTranctionObjectNew.Description = inventoryObjectNew.Description;
                                 inventoryTranctionObjectNew.ProjectNumber = inventoryObjectNew.ProjectNumber;
                                 inventoryTranctionObjectNew.Issued_Quantity = inventoryObjectNew.Balance_Quantity;
+                                inventoryTranctionObjectNew.IsStockAvailable = inventoryObjectNew.IsStockAvailable;
                                 inventoryTranctionObjectNew.Issued_DateTime = DateTime.Now;
                                 inventoryTranctionObjectNew.Issued_By = _createdBy;
                                 inventoryTranctionObjectNew.UOM = inventoryObjectNew.UOM;
@@ -1752,6 +1761,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.Description = inventoryObject.description;
                                 iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
                                 iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                                iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
                                 iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDto.Issued_By = _createdBy;
                                 iqcInventoryTranctionDto.UOM = inventoryObject.uom;
@@ -1791,6 +1801,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryObjectNew.Description = grinPartDetails.ItemDescription;
                                 inventoryObjectNew.ProjectNumber = location.ProjectNumber;
                                 inventoryObjectNew.Balance_Quantity = location.Qty;
+                                inventoryObjectNew.IsStockAvailable = true;
                                 inventoryObjectNew.Max = itemMasterObject.max;
                                 inventoryObjectNew.Min = itemMasterObject.min;
                                 inventoryObjectNew.UOM = grinPartDetails.UOM;
@@ -1827,6 +1838,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryTranctionObjectNew.Description = inventoryObjectNew.Description;
                                 inventoryTranctionObjectNew.ProjectNumber = inventoryObjectNew.ProjectNumber;
                                 inventoryTranctionObjectNew.Issued_Quantity = inventoryObjectNew.Balance_Quantity;
+                                inventoryTranctionObjectNew.IsStockAvailable = inventoryObjectNew.IsStockAvailable;
                                 inventoryTranctionObjectNew.UOM = inventoryObjectNew.UOM;
                                 inventoryTranctionObjectNew.Issued_DateTime = DateTime.Now;
                                 inventoryTranctionObjectNew.Issued_By = _createdBy;
