@@ -12,7 +12,7 @@ namespace Entities
         [Key]
         public int Id {  get; set; }
         public decimal RangeFrom { get; set; }
-        public decimal RangeTo { get; set; }
+        public decimal? RangeTo { get; set; }
         public bool Approval1 { get; set; }
         public bool Approval2 { get; set; }
         public bool Approval3 { get; set; }

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Entities;
+using System.ComponentModel;
 using Tips.Purchase.Api.Entities.Dto;
 using Tips.Purchase.Api.Entities.Enums;
 
@@ -60,6 +61,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? POApprovedIVBy { get; set; }
         public DateTime? POApprovedIVDate { get; set; }
         public int? ApprovalCount { get; set; }
+        public bool? InApproval { get; set; }
+        public int ApprovalRangeId { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -106,7 +109,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? Others { get; set; }
         public decimal TotalAmount { get; set; }
         public int? ApprovalCount { get; set; }
-
+        public int ApprovalRangeId { get; set; }
         public List<PoItemsPostDto>? POItems { get; set; }
         public List<PoIncoTermPostDto>? POIncoTerms { get; set; }
 
@@ -148,7 +151,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? Unit { get; set; }
         //public string? LastModifiedBy { get; set; }
         //public DateTime? LastModifiedOn { get; set; }
-
+        public int ApprovalRangeId { get; set; }
         public List<PoItemsUpdateDto>? POItems { get; set; }
         public List<PoIncoTermUpdateDto>? POIncoTerms { get; set; }
 
@@ -417,14 +420,14 @@ namespace Tips.Purchase.Api.Entities.DTOs
     }
 
     public class PurchaseOrderApprovalSPReportWithParamDTO
-        {
-            public string? VendorName { get; set; }
-            public string? PONumber { get; set; }
-            public string? ItemNumber { get; set; }
-            public string? RecordType { get; set; }
-            public string? Postatus { get; set; }
-            public string? Approval { get; set; }
-        }
+    {
+        public string? VendorName { get; set; }
+        public string? PONumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? RecordType { get; set; }
+        public string? Postatus { get; set; }
+        public string? Approval { get; set; }
+    }
     public class PurchaseOrderApprovalSPReportWithDateDTO
     {
         public DateTime? FromDate { get; set; }
@@ -444,26 +447,26 @@ namespace Tips.Purchase.Api.Entities.DTOs
     }
 
     public class Tras_POSPReportDTO
-        {
-            public string? VendorName { get; set; }
-            public string? PONumber { get; set; }
-            public string? PartNumber { get; set; }
-        }
-        public class Data
-        {
-            public int id { get; set; }
-            public string processType { get; set; }
-            public string template { get; set; }
-            public string subject { get; set; }
-        }
+    {
+        public string? VendorName { get; set; }
+        public string? PONumber { get; set; }
+        public string? PartNumber { get; set; }
+    }
+    public class Data
+    {
+        public int id { get; set; }
+        public string processType { get; set; }
+        public string template { get; set; }
+        public string subject { get; set; }
+    }
 
-        public class EmailTemplateDto
-        {
-            public Data data { get; set; }
-            public string message { get; set; }
-            public bool success { get; set; }
-            public int statusCode { get; set; }
-        }
+    public class EmailTemplateDto
+    {
+        public Data data { get; set; }
+        public string message { get; set; }
+        public bool success { get; set; }
+        public int statusCode { get; set; }
+    }
     public class PONameList
     {
         public int Id { get; set; }
@@ -504,7 +507,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
     }
     public class PurchaseOrderReturnProjectBackDto
     {
-        public string ProjectNo {  get; set; }
+        public string ProjectNo { get; set; }
         public decimal ReturnQty { get; set; }
-    }
+    }    
 }

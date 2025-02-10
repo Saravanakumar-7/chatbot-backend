@@ -10,9 +10,10 @@ namespace Entities
     public class ApprovalRanges
     {
         [Key]
-        public int? Id { get; set; }
+        public int Id { get; set; }
         public string ProcurementName { get; set; }
         public string? Description { get; set; }
+        public int Version { get; set; }
         public List<Ranges> Ranges { get; set; }
         public string? Remarks { get; set; } 
         public string Unit { get; set; }

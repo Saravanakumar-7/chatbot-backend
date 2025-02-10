@@ -9,9 +9,10 @@ namespace Entities.DTOs
 {
     public class ApprovalRangesDto
     {
-        public int? Id { get; set; }
+        public int Id { get; set; }
         public string ProcurementName { get; set; }
         public string? Description { get; set; }
+        public int Version { get; set; }
         public List<RangesDto> Ranges { get; set; }
         public string? Remarks { get; set; }
         public string Unit { get; set; }
@@ -25,6 +26,14 @@ namespace Entities.DTOs
         public string ProcurementName { get; set; }
         public string? Description { get; set; }
         public List<RangesPostDto> Ranges { get; set; }
+        public string? Remarks { get; set; }
+    }
+    public class ApprovalRangesUpdateDto
+    {       
+        public int Id { get; set; }
+        public string ProcurementName { get; set; }
+        public string? Description { get; set; }
+        public List<RangesUpdateDto> Ranges { get; set; }
         public string? Remarks { get; set; }
     }
 }
