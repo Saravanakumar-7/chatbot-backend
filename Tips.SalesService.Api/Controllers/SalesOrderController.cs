@@ -696,7 +696,7 @@ namespace Tips.SalesService.Api.Controllers
                 await _repository.CreateSalesOrder(createSalesOrder);
 
                 //ShortClose Quote Once SalesOrder Created
-                var quoteDetails = await _quoteRepository.GetQuoteByQuoteNumber(createSalesOrder.QuoteNumber);
+                var quoteDetails = await _quoteRepository.GetQuoteByQuoteNumberAndRevNo(createSalesOrder.QuoteNumber, createSalesOrder.QuoteRevisionNumber);
                 if (quoteDetails != null)
                 {
                     quoteDetails.QuoteStatus = OrderStatus.Closed;
@@ -1626,6 +1626,45 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inter server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetSalesOrderDetailByCusIdandTypeOfSol_SP(string customerId, string typeOfSolution)
+        {
+            ServiceResponse<IEnumerable<SalesOrderDetailsTOSDto>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderDetailsTOSDto>>();
+
+            try
+            {
+                var salesOrderDetails = await _repository.GetSalesOrderDetailByCusIdandTypeOfSol_SP(customerId, typeOfSolution);
+                if (salesOrderDetails.Count() == 0)
+                {
+                    _logger.LogError($"SalesOrderDetail with customerId: {customerId} and typeOfSolution: {typeOfSolution}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderDetail with customerId: {customerId} and typeOfSolution: {typeOfSolution}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned SalesOrderDetail with customerId: {customerId} and typeOfSolution: {typeOfSolution}");
+                    var result = _mapper.Map<List<SalesOrderDetailsTOSDto>>(salesOrderDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Successfully Returned SalesOrderDetail";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetSalesOrderDetailByCusIdandTypeOfSol_SP action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");

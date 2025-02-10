@@ -665,4 +665,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? producttype { get; set; }
         public string? typeofsolution { get; set; }
     }
+
+    public class SalesOrderDetailsTOSDto
+    {
+        public string? SalesOrderNumber { get; set; }
+        public decimal? RevisionNumber { get; set; }
+        public string? QuoteNumber { get; set; }
+        public int? QuoteRevisionNumber { get; set; }
+    }
 }

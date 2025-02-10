@@ -134,7 +134,20 @@ namespace Tips.SalesService.Api.Repository
             return quoteNos;
         }
 
+        public async Task<IEnumerable<QuoteNoDto>> GetClosedQuoteDetailsByQuoteNo(string quoteNo)
+        {
+            var quoteGroups = await _tipsSalesServiceDbContext.Quotes
+                .Where(x=>x.QuoteNumber == quoteNo && x.QuoteStatus == OrderStatus.Closed)
+                .GroupBy(q => q.QuoteNumber)
+                .Select(g => new QuoteNoDto
+                {
+                    QuoteNumber = g.Key,
+                    RevisionNumber = g.Select(q => q.RevisionNumber).ToList()
+                })
+                .ToListAsync();
 
+            return quoteGroups;
+        }
 
         public async Task<string> GenerateQuoteNumber()
         {
@@ -578,6 +591,15 @@ namespace Tips.SalesService.Api.Repository
         public async Task<Quote> GetQuoteByQuoteNumber(string quoteNumber)
         {
             var quoteDetails = await _tipsSalesServiceDbContext.Quotes.Where(x => x.QuoteNumber == quoteNumber)
+
+                               .FirstOrDefaultAsync();
+
+            return quoteDetails;
+        }
+
+        public async Task<Quote> GetQuoteByQuoteNumberAndRevNo(string quoteNumber,int? revno)
+        {
+            var quoteDetails = await _tipsSalesServiceDbContext.Quotes.Where(x => x.QuoteNumber == quoteNumber && x.RevisionNumber == revno)
 
                                .FirstOrDefaultAsync();
 

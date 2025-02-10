@@ -921,6 +921,17 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
+        public async Task<IEnumerable<InventoryWIPSPReport>> GetWIPInventorySPReportsWithParam(string PartNumber, string Warehouse,
+                                                                                                   string Location, string ProjectNumber)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<InventoryWIPSPReport>()
+            .FromSqlInterpolated($"CALL WIP_Inventory_Report({PartNumber},{Warehouse},{Location},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+
         public async Task<IEnumerable<InventorySPReport>> GetWareproInventoryWithLocationTranferSPReportsWithParam(string PartNumber, string Description, string Warehouse,
                                                                                                   string Location, string ProjectNumber)
         {

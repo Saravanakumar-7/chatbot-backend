@@ -464,6 +464,28 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     {
         public string? KPN { get; set; }
     }
+
+    public class InventoryWIPSPReportDto
+    {
+        public string? PartNumber { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
+    public class InventoryWIPSPReport
+    {
+        public string? ProjectNumber { get; set; }
+        public string? PartNumber { get; set; }
+        public string? MPN { get; set; }
+        public string? Description { get; set; }
+        public int? PartType { get; set; }
+        public string? UOM { get; set; }
+        public decimal? Qty { get; set; }
+        public string? UOC { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public decimal? TotalValue { get; set; }
+        public string? Warehouse { get; set; }
+    }
     public class CrossMarginSPReportDto
     {
         public string? CustomerId { get; set; }

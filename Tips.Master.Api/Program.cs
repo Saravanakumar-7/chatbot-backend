@@ -118,6 +118,7 @@ builder.Services.AddScoped<IRoomNameRepository, RoomNameRepository>();
 builder.Services.AddScoped<IProductTypeRepository, ProductTypeRepository>();
 builder.Services.AddScoped<ITypeSolutionRepository, TypeSolutionRepository>();
 builder.Services.AddScoped<ITypeOfRoomRepository, TypeOfRoomRepository>();
+builder.Services.AddScoped<IPrioritizeRepository, PrioritizeRepository>();
 
 var app = builder.Build();
 

@@ -28,6 +28,8 @@ namespace Tips.SalesService.Api.Contracts
          Task<string> UpdateQuote(Quote quote);
         Task<string> DeleteQuote(Quote quote);
         Task<Quote> GetQuoteByQuoteNumber(string quoteNumber);
+        Task<Quote> GetQuoteByQuoteNumberAndRevNo(string quoteNumber, int? revno);
+        Task<IEnumerable<QuoteNoDto>> GetClosedQuoteDetailsByQuoteNo(string quoteNo);
         Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithParam(string? CustomerId, string? QuoteNumber, string? QuotationVersionNo);
         Task<IEnumerable<QuoteSPReport>> GetQuoteSPReport(string CustomerName, string CustomerId, string RfqNumber);
         Task<IEnumerable<SoSummaryQuotationDto>> GetSoSummaryQuotationSPReportWithParam(string FirstQuotenumber, string SOLatestSalesOrderSentNumber, string Leadid,

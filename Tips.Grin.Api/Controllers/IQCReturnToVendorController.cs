@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
@@ -29,7 +30,10 @@ namespace Tips.Grin.Api.Controllers
         private IIQCReturnToVendorRepository _repository;
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
-        public IQCReturnToVendorController(ILoggerManager logger, IMapper mapper, IConfiguration config, IGrinRepository grinRepository, IHttpClientFactory clientFactory,
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public IQCReturnToVendorController(IHttpContextAccessor httpContextAccessor, ILoggerManager logger, IMapper mapper, IConfiguration config, IGrinRepository grinRepository, IHttpClientFactory clientFactory,
             IIQCConfirmationRepository iQCConfirmationRepository, IIQCReturnToVendorRepository repository)
         {
             _logger = logger;
@@ -39,6 +43,10 @@ namespace Tips.Grin.Api.Controllers
             _iQCConfirmationRepository = iQCConfirmationRepository;
             _clientFactory = clientFactory;
             _repository = repository;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
         [HttpPost]
         public async Task<IActionResult> CreateIQCReturnToVendor([FromBody] IQCReturnToVendorPostDto iQCRejectRecoveryPostDto)
@@ -187,6 +195,7 @@ namespace Tips.Grin.Api.Controllers
                                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                                 return StatusCode(500, serviceResponse);
                             }
+
                             IQCInventoryTranctionDto iqcInventoryTranctionDtos = new IQCInventoryTranctionDto();
                             iqcInventoryTranctionDtos.PartNumber = Inv.PartNumber;
                             iqcInventoryTranctionDtos.LotNumber = Inv.LotNumber;
@@ -194,6 +203,9 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDtos.Description = Inv.Description;
                             iqcInventoryTranctionDtos.ProjectNumber = Inv.ProjectNumber;
                             iqcInventoryTranctionDtos.Issued_Quantity = Inv.Balance_Quantity;
+                            iqcInventoryTranctionDtos.IsStockAvailable = Inv.IsStockAvailable;
+                            iqcInventoryTranctionDtos.Issued_By = _createdBy;
+                            iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
                             iqcInventoryTranctionDtos.UOM = Inv.UOM;
                             iqcInventoryTranctionDtos.Warehouse = Inv.Warehouse;
                             iqcInventoryTranctionDtos.From_Location = Inv.Location;
@@ -205,6 +217,8 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDtos.ReferenceIDFrom = "IQCRejectRecovery";
                             iqcInventoryTranctionDtos.GrinMaterialType = "GRIN";
                             iqcInventoryTranctionDtos.ShopOrderNo = "";
+                            iqcInventoryTranctionDtos.Remarks = "RTV Done";
+
                             string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
                             var contents1 = new StringContent(iqcInventoryTranctionDtoJsons, Encoding.UTF8, "application/json");
                             var request8 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["WarehouseService"],
@@ -307,7 +321,10 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDtos.MftrPartNumber = Inv.MftrPartNumber;
                             iqcInventoryTranctionDtos.Description = Inv.Description;
                             iqcInventoryTranctionDtos.ProjectNumber = Inv.ProjectNumber;
-                            iqcInventoryTranctionDtos.Issued_Quantity = returnqty;
+                            iqcInventoryTranctionDtos.Issued_Quantity = returnqty; 
+                            iqcInventoryTranctionDtos.IsStockAvailable = Inv.IsStockAvailable;
+                            iqcInventoryTranctionDtos.Issued_By = _createdBy;
+                            iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
                             iqcInventoryTranctionDtos.UOM = Inv.UOM;
                             iqcInventoryTranctionDtos.Warehouse = Inv.Warehouse;
                             iqcInventoryTranctionDtos.From_Location = Inv.Location;
@@ -319,6 +336,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDtos.ReferenceIDFrom = "IQCRejectRecovery";
                             iqcInventoryTranctionDtos.GrinMaterialType = "GRIN";
                             iqcInventoryTranctionDtos.ShopOrderNo = "";
+                            iqcInventoryTranctionDtos.Remarks = "RTV Done";
 
                             string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
                             var contents1 = new StringContent(iqcInventoryTranctionDtoJsons, Encoding.UTF8, "application/json");

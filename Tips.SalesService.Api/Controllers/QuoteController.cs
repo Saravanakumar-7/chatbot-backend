@@ -1577,7 +1577,47 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        
+
+        [HttpGet]
+        public async Task<IActionResult> GetClosedQuoteDetailsByQuoteNo(string quoteNumber)
+        {
+            ServiceResponse<IEnumerable<QuoteNoDto>> serviceResponse = new ServiceResponse<IEnumerable<QuoteNoDto>>();
+
+            try
+            {
+                var quoteDetails = await _repository.GetClosedQuoteDetailsByQuoteNo(quoteNumber);
+                if (quoteDetails.Count() == 0)
+                {
+                    _logger.LogError($"QuoteDetails with ItemNo: {quoteNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"QuoteDetails with ItemNo: {quoteNumber}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned QuoteDetails with ItemNo: {quoteNumber}");
+                    var result = _mapper.Map<List<QuoteNoDto>>(quoteDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Successfully Returned QuoteDetails";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetQuoteDetailsByQuoteNo action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+
     }
 }
 

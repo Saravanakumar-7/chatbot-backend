@@ -778,6 +778,17 @@ namespace Tips.SalesService.Api.Repository
             return getSalesorderList;
         }
 
+        public async Task<IEnumerable<SalesOrderDetailsTOSDto>> GetSalesOrderDetailByCusIdandTypeOfSol_SP(string? customerId, string? typeOfSolution)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SalesOrderDetailsTOSDto>()
+            .FromSqlInterpolated($"CALL GetSalesOrders({customerId},{typeOfSolution})")
+            .ToList();
+
+            return result;
+
+        }
+
         public async Task<IEnumerable<ListofSalesOrderDetails>> GetSalesOrderNoDetailsByCustomerId(string Customerid)
         {
            var soAddSalesOrderIds = await _tipsSalesServiceDbContext.SalesOrderAdditionalCharges

@@ -130,10 +130,22 @@ namespace Repository
         private IEnggChildItemsRepository? _enggChildItemsRepository;
         private IWeightedAvgRateRepository? _weightedAvgRateRepository;
         private IFieldInformationRepository? _fieldInformationRepository;
+        private IPrioritizeRepository? _prioritizeRepository;
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
             _httpContextAccessor = httpContextAccessor;
+        }
+        public IPrioritizeRepository PrioritizeRepository
+        {
+            get
+            {
+                if (_prioritizeRepository == null)
+                {
+                    _prioritizeRepository = new PrioritizeRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _prioritizeRepository;
+            }
         }
         public IFieldInformationRepository FieldInformationRepository
         {

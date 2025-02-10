@@ -172,6 +172,7 @@ namespace Entities
         public DbSet<FieldInformation>? FieldInformations { get; set; }
         public DbSet<BomSPReport>? BomSPReports { get; set; }
         public DbSet<EnggBomLevelSPReport>? EnggBomLevelSPReport { get; set; }
+        public DbSet<Prioritize> Prioritizes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

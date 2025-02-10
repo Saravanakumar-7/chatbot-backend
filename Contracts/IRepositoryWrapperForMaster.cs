@@ -155,6 +155,7 @@ namespace Contracts
         IEnggChildItemsRepository EnggChildItemsRepository { get; }
         IWeightedAvgRateRepository WeightedAvgRateRepository { get; }
         IFieldInformationRepository FieldInformationRepository { get; }
+        IPrioritizeRepository PrioritizeRepository { get; }
         void SaveAsync();
         void Save();
     }
