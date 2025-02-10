@@ -1688,23 +1688,27 @@ namespace Tips.Purchase.Api.Controllers
                     }
                 }
 
-
-                foreach (var poItems in poItemDtoList)
+                if (poItemDtoList != null)
                 {
-                    foreach (var prDetails in poItems.PrDetails.Where(x=>x.ToClosePR==true).ToList())
+                    foreach (var poItems in poItemDtoList)
                     {
-                        var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, poItems.ItemNumber);
-                        if (prItemDetail != null)
-                        {
-                            prItemDetail.PrStatus = PrStatus.Closed;
-                            await _purchaseRequisitionItemRepository.UpdatePrItem(prItemDetail);
-                            _purchaseRequisitionItemRepository.SaveAsync();
-                        }
+                        if (poItems.PrDetails != null) {
+                            foreach (var prDetails in poItems.PrDetails.Where(x => x.ToClosePR == true).ToList())
+                            {
+                                var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, poItems.ItemNumber);
+                                if (prItemDetail != null)
+                                {
+                                    prItemDetail.PrStatus = PrStatus.Closed;
+                                    await _purchaseRequisitionItemRepository.UpdatePrItem(prItemDetail);
+                                    _purchaseRequisitionItemRepository.SaveAsync();
+                                }
 
-                        var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
-                        var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
-                        prDetail.PrStatus = prItemClosedStatusCount;
-                        await _purchaseRequisitionRepository.UpdatePurchaseRequisition_ForApproval(prDetail);
+                                var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
+                                var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
+                                prDetail.PrStatus = prItemClosedStatusCount;
+                                await _purchaseRequisitionRepository.UpdatePurchaseRequisition_ForApproval(prDetail);
+                            } 
+                        }
                     }
                 }
                 _documentUploadRepository.SaveAsync();

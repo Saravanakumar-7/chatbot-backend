@@ -342,10 +342,10 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 await _repository.ApprovalRangesRepository.UpdateApprovalRange(approvalRanges);
-
+                var latestApproval = await _repository.ApprovalRangesRepository.GetApprovalRangesByProcurementType(approvalRanges.ProcurementName);
                 var NewApproval = _mapper.Map<ApprovalRanges>(approvalRangesUpdateDto);
                 NewApproval.Id = 0;
-                NewApproval.Version = approvalRanges.Version;
+                NewApproval.Version = latestApproval.Version;
                 NewApproval.Ranges.ForEach(x => x.Id = 0);
                 NewApproval = await _repository.ApprovalRangesRepository.CreateNewApprovalRangeVersion(NewApproval);
                 _repository.SaveAsync();
