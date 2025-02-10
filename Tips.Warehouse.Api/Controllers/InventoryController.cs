@@ -1510,7 +1510,6 @@ namespace Tips.Warehouse.Api.Controllers
                     var ItemNo = itemMasterTranctionObject.itemNumber;
                     var Desc = itemMasterTranctionObject.description;
                     var uom = itemMasterTranctionObject.uom;
-                    var ProjectNo = itemMasterTranctionObject.projectNumber;
                     var ItemType = itemMasterTranctionObject.itemType;
 
                     for (int i = 0; i < inventoryDetails.Count; i++)
@@ -1548,9 +1547,10 @@ namespace Tips.Warehouse.Api.Controllers
                         inventoryTranction.LotNumber = inventoryDetails[i].LotNumber;
                         inventoryTranction.MftrPartNumber = inventoryDetails[i].MftrPartNumber;
                         inventoryTranction.Description = Desc;
-                        inventoryTranction.ProjectNumber = ProjectNo;
+                        inventoryTranction.ProjectNumber = inventoryDetails[i].ProjectNumber;
                         inventoryTranction.PartType = ItemType;
-                        inventoryTranction.Issued_Quantity = producedQty;
+                        inventoryTranction.Issued_Quantity = item.NewConvertedToFgQty;
+                        inventoryTranction.IsStockAvailable = inventoryDetails[i].IsStockAvailable;
                         inventoryTranction.UOM = uom;
                         inventoryTranction.BOM_Version_No = 0;
                         inventoryTranction.Issued_DateTime = DateTime.Now;
@@ -1818,6 +1818,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                 decimal disQty = dtoForMaterialIssue.DistributingQty;
                 string shopOrderNumber = dtoForMaterialIssue.ShopOrderNumber;
+                //var shopOrderDetail = await _shop
                 for (int i = 0; i < inventoryDetails.Count(); i++)
                 {
                     decimal balanceqty = inventoryDetails[i].Balance_Quantity;
