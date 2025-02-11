@@ -12,6 +12,7 @@ using Entities.Enums;
 using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
 using MimeKit;
 using MimeKit.Text;
@@ -825,7 +826,7 @@ namespace Tips.Production.Api.Controllers
 
 
                 // After Shop Order Creation Material Issue also should be created.
-                await CreateMaterialIssueDetails(shopOrder);
+                //await CreateMaterialIssueDetails(shopOrder);
                 _logger.LogInfo($"ShopOrder Created");
                 if (serverKey == "avision")
                 {
@@ -2081,6 +2082,52 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Message = $"Something went wrong inside GetShopOrderComsumptionDetialsBySaleOrderNos action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> ActivateShopOrderApproval(string shopOrderNo)
+        {
+            ServiceResponse<ShopOrderDto> serviceResponse = new ServiceResponse<ShopOrderDto>();
+
+            try
+            {
+                string serverKey = GetServerKey();
+                var shopOrderDetails = await _shopOrderRepository.GetShopOrderByShopOrderNo(shopOrderNo);
+                if (shopOrderDetails is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ShopOrderApproval object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"ShopOrderApproval with ShopOrderNo: {shopOrderNo}, hasn't been found in db.");
+                    return BadRequest(serviceResponse);
+                }
+                shopOrderDetails.ShopOrderApproval = true;
+                shopOrderDetails.ShopOrderApprovedBy = _createdBy;
+                shopOrderDetails.ShopOrderApprovedDate = DateTime.Now;
+                string result = await _shopOrderRepository.UpdateShopOrderForApproval(shopOrderDetails);
+                _logger.LogInfo(result);
+                _shopOrderRepository.SaveAsync();
+
+                var shopOrderDetail = await _shopOrderRepository.GetShopOrderApprovalStatusByShopOrderNo(shopOrderDetails.ShopOrderNumber);
+                if(shopOrderDetail != null)
+                {
+                    await CreateMaterialIssueDetails(shopOrderDetail);
+                }
+                serviceResponse.Message = "ShopOrderApproval Activated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Something went wrong inside ActivateShopOrderApproval action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }

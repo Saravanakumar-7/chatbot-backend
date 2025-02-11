@@ -34,6 +34,9 @@ namespace Tips.Production.Api.Entities.DTOs
         public bool IsShortClosed { get; set; }
         public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }
+        public bool ShopOrderApproval { get; set; } = false;
+        public string? ShopOrderApprovedBy { get; set; }
+        public DateTime ShopOrderApprovedDate { get; set; }
         [Required]
         public decimal BomRevisionNo { get; set; }
         public string? Remarks { get; set; }

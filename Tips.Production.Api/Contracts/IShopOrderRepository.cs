@@ -16,12 +16,14 @@ namespace Tips.Production.Api.Contracts
         Task<ShopOrder> GetShopOrderById(int id);
         Task<int?> CreateShopOrder(ShopOrder shopOrder);
         Task<string> UpdateShopOrder(ShopOrder shopOrder);
+        Task<string> UpdateShopOrderForApproval(ShopOrder shopOrder);
         Task<ShopOrder> GetShopOrderDetailsByShopOrderNo(string shopOrderNo);
         Task<ShopOrder> GetShopOrderBySalesOrderNo(string salesOrderNo);
         Task<List<string>> GetShopOrderNoListBySalesOrderNo(string salesOrderNo, string itemNumber);
         Task<List<ShopOrderComsumpDetailsDto>> GetShopOrderComsumptionDetialsBySaleOrderNos(List<string> lotNoListString);
         Task<string> GetShopOrderComsumptionDetialsBySaItemNo(string saItemNo, string fgItemNumber);
         Task<ShopOrder> GetShopOrderByShopOrderNo(string shopOrderNo);
+        Task<ShopOrder> GetShopOrderApprovalStatusByShopOrderNo(string shopOrderNo);
         Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByItemType(string itemType);
         Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFGNo(string fGNumber);
         Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFGNoAndSANo(string fGNumber, string sANumber);

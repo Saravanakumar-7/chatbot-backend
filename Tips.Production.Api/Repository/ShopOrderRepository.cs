@@ -395,6 +395,13 @@ namespace Tips.Production.Api.Repository
             return result;
         }
 
+        public async Task<string> UpdateShopOrderForApproval(ShopOrder shopOrder)
+        {
+            Update(shopOrder);
+            string result = $"ShopOrderApproval details of {shopOrder.Id} is updated successfully!";
+            return result;
+        }
+
         public async Task<ShopOrder> GetShopOrderBySalesOrderNo(string salesOrderNo)
         {
             var shopOrderBySalesOrderNo = await _tipsProductionDbContext.ShopOrders
@@ -452,6 +459,15 @@ namespace Tips.Production.Api.Repository
             var shopOrderByShopOrderNo = await _tipsProductionDbContext.ShopOrders
                             .Include(x => x.ShopOrderItems)
                             .Where(x => x.ShopOrderNumber == shopOrderNo)
+                             .FirstOrDefaultAsync();
+            return shopOrderByShopOrderNo;
+        }
+
+        public async Task<ShopOrder> GetShopOrderApprovalStatusByShopOrderNo(string shopOrderNo)
+        {
+            var shopOrderByShopOrderNo = await _tipsProductionDbContext.ShopOrders
+                            .Include(x => x.ShopOrderItems)
+                            .Where(x => x.ShopOrderNumber == shopOrderNo && x.ShopOrderApproval == true)
                              .FirstOrDefaultAsync();
             return shopOrderByShopOrderNo;
         }
