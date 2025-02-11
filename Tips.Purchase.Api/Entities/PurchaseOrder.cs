@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Tips.Purchase.Api.Entities.Enums;
@@ -72,6 +73,10 @@ namespace Tips.Purchase.Api.Entities
         [DefaultValue(false)]
         public bool PoConfirmationStatus { get; set; }
         public int? ApprovalCount { get; set; }
+        [Precision(18, 3)]
+        public decimal? PoItemsTotal { get; set; }
+        [Precision(18, 3)]
+        public decimal? PoAdditionalChargesTotal { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -84,6 +89,7 @@ namespace Tips.Purchase.Api.Entities
 
         public List<PoItem>? POItems { get; set; }
         public List<PoIncoTerm>? POIncoTerms { get; set; }
+        public List<PurchaseOrderAdditionalCharges>? PurchaseOrderAdditionalCharges { get; set; }
 
     }
 }

@@ -1640,17 +1640,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var salesOrderDetails = await _repository.GetSalesOrderDetailByCusIdandTypeOfSol_SP(customerId, typeOfSolution);
-                if (salesOrderDetails.Count() == 0)
-                {
-                    _logger.LogError($"SalesOrderDetail with customerId: {customerId} and typeOfSolution: {typeOfSolution}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"SalesOrderDetail with customerId: {customerId} and typeOfSolution: {typeOfSolution}, hasn't been found in db.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound();
-                }
-                else
-                {
+               
                     _logger.LogInfo($"Returned SalesOrderDetail with customerId: {customerId} and typeOfSolution: {typeOfSolution}");
                     var result = _mapper.Map<List<SalesOrderDetailsTOSDto>>(salesOrderDetails);
                     serviceResponse.Data = result;
@@ -1658,7 +1648,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(result);
-                }
+                
             }
             catch (Exception ex)
             {

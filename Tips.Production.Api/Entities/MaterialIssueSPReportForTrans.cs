@@ -5,7 +5,7 @@
         public string? WorkorderNo { get; set; }
         public DateTime? WorkOrderDate { get; set; }
         public decimal? WOreleaseqty { get; set; }
-        public int? ProjectType { get; set; }
+        public string? ProjectType { get; set; }
         public int? ItemType { get; set; }
         public string? ProjectNumber { get; set; }
         public string? ItemNumber { get; set; }

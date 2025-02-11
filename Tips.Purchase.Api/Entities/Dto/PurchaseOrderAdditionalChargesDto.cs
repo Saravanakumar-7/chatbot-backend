@@ -1,0 +1,109 @@
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Tips.Purchase.Api.Entities.Dto
+{
+    public class PurchaseOrderAdditionalChargesDto
+    {
+        public int Id { get; set; }
+        public string? AdditionalChargesLabelName { get; set; }
+        public string? AddtionalChargesValueType { get; set; }
+
+        [Precision(18, 4)]
+        public decimal? AddtionalChargesValueAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? IGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? CGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? UTGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SGST { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? TotalValue { get; set; }
+
+        public string? Remarks { get; set; }
+    }
+
+    public class PurchaseOrderAdditionalChargesPostDto
+    {
+        public string? AdditionalChargesLabelName { get; set; }
+        public string? AddtionalChargesValueType { get; set; }
+
+        [Precision(18, 4)]
+        public decimal? AddtionalChargesValueAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? IGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? CGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? UTGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SGST { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? TotalValue { get; set; }
+
+        public string? Remarks { get; set; }
+    }
+
+    public class PurchaseOrderAdditionalChargesUpdateDto
+    {
+        public string? AdditionalChargesLabelName { get; set; }
+        public string? AddtionalChargesValueType { get; set; }
+
+        [Precision(18, 4)]
+        public decimal? AddtionalChargesValueAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? IGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? CGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? UTGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SGST { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? TotalValue { get; set; }
+
+        public string? Remarks { get; set; }
+    }
+    public class PurchaseOrderShortCloseAdditionalChargesDto
+    {
+        public int Id { get; set; }
+        public string? AdditionalChargesLabelName { get; set; }
+        public string? AddtionalChargesValueType { get; set; }
+
+        [Precision(18, 4)]
+        public decimal? AddtionalChargesValueAmount { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? IGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? CGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? UTGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? SGST { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? TotalValue { get; set; }
+
+        public string? Remarks { get; set; }
+    }
+}

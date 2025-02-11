@@ -246,6 +246,7 @@ namespace Tips.Purchase.Api.Controllers
                     PurchaseOrderDto purchaseOrderDto = _mapper.Map<PurchaseOrderDto>(purchaseOrderDetailbyPONumber);
                     List<PoItemsDto> poItemDtoList = new List<PoItemsDto>();
                     var poIncoTermList = _mapper.Map<IEnumerable<PoIncoTerm>>(purchaseOrderDto.POIncoTerms);
+                    var poAdditionalChargeList = _mapper.Map<IEnumerable<PurchaseOrderAdditionalCharges>>(purchaseOrderDto.PurchaseOrderAdditionalCharges);
                     //List<DocumentUploadDto> documentUplaodDtoList = new List<DocumentUploadDto>();
 
                     //if (purchaseOrderDto.POFiles.Count() != 0)
@@ -270,6 +271,19 @@ namespace Tips.Purchase.Api.Controllers
                         }
                     }
                     purchaseOrderDto.POIncoTerms = poIncoTermsList;
+
+                    var poAdditionalChargesDto = purchaseOrderDto.PurchaseOrderAdditionalCharges;
+
+                    var poAdditionalChargesList = new List<PurchaseOrderAdditionalChargesDto>();
+                    if (poAdditionalChargesDto != null)
+                    {
+                        for (int i = 0; i < poAdditionalChargesDto.Count; i++)
+                        {
+                            PurchaseOrderAdditionalChargesDto poAdditionalChargeDetails = _mapper.Map<PurchaseOrderAdditionalChargesDto>(poAdditionalChargesDto[i]);
+                            poAdditionalChargesList.Add(poAdditionalChargeDetails);
+                        }
+                    }
+                    purchaseOrderDto.PurchaseOrderAdditionalCharges = poAdditionalChargesList;
 
                     if (purchaseOrderDetailbyPONumber.POItems != null)
                     {
@@ -353,6 +367,19 @@ namespace Tips.Purchase.Api.Controllers
                         }
                     }
                     purchaseOrderDto.POIncoTerms = poIncoTermsList;
+
+                    var poAdditionalChargesDto = purchaseOrderDto.PurchaseOrderAdditionalCharges;
+
+                    var poAdditionalChargesList = new List<PurchaseOrderAdditionalChargesDto>();
+                    if (poAdditionalChargesDto != null)
+                    {
+                        for (int i = 0; i < poAdditionalChargesDto.Count; i++)
+                        {
+                            PurchaseOrderAdditionalChargesDto poAdditionalChargeDetails = _mapper.Map<PurchaseOrderAdditionalChargesDto>(poAdditionalChargesDto[i]);
+                            poAdditionalChargesList.Add(poAdditionalChargeDetails);
+                        }
+                    }
+                    purchaseOrderDto.PurchaseOrderAdditionalCharges = poAdditionalChargesList;
 
                     if (purchaseOrderDetailbyPONumber.POItems != null)
                     {
@@ -1203,6 +1230,19 @@ namespace Tips.Purchase.Api.Controllers
                     }
                     purchaseOrderDto.POIncoTerms = poIncoTermsList;
 
+                    var poAdditionalChargesDto = purchaseOrderDto.PurchaseOrderAdditionalCharges;
+
+                    var poAdditionalChargesList = new List<PurchaseOrderAdditionalChargesDto>();
+                    if (poAdditionalChargesDto != null)
+                    {
+                        for (int i = 0; i < poAdditionalChargesDto.Count; i++)
+                        {
+                            PurchaseOrderAdditionalChargesDto poAdditionalChargeDetails = _mapper.Map<PurchaseOrderAdditionalChargesDto>(poAdditionalChargesDto[i]);
+                            poAdditionalChargesList.Add(poAdditionalChargeDetails);
+                        }
+                    }
+                    purchaseOrderDto.PurchaseOrderAdditionalCharges = poAdditionalChargesList;
+
                     if (purchaseOrderDetail.POItems != null)
                     {
                         foreach (var poItemDetails in purchaseOrderDetail.POItems)
@@ -1286,6 +1326,19 @@ namespace Tips.Purchase.Api.Controllers
                         }
                     }
                     purchaseOrderDto.POIncoTerms = poIncoTermsList;
+
+                    var poAdditionalChargesDto = purchaseOrderDto.PurchaseOrderAdditionalCharges;
+
+                    var poAdditionalChargesList = new List<PurchaseOrderAdditionalChargesDto>();
+                    if (poAdditionalChargesDto != null)
+                    {
+                        for (int i = 0; i < poAdditionalChargesDto.Count; i++)
+                        {
+                            PurchaseOrderAdditionalChargesDto poAdditionalChargeDetails = _mapper.Map<PurchaseOrderAdditionalChargesDto>(poAdditionalChargesDto[i]);
+                            poAdditionalChargesList.Add(poAdditionalChargeDetails);
+                        }
+                    }
+                    purchaseOrderDto.PurchaseOrderAdditionalCharges = poAdditionalChargesList;
 
                     if (purchaseOrderDetailbyId.POItems != null)
                     {
@@ -1615,6 +1668,7 @@ namespace Tips.Purchase.Api.Controllers
                 var poFile = purchaseOrderPostDto.POFiles;
                 var poItemDtoList = new List<PoItem>();
                 var poIncoTermList = _mapper.Map<IEnumerable<PoIncoTerm>>(purchaseOrderPostDto.POIncoTerms);
+                var poAdditionalChargeList = _mapper.Map<IEnumerable<PurchaseOrderAdditionalCharges>>(purchaseOrderPostDto.PurchaseOrderAdditionalCharges);
 
                 var date = DateTime.Now;
                 purchaseOrderPostDto.QuotationDate = date;
@@ -1658,6 +1712,7 @@ namespace Tips.Purchase.Api.Controllers
                 purchaseOrderDetails.POItems = poItemDtoList;
                 // purchaseOrderDetails.POFiles = poDocumentUploadDtoList;
                 purchaseOrderDetails.POIncoTerms = poIncoTermList.ToList();
+                purchaseOrderDetails.PurchaseOrderAdditionalCharges = poAdditionalChargeList.ToList();
                 await _repository.CreatePurchaseOrder(purchaseOrderDetails);
 
 
@@ -1706,10 +1761,12 @@ namespace Tips.Purchase.Api.Controllers
                         await _purchaseRequisitionRepository.UpdatePurchaseRequisition_ForApproval(prDetail);
                     }
                 }
+
                 _documentUploadRepository.SaveAsync();
                 _pRItemsDocumentUploadRepository.SaveAsync();
                 _purchaseRequisitionRepository.SaveAsync();
                 _repository.SaveAsync();
+
                 if (serverKey == "avision")
                 {
                     var client = _clientFactory.CreateClient();
@@ -2520,6 +2577,19 @@ namespace Tips.Purchase.Api.Controllers
                 }
                 purchaseOrderDetails.POIncoTerms = poIncoTermsList;
 
+                var poAdditionalChargesDto = purchaseOrderUpdateDto.PurchaseOrderAdditionalCharges;
+
+                var poAdditionalChargesList = new List<PurchaseOrderAdditionalCharges>();
+                if (poAdditionalChargesDto != null)
+                {
+                    for (int i = 0; i < poAdditionalChargesDto.Count; i++)
+                    {
+                        PurchaseOrderAdditionalCharges poAdditionalChargeDetails = _mapper.Map<PurchaseOrderAdditionalCharges>(poAdditionalChargesDto[i]);
+                        poAdditionalChargesList.Add(poAdditionalChargeDetails);
+                    }
+                }
+                purchaseOrderDetails.PurchaseOrderAdditionalCharges = poAdditionalChargesList;
+
                 if (poItemDto != null)
                 {
                     for (int i = 0; i < poItemDto.Count; i++)
@@ -2755,6 +2825,18 @@ namespace Tips.Purchase.Api.Controllers
                     }
                 }
 
+                var poAdditionalChargesDto = purchaseOrderUpdateDto.PurchaseOrderAdditionalCharges;
+
+                var poAdditionalChargesList = new List<PurchaseOrderAdditionalCharges>();
+                if (poAdditionalChargesDto != null)
+                {
+                    for (int i = 0; i < poAdditionalChargesDto.Count; i++)
+                    {
+                        PurchaseOrderAdditionalCharges poAdditionalChargeDetails = _mapper.Map<PurchaseOrderAdditionalCharges>(poAdditionalChargesDto[i]);
+                        poAdditionalChargesList.Add(poAdditionalChargeDetails);
+                    }
+                }
+
                 if (poItemDto != null)
                 {
                     for (int i = 0; i < poItemDto.Count; i++)
@@ -2908,6 +2990,7 @@ namespace Tips.Purchase.Api.Controllers
                 var updateData = _mapper.Map(purchaseOrderUpdateDto, poDetailBeforeUpdate);
                 updateData.POItems = poItemDtoList;
                 updateData.POIncoTerms = poIncoTermsList;
+                updateData.PurchaseOrderAdditionalCharges = poAdditionalChargesList;
                 await _repository.UpdatePurchaseOrder_ForApproval(updateData);
                 _repository.SaveAsync();
                 _poItemHistoryRepository.SaveAsync();

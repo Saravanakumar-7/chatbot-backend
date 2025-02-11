@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using Tips.Purchase.Api.Entities.Dto;
 using Tips.Purchase.Api.Entities.Enums;
 
@@ -47,6 +48,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }
         public decimal TotalAmount { get; set; }
+        public decimal? PoItemsTotal { get; set; }
+        public decimal? PoAdditionalChargesTotal { get; set; }
         public bool POApprovalI { get; set; }
         public DateTime POApprovedIDate { get; set; }
         public string? POApprovedIBy { get; set; }
@@ -68,6 +71,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public List<PoItemsDto>? POItems { get; set; }
         public List<PoIncoTermDto>? POIncoTerms { get; set; }
+        public List<PurchaseOrderAdditionalChargesDto>? PurchaseOrderAdditionalCharges { get; set; }
 
     }
 
@@ -105,10 +109,12 @@ namespace Tips.Purchase.Api.Entities.DTOs
         //public string? Transport { get; set; }
         public string? Others { get; set; }
         public decimal TotalAmount { get; set; }
+        public decimal? PoItemsTotal { get; set; }
+        public decimal? PoAdditionalChargesTotal { get; set; }
         public int? ApprovalCount { get; set; }
-
         public List<PoItemsPostDto>? POItems { get; set; }
         public List<PoIncoTermPostDto>? POIncoTerms { get; set; }
+        public List<PurchaseOrderAdditionalChargesPostDto>? PurchaseOrderAdditionalCharges { get; set; }
 
     }
     public class PurchaseOrderUpdateDto
@@ -143,6 +149,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? RetentionPeriod { get; set; }
         public string? SpecialTermsAndConditions { get; set; }
         public decimal TotalAmount { get; set; }
+        public decimal? PoItemsTotal { get; set; }
+        public decimal? PoAdditionalChargesTotal { get; set; }
         public int? ApprovalCount { get; set; }
         public PoStatus PoStatus { get; set; }
         public string? Unit { get; set; }
@@ -151,6 +159,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public List<PoItemsUpdateDto>? POItems { get; set; }
         public List<PoIncoTermUpdateDto>? POIncoTerms { get; set; }
+        public List<PurchaseOrderAdditionalChargesUpdateDto>? PurchaseOrderAdditionalCharges { get; set; }
 
     }
     public class PurchaseOrderForShortCloseDto
@@ -196,6 +205,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }
         public decimal TotalAmount { get; set; }
+        public decimal? PoItemsTotal { get; set; }
+        public decimal? PoAdditionalChargesTotal { get; set; }
         public bool POApprovalI { get; set; }
         public DateTime POApprovedIDate { get; set; }
         public string? POApprovedIBy { get; set; }
@@ -217,6 +228,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public bool TallyStatus { get; set; } = false;
         public List<PoItemsShortCloseDto>? POItems { get; set; }
         public List<PoIncoTermShortCloseDto>? POIncoTerms { get; set; }
+        public List<PurchaseOrderShortCloseAdditionalChargesDto>? PurchaseOrderAdditionalCharges { get; set; }
 
     }
     public class PurchaseOrderIdNameListDto
@@ -261,6 +273,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }
         public decimal TotalAmount { get; set; }
+        public decimal? PoItemsTotal { get; set; }
+        public decimal? PoAdditionalChargesTotal { get; set; }
         public bool POApprovalI { get; set; }
         public DateTime POApprovedIDate { get; set; }
         public string? POApprovedIBy { get; set; }
@@ -357,6 +371,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? ShortClosedBy { get; set; }
         public DateTime? ShortClosedOn { get; set; }
         public decimal TotalAmount { get; set; }
+        public decimal? PoItemsTotal { get; set; }
+        public decimal? PoAdditionalChargesTotal { get; set; }
         public bool POApprovalI { get; set; }
         public DateTime POApprovedIDate { get; set; }
         public string? POApprovedIBy { get; set; }

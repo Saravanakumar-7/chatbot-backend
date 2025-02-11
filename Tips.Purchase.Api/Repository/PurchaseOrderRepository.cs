@@ -703,6 +703,8 @@ namespace Tips.Purchase.Api.Repository
                 ShortClosedBy = g.ShortClosedBy,
                 ShortClosedOn = g.ShortClosedOn,
                 TotalAmount = g.TotalAmount,
+                PoItemsTotal = g.PoItemsTotal,
+                PoAdditionalChargesTotal = g.PoAdditionalChargesTotal,
                 POApprovalI = g.POApprovalI,
                 POApprovedIDate = g.POApprovedIDate,
                 POApprovedIBy = g.POApprovedIBy,
@@ -776,6 +778,8 @@ namespace Tips.Purchase.Api.Repository
                 ShortClosedBy = g.ShortClosedBy,
                 ShortClosedOn = g.ShortClosedOn,
                 TotalAmount = g.TotalAmount,
+                PoItemsTotal = g.PoItemsTotal,
+                PoAdditionalChargesTotal = g.PoAdditionalChargesTotal,
                 POApprovalI = g.POApprovalI,
                 POApprovedIDate = g.POApprovedIDate,
                 POApprovedIBy = g.POApprovedIBy,
@@ -853,6 +857,8 @@ namespace Tips.Purchase.Api.Repository
                 ShortClosedBy = g.ShortClosedBy,
                 ShortClosedOn = g.ShortClosedOn,
                 TotalAmount = g.TotalAmount,
+                PoItemsTotal = g.PoItemsTotal,
+                PoAdditionalChargesTotal = g.PoAdditionalChargesTotal,
                 POApprovalI = g.POApprovalI,
                 POApprovedIDate = g.POApprovedIDate,
                 POApprovedIBy = g.POApprovedIBy,
@@ -934,6 +940,8 @@ namespace Tips.Purchase.Api.Repository
                 ShortClosedBy = g.ShortClosedBy,
                 ShortClosedOn = g.ShortClosedOn,
                 TotalAmount = g.TotalAmount,
+                PoItemsTotal = g.PoItemsTotal,
+                PoAdditionalChargesTotal = g.PoAdditionalChargesTotal,
                 POApprovalI = g.POApprovalI,
                 POApprovedIDate = g.POApprovedIDate,
                 POApprovedIBy = g.POApprovedIBy,
@@ -1218,9 +1226,12 @@ namespace Tips.Purchase.Api.Repository
             inv.RevisionNumber.Equals(searchrev) || inv.PODate.Equals(searchDate)))
             .OrderByDescending(on => on.Id)//.Include(o => o.POFiles)
             .Include(t => t.POItems).ThenInclude(x => x.POAddprojects)
-            .Include(m => m.POItems).ThenInclude(i => i.POAddDeliverySchedules).Include(itm => itm.POItems)
-            .ThenInclude(po => po.POSpecialInstructions).Include(itm => itm.POItems).ThenInclude(po => po.POConfirmationDates)
-            .Include(itm => itm.POItems).ThenInclude(po => po.PrDetails).Include(itm => itm.POIncoTerms);
+            .Include(m => m.POItems).ThenInclude(i => i.POAddDeliverySchedules)
+            .Include(itm => itm.POItems).ThenInclude(po => po.POSpecialInstructions)
+            .Include(itm => itm.POItems).ThenInclude(po => po.POConfirmationDates)
+            .Include(itm => itm.POItems).ThenInclude(po => po.PrDetails)
+            .Include(itm => itm.POIncoTerms)
+            .Include(itm => itm.PurchaseOrderAdditionalCharges);
 
             return PagedList<PurchaseOrder>.ToPagedList(purchaseOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
@@ -1295,7 +1306,7 @@ namespace Tips.Purchase.Api.Repository
             .Include(t => t.POItems).ThenInclude(x => x.POAddprojects)
             .Include(m => m.POItems).ThenInclude(i => i.POAddDeliverySchedules).Include(itm => itm.POItems)
             .ThenInclude(po => po.POSpecialInstructions).Include(itm => itm.POItems).ThenInclude(po => po.POConfirmationDates)
-            .Include(itm => itm.POItems).ThenInclude(po => po.PrDetails).Include(itm => itm.POIncoTerms);
+            .Include(itm => itm.POItems).ThenInclude(po => po.PrDetails).Include(itm => itm.POIncoTerms).Include(itm => itm.PurchaseOrderAdditionalCharges);
 
             return PagedList<PurchaseOrder>.ToPagedList(purchaseOrderDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
@@ -1317,6 +1328,7 @@ namespace Tips.Purchase.Api.Repository
                                 .Include(itm => itm.POItems)
                                  .ThenInclude(po => po.PrDetails)
                                  .Include(itm => itm.POIncoTerms)
+                                 .Include(itm => itm.PurchaseOrderAdditionalCharges)
                                 .FirstOrDefaultAsync();
 
 
@@ -1339,6 +1351,7 @@ namespace Tips.Purchase.Api.Repository
                                 .Include(itm => itm.POItems)
                                 .ThenInclude(po => po.PrDetails)
                                 .Include(itm => itm.POIncoTerms)
+                                .Include(itm => itm.PurchaseOrderAdditionalCharges)
                                 .FirstOrDefaultAsync();
             return purchaseOrderDetailbyPONumber;
         }
@@ -1359,6 +1372,7 @@ namespace Tips.Purchase.Api.Repository
                                 .Include(itm => itm.POItems)
                                 .ThenInclude(po => po.PrDetails)
                                 .Include(itm => itm.POIncoTerms)
+                                .Include(itm => itm.PurchaseOrderAdditionalCharges)
                                 .FirstOrDefaultAsync();
             return purchaseOrderDetailbyPONumber;
         }
@@ -1378,6 +1392,7 @@ namespace Tips.Purchase.Api.Repository
                                 .Include(itm => itm.POItems)
                                 .ThenInclude(po => po.PrDetails)
                                 .Include(itm => itm.POIncoTerms)
+                                .Include(itm => itm.PurchaseOrderAdditionalCharges)
                                 .FirstOrDefaultAsync();
             purchaseOrderDetailbyPONumber.POItems = purchaseOrderDetailbyPONumber.POItems
         .Where(item => item.PoStatus == PoStatus.Open || item.PoStatus == PoStatus.PartiallyClosed)

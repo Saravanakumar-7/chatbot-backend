@@ -109,6 +109,12 @@ namespace Tips.Purchase.Api
             CreateMap<PRItemsDocumentUpload, PRItemsGetDownloadUrlDto>().ReverseMap();
             CreateMap<PRItemsDocumentUpload, GetPRItemsDownloadUrlDto>().ReverseMap();
 
+
+            CreateMap<PurchaseOrderAdditionalCharges, PurchaseOrderAdditionalChargesDto>().ReverseMap();
+            CreateMap<PurchaseOrderAdditionalCharges, PurchaseOrderAdditionalChargesPostDto>().ReverseMap();
+            CreateMap<PurchaseOrderAdditionalCharges, PurchaseOrderAdditionalChargesUpdateDto>().ReverseMap();
+            CreateMap<PurchaseOrderAdditionalCharges, PurchaseOrderShortCloseAdditionalChargesDto>().ReverseMap();
+
         }
     }
 }
