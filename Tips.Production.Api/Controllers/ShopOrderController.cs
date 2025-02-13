@@ -826,7 +826,10 @@ namespace Tips.Production.Api.Controllers
 
 
                 // After Shop Order Creation Material Issue also should be created.
-                //await CreateMaterialIssueDetails(shopOrder);
+                if (serverKey != "avision")
+                {
+                    await CreateMaterialIssueDetails(shopOrder);
+                }
                 _logger.LogInfo($"ShopOrder Created");
                 if (serverKey == "avision")
                 {
