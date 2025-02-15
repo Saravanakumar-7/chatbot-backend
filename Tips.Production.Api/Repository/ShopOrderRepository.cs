@@ -508,6 +508,21 @@ namespace Tips.Production.Api.Repository
 
         }
 
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetApprovedShopOrderNumberList()
+        {
+            IEnumerable<ListOfShopOrderDto> shopOrderByItemType = await _tipsProductionDbContext.ShopOrders
+                           .Where(x =>  x.ShopOrderApproval == true && x.Status != OrderStatus.ShortClose)
+                           .Select(x => new ListOfShopOrderDto()
+                           {
+                               Id = x.Id,
+                               ShopOrderNumber = x.ShopOrderNumber,
+                           }).ToListAsync();
+
+
+            return shopOrderByItemType;
+
+        }
+
         public async Task<IEnumerable<ListOfShopOrderDto>> GetShopOrderByFGNoAndSANo(string fGNumber, string sANumber)
         {
             IEnumerable<ListOfShopOrderDto> shopOrderByFGNoAndSANo = await _tipsProductionDbContext.ShopOrders

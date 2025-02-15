@@ -1449,6 +1449,45 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetApprovedShopOrderNumberList()
+        {
+            ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
+
+            try
+            {
+                var shopOrderByShopOrderNo = await _shopOrderRepository.GetApprovedShopOrderNumberList();
+                if (shopOrderByShopOrderNo == null)
+                {
+                    _logger.LogError($"ShopOrder hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ShopOrder with shopOrderNo hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned ShopOrder");
+                    var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(shopOrderByShopOrderNo);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "ShopOrderNumber List Successfully Returned";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetApprovedShopOrderNumberList action: {ex.Message}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> GetShopOrderByItemType(string itemType)
         {
