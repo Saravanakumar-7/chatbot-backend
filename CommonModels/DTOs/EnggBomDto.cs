@@ -203,6 +203,13 @@ namespace Entities.DTOs
     {
         public int? BOMId { get; set; }
     }
+
+    public class EnggBomRevSPReportDto
+    {
+        public string? ItemNumber { get; set; }
+        public decimal? RevisionNumber { get; set; }
+    }
+
     public class EnggBomDetailsDto
     {
         public string? ItemNumber { get; set; }
