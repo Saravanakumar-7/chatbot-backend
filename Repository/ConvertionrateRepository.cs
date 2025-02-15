@@ -45,7 +45,7 @@ namespace Repository
 
         public async Task<IEnumerable<Convertionrate>> GetAllActiveConvertionrate(SearchParames searchParams)
         {
-            var convertionrateDetails = FindAll()
+            var convertionrateDetails = FindByCondition(x => x.ActiveStatus == true)
            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.UOC.Contains(searchParams.SearchValue) ||
          inv.Unit.Contains(searchParams.SearchValue))));
             return convertionrateDetails;
@@ -76,6 +76,12 @@ namespace Repository
             Update(convertionrate);
             string result = $"Convertionrate details of {convertionrate.Id} is updated successfully!";
             return result;
+        }
+        public async Task<List<Convertionrate>> GetAllLatestConvertionrate()
+        {
+            return FindAll()
+              .GroupBy(x => x.UOC).Select(group => group.OrderByDescending(x => x.Date).First()).OrderByDescending(x => x.Id)
+              .ToList();
         }
     }
 }

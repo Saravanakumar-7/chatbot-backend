@@ -53,51 +53,108 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid ApprovalRanges object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                if (approvalRangesPostDto.Ranges.Count() != 3)
+                var arraycount = approvalRangesPostDto.Ranges.Count();
+                switch (arraycount)
                 {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "The No. of Ranges per Procurement can't excide more then 3";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Error occured in CreateApprovalRanges: Error occured in CreateApprovalRanges: The No. of Ranges per Procurement can't excide more then 3");
-                    return BadRequest(serviceResponse);
-                } 
-                if (approvalRangesPostDto.Ranges[2].RangeTo != null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "The 3rd Range's must not have a limit and must be sent as NULL";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Error occured in CreateApprovalRanges: The 3rd Range's must not have a limit and must be sent as NULL");
-                    return BadRequest(serviceResponse);
+                    case 1:
+                        if (approvalRangesPostDto.Ranges[0].RangeFrom != 1)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The 1st Range must begin from 1";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in CreateApprovalRanges: The 1st Range must begin from 1");
+                            return BadRequest(serviceResponse);
+                        }
+                        if (approvalRangesPostDto.Ranges[arraycount - 1].RangeTo != null)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The Last Range's must not have a limit and must be sent as NULL";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in CreateApprovalRanges: The Last Range's must not have a limit and must be sent as NULL");
+                            return BadRequest(serviceResponse);
+                        }
+                        break;
+                    case 2:
+                        if (approvalRangesPostDto.Ranges[0].RangeFrom != 1)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The 1st Range must begin from 1";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in CreateApprovalRanges: The 1st Range must begin from 1");
+                            return BadRequest(serviceResponse);
+                        }
+                        if (approvalRangesPostDto.Ranges[0].RangeTo >= approvalRangesPostDto.Ranges[1].RangeFrom)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The 2nd Range must begin from value greater then 1st Range";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in CreateApprovalRanges: The 2nd Range must begin from value greater then 1st Range");
+                            return BadRequest(serviceResponse);
+                        }
+                        if (approvalRangesPostDto.Ranges[arraycount - 1].RangeTo != null)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The Last Range's must not have a limit and must be sent as NULL";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in CreateApprovalRanges: The Last Range's must not have a limit and must be sent as NULL");
+                            return BadRequest(serviceResponse);
+                        }
+                        break;
+                    case 3:
+                        if (approvalRangesPostDto.Ranges[0].RangeFrom != 1)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The 1st Range must begin from 1";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in CreateApprovalRanges: The 1st Range must begin from 1");
+                            return BadRequest(serviceResponse);
+                        }
+                        if (approvalRangesPostDto.Ranges[0].RangeTo >= approvalRangesPostDto.Ranges[1].RangeFrom)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The 2nd Range must begin from value greater then 1st Range";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in CreateApprovalRanges: The 2nd Range must begin from value greater then 1st Range");
+                            return BadRequest(serviceResponse);
+                        }
+                        if (approvalRangesPostDto.Ranges[1].RangeTo >= approvalRangesPostDto.Ranges[2].RangeFrom)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The 3rd Range must begin from value greater then 2nd Range";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in CreateApprovalRanges: The 3rd Range must begin from value greater then 2nd Range");
+                            return BadRequest(serviceResponse);
+                        }
+                        if (approvalRangesPostDto.Ranges[arraycount - 1].RangeTo != null)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The Last Range's must not have a limit and must be sent as NULL";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in CreateApprovalRanges: The Last Range's must not have a limit and must be sent as NULL");
+                            return BadRequest(serviceResponse);
+                        }
+                        break;
+                    default:
+                        if (arraycount <1 || arraycount>3)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The No. of Ranges per Procurement can't excide more then 3 or be lesser then 1";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in CreateApprovalRanges: The No. of Ranges per Procurement can't excide more then 3 or be lesser then 1");
+                            return BadRequest(serviceResponse);
+                        }
+                        break;
                 }
-                if(approvalRangesPostDto.Ranges[0].RangeFrom != 1)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "The 1st Range must begin from 1";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Error occured in CreateApprovalRanges: The 1st Range must begin from 1");
-                    return BadRequest(serviceResponse);
-                } 
-                if(approvalRangesPostDto.Ranges[0].RangeTo >= approvalRangesPostDto.Ranges[1].RangeFrom)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "The 2nd Range must begin from value greater then 1st Range";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Error occured in CreateApprovalRanges: The 2nd Range must begin from value greater then 1st Range");
-                    return BadRequest(serviceResponse);
-                }
-                if(approvalRangesPostDto.Ranges[1].RangeTo >= approvalRangesPostDto.Ranges[2].RangeFrom)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "The 3rd Range must begin from value greater then 2nd Range";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Error occured in CreateApprovalRanges: The 3rd Range must begin from value greater then 2nd Range");
-                    return BadRequest(serviceResponse);
-                }                
                 var approvalRanges = await _repository.ApprovalRangesRepository.GetApprovalRangesByProcurementType(approvalRangesPostDto.ProcurementName);
                 if (approvalRanges != null)
                 {
@@ -106,7 +163,7 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
                     _logger.LogError($"An Range has already been created for this Procurement Type: {approvalRanges.ProcurementName}. Please update it or select other Procurement type");
-                    return StatusCode(406,serviceResponse);
+                    return StatusCode(406, serviceResponse);
                 }
                 var result = _mapper.Map<ApprovalRanges>(approvalRangesPostDto);
                 await _repository.ApprovalRangesRepository.CreateApprovalRanges(result);
@@ -286,50 +343,107 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid ApprovalRanges object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                if (approvalRangesUpdateDto.Ranges.Count() != 3)
+                var arraycount = approvalRangesUpdateDto.Ranges.Count();
+                switch (arraycount)
                 {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "The No. of Ranges per Procurement can't excide more then 3 or be lesser then 3";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Error occured in UpdateApprovalRange: The No. of Ranges per Procurement can't excide more then 3 or be lesser then 3");
-                    return BadRequest(serviceResponse);
-                }
-                if (approvalRangesUpdateDto.Ranges[2].RangeTo != null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "The No. of Ranges per Procurement can't excide more then 3";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Error occured in CreateApprovalRanges: The No. of Ranges per Procurement can't excide more then 3");
-                    return BadRequest(serviceResponse);
-                }
-                if (approvalRangesUpdateDto.Ranges[0].RangeFrom != 1)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "The 1st Range must begin from 1";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Error occured in UpdateApprovalRange: The 1st Range must begin from 1");
-                    return BadRequest(serviceResponse);
-                }
-                if (approvalRangesUpdateDto.Ranges[0].RangeTo >= approvalRangesUpdateDto.Ranges[1].RangeFrom)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "The 2nd Range must begin from value greater then 1st Range";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Error occured in UpdateApprovalRange: The 2nd Range must begin from value greater then 1st Range");
-                    return BadRequest(serviceResponse);
-                }
-                if (approvalRangesUpdateDto.Ranges[1].RangeTo >= approvalRangesUpdateDto.Ranges[2].RangeFrom)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "The 3rd Range must begin from value greater then 2nd Range";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Error occured in UpdateApprovalRange: The 3rd Range must begin from value greater then 2nd Range");
-                    return BadRequest(serviceResponse);
+                    case 1:
+                        if (approvalRangesUpdateDto.Ranges[0].RangeFrom != 1)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The 1st Range must begin from 1";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in UpdateApprovalRange: The 1st Range must begin from 1");
+                            return BadRequest(serviceResponse);
+                        }
+                        if (approvalRangesUpdateDto.Ranges[arraycount - 1].RangeTo != null)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The Last Range's must not have a limit and must be sent as NULL";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in UpdateApprovalRange: The Last Range's must not have a limit and must be sent as NULL");
+                            return BadRequest(serviceResponse);
+                        }
+                        break;
+                    case 2:
+                        if (approvalRangesUpdateDto.Ranges[0].RangeFrom != 1)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The 1st Range must begin from 1";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in UpdateApprovalRange: The 1st Range must begin from 1");
+                            return BadRequest(serviceResponse);
+                        }
+                        if (approvalRangesUpdateDto.Ranges[0].RangeTo >= approvalRangesUpdateDto.Ranges[1].RangeFrom)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The 2nd Range must begin from value greater then 1st Range";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in UpdateApprovalRange: The 2nd Range must begin from value greater then 1st Range");
+                            return BadRequest(serviceResponse);
+                        }
+                        if (approvalRangesUpdateDto.Ranges[arraycount - 1].RangeTo != null)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The Last Range's must not have a limit and must be sent as NULL";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in UpdateApprovalRange: The Last Range's must not have a limit and must be sent as NULL");
+                            return BadRequest(serviceResponse);
+                        }
+                        break;
+                    case 3:
+                        if (approvalRangesUpdateDto.Ranges[0].RangeFrom != 1)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The 1st Range must begin from 1";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in UpdateApprovalRange: The 1st Range must begin from 1");
+                            return BadRequest(serviceResponse);
+                        }
+                        if (approvalRangesUpdateDto.Ranges[0].RangeTo >= approvalRangesUpdateDto.Ranges[1].RangeFrom)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The 2nd Range must begin from value greater then 1st Range";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in UpdateApprovalRange: The 2nd Range must begin from value greater then 1st Range");
+                            return BadRequest(serviceResponse);
+                        }
+                        if (approvalRangesUpdateDto.Ranges[1].RangeTo >= approvalRangesUpdateDto.Ranges[2].RangeFrom)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The 3rd Range must begin from value greater then 2nd Range";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in UpdateApprovalRange: The 3rd Range must begin from value greater then 2nd Range");
+                            return BadRequest(serviceResponse);
+                        }
+                        if (approvalRangesUpdateDto.Ranges[arraycount - 1].RangeTo != null)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The Last Range's must not have a limit and must be sent as NULL";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in UpdateApprovalRange: The Last Range's must not have a limit and must be sent as NULL");
+                            return BadRequest(serviceResponse);
+                        }
+                        break;
+                    default:
+                        if (arraycount < 1 || arraycount > 3)
+                        {
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = "The No. of Ranges per Procurement can't excide more then 3 or be lesser then 1";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                            _logger.LogError("Error occured in UpdateApprovalRange: The No. of Ranges per Procurement can't excide more then 3 or be lesser then 1");
+                            return BadRequest(serviceResponse);
+                        }
+                        break;
                 }
                 var approvalRanges = await _repository.ApprovalRangesRepository.GetApprovalRangesById(approvalRangesUpdateDto.Id);
                 if (approvalRanges == null)
@@ -350,12 +464,19 @@ namespace Tips.Master.Api.Controllers
                 NewApproval = await _repository.ApprovalRangesRepository.CreateNewApprovalRangeVersion(NewApproval);
                 _repository.SaveAsync();
                 var AppforPO = _mapper.Map<ApprovalRangesDto>(NewApproval);
-                var jsons = JsonConvert.SerializeObject(AppforPO);
+                var SendData = new ApprovalRangeUpdateRequest()
+                {
+                    ApprovalRanges = _mapper.Map<ApprovalRangesDto>(NewApproval),
+                    ConvertionRates = await _repository.ConvertionrateRepository.GetAllLatestConvertionrate()
+                };
+
+                var jsons = JsonConvert.SerializeObject(SendData);
                 var data1 = new StringContent(jsons, Encoding.UTF8, "application/json");
                 var client = _clientFactory.CreateClient();
                 var token = HttpContext.Request.Headers["Authorization"].ToString();
-                var request = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["PurchaseService"], "PurchaseOrder/UpdatePurchaseOrdersApprovalRange")){
-                    Content= data1
+                var request = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["PurchaseService"], "PurchaseOrder/UpdatePurchaseOrdersApprovalRange"))
+                {
+                    Content = data1
                 };
                 request.Headers.Add("Authorization", token);
                 var response = await client.SendAsync(request);

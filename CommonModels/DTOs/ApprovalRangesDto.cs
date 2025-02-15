@@ -36,4 +36,9 @@ namespace Entities.DTOs
         public List<RangesUpdateDto> Ranges { get; set; }
         public string? Remarks { get; set; }
     }
+    public class ApprovalRangeUpdateRequest
+    {
+        public ApprovalRangesDto ApprovalRanges { get; set; }
+        public List<Convertionrate> ConvertionRates { get; set; }
+    }
 }

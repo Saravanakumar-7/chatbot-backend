@@ -5653,18 +5653,35 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
         [HttpPut]
-        public async Task<IActionResult> UpdatePurchaseOrdersApprovalRange([FromBody] ApprovalRangesDto approvalRanges)
+        public async Task<IActionResult> UpdatePurchaseOrdersApprovalRange([FromBody] ApprovalRangeUpdateRequest approvalRangesRequest)
         {
             ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
             try
             {
-                var POs = await _repository.GetAllUnApprovedLastestPOsbyProcurementType(approvalRanges.ProcurementName);
+                var POs = await _repository.GetAllUnApprovedLastestPOsbyProcurementType(approvalRangesRequest.ApprovalRanges.ProcurementName);
                 foreach (var po in POs)
                 {
-                    var range = approvalRanges.Ranges.FirstOrDefault(r => po.TotalAmount >= r.RangeFrom && (r.RangeTo != null ? po.TotalAmount <= r.RangeTo: true));
+                    decimal totalamount = po.TotalAmount;
+                    if (po.Currency != "INR")
+                    {
+                        var converion = approvalRangesRequest.ConvertionRates.Where(x => x.UOC == po.Currency).FirstOrDefault();
+                        if (converion == null) {
+                            _logger.LogError($"Error occured in UpdatePurchaseOrdersApprovalRange: The UOM {po.Currency} doesnot have any convertionrate");
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = $"Error occured in UpdatePurchaseOrdersApprovalRange: The UOM {po.Currency} doesnot have any convertionrate";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                            return StatusCode(500, serviceResponse);
+                        }
+                        else
+                        {
+                            totalamount = totalamount * converion.ConvertionRate;
+                        }
+                    }
+                    var range = approvalRangesRequest.ApprovalRanges.Ranges.FirstOrDefault(r => totalamount >= r.RangeFrom && (r.RangeTo != null ? totalamount <= r.RangeTo: true));
                     int count = (range.Approval1 ? 1 : 0) + (range.Approval2 ? 1 : 0) + (range.Approval3 ? 1 : 0) + (range.Approval4 ? 1 : 0);
                     po.ApprovalCount = count;
-                    po.ApprovalRangeId = approvalRanges.Id;
+                    po.ApprovalRangeId = approvalRangesRequest.ApprovalRanges.Id;
                     await _repository.UpdatePurchaseOrder_ForApproval(po);
                 }
                 _repository.SaveAsync();

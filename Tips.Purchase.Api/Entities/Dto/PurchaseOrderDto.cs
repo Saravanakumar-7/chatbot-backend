@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.DTOs;
 using System.ComponentModel;
 using Tips.Purchase.Api.Entities.Dto;
 using Tips.Purchase.Api.Entities.Enums;
@@ -510,4 +511,5 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string ProjectNo { get; set; }
         public decimal ReturnQty { get; set; }
     }    
+    
 }
