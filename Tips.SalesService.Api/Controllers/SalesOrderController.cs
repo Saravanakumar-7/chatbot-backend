@@ -216,7 +216,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var getAllCustomer = await _repository.GetAllSalesOrderCustomerNames(SalesOrders);
-              
+
                 serviceResponse.Data = getAllCustomer;
                 serviceResponse.Message = "Returned all GetAllSalesOrderCustomerNames";
                 serviceResponse.Success = true;
@@ -1002,11 +1002,11 @@ namespace Tips.SalesService.Api.Controllers
                         SalesOrderAdditionalCharges additionalChargesDetails = _mapper.Map<SalesOrderAdditionalCharges>(salesAdditionalChargesDto[i]);
                         if (salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges != null && salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges.Count > 0)
                         {
-                            if (i <  salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges.Count && salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges[i] != null )
+                            if (i < salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges.Count && salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges[i] != null)
                             {
                                 var oldSOAddCharges = salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges[i];
                                 additionalChargesDetails.Id = oldSOAddCharges.Id;
-                                if(additionalChargesDetails.InvoicedValue == 0) additionalChargesDetails.SOAdditionalStatus = SoStatus.Open;
+                                if (additionalChargesDetails.InvoicedValue == 0) additionalChargesDetails.SOAdditionalStatus = SoStatus.Open;
                                 else if (additionalChargesDetails.TotalValue > additionalChargesDetails.InvoicedValue && additionalChargesDetails.InvoicedValue > 0) additionalChargesDetails.SOAdditionalStatus = SoStatus.PartiallyClosed;
                                 else if (additionalChargesDetails.TotalValue == additionalChargesDetails.InvoicedValue) additionalChargesDetails.SOAdditionalStatus = SoStatus.Closed;
 
@@ -1640,15 +1640,15 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var salesOrderDetails = await _repository.GetSalesOrderDetailByCusIdandTypeOfSol_SP(customerId, typeOfSolution);
-               
-                    _logger.LogInfo($"Returned SalesOrderDetail with customerId: {customerId} and typeOfSolution: {typeOfSolution}");
-                    var result = _mapper.Map<List<SalesOrderDetailsTOSDto>>(salesOrderDetails);
-                    serviceResponse.Data = result;
-                    serviceResponse.Message = "Successfully Returned SalesOrderDetail";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
-                
+
+                _logger.LogInfo($"Returned SalesOrderDetail with customerId: {customerId} and typeOfSolution: {typeOfSolution}");
+                var result = _mapper.Map<List<SalesOrderDetailsTOSDto>>(salesOrderDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Successfully Returned SalesOrderDetail";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(result);
+
             }
             catch (Exception ex)
             {
@@ -4483,7 +4483,7 @@ namespace Tips.SalesService.Api.Controllers
                     //var projectSODetails = await _repository.GetProjectDetailsBySAItemNo(fgItemNo.Key);
                     //foreach (var project in projectSODetails)
                     //{
-                       //project.SalesOrderQtyDetails = await _repository.GetSASalesOrderQtyDetailsByItemNo(fgItemNo.Key, project.ProjectNumber, BomQty);
+                    //project.SalesOrderQtyDetails = await _repository.GetSASalesOrderQtyDetailsByItemNo(fgItemNo.Key, project.ProjectNumber, BomQty);
                     //    // itemDetailsDto.ProjectSODetails = projectSODetails;
                     //    projectSOSADetailDtos.Add(project);
                     //}
@@ -4504,7 +4504,7 @@ namespace Tips.SalesService.Api.Controllers
                                      SalesOrderQty = so.SalesOrderQty,
                                      OpenSalesOrderQty = so.OpenSalesOrderQty,
                                      RequiredQty = so.RequiredQty,
-                                     Description = so.Description,  
+                                     Description = so.Description,
                                      FgItemNumber = so.FgItemNumber,
                                      ProjectNumber = so.ProjectNumber
                                  })
@@ -5823,7 +5823,7 @@ namespace Tips.SalesService.Api.Controllers
                     body = System.IO.File.ReadAllText(htmlFilePath);
                     body = body.Replace("{{Customer Name}}", salesorderDetails.CustomerName);
                 }
-                string base64 ;
+                string base64;
                 var builder = new BodyBuilder();
                 builder.HtmlBody = body;
                 using (HttpClient client1 = new HttpClient())
@@ -5839,6 +5839,20 @@ namespace Tips.SalesService.Api.Controllers
                     builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
                     base64 = Convert.ToBase64String(fileBytes);
                 }
+                //Guid guids = Guid.NewGuid();
+                //byte[] fileContent = Convert.FromBase64String(base64);
+                //string fileName = guids.ToString() + "_" + FileName + ".pdf";
+                //string FileExt = Path.GetExtension(fileName).ToUpper();
+                //string filePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "Temp_Email", fileName);
+                //using (MemoryStream ms = new MemoryStream(fileContent))
+                //{
+                //    ms.Position = 0;
+                //    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                //    {
+                //        ms.WriteTo(fileStream);
+                //    }
+                //}
+
                 email.Body = builder.ToMessageBody();
 
                 using var smtp = new MailKit.Net.Smtp.SmtpClient();
