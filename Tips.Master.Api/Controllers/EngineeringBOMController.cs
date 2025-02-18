@@ -209,6 +209,44 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> GetEnggBomRevSPReportWithParam([FromBody] EnggBomRevSPReportDto enggBomRevSPReportDto)
+        {
+            ServiceResponse<IEnumerable<EnggBomSPReport>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomSPReport>>();
+            try
+            {
+                var products = await _enggBomRepository.GetEnggBomRevSPReportWithParam(enggBomRevSPReportDto.ItemNumber , enggBomRevSPReportDto.RevisionNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"EnggBomRevSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"EnggBomRevSPReport hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned EnggBomRevSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetEnggBomRevSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> GetEngganditsPP([FromQuery] string FGItemNumber, [FromQuery] decimal FGRevno, [FromBody] List<RfqSourcingPPdetailsforEngg> rfqSourcingPPdetails)
         {
             ServiceResponse<FGFinalLandedandMoqPrice> serviceResponse = new ServiceResponse<FGFinalLandedandMoqPrice>();
