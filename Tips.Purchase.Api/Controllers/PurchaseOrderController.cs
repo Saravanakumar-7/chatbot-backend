@@ -34,6 +34,7 @@ using Tips.Purchase.Api.Entities.Dto;
 using Tips.Purchase.Api.Entities.DTOs;
 using Tips.Purchase.Api.Entities.Enums;
 using Tips.Purchase.Api.Repository;
+using static NPOI.HSSF.Util.HSSFColor;
 using EmailIDsDto = Tips.Purchase.Api.Entities.Dto.EmailIDsDto;
 using EmailTemplateDto = Tips.Purchase.Api.Entities.DTOs.EmailTemplateDto;
 //using static Org.BouncyCastle.Math.EC.ECCurve;
@@ -1742,23 +1743,27 @@ namespace Tips.Purchase.Api.Controllers
                     }
                 }
 
-
-                foreach (var poItems in poItemDtoList)
+                if (poItemDtoList != null)
                 {
-                    foreach (var prDetails in poItems.PrDetails.Where(x=>x.ToClosePR==true).ToList())
+                    foreach (var poItems in poItemDtoList)
                     {
-                        var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, poItems.ItemNumber);
-                        if (prItemDetail != null)
-                        {
-                            prItemDetail.PrStatus = PrStatus.Closed;
-                            await _purchaseRequisitionItemRepository.UpdatePrItem(prItemDetail);
-                            _purchaseRequisitionItemRepository.SaveAsync();
-                        }
+                        if (poItems.PrDetails != null) {
+                            foreach (var prDetails in poItems.PrDetails.Where(x => x.ToClosePR == true).ToList())
+                            {
+                                var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, poItems.ItemNumber);
+                                if (prItemDetail != null)
+                                {
+                                    prItemDetail.PrStatus = PrStatus.Closed;
+                                    await _purchaseRequisitionItemRepository.UpdatePrItem(prItemDetail);
+                                    _purchaseRequisitionItemRepository.SaveAsync();
+                                }
 
-                        var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
-                        var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
-                        prDetail.PrStatus = prItemClosedStatusCount;
-                        await _purchaseRequisitionRepository.UpdatePurchaseRequisition_ForApproval(prDetail);
+                                var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
+                                var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
+                                prDetail.PrStatus = prItemClosedStatusCount;
+                                await _purchaseRequisitionRepository.UpdatePurchaseRequisition_ForApproval(prDetail);
+                            } 
+                        }
                     }
                 }
 
@@ -3662,7 +3667,7 @@ namespace Tips.Purchase.Api.Controllers
             try
             {
                 string serverKey = GetServerKey();
-                var purchaseOrderDetailByPONumber = await _repository.GetPurchaseOrderByPONumber(PONumber);
+                var purchaseOrderDetailByPONumber = await _repository.GetAllPurchaseOrderbyPurchaseOrderNumber(PONumber);
                 if (purchaseOrderDetailByPONumber is null)
                 {
                     serviceResponse.Data = null;
@@ -3672,11 +3677,13 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError($"PurchaseOrderApprovalI with string: {PONumber}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
-                purchaseOrderDetailByPONumber.POApprovalI = true;
-                purchaseOrderDetailByPONumber.POApprovedIBy = _createdBy;
-                purchaseOrderDetailByPONumber.POApprovedIDate = DateTime.Now;
-                string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailByPONumber);
-                _logger.LogInfo(result);
+
+                purchaseOrderDetailByPONumber[0].POApprovalI = true;
+                purchaseOrderDetailByPONumber[0].POApprovedIBy = _createdBy;
+                purchaseOrderDetailByPONumber[0].POApprovedIDate = DateTime.Now;
+                purchaseOrderDetailByPONumber.ForEach(x=>x.InApproval=true);
+                foreach(var po in purchaseOrderDetailByPONumber) await _repository.UpdatePurchaseOrder_ForApproval(po);
+                _logger.LogInfo($"ActivatePurchaseOrderApprovalI for PO: {PONumber}");
                 _repository.SaveAsync();
                 if (serverKey == "avision")
                 {
@@ -3701,17 +3708,17 @@ namespace Tips.Purchase.Api.Controllers
                     var email = new MimeMessage();
                     email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
                     //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
-                    var podate = purchaseOrderDetailByPONumber.PODate.ToString().Split(" ");
+                    var podate = purchaseOrderDetailByPONumber[0].PODate.ToString().Split(" ");
                     email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
 
                     email.Subject = emaildetails.data.subject;
                     string body = emaildetails.data.template;
-                    body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber.PONumber);
-                    body = body.Replace("{{PO Revision No}}", purchaseOrderDetailByPONumber.RevisionNumber.ToString());
+                    body = body.Replace("{{PO Number}}", purchaseOrderDetailByPONumber[0].PONumber);
+                    body = body.Replace("{{PO Revision No}}", purchaseOrderDetailByPONumber[0].RevisionNumber.ToString());
                     body = body.Replace("{{PO Date}}", podate[0]);
-                    body = body.Replace("{{PO Value}}", purchaseOrderDetailByPONumber.TotalAmount.ToString());
-                    body = body.Replace("{{Vendor Name}}", purchaseOrderDetailByPONumber.VendorName.ToString());
-                    body = body.Replace("{{Approval1}}", purchaseOrderDetailByPONumber.POApprovedIBy);
+                    body = body.Replace("{{PO Value}}", purchaseOrderDetailByPONumber[0].TotalAmount.ToString());
+                    body = body.Replace("{{Vendor Name}}", purchaseOrderDetailByPONumber[0].VendorName.ToString());
+                    body = body.Replace("{{Approval1}}", purchaseOrderDetailByPONumber[0].POApprovedIBy);
                     body = body.Replace("{{Approval2}}", "Awaiting");
                     body = body.Replace("{{Approval3}}", "Awaiting");
                     body = body.Replace("{{Approval4}}", "Awaiting");
@@ -3720,7 +3727,7 @@ namespace Tips.Purchase.Api.Controllers
                     List<string>? tempProj = new List<string>();
                     List<string>? tempPRno = new List<string>();
                     string? PRNo = null;
-                    foreach (var item in purchaseOrderDetailByPONumber.POItems)
+                    foreach (var item in purchaseOrderDetailByPONumber[0].POItems)
                     {
 
                         if (item.POAddprojects.Count > 0)
@@ -3777,7 +3784,7 @@ namespace Tips.Purchase.Api.Controllers
             try
             {
                 string serverKey = GetServerKey();
-                var purchaseOrderDetailByPONumber = await _repository.GetPurchaseOrderByPONumber(PONumber);
+                var purchaseOrderDetailByPONumber = await _repository.GetLastestPurchaseOrderByPONumber(PONumber);
                 if (purchaseOrderDetailByPONumber is null)
                 {
                     serviceResponse.Data = null;
@@ -3966,7 +3973,7 @@ namespace Tips.Purchase.Api.Controllers
             try
             {
                 string serverKey = GetServerKey();
-                var purchaseOrderDetailByPONumber = await _repository.GetPurchaseOrderByPONumber(PONumber);
+                var purchaseOrderDetailByPONumber = await _repository.GetLastestPurchaseOrderByPONumber(PONumber);
                 if (purchaseOrderDetailByPONumber is null)
                 {
                     serviceResponse.Data = null;
@@ -4080,7 +4087,7 @@ namespace Tips.Purchase.Api.Controllers
             try
             {
                 string serverKey = GetServerKey();
-                var purchaseOrderDetailByPONumber = await _repository.GetPurchaseOrderByPONumber(PONumber);
+                var purchaseOrderDetailByPONumber = await _repository.GetLastestPurchaseOrderByPONumber(PONumber);
                 if (purchaseOrderDetailByPONumber is null)
                 {
                     serviceResponse.Data = null;
@@ -5722,6 +5729,56 @@ namespace Tips.Purchase.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside UpdatePurchaseOrderTallyStatus action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPut]
+        public async Task<IActionResult> UpdatePurchaseOrdersApprovalRange([FromBody] ApprovalRangeUpdateRequest approvalRangesRequest)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                var POs = await _repository.GetAllUnApprovedLastestPOsbyProcurementType(approvalRangesRequest.ApprovalRanges.ProcurementName);
+                foreach (var po in POs)
+                {
+                    decimal totalamount = po.TotalAmount;
+                    if (po.Currency != "INR")
+                    {
+                        var converion = approvalRangesRequest.ConvertionRates.Where(x => x.UOC == po.Currency).FirstOrDefault();
+                        if (converion == null) {
+                            _logger.LogError($"Error occured in UpdatePurchaseOrdersApprovalRange: The UOM {po.Currency} doesnot have any convertionrate");
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = $"Error occured in UpdatePurchaseOrdersApprovalRange: The UOM {po.Currency} doesnot have any convertionrate";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                            return StatusCode(500, serviceResponse);
+                        }
+                        else
+                        {
+                            totalamount = totalamount * converion.ConvertionRate;
+                        }
+                    }
+                    var range = approvalRangesRequest.ApprovalRanges.Ranges.FirstOrDefault(r => totalamount >= r.RangeFrom && (r.RangeTo != null ? totalamount <= r.RangeTo: true));
+                    int count = (range.Approval1 ? 1 : 0) + (range.Approval2 ? 1 : 0) + (range.Approval3 ? 1 : 0) + (range.Approval4 ? 1 : 0);
+                    po.ApprovalCount = count;
+                    po.ApprovalRangeId = approvalRangesRequest.ApprovalRanges.Id;
+                    await _repository.UpdatePurchaseOrder_ForApproval(po);
+                }
+                _repository.SaveAsync();
+                _logger.LogInfo($"Successfully Updated UpdatePurchaseOrdersApprovalRange API");
+                serviceResponse.Data = "Successfully";
+                serviceResponse.Message = $"Successfully Updated UpdatePurchaseOrdersApprovalRange API";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return StatusCode(200, serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in UpdatePurchaseOrdersApprovalRange: {ex.Message} \n {ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error occured in UpdatePurchaseOrdersApprovalRange: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
