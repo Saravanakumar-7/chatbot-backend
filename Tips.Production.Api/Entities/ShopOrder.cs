@@ -50,7 +50,7 @@ namespace Tips.Production.Api.Entities
         public DateTime? ShortClosedOn { get; set; }
         public bool ShopOrderApproval { get; set; } = false;
         public string? ShopOrderApprovedBy { get; set; }
-        public DateTime ShopOrderApprovedDate { get; set; }
+        public DateTime? ShopOrderApprovedDate { get; set; }
         public string? Remarks { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
