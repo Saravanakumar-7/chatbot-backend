@@ -2539,7 +2539,7 @@ namespace Tips.SalesService.Api.Controllers
         //            }
         //        }
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetSalesOrderSPReportWithParam([FromBody] SalesOrderSPResportDTO salesOrderSPResport)
+        public async Task<IActionResult> GetSalesOrderSPReportWithParam([FromBody] SalesOrderSPReportDTO salesOrderSPResport)
 
         {
             ServiceResponse<IEnumerable<SalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPReport>>();
@@ -2744,7 +2744,46 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetSOSummarySPReportWithParam([FromBody] SOSummarySPResportDTO soSummarySPResportDTO)
+        public async Task<IActionResult> GetSalesorderLeadWiseDataSPReportWithParam([FromBody] SOLeadWiseDataSPReportDTO soLeadWiseDataSPReportDTO)
+
+        {
+            ServiceResponse<IEnumerable<SOLeadWiseDataSPReport>> serviceResponse = new ServiceResponse<IEnumerable<SOLeadWiseDataSPReport>>();
+            try
+            {
+                var products = await _repository.GetSalesorderLeadWiseDataSPReportWithParam(soLeadWiseDataSPReportDTO.SOFirstSalesOrderNumber, soLeadWiseDataSPReportDTO.CustomerId, soLeadWiseDataSPReportDTO.CustomerName);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrderLeadWiseDataSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesOrderLeadWiseDataSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned SalesOrderLeadWiseDataSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetSalesOrderLeadWiseDataSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetSOSummarySPReportWithParam([FromBody] SOSummarySPReportDTO soSummarySPResportDTO)
 
         {
             ServiceResponse<IEnumerable<SOSummarySPReport>> serviceResponse = new ServiceResponse<IEnumerable<SOSummarySPReport>>();
@@ -2993,7 +3032,7 @@ namespace Tips.SalesService.Api.Controllers
 
 
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetRfqSalesOrderSPReportWithParam([FromBody] RfqSalesOrderSPResportDTO rfqSalesOrderSPResportDTO)
+        public async Task<IActionResult> GetRfqSalesOrderSPReportWithParam([FromBody] RfqSalesOrderSPReportDTO rfqSalesOrderSPResportDTO)
 
         {
             ServiceResponse<IEnumerable<RfqSalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderSPReport>>();
@@ -3072,7 +3111,7 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetRfqSalesOrderRoomWiseSPReportWithParam([FromBody] SalesOrderSPResportDTO rfqSalesOrderRoomWiseSPResportDTO)
+        public async Task<IActionResult> GetRfqSalesOrderRoomWiseSPReportWithParam([FromBody] SalesOrderSPReportDTO rfqSalesOrderRoomWiseSPResportDTO)
 
         {
             ServiceResponse<IEnumerable<RfqSalesOrderRoomWiseSPReport>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderRoomWiseSPReport>>();
@@ -3112,7 +3151,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetRfqSalesOrderSPReportWithParamForTrans([FromBody] RfqSalesOrderSPResportDTOForTrans rfqSalesOrderSPResportDTO)
+        public async Task<IActionResult> GetRfqSalesOrderSPReportWithParamForTrans([FromBody] RfqSalesOrderSPReportDTOForTrans rfqSalesOrderSPResportDTO)
 
         {
             ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>>();
@@ -3153,7 +3192,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetRfqSalesOrderSPReportWithParamForAvision([FromBody] RfqSalesOrderSPResportDTO rfqSalesOrderSPResportDTO)
+        public async Task<IActionResult> GetRfqSalesOrderSPReportWithParamForAvision([FromBody] RfqSalesOrderSPReportDTO rfqSalesOrderSPResportDTO)
 
         {
             ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<RfqSalesOrderSPReportForTrans>>();
@@ -3267,7 +3306,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetForecastSalesOrderSPReportWithParam([FromBody] ForecastSalesOrderSPResportDTO forecastSalesOrderSPResportDTO)
+        public async Task<IActionResult> GetForecastSalesOrderSPReportWithParam([FromBody] ForecastSalesOrderSPReportDTO forecastSalesOrderSPResportDTO)
 
         {
             ServiceResponse<IEnumerable<ForecastSalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<ForecastSalesOrderSPReport>>();
@@ -3308,7 +3347,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetForecastSalesOrderSPReportWithParamForTrans([FromBody] ForecastSalesOrderSPResportDTOForTrans forecastSalesOrderSPResportDTO)
+        public async Task<IActionResult> GetForecastSalesOrderSPReportWithParamForTrans([FromBody] ForecastSalesOrderSPReportDTOForTrans forecastSalesOrderSPResportDTO)
 
         {
             ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>>();
@@ -3349,7 +3388,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetForecastSalesOrderSPReportWithParamForAvision([FromBody] ForecastSalesOrderSPResportDTO forecastSalesOrderSPResportDTO)
+        public async Task<IActionResult> GetForecastSalesOrderSPReportWithParamForAvision([FromBody] ForecastSalesOrderSPReportDTO forecastSalesOrderSPResportDTO)
 
         {
             ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<ForecastSalesOrderSPReportForTrans>>();
@@ -3462,7 +3501,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ExportSalesOrderSPReportToExcel([FromBody] SalesOrderSPResportDTO salesOrderSPReport)
+        public async Task<IActionResult> ExportSalesOrderSPReportToExcel([FromBody] SalesOrderSPReportDTO salesOrderSPReport)
         {
             try
             {
@@ -3557,7 +3596,7 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> ExportSalesOrderRFQSPReportToExcel([FromBody] RfqSalesOrderSPResportDTO salesOrderSPReport)
+        public async Task<IActionResult> ExportSalesOrderRFQSPReportToExcel([FromBody] RfqSalesOrderSPReportDTO salesOrderSPReport)
         {
             try
             {
@@ -3674,7 +3713,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ExportSalesOrderRFQRoomWiseSPReportToExcel([FromBody] SalesOrderSPResportDTO rfqRoomWiseSPReport)
+        public async Task<IActionResult> ExportSalesOrderRFQRoomWiseSPReportToExcel([FromBody] SalesOrderSPReportDTO rfqRoomWiseSPReport)
         {
             try
             {
@@ -3782,7 +3821,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ExportSalesOrderRFQSPReportToExcelForTrans([FromBody] RfqSalesOrderSPResportDTOForTrans salesOrderSPReport)
+        public async Task<IActionResult> ExportSalesOrderRFQSPReportToExcelForTrans([FromBody] RfqSalesOrderSPReportDTOForTrans salesOrderSPReport)
         {
             try
             {
@@ -3888,7 +3927,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ExportSalesOrderRFQSPReportToExcelForAvision([FromBody] RfqSalesOrderSPResportDTO salesOrderSPReport)
+        public async Task<IActionResult> ExportSalesOrderRFQSPReportToExcelForAvision([FromBody] RfqSalesOrderSPReportDTO salesOrderSPReport)
         {
             try
             {
@@ -3994,7 +4033,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ExportSalesOrderForecastSPReportToExcel([FromBody] ForecastSalesOrderSPResportDTO salesOrderSPReport)
+        public async Task<IActionResult> ExportSalesOrderForecastSPReportToExcel([FromBody] ForecastSalesOrderSPReportDTO salesOrderSPReport)
         {
             try
             {
@@ -4112,7 +4151,7 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ExportSalesOrderForecastSPReportToExcelForTrans([FromBody] ForecastSalesOrderSPResportDTOForTrans salesOrderSPReport)
+        public async Task<IActionResult> ExportSalesOrderForecastSPReportToExcelForTrans([FromBody] ForecastSalesOrderSPReportDTOForTrans salesOrderSPReport)
         {
             try
             {
@@ -4218,7 +4257,7 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> ExportSalesOrderForecastSPReportToExcelForAvision([FromBody] ForecastSalesOrderSPResportDTO salesOrderSPReport)
+        public async Task<IActionResult> ExportSalesOrderForecastSPReportToExcelForAvision([FromBody] ForecastSalesOrderSPReportDTO salesOrderSPReport)
         {
             try
             {

@@ -231,6 +231,19 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
+
+
+        public async Task<IEnumerable<SOLeadWiseDataSPReport>> GetSalesorderLeadWiseDataSPReportWithParam(string SOFirstSalesOrderNumber, string CustomerId, string CustomerName)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SOLeadWiseDataSPReport>()
+            .FromSqlInterpolated($"CALL salesorderleadwisedata_with_parameter({SOFirstSalesOrderNumber},{CustomerId},{CustomerName})")
+            .ToList();
+
+            return result;
+
+        }
+
         public async Task<IEnumerable<SOSummarySPReport>> GetSOSummarySPReportWithParam(string CustomerId, string SalesOrderNumber, string KPN)
         {
             var result = _tipsSalesServiceDbContext
