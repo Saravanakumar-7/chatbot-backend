@@ -207,7 +207,7 @@ namespace Entities.DTOs
     public class EnggBomRevSPReportDto
     {
         public string? ItemNumber { get; set; }
-        public decimal? RevisionNumber { get; set; }
+        public decimal RevisionNumber { get; set; }
     }
 
     public class EnggBomDetailsDto
