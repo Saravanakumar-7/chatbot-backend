@@ -1451,13 +1451,13 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetApprovedShopOrderNumberList()
+        public async Task<IActionResult> GetAllPendingApprovalShopOrderNumberList()
         {
             ServiceResponse<IEnumerable<ListOfShopOrderDto>> serviceResponse = new ServiceResponse<IEnumerable<ListOfShopOrderDto>>();
 
             try
             {
-                var shopOrderByShopOrderNo = await _shopOrderRepository.GetApprovedShopOrderNumberList();
+                var shopOrderByShopOrderNo = await _shopOrderRepository.GetAllPendingApprovalShopOrderNumberList();
                 if (shopOrderByShopOrderNo == null)
                 {
                     _logger.LogError($"ShopOrder hasn't been found in db.");
@@ -1472,7 +1472,7 @@ namespace Tips.Production.Api.Controllers
                     _logger.LogInfo($"Returned ShopOrder");
                     var result = _mapper.Map<IEnumerable<ListOfShopOrderDto>>(shopOrderByShopOrderNo);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "ShopOrderNumber List Successfully Returned";
+                    serviceResponse.Message = "Pending ShopOrderNumber List Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -1480,7 +1480,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetApprovedShopOrderNumberList action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetAllPendingApprovalShopOrderNumberList action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
@@ -2158,7 +2158,7 @@ namespace Tips.Production.Api.Controllers
                 {
                     await CreateMaterialIssueDetails(shopOrderDetail);
                 }
-                serviceResponse.Message = "ShopOrderApproval Activated Successfully";
+                serviceResponse.Message = "ShopOrderApproval Done Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

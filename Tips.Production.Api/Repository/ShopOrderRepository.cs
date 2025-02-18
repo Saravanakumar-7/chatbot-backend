@@ -508,10 +508,10 @@ namespace Tips.Production.Api.Repository
 
         }
 
-        public async Task<IEnumerable<ListOfShopOrderDto>> GetApprovedShopOrderNumberList()
+        public async Task<IEnumerable<ListOfShopOrderDto>> GetAllPendingApprovalShopOrderNumberList()
         {
             IEnumerable<ListOfShopOrderDto> shopOrderByItemType = await _tipsProductionDbContext.ShopOrders
-                           .Where(x =>  x.ShopOrderApproval == true && x.Status != OrderStatus.ShortClose)
+                           .Where(x =>  x.ShopOrderApproval != true && x.Status != OrderStatus.ShortClose)
                            .Select(x => new ListOfShopOrderDto()
                            {
                                Id = x.Id,
