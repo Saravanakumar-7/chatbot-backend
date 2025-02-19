@@ -2013,6 +2013,45 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetPurchaseInventorySPReportWithParam([FromBody] PurchaseInventorySPReportDto purchaseInventorySPReportDto)
+        {
+            ServiceResponse<IEnumerable<PurchaseInventorySPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseInventorySPReport>>();
+            try
+            {
+                var products = await _repository.GetPurchaseInventorySPReportWithParam(purchaseInventorySPReportDto.InvoiceNumber, purchaseInventorySPReportDto.GRINNumber,
+                                                                            purchaseInventorySPReportDto.KPN, purchaseInventorySPReportDto.VendorName);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseInventory hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseInventory hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseInventory Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseInventorySPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> GetGrinSPReport([FromQuery] PagingParameter pagingParameter)
@@ -2180,6 +2219,43 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetPurchaseInventorySPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<PurchaseInventorySPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseInventorySPReport>>();
+            try
+            {
+                var products = await _repository.GetPurchaseInventorySPReportWithDate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PurchaseInventory hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PurchaseInventory hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PurchaseInventory Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetPurchaseInventorySPReportWithDate action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

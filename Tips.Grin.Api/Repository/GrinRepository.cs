@@ -130,6 +130,17 @@ namespace Tips.Grin.Api.Repository
 
             return PagedList<GrinSPReportForTrans>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
+
+        public async Task<IEnumerable<PurchaseInventorySPReport>> GetPurchaseInventorySPReportWithParam(string? InvoiceNumber, string? GRINNumber, string? KPN, string? VendorName)
+        {
+            var result = _tipsGrinDbContext
+            .Set<PurchaseInventorySPReport>()
+            .FromSqlInterpolated($"CALL Purchase_With_Inventory({InvoiceNumber},{GRINNumber},{KPN},{VendorName})")
+            .ToList();
+
+            return result;
+        }
+
         public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string? GrinNumber, string? VendorName, string? PONumber,
                                                                                                     string? KPN, string? MPN, string? Warehouse, string? Location)
         {
@@ -167,6 +178,16 @@ namespace Tips.Grin.Api.Repository
 
             return results;
         }
+
+        public async Task<IEnumerable<PurchaseInventorySPReport>> GetPurchaseInventorySPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<PurchaseInventorySPReport>()
+                      .FromSqlInterpolated($"CALL Purchase_With_Inventory_with_Date({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+
         public async Task<string> GenerateGrinNumberForAvision()
         {
             using var transaction = await _tipsGrinDbContext.Database.BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted);

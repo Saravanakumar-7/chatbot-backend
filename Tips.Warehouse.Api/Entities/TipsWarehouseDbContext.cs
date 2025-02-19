@@ -103,6 +103,7 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<InventoryBySumOfFilteringDatesSPReport>().HasNoKey();
             modelBuilder.Entity<InventoryDashboardSPReport>().HasNoKey();
             modelBuilder.Entity<InventoryWIPSPReport>().HasNoKey();
+            modelBuilder.Entity<SalesInvoiceSPReport>().HasNoKey();
             
             base.OnModelCreating(modelBuilder);
         }

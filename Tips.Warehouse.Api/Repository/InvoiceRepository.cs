@@ -153,7 +153,14 @@ namespace Tips.Warehouse.Api.Repository
 
             return results;
         }
+        public async Task<IEnumerable<SalesInvoiceSPReport>> SalesInvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<SalesInvoiceSPReport>()
+                         .FromSqlInterpolated($"CALL Sales_Invoice_WithDate({FromDate},{ToDate})")
+                         .ToList();
 
+            return results;
+        }
         public async Task<PagedList<InvoiceSPReport>> InvoiceSPReport(PagingParameter pagingParameter)
         {
             var results = _tipsWarehouseDbContext.Set<InvoiceSPReport>()
@@ -171,6 +178,17 @@ namespace Tips.Warehouse.Api.Repository
             return result;
 
         }
+
+        public async Task<IEnumerable<SalesInvoiceSPReport>> SalesInvoiceSPReportWithParameter(string? InvoiceNumber, string? CustomerId, string? CustomerName, string? FGItemNumber)
+        {
+            var result = _tipsWarehouseDbContext.Set<SalesInvoiceSPReport>()
+                            .FromSqlInterpolated($"CALL Sales_Invoice_Withparameter({InvoiceNumber},{CustomerId},{CustomerName},{FGItemNumber})")
+                            .ToList();
+
+            return result;
+
+        }
+
         public async Task<IEnumerable<InvoiceSPReportForTrans>> InvoiceSPReportWithParameterForTrans(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName,
                                                                                                         string? SalesOrderNumber, string? Location,
                                                                                                             string? Warehouse, string? KPN, string? MPN, string? IssuedTo, string? ProjectNumber)

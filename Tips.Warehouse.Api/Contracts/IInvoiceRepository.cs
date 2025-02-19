@@ -25,6 +25,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<PagedList<InvoiceSPReport>> InvoiceSPReport(PagingParameter pagingParameter);
         Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<InvoiceSPReportForTrans>> InvoiceSPReportDateForTrans(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<SalesInvoiceSPReport>> SalesInvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<SalesInvoiceSPReport>> SalesInvoiceSPReportWithParameter(string? InvoiceNumber, string? CustomerId, string? CustomerName, string? FGItemNumber);
         Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportWithParameter(string InvoiceNumber, string DONumber, string LeadId, string CustomerName,
                                                    string CustomerAliasName, string SalesOrderNumber, string Location, string Warehouse, string KPN, string MPN, string IssuedTo);
         Task<IEnumerable<InvoiceSPReportForTrans>> InvoiceSPReportWithParameterForTrans(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName,
