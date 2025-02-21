@@ -35,6 +35,7 @@ namespace Tips.Grin.Api.Contracts
         Task<int?> GetGrinIqcStatusCount(string grinNo);
         Task<int?> GetGrinbinningStatusCount(string grinNo);
         Task<string> GenerateGrinNumberForAvision();
+        Task<IEnumerable<PurchaseInventorySPReport>> GetPurchaseInventorySPReportWithParam(string? InvoiceNumber, string? GRINNumber, string? KPN, string? VendorName);
         Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string? GrinNumber, string? VendorName, string? PONumber, string? KPN, string? MPN, 
                                                                                                                             string? Warehouse, string? Location);
         Task<IEnumerable<GrinSPReportForTrans>> GetGrinSPReportWithParamForTrans(string? GrinNumber, string? VendorName, string? PONumber,
@@ -44,6 +45,7 @@ namespace Tips.Grin.Api.Contracts
         Task<PagedList<GrinSPReportForTrans>> GetGrinSPReportForTrans(PagingParameter pagingParameter);
         Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<GrinSPReportForTrans>> GetGrinSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<PurchaseInventorySPReport>> GetPurchaseInventorySPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<List<GrinComsumpReportDto>> GetGrinComsumptionDetialsByPartNos(List<string> PartNoListString);
     }
 }
