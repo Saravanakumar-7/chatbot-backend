@@ -40,7 +40,6 @@ namespace Accounts
             {
                 return (LoginResult.UserNotFound, null, 0,null);
             }
-
             if (userDetail.Password != loginDto.Password)
             {
                 return (LoginResult.InvalidPassword, null, 0, null);

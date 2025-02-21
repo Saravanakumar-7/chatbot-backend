@@ -5758,6 +5758,7 @@ namespace Tips.Purchase.Api.Controllers
                         else
                         {
                             totalamount = totalamount * converion.ConvertionRate;
+                            po.ConvertionRateId = converion.Id;
                         }
                     }
                     var range = approvalRangesRequest.ApprovalRanges.Ranges.FirstOrDefault(r => totalamount >= r.RangeFrom && (r.RangeTo != null ? totalamount <= r.RangeTo: true));

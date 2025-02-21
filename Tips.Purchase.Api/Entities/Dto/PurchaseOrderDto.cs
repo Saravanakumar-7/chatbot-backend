@@ -117,6 +117,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public decimal? PoAdditionalChargesTotal { get; set; }
         public int? ApprovalCount { get; set; }
         public int ApprovalRangeId { get; set; }
+        public int? ConvertionRateId { get; set; }
         public List<PoItemsPostDto>? POItems { get; set; }
         public List<PoIncoTermPostDto>? POIncoTerms { get; set; }
         public List<PurchaseOrderAdditionalChargesPostDto>? PurchaseOrderAdditionalCharges { get; set; }
@@ -162,6 +163,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         //public string? LastModifiedBy { get; set; }
         //public DateTime? LastModifiedOn { get; set; }
         public int ApprovalRangeId { get; set; }
+        public int? ConvertionRateId { get; set; }
         public List<PoItemsUpdateDto>? POItems { get; set; }
         public List<PoIncoTermUpdateDto>? POIncoTerms { get; set; }
         public List<PurchaseOrderAdditionalChargesUpdateDto>? PurchaseOrderAdditionalCharges { get; set; }
