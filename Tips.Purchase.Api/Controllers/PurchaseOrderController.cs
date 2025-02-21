@@ -1660,7 +1660,14 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError("Invalid PurchaseOrder object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-
+                if (purchaseOrderPostDto.Currency!="INR" && purchaseOrderPostDto.ConvertionRateId == null)
+                {
+                    serviceResponse.Message = $"Error Occured in CreatePurchaseOrder: The ConvertionRateId is required for the UOC:{purchaseOrderPostDto.Currency}";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Error Occured in CreatePurchaseOrder: The ConvertionRateId is required for the UOC:{purchaseOrderPostDto.Currency}");
+                    return BadRequest(serviceResponse);
+                }
                 var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderPostDto);
                 var AmountInWords = GetTotalValueInWords(purchaseOrderDetails.TotalAmount);
                 purchaseOrderDetails.AmountInWords = AmountInWords;
@@ -2563,7 +2570,14 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError("Invalid PurchaseOrder object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-
+                if (purchaseOrderUpdateDto.Currency != "INR" && purchaseOrderUpdateDto.ConvertionRateId == null)
+                {
+                    serviceResponse.Message = $"Error Occured in CreatePurchaseOrder: The ConvertionRateId is required for the UOC:{purchaseOrderUpdateDto.Currency}";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Error Occured in CreatePurchaseOrder: The ConvertionRateId is required for the UOC:{purchaseOrderUpdateDto.Currency}");
+                    return BadRequest(serviceResponse);
+                }
                 var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderUpdateDto);
                 var AmountInWords = GetTotalValueInWords(purchaseOrderDetails.TotalAmount);
                 purchaseOrderDetails.AmountInWords = AmountInWords;
