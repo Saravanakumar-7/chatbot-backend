@@ -11,8 +11,10 @@ namespace Entities
     {
         public string? PartType { get; set; }
         public string? MaterialGroup { get; set; }
+        public int? ItemType { get; set; }
         public string? ItemNumber { get; set; }
         public string? ItemDescription { get; set; }
+        public decimal? RevisionNumber { get; set; }
         public string? manufacturepartnumber1 { get; set; }
         public string? manufacturepartnumber2 { get; set; }
         public string? manufacturepartnumber3 { get; set; }
