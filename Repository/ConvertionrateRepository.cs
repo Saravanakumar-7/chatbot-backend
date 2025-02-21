@@ -20,7 +20,6 @@ namespace Repository
         {
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
-
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
@@ -36,29 +35,6 @@ namespace Repository
             return result.Id;
         }
 
-        public async Task<string> DeleteConvertionrate(Convertionrate convertionrate)
-        {
-            Delete(convertionrate);
-            string result = $"Convertionrate details of {convertionrate.Id} is deleted successfully!";
-            return result;
-        }
-
-        public async Task<IEnumerable<Convertionrate>> GetAllActiveConvertionrate(SearchParames searchParams)
-        {
-            var convertionrateDetails = FindByCondition(x => x.ActiveStatus == true)
-           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.UOC.Contains(searchParams.SearchValue) ||
-         inv.Unit.Contains(searchParams.SearchValue))));
-            return convertionrateDetails;
-        }
-
-        public async Task<IEnumerable<Convertionrate>> GetAllConvertionrate(SearchParames searchParams)
-        {
-            var convertionrateDetails = FindAll().OrderByDescending(x => x.Id)
-            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.UOC.Contains(searchParams.SearchValue) ||
-          inv.Unit.Contains(searchParams.SearchValue))));
-            return convertionrateDetails;
-        }
-
         public async Task<Convertionrate> GetConvertionrateById(int id)
         {
             var convertionratebyId = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();
@@ -66,7 +42,7 @@ namespace Repository
         }
         public async Task<Convertionrate> GetLatestConvertionrateByUOC(string currency)
         {
-            var currentrate = await FindByCondition(x => x.UOC == currency).OrderByDescending(x => x.Date).FirstOrDefaultAsync();
+            var currentrate = await FindByCondition(x => x.UOC == currency).OrderByDescending(x => x.Version).FirstOrDefaultAsync();
             return currentrate;
         }
         public async Task<string> UpdateConvertionrate(Convertionrate convertionrate)
@@ -77,11 +53,9 @@ namespace Repository
             string result = $"Convertionrate details of {convertionrate.Id} is updated successfully!";
             return result;
         }
-        public async Task<List<Convertionrate>> GetAllLatestConvertionrate()
+        public async Task<List<Convertionrate>> GetAllLatestConvertionrate(SearchParames searchParams)
         {
-            return FindAll()
-              .GroupBy(x => x.UOC).Select(group => group.OrderByDescending(x => x.Date).First()).OrderByDescending(x => x.Id)
-              .ToList();
+            return FindAll().AsEnumerable().Where(inv => string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.UOC.Contains(searchParams.SearchValue)).GroupBy(x => x.UOC).Select(group => group.OrderByDescending(x => x.Version).First()).OrderByDescending(x => x.Id).ToList();
         }
     }
 }
