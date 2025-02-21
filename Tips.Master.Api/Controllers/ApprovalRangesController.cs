@@ -464,10 +464,11 @@ namespace Tips.Master.Api.Controllers
                 NewApproval = await _repository.ApprovalRangesRepository.CreateNewApprovalRangeVersion(NewApproval);
                 _repository.SaveAsync();
                 var AppforPO = _mapper.Map<ApprovalRangesDto>(NewApproval);
+                SearchParames searchParams=null;
                 var SendData = new ApprovalRangeUpdateRequest()
                 {
                     ApprovalRanges = _mapper.Map<ApprovalRangesDto>(NewApproval),
-                    ConvertionRates = await _repository.ConvertionrateRepository.GetAllLatestConvertionrate()
+                    ConvertionRates = await _repository.ConvertionrateRepository.GetAllLatestConvertionrate(searchParams)
                 };
 
                 var jsons = JsonConvert.SerializeObject(SendData);

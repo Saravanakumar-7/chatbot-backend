@@ -12,9 +12,9 @@ namespace Entities
         [Key]
         public int Id { get; set; }
         public decimal ConvertionRate { get; set; }
+        public decimal Version { get; set; }
         public string UOC { get; set; }
         public DateTime Date { get; set; }
-        public bool ActiveStatus { get; set; } = true;
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
