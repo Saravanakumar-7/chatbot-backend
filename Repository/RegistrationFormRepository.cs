@@ -78,7 +78,7 @@ namespace Repository
                 .Where(inv => (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
                                inv.UserName.Contains(searchParams.SearchValue) ||
                                inv.EmailId.Contains(searchParams.SearchValue) ||
-                               inv.FirstName.Contains(searchParams.SearchValue) ||
+                               inv.FirstName.Contains(searchParams.SearchValue) || inv.RoleName.Contains(searchParams.SearchValue)||
                                inv.LastName.Contains(searchParams.SearchValue)))
                 .OrderByDescending(x => x.Id);
 

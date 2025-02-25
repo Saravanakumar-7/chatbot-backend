@@ -279,7 +279,7 @@ namespace Tips.Master.Api.Controllers
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                var result = _mapper.Map<List<ApprovalRangesDto>>(getAllApprovalRanges);
+                var result = _mapper.Map<List<ApprovalRangesDto>>(getAllApprovalRanges.OrderByDescending(x=>x.Id));
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all ApprovalRanges Successfully";
                 serviceResponse.Success = true;

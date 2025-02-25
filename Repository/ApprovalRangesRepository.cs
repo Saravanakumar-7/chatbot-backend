@@ -48,7 +48,7 @@ namespace Repository
         }
         public async Task<List<string>> GetListofProcurementType()
         {
-            var ApprovalRangesProcurementType = await FindAll().Select(x=>x.ProcurementName).Distinct().ToListAsync();
+            var ApprovalRangesProcurementType = await FindAll().OrderByDescending(x=>x.Id).Select(x=>x.ProcurementName).Distinct().ToListAsync();
             return ApprovalRangesProcurementType;
         }
         public async Task<PagedList<ApprovalRanges>> GetAllApprovalRanges(PagingParameter pagingParameter, SearchParames searchParams)
