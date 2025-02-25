@@ -4399,13 +4399,14 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllRecievableDayWiseSPReport()
+        [HttpPost]
+        public async Task<IActionResult> GetAllRecievableDayWiseSPReport(ReceivableSPReportsDto receivableSPReportsDto)
         {
             ServiceResponse<IEnumerable<RecievableDayWiseSPReportDto>> serviceResponse = new ServiceResponse<IEnumerable<RecievableDayWiseSPReportDto>>();
             try
             {
-                var products = await _repository.GetAllRecievableDayWiseSPReport();
+                var products = await _repository.GetAllRecievableDayWiseSPReport(receivableSPReportsDto.CustomerId, receivableSPReportsDto.FromDate,
+                                                                                    receivableSPReportsDto.ToDate);
 
                 if (products == null)
                 {
