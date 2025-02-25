@@ -620,6 +620,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public string? CustomerId { get; set; }
     }
+    public class ReceivableSPReportsDto
+    {
+        public string? CustomerId { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+    }
     public class FGSalesOrderSPReport
     {
         public string? SalesOrderNumber { get; set; } 

@@ -112,13 +112,13 @@ namespace Tips.SalesService.Api.Repository
                 return Enumerable.Empty<RecievableCustomer>();
             }
         }
-        public async Task<IEnumerable<RecievableDayWiseSPReportDto>> GetAllRecievableDayWiseSPReport()
+        public async Task<IEnumerable<RecievableDayWiseSPReportDto>> GetAllRecievableDayWiseSPReport(string CustomerId, DateTime? FromDate, DateTime? ToDate)
         {
 
             try
             {
                 var results = await _tipsSalesServiceDbContext.Set<RecievableDayWiseSPReportDto>()
-                    .FromSqlInterpolated($"CALL Recievable_day_wise_report")
+                    .FromSqlInterpolated($"CALL Recievable_day_wise_report({CustomerId},{FromDate},{ToDate})")
                     .ToListAsync();
 
                 return results;
