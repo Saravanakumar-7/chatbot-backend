@@ -1579,6 +1579,7 @@ namespace Tips.Purchase.Api.Repository
                                      .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) &&
                                      (
                                         (x.ApprovalCount == 4 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == true) ||
+                                        (x.ApprovalCount == 3 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == false) ||
                                         (x.ApprovalCount == 2 && x.POApprovalI == true && x.POApprovalII == true)
                                      )
                                 )
@@ -1599,6 +1600,7 @@ namespace Tips.Purchase.Api.Repository
                                      .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.ProcurementType == "Service" &&
                                      (
                                         (x.ApprovalCount == 4 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == true) ||
+                                        (x.ApprovalCount == 3 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == false) ||
                                         (x.ApprovalCount == 2 && x.POApprovalI == true && x.POApprovalII == true)
                                      )
                                 )
@@ -1619,6 +1621,7 @@ namespace Tips.Purchase.Api.Repository
                                      .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.ProcurementType != "Service" &&
                                      (
                                         (x.ApprovalCount == 4 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == true) ||
+                                        (x.ApprovalCount == 3 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == false) ||
                                         (x.ApprovalCount == 2 && x.POApprovalI == true && x.POApprovalII == true)
                                      )
                                 )
