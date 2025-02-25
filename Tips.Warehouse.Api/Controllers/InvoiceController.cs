@@ -259,6 +259,43 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpPost] 
+        public async Task<IActionResult> SalesInvoiceSPReportWithParameter([FromBody] SalesInvoiceSPReportDto salesInvoiceSPReportDto)
+        {
+            ServiceResponse<IEnumerable<SalesInvoiceSPReport>> serviceResponse = new ServiceResponse<IEnumerable<SalesInvoiceSPReport>>();
+            try
+            {
+                var products = await _invoiceRepository.SalesInvoiceSPReportWithParameter(salesInvoiceSPReportDto.InvoiceNumber, salesInvoiceSPReportDto.CustomerId,
+                                            salesInvoiceSPReportDto.CustomerName, salesInvoiceSPReportDto.FGItemNumber);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesInvoice hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesInvoice hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned SalesInvoice Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside SalesInvoiceSPReportWithParameter action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> SearchInvoice([FromQuery] SearchParames searchParams)
         {
@@ -627,6 +664,42 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside InvoiceSPReportDateForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> SalesInvoiceSPReportDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<SalesInvoiceSPReport>> serviceResponse = new ServiceResponse<IEnumerable<SalesInvoiceSPReport>>();
+            try
+            {
+                var products = await _invoiceRepository.SalesInvoiceSPReportDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesInvoice hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesInvoice hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned SalesInvoice Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside SalesInvoiceSPReportDate action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

@@ -45,7 +45,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<PagedList<SalesOrderSPReport>> GetSalesOrderSPReport(PagingParameter pagingParameter);
         Task<IEnumerable<RecievableCustomer>> GetRecievableCustomersWithCustomerID(string CustomerId);
         Task<IEnumerable<RecievableCustomer>> GetReceivableReportsForMultiCustomerID(string CustomerId);
-        Task<IEnumerable<RecievableDayWiseSPReportDto>> GetAllRecievableDayWiseSPReport();
+        Task<IEnumerable<RecievableDayWiseSPReportDto>> GetAllRecievableDayWiseSPReport(string CustomerId, DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<SalesOrderSPReport>> GetSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN);
         Task<IEnumerable<SalesOrderQtyDetailsDto>> GetSalesOrderQtySPReportWithParam(string itemNo, decimal bomQty);
         Task<List<SalesOrderDashboardSPReport>> GetSalesOrderDashboardSPReportWithParam(string Bucket_Id);
@@ -57,6 +57,7 @@ namespace Tips.SalesService.Api.Contracts
 
         Task<List<FinancialYearDashboardSPReport>> GetFinancialYearDashboardSPReportWithParam(string Bucket_Id);
         Task<IEnumerable<SalesOrderSPReport>> GetSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<SOLeadWiseDataSPReport>> GetSalesorderLeadWiseDataSPReportWithParam(string SOFirstSalesOrderNumber, string CustomerId, string CustomerName);
         Task<IEnumerable<SOSummarySPReport>> GetSOSummarySPReportWithParam(string CustomerId, string SalesOrderNumber, string KPN);
         Task<IEnumerable<SOSummarySPReport>> GetSOSummarySPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<SOMonthlyConsumptionSPReport>> GetSOMonthlyConsumptionSPReportWithParam(string CustomerId);

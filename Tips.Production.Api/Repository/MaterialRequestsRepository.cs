@@ -85,6 +85,16 @@ namespace Tips.Production.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<MaterialIssueAgainstMRSPReportForkeus>> GetMaterialIssueAgainstMaterialRequestSPReportWithParamForKeus(string? mRNumber, string? projectType,
+                                                                                                             string? projectNo, string? shopOrderNo, string? KPN)
+        {
+            var result = _tipsProductionDbContext
+            .Set<MaterialIssueAgainstMRSPReportForkeus>()
+            .FromSqlInterpolated($"Materialissue_against_Materialrequest_Report_withparameter_keus({mRNumber},{projectType},{projectNo},{shopOrderNo},{KPN})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<MaterialRequestSPReport>> GetMaterialRequestSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsProductionDbContext.Set<MaterialRequestSPReport>()
@@ -105,6 +115,14 @@ namespace Tips.Production.Api.Repository
         {
             var results = _tipsProductionDbContext.Set<MaterialIssueAgainstMRSPReport>()
                       .FromSqlInterpolated($"Materialissue_against_Materialrequest_withparameter_withdate({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<MaterialIssueAgainstMRSPReportForkeus>> GetMaterialIssueAgainstMaterialRequestSPReportWithDateForKeus(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsProductionDbContext.Set<MaterialIssueAgainstMRSPReportForkeus>()
+                      .FromSqlInterpolated($"Materialissue_against_Materialrequest_withparameter_date_keus({FromDate},{ToDate})")
                       .ToList();
 
             return results;

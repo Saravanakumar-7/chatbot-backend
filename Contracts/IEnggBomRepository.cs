@@ -50,5 +50,6 @@ namespace Contracts
         Task<SAFinalLandedandMoqPrice> GetEnggFGSA(string SAItemNumber, decimal SAQty, List<RfqSourcingPPdetailsforEngg> rfqSourcingPPdetails);
         Task<List<EnggChildItem>> GetChildItemsLists();
         Task<IEnumerable<EnggBomSPReport>> GetEnggBomSPReportWithParam(int? bomId);
+        Task<IEnumerable<EnggBomSPReport>> GetEnggBomRevSPReportWithParam(string itemNumber, decimal revisionNumber);
     }
 }

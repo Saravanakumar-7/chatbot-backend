@@ -401,14 +401,14 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
     }
 
-    public class SalesOrderSPResportDTO
+    public class SalesOrderSPReportDTO
     {
         public string? CustomerName { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string? KPN { get; set; }
         public string? CustomerId { get; set; }
     }
-    public class SOSummarySPResportDTO
+    public class SOSummarySPReportDTO
     {
         public string? CustomerId { get; set; }
         public string? SalesOrderNumber { get; set; }
@@ -436,7 +436,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? OpenGrinQty { get; set; }
     }
 
-    public class RfqSalesOrderSPResportDTO
+    public class RfqSalesOrderSPReportDTO
     {
         public string? CustomerName { get; set; }
         public string? SalesOrderNumber { get; set; }
@@ -444,7 +444,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SOStatus { get; set; }
         public string? CustomerId { get; set; }
     }
-    public class RfqSalesOrderSPResportDTOForTrans
+    public class RfqSalesOrderSPReportDTOForTrans
     {
         public string? CustomerName { get; set; }
         public string? SalesOrderNumber { get; set; }
@@ -452,7 +452,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SOStatus { get; set; }
         public string? ProjectNumber { get; set; }
     }
-    public class ForecastSalesOrderSPResportDTO
+    public class ForecastSalesOrderSPReportDTO
     {
         public string? CustomerName { get; set; }
         public string? SalesOrderNumber { get; set; }
@@ -460,7 +460,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SOStatus { get; set; }
         public string? CustomerId { get; set; }
     }
-    public class ForecastSalesOrderSPResportDTOForTrans
+    public class ForecastSalesOrderSPReportDTOForTrans
     {
         public string? CustomerName { get; set; }
         public string? SalesOrderNumber { get; set; }
@@ -620,6 +620,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public string? CustomerId { get; set; }
     }
+    public class ReceivableSPReportsDto
+    {
+        public string? CustomerId { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+    }
     public class FGSalesOrderSPReport
     {
         public string? SalesOrderNumber { get; set; } 
@@ -673,4 +679,29 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? QuoteNumber { get; set; }
         public int? QuoteRevisionNumber { get; set; }
     }
+    public class SOLeadWiseDataSPReportDTO
+    {
+        public string? SOFirstSalesOrderNumber { get; set; }
+        public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+    }
+    public class SOLeadWiseDataSPReport
+    {
+        public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public DateTime? SOFirstCreatedOn { get; set; }
+        public string? SOFirstSalesOrderNumber { get; set; }
+        public decimal? SOFirstValue { get; set; }
+        public string? SOFirstDiscount { get; set; }
+        public string? SOFirstDiscountType { get; set; }
+        public double? FirstSODiscountValue { get; set; }
+        public DateTime? SOLatestCreatedOn { get; set; }
+        public string? SOLatestSalesOrderNumber { get; set; }
+        public decimal? SOLatestValue { get; set; }
+        public string? SOLatestDiscount { get; set; }
+        public string? SOLatestDiscountType { get; set; }
+        public double? LatestSODiscountValue { get; set; }
+    }
+
 }

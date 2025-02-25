@@ -5,6 +5,7 @@ using Entities.Helper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NPOI.SS.Formula.Functions;
 using Org.BouncyCastle.Asn1.Misc;
 using System.Security.Claims;
 using Tips.Purchase.Api.Contracts;
@@ -255,7 +256,7 @@ namespace Tips.Purchase.Api.Repository
         }
         public async Task<List<POCollectionTrackerForAvi>> GetAllPOCollectionTrackersForAviByPonumber(string Ponumber)
         {
-            var CollectionTrackerIds= await _tipsPurchaseDbContext.POBreakDownsForAvi.Where(x=>x.PONumber==Ponumber).Select(x=>x.POCollectionTrackerForAviId).ToListAsync();
+            var CollectionTrackerIds = await _tipsPurchaseDbContext.POBreakDownsForAvi.Where(x => x.PONumber == Ponumber).Select(x => x.POCollectionTrackerForAviId).ToListAsync();
             var CollectionDetails = await _tipsPurchaseDbContext.POCollectionTrackersForAvi.Where(x => CollectionTrackerIds.Contains(x.Id))
                 .Include(x => x.POBreakDownForAvi.Where(x => x.PONumber == Ponumber)).ToListAsync();
 

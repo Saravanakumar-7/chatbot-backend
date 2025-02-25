@@ -520,6 +520,13 @@ namespace Tips.Master.Api
             CreateMap<Prioritize, PrioritizeDTO>().ReverseMap();
             CreateMap<Prioritize, PrioritizeDtoPost>().ReverseMap();
             CreateMap<Prioritize, PrioritizeDtoUpdate>().ReverseMap();
+
+            CreateMap<ApprovalRanges, ApprovalRangesDto>().ReverseMap();
+            CreateMap<ApprovalRanges, ApprovalRangesPostDto>().ReverseMap();
+            CreateMap<ApprovalRanges, ApprovalRangesUpdateDto>().ReverseMap();
+            CreateMap<Ranges, RangesPostDto>().ReverseMap();
+            CreateMap<Ranges, RangesDto>().ReverseMap();
+            CreateMap<Ranges, RangesUpdateDto>().ReverseMap();
         }
     }
 }

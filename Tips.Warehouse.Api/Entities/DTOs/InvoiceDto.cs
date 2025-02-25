@@ -229,6 +229,30 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? FGItemNumber { get; set; }
         public decimal? InvoicedQty { get; set; }
     }
+    public class SalesInvoiceSPReportDto
+    {
+        public string? InvoiceNumber { get; set; }
+        public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? FGItemNumber { get; set; }
+    }
+    public class SalesInvoiceSPReport
+    {
+        public string? InvoiceNumber { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public string? CustomerId { get; set; }
+        public string? VoucherType { get; set; }
+        public string? CustomerName { get; set; }
+        public string? FGItemNumber { get; set; }
+        public string? Description { get; set; }
+        public string? UOM { get; set; }
+        public decimal? TaxRate { get; set; }
+        public decimal? InvoicedQty { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public decimal? Discount { get; set; }
+        public decimal? TotalValueWithTax { get; set; }
+    }
+
 
 
 }

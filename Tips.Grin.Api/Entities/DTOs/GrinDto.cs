@@ -504,4 +504,103 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? UOC { get; set; }
 
     }
+    public class PurchaseInventorySPReportDto
+    {
+        public string? InvoiceNumber { get; set; }
+        public string? GRINNumber { get; set; }
+        public string? KPN { get; set; }
+        public string? VendorName { get; set; }
+    }
+    public class PurchaseInventorySPReport
+    {
+        public string? Invoice_Date { get; set; }
+        public string? Invoice_No { get; set; }
+        public string? InvoiceNumber { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public string? VoucherType { get; set; }
+        public string? VendorName { get; set; }
+        public string? Address1 { get; set; }
+        public string? Address2 { get; set; }
+        public string? Address3 { get; set; }
+        public string? SupplierPinCode { get; set; }
+        public string? State { get; set; }
+        public string? PlaceOfSupply { get; set; }
+        public string? Country { get; set; }
+        public string? GSTNNumber { get; set; }
+        public string? ConsignorFromName { get; set; }
+        public string? ConsignorFrom_Add1 { get; set; }
+        public string? ConsignorFrom_Add2 { get; set; }
+        public string? ConsignorFrom_Add3 { get; set; }
+        public string? ConsignorFrom_State { get; set; }
+        public string? ConsignorFrom_Place { get; set; }
+        public string? ConsignorFrom_Pincode { get; set; }
+        public string? ConsignorFrom_GSTIN { get; set; }
+        public string? TinNo { get; set; }
+        public string? CSTNo { get; set; }
+        public string? GSTRegistrationType { get; set; }
+        public string? ReceiptNote_No { get; set; }
+        public string? ReceiptNote_Date { get; set; }
+        public string? OrderNo { get; set; }
+        public string? OrderDate { get; set; }
+        public string? Order_DueDate { get; set; }
+        public string? LR_No { get; set; }
+        public string? Despatch_Through { get; set; }
+        public string? Destination { get; set; }
+        public string? TermsOfPayment { get; set; }
+        public string? Other_Reference { get; set; }
+        public string? TermsOfDelivery { get; set; }
+        public string? Purchase_Ledger { get; set; }
+        public string? ItemName { get; set; }
+        public string? HSN_Code { get; set; }
+        public string? ItemDescription { get; set; }
+        public decimal? TaxRate { get; set; }
+        public string? BatchNo { get; set; }
+        public string? MfgDate { get; set; }
+        public string? ExpDate { get; set; }
+        public decimal? Qty { get; set; }
+        public string? UOM { get; set; }
+        public decimal? Rate { get; set; }
+        public string? Discount { get; set; }
+        public decimal? Amount { get; set; }
+        public string? OtherCharges_1_Ledger { get; set; }
+        public string? OtherCharges_1_Amount { get; set; }
+        public string? OtherCharges_2_Ledger { get; set; }
+        public string? OtherCharges_2_Amount { get; set; }
+        public string? OtherCharges_3_Ledger { get; set; }
+        public string? OtherCharges_3_Amount { get; set; }
+        public string? OtherCharges_4_Ledger { get; set; }
+        public string? OtherCharges_4_Amount { get; set; }
+        public string? OtherCharges_5_Ledger { get; set; }
+        public string? OtherCharges_5_Amount { get; set; }
+        public decimal? CSGT_Ledger { get; set; }
+        public decimal? CGSTAmount { get; set; }
+        public decimal? SGST_Ledger { get; set; }
+        public decimal? SGSTAmount { get; set; }
+        public decimal? IGST_Ledger { get; set; }
+        public decimal? IGSTAmount { get; set; }
+        public string? CessLedger { get; set; }
+        public string? CessAmount { get; set; }
+        public string? Roundoff_Ledger { get; set; }
+        public string? Roundoff_Amount { get; set; }
+        public string? CostCenter { get; set; }
+        public string? Godown { get; set; }
+        public string? Narration { get; set; }
+        public string? eWay_BillNo { get; set; }
+        public string? eWay_BillDate { get; set; }
+        public string? Consolidated_eWay_BillNo { get; set; }
+        public string? Consolidated_eWay_Date { get; set; }
+        public string? SubType { get; set; }
+        public string? DocumentType { get; set; }
+        public string? Statusof_eWayBill { get; set; }
+        public string? TransportMode { get; set; }
+        public string? Distance { get; set; }
+        public string? Transporter_Name { get; set; }
+        public string? Vehicle_Number { get; set; }
+        public string? Vehicle_Type { get; set; }
+        public string? Doc_or_AirWay_BillNo { get; set; }
+        public string? DocDate { get; set; }
+        public string? Transporter_ID { get; set; }
+    }
+
+
 }

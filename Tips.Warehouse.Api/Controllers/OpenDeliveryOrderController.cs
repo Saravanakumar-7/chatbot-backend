@@ -609,7 +609,7 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 _logger.LogError($"Something went wrong inside CreateOpenDeliveryOrder action: {ex.Message}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Something went wrong inside CreateOpenDeliveryOrder action: {ex.Message} \n {ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

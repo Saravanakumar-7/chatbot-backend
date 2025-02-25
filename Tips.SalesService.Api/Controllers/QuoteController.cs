@@ -34,6 +34,7 @@ using NPOI.XSSF.UserModel;
 using System.Text;
 using System.Net.Http.Headers;
 using System.Collections;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -769,7 +770,24 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<ActionResult> DownloadFile(string Filename)
+        {
+            ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+            var filename = Uri.UnescapeDataString(Filename);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "Temp_Email", filename);
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out var ContentType))
+            {
+                ContentType = "application/octet-stream";
+            }
+            var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+            var DownloadFilename = filename.Split('_');
+            var downloadFilename = string.IsNullOrWhiteSpace(DownloadFilename[1]) ? Path.GetFileName(filePath) : DownloadFilename[1];
 
+            return File(bytes, ContentType, downloadFilename);
+        }
         [HttpPost]
         public async Task<IActionResult> SendEmailandWhatsAppMessageforQuote([FromBody] QuoteEmailPostDto quoteEmailPostDto)
         {
@@ -884,26 +902,20 @@ namespace Tips.SalesService.Api.Controllers
                     builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
                     base64 = Convert.ToBase64String(fileBytes);
                 }
-
                 //Guid guids = Guid.NewGuid();
                 //byte[] fileContent = Convert.FromBase64String(base64);
-                //string fileName = guids.ToString() + "_" + FileName + ".pdf";
-               
-                
+                //string fileName = /*guids.ToString() + "_" +*/ FileName + ".pdf";
                 //string FileExt = Path.GetExtension(fileName).ToUpper();
-
-                ////Guid guids = Guid.NewGuid();
-                //string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileName);
+                //string filePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "Temp_Email", fileName);
                 //using (MemoryStream ms = new MemoryStream(fileContent))
                 //{
                 //    ms.Position = 0;
                 //    using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
                 //    {
                 //        ms.WriteTo(fileStream);
-                //    }                    
-                    email.Body = builder.ToMessageBody();
-               // }
-
+                //    }
+                //}
+                email.Body = builder.ToMessageBody();
                 using var smtp = new MailKit.Net.Smtp.SmtpClient();
                 int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
                 smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
@@ -921,8 +933,10 @@ namespace Tips.SalesService.Api.Controllers
 
                 //await _googlegcpservice.UploadFileAsync(filePath, fileName, "");
                 //var PDFLink = _googlegcpservice.GenerateSignedUrl(fileName, TimeSpan.FromDays(7), "");
+          
+                //var generatedURL = $"{_config["SalesOrderUrl"]}/api/Quote/DownloadFile?Filename={fileName}";
 
-                //whatsAppMessagePayload.Template.Components[0].Parameters[0].Document.Link = PDFLink;
+                //whatsAppMessagePayload.Template.Components[0].Parameters[0].Document.Link = generatedURL;
 
                 Component component = new Component();
                 List<Tips.SalesService.Api.Entities.DTOs.Parameter> parameters = new List<Tips.SalesService.Api.Entities.DTOs.Parameter>();

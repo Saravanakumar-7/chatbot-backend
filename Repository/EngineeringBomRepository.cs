@@ -168,6 +168,16 @@ namespace Repository
             return result;
         }
 
+        public async Task<IEnumerable<EnggBomSPReport>> GetEnggBomRevSPReportWithParam(string itemNumber, decimal revisionNumber)
+        {
+            var result = _tipsMasterDbContext
+            .Set<EnggBomSPReport>()
+            .FromSqlInterpolated($"CALL enggbom_report_revision({itemNumber},{revisionNumber})")
+            .ToList();
+
+            return result;
+        }
+
         public async Task<IEnumerable<FGCostingSPReport>> GetFGCostingSPReportWithParam(string fgItemnumber, string shopOrderNumber)
         {
             var result = _tipsMasterDbContext

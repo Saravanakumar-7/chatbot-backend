@@ -84,9 +84,10 @@ namespace Tips.Purchase.Api.Entities
         public bool IsModified { get; set; } = false;
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+        public bool InApproval { get; set; }
+        public int ApprovalRangeId { get; set; }
         public string? POFiles { get; set; }
-
+        public int? ConvertionRateId { get; set; }
         public List<PoItem>? POItems { get; set; }
         public List<PoIncoTerm>? POIncoTerms { get; set; }
         public List<PurchaseOrderAdditionalCharges>? PurchaseOrderAdditionalCharges { get; set; }

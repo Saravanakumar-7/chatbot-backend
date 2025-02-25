@@ -12,6 +12,7 @@ namespace Tips.Purchase.Api.Contracts
 {
     public interface IPurchaseOrderRepository : IRepositoryBase<PurchaseOrder>
     {
+        Task<List<PurchaseOrder>> GetAllUnApprovedLastestPOsbyProcurementType(string ProcurementType);
         Task<List<PurchaseOrder>> GetLatestPurchaseOrdersByPONumbers(List<string> Ponumbers);
         Task<PagedList<PurchaseOrder>> GetAllPurchaseOrders(PagingParameter pagingParameter, SearchParamess searchParamess);
         Task<PagedList<PurchaseOrder>> GetAllLastestPurchaseOrders(PagingParameter pagingParameter, SearchParamess searchParams);
@@ -106,6 +107,6 @@ namespace Tips.Purchase.Api.Contracts
                                                                                                 , int? Offset, int? Limit);
         Task<int> GetAllPurchaseOrderCountForTrans(string? SearchTerm);
 
-
+        Task<List<PurchaseOrder>> GetAllPurchaseOrderbyPurchaseOrderNumber(string poNumber);
     }
 }

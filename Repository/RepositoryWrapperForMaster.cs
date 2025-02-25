@@ -131,11 +131,23 @@ namespace Repository
         private IWeightedAvgRateRepository? _weightedAvgRateRepository;
         private IFieldInformationRepository? _fieldInformationRepository;
         private IPrioritizeRepository? _prioritizeRepository;
+        private IApprovalRangesRepository? _approvalRangesRepository;
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
             _httpContextAccessor = httpContextAccessor;
         }
+        public IApprovalRangesRepository ApprovalRangesRepository
+        {
+            get
+            {
+                if (_approvalRangesRepository == null)
+                {
+                    _approvalRangesRepository = new ApprovalRangesRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _approvalRangesRepository;
+            }
+        } 
         public IPrioritizeRepository PrioritizeRepository
         {
             get

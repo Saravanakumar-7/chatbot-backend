@@ -12,7 +12,7 @@ namespace Tips.SalesService.Api
         {
 
             CreateMap<SalesOrderFGandBalanceQtyByProjectNo, SalesOrderItemNoAndProjectNoDto>().ReverseMap();
-            CreateMap<SalesOrderSPReport, SalesOrderSPResportDTO>().ReverseMap();
+            CreateMap<SalesOrderSPReport, SalesOrderSPReportDTO>().ReverseMap();
             CreateMap<RfqCustomerSupport, RfqCustomerSupportDto>().ReverseMap();
             CreateMap<RfqCustomerSupport, RfqCustomerSupportPostDto>().ReverseMap();
             CreateMap<RfqCustomerSupport, RfqCustomerSupportUpdateDto>().ReverseMap();
