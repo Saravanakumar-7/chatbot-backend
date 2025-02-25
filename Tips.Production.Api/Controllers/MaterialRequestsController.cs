@@ -382,6 +382,82 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GetMaterialIssueAgainstMaterialRequestSPReportWithParamForkeus([FromBody] MaterialIssueAgainstMaterialRequestReportWithParamDto materialIssueAgainstMaterialRequestReportWithParamDto)
+        {
+            ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReportForkeus>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReportForkeus>>();
+            try
+            {
+                var products = await _materialRequestRepository.GetMaterialIssueAgainstMaterialRequestSPReportWithParamForKeus(materialIssueAgainstMaterialRequestReportWithParamDto.MRNumber,
+                                                                            materialIssueAgainstMaterialRequestReportWithParamDto.ProjectType, materialIssueAgainstMaterialRequestReportWithParamDto.ProjectNumber,
+                                                                            materialIssueAgainstMaterialRequestReportWithParamDto.ShopOrderNumber, materialIssueAgainstMaterialRequestReportWithParamDto.KPN);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"MaterialIssueAgainstMaterialRequest hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"MaterialIssueAgainstMaterialRequest hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned MaterialIssueAgainstMaterialRequest Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetMaterialIssueAgainstMaterialRequestSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetMaterialIssueAgainstMaterialRequestSPReportWithDateForKeus([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReportForkeus>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReportForkeus>>();
+            try
+            {
+                var products = await _materialRequestRepository.GetMaterialIssueAgainstMaterialRequestSPReportWithDateForKeus(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"MaterialIssueAgainstMaterialRequest hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"MaterialIssueAgainstMaterialRequest hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned MaterialIssueAgainstMaterialRequest Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetMaterialIssueAgainstMaterialRequestSPReportWithDate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAllMROpenStatus([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParammes)
         {
