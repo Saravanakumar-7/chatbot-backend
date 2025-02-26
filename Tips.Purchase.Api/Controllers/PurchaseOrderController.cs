@@ -4860,28 +4860,27 @@ namespace Tips.Purchase.Api.Controllers
                 headerRow1.CreateCell(1).SetCellValue("Vendor Name");
                 headerRow1.CreateCell(2).SetCellValue("PO Number");
                 headerRow1.CreateCell(3).SetCellValue("PO Date");
-                headerRow1.CreateCell(4).SetCellValue("PR Number");
-                headerRow1.CreateCell(5).SetCellValue("PR Qty");
-                headerRow1.CreateCell(6).SetCellValue("Revision Number");
-                headerRow1.CreateCell(7).SetCellValue("Item Number");
-                headerRow1.CreateCell(8).SetCellValue("Mftr Item Number");
-                headerRow1.CreateCell(9).SetCellValue("Item Description");
-                headerRow1.CreateCell(10).SetCellValue("PO Qty");
-                headerRow1.CreateCell(11).SetCellValue("Received Qty");
-                headerRow1.CreateCell(12).SetCellValue("Balance Qty");
-                headerRow1.CreateCell(13).SetCellValue("Currency");
-                headerRow1.CreateCell(14).SetCellValue("UOM");
-                headerRow1.CreateCell(15).SetCellValue("Unit Price");
-                headerRow1.CreateCell(16).SetCellValue("Balance Value");
-                headerRow1.CreateCell(17).SetCellValue("PO Approved I By");
-                headerRow1.CreateCell(18).SetCellValue("PO Approved I Date");
-                headerRow1.CreateCell(19).SetCellValue("PO Approved II By");
-                headerRow1.CreateCell(20).SetCellValue("PO Approved II Date");
-                headerRow1.CreateCell(21).SetCellValue("PO Status");
-                headerRow1.CreateCell(22).SetCellValue("Created By");
-                headerRow1.CreateCell(23).SetCellValue("Created On");
-                headerRow1.CreateCell(24).SetCellValue("Confirmation Date");
-                headerRow1.CreateCell(25).SetCellValue("Confirmation Qty");
+                headerRow1.CreateCell(4).SetCellValue("PR Qty");
+                headerRow1.CreateCell(5).SetCellValue("Revision Number");
+                headerRow1.CreateCell(6).SetCellValue("Item Number");
+                headerRow1.CreateCell(7).SetCellValue("Mftr Item Number");
+                headerRow1.CreateCell(8).SetCellValue("Item Description");
+                headerRow1.CreateCell(9).SetCellValue("PO Qty");
+                headerRow1.CreateCell(10).SetCellValue("Received Qty");
+                headerRow1.CreateCell(11).SetCellValue("Balance Qty");
+                headerRow1.CreateCell(12).SetCellValue("Currency");
+                headerRow1.CreateCell(13).SetCellValue("UOM");
+                headerRow1.CreateCell(14).SetCellValue("Unit Price");
+                headerRow1.CreateCell(15).SetCellValue("Balance Value");
+                headerRow1.CreateCell(16).SetCellValue("PO Approved I By");
+                headerRow1.CreateCell(17).SetCellValue("PO Approved I Date");
+                headerRow1.CreateCell(18).SetCellValue("PO Approved II By");
+                headerRow1.CreateCell(19).SetCellValue("PO Approved II Date");
+                headerRow1.CreateCell(20).SetCellValue("PO Status");
+                headerRow1.CreateCell(21).SetCellValue("Created By");
+                headerRow1.CreateCell(22).SetCellValue("Created On");
+                headerRow1.CreateCell(23).SetCellValue("Confirmation Date");
+                headerRow1.CreateCell(24).SetCellValue("Confirmation Qty");
 
 
                 var headerRow2 = sheet2.CreateRow(0);
@@ -4889,28 +4888,27 @@ namespace Tips.Purchase.Api.Controllers
                 headerRow2.CreateCell(1).SetCellValue("Vendor Name");
                 headerRow2.CreateCell(2).SetCellValue("PO Number");
                 headerRow2.CreateCell(3).SetCellValue("PO Date");
-                headerRow2.CreateCell(4).SetCellValue("PR Number");
-                headerRow2.CreateCell(5).SetCellValue("PR Qty");
-                headerRow2.CreateCell(6).SetCellValue("Revision Number");
-                headerRow2.CreateCell(7).SetCellValue("Item Number");
-                headerRow2.CreateCell(8).SetCellValue("Mftr Item Number");
-                headerRow2.CreateCell(9).SetCellValue("Item Description");
-                headerRow2.CreateCell(10).SetCellValue("PO Qty");
-                headerRow2.CreateCell(11).SetCellValue("Schedule Qty");
-                headerRow2.CreateCell(12).SetCellValue("Received Qty");
-                headerRow2.CreateCell(13).SetCellValue("Balance Qty");
-                headerRow2.CreateCell(14).SetCellValue("Currency");
-                headerRow2.CreateCell(15).SetCellValue("UOM");
-                headerRow2.CreateCell(16).SetCellValue("Unit Price");
-                headerRow2.CreateCell(17).SetCellValue("Balance Value");
-                headerRow2.CreateCell(18).SetCellValue("PO Approved I By");
-                headerRow2.CreateCell(19).SetCellValue("PO Approved I Date");
-                headerRow2.CreateCell(20).SetCellValue("PO Approved II By");
-                headerRow2.CreateCell(21).SetCellValue("PO Approved II Date");
-                headerRow2.CreateCell(22).SetCellValue("PO Status");
-                headerRow2.CreateCell(23).SetCellValue("Created By");
-                headerRow2.CreateCell(24).SetCellValue("Created On");
-                headerRow2.CreateCell(25).SetCellValue("Schedule Date");
+                headerRow2.CreateCell(4).SetCellValue("PR Qty");
+                headerRow2.CreateCell(5).SetCellValue("Revision Number");
+                headerRow2.CreateCell(6).SetCellValue("Item Number");
+                headerRow2.CreateCell(7).SetCellValue("Mftr Item Number");
+                headerRow2.CreateCell(8).SetCellValue("Item Description");
+                headerRow2.CreateCell(9).SetCellValue("PO Qty");
+                headerRow2.CreateCell(10).SetCellValue("Schedule Qty");
+                headerRow2.CreateCell(11).SetCellValue("Received Qty");
+                headerRow2.CreateCell(12).SetCellValue("Balance Qty");
+                headerRow2.CreateCell(13).SetCellValue("Currency");
+                headerRow2.CreateCell(14).SetCellValue("UOM");
+                headerRow2.CreateCell(15).SetCellValue("Unit Price");
+                headerRow2.CreateCell(16).SetCellValue("Balance Value");
+                headerRow2.CreateCell(17).SetCellValue("PO Approved I By");
+                headerRow2.CreateCell(18).SetCellValue("PO Approved I Date");
+                headerRow2.CreateCell(19).SetCellValue("PO Approved II By");
+                headerRow2.CreateCell(20).SetCellValue("PO Approved II Date");
+                headerRow2.CreateCell(21).SetCellValue("PO Status");
+                headerRow2.CreateCell(22).SetCellValue("Created By");
+                headerRow2.CreateCell(23).SetCellValue("Created On");
+                headerRow2.CreateCell(24).SetCellValue("Schedule Date");
 
 
                 var headerRow3 = sheet3.CreateRow(0);
@@ -4918,28 +4916,27 @@ namespace Tips.Purchase.Api.Controllers
                 headerRow3.CreateCell(1).SetCellValue("Vendor Name");
                 headerRow3.CreateCell(2).SetCellValue("PO Number");
                 headerRow3.CreateCell(3).SetCellValue("PO Date");
-                headerRow3.CreateCell(4).SetCellValue("PR Number");
-                headerRow3.CreateCell(5).SetCellValue("PR Qty");
-                headerRow3.CreateCell(6).SetCellValue("Revision Number");
-                headerRow3.CreateCell(7).SetCellValue("Project Number");
-                headerRow3.CreateCell(8).SetCellValue("Project Qty");
-                headerRow3.CreateCell(9).SetCellValue("Item Number");
-                headerRow3.CreateCell(10).SetCellValue("Mftr Item Number");
-                headerRow3.CreateCell(11).SetCellValue("Item Description");
-                headerRow3.CreateCell(12).SetCellValue("PO Qty");
-                headerRow3.CreateCell(13).SetCellValue("Received Qty");
-                headerRow3.CreateCell(14).SetCellValue("Balance Qty");
-                headerRow3.CreateCell(15).SetCellValue("Currency");
-                headerRow3.CreateCell(16).SetCellValue("UOM");
-                headerRow3.CreateCell(17).SetCellValue("Unit Price");
-                headerRow3.CreateCell(18).SetCellValue("Balance Value");
-                headerRow3.CreateCell(19).SetCellValue("PO Approved I By");
-                headerRow3.CreateCell(20).SetCellValue("PO Approved I Date");
-                headerRow3.CreateCell(21).SetCellValue("PO Approved II By");
-                headerRow3.CreateCell(22).SetCellValue("PO Approved II Date");
-                headerRow3.CreateCell(23).SetCellValue("PO Status");
-                headerRow3.CreateCell(24).SetCellValue("Created By");
-                headerRow3.CreateCell(25).SetCellValue("Created On");
+                headerRow3.CreateCell(4).SetCellValue("PR Qty");
+                headerRow3.CreateCell(5).SetCellValue("Revision Number");
+                headerRow3.CreateCell(6).SetCellValue("Project Number");
+                headerRow3.CreateCell(7).SetCellValue("Project Qty");
+                headerRow3.CreateCell(8).SetCellValue("Item Number");
+                headerRow3.CreateCell(9).SetCellValue("Mftr Item Number");
+                headerRow3.CreateCell(10).SetCellValue("Item Description");
+                headerRow3.CreateCell(11).SetCellValue("PO Qty");
+                headerRow3.CreateCell(12).SetCellValue("Received Qty");
+                headerRow3.CreateCell(13).SetCellValue("Balance Qty");
+                headerRow3.CreateCell(14).SetCellValue("Currency");
+                headerRow3.CreateCell(15).SetCellValue("UOM");
+                headerRow3.CreateCell(16).SetCellValue("Unit Price");
+                headerRow3.CreateCell(17).SetCellValue("Balance Value");
+                headerRow3.CreateCell(18).SetCellValue("PO Approved I By");
+                headerRow3.CreateCell(19).SetCellValue("PO Approved I Date");
+                headerRow3.CreateCell(20).SetCellValue("PO Approved II By");
+                headerRow3.CreateCell(21).SetCellValue("PO Approved II Date");
+                headerRow3.CreateCell(22).SetCellValue("PO Status");
+                headerRow3.CreateCell(23).SetCellValue("Created By");
+                headerRow3.CreateCell(24).SetCellValue("Created On");
 
                 // Populate data rows
                 int rowIndex1 = 1;
@@ -4950,13 +4947,44 @@ namespace Tips.Purchase.Api.Controllers
                     row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
                     row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
                     row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("MM/dd/yyyy") : ""); // PODate
-                    row.CreateCell(4).SetCellValue(item.PRNumber ?? ""); // PRNumber
-                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
-                    row.CreateCell(6).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
-                    row.CreateCell(7).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
-                    row.CreateCell(8).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
-                    row.CreateCell(9).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
-                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+                    row.CreateCell(4).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+                    row.CreateCell(5).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+                    row.CreateCell(6).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+                    row.CreateCell(7).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+                    row.CreateCell(8).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
+                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
+                    row.CreateCell(12).SetCellValue(item.Currency ?? ""); // Currency
+                    row.CreateCell(13).SetCellValue(item.UOM ?? ""); // UOM
+                    row.CreateCell(14).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
+                    row.CreateCell(15).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
+                    row.CreateCell(16).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
+                    row.CreateCell(17).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
+                    row.CreateCell(18).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
+                    row.CreateCell(19).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
+                    row.CreateCell(20).SetCellValue(item.PoStatus ?? 0); // POStatus
+                    row.CreateCell(21).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
+                    row.CreateCell(22).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
+                    row.CreateCell(23).SetCellValue(item.ConfirmationDate.HasValue ? item.ConfirmationDate.Value.ToString("MM/dd/yyyy") : ""); // ConfirmationDate
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.ConfirmationQty ?? 0)); // ConfirmationQty
+                }
+
+                int rowIndex2 = 1;
+                foreach (var item in poDeliveryScheduleReports)
+                {
+                    var row = sheet2.CreateRow(rowIndex2++);
+                    row.CreateCell(0).SetCellValue(item.VendorId ?? ""); // VendorId
+                    row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
+                    row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
+                    row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("MM/dd/yyyy") : ""); // PODate
+                    row.CreateCell(4).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+                    row.CreateCell(5).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+                    row.CreateCell(6).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+                    row.CreateCell(7).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+                    row.CreateCell(8).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.ScheduleQty ?? 0)); // ScheduleQty
                     row.CreateCell(11).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
                     row.CreateCell(12).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
                     row.CreateCell(13).SetCellValue(item.Currency ?? ""); // Currency
@@ -4970,26 +4998,25 @@ namespace Tips.Purchase.Api.Controllers
                     row.CreateCell(21).SetCellValue(item.PoStatus ?? 0); // POStatus
                     row.CreateCell(22).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
                     row.CreateCell(23).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
-                    row.CreateCell(24).SetCellValue(item.ConfirmationDate.HasValue ? item.ConfirmationDate.Value.ToString("MM/dd/yyyy") : ""); // ConfirmationDate
-                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.ConfirmationQty ?? 0)); // ConfirmationQty
+                    row.CreateCell(24).SetCellValue(item.ScheduleDate.HasValue ? item.ScheduleDate.Value.ToString("MM/dd/yyyy") : ""); // ScheduleDate
                 }
 
-                int rowIndex2 = 1;
-                foreach (var item in poDeliveryScheduleReports)
+                int rowIndex3 = 1;
+                foreach (var item in poProjectReports)
                 {
-                    var row = sheet2.CreateRow(rowIndex2++);
+                    var row = sheet3.CreateRow(rowIndex3++);
                     row.CreateCell(0).SetCellValue(item.VendorId ?? ""); // VendorId
                     row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
                     row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
                     row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("MM/dd/yyyy") : ""); // PODate
-                    row.CreateCell(4).SetCellValue(item.PRNumber ?? ""); // PRNumber
-                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
-                    row.CreateCell(6).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
-                    row.CreateCell(7).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
-                    row.CreateCell(8).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
-                    row.CreateCell(9).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
-                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
-                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.ScheduleQty ?? 0)); // ScheduleQty
+                    row.CreateCell(4).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+                    row.CreateCell(5).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+                    row.CreateCell(6).SetCellValue(item.ProjectNumber ?? ""); // ProjectNumber
+                    row.CreateCell(7).SetCellValue(Convert.ToDouble(item.ProjectQty ?? 0)); // ProjectQty
+                    row.CreateCell(8).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+                    row.CreateCell(9).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+                    row.CreateCell(10).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
                     row.CreateCell(12).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
                     row.CreateCell(13).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
                     row.CreateCell(14).SetCellValue(item.Currency ?? ""); // Currency
@@ -5003,39 +5030,6 @@ namespace Tips.Purchase.Api.Controllers
                     row.CreateCell(22).SetCellValue(item.PoStatus ?? 0); // POStatus
                     row.CreateCell(23).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
                     row.CreateCell(24).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
-                    row.CreateCell(25).SetCellValue(item.ScheduleDate.HasValue ? item.ScheduleDate.Value.ToString("MM/dd/yyyy") : ""); // ScheduleDate
-                }
-
-                int rowIndex3 = 1;
-                foreach (var item in poProjectReports)
-                {
-                    var row = sheet3.CreateRow(rowIndex3++);
-                    row.CreateCell(0).SetCellValue(item.VendorId ?? ""); // VendorId
-                    row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
-                    row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
-                    row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("MM/dd/yyyy") : ""); // PODate
-                    row.CreateCell(4).SetCellValue(item.PRNumber ?? ""); // PRNumber
-                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
-                    row.CreateCell(6).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
-                    row.CreateCell(7).SetCellValue(item.ProjectNumber ?? ""); // ProjectNumber
-                    row.CreateCell(8).SetCellValue(Convert.ToDouble(item.ProjectQty ?? 0)); // ProjectQty
-                    row.CreateCell(9).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
-                    row.CreateCell(10).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
-                    row.CreateCell(11).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
-                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
-                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
-                    row.CreateCell(14).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
-                    row.CreateCell(15).SetCellValue(item.Currency ?? ""); // Currency
-                    row.CreateCell(16).SetCellValue(item.UOM ?? ""); // UOM
-                    row.CreateCell(17).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
-                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
-                    row.CreateCell(19).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
-                    row.CreateCell(20).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
-                    row.CreateCell(21).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
-                    row.CreateCell(22).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
-                    row.CreateCell(23).SetCellValue(item.PoStatus ?? 0); // POStatus
-                    row.CreateCell(24).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
-                    row.CreateCell(25).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
                 }
 
 
@@ -5076,28 +5070,27 @@ namespace Tips.Purchase.Api.Controllers
                 headerRow.CreateCell(1).SetCellValue("Vendor Name");
                 headerRow.CreateCell(2).SetCellValue("PO Number");
                 headerRow.CreateCell(3).SetCellValue("PO Date");
-                headerRow.CreateCell(4).SetCellValue("PR Number");
-                headerRow.CreateCell(5).SetCellValue("PR Qty");
-                headerRow.CreateCell(6).SetCellValue("Revision Number");
-                headerRow.CreateCell(7).SetCellValue("Item Number");
-                headerRow.CreateCell(8).SetCellValue("Mftr Item Number");
-                headerRow.CreateCell(9).SetCellValue("Item Description");
-                headerRow.CreateCell(10).SetCellValue("PO Qty");
-                headerRow.CreateCell(11).SetCellValue("Received Qty");
-                headerRow.CreateCell(12).SetCellValue("Balance Qty");
-                headerRow.CreateCell(13).SetCellValue("Currency");
-                headerRow.CreateCell(14).SetCellValue("UOM");
-                headerRow.CreateCell(15).SetCellValue("Unit Price");
-                headerRow.CreateCell(16).SetCellValue("Balance Value");
-                headerRow.CreateCell(17).SetCellValue("PO Approved I By");
-                headerRow.CreateCell(18).SetCellValue("PO Approved I Date");
-                headerRow.CreateCell(19).SetCellValue("PO Approved II By");
-                headerRow.CreateCell(20).SetCellValue("PO Approved II Date");
-                headerRow.CreateCell(21).SetCellValue("PO Status");
-                headerRow.CreateCell(22).SetCellValue("Created By");
-                headerRow.CreateCell(23).SetCellValue("Created On");
-                headerRow.CreateCell(24).SetCellValue("Confirmation Date");
-                headerRow.CreateCell(25).SetCellValue("Confirmation Qty");
+                headerRow.CreateCell(4).SetCellValue("PR Qty");
+                headerRow.CreateCell(5).SetCellValue("Revision Number");
+                headerRow.CreateCell(6).SetCellValue("Item Number");
+                headerRow.CreateCell(7).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(8).SetCellValue("Item Description");
+                headerRow.CreateCell(9).SetCellValue("PO Qty");
+                headerRow.CreateCell(10).SetCellValue("Received Qty");
+                headerRow.CreateCell(11).SetCellValue("Balance Qty");
+                headerRow.CreateCell(12).SetCellValue("Currency");
+                headerRow.CreateCell(13).SetCellValue("UOM");
+                headerRow.CreateCell(14).SetCellValue("Unit Price");
+                headerRow.CreateCell(15).SetCellValue("Balance Value");
+                headerRow.CreateCell(16).SetCellValue("PO Approved I By");
+                headerRow.CreateCell(17).SetCellValue("PO Approved I Date");
+                headerRow.CreateCell(18).SetCellValue("PO Approved II By");
+                headerRow.CreateCell(19).SetCellValue("PO Approved II Date");
+                headerRow.CreateCell(20).SetCellValue("PO Status");
+                headerRow.CreateCell(21).SetCellValue("Created By");
+                headerRow.CreateCell(22).SetCellValue("Created On");
+                headerRow.CreateCell(23).SetCellValue("Confirmation Date");
+                headerRow.CreateCell(24).SetCellValue("Confirmation Qty");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -5108,28 +5101,27 @@ namespace Tips.Purchase.Api.Controllers
                     row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
                     row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
                     row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("MM/dd/yyyy") : ""); // PODate
-                    row.CreateCell(4).SetCellValue(item.PRNumber ?? ""); // PRNumber
-                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
-                    row.CreateCell(6).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
-                    row.CreateCell(7).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
-                    row.CreateCell(8).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
-                    row.CreateCell(9).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
-                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
-                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
-                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
-                    row.CreateCell(13).SetCellValue(item.Currency ?? ""); // Currency
-                    row.CreateCell(14).SetCellValue(item.UOM ?? ""); // UOM
-                    row.CreateCell(15).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
-                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
-                    row.CreateCell(17).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
-                    row.CreateCell(18).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
-                    row.CreateCell(19).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
-                    row.CreateCell(20).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
-                    row.CreateCell(21).SetCellValue(item.PoStatus ?? 0); // POStatus
-                    row.CreateCell(22).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
-                    row.CreateCell(23).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
-                    row.CreateCell(24).SetCellValue(item.ConfirmationDate.HasValue ? item.ConfirmationDate.Value.ToString("MM/dd/yyyy") : ""); // ConfirmationDate
-                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.ConfirmationQty ?? 0)); // ConfirmationQty
+                    row.CreateCell(4).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+                    row.CreateCell(5).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+                    row.CreateCell(6).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+                    row.CreateCell(7).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+                    row.CreateCell(8).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
+                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
+                    row.CreateCell(12).SetCellValue(item.Currency ?? ""); // Currency
+                    row.CreateCell(13).SetCellValue(item.UOM ?? ""); // UOM
+                    row.CreateCell(14).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
+                    row.CreateCell(15).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
+                    row.CreateCell(16).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
+                    row.CreateCell(17).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
+                    row.CreateCell(18).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
+                    row.CreateCell(19).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
+                    row.CreateCell(20).SetCellValue(item.PoStatus ?? 0); // POStatus
+                    row.CreateCell(21).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
+                    row.CreateCell(22).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
+                    row.CreateCell(23).SetCellValue(item.ConfirmationDate.HasValue ? item.ConfirmationDate.Value.ToString("MM/dd/yyyy") : ""); // ConfirmationDate
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.ConfirmationQty ?? 0)); // ConfirmationQty
                 }
 
                 // Save Excel workbook to a memory stream
@@ -5268,28 +5260,27 @@ namespace Tips.Purchase.Api.Controllers
                 headerRow.CreateCell(1).SetCellValue("Vendor Name");
                 headerRow.CreateCell(2).SetCellValue("PO Number");
                 headerRow.CreateCell(3).SetCellValue("PO Date");
-                headerRow.CreateCell(4).SetCellValue("PR Number");
-                headerRow.CreateCell(5).SetCellValue("PR Qty");
-                headerRow.CreateCell(6).SetCellValue("Revision Number");
-                headerRow.CreateCell(7).SetCellValue("Item Number");
-                headerRow.CreateCell(8).SetCellValue("Mftr Item Number");
-                headerRow.CreateCell(9).SetCellValue("Item Description");
-                headerRow.CreateCell(10).SetCellValue("PO Qty");
-                headerRow.CreateCell(11).SetCellValue("Schedule Qty");
-                headerRow.CreateCell(12).SetCellValue("Received Qty");
-                headerRow.CreateCell(13).SetCellValue("Balance Qty");
-                headerRow.CreateCell(14).SetCellValue("Currency");
-                headerRow.CreateCell(15).SetCellValue("UOM");
-                headerRow.CreateCell(16).SetCellValue("Unit Price");
-                headerRow.CreateCell(17).SetCellValue("Balance Value");
-                headerRow.CreateCell(18).SetCellValue("PO Approved I By");
-                headerRow.CreateCell(19).SetCellValue("PO Approved I Date");
-                headerRow.CreateCell(20).SetCellValue("PO Approved II By");
-                headerRow.CreateCell(21).SetCellValue("PO Approved II Date");
-                headerRow.CreateCell(22).SetCellValue("PO Status");
-                headerRow.CreateCell(23).SetCellValue("Created By");
-                headerRow.CreateCell(24).SetCellValue("Created On");
-                headerRow.CreateCell(25).SetCellValue("Schedule Date");
+                headerRow.CreateCell(4).SetCellValue("PR Qty");
+                headerRow.CreateCell(5).SetCellValue("Revision Number");
+                headerRow.CreateCell(6).SetCellValue("Item Number");
+                headerRow.CreateCell(7).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(8).SetCellValue("Item Description");
+                headerRow.CreateCell(9).SetCellValue("PO Qty");
+                headerRow.CreateCell(10).SetCellValue("Schedule Qty");
+                headerRow.CreateCell(11).SetCellValue("Received Qty");
+                headerRow.CreateCell(12).SetCellValue("Balance Qty");
+                headerRow.CreateCell(13).SetCellValue("Currency");
+                headerRow.CreateCell(14).SetCellValue("UOM");
+                headerRow.CreateCell(15).SetCellValue("Unit Price");
+                headerRow.CreateCell(16).SetCellValue("Balance Value");
+                headerRow.CreateCell(17).SetCellValue("PO Approved I By");
+                headerRow.CreateCell(18).SetCellValue("PO Approved I Date");
+                headerRow.CreateCell(19).SetCellValue("PO Approved II By");
+                headerRow.CreateCell(20).SetCellValue("PO Approved II Date");
+                headerRow.CreateCell(21).SetCellValue("PO Status");
+                headerRow.CreateCell(22).SetCellValue("Created By");
+                headerRow.CreateCell(23).SetCellValue("Created On");
+                headerRow.CreateCell(24).SetCellValue("Schedule Date");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -5300,28 +5291,27 @@ namespace Tips.Purchase.Api.Controllers
                     row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
                     row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
                     row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("MM/dd/yyyy") : ""); // PODate
-                    row.CreateCell(4).SetCellValue(item.PRNumber ?? ""); // PRNumber
-                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
-                    row.CreateCell(6).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
-                    row.CreateCell(7).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
-                    row.CreateCell(8).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
-                    row.CreateCell(9).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
-                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
-                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.ScheduleQty ?? 0)); // ScheduleQty
-                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
-                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
-                    row.CreateCell(14).SetCellValue(item.Currency ?? ""); // Currency
-                    row.CreateCell(15).SetCellValue(item.UOM ?? ""); // UOM
-                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
-                    row.CreateCell(17).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
-                    row.CreateCell(18).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
-                    row.CreateCell(19).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
-                    row.CreateCell(20).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
-                    row.CreateCell(21).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
-                    row.CreateCell(22).SetCellValue(item.PoStatus ?? 0); // POStatus
-                    row.CreateCell(23).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
-                    row.CreateCell(24).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
-                    row.CreateCell(25).SetCellValue(item.ScheduleDate.HasValue ? item.ScheduleDate.Value.ToString("MM/dd/yyyy") : ""); // ScheduleDate
+                    row.CreateCell(4).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+                    row.CreateCell(5).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+                    row.CreateCell(6).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+                    row.CreateCell(7).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+                    row.CreateCell(8).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.ScheduleQty ?? 0)); // ScheduleQty
+                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
+                    row.CreateCell(13).SetCellValue(item.Currency ?? ""); // Currency
+                    row.CreateCell(14).SetCellValue(item.UOM ?? ""); // UOM
+                    row.CreateCell(15).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
+                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
+                    row.CreateCell(17).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
+                    row.CreateCell(18).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
+                    row.CreateCell(19).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
+                    row.CreateCell(20).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
+                    row.CreateCell(21).SetCellValue(item.PoStatus ?? 0); // POStatus
+                    row.CreateCell(22).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
+                    row.CreateCell(23).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
+                    row.CreateCell(24).SetCellValue(item.ScheduleDate.HasValue ? item.ScheduleDate.Value.ToString("MM/dd/yyyy") : ""); // ScheduleDate
                 }
 
                 // Save Excel workbook to a memory stream
@@ -5360,28 +5350,27 @@ namespace Tips.Purchase.Api.Controllers
                 headerRow.CreateCell(1).SetCellValue("Vendor Name");
                 headerRow.CreateCell(2).SetCellValue("PO Number");
                 headerRow.CreateCell(3).SetCellValue("PO Date");
-                headerRow.CreateCell(4).SetCellValue("PR Number");
-                headerRow.CreateCell(5).SetCellValue("PR Qty");
-                headerRow.CreateCell(6).SetCellValue("Revision Number");
-                headerRow.CreateCell(7).SetCellValue("Item Number");
-                headerRow.CreateCell(8).SetCellValue("Mftr Item Number");
-                headerRow.CreateCell(9).SetCellValue("Item Description");
-                headerRow.CreateCell(10).SetCellValue("PO Qty");
-                headerRow.CreateCell(11).SetCellValue("Schedule Qty");
-                headerRow.CreateCell(12).SetCellValue("Received Qty");
-                headerRow.CreateCell(13).SetCellValue("Balance Qty");
-                headerRow.CreateCell(14).SetCellValue("Currency");
-                headerRow.CreateCell(15).SetCellValue("UOM");
-                headerRow.CreateCell(16).SetCellValue("Unit Price");
-                headerRow.CreateCell(17).SetCellValue("Balance Value");
-                headerRow.CreateCell(18).SetCellValue("PO Approved I By");
-                headerRow.CreateCell(19).SetCellValue("PO Approved I Date");
-                headerRow.CreateCell(20).SetCellValue("PO Approved II By");
-                headerRow.CreateCell(21).SetCellValue("PO Approved II Date");
-                headerRow.CreateCell(22).SetCellValue("PO Status");
-                headerRow.CreateCell(23).SetCellValue("Created By");
-                headerRow.CreateCell(24).SetCellValue("Created On");
-                headerRow.CreateCell(25).SetCellValue("Schedule Date");
+                headerRow.CreateCell(4).SetCellValue("PR Qty");
+                headerRow.CreateCell(5).SetCellValue("Revision Number");
+                headerRow.CreateCell(6).SetCellValue("Item Number");
+                headerRow.CreateCell(7).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(8).SetCellValue("Item Description");
+                headerRow.CreateCell(9).SetCellValue("PO Qty");
+                headerRow.CreateCell(10).SetCellValue("Schedule Qty");
+                headerRow.CreateCell(11).SetCellValue("Received Qty");
+                headerRow.CreateCell(12).SetCellValue("Balance Qty");
+                headerRow.CreateCell(13).SetCellValue("Currency");
+                headerRow.CreateCell(14).SetCellValue("UOM");
+                headerRow.CreateCell(15).SetCellValue("Unit Price");
+                headerRow.CreateCell(16).SetCellValue("Balance Value");
+                headerRow.CreateCell(17).SetCellValue("PO Approved I By");
+                headerRow.CreateCell(18).SetCellValue("PO Approved I Date");
+                headerRow.CreateCell(19).SetCellValue("PO Approved II By");
+                headerRow.CreateCell(20).SetCellValue("PO Approved II Date");
+                headerRow.CreateCell(21).SetCellValue("PO Status");
+                headerRow.CreateCell(22).SetCellValue("Created By");
+                headerRow.CreateCell(23).SetCellValue("Created On");
+                headerRow.CreateCell(24).SetCellValue("Schedule Date");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -5392,28 +5381,27 @@ namespace Tips.Purchase.Api.Controllers
                     row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
                     row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
                     row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("MM/dd/yyyy") : ""); // PODate
-                    row.CreateCell(4).SetCellValue(item.PRNumber ?? ""); // PRNumber
-                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
-                    row.CreateCell(6).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
-                    row.CreateCell(7).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
-                    row.CreateCell(8).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
-                    row.CreateCell(9).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
-                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
-                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.ScheduleQty ?? 0)); // ScheduleQty
-                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
-                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
-                    row.CreateCell(14).SetCellValue(item.Currency ?? ""); // Currency
-                    row.CreateCell(15).SetCellValue(item.UOM ?? ""); // UOM
-                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
-                    row.CreateCell(17).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
-                    row.CreateCell(18).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
-                    row.CreateCell(19).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
-                    row.CreateCell(20).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
-                    row.CreateCell(21).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
-                    row.CreateCell(22).SetCellValue(item.PoStatus ?? 0); // POStatus
-                    row.CreateCell(23).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
-                    row.CreateCell(24).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
-                    row.CreateCell(25).SetCellValue(item.ScheduleDate.HasValue ? item.ScheduleDate.Value.ToString("MM/dd/yyyy") : ""); // ScheduleDate
+                    row.CreateCell(4).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+                    row.CreateCell(5).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+                    row.CreateCell(6).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+                    row.CreateCell(7).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+                    row.CreateCell(8).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.ScheduleQty ?? 0)); // ScheduleQty
+                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
+                    row.CreateCell(13).SetCellValue(item.Currency ?? ""); // Currency
+                    row.CreateCell(14).SetCellValue(item.UOM ?? ""); // UOM
+                    row.CreateCell(15).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
+                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
+                    row.CreateCell(17).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
+                    row.CreateCell(18).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
+                    row.CreateCell(19).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
+                    row.CreateCell(20).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
+                    row.CreateCell(21).SetCellValue(item.PoStatus ?? 0); // POStatus
+                    row.CreateCell(22).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
+                    row.CreateCell(23).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
+                    row.CreateCell(24).SetCellValue(item.ScheduleDate.HasValue ? item.ScheduleDate.Value.ToString("MM/dd/yyyy") : ""); // ScheduleDate
                 }
 
                 // Save Excel workbook to a memory stream
@@ -5552,29 +5540,28 @@ namespace Tips.Purchase.Api.Controllers
                 headerRow.CreateCell(1).SetCellValue("Vendor Name");
                 headerRow.CreateCell(2).SetCellValue("PO Number");
                 headerRow.CreateCell(3).SetCellValue("PO Date");
-                headerRow.CreateCell(4).SetCellValue("PR Number");
-                headerRow.CreateCell(5).SetCellValue("PR Qty");
-                headerRow.CreateCell(6).SetCellValue("Revision Number");
-                headerRow.CreateCell(7).SetCellValue("Project Number");
-                headerRow.CreateCell(8).SetCellValue("Project Qty");
-                headerRow.CreateCell(9).SetCellValue("Item Number");
-                headerRow.CreateCell(10).SetCellValue("Mftr Item Number");
-                headerRow.CreateCell(11).SetCellValue("Item Description");
-                headerRow.CreateCell(12).SetCellValue("PO Qty");
-                headerRow.CreateCell(13).SetCellValue("Received Qty");
-                headerRow.CreateCell(14).SetCellValue("Balance Qty");
-                headerRow.CreateCell(15).SetCellValue("Currency");
-                headerRow.CreateCell(16).SetCellValue("UOM");
-                headerRow.CreateCell(17).SetCellValue("Unit Price");
-                headerRow.CreateCell(18).SetCellValue("Payment Terms");
-                headerRow.CreateCell(19).SetCellValue("Balance Value");
-                headerRow.CreateCell(20).SetCellValue("PO Approved I By");
-                headerRow.CreateCell(21).SetCellValue("PO Approved I Date");
-                headerRow.CreateCell(22).SetCellValue("PO Approved II By");
-                headerRow.CreateCell(23).SetCellValue("PO Approved II Date");
-                headerRow.CreateCell(24).SetCellValue("PO Status");
-                headerRow.CreateCell(25).SetCellValue("Created By");
-                headerRow.CreateCell(26).SetCellValue("Created On");
+                headerRow.CreateCell(4).SetCellValue("PR Qty");
+                headerRow.CreateCell(5).SetCellValue("Revision Number");
+                headerRow.CreateCell(6).SetCellValue("Project Number");
+                headerRow.CreateCell(7).SetCellValue("Project Qty");
+                headerRow.CreateCell(8).SetCellValue("Item Number");
+                headerRow.CreateCell(9).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(10).SetCellValue("Item Description");
+                headerRow.CreateCell(11).SetCellValue("PO Qty");
+                headerRow.CreateCell(12).SetCellValue("Received Qty");
+                headerRow.CreateCell(13).SetCellValue("Balance Qty");
+                headerRow.CreateCell(14).SetCellValue("Currency");
+                headerRow.CreateCell(15).SetCellValue("UOM");
+                headerRow.CreateCell(16).SetCellValue("Unit Price");
+                headerRow.CreateCell(17).SetCellValue("Payment Terms");
+                headerRow.CreateCell(18).SetCellValue("Balance Value");
+                headerRow.CreateCell(19).SetCellValue("PO Approved I By");
+                headerRow.CreateCell(20).SetCellValue("PO Approved I Date");
+                headerRow.CreateCell(21).SetCellValue("PO Approved II By");
+                headerRow.CreateCell(22).SetCellValue("PO Approved II Date");
+                headerRow.CreateCell(23).SetCellValue("PO Status");
+                headerRow.CreateCell(24).SetCellValue("Created By");
+                headerRow.CreateCell(25).SetCellValue("Created On");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -5585,29 +5572,28 @@ namespace Tips.Purchase.Api.Controllers
                     row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
                     row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
                     row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("MM/dd/yyyy") : ""); // PODate
-                    row.CreateCell(4).SetCellValue(item.PRNumber ?? ""); // PRNumber
-                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
-                    row.CreateCell(6).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
-                    row.CreateCell(7).SetCellValue(item.ProjectNumber ?? ""); // ProjectNumber
-                    row.CreateCell(8).SetCellValue(Convert.ToDouble(item.ProjectQty ?? 0)); // ProjectQty
-                    row.CreateCell(9).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
-                    row.CreateCell(10).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
-                    row.CreateCell(11).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
-                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
-                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
-                    row.CreateCell(14).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
-                    row.CreateCell(15).SetCellValue(item.Currency ?? ""); // Currency
-                    row.CreateCell(16).SetCellValue(item.UOM ?? ""); // UOM
-                    row.CreateCell(17).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
-                    row.CreateCell(18).SetCellValue(item.PaymentTerms ?? ""); 
-                    row.CreateCell(19).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
-                    row.CreateCell(20).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
-                    row.CreateCell(21).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
-                    row.CreateCell(22).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
-                    row.CreateCell(23).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
-                    row.CreateCell(24).SetCellValue(item.PoStatus ?? 0); // POStatus
-                    row.CreateCell(25).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
-                    row.CreateCell(26).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
+                    row.CreateCell(4).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+                    row.CreateCell(5).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+                    row.CreateCell(6).SetCellValue(item.ProjectNumber ?? ""); // ProjectNumber
+                    row.CreateCell(7).SetCellValue(Convert.ToDouble(item.ProjectQty ?? 0)); // ProjectQty
+                    row.CreateCell(8).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+                    row.CreateCell(9).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+                    row.CreateCell(10).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
+                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
+                    row.CreateCell(14).SetCellValue(item.Currency ?? ""); // Currency
+                    row.CreateCell(15).SetCellValue(item.UOM ?? ""); // UOM
+                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
+                    row.CreateCell(17).SetCellValue(item.PaymentTerms ?? ""); 
+                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
+                    row.CreateCell(19).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
+                    row.CreateCell(20).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
+                    row.CreateCell(21).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
+                    row.CreateCell(22).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
+                    row.CreateCell(23).SetCellValue(item.PoStatus ?? 0); // POStatus
+                    row.CreateCell(24).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
+                    row.CreateCell(25).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
                 }
 
                 // Save Excel workbook to a memory stream
@@ -5645,29 +5631,28 @@ namespace Tips.Purchase.Api.Controllers
                 headerRow.CreateCell(1).SetCellValue("Vendor Name");
                 headerRow.CreateCell(2).SetCellValue("PO Number");
                 headerRow.CreateCell(3).SetCellValue("PO Date");
-                headerRow.CreateCell(4).SetCellValue("PR Number");
-                headerRow.CreateCell(5).SetCellValue("PR Qty");
-                headerRow.CreateCell(6).SetCellValue("Revision Number");
-                headerRow.CreateCell(7).SetCellValue("Project Number");
-                headerRow.CreateCell(8).SetCellValue("Project Qty");
-                headerRow.CreateCell(9).SetCellValue("Item Number");
-                headerRow.CreateCell(10).SetCellValue("Mftr Item Number");
-                headerRow.CreateCell(11).SetCellValue("Item Description");
-                headerRow.CreateCell(12).SetCellValue("PO Qty");
-                headerRow.CreateCell(13).SetCellValue("Received Qty");
-                headerRow.CreateCell(14).SetCellValue("Balance Qty");
-                headerRow.CreateCell(15).SetCellValue("Currency");
-                headerRow.CreateCell(16).SetCellValue("UOM");
-                headerRow.CreateCell(17).SetCellValue("Unit Price");
-                headerRow.CreateCell(18).SetCellValue("Payment Terms");
-                headerRow.CreateCell(19).SetCellValue("Balance Value");
-                headerRow.CreateCell(20).SetCellValue("PO Approved I By");
-                headerRow.CreateCell(21).SetCellValue("PO Approved I Date");
-                headerRow.CreateCell(22).SetCellValue("PO Approved II By");
-                headerRow.CreateCell(23).SetCellValue("PO Approved II Date");
-                headerRow.CreateCell(24).SetCellValue("PO Status");
-                headerRow.CreateCell(25).SetCellValue("Created By");
-                headerRow.CreateCell(26).SetCellValue("Created On");
+                headerRow.CreateCell(4).SetCellValue("PR Qty");
+                headerRow.CreateCell(5).SetCellValue("Revision Number");
+                headerRow.CreateCell(6).SetCellValue("Project Number");
+                headerRow.CreateCell(7).SetCellValue("Project Qty");
+                headerRow.CreateCell(8).SetCellValue("Item Number");
+                headerRow.CreateCell(9).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(10).SetCellValue("Item Description");
+                headerRow.CreateCell(11).SetCellValue("PO Qty");
+                headerRow.CreateCell(12).SetCellValue("Received Qty");
+                headerRow.CreateCell(13).SetCellValue("Balance Qty");
+                headerRow.CreateCell(14).SetCellValue("Currency");
+                headerRow.CreateCell(15).SetCellValue("UOM");
+                headerRow.CreateCell(16).SetCellValue("Unit Price");
+                headerRow.CreateCell(17).SetCellValue("Payment Terms");
+                headerRow.CreateCell(18).SetCellValue("Balance Value");
+                headerRow.CreateCell(19).SetCellValue("PO Approved I By");
+                headerRow.CreateCell(20).SetCellValue("PO Approved I Date");
+                headerRow.CreateCell(21).SetCellValue("PO Approved II By");
+                headerRow.CreateCell(22).SetCellValue("PO Approved II Date");
+                headerRow.CreateCell(23).SetCellValue("PO Status");
+                headerRow.CreateCell(24).SetCellValue("Created By");
+                headerRow.CreateCell(25).SetCellValue("Created On");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -5678,29 +5663,28 @@ namespace Tips.Purchase.Api.Controllers
                     row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
                     row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
                     row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("MM/dd/yyyy") : ""); // PODate
-                    row.CreateCell(4).SetCellValue(item.PRNumber ?? ""); // PRNumber
-                    row.CreateCell(5).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
-                    row.CreateCell(6).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
-                    row.CreateCell(7).SetCellValue(item.ProjectNumber ?? ""); // ProjectNumber
-                    row.CreateCell(8).SetCellValue(Convert.ToDouble(item.ProjectQty ?? 0)); // ProjectQty
-                    row.CreateCell(9).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
-                    row.CreateCell(10).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
-                    row.CreateCell(11).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
-                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
-                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
-                    row.CreateCell(14).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
-                    row.CreateCell(15).SetCellValue(item.Currency ?? ""); // Currency
-                    row.CreateCell(16).SetCellValue(item.UOM ?? ""); // UOM
-                    row.CreateCell(17).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
-                    row.CreateCell(18).SetCellValue(item.PaymentTerms ?? "");
-                    row.CreateCell(19).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
-                    row.CreateCell(20).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
-                    row.CreateCell(21).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
-                    row.CreateCell(22).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
-                    row.CreateCell(23).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
-                    row.CreateCell(24).SetCellValue(item.PoStatus ?? 0); // POStatus
-                    row.CreateCell(25).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
-                    row.CreateCell(26).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
+                    row.CreateCell(4).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+                    row.CreateCell(5).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+                    row.CreateCell(6).SetCellValue(item.ProjectNumber ?? ""); // ProjectNumber
+                    row.CreateCell(7).SetCellValue(Convert.ToDouble(item.ProjectQty ?? 0)); // ProjectQty
+                    row.CreateCell(8).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+                    row.CreateCell(9).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+                    row.CreateCell(10).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+                    row.CreateCell(11).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
+                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
+                    row.CreateCell(14).SetCellValue(item.Currency ?? ""); // Currency
+                    row.CreateCell(15).SetCellValue(item.UOM ?? ""); // UOM
+                    row.CreateCell(16).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
+                    row.CreateCell(17).SetCellValue(item.PaymentTerms ?? "");
+                    row.CreateCell(18).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
+                    row.CreateCell(19).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
+                    row.CreateCell(20).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
+                    row.CreateCell(21).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
+                    row.CreateCell(22).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIIDate
+                    row.CreateCell(23).SetCellValue(item.PoStatus ?? 0); // POStatus
+                    row.CreateCell(24).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
+                    row.CreateCell(25).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("MM/dd/yyyy") : ""); // CreatedOn
                 }
 
                 // Save Excel workbook to a memory stream

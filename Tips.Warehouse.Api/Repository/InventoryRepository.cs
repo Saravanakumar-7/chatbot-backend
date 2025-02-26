@@ -1158,6 +1158,16 @@ namespace Tips.Warehouse.Api.Repository
 
             return results;
         }
+
+        public async Task<IEnumerable<InventorySumSPReport>> InventorySumSPReportWithdate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<InventorySumSPReport>()
+                         .FromSqlInterpolated($"CALL Inventory_Sum_Report_With_Date({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
+
         public async Task<IEnumerable<GetInventorySPReportForAvi>> GetInventorySPReportForAvision(DateTime? FromDate, DateTime? ToDate, string partNumber, string projectNumber)
         {
             var results = _tipsWarehouseDbContext.Set<GetInventorySPReportForAvi>()

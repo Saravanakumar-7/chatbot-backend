@@ -6,7 +6,7 @@
             public string? VendorName { get; set; }
             public string? PONumber { get; set; }
             public DateTime? PODate { get; set; }
-            public string? PRNumber { get; set; }
+            //public string? PRNumber { get; set; }
             public decimal? PRQty { get; set; }
             public int? RevisionNumber { get; set; }
             public string? ProjectNumber { get; set; }

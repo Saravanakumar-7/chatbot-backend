@@ -3829,6 +3829,43 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> InventorySumSPReportWithdate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<InventorySumSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventorySumSPReport>>();
+            try
+            {
+                var products = await _inventoryRepository.InventorySumSPReportWithdate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventorySumSPReportWithDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"InventorySumSPReportWithDate hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InventorySumSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside InventorySumSPReportWithdate action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetInventoryDashboardSPReportsWithParam()
         {
             ServiceResponse<List<InventoryDashboardSPReport_Details>> serviceResponse = new ServiceResponse<List<InventoryDashboardSPReport_Details>>();

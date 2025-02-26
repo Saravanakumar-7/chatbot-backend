@@ -72,7 +72,10 @@ namespace Tips.Grin.Api.Entities
             modelBuilder.Entity<OpenGrinForGrinSPReport>().HasNoKey();
             modelBuilder.Entity<OpenGrinForIQCSPReport>().HasNoKey();
             modelBuilder.Entity<IQCPendingReportWithParamForTrans>().HasNoKey();
+            modelBuilder.Entity<PurchaseInventorySPReport>().HasNoKey();
             
+
+
 
         }
 
