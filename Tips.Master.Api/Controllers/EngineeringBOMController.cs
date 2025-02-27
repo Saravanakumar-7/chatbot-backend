@@ -1090,8 +1090,11 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
-                    var revRound = Math.Round(enggBomList.RevisionNumber);
-                    enggBomList.RevisionNumber = revRound + Convert.ToDecimal(1.0);
+                    var revNo = Convert.ToInt32(enggBomList.RevisionNumber);
+                    enggBomList.RevisionNumber = Convert.ToDecimal(revNo + 1);
+
+                    //var revRound = Math.Ceiling(enggBomList.RevisionNumber);
+                    //enggBomList.RevisionNumber = revRound + Convert.ToDecimal(1.0);
                 }
                 _logger.LogInfo("Engineering BOM Updated successfully");
                 _repository.SaveAsync();
