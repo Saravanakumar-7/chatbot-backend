@@ -108,6 +108,9 @@ namespace Entities
         public bool Depreciation { get; set; }
         public bool Pfo { get; set; }
         public string? RemarksToVendor { get; set; }
+        public string? CCT { get; set; }
+        public string? BeamAngle { get; set; }
+        public string? TrimColor { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         
