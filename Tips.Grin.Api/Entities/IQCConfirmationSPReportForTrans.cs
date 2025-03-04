@@ -6,7 +6,6 @@
         public DateTime? GrinDate { get; set; }
         public string? VendorName { get; set; }
         public string? InvoiceNumber { get; set; }
-        public DateTime? IqcClearedDate { get; set; }
         public DateTime? InvoiceDate { get; set; }
         public decimal? InvoiceValue { get; set; }
         public string? PONumber { get; set; }

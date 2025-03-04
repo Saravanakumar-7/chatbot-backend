@@ -30,8 +30,10 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<IQCPendingReportWithParamForTrans>> GetIQCPendingSPReportWithParamForTrans(string? GrinNumber, string? VendorName, string? PONumber, string? ItemNumber,
                                                                                                     string? MPN, string? ProjectNumber);
         Task<IEnumerable<IQCConfirmationSPReportForTrans>> GetIQCConfirmationSPReportWithParamForTrans(string? GrinNumber, string? itemNo, string? ProjectNumber);
+        Task<IEnumerable<IQCConfirmationSPReportForAvi>> GetIQCConfirmationSPReportWithParamForAvi(string? GrinNumber, string? ItemNumber, string? ProjectNumber);
         Task<IEnumerable<IQCConfirmation_SPReport>> GetIQCConfirmationSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<IQCConfirmationSPReportForTrans>> GetIQCConfirmationSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<IQCConfirmationSPReportForAvi>> GetIQCConfirmationSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate);
         Task<PagedList<IQCConfirmationSPReportForTrans>> GetIQCConfirmationSPReportForTrans(PagingParameter pagingParameter);
         Task<List<IQCConfirmation>> GetIqcDetailsByGrinNoAndParts(Dictionary<string, List<string>> Grins);
     }
