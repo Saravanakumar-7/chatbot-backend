@@ -3828,13 +3828,14 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> InventorySumSPReportWithdate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        [HttpPost]
+        public async Task<IActionResult> InventorySumSPReportWithdate([FromBody] GetInventorySPReportForAviDto inventorySPReportForAviDto)
         {
             ServiceResponse<IEnumerable<InventorySumSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventorySumSPReport>>();
             try
             {
-                var products = await _inventoryRepository.InventorySumSPReportWithdate(FromDate, ToDate);
+                var products = await _inventoryRepository.InventorySumSPReportWithdate(inventorySPReportForAviDto.FromDate, inventorySPReportForAviDto.ToDate,
+                                                                                            inventorySPReportForAviDto.PartNumber, inventorySPReportForAviDto.ProjectNumber);
 
                 if (products == null)
                 {

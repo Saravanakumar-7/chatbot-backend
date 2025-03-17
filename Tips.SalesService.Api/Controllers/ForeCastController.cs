@@ -2145,7 +2145,7 @@ namespace Tips.SalesService.Api.Controllers
 
         // POST: api/<ForeCastCustomFieldController>
         [HttpPost]
-        public IActionResult CreateForeCastCustomField([FromBody] ForeCastCustomFieldDtoPost foreCastCustomFieldDtoPost)
+        public IActionResult CreateForeCastCustomField([FromBody] List<ForeCastCustomFieldDtoPost> foreCastCustomFieldDtoPost)
         {
             ServiceResponse<ForeCastCustomFieldDtoPost> serviceResponse = new ServiceResponse<ForeCastCustomFieldDtoPost>();
 
@@ -2548,7 +2548,7 @@ namespace Tips.SalesService.Api.Controllers
         [HttpGet("{CustomGroup}")]
         public async Task<IActionResult> GetForecastCustomFieldByCustomGroup(string CustomGroup)
         {
-            ServiceResponse<IEnumerable<RfqCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<RfqCustomFieldDto>>();
+            ServiceResponse<IEnumerable<ForeCastCustomFieldDto>> serviceResponse = new ServiceResponse<IEnumerable<ForeCastCustomFieldDto>>();
 
             try
             {
@@ -2566,7 +2566,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
 
                     _logger.LogInfo($"Returned CustomFieldList with id: {CustomGroup}");
-                    var result = _mapper.Map<IEnumerable<RfqCustomFieldDto>>(getCustomFieldList);
+                    var result = _mapper.Map<IEnumerable<ForeCastCustomFieldDto>>(getCustomFieldList);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned CustomFieldList with id successfully";
                     serviceResponse.Success = true;
