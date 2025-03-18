@@ -111,6 +111,8 @@ namespace Entities
         public string? CCT { get; set; }
         public string? BeamAngle { get; set; }
         public string? TrimColor { get; set; }
+        public string? Reflector { get; set; }
+        
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         

@@ -20,6 +20,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? ReasonforIssuingStock { get; set; }
         public bool ModifiedStatus { get; set; } = false;
         public bool IsDeleted { get; set; } = false;
+        public DateTime? DueDate { get; set; }
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }

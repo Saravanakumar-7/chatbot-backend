@@ -112,6 +112,7 @@ namespace Entities.DTOs
         public string? CCT { get; set; }
         public string? BeamAngle { get; set; }
         public string? TrimColor { get; set; }
+        public string? Reflector { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -220,6 +221,7 @@ namespace Entities.DTOs
         public string? CCT { get; set; }
         public string? BeamAngle { get; set; }
         public string? TrimColor { get; set; }
+        public string? Reflector { get; set; }
         public List<ItemmasterAlternateDtoPost>? ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouseDtoPost>? ItemMasterWarehouse { get; set; }
         public List<ItemMasterApprovedVendorDtoPost>? ItemMasterApprovedVendor { get; set; }
@@ -313,6 +315,7 @@ namespace Entities.DTOs
         public string? CCT { get; set; }
         public string? BeamAngle { get; set; }
         public string? TrimColor { get; set; }
+        public string? Reflector { get; set; }
         public List<ItemmasterAlternateDtoPost> ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouseDtoPost>? ItemMasterWarehouse { get; set; }
         public List<ItemMasterApprovedVendorDtoPost>? ItemMasterApprovedVendor { get; set; }
@@ -420,6 +423,7 @@ namespace Entities.DTOs
         public string? CCT { get; set; }
         public string? BeamAngle { get; set; }
         public string? TrimColor { get; set; }
+        public string? Reflector { get; set; }
 
         [Required(ErrorMessage = "Unit is required")]
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
@@ -583,6 +587,7 @@ namespace Entities.DTOs
         public string? CCT { get; set; }
         public string? BeamAngle { get; set; }
         public string? TrimColor { get; set; }
+        public string? Reflector { get; set; }
         public string? CreatedBy { get; set; }
         [DisplayFormat(DataFormatString = "{dd-MM-yyyy HH:mm:ss}")]
         public DateTime CreatedOn { get; set; }
