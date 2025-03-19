@@ -53,7 +53,7 @@ namespace Repository
         {
             var additionalChargesActiveDetails = FindAll()
                                .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.AdditionalChargesLabelName.Contains(searchParams.SearchValue) ||
-                                      inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
+                                      inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))) && inv.ActiveStatus == true);
             return additionalChargesActiveDetails;
         }
 
