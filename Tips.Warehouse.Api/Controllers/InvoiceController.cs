@@ -810,7 +810,10 @@ namespace Tips.Warehouse.Api.Controllers
                 var invoiceChildItemsEntityList = new List<InvoiceChildItem>();
                 var invoiceAdditionalChargePostDto = invoicePostDto.InvoiceAdditionalCharges;
                 var InvoiceAdditionalChargesList = _mapper.Map<IEnumerable<InvoiceAdditionalCharges>>(invoiceAdditionalChargePostDto);
-
+                foreach( var invoiceAddi in InvoiceAdditionalChargesList)
+                {
+                    invoiceAddi.InitialInvoicedValue = invoiceAddi.InvoicedValue;
+                } 
 
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
