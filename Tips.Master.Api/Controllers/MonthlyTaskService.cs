@@ -40,7 +40,7 @@ public class MonthlyTaskService : BackgroundService
             try
             {
                 await weightedAvgCostTask.Calculate_SA_Weighted_AvgCost();
-                await Task.Delay(300000);
+                await Task.Delay(100);
                 await FGweightedAvgCostTask.Calculate_FG_Weighted_AvgCost();
             }
             catch (Exception ex)
