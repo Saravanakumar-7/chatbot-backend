@@ -46,7 +46,7 @@ namespace Tips.Master.Api.Controllers
         private async Task Weighted_Calculation(string itemNumber, decimal version, List<SA_Weighted_AvgCost> sA_Weighted_AvgCosts)
         {
             decimal ppQtyAndWeight = 0;
-            var bomDetails = await _repository.EnggBomRepository.GetEnggBomByItemNoAndRevNo(itemNumber, version);
+            var bomDetails = await _repository.SA_Weighted_AvgCostRepository.GetEnggBomByItemNoAndRevNo(itemNumber, version);
 
             if (bomDetails?.EnggChildItems != null)
             {

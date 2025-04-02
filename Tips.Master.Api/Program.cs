@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using NLog;
 using Repository;
 using System.Text;
+using Tips.Master.Api.Controllers;
 using Tips.Master.Api.Extensions;
 using static Repository.ReleaseCostBomRepository;
 
@@ -119,6 +120,8 @@ builder.Services.AddScoped<IProductTypeRepository, ProductTypeRepository>();
 builder.Services.AddScoped<ITypeSolutionRepository, TypeSolutionRepository>();
 builder.Services.AddScoped<ITypeOfRoomRepository, TypeOfRoomRepository>();
 builder.Services.AddScoped<IPrioritizeRepository, PrioritizeRepository>();
+builder.Services.AddScoped<I_SA_Weighted_AvgCostTask, SA_Weighted_AvgCostTask>();
+builder.Services.AddScoped<I_FG_Weighted_AvgCostTask, FG_Weighted_AvgCostTask>();
 
 var app = builder.Build();
 

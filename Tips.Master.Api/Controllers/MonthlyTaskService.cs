@@ -14,7 +14,7 @@ public class MonthlyTaskService : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             var now = DateTime.Now;
-            var nextRun = new DateTime(now.Year, now.Month, 1, 1, 0, 0, DateTimeKind.Utc);
+            var nextRun = new DateTime(now.Year, now.Month, 1, 1, 0, 0, DateTimeKind.Local);
 
             if (now > nextRun)
             {
@@ -35,10 +35,11 @@ public class MonthlyTaskService : BackgroundService
     {
         using (var scope = _serviceProvider.CreateScope())
         {
-            var weightedAvgCostTask = scope.ServiceProvider.GetRequiredService<I_SA_Weighted_AvgCostTask>();
-            var FGweightedAvgCostTask = scope.ServiceProvider.GetRequiredService<I_FG_Weighted_AvgCostTask>();
             try
             {
+                var weightedAvgCostTask = scope.ServiceProvider.GetRequiredService<I_SA_Weighted_AvgCostTask>();
+            var FGweightedAvgCostTask = scope.ServiceProvider.GetRequiredService<I_FG_Weighted_AvgCostTask>();
+            
                 await weightedAvgCostTask.Calculate_SA_Weighted_AvgCost();
                 await Task.Delay(100);
                 await FGweightedAvgCostTask.Calculate_FG_Weighted_AvgCost();
