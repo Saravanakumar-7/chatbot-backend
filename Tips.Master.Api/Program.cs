@@ -82,6 +82,25 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.ASCII.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
+        }; 
+        options.Events = new JwtBearerEvents
+        {
+            OnAuthenticationFailed = async context =>
+            {
+                if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+                {
+                    var expiredToken = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+                    if (!string.IsNullOrEmpty(expiredToken))
+                    {
+                        var expiredTokenService = context.HttpContext.RequestServices.GetRequiredService<IUserTokenActivitiesRepository>();
+                        await expiredTokenService.DisableTokenInvalidTokenUse(expiredToken);
+                    }
+
+                    context.Response.StatusCode = 401;
+                    await context.Response.WriteAsync("Token expired and stored in database.");
+                }
+            }
         };
     });
 
@@ -112,6 +131,7 @@ builder.Services.AddScoped<ILightningDesignerRepository, LightningDesignerReposi
 builder.Services.AddScoped<IStageOfConstructionRepository, StageOfConstructionRepository>();
 builder.Services.AddScoped<IStateRepository, StateRepository>();
 builder.Services.AddScoped<ISourceDetailsRepository, SourceDetailsRepository>();
+builder.Services.AddScoped<IUserTokenActivitiesRepository, UserTokenActivitiesRepository>();
 
 
 builder.Services.AddScoped<IRoomNameRepository, RoomNameRepository>();

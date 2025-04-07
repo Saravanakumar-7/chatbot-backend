@@ -53,11 +53,12 @@ namespace Repository
         }
         public async Task<PagedList<ApprovalRanges>> GetAllApprovalRanges(PagingParameter pagingParameter, SearchParames searchParams)
         {
-            var ApprovalRangesDetails = FindAll().OrderByDescending(x => x.Id).Where(inv =>
+            var query = await FindAll().OrderByDescending(x => x.Id).ToListAsync();
+            var ApprovalRangesDetails = query.Where(inv =>
                     (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
                     inv.ProcurementName.Contains(searchParams.SearchValue) ||
                     inv.Description.Contains(searchParams.SearchValue))).GroupBy(inv => inv.ProcurementName)
-                    .Select(group => group.OrderByDescending(x => x.Version).First());
+                    .Select(group => group.OrderByDescending(x => x.Version).First()).AsQueryable();
 
             return PagedList<ApprovalRanges>.ToPagedList(ApprovalRangesDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }

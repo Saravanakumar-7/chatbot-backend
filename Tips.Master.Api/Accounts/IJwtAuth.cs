@@ -16,7 +16,7 @@ namespace Accounts
     {
         //Task<string> GetToken(string userName, string password);
         //Task<(string token, int userId)> GetToken(string userName, string password);
-        Task<(LoginResult Result, string Token, int UserId, string UserName)> GetToken(LoginDto loginDto);
+        Task<(LoginResult Result, string Token, int UserId, string UserName, DateTime Validity)> GetToken(LoginDto loginDto);
 
 
     }

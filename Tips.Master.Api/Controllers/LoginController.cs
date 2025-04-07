@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NuGet.Common;
 using NuGet.Protocol;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 
 namespace Tips.Master.Api.Controllers
@@ -29,7 +30,99 @@ namespace Tips.Master.Api.Controllers
             _logger = logger;
             _mapper = mapper;
         }
+        [HttpPost]
+        public async Task<IActionResult> LogInValidator([FromBody] LoginDto loginDto)
+        {
+            ServiceResponse<LoginResponseDto> serviceResponse = new ServiceResponse<LoginResponseDto>();
+            try
+            {
+                if (loginDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "User Data sent";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("User Data sent from client is null");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid User Data";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid User Data sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                ResetPW confirm = new ResetPW()
+                {
+                    UserName= loginDto.UserName,
+                    Password=loginDto.Password,
+                    UnitName=loginDto.UnitName,
+                    NewPW="",
+                    ConfirmPW=""
+                };
+                var (loginResult, userId, userName) = await _userRepository.ConfirmUser(confirm);
 
+                switch (loginResult)
+                {
+                    case LoginResult.Success:
+                        var Valid = await _repository.UserTokenActivitiesRepository.ValidateUser(userId);
+                        if (Valid==1)
+                        {
+                            serviceResponse.Message = "The user is active elsewhere. Would you like to close other sessions and log in here?";
+                            serviceResponse.Success = true;
+                            serviceResponse.StatusCode = HttpStatusCode.Continue;
+                            _repository.SaveAsync();
+                            break;
+                        }
+                        serviceResponse.Message = "User Exists Please Generate Token Now";
+                        serviceResponse.Success = true;
+                        serviceResponse.StatusCode = HttpStatusCode.OK;
+                        break;
+
+                    case LoginResult.UserNotFound:
+                        serviceResponse.Message = "User does not exist";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        break;
+
+                    case LoginResult.InvalidPassword:
+                        serviceResponse.Message = "Invalid password";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.Unauthorized;
+                        break;
+
+                    case LoginResult.InvalidUnit:
+                        serviceResponse.Message = "User does not exist in this unit";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        break;
+                    case LoginResult.InvalidEntry:
+                        serviceResponse.Message = "User has been Deactivated";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NonAuthoritativeInformation;
+                        break;
+
+                    default: // LoginResult.InvalidEntry
+                        serviceResponse.Message = "Invalid entry";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                        break;
+                }
+                serviceResponse.Data = null;
+                return StatusCode((int)serviceResponse.StatusCode, serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in LogInValidator: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Error Occured in LogInValidator: {ex.Message} \n  {ex.InnerException}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> GenerateUserToken([FromBody] LoginDto loginDto)
         {
@@ -54,7 +147,7 @@ namespace Tips.Master.Api.Controllers
                     _logger.LogError("Invalid User Data sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
-                var (loginResult, token, userId, userName) = await _jwtAuth.GetToken(loginDto);
+                var (loginResult, token, userId, userName, Validity) = await _jwtAuth.GetToken(loginDto);
 
                 LoginResponseDto loginResponseDto = new LoginResponseDto();
                 loginResponseDto.Name = userName;
@@ -64,6 +157,8 @@ namespace Tips.Master.Api.Controllers
                 switch (loginResult)
                 {
                     case LoginResult.Success:
+                        await _repository.UserTokenActivitiesRepository.UpdateToken(userId, token,Validity);
+                        _repository.SaveAsync();
                         loginResponseDto.Token = token;
                         loginResponseDto.UserId = userId;
                         serviceResponse.Message = "Token Successfully Created";
@@ -107,10 +202,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Message = $"Error Occured in GenerateUserToken: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside Login action: {ex.Message}");
+                _logger.LogError($"Error Occured in GenerateUserToken: {ex.Message} \n  {ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -200,13 +295,14 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Message = $"Error Occured in ResetPassword: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside Conformation action: {ex.Message}");
-                return StatusCode(500, serviceResponse);
+                _logger.LogError($"Error Occured in ResetPassword: {ex.Message} \n  {ex.InnerException}");
+                return StatusCode(500, serviceResponse); ;
             }
         }
+       
         //[HttpPut]
         //public async Task<IActionResult> ResetPassword(int Id, string NewPW, string ConfirmPW)
         //{
