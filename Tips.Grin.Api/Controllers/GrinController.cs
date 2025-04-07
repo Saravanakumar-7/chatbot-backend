@@ -652,9 +652,10 @@ namespace Tips.Grin.Api.Controllers
                 foreach (var gPart in grinCal)
                 {
                     decimal? EP = gPart.Qty * gPart.UnitPrice;
-                    decimal? Itemwithtax = gPart.SGST + gPart.IGST + gPart.CGST + gPart.UTGST + gPart.Duties;
-                    if (Itemwithtax == null || Itemwithtax == 0) gPart.EPwithTax = EP * conversionrate;
-                    else gPart.EPwithTax = (EP + (EP * (Itemwithtax / 100))) * conversionrate;
+                    //decimal? Itemwithtax = gPart.SGST + gPart.IGST + gPart.CGST + gPart.UTGST + gPart.Duties;
+                    //*if (Itemwithtax == null || Itemwithtax == 0)*/ gPart.EPwithTax = EP * conversionrate;
+                    //else gPart.EPwithTax = (EP + (EP * (Itemwithtax / 100))) * conversionrate;
+                    gPart.EPwithTax = EP * conversionrate;
                     gPart.EPforSingleQty = gPart.EPwithTax / gPart.Qty;
                 }
                 decimal? SumofEPwithtax = grinCal.Sum(x => x.EPwithTax);
@@ -1892,9 +1893,10 @@ namespace Tips.Grin.Api.Controllers
                 foreach (var gPart in grinCal)
                 {
                     decimal? EP = gPart.Qty * gPart.UnitPrice;
-                    decimal? Itemwithtax = gPart.SGST + gPart.IGST + gPart.CGST + gPart.UTGST + gPart.Duties;
-                    if (Itemwithtax == null || Itemwithtax == 0) gPart.EPwithTax = EP * conversionrate;
-                    else gPart.EPwithTax = (EP + (EP * (Itemwithtax / 100))) * conversionrate;
+                    //decimal? Itemwithtax = gPart.SGST + gPart.IGST + gPart.CGST + gPart.UTGST + gPart.Duties;
+                    //if (Itemwithtax == null || Itemwithtax == 0) gPart.EPwithTax = EP * conversionrate;
+                    //else gPart.EPwithTax = (EP + (EP * (Itemwithtax / 100))) * conversionrate;
+                    gPart.EPwithTax = EP * conversionrate;
                     gPart.EPforSingleQty = gPart.EPwithTax / gPart.Qty;
                 }
                 decimal? SumofEPwithtax = grinCal.Sum(x => x.EPwithTax);

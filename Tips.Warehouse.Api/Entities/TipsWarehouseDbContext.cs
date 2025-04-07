@@ -105,6 +105,7 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<InventoryWIPSPReport>().HasNoKey();
             modelBuilder.Entity<SalesInvoiceSPReport>().HasNoKey();
             modelBuilder.Entity<InventorySumSPReport>().HasNoKey();
+            modelBuilder.Entity<DOSPReportForTrans>().HasNoKey();
             
 
             base.OnModelCreating(modelBuilder);

@@ -3845,7 +3845,7 @@ namespace Tips.SalesService.Api.Controllers
 
         // POST: api/<RfqCustomFieldController>
         [HttpPost]
-        public IActionResult CreateRfqCustomField([FromBody] RfqCustomFieldDtoPost rfqCustomFieldDtoPost)
+        public IActionResult CreateRfqCustomField([FromBody] List<RfqCustomFieldDtoPost> rfqCustomFieldDtoPost)
                 {
                     ServiceResponse<RfqCustomFieldDtoPost> serviceResponse = new ServiceResponse<RfqCustomFieldDtoPost>();
 

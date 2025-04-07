@@ -1660,7 +1660,7 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError("Invalid PurchaseOrder object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                if (purchaseOrderPostDto.Currency!="INR" && purchaseOrderPostDto.ConvertionRateId == null)
+                if (purchaseOrderPostDto.Currency!="INR" && purchaseOrderPostDto.ConvertionRateId == null && serverKey != "keus")
                 {
                     serviceResponse.Message = $"Error Occured in CreatePurchaseOrder: The ConvertionRateId is required for the UOC:{purchaseOrderPostDto.Currency}";
                     serviceResponse.Success = false;
@@ -2570,7 +2570,7 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError("Invalid PurchaseOrder object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                if (purchaseOrderUpdateDto.Currency != "INR" && purchaseOrderUpdateDto.ConvertionRateId == null)
+                if (purchaseOrderUpdateDto.Currency != "INR" && purchaseOrderUpdateDto.ConvertionRateId == null && serverKey != "keus")
                 {
                     serviceResponse.Message = $"Error Occured in CreatePurchaseOrder: The ConvertionRateId is required for the UOC:{purchaseOrderUpdateDto.Currency}";
                     serviceResponse.Success = false;

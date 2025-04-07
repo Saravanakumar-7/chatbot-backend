@@ -114,6 +114,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? FirstEmailQuoteRevNo { get; set; }
         public decimal? FirstEmailQuoteValue { get; set; }
         public decimal? QuoteUntaxedValue { get; set; }
+        public DateTime? RevCreatedOnDate { get; set; }
+        
+
         // public decimal? EmailSentValue { get; set; }
         public string? Remarks { get; set; }
         public string Unit { get; set; }

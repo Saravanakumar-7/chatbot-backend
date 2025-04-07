@@ -216,6 +216,43 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> DOSPReportdateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<DOSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<DOSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.DOSPReportdateForTrans(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DeliveryOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"DeliveryOrder hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned DO Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside DOSPReportdateForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetDeliveryOrderSPReportsWithParam([FromBody] DeliveryOrderReportWithParamDTO deliveryOrderSPReport)
         {
@@ -291,6 +328,46 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetDeliveryOrderSPReportsWithParamForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetDOSPReportsWithParamForTrans([FromBody] DeliveryOrderReportWithParamDTOForTrans deliveryOrderSPReport)
+        {
+            ServiceResponse<IEnumerable<DOSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<DOSPReportForTrans>>();
+            try
+            {
+                var products = await _repository.GetDOSPReportsWithParamForTrans(deliveryOrderSPReport.DoNumber, deliveryOrderSPReport.CustomerName,
+                                                                                    deliveryOrderSPReport.SalesOrderNumber, deliveryOrderSPReport.ProductType,
+                                                                                    deliveryOrderSPReport.Warehouse, deliveryOrderSPReport.Location,
+                                                                                    deliveryOrderSPReport.ItemNumber, deliveryOrderSPReport.MPN, deliveryOrderSPReport.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DeliveryOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"DeliveryOrder hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned DO Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetDOSPReportsWithParamForTrans action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

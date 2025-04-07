@@ -124,7 +124,7 @@ namespace Tips.SalesService.Api.Entities.Dto
     }
     public class SalesOrderItemsUpdateDto
     {
-
+        public int Id {  get; set; }
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
         //  public string? SalesOrderNumber { get; set; }

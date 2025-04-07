@@ -26,6 +26,7 @@ namespace Entities.DTOs
         public string Password { get; set; }
         [Required]
         public string PasswordConfirm { get; set; }
+        public string MobileNumber { get; set; }
         public bool IsActive { get; set; } = true;
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
@@ -52,6 +53,7 @@ namespace Entities.DTOs
         public string Password { get; set; }
         [Required]
         public string PasswordConfirm { get; set; }
+        public string MobileNumber { get; set; }
         public bool IsActive { get; set; } = true;
         public string Unit { get; set; }
 
@@ -75,6 +77,7 @@ namespace Entities.DTOs
         public string Password { get; set; }
         [Required]
         public string PasswordConfirm { get; set; }
+        public string MobileNumber { get; set; }
         public bool IsActive { get; set; } = true;
         public string Unit { get; set; }
         public string? LastModifiedBy { get; set; }

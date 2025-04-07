@@ -91,6 +91,15 @@ namespace Tips.Grin.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<IQCConfirmationSPReportForAvi>> GetIQCConfirmationSPReportWithParamForAvi(string? GrinNumber, string? ItemNumber, string? ProjectNumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<IQCConfirmationSPReportForAvi>()
+            .FromSqlInterpolated($"CALL iqc_confirmation_with_parameters_avision({GrinNumber},{ItemNumber},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<IQCConfirmation_SPReport>> GetIQCConfirmationSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsGrinDbContext.Set<IQCConfirmation_SPReport>()
@@ -103,6 +112,14 @@ namespace Tips.Grin.Api.Repository
         {
             var results = _tipsGrinDbContext.Set<IQCConfirmationSPReportForTrans>()
                       .FromSqlInterpolated($"CALL iqc_confirmation_with_parameter_withdate_tras({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<IQCConfirmationSPReportForAvi>> GetIQCConfirmationSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<IQCConfirmationSPReportForAvi>()
+                      .FromSqlInterpolated($"CALL iqc_confirmation_with_parameter_withdate_avision({FromDate},{ToDate})")
                       .ToList();
 
             return results;

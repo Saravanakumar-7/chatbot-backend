@@ -222,7 +222,6 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
 
         [Required(ErrorMessage = "ItemDescription is required")]
-        [StringLength(100, ErrorMessage = "ItemDescription can't be longer than 100 characters")]
         public string ItemDescription { get; set; }
         public string? PONumber { get; set; }
 

@@ -1090,8 +1090,11 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
-                    var revRound = Math.Round(enggBomList.RevisionNumber);
-                    enggBomList.RevisionNumber = revRound + Convert.ToDecimal(1.0);
+                    //int revNo =(int)enggBomList.RevisionNumber;
+                    //enggBomList.RevisionNumber = Convert.ToDecimal(revNo + 1);
+
+                    var revRound = Math.Ceiling(enggBomList.RevisionNumber + Convert.ToDecimal(0.1));
+                    enggBomList.RevisionNumber = revRound;
                 }
                 _logger.LogInfo("Engineering BOM Updated successfully");
                 _repository.SaveAsync();
@@ -1101,7 +1104,7 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
-            catch (Exception ex)
+            catch (Exception ex)    
             {
                 _logger.LogError($"Something went wrong inside UpdateEngineering Bom action: {ex.Message}");
                 serviceResponse.Data = null;

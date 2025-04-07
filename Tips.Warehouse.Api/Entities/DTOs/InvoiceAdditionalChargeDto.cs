@@ -36,6 +36,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public Status InvoiceAdditionalStatus { get; set; }
         public decimal? AlreadyReturnedValue { get; set; }
         public int SalesAdditionalChargeId { get; set; }
+        public decimal? InitialInvoicedValue { get; set; }
 
     }
 

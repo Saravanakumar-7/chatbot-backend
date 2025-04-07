@@ -274,6 +274,46 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetIQCConfirmationSPReportWithParamForAvi([FromBody] IQCConfirmationReportWithParamForTransDto iQCConfirmationReportWithParamDto)
+        {
+            ServiceResponse<IEnumerable<IQCConfirmationSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationSPReportForAvi>>();
+            try
+            {
+                var products = await _iQCConfirmationRepository.GetIQCConfirmationSPReportWithParamForAvi(iQCConfirmationReportWithParamDto.GrinNumber,
+                                                                                                                    iQCConfirmationReportWithParamDto.ItemNumber,
+                                                                                                                    iQCConfirmationReportWithParamDto.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"IQCConfirmationForAvi hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"IQCConfirmationForAvi hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned IQCConfirmationSPReportWithParamForAvi Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetIQCConfirmationSPReportWithParamForAvi action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetIQCConfirmationSPReport([FromQuery] PagingParameter pagingParameter)
         {
@@ -330,6 +370,43 @@ namespace Tips.Grin.Api.Controllers
             try
             {
                 var products = await _iQCConfirmationRepository.GetIQCConfirmationSPReportWithDateForTrans(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"IQCConfirmation hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"IQCConfirmation hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned IQCConfirmationSPReportWithDateForTrans Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetIQCConfirmationSPReportWithDateForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetIQCConfirmationSPReportWithDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<IQCConfirmationSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationSPReportForAvi>>();
+            try
+            {
+                var products = await _iQCConfirmationRepository.GetIQCConfirmationSPReportWithDateForAvi(FromDate, ToDate);
 
                 if (products == null)
                 {

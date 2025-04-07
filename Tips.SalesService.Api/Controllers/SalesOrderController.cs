@@ -5020,42 +5020,42 @@ namespace Tips.SalesService.Api.Controllers
                     {
                         foreach (var soConfirmationDate in soItemConfirmationDateDetails)
                         {
-                            var purchaseOrderItemDetailById = await _salesOrderItemsRepository.GetSalesOrderItemDetailsById(firstItemInSet.SalesOrderItemsId);
+                            var salesOrderItemDetailById = await _salesOrderItemsRepository.GetSalesOrderItemDetailsById(firstItemInSet.SalesOrderItemsId);
 
-                            SOInitialConfirmationDateHistory soInitialConfirmationDateHistory = new SOInitialConfirmationDateHistory();
-                            soInitialConfirmationDateHistory.SalesOrderId = purchaseOrderItemDetailById.SalesOrderId;
-                            soInitialConfirmationDateHistory.SalesOrderItemsId = purchaseOrderItemDetailById.Id;
-                            soInitialConfirmationDateHistory.InitialConfirmationDate = soConfirmationDate.ConfirmationDate;
-                            soInitialConfirmationDateHistory.InitialQty = soConfirmationDate.Qty;
+                            //SOInitialConfirmationDateHistory soInitialConfirmationDateHistory = new SOInitialConfirmationDateHistory();
+                            //soInitialConfirmationDateHistory.SalesOrderId = salesOrderItemDetailById.SalesOrderId;
+                            //soInitialConfirmationDateHistory.SalesOrderItemsId = salesOrderItemDetailById.Id;
+                            //soInitialConfirmationDateHistory.InitialConfirmationDate = soConfirmationDate.ConfirmationDate;
+                            //soInitialConfirmationDateHistory.InitialQty = soConfirmationDate.Qty;
 
 
                             SoConfirmationDateHistory soConfirmationDateHistory = new SoConfirmationDateHistory();
-                            soConfirmationDateHistory.ItemNumber = purchaseOrderItemDetailById.ItemNumber;
-                            soConfirmationDateHistory.Description = purchaseOrderItemDetailById.Description;
-                            soConfirmationDateHistory.SalesOrderNumber = purchaseOrderItemDetailById.SalesOrderNumber;
-                            soConfirmationDateHistory.ProjectNumber = purchaseOrderItemDetailById.ProjectNumber;
-                            soConfirmationDateHistory.StatusEnum = purchaseOrderItemDetailById.StatusEnum;
+                            soConfirmationDateHistory.ItemNumber = salesOrderItemDetailById.ItemNumber;
+                            soConfirmationDateHistory.Description = salesOrderItemDetailById.Description;
+                            soConfirmationDateHistory.SalesOrderNumber = salesOrderItemDetailById.SalesOrderNumber;
+                            soConfirmationDateHistory.ProjectNumber = salesOrderItemDetailById.ProjectNumber;
+                            soConfirmationDateHistory.StatusEnum = salesOrderItemDetailById.StatusEnum;
                             soConfirmationDateHistory.Qty = soConfirmationDate.Qty;
                             soConfirmationDateHistory.ConfirmationDate = soConfirmationDate.ConfirmationDate;
-                            soConfirmationDateHistory.UOM = purchaseOrderItemDetailById.UOM;
-                            soConfirmationDateHistory.Currency = purchaseOrderItemDetailById.Currency;
-                            soConfirmationDateHistory.TotalAmount = purchaseOrderItemDetailById.TotalAmount;
-                            soConfirmationDateHistory.BasicAmount = purchaseOrderItemDetailById.BasicAmount;
-                            soConfirmationDateHistory.Discount = purchaseOrderItemDetailById.Discount;
-                            soConfirmationDateHistory.RoomName = purchaseOrderItemDetailById.RoomName;
-                            soConfirmationDateHistory.DiscountType = purchaseOrderItemDetailById.DiscountType;
-                            soConfirmationDateHistory.UnitPrice = purchaseOrderItemDetailById.UnitPrice;
-                            soConfirmationDateHistory.OrderQty = purchaseOrderItemDetailById.OrderQty;
-                            soConfirmationDateHistory.BalanceQty = purchaseOrderItemDetailById.BalanceQty;
-                            soConfirmationDateHistory.DispatchQty = purchaseOrderItemDetailById.DispatchQty;
-                            soConfirmationDateHistory.ShopOrderQty = purchaseOrderItemDetailById.ShopOrderQty;
-                            soConfirmationDateHistory.SGST = purchaseOrderItemDetailById.SGST;
-                            soConfirmationDateHistory.CGST = purchaseOrderItemDetailById.CGST;
-                            soConfirmationDateHistory.UTGST = purchaseOrderItemDetailById.UTGST;
-                            soConfirmationDateHistory.IGST = purchaseOrderItemDetailById.IGST;
-                            soConfirmationDateHistory.RequestedDate = purchaseOrderItemDetailById.RequestedDate;
-                            soConfirmationDateHistory.PriceList = purchaseOrderItemDetailById.PriceList;
-                            soConfirmationDateHistory.Remarks = purchaseOrderItemDetailById.Remarks;
+                            soConfirmationDateHistory.UOM = salesOrderItemDetailById.UOM;
+                            soConfirmationDateHistory.Currency = salesOrderItemDetailById.Currency;
+                            soConfirmationDateHistory.TotalAmount = salesOrderItemDetailById.TotalAmount;
+                            soConfirmationDateHistory.BasicAmount = salesOrderItemDetailById.BasicAmount;
+                            soConfirmationDateHistory.Discount = salesOrderItemDetailById.Discount;
+                            soConfirmationDateHistory.RoomName = salesOrderItemDetailById.RoomName;
+                            soConfirmationDateHistory.DiscountType = salesOrderItemDetailById.DiscountType;
+                            soConfirmationDateHistory.UnitPrice = salesOrderItemDetailById.UnitPrice;
+                            soConfirmationDateHistory.OrderQty = salesOrderItemDetailById.OrderQty;
+                            soConfirmationDateHistory.BalanceQty = salesOrderItemDetailById.BalanceQty;
+                            soConfirmationDateHistory.DispatchQty = salesOrderItemDetailById.DispatchQty;
+                            soConfirmationDateHistory.ShopOrderQty = salesOrderItemDetailById.ShopOrderQty;
+                            soConfirmationDateHistory.SGST = salesOrderItemDetailById.SGST;
+                            soConfirmationDateHistory.CGST = salesOrderItemDetailById.CGST;
+                            soConfirmationDateHistory.UTGST = salesOrderItemDetailById.UTGST;
+                            soConfirmationDateHistory.IGST = salesOrderItemDetailById.IGST;
+                            soConfirmationDateHistory.RequestedDate = salesOrderItemDetailById.RequestedDate;
+                            soConfirmationDateHistory.PriceList = salesOrderItemDetailById.PriceList;
+                            soConfirmationDateHistory.Remarks = salesOrderItemDetailById.Remarks;
                             soConfirmationDateHistory.CreatedBy = _createdBy;
                             soConfirmationDateHistory.CreatedOn = DateTime.Now;
 
@@ -5078,6 +5078,8 @@ namespace Tips.SalesService.Api.Controllers
                             soInitialConfirmationDateHistory.SalesOrderNumber = salesOrderItemDetailById.SalesOrderNumber;
                             soInitialConfirmationDateHistory.InitialConfirmationDate = soConfirmationDate.ConfirmationDate;
                             soInitialConfirmationDateHistory.InitialQty = soConfirmationDate.Qty;
+                            soInitialConfirmationDateHistory.CreatedBy = _createdBy;
+                            soInitialConfirmationDateHistory.CreatedOn = DateTime.Now;
 
                             await _sOInitialConfirmationDateHistoryRepository.CreateSOInitialConfirmationDate(soInitialConfirmationDateHistory);
                             _sOInitialConfirmationDateHistoryRepository.SaveAsync();
@@ -5114,18 +5116,18 @@ namespace Tips.SalesService.Api.Controllers
             {
                 if (salesOrderDtoUpdate is null)
                 {
-                    _logger.LogError("ShortClose SalesOrder object sent from client is null.");
+                    _logger.LogError("SalesOrder ShortClose object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ShortClose SalesOrder object sent from client is null.";
+                    serviceResponse.Message = "SalesOrder ShortClose object sent from client is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid ShortClose SalesOrder object sent from client.");
+                    _logger.LogError("Invalid  SalesOrder ShortClose object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid ShortClose SalesOrder object sent from client.";
+                    serviceResponse.Message = "Invalid  SalesOrder ShortClose object sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -5135,9 +5137,9 @@ namespace Tips.SalesService.Api.Controllers
 
                 if (salesOrderDetailBeforeUpdate is null)
                 {
-                    _logger.LogError($"ShortClose SalesOrder with id: {salesOrderDtoUpdate.Id}, hasn't been found in db.");
+                    _logger.LogError($"SalesOrder ShortClose with id: {salesOrderDtoUpdate.Id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update SalesOrder hasn't been found in db.";
+                    serviceResponse.Message = $"SalesOrder ShortClose hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
@@ -5146,7 +5148,6 @@ namespace Tips.SalesService.Api.Controllers
                 var salesOrderItemsDto = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos;
                 var salesAdditionalChargesDto = salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos;
                 var salesOrderItemsList = new List<SalesOrderItems>();
-
                 if (salesOrderItemsDto != null && salesOrderItemsDto.Count > 0)
                 {
                     for (int i = 0; i < salesOrderItemsDto.Count; i++)
@@ -5251,14 +5252,14 @@ namespace Tips.SalesService.Api.Controllers
 
 
                 serviceResponse.Data = null;
-                serviceResponse.Message = " SalesOrder Successfully Updated";
+                serviceResponse.Message = " SalesOrder ShortClosed Successfully ";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateSalesOrder action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside ShortCloseForSalesOrder action: {ex.Message}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal server error";
                 serviceResponse.Success = false;
