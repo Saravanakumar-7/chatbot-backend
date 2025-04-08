@@ -71,7 +71,6 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -79,31 +78,43 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidateIssuer = false,
             ValidateAudience = false,
-            ValidateLifetime = true,            
-            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
             IssuerSigningKey = new SymmetricSecurityKey(
                 Encoding.ASCII.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
-        }; 
-        options.Events = new JwtBearerEvents
-        {
-            OnAuthenticationFailed = async context =>
-            {
-                if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
-                {
-                    var expiredToken = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
-
-                    if (!string.IsNullOrEmpty(expiredToken))
-                    {
-                        var expiredTokenService = context.HttpContext.RequestServices.GetRequiredService<IUserTokenActivitiesRepository>();
-                        await expiredTokenService.DisableTokenInvalidTokenUse(expiredToken);
-                    }
-
-                    context.Response.StatusCode = 401;
-                    await context.Response.WriteAsync("Token expired and stored in database.");
-                }
-            }
         };
     });
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//    .AddJwtBearer(options =>
+//    {
+//        options.TokenValidationParameters = new TokenValidationParameters
+//        {
+//            ValidateIssuer = false,
+//            ValidateAudience = false,
+//            ValidateLifetime = true,            
+//            ValidateIssuerSigningKey = true,
+//            IssuerSigningKey = new SymmetricSecurityKey(
+//                Encoding.ASCII.GetBytes("yX%z@1&*U$3#sP9!")), // Use the same secret key as the one in https://localhost:7016
+//        }; 
+//        options.Events = new JwtBearerEvents
+//        {
+//            OnAuthenticationFailed = async context =>
+//            {
+//                if (context.Exception.GetType() == typeof(SecurityTokenExpiredException))
+//                {
+//                    var expiredToken = context.Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+
+//                    if (!string.IsNullOrEmpty(expiredToken))
+//                    {
+//                        var expiredTokenService = context.HttpContext.RequestServices.GetRequiredService<IUserTokenActivitiesRepository>();
+//                        await expiredTokenService.DisableTokenInvalidTokenUse(expiredToken);
+//                    }
+
+//                    context.Response.StatusCode = 401;
+//                    await context.Response.WriteAsync("Token expired and stored in database.");
+//                }
+//            }
+//        };
+//    });
 
 builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
@@ -159,6 +170,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 
 app.UseCors("CorsPolicy");
 app.UseRouting();
+app.UseMiddleware<TokenValidationMiddleware>();
 app.UseAuthentication();
 
 app.UseAuthorization();

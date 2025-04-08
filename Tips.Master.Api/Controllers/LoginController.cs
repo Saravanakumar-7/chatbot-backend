@@ -70,9 +70,9 @@ namespace Tips.Master.Api.Controllers
                         var Valid = await _repository.UserTokenActivitiesRepository.ValidateUser(userId);
                         if (Valid==1)
                         {
-                            serviceResponse.Message = "The user is active elsewhere. Would you like to close other sessions and log in here?";
-                            serviceResponse.Success = true;
-                            serviceResponse.StatusCode = HttpStatusCode.Continue;
+                            serviceResponse.Message = "The user is active else where. Would you like to close other sessions and log in here?";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.NotExtended;
                             _repository.SaveAsync();
                             break;
                         }

@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -40,34 +41,83 @@ namespace Repository
             User.Validity = Validity;
             Update(User);
         }
-       
+
         public async Task DisableTokenInvalidTokenUse(string token)
-        {            
+        {
+            try
+            {
                 var handler = new JwtSecurityTokenHandler();
                 if (!handler.CanReadToken(token))
                 {
-                    return;
+                    throw new UnauthorizedAccessException("Cannot read token.");
                 }
 
                 var jwtToken = handler.ReadJwtToken(token);
                 var expClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "exp")?.Value;
-                var userIdClaim = Convert.ToInt32(jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value);
+                var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
 
-                if (expClaim != null && long.TryParse(expClaim, out long expSeconds))
-                {   
-                    // Convert Unix timestamp to DateTime
+                if (string.IsNullOrEmpty(expClaim) || string.IsNullOrEmpty(userIdClaim))
+                {
+                    throw new UnauthorizedAccessException("Required claims not found.");
+                }
+
+                if (!int.TryParse(userIdClaim, out int userId))
+                {
+                    throw new UnauthorizedAccessException("Invalid UserId claim.");
+                }
+
+                var user = await TipsMasterDbContext.UserTokenActivities
+                    .FirstOrDefaultAsync(x => x.RegistrationId == userId);
+
+                if (user == null || !user.Token.Equals(token) || user.TokenIsActive == false)
+                {
+                    throw new UnauthorizedAccessException("Token not valid or already inactive.");
+                }
+
+                if (long.TryParse(expClaim, out long expSeconds))
+                {
                     DateTime expiryDateTime = DateTimeOffset.FromUnixTimeSeconds(expSeconds).UtcDateTime;
+
                     if (DateTime.UtcNow > expiryDateTime)
-                    {                       
-                        var User = await TipsMasterDbContext.UserTokenActivities.Where(x => x.RegistrationId == userIdClaim).FirstOrDefaultAsync();
-                        User.Token = token;
-                        User.TokenIsActive = false;
-                        User.Validity = expiryDateTime;
-                        Update(User);
+                    {
+                        user.Token = token;
+                        user.TokenIsActive = false;
+                        user.Validity = expiryDateTime;
+                        Update(user);
                         await TipsMasterDbContext.SaveChangesAsync();
                     }
-                }            
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
+
     }
+    public class TokenValidationMiddleware
+    {
+        private readonly RequestDelegate _next;
+
+        public TokenValidationMiddleware(RequestDelegate next)
+        {
+            _next = next;
+        }
+
+        public async Task Invoke(HttpContext context, IUserTokenActivitiesRepository tokenRepo)
+        {
+            var authHeader = context.Request.Headers["Authorization"].ToString();
+            if (!string.IsNullOrWhiteSpace(authHeader) && authHeader.StartsWith("Bearer "))
+            {
+                var token = authHeader.Replace("Bearer ", "");
+
+                // This method can handle blacklist checking, expiration, revocation, etc.
+                await tokenRepo.DisableTokenInvalidTokenUse(token);
+            }
+
+            await _next(context); // Continue down the pipeline
+        }
+    }
+
 }
