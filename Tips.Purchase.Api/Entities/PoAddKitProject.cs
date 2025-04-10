@@ -3,10 +3,11 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Purchase.Api.Entities
 {
-    public class PoAddProject
+    public class PoAddKitProject
     {
         [Key]
         public int Id { get; set; }
+        public string? PartNumber { get; set; }
         public string? ProjectNumber { get; set; }
 
         [Precision(13, 3)]
@@ -14,10 +15,8 @@ namespace Tips.Purchase.Api.Entities
         public decimal BalanceQty { get; set; }
         [Precision(13, 3)]
         public decimal ReceivedQty { get; set; }
-        public bool PoAddProjectStatus {  get; set; }
-        public int POItemDetailId { get; set; }
-        public PoItem? POItemDetail { get; set; }
-        public List<PoAddKitProject>? PoAddKitProjects { get; set; }
-
+        public bool PoAddKitProjectStatus { get; set; }
+        public int PoAddProjectId { get; set; }
+        public PoAddProject? PoAddProject { get; set; }
     }
 }
