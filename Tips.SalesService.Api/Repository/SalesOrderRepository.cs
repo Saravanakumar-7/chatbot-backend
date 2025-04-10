@@ -244,6 +244,17 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
+        public async Task<IEnumerable<FQToFSSPReport>> GetFQToFSSPReportWithParam(string FirstQuoteSentNumber, string SOLatestSalesOrderSentNumber, string LeadId, string TypeOfSolution)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<FQToFSSPReport>()
+            .FromSqlInterpolated($"CALL FQ_to_FS_report({FirstQuoteSentNumber},{SOLatestSalesOrderSentNumber},{LeadId},{TypeOfSolution})")
+            .ToList();
+
+            return result;
+
+        }
+
         public async Task<IEnumerable<SOSummarySPReport>> GetSOSummarySPReportWithParam(string CustomerId, string SalesOrderNumber, string KPN)
         {
             var result = _tipsSalesServiceDbContext

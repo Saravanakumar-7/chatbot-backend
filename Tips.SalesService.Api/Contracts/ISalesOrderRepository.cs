@@ -59,6 +59,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<SalesOrderSPReport>> GetSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<SOLeadWiseDataSPReport>> GetSalesorderLeadWiseDataSPReportWithParam(string SOFirstSalesOrderNumber, string CustomerId, string CustomerName);
         Task<IEnumerable<SOSummarySPReport>> GetSOSummarySPReportWithParam(string CustomerId, string SalesOrderNumber, string KPN);
+        Task<IEnumerable<FQToFSSPReport>> GetFQToFSSPReportWithParam(string FirstQuoteSentNumber, string SOLatestSalesOrderSentNumber, string LeadId, string TypeOfSolution);
         Task<IEnumerable<SOSummarySPReport>> GetSOSummarySPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<SOMonthlyConsumptionSPReport>> GetSOMonthlyConsumptionSPReportWithParam(string CustomerId);
         Task<IEnumerable<CustomerWiseTransactionSPReport>> GetCustomerWiseTransactionSPReportWithParam(string CustomerId);

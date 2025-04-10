@@ -703,5 +703,87 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? SOLatestDiscountType { get; set; }
         public double? LatestSODiscountValue { get; set; }
     }
+   
+    public class FQToFSSPReport
+    {
+        public string? LeadId { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? FirstQuoteCreatedNumber { get; set; }
+        public string? FirstQuoteRevisionNumber { get; set; }
+        public DateTime? FirstQuoteCreatedOn { get; set; }
+
+        public string? FirstQuoteKPN { get; set; }
+        public string? FirstQuoteKPNDescription { get; set; }
+        public decimal? FirstQuoteQty { get; set; }
+        public decimal? FirstQuoteDiscountAmount { get; set; }
+        public decimal? FirstQuoteTotalFinalAmount { get; set; }
+
+        public string? FirstQuoteSentNumber { get; set; }
+        public string? FirstQuoteSentRevisionnumber { get; set; }
+        public DateTime? FirstQuoteSentCreatedOn { get; set; }
+
+        public string? FirstQuoteSentKPN { get; set; }
+        public string? FirstQuoteSentKPNDescription { get; set; }
+        public decimal? FirstQuoteSentQty { get; set; }
+        public decimal? FirstQuoteSentDiscountAmount { get; set; }
+        public decimal? FirstQuoteSentTotalFinalAmount { get; set; }
+
+        public string? LatestSalesOrderSentNumber { get; set; }
+        public DateTime? LatestSOSentCreatedOn { get; set; }
+        public int? LatestSOSentRevisionnumber { get; set; }
+        public string? LatestSOSentKPN { get; set; }
+        public string? LatestSOSentKPNDescription { get; set; }
+
+        public int? StatusEnum { get; set; }
+        public decimal? OrderQty { get; set; }
+        public decimal? BalanceQty { get; set; }
+        public decimal? DispatchQty { get; set; }
+        public string? LatestSOSentDiscount { get; set; }
+        public decimal? LatestSOSentTaxedValue { get; set; }
+    }
+
+    public class FQToFSSPReportDto
+    {
+        public string? FirstQuoteSentNumber { get; set; }
+        public string? SOLatestSalesOrderSentNumber { get; set; }
+        public string? LeadId { get; set; }
+        public string? TypeOfSolution { get; set; }
+    }
+
+    public class SalesOrderSPReportForTrans
+    {
+        public string? CustomerName { get; set; }
+        public string? CustomerId { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public DateTime? sodate { get; set; }
+        public string? KPN { get; set; }
+        public string? KPNDescription { get; set; }
+        public decimal? OrderQty { get; set; }
+        public decimal? TotalAmount { get; set; }
+        public string? UOC { get; set; }
+        public string? UOM { get; set; }
+        public decimal? BalanceQty { get; set; }
+        public decimal? DispatchQty { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? MaterialGroup { get; set; }
+        public int? ItemType { get; set; }
+        public string? PONumber { get; set; }
+        public string? ProductType { get; set; }
+        public string? OrderType { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public decimal? itempricelist { get; set; }
+        public decimal? BasicAmount { get; set; }
+        public string? LeadId { get; set; }
+        public string? SalesPerson { get; set; }
+        public string? DiscountType { get; set; }
+        public string? Discount { get; set; }
+        public decimal? SGST { get; set; }
+        public decimal? CGST { get; set; }
+        public decimal? IGST { get; set; }
+        public decimal? UTGST { get; set; }
+        public string? PriceList { get; set; }
+
+    }
+
 
 }

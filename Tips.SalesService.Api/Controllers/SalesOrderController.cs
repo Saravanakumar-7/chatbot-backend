@@ -1032,6 +1032,9 @@ namespace Tips.SalesService.Api.Controllers
                         {
                             salesOrderItemsDetail.BalanceQty = salesOrderItemsDetail.OrderQty - salesOrderItemsDetail.DispatchQty;
                             salesOrderItemsDetail.SalesOrderNumber = salesOrderNumber;
+                            if (salesOrderItemsDetail.OrderQty == salesOrderItemsDetail.BalanceQty && salesOrderItemsDetail.BalanceQty > 0) salesOrderItemsDetail.StatusEnum = OrderStatus.Open;
+                            else if (salesOrderItemsDetail.OrderQty > salesOrderItemsDetail.BalanceQty && salesOrderItemsDetail.BalanceQty > 0) salesOrderItemsDetail.StatusEnum = OrderStatus.PartiallyClosed;
+                            else if (salesOrderItemsDetail.BalanceQty == 0) salesOrderItemsDetail.StatusEnum = OrderStatus.Closed;
                         }
                         salesOrderItemsList.Add(salesOrderItemsDetail);
 
@@ -2781,6 +2784,47 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetFQToFSSPReportWithParam([FromBody] FQToFSSPReportDto FQToFSSPReportDto)
+
+        {
+            ServiceResponse<IEnumerable<FQToFSSPReport>> serviceResponse = new ServiceResponse<IEnumerable<FQToFSSPReport>>();
+            try
+            {
+                var products = await _repository.GetFQToFSSPReportWithParam(FQToFSSPReportDto.FirstQuoteSentNumber, FQToFSSPReportDto.SOLatestSalesOrderSentNumber, FQToFSSPReportDto.LeadId,
+                                                                                    FQToFSSPReportDto.TypeOfSolution);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"FQToFSSPReportWithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"FQToFSSPReportWithParam hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned FQToFSSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside FQToFSSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetSOSummarySPReportWithParam([FromBody] SOSummarySPReportDTO soSummarySPResportDTO)
