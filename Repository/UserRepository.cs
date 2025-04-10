@@ -25,7 +25,7 @@ namespace Repository
         public async Task<(LoginResult Result, int UserId, string UserName)> ConfirmUser(ResetPW loginDto)
         {
             var userDetail = await _tipsMasterDbContext.RegistrationForms
-                .Where(m => m.EmailId == loginDto.UserName)
+                .Where(m => m.EmailId == loginDto.UserName || m.UserName == loginDto.UserName)
                 .FirstOrDefaultAsync();
 
             if (userDetail == null)
@@ -41,7 +41,10 @@ namespace Repository
             {
                 return (LoginResult.InvalidUnit, 0, null);
             }
-
+            if (userDetail.IsActive == false)
+            {
+                return (LoginResult.InvalidEntry, 0, null);
+            }
             return (LoginResult.Success, userDetail.Id, userDetail.UserName);
         }
         public async Task<string> ResetPassword(int Id, string NewPW, string ConfirmPW)

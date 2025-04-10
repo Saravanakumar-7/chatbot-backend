@@ -175,7 +175,7 @@ namespace Entities
         public DbSet<ApprovalRanges> ApprovalRanges { get; set; }
         public DbSet<Ranges> Ranges { get; set; }
         public DbSet<Prioritize> Prioritizes { get; set; }
-
+        public DbSet<UserTokenActivities> UserTokenActivities { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EnggBomSPReport>().HasNoKey();

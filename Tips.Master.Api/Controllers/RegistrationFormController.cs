@@ -259,6 +259,17 @@ namespace Tips.Master.Api.Controllers
                 }
                 var roles = _mapper.Map<RegistrationForm>(registrationFormPostDto);
                 var res = await _repository.RegistrationFormRepository.CreateRegistrationForm(roles);
+                _repository.SaveAsync();
+                var Usertokenactivity = new UserTokenActivities()
+                {
+                    RegistrationId= roles.Id,
+                    UserName=roles.UserName,
+                    EmailId=roles.EmailId,
+                    Token="",
+                    Validity=DateTime.Now,
+                    TokenIsActive=false
+                };
+                await _repository.UserTokenActivitiesRepository.CreateUserTokenActivity(Usertokenactivity);
                 if (res == -1)
                 {
                     serviceResponse.Data = null;

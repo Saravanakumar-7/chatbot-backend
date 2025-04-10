@@ -157,6 +157,7 @@ namespace Contracts
         IFieldInformationRepository FieldInformationRepository { get; }
         IApprovalRangesRepository ApprovalRangesRepository { get; }
         IPrioritizeRepository PrioritizeRepository { get; }
+        IUserTokenActivitiesRepository UserTokenActivitiesRepository { get; }
         void SaveAsync();
         void Save();
     }

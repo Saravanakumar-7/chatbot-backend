@@ -30,7 +30,7 @@ namespace Accounts
             _tipsMasterDbContext = tipsMasterDbContext; 
             _configuration = configuration;
         }
-        public async Task<(LoginResult Result, string Token, int UserId, string UserName)> GetToken(LoginDto loginDto)
+        public async Task<(LoginResult Result, string Token, int UserId, string UserName, DateTime Validity)> GetToken(LoginDto loginDto)
         {
             var userDetail = await _tipsMasterDbContext.RegistrationForms
                 .Where(m => m.EmailId == loginDto.UserName || m.UserName==loginDto.UserName)
@@ -38,21 +38,22 @@ namespace Accounts
 
             if (userDetail == null)
             {
-                return (LoginResult.UserNotFound, null, 0,null);
+                return (LoginResult.UserNotFound, null, 0,null,DateTime.UtcNow);
             }
             if (userDetail.Password != loginDto.Password)
             {
-                return (LoginResult.InvalidPassword, null, 0, null);
+                return (LoginResult.InvalidPassword, null, 0, null, DateTime.UtcNow);
             }
             if (userDetail.Unit != loginDto.UnitName)
             {
-                return (LoginResult.InvalidUnit, null, 0, null);
+                return (LoginResult.InvalidUnit, null, 0, null, DateTime.UtcNow);
             }
             if (userDetail.IsActive == false)
             {
-                return (LoginResult.InvalidEntry,null,0,null);
+                return (LoginResult.InvalidEntry,null,0,null, DateTime.UtcNow);
             }
-
+            DateTime Validity = DateTime.UtcNow.AddHours(8);
+           // DateTime Validity = DateTime.Now.AddMinutes(5);
             var key = _configuration["Jwt:key"];
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenKey = Encoding.ASCII.GetBytes(key);
@@ -66,13 +67,13 @@ namespace Accounts
                 new Claim("UnitName", userDetail.Unit), 
                 new Claim("UserId", userDetail.Id.ToString()),
                     }),
-                Expires = DateTime.UtcNow.AddHours(8),
+                Expires = Validity,
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256Signature)
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
-            return (LoginResult.Success, tokenHandler.WriteToken(token), userDetail.Id, (userDetail.FirstName + " " + userDetail.LastName));
+            return (LoginResult.Success, tokenHandler.WriteToken(token), userDetail.Id, (userDetail.FirstName + " " + userDetail.LastName),Validity);
         }
     //    public async Task<(string token, int userId)> GetToken(string userName, string password)
 

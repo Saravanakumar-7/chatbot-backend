@@ -132,10 +132,22 @@ namespace Repository
         private IFieldInformationRepository? _fieldInformationRepository;
         private IPrioritizeRepository? _prioritizeRepository;
         private IApprovalRangesRepository? _approvalRangesRepository;
+        private IUserTokenActivitiesRepository _userTokenActivitiesRepository;
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
             _httpContextAccessor = httpContextAccessor;
+        }
+        public IUserTokenActivitiesRepository UserTokenActivitiesRepository
+        {
+            get
+            {
+                if (_userTokenActivitiesRepository == null)
+                {
+                    _userTokenActivitiesRepository = new UserTokenActivitiesRepository(_tipsMasterDbContext);
+                }
+                return _userTokenActivitiesRepository;
+            }
         }
         public IApprovalRangesRepository ApprovalRangesRepository
         {
