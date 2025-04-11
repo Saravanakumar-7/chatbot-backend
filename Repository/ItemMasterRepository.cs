@@ -397,7 +397,7 @@ namespace Repository
         public async Task<IEnumerable<ItemMaster>> GetAllFgSaFruItems()
         {
             var itemmasterFgSaFRUDetails = FindAll().OrderByDescending(a => a.Id)
-               .Where(a => (a.ItemType == PartType.SA || a.ItemType == PartType.FG || a.ItemType == PartType.FRU) && a.IsActive == true)
+               .Where(a => (a.ItemType == PartType.SA || a.ItemType == PartType.FG || a.ItemType == PartType.FRU || a.ItemType == PartType.Kit) && a.IsActive == true)
                             //.Include(c => c.FileUpload)
                             //  .Include(x => x.ImageUpload)
                             .Include(t => t.ItemmasterAlternate)
