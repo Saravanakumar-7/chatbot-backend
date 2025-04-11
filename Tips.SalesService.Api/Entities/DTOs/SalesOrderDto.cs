@@ -400,6 +400,12 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal ODOQty { get; set; }
 
     }
+    public class SalesOrderSPReportForTransDTO
+    {
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? KPN { get; set; }
+    }
 
     public class SalesOrderSPReportDTO
     {
@@ -766,7 +772,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? DispatchQty { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? MaterialGroup { get; set; }
-        public int? ItemType { get; set; }
+        public string? ItemType { get; set; }
         public string? PONumber { get; set; }
         public string? ProductType { get; set; }
         public string? OrderType { get; set; }

@@ -151,6 +151,16 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
+        public async Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSPReportWithParamForTrans(string CustomerName, string SalesOrderNumber, string KPN)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SalesOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL SalesOrder_withparameter_Report_tras({CustomerName},{SalesOrderNumber},{KPN})")
+            .ToList();
+
+            return result;
+
+        }
         public async Task<List<SalesOrderDashboardSPReport>> GetSalesOrderDashboardSPReportWithParam(string Bucket_Id)
         {
             var result = _tipsSalesServiceDbContext
@@ -226,6 +236,15 @@ namespace Tips.SalesService.Api.Repository
         {
             var results = _tipsSalesServiceDbContext.Set<SalesOrderSPReport>()
                         .FromSqlInterpolated($"CALL SalesOrder_withparameter_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<SalesOrderSPReportForTrans>()
+                        .FromSqlInterpolated($"CALL SalesOrder_withparameter_withdate_tras({FromDate},{ToDate})")
                         .ToList();
 
             return results;

@@ -174,6 +174,7 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<SalesOrderDetailsTOSDto>().HasNoKey();
             modelBuilder.Entity<SOLeadWiseDataSPReport>().HasNoKey();
             modelBuilder.Entity<FQToFSSPReport>().HasNoKey();
+            modelBuilder.Entity<SalesOrderSPReportForTrans>().HasNoKey();
             
 
         }
