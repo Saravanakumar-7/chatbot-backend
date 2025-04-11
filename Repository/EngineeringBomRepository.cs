@@ -442,12 +442,6 @@ namespace Repository
                 .OrderByDescending(x => x.RevisionNumber)
                 .Select(x => x.BOMId)
                 .FirstOrDefaultAsync();
-            //int bomId = await _tipsMasterDbContext.EnggBoms
-            //                .Where(x => x.ItemNumber == fgItemMaster && x.IsEnggBomRelease == true)
-            //                .GroupBy(x => x.ItemNumber)
-            //                .Select(group => group.OrderByDescending(x => x.RevisionNumber).FirstOrDefault())
-            //                .Select(m => m.BOMId)
-            //                .FirstOrDefaultAsync();
 
             var fgbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == bomId && x.IsActive == true).OrderByDescending(x => x.PartType).ToListAsync();
             if (fgbomdetails != null)
