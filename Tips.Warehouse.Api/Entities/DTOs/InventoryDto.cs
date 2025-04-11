@@ -592,7 +592,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string Title { get; set; }
         public List<InventoryDashboardSPReport> Items { get; set; }
     }
-   
+
     public class InventorySumSPReport
     {
         public string? PartNumber { get; set; }
@@ -600,12 +600,13 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public int? PartType { get; set; }
         public string? ProjectNumber { get; set; }
         public string? UOM { get; set; }
-        public decimal? OpeningStock { get; set; }
-        public decimal? InwardsTotalOpeningStock { get; set; }
-        public decimal? OutwardsTotalOpeningStock { get; set; }
+        public decimal? Opening_Stock { get; set; }
         public decimal? Value_Without_Tax_OpeningStock { get; set; }
+        public decimal? TotalInwords { get; set; }
+        public decimal? Value_Without_Tax_inwards { get; set; }
+        public decimal? Totaloutwords { get; set; }
         public decimal? Value_Without_Tax_Outwards { get; set; }
-        public decimal? ClosingStock { get; set; }
+        public decimal? Closing_stock { get; set; }
         public decimal? Price { get; set; }
         public decimal? ClosingStockValue { get; set; }
     }
