@@ -194,6 +194,14 @@ namespace Tips.Master.Api
             CreateMap<ItemMasterWarehouse, ItemMasterWarehouseDtoPost>().ReverseMap();
             CreateMap<ItemMasterWarehouse, ItemMasterWarehouseDtoUpdate>().ReverseMap();
 
+            CreateMap<ItemMasterSchedules, ItemMasterSchedulesDto>().ReverseMap();
+            CreateMap<ItemMasterSchedules, ItemMasterSchedulesDtoPost>().ReverseMap();
+            CreateMap<ItemMasterSchedules, ItemMasterSchedulesDtoUpdate>().ReverseMap();
+
+            CreateMap<ItemMasterScheduleParts, ItemMasterSchedulePartsDto>().ReverseMap();
+            CreateMap<ItemMasterScheduleParts, ItemMasterSchedulePartsDtoPost>().ReverseMap();
+            CreateMap<ItemMasterScheduleParts, ItemMasterSchedulePartsDtoUpdate>().ReverseMap();
+
             CreateMap<Unit, UnitDto>().ReverseMap();
             CreateMap<Unit, UnitPostDto>().ReverseMap();
             CreateMap<Unit, UnitUpdateDto>().ReverseMap();

@@ -93,7 +93,7 @@ namespace Repository
             .Include(t => t.ItemMasterApprovedVendor)
             //.Include(t => t.ItemMasterFileUpload)
             .Include(d => d.ItemMasterRouting)
-            .Include(d => d.ItemMasterWarehouse)
+            .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts)
             .ToListAsync();
             return allActiveCompanyMasters;
         }
@@ -120,7 +120,7 @@ namespace Repository
                 .Include(x => x.ItemmasterAlternate)
                 .Include(M => M.ItemMasterWarehouse)
                 .Include(M => M.ItemMasterApprovedVendor)
-                .Include(M => M.ItemMasterRouting);
+                .Include(M => M.ItemMasterRouting).Include(M=>M.ItemMasterSchedules).ThenInclude(x=>x.ItemMasterScheduleParts);
             return PagedList<ItemMaster>.ToPagedList(itemMasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
         //public async Task<PagedList<ItemMaster>> GetAllItemMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)     // inv.ItemNumber.Contains(searchParams.SearchValue)
@@ -205,7 +205,7 @@ namespace Repository
                              .Include(t => t.ItemMasterApprovedVendor)
                              //.Include(t => t.ItemMasterFileUpload)
                              .Include(d => d.ItemMasterRouting)
-                             .Include(d => d.ItemMasterWarehouse)
+                             .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts)
                              .ToList();
             return itemMasterDetails;
         }
@@ -234,7 +234,7 @@ namespace Repository
                              .Include(t => t.ItemMasterApprovedVendor)
                              //.Include(t => t.ItemMasterFileUpload)
                              .Include(d => d.ItemMasterRouting)
-                             .Include(d => d.ItemMasterWarehouse);
+                             .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts);
                 }
                 return query.ToList();
             }
@@ -325,7 +325,7 @@ namespace Repository
                              .Include(t => t.ItemMasterApprovedVendor)
                              //.Include(t => t.ItemMasterFileUpload)
                              .Include(d => d.ItemMasterRouting)
-                             .Include(d => d.ItemMasterWarehouse);
+                             .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts);
                 }
                 return query.ToList();
             }
@@ -340,7 +340,7 @@ namespace Repository
             .Include(t => t.ItemMasterApprovedVendor)
             //.Include(t => t.ItemMasterFileUpload)
             .Include(d => d.ItemMasterRouting)
-            .Include(d => d.ItemMasterWarehouse);
+            .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts);
             return itemmasterFgDetails;
         }
         public async Task<IEnumerable<string>> GetAllFGItemNumberList()
@@ -368,7 +368,7 @@ namespace Repository
        .Include(t => t.ItemmasterAlternate)
        .Include(t => t.ItemMasterApprovedVendor)
        .Include(d => d.ItemMasterRouting)
-       .Include(d => d.ItemMasterWarehouse)
+       .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts)
        .ToListAsync();  // Ensure the query is executed asynchronously
 
             return itemmasterFgDetails;
@@ -383,7 +383,7 @@ namespace Repository
             .Include(t => t.ItemMasterApprovedVendor)
             //.Include(t => t.ItemMasterFileUpload)
             .Include(d => d.ItemMasterRouting)
-            .Include(d => d.ItemMasterWarehouse);
+            .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts);
             return itemmasterSADetails;
         }
         public async Task<IEnumerable<ItemMaster>> GetAllFgSaItems()
@@ -404,7 +404,7 @@ namespace Repository
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 //.Include(m => m.ItemMasterFileUpload)
                                 .Include(s => s.ItemMasterRouting)
-                                .Include(f => f.ItemMasterWarehouse).ToList();
+                                .Include(f => f.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts).ToList();
             return itemmasterFgSaFRUDetails;
 
 
@@ -420,7 +420,7 @@ namespace Repository
                             .Include(x => x.ItemMasterApprovedVendor)
                             //.Include(m => m.ItemMasterFileUpload)
                             .Include(s => s.ItemMasterRouting)
-                            .Include(p => p.ItemMasterWarehouse).FirstOrDefaultAsync();
+                            .Include(p => p.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts).FirstOrDefaultAsync();
 
 
             return getItemMasterById;
@@ -542,7 +542,7 @@ namespace Repository
                                 //.Include(m => m.ItemMasterFileUpload)
                                 .Include(s => s.ItemMasterRouting)
                                 .Include(p => p.ItemMasterWarehouse)
-
+                                .Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts)
                              .FirstOrDefaultAsync();
             return getItemMasterByItemNo;
         }
@@ -555,7 +555,7 @@ namespace Repository
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(s => s.ItemMasterRouting)
                                 .Include(p => p.ItemMasterWarehouse)
-
+                                .Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts)
                              .FirstOrDefaultAsync();
             return getItemMasterByItemNo;
         }
