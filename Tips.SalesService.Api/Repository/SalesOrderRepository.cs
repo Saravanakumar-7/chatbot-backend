@@ -151,6 +151,16 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
+        public async Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSPReportWithParamForTrans(string CustomerName, string SalesOrderNumber, string KPN)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SalesOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL SalesOrder_withparameter_Report_tras({CustomerName},{SalesOrderNumber},{KPN})")
+            .ToList();
+
+            return result;
+
+        }
         public async Task<List<SalesOrderDashboardSPReport>> GetSalesOrderDashboardSPReportWithParam(string Bucket_Id)
         {
             var result = _tipsSalesServiceDbContext
@@ -231,6 +241,15 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
+        public async Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<SalesOrderSPReportForTrans>()
+                        .FromSqlInterpolated($"CALL SalesOrder_withparameter_withdate_tras({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
 
 
         public async Task<IEnumerable<SOLeadWiseDataSPReport>> GetSalesorderLeadWiseDataSPReportWithParam(string SOFirstSalesOrderNumber, string CustomerId, string CustomerName)
@@ -238,6 +257,17 @@ namespace Tips.SalesService.Api.Repository
             var result = _tipsSalesServiceDbContext
             .Set<SOLeadWiseDataSPReport>()
             .FromSqlInterpolated($"CALL salesorderleadwisedata_with_parameter({SOFirstSalesOrderNumber},{CustomerId},{CustomerName})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<FQToFSSPReport>> GetFQToFSSPReportWithParam(string FirstQuoteSentNumber, string SOLatestSalesOrderSentNumber, string LeadId, string TypeOfSolution)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<FQToFSSPReport>()
+            .FromSqlInterpolated($"CALL FQ_to_FS_report({FirstQuoteSentNumber},{SOLatestSalesOrderSentNumber},{LeadId},{TypeOfSolution})")
             .ToList();
 
             return result;

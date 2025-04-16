@@ -5033,21 +5033,18 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
 
-                // Save Excel workbook to a memory stream
                 using (var memoryStream = new MemoryStream())
                 {
                     workbook.Write(memoryStream);
                     var excelBytes = memoryStream.ToArray();
 
-                    // Send Excel file as a response
                     return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "POReports.xlsx");
                 }
             }
             catch (Exception ex)
             {
-                // Log the exception
-                // Return appropriate error response to the client
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                _logger.LogError( ex.Message);
+                return StatusCode(500, $"An error occurred: {ex.Message},{ex.InnerException}");
             }
         }
 
