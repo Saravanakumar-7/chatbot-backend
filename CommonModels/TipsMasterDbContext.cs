@@ -176,6 +176,8 @@ namespace Entities
         public DbSet<Ranges> Ranges { get; set; }
         public DbSet<Prioritize> Prioritizes { get; set; }
         public DbSet<UserTokenActivities> UserTokenActivities { get; set; }
+        public DbSet<ItemMasterSchedules> ItemMasterSchedules { get; set; }
+        public DbSet<ItemMasterScheduleParts> ItemMasterScheduleParts { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EnggBomSPReport>().HasNoKey();

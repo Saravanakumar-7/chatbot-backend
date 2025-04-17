@@ -13,6 +13,8 @@ namespace Entities.Enums
         TG,
         SA,
         FRU,
-        Phantom
+        Phantom,
+        Tools,
+        CapitalGoods
     }
 }

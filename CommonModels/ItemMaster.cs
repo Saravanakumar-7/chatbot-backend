@@ -112,7 +112,14 @@ namespace Entities
         public string? BeamAngle { get; set; }
         public string? TrimColor { get; set; }
         public string? Reflector { get; set; }
-        
+        public string? Make { get; set; }
+        public string? Model { get; set; }
+        public string? Manufacturer { get; set; }
+        public string? Manufacture_Year { get; set; }
+        public string? SubModel { get; set; }
+        public string? Serial_Number { get; set; }
+        public string? Asset_Number { get; set; }
+
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         
@@ -130,6 +137,7 @@ namespace Entities
 
         //public List<ItemMasterFileUpload>? ItemMasterFileUpload { get; set; }
         public List<ItemMasterRouting>? ItemMasterRouting { get; set; }
+        public List<ItemMasterSchedules>? ItemMasterSchedules { get; set; }
     }
 
 }
