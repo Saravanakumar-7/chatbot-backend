@@ -10,9 +10,10 @@ namespace Entities
 {
     public class ItemMasterScheduleParts
     {
+        [Key]
         public int Id { get; set; }
-        public string? ItemNumber { get; set; }
-        public string? Description { get; set; }
+        public string ItemNumber { get; set; }
+        public string Description { get; set; }
         public PartType ItemType { get; set; }
         public decimal Qty { get; set; }
         public int ItemMasterSchedulesId { get; set; }

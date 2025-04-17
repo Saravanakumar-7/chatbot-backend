@@ -11,7 +11,6 @@ namespace Entities.DTOs
         public int Id { get; set; }
         public DateTime SchedulesDate { get; set; }
         public List<ItemMasterSchedulePartsDto>? ItemMasterScheduleParts { get; set; }
-        public int ItemMasterId { get; set; }
     }
     public class ItemMasterSchedulesDtoPost
     {

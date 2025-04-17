@@ -14,7 +14,6 @@ namespace Entities.DTOs
         public string? Description { get; set; }
         public PartType ItemType { get; set; }
         public decimal Qty { get; set; }
-        public int ItemMasterSchedulesId { get; set; }
     }
     public class ItemMasterSchedulePartsDtoPost
     {
