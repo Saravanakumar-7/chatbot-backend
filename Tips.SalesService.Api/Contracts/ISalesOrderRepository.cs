@@ -47,7 +47,8 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<RecievableCustomer>> GetReceivableReportsForMultiCustomerID(string CustomerId);
         Task<IEnumerable<RecievableDayWiseSPReportDto>> GetAllRecievableDayWiseSPReport(string CustomerId, DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<SalesOrderSPReport>> GetSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN);
-        Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSPReportWithParamForTrans(string CustomerName, string SalesOrderNumber, string KPN);
+        Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSPReportWithParamForTrans(string ProjectNumber, string CustomerName, string SalesOrderNumber, string SOStatus, string KPN);
+        Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSOStatusSPReportWithParamForTrans(string ProjectNumber, string CustomerName, string SalesOrderNumber, string SOStatus, string KPN);
         Task<IEnumerable<SalesOrderQtyDetailsDto>> GetSalesOrderQtySPReportWithParam(string itemNo, decimal bomQty);
         Task<List<SalesOrderDashboardSPReport>> GetSalesOrderDashboardSPReportWithParam(string Bucket_Id);
         Task<List<TransactionDashboardSPReport>> GetTransactionDashboardSPReportWithParam();

@@ -178,6 +178,64 @@ namespace Tips.SalesService.Api.Entities.Dto
         public List<SoConfirmationDateDto>? SoConfirmationDates { get; set; }
 
     }
+
+    public class SalesOrderItemsShortCloseDto
+    {
+        // public int Id {  get; set; }
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
+        //  public string? SalesOrderNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? CustomerItemNumber { get; set; }
+        public PartType PartType { get; set; }
+        [Precision(13, 3)]
+        public decimal BalanceQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal DispatchQty { get; set; }
+        public OrderStatus StatusEnum { get; set; }
+        public decimal? ShortClosedQty { get; set; }
+        [DefaultValue(false)]
+        public bool NowShortClosed { get; set; }
+        [Precision(18, 3)]
+        public decimal? BasicAmount { get; set; }
+        public string? ShortClosedBy { get; set; }
+        public DateTime? ShortClosedOn { get; set; }
+        [Precision(13, 3)]
+        public decimal? Discount { get; set; }
+        public string? RoomName { get; set; }
+        public string? DiscountType { get; set; }
+
+        [Precision(13, 3)]
+        public decimal ShopOrderQty { get; set; }
+        public string? UOM { get; set; }
+        public string? Currency { get; set; }
+        public string? PriceList { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? UnitPrice { get; set; }
+
+        [Precision(13, 3)]
+        public decimal OrderQty { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? SGST { get; set; }
+        [Precision(13, 3)]
+        public decimal? CGST { get; set; }
+        [Precision(13, 3)]
+        public decimal? UTGST { get; set; }
+        [Precision(13, 3)]
+        public decimal? IGST { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAmount { get; set; }
+        public DateTime RequestedDate { get; set; }
+        public string? Remarks { get; set; }
+        public List<ScheduleDateShortCloseDto>? ScheduleDates { get; set; }
+        public List<SoConfirmationDateDto>? SoConfirmationDates { get; set; }
+
+    }
+
     public class ListOfProjectNoDto
     {
         public int Id { get; set; }
