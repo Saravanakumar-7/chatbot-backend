@@ -562,6 +562,49 @@ namespace Repository
             }
             return enggBomSAItemNumberWithQtyDtos;
         }
+
+        public async Task<List<EnggBomKitItemNumberWithQtyDto>> GetKitBomChildDetails(string kitItemMaster)
+        {
+            List<EnggBomKitItemNumberWithQtyDto> enggBomKitItemNumberWithQtyDtos = new List<EnggBomKitItemNumberWithQtyDto>();
+
+            int bomId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == kitItemMaster && x.IsActive == true)
+                .OrderByDescending(x => x.RevisionNumber)
+                .Select(x => x.BOMId)
+                .FirstOrDefaultAsync();
+
+            var kitbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == bomId && x.IsActive == true).OrderByDescending(x => x.PartType).ToListAsync();
+            if (kitbomdetails != null)
+            {
+                foreach (var childofKit in kitbomdetails)
+                {
+                    if (childofKit.PartType == PartType.kitComponent)
+                    {
+                        int flag = 0;
+                        foreach (var existingKitComponent in enggBomKitItemNumberWithQtyDtos)
+                        {
+                            if (existingKitComponent.ItemNumber == childofKit.ItemNumber)
+                            {
+                                existingKitComponent.QtyReq = existingKitComponent.QtyReq + (childofKit.Quantity);
+                                flag = 1;
+                                break;
+                            }
+                        }
+                        if (flag == 0)
+                        {
+                            EnggBomKitItemNumberWithQtyDto addKitComponent = new EnggBomKitItemNumberWithQtyDto();
+                            addKitComponent.KitItemNumber = kitItemMaster;
+                            addKitComponent.ItemNumber = childofKit.ItemNumber;
+                            addKitComponent.ItemDescription = childofKit.Description;
+                            addKitComponent.QtyReq = childofKit.Quantity;
+                            enggBomKitItemNumberWithQtyDtos.Add(addKitComponent);
+                        }
+                    }
+                }
+            }
+
+            return enggBomKitItemNumberWithQtyDtos;
+        }
+
         public async Task<decimal?> GetSABomQuantity(string fgPartNumber, string saItemNumber)
         {
 

@@ -1707,6 +1707,15 @@ namespace Tips.Purchase.Api.Controllers
                         {
                             PoAddProject poaddproject = poItemDetails.POAddprojects[j];
                             poaddproject.BalanceQty = poaddproject.ProjectQty;
+                            foreach(var poaddKitproject in poaddproject.PoAddKitProjects)
+                            {
+                                var KitItemNo = poItemDetails.ItemNumber;
+                                var client = _clientFactory.CreateClient();
+                                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"], $"GetKitBomChildDetails?kitItemNumber={KitItemNo}"));
+                                request.Headers.Add("Authorization", token);
+                                var response = await client.SendAsync(request);
+                            }
                         }
 
                         poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);

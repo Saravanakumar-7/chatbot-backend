@@ -1626,6 +1626,42 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetKitBomChildDetails([FromBody] string kitItemNumber)
+        {
+            ServiceResponse<List<EnggBomKitItemNumberWithQtyDto>> serviceResponse = new ServiceResponse<List<EnggBomKitItemNumberWithQtyDto>>();
+            
+            try
+            {
+                if (kitItemNumber is null)
+                {
+                    _logger.LogError("ItemNumber object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ItemNumber object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                var kitBomDetails = await _enggBomRepository.GetKitBomChildDetails(kitItemNumber);
+                serviceResponse.Data = kitBomDetails;
+                serviceResponse.Message = "List Of Kit BOM Child ItemNumber ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong Kit BOM Child ItemNumber action: {ex.Message} {ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> GetFGCostingDetailsByItemNumber(List<string> fgItemNumberList)
         {

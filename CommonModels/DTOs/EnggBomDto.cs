@@ -142,6 +142,16 @@ namespace Entities.DTOs
         public decimal WeightedAvg { set; get; }
 
     }
+
+    public class EnggBomKitItemNumberWithQtyDto
+    {
+        public string? KitItemNumber { set; get; }
+        public string? ItemNumber { set; get; }
+        public string? ItemDescription { set; get; }
+        public decimal QtyReq { set; get; }
+
+    }
+
     public class EnggBomItemDto
     {
         public string ItemNumber { get; set; }
