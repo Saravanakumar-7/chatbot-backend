@@ -13,6 +13,8 @@ namespace Tips.Warehouse.Api.Entities.Enums
         TG,
         SA,
         FRU,
-        Phantom
+        Phantom,
+        Tools,
+        CapitalGoods
     }
 }
