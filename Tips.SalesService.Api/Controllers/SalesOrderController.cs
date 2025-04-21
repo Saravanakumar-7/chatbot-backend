@@ -4922,6 +4922,43 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> GetAllAdvanceRecievableSPReport(ReceivableReportsForMultiCustomerIdDto receivableSPReportsDto)
+        {
+            ServiceResponse<IEnumerable<AdvanceRecievableSPReportDto>> serviceResponse = new ServiceResponse<IEnumerable<AdvanceRecievableSPReportDto>>();
+            try
+            {
+                var products = await _repository.GetAllAdvanceRecievableSPReport(receivableSPReportsDto.CustomerId);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"AdvanceRecievable hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"AdvanceRecievable hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned AdvanceRecievable Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllAdvanceRecievableSPReport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> GetReceivableReportsForMultiCustomerID(ReceivableReportsForMultiCustomerIdDto receivableReportsForMultiCustomerIdDto)
         {
             ServiceResponse<IEnumerable<RecievableCustomer>> serviceResponse = new ServiceResponse<IEnumerable<RecievableCustomer>>();

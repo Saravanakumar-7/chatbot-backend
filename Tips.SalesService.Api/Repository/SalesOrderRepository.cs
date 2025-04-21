@@ -131,6 +131,26 @@ namespace Tips.SalesService.Api.Repository
             }
         }
 
+        public async Task<IEnumerable<AdvanceRecievableSPReportDto>> GetAllAdvanceRecievableSPReport(string CustomerId)
+        {
+
+            try
+            {
+                var results = await _tipsSalesServiceDbContext.Set<AdvanceRecievableSPReportDto>()
+                    .FromSqlInterpolated($"CALL Advance_Recievable_Report({CustomerId})")
+                    .ToListAsync();
+
+                return results;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine($"An error occurred while executing the GetAllAdvanceRecievableSPReport : {ex.Message}");
+                return Enumerable.Empty<AdvanceRecievableSPReportDto>();
+            }
+        }
+
+
         public async Task<PagedList<SalesOrderSPReport>> GetSalesOrderSPReport(PagingParameter pagingParameter)
         {
             var results = _tipsSalesServiceDbContext.Set<SalesOrderSPReport>()

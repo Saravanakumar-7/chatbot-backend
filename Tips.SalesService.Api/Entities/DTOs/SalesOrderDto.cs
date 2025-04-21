@@ -739,6 +739,20 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? typeofsolution { get; set; }
     }
 
+    public class AdvanceRecievableSPReportDto
+    {
+        public string? CustomerId { get; set; } 
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; } 
+        public decimal? TotalSumOfSOAmount { get; set; } 
+        public decimal? AlreadyRecieved { get; set; } 
+        public decimal? AmountRecieved { get; set; } 
+        public decimal? TotalAdvance { get; set; } 
+        public string? TypeOfSolution { get; set; } 
+        public string? ProductType { get; set; } 
+    }
+
+
     public class SalesOrderDetailsTOSDto
     {
         public string? SalesOrderNumber { get; set; }
