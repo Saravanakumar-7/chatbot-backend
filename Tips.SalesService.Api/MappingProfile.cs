@@ -317,6 +317,16 @@ namespace Tips.SalesService.Api
             CreateMap<ScheduleDateUpdateDto, SalesOrderScheduleDateHistory>().ReverseMap();
             CreateMap<SalesOrderAdditionalChargesUpdateDto, SOAdditionalChargesHistory>().ReverseMap();
 
+            CreateMap<SalesOrder, SalesOrderShortCloseDto>().ReverseMap();
+            CreateMap<SalesOrderItems, SalesOrderItemsShortCloseDto>().ReverseMap();
+            CreateMap<ScheduleDate, ScheduleDateShortCloseDto>().ReverseMap();
+            CreateMap<SalesOrderAdditionalCharges, SalesOrderAdditionalChargesShortCloseDto>().ReverseMap();
+
+            CreateMap<SalesOrderShortCloseDto, SalesOrderMainLevelHistory>().ReverseMap();
+            CreateMap<SalesOrderItemsShortCloseDto, SalesOrderItemLevelHistory>().ReverseMap();
+            CreateMap<ScheduleDateShortCloseDto, SalesOrderScheduleDateHistory>().ReverseMap();
+            CreateMap<SalesOrderAdditionalChargesShortCloseDto, SOAdditionalChargesHistory>().ReverseMap();
+
             CreateMap<SalesOrderMainLevelHistorySP, SalesOrderMainLevelHistoryDto>().ReverseMap();
 
             CreateMap<SoConfirmationDate, SoItemConfirmationDateDto>().ReverseMap();
