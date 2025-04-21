@@ -20,6 +20,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? IssuedTo { get; set; }
         public string? ReasonforIssuingStock { get; set; }
         public DateTime? DueDate { get; set; }
+        public string? EWayBill { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -41,6 +42,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? IssuedTo { get; set; }
         public string? ReasonforIssuingStock { get; set; }
         public DateTime? DueDate { get; set; }
+        public string? EWayBill { get; set; }
         public List<OpenDeliveryOrderPartsDtoPost> OpenDeliveryOrderParts { get; set; }
     }
     public class OpenDeliveryOrderDtoUpdate
@@ -56,6 +58,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? IssuedTo { get; set; }
         public string? ReasonforIssuingStock { get; set; }
         public DateTime? DueDate { get; set; }
+        public string? EWayBill { get; set; }
 
         [Required(ErrorMessage = "Unit is required")]
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]

@@ -151,16 +151,28 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
-        public async Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSPReportWithParamForTrans(string CustomerName, string SalesOrderNumber, string KPN)
+        public async Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSPReportWithParamForTrans(string ProjectNumber, string CustomerName, string SalesOrderNumber, string SOStatus, string KPN)
         {
             var result = _tipsSalesServiceDbContext
             .Set<SalesOrderSPReportForTrans>()
-            .FromSqlInterpolated($"CALL SalesOrder_withparameter_Report_tras({CustomerName},{SalesOrderNumber},{KPN})")
+            .FromSqlInterpolated($"CALL SalesOrder_withparameter_Report_tras({ProjectNumber},{CustomerName},{SalesOrderNumber},{SOStatus},{KPN})")
             .ToList();
 
             return result;
 
         }
+
+        public async Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSOStatusSPReportWithParamForTrans(string ProjectNumber, string CustomerName, string SalesOrderNumber, string SOStatus, string KPN)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SalesOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL SalesOrder_withparameter_Report_tras_SOStatus({ProjectNumber},{CustomerName},{SalesOrderNumber},{SOStatus},{KPN})")
+            .ToList();
+
+            return result;
+
+        }
+
         public async Task<List<SalesOrderDashboardSPReport>> GetSalesOrderDashboardSPReportWithParam(string Bucket_Id)
         {
             var result = _tipsSalesServiceDbContext
