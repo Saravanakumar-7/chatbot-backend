@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Tips.Purchase.Api.Entities.Dto;
 
 namespace Tips.Purchase.Api.Entities.DTOs
 {
@@ -11,6 +12,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public decimal ProjectQty { get; set; }
         public decimal BalanceQty { get; set; }
         public decimal ReceivedQty { get; set; }
+        public List<PoAddKitProjectDto>? PoAddKitProjects { get; set; }
 
     }
     public class PoAddProjectPostDto
@@ -19,6 +21,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal ProjectQty { get; set; }
+        public List<PoAddKitProjectPostDto>? PoAddKitProjects { get; set; }
 
     }
     public class PoAddProjectUpdateDto
@@ -27,6 +30,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal ProjectQty { get; set; }
+        public List<PoAddKitProjectUpdateDto>? PoAddKitProjects { get; set; }
 
     }
     public class PoAddProjectShortCloseDto

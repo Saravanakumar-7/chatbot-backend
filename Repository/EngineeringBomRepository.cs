@@ -563,16 +563,16 @@ namespace Repository
             return enggBomSAItemNumberWithQtyDtos;
         }
 
-        public async Task<List<EnggBomKitItemNumberWithQtyDto>> GetKitBomChildDetails(string kitItemMaster)
+        public async Task<List<EnggBomKitItemNumberWithQtyDto>> GetKitBomChildDetails(string kitItemMaster , decimal kitRevNo)
         {
             List<EnggBomKitItemNumberWithQtyDto> enggBomKitItemNumberWithQtyDtos = new List<EnggBomKitItemNumberWithQtyDto>();
 
-            int bomId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == kitItemMaster && x.IsActive == true)
+            int bomId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == kitItemMaster && x.RevisionNumber == kitRevNo && x.IsActive == true)
                 .OrderByDescending(x => x.RevisionNumber)
                 .Select(x => x.BOMId)
                 .FirstOrDefaultAsync();
 
-            var kitbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == bomId && x.IsActive == true).OrderByDescending(x => x.PartType).ToListAsync();
+            var kitbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == bomId && x.IsActive == true).ToListAsync();
             if (kitbomdetails != null)
             {
                 foreach (var childofKit in kitbomdetails)
@@ -582,9 +582,9 @@ namespace Repository
                         int flag = 0;
                         foreach (var existingKitComponent in enggBomKitItemNumberWithQtyDtos)
                         {
-                            if (existingKitComponent.ItemNumber == childofKit.ItemNumber)
+                            if (existingKitComponent.PartNumber == childofKit.ItemNumber)
                             {
-                                existingKitComponent.QtyReq = existingKitComponent.QtyReq + (childofKit.Quantity);
+                                existingKitComponent.KitComponentQty = existingKitComponent.KitComponentQty + (childofKit.Quantity);
                                 flag = 1;
                                 break;
                             }
@@ -592,10 +592,10 @@ namespace Repository
                         if (flag == 0)
                         {
                             EnggBomKitItemNumberWithQtyDto addKitComponent = new EnggBomKitItemNumberWithQtyDto();
-                            addKitComponent.KitItemNumber = kitItemMaster;
-                            addKitComponent.ItemNumber = childofKit.ItemNumber;
-                            addKitComponent.ItemDescription = childofKit.Description;
-                            addKitComponent.QtyReq = childofKit.Quantity;
+                            addKitComponent.PartNumber = childofKit.ItemNumber;
+                            addKitComponent.Description = childofKit.Description;
+                            addKitComponent.KitComponentQty = childofKit.Quantity;
+                            addKitComponent.PartType = childofKit.PartType;
                             enggBomKitItemNumberWithQtyDtos.Add(addKitComponent);
                         }
                     }

@@ -1628,7 +1628,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetKitBomChildDetails([FromBody] string kitItemNumber)
+        public async Task<IActionResult> GetKitBomChildDetails( string kitItemNumber ,decimal kitRevNo)
         {
             ServiceResponse<List<EnggBomKitItemNumberWithQtyDto>> serviceResponse = new ServiceResponse<List<EnggBomKitItemNumberWithQtyDto>>();
             
@@ -1636,15 +1636,15 @@ namespace Tips.Master.Api.Controllers
             {
                 if (kitItemNumber is null)
                 {
-                    _logger.LogError("ItemNumber object sent from client is null.");
+                    _logger.LogError("KitItemNumber object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "ItemNumber object is null";
+                    serviceResponse.Message = "KitItemNumber object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
 
-                var kitBomDetails = await _enggBomRepository.GetKitBomChildDetails(kitItemNumber);
+                var kitBomDetails = await _enggBomRepository.GetKitBomChildDetails(kitItemNumber, kitRevNo);
                 serviceResponse.Data = kitBomDetails;
                 serviceResponse.Message = "List Of Kit BOM Child ItemNumber ";
                 serviceResponse.Success = true;

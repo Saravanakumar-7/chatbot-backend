@@ -2,29 +2,40 @@
 using System.ComponentModel.DataAnnotations;
 using Tips.Purchase.Api.Entities.Enums;
 
-namespace Tips.Purchase.Api.Entities
+namespace Tips.Purchase.Api.Entities.Dto
 {
-    public class PoAddKitProject
+    public class PoAddKitProjectDto
     {
-        [Key]
         public int Id { get; set; }
         public string? PartNumber { get; set; }
         public string? Description { get; set; }
         public PoPartType PartType { get; set; }
         public string? ProjectNumber { get; set; }
-
-        [Precision(13, 3)]
         public decimal KitComponentQty { get; set; }
-        [Precision(13, 3)]
         public decimal BalanceQty { get; set; }
-        [Precision(13, 3)]
         public decimal ReceivedQty { get; set; }
         public PoStatus PoAddKitProjectStatus { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public int PoAddProjectId { get; set; }
-        public PoAddProject? PoAddProject { get; set; }
+    }
+    public class PoAddKitProjectPostDto
+    {
+        public string? PartNumber { get; set; }
+        public string? Description { get; set; }
+        public PoPartType PartType { get; set; }
+        public string? ProjectNumber { get; set; }
+        public decimal KitComponentQty { get; set; }
+    }
+    public class PoAddKitProjectUpdateDto
+    {
+        public string? PartNumber { get; set; }
+        public string? Description { get; set; }
+        public PoPartType PartType { get; set; }
+        public string? ProjectNumber { get; set; }
+        public decimal KitComponentQty { get; set; }
+        public decimal BalanceQty { get; set; }
+        public decimal ReceivedQty { get; set; }
     }
 }

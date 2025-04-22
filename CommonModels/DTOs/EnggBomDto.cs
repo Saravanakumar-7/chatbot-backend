@@ -145,10 +145,10 @@ namespace Entities.DTOs
 
     public class EnggBomKitItemNumberWithQtyDto
     {
-        public string? KitItemNumber { set; get; }
-        public string? ItemNumber { set; get; }
-        public string? ItemDescription { set; get; }
-        public decimal QtyReq { set; get; }
+        public string? PartNumber { set; get; }
+        public string? Description { set; get; }
+        public decimal KitComponentQty { set; get; }
+        public PartType PartType { set; get; }
 
     }
 
