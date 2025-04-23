@@ -1231,6 +1231,7 @@ namespace Tips.Master.Api.Controllers
                 }
 
                 var itemMasterEntity = _mapper.Map<ItemMaster>(itemMasterDtoPost);
+                itemMasterEntity.Manufacture_Year = itemMasterDtoPost.Manufacture_Year?.ToString("MM/yyyy");
                 //var itemMasterAlternate = _mapper.Map<IEnumerable<ItemmasterAlternate>>(itemMasterDtoPost.ItemmasterAlternate);
                 //var itemMasterApprovedVendor = _mapper.Map<IEnumerable<ItemMasterApprovedVendor>>(itemMasterDtoPost.ItemMasterApprovedVendor);
                 //var itemMasterRouting = _mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoPost.ItemMasterRouting);
@@ -1389,7 +1390,7 @@ namespace Tips.Master.Api.Controllers
                 updateItemMasterEntity.ItemMasterWarehouse = null;
                 updateItemMasterEntity.ItemMasterSchedules = null;
                 var itemMaster = _mapper.Map(itemMasterDtoUpdate, updateItemMasterEntity);
-
+                itemMaster.Manufacture_Year = itemMasterDtoUpdate.Manufacture_Year?.ToString("MM/yyyy");
                 itemMaster.ItemmasterAlternate = itemMasterAlternate.ToList();
                 itemMaster.ItemMasterApprovedVendor = itemMasterApprovedVendor.ToList();
                 //itemMaster.ItemMasterFileUpload=itemMasterFileUpload.ToList();

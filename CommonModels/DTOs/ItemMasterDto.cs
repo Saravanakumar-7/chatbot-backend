@@ -233,7 +233,7 @@ namespace Entities.DTOs
         public string? Make { get; set; }
         public string? Model { get; set; }
         public string? Manufacturer { get; set; }
-        public string? Manufacture_Year { get; set; }
+        public DateTime? Manufacture_Year { get; set; }
         public string? SubModel { get; set; }
         public string? Serial_Number { get; set; }
         public string? Asset_Number { get; set; }
@@ -443,7 +443,7 @@ namespace Entities.DTOs
         public string? Make { get; set; }
         public string? Model { get; set; }
         public string? Manufacturer { get; set; }
-        public string? Manufacture_Year { get; set; }
+        public DateTime? Manufacture_Year { get; set; }
         public string? SubModel { get; set; }
         public string? Serial_Number { get; set; }
         public string? Asset_Number { get; set; }
