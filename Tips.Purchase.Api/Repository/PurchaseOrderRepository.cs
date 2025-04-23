@@ -2259,7 +2259,7 @@ namespace Tips.Purchase.Api.Repository
                           .ToListAsync();
 
             var poProjectNoDetailsByProjectNo = await _tipsPurchaseDbContexts.PoAddProjects
-                 .Where(x => x.ProjectNumber == projectNo && x.PoAddProjectStatus != true && poItemDetailId.Contains(x.POItemDetailId))
+                 .Where(x => x.ProjectNumber == projectNo /*&& x.PoAddProjectStatus != true*/ && poItemDetailId.Contains(x.POItemDetailId))
                           .ToListAsync();
 
             return poProjectNoDetailsByProjectNo;

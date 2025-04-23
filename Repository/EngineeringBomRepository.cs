@@ -271,6 +271,22 @@ namespace Repository
             .FirstOrDefaultAsync();
             return latestBomData;
         }
+
+        public async Task<EnggBomRevSPReportDto> GetLatestkitRevNo(string kitItemNumber)
+        {
+            var latestKitRevNoData = await _tipsMasterDbContext.EnggBoms
+                .Where(x => x.IsActive == true && x.ItemNumber == kitItemNumber)
+                .GroupBy(i => i.ItemNumber)
+                .Select(e => new EnggBomRevSPReportDto
+                {
+                    ItemNumber = e.Key,
+                    RevisionNumber = e.Max(e=>e.RevisionNumber)
+                })
+                .FirstOrDefaultAsync();
+
+            return latestKitRevNoData;
+        }
+
         public async Task<List<EnggChildItem>> GetChildItemsLists()
         {
             var list = await _tipsMasterDbContext.EnggChildItems.ToListAsync();

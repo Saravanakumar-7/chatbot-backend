@@ -1726,7 +1726,7 @@ namespace Tips.Purchase.Api.Controllers
                                     dynamic enggBomKitDetailsJson = JsonConvert.DeserializeObject(enggBomKitDetailsJsonString);
                                     var data = enggBomKitDetailsJson.data;
                                     enggBomKitDetailsDynamic = data.ToObject<List<EnggBomKitItemNumberWithQtyDto>>();
-
+                                
                                     foreach (var enggBomKitDetail in enggBomKitDetailsDynamic)
                                     {
                                         PoAddKitProject poAddKitProject = new PoAddKitProject()
@@ -1741,14 +1741,13 @@ namespace Tips.Purchase.Api.Controllers
                                             PoAddKitProjectStatus = PoStatus.Open,
                                             CreatedBy = _createdBy,
                                             CreatedOn = DateTime.Now
-                                            
+
                                         };
                                         poAddKitProjectList.Add(poAddKitProject);
                                     }
-                                    poaddproject.PoAddKitProjects = poAddKitProjectList;
-
+                                poItemDetails.POAddprojects[j].PoAddKitProjects = poAddKitProjectList;
                             }
-
+                            
                             poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
                             poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
                             //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
@@ -2579,7 +2578,7 @@ namespace Tips.Purchase.Api.Controllers
                             var project = POChild.POAddprojects.Where(x => x.ProjectNumber == prj.ProjectNo).FirstOrDefault();
                             project.BalanceQty += prj.ReturnQty;
                             project.ReceivedQty -= prj.ReturnQty;
-                            project.PoAddProjectStatus = false;
+                            //project.PoAddProjectStatus = false;
                         }
                     }
                     if (PurchaseOrder.POItems.Where(x => x.PoStatus == PoStatus.Open).Count() == PurchaseOrder.POItems.Count()) PurchaseOrder.PoStatus = PoStatus.Open;
@@ -2719,7 +2718,7 @@ namespace Tips.Purchase.Api.Controllers
                                     };
                                     poAddKitProjectList.Add(poAddKitProject);
                                 }
-                                poaddproject.PoAddKitProjects = poAddKitProjectList;
+                                poItemDetails.POAddprojects[j].PoAddKitProjects = poAddKitProjectList;
 
                             }
 
@@ -3210,7 +3209,7 @@ namespace Tips.Purchase.Api.Controllers
                     {
                         if (poProjectNos.BalanceQty == dispatchedQty)
                         {
-                            poProjectNos.PoAddProjectStatus = true;
+                            //poProjectNos.PoAddProjectStatus = true;
                         }
                         poProjectNos.BalanceQty -= dispatchedQty;
                         dispatchedQty = 0;

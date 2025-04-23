@@ -29,6 +29,10 @@ namespace Tips.Purchase.Api
             CreateMap<PoAddProject, PoAddProjectUpdateDto>().ReverseMap();
             CreateMap<PoAddProject, PoAddProjectShortCloseDto>().ReverseMap();
 
+            CreateMap<PoAddKitProject, PoAddKitProjectDto>().ReverseMap();
+            CreateMap<PoAddKitProject, PoAddKitProjectPostDto>().ReverseMap();
+            CreateMap<PoAddKitProject, PoAddKitProjectUpdateDto>().ReverseMap();
+
             CreateMap<PoAddDeliverySchedule, PoAddDeliveryScheduleDto>().ReverseMap();
             CreateMap<PoAddDeliverySchedule, PoAddDeliverySchedulePostDto>().ReverseMap();
             CreateMap<PoAddDeliverySchedule, PoAddDeliveryScheduleUpdateDto>().ReverseMap();

@@ -16,6 +16,8 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PurchaseRequisition> PurchaseRequisitions { get; set; }
         public DbSet<PoItem> PoItems { get; set; }
         public DbSet<PoAddProject> PoAddProjects { get; set; }
+        public DbSet<PoAddKitProject> PoAddKitProjects { get; set; }
+        
         public DbSet<PoAddDeliverySchedule> PoAddDeliverySchedules { get; set; }
         public DbSet<PrItem> PrItems { get; set; }
         public DbSet<PrAddProject> PrAddProjects { get; set; }

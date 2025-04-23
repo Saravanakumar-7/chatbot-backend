@@ -2670,6 +2670,32 @@ namespace Tips.Master.Api.Controllers
         //}
 
         [HttpGet]
+        public async Task<IActionResult> GetLatestkitRevNo(string kitItemNumber)
+        {
+            ServiceResponse<IEnumerable<EnggBomRevSPReportDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomRevSPReportDto>>();
+            try
+            {
+
+                var kitRevNoDetail = await _enggBomRepository.GetLatestkitRevNo(kitItemNumber);
+                var result = _mapper.Map<IEnumerable<EnggBomRevSPReportDto>>(kitRevNoDetail);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned  LatestkitRevNo";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetLatestkitRevNo action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetAllEnggBomRevisionNumberList(string itemNumber)
         {
             ServiceResponse<IEnumerable<ReleaseEnggBomDto>> serviceResponse = new ServiceResponse<IEnumerable<ReleaseEnggBomDto>>();
