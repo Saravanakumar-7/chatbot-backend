@@ -21,7 +21,6 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal ProjectQty { get; set; }
-        public List<PoAddKitProjectPostDto>? PoAddKitProjects { get; set; }
 
     }
     public class PoAddProjectUpdateDto
@@ -30,7 +29,6 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal ProjectQty { get; set; }
-        public List<PoAddKitProjectUpdateDto>? PoAddKitProjects { get; set; }
 
     }
     public class PoAddProjectShortCloseDto

@@ -1707,10 +1707,10 @@ namespace Tips.Purchase.Api.Controllers
                             poItemDetails.BalanceQty = poItemDto[i].Qty;
                             poItemDetails.PoPartsStatus = false;
                             poItemDetails.PONumber = purchaseOrderDetails.PONumber;
-                            poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
-                            for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                            var poAddprojectDetails = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                            for (int j = 0; j < poAddprojectDetails.Count; j++)
                             {
-                                PoAddProject poaddproject = poItemDetails.POAddprojects[j];
+                                PoAddProject poaddproject = poAddprojectDetails[j];
                                 poaddproject.BalanceQty = poaddproject.ProjectQty;
                                 
                                     var kitItemNo = poItemDetails.ItemNumber;
@@ -1726,28 +1726,29 @@ namespace Tips.Purchase.Api.Controllers
                                     dynamic enggBomKitDetailsJson = JsonConvert.DeserializeObject(enggBomKitDetailsJsonString);
                                     var data = enggBomKitDetailsJson.data;
                                     enggBomKitDetailsDynamic = data.ToObject<List<EnggBomKitItemNumberWithQtyDto>>();
-                                
-                                    foreach (var enggBomKitDetail in enggBomKitDetailsDynamic)
-                                    {
-                                        PoAddKitProject poAddKitProject = new PoAddKitProject()
-                                        {
-                                            PartNumber = enggBomKitDetail.PartNumber,
-                                            Description = enggBomKitDetail.Description,
-                                            ProjectNumber = poaddproject.ProjectNumber,
-                                            PartType = PoPartType.kitComponent,
-                                            KitComponentQty = poaddproject.ProjectQty * enggBomKitDetail.KitComponentQty,
-                                            BalanceQty = 0,
-                                            ReceivedQty = 0,
-                                            PoAddKitProjectStatus = PoStatus.Open,
-                                            CreatedBy = _createdBy,
-                                            CreatedOn = DateTime.Now
 
-                                        };
-                                        poAddKitProjectList.Add(poAddKitProject);
-                                    }
-                                poItemDetails.POAddprojects[j].PoAddKitProjects = poAddKitProjectList;
+                                foreach (var enggBomKitDetail in enggBomKitDetailsDynamic)
+                                {
+                                    PoAddKitProject poAddKitProject = new PoAddKitProject
+                                    {
+                                        PartNumber = enggBomKitDetail.PartNumber,
+                                        Description = enggBomKitDetail.Description,
+                                        ProjectNumber = poaddproject.ProjectNumber,
+                                        PartType = PoPartType.kitComponent,
+                                        KitComponentQty = poaddproject.ProjectQty * enggBomKitDetail.KitComponentQty,
+                                        BalanceQty = 0,
+                                        ReceivedQty = 0,
+                                        PoAddKitProjectStatus = PoStatus.Open,
+                                        CreatedBy = _createdBy,
+                                        CreatedOn = DateTime.Now
+
+                                    };
+
+                                    poAddprojectDetails[j].PoAddKitProjects.Add(poAddKitProject);
+                                }
+                                
                             }
-                            
+                            poItemDetails.POAddprojects = poAddprojectDetails;
                             poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
                             poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
                             //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
@@ -2680,10 +2681,10 @@ namespace Tips.Purchase.Api.Controllers
                             poItemDetails.BalanceQty = poItemDto[i].Qty;
                             poItemDetails.PoPartsStatus = false;
                             poItemDetails.PONumber = purchaseOrderDetails.PONumber;
-                            poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
-                            for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                            var poAddprojectDetails = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                            for (int j = 0; j < poAddprojectDetails.Count; j++)
                             {
-                                PoAddProject poaddproject = poItemDetails.POAddprojects[j];
+                                PoAddProject poaddproject = poAddprojectDetails[j];
                                 poaddproject.BalanceQty = poaddproject.ProjectQty;
 
                                 var kitItemNo = poItemDetails.ItemNumber;
@@ -2716,12 +2717,12 @@ namespace Tips.Purchase.Api.Controllers
                                         CreatedOn = DateTime.Now
 
                                     };
-                                    poAddKitProjectList.Add(poAddKitProject);
+                                    poAddprojectDetails[j].PoAddKitProjects.Add(poAddKitProject);
                                 }
-                                poItemDetails.POAddprojects[j].PoAddKitProjects = poAddKitProjectList;
 
                             }
 
+                            poItemDetails.POAddprojects = poAddprojectDetails;
                             poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
                             poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
                             //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
