@@ -775,6 +775,34 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllKitComponentItemList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+
+            try
+            {
+                var sAPurchasePartItemsList = await _repository.ItemMasterRepository.GetAllKitComponentItemList();
+                _logger.LogInfo("Returned all KitComponentItemListFromItemMaster");
+
+                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(sAPurchasePartItemsList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all KitComponentItemListFromItemMaster Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> SearchItemMasterDate([FromQuery] SearchDateParamess searchDateParam)

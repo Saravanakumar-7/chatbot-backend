@@ -243,7 +243,7 @@ namespace Repository
         public async Task<IEnumerable<ItemNoListDtos>> GetAllOnlyServiceItemsPurchasePartItemNoList()
         {
             IEnumerable<ItemNoListDtos> itemNumberListDto = await TipsMasterDbContext.ItemMasters
-                               .Where(x => (x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG) && x.IsActive == true && x.PoMaterialType== "ServiceItem")
+                               .Where(x => (x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG || x.ItemType == PartType.Kit) && x.IsActive == true && x.PoMaterialType== "ServiceItem")
                                .Select(c => new ItemNoListDtos()
                                {
                                    ItemNumber = c.ItemNumber,
@@ -256,7 +256,7 @@ namespace Repository
         public async Task<IEnumerable<ItemNoListDtos>> GetAllPurchasePartItemNoListExcludingServiceItems()
         {
             IEnumerable<ItemNoListDtos> itemNumberListDto = await TipsMasterDbContext.ItemMasters
-                               .Where(x => (x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG) && x.IsActive == true && x.PoMaterialType != "ServiceItem")
+                               .Where(x => (x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG || x.ItemType == PartType.Kit) && x.IsActive == true && x.PoMaterialType != "ServiceItem")
                                .Select(c => new ItemNoListDtos()
                                {
                                    ItemNumber = c.ItemNumber,
@@ -282,7 +282,7 @@ namespace Repository
         public async Task<IEnumerable<ItemNoListDtos>> GetAllIsPRRequiredStatusTruePPItemNoList()
         {
             IEnumerable<ItemNoListDtos> itemNumberListDto = await TipsMasterDbContext.ItemMasters
-                               .Where(x => (x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG) && x.IsPRRequired == true && x.IsActive == true)
+                               .Where(x => (x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG || x.ItemType == PartType.Kit) && x.IsPRRequired == true && x.IsActive == true)
                                .Select(c => new ItemNoListDtos()
                                {
                                    ItemNumber = c.ItemNumber,
@@ -374,7 +374,19 @@ namespace Repository
             return itemmasterFgDetails;
         }
 
+        public async Task<IEnumerable<ItemMaster>> GetAllKitComponentItemList()
+        {
+            var itemmasterKitComponentDetails = await TipsMasterDbContext.ItemMasters
+                                   .Where(inv => (inv.ItemType == PartType.kitComponent) && inv.IsActive)
+                                   .OrderByDescending(a => a.Id)
+                                   .Include(t => t.ItemmasterAlternate)
+                                   .Include(t => t.ItemMasterApprovedVendor)
+                                   .Include(d => d.ItemMasterRouting)
+                                   .Include(d => d.ItemMasterWarehouse)
+                                   .ToListAsync();
 
+            return itemmasterKitComponentDetails;
+        }
 
         public async Task<IEnumerable<ItemMaster>> GetAllSAItems()
         {

@@ -1701,6 +1701,7 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     for (int i = 0; i < poItemDto.Count; i++)
                     {
+                        //Implement Kit
                         if (poItemDto[i].PartType == PoPartType.Kit)
                         {
                             PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
@@ -1712,39 +1713,62 @@ namespace Tips.Purchase.Api.Controllers
                             {
                                 PoAddProject poaddproject = poAddprojectDetails[j];
                                 poaddproject.BalanceQty = poaddproject.ProjectQty;
-                                
-                                    var kitItemNo = poItemDetails.ItemNumber;
-                                    var kitRevNo = poItemDetails.KitRevisionNo;
 
-                                    var client = _clientFactory.CreateClient();
-                                    var token = HttpContext.Request.Headers["Authorization"].ToString();
-                                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"], $"GetKitBomChildDetails?kitItemNumber={kitItemNo}&kitRevNo={kitRevNo}"));
-                                    request.Headers.Add("Authorization", token);
-                                    var response = await client.SendAsync(request);
+                                //Implement KitComponent
+                                var poAddKitDetails = poAddprojectDetails[j].PoAddKitProjects;
 
-                                    var enggBomKitDetailsJsonString = await response.Content.ReadAsStringAsync();
-                                    dynamic enggBomKitDetailsJson = JsonConvert.DeserializeObject(enggBomKitDetailsJsonString);
-                                    var data = enggBomKitDetailsJson.data;
-                                    enggBomKitDetailsDynamic = data.ToObject<List<EnggBomKitItemNumberWithQtyDto>>();
+                                var kitItemNo = poItemDetails.ItemNumber;
+                                var kitRevNo = poItemDetails.KitRevisionNo;
 
-                                foreach (var enggBomKitDetail in enggBomKitDetailsDynamic)
+                                var client = _clientFactory.CreateClient();
+                                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"], $"GetKitBomChildDetails?kitItemNumber={kitItemNo}&kitRevNo={kitRevNo}"));
+                                request.Headers.Add("Authorization", token);
+                                var response = await client.SendAsync(request);
+
+                                var enggBomKitDetailsJsonString = await response.Content.ReadAsStringAsync();
+                                dynamic enggBomKitDetailsJson = JsonConvert.DeserializeObject(enggBomKitDetailsJsonString);
+                                var data = enggBomKitDetailsJson.data;
+                                enggBomKitDetailsDynamic = data.ToObject<List<EnggBomKitItemNumberWithQtyDto>>();
+
+                                if (enggBomKitDetailsDynamic.Count() > 0)
                                 {
-                                    PoAddKitProject poAddKitProject = new PoAddKitProject
+                                    foreach (var enggBomKitDetail in enggBomKitDetailsDynamic)
                                     {
-                                        PartNumber = enggBomKitDetail.PartNumber,
-                                        Description = enggBomKitDetail.Description,
-                                        ProjectNumber = poaddproject.ProjectNumber,
-                                        PartType = PoPartType.kitComponent,
-                                        KitComponentQty = poaddproject.ProjectQty * enggBomKitDetail.KitComponentQty,
-                                        BalanceQty = 0,
-                                        ReceivedQty = 0,
-                                        PoAddKitProjectStatus = PoStatus.Open,
-                                        CreatedBy = _createdBy,
-                                        CreatedOn = DateTime.Now
 
-                                    };
+                                        if (poAddKitDetails == null)
+                                        {
+                                            poAddKitDetails = new List<PoAddKitProject>();
+                                        }
 
-                                    poAddprojectDetails[j].PoAddKitProjects.Add(poAddKitProject);
+                                        PoAddKitProject poAddKitProject = new PoAddKitProject
+                                        {
+                                            PartNumber = enggBomKitDetail.PartNumber,
+                                            Description = enggBomKitDetail.Description,
+                                            ProjectNumber = poaddproject.ProjectNumber,
+                                            PartType = PoPartType.kitComponent,
+                                            KitComponentQty = poaddproject.ProjectQty * enggBomKitDetail.KitComponentQty,
+                                            BalanceQty = 0,
+                                            ReceivedQty = 0,
+                                            PoAddKitProjectStatus = PoStatus.Open,
+                                            CreatedBy = _createdBy,
+                                            CreatedOn = DateTime.Now
+
+                                        };
+
+                                        poAddKitDetails.Add(poAddKitProject);
+
+                                    }
+
+                                }
+                                else
+                                {
+                                    _logger.LogError($"Something went wrong inside EnggBomKitDetails action While Create Po:");
+                                    serviceResponse.Data = null;
+                                    serviceResponse.Message = $"Something went wrong inside EnggBomKitDetails ,try again";
+                                    serviceResponse.Success = false;
+                                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                    return StatusCode(500, serviceResponse);
                                 }
                                 
                             }
@@ -2675,6 +2699,7 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     for (int i = 0; i < poItemDto.Count; i++)
                     {
+                        //Implement Kit
                         if (poItemDto[i].PartType == PoPartType.Kit)
                         {
                             PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
@@ -2686,6 +2711,9 @@ namespace Tips.Purchase.Api.Controllers
                             {
                                 PoAddProject poaddproject = poAddprojectDetails[j];
                                 poaddproject.BalanceQty = poaddproject.ProjectQty;
+
+                                //Implement KitComponent
+                                var poAddKitDetails = poAddprojectDetails[j].PoAddKitProjects;
 
                                 var kitItemNo = poItemDetails.ItemNumber;
                                 var kitRevNo = poItemDetails.KitRevisionNo;
@@ -2701,23 +2729,41 @@ namespace Tips.Purchase.Api.Controllers
                                 var data = enggBomKitDetailsJson.data;
                                 enggBomKitDetailsDynamic = data.ToObject<List<EnggBomKitItemNumberWithQtyDto>>();
 
-                                foreach (var enggBomKitDetail in enggBomKitDetailsDynamic)
+                                if (enggBomKitDetailsDynamic.Count() > 0)
                                 {
-                                    PoAddKitProject poAddKitProject = new PoAddKitProject()
+                                    foreach (var enggBomKitDetail in enggBomKitDetailsDynamic)
                                     {
-                                        PartNumber = enggBomKitDetail.PartNumber,
-                                        Description = enggBomKitDetail.Description,
-                                        ProjectNumber = poaddproject.ProjectNumber,
-                                        PartType = PoPartType.kitComponent,
-                                        KitComponentQty = poaddproject.ProjectQty * enggBomKitDetail.KitComponentQty,
-                                        BalanceQty = 0,
-                                        ReceivedQty = 0,
-                                        PoAddKitProjectStatus = PoStatus.Open,
-                                        CreatedBy = _createdBy,
-                                        CreatedOn = DateTime.Now
+                                        if (poAddKitDetails == null)
+                                        {
+                                            poAddKitDetails = new List<PoAddKitProject>();
+                                        }
 
-                                    };
-                                    poAddprojectDetails[j].PoAddKitProjects.Add(poAddKitProject);
+                                        PoAddKitProject poAddKitProject = new PoAddKitProject()
+                                        {
+                                            PartNumber = enggBomKitDetail.PartNumber,
+                                            Description = enggBomKitDetail.Description,
+                                            ProjectNumber = poaddproject.ProjectNumber,
+                                            PartType = PoPartType.kitComponent,
+                                            KitComponentQty = poaddproject.ProjectQty * enggBomKitDetail.KitComponentQty,
+                                            BalanceQty = 0,
+                                            ReceivedQty = 0,
+                                            PoAddKitProjectStatus = PoStatus.Open,
+                                            CreatedBy = _createdBy,
+                                            CreatedOn = DateTime.Now
+
+                                        };
+
+                                        poAddKitDetails.Add(poAddKitProject);
+                                    }
+                                }
+                                else
+                                {
+                                    _logger.LogError($"Something went wrong inside EnggBomKitDetails action While Update Po:");
+                                    serviceResponse.Data = null;
+                                    serviceResponse.Message = $"Something went wrong inside EnggBomKitDetails,try again";
+                                    serviceResponse.Success = false;
+                                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                    return StatusCode(500, serviceResponse);
                                 }
 
                             }
