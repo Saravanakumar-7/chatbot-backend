@@ -2672,12 +2672,12 @@ namespace Tips.Master.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetLatestkitRevNo(string kitItemNumber)
         {
-            ServiceResponse<IEnumerable<EnggBomRevSPReportDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomRevSPReportDto>>();
+            ServiceResponse<EnggBomRevSPReportDto> serviceResponse = new ServiceResponse<EnggBomRevSPReportDto>();
             try
             {
 
                 var kitRevNoDetail = await _enggBomRepository.GetLatestkitRevNo(kitItemNumber);
-                var result = _mapper.Map<IEnumerable<EnggBomRevSPReportDto>>(kitRevNoDetail);
+                var result = _mapper.Map<EnggBomRevSPReportDto>(kitRevNoDetail);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned  LatestkitRevNo";
                 serviceResponse.Success = true;
