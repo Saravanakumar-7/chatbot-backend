@@ -1715,7 +1715,6 @@ namespace Tips.Purchase.Api.Controllers
                                 poaddproject.BalanceQty = poaddproject.ProjectQty;
 
                                 //Implement KitComponent
-                                var poAddKitDetails = poAddprojectDetails[j].PoAddKitProjects;
 
                                 var kitItemNo = poItemDetails.ItemNumber;
                                 var kitRevNo = poItemDetails.KitRevisionNo;
@@ -1736,9 +1735,9 @@ namespace Tips.Purchase.Api.Controllers
                                     foreach (var enggBomKitDetail in enggBomKitDetailsDynamic)
                                     {
 
-                                        if (poAddKitDetails == null)
+                                        if (poAddprojectDetails[j].PoAddKitProjects == null)
                                         {
-                                            poAddKitDetails = new List<PoAddKitProject>();
+                                            poAddprojectDetails[j].PoAddKitProjects = new List<PoAddKitProject>();
                                         }
 
                                         PoAddKitProject poAddKitProject = new PoAddKitProject
@@ -1756,7 +1755,7 @@ namespace Tips.Purchase.Api.Controllers
 
                                         };
 
-                                        poAddKitDetails.Add(poAddKitProject);
+                                        poAddprojectDetails[j].PoAddKitProjects.Add(poAddKitProject);
 
                                     }
 
@@ -2712,8 +2711,7 @@ namespace Tips.Purchase.Api.Controllers
                                 PoAddProject poaddproject = poAddprojectDetails[j];
                                 poaddproject.BalanceQty = poaddproject.ProjectQty;
 
-                                //Implement KitComponent
-                                var poAddKitDetails = poAddprojectDetails[j].PoAddKitProjects;
+                                //Implement KitComponent 
 
                                 var kitItemNo = poItemDetails.ItemNumber;
                                 var kitRevNo = poItemDetails.KitRevisionNo;
@@ -2733,9 +2731,9 @@ namespace Tips.Purchase.Api.Controllers
                                 {
                                     foreach (var enggBomKitDetail in enggBomKitDetailsDynamic)
                                     {
-                                        if (poAddKitDetails == null)
+                                        if (poAddprojectDetails[j].PoAddKitProjects == null)
                                         {
-                                            poAddKitDetails = new List<PoAddKitProject>();
+                                            poAddprojectDetails[j].PoAddKitProjects = new List<PoAddKitProject>();
                                         }
 
                                         PoAddKitProject poAddKitProject = new PoAddKitProject()
@@ -2753,7 +2751,7 @@ namespace Tips.Purchase.Api.Controllers
 
                                         };
 
-                                        poAddKitDetails.Add(poAddKitProject);
+                                        poAddprojectDetails[j].PoAddKitProjects.Add(poAddKitProject);
                                     }
                                 }
                                 else
