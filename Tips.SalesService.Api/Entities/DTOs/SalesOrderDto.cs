@@ -277,6 +277,65 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public List<SalesOrderAdditionalChargesUpdateDto>? SalesOrderAdditionalChargesUpdateDtos { get; set; }
     }
 
+    public class SalesOrderShortCloseDto
+    {
+        public int Id { get; set; }
+        public string? LeadId { get; set; }
+        public string? SalesPerson { get; set; }
+        public string ProjectNumber { get; set; }
+        public string? QuoteNumber { get; set; }
+
+        [Precision(13, 1)]
+        public int? QuoteRevisionNumber { get; set; }
+        public DateTime? OrderDate { get; set; }
+        public string? OrderType { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerId { get; set; }
+        public string? ProductType { get; set; }
+        public string? TypeOfSolution { get; set; }
+
+        public string? PONumber { get; set; }
+        public DateTime? PODate { get; set; }
+        public DateTime? ReceivedDate { get; set; }
+
+        public string? BillTo { get; set; }
+        public int? BillToId { get; set; }
+        public string? ShipTo { get; set; }
+        public int? ShipToId { get; set; }
+        public string? PaymentTerms { get; set; }
+        public string? Remarks { get; set; }
+        public decimal? Total { get; set; }
+        public string? ReasonForModification { get; set; }
+        [Precision(13, 3)]
+        public decimal? InstallationCharges { get; set; }
+
+        [Precision(13, 3)]
+        public decimal? TotalAmountWithInstallationCharges { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? TotalAdditionalCharges { get; set; }
+        public string? SpecialDiscountType { get; set; }
+        public SalesOrderStatus SalesOrderStatus { get; set; }
+        public OrderStatus SOStatus { get; set; }
+        [DefaultValue(false)]
+        public bool IsDODone { get; set; }
+        [Precision(18, 3)]
+        public decimal? SpecialDiscountAmount { get; set; }
+        [Precision(18, 3)]
+        public decimal? TotalAmount { get; set; }
+        [Precision(18, 3)]
+        public decimal TotalFinalAmount { get; set; }
+        [DefaultValue(false)]
+        public bool NowShortClosed { get; set; }
+
+        [Required]
+        public string Unit { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
+        public List<SalesOrderItemsShortCloseDto>? SalesOrderItemsUpdateDtos { get; set; }
+        public List<SalesOrderAdditionalChargesShortCloseDto>? SalesOrderAdditionalChargesUpdateDtos { get; set; }
+    }
+
     public class ListofSalesOrderDetails
     {
         public int SalesOrderId { get; set; }
@@ -399,6 +458,14 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal RequiredQty { get; set; }
         public decimal ODOQty { get; set; }
 
+    }
+    public class SalesOrderSPReportForTransDTO
+    {
+        public string? ProjectNumber {  get; set; }
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? SOStatus {  get; set; }
+        public string? KPN { get; set; }
     }
 
     public class SalesOrderSPReportDTO
@@ -672,6 +739,20 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? typeofsolution { get; set; }
     }
 
+    public class AdvanceRecievableSPReportDto
+    {
+        public string? CustomerId { get; set; } 
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; } 
+        public decimal? TotalSumOfSOAmount { get; set; } 
+        public decimal? AlreadyRecieved { get; set; } 
+        public decimal? AmountRecieved { get; set; } 
+        public decimal? TotalAdvance { get; set; } 
+        public string? TypeOfSolution { get; set; } 
+        public string? ProductType { get; set; } 
+    }
+
+
     public class SalesOrderDetailsTOSDto
     {
         public string? SalesOrderNumber { get; set; }
@@ -766,7 +847,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? DispatchQty { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? MaterialGroup { get; set; }
-        public int? ItemType { get; set; }
+        public string? ItemType { get; set; }
         public string? PONumber { get; set; }
         public string? ProductType { get; set; }
         public string? OrderType { get; set; }

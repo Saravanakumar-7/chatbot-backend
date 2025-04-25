@@ -131,6 +131,26 @@ namespace Tips.SalesService.Api.Repository
             }
         }
 
+        public async Task<IEnumerable<AdvanceRecievableSPReportDto>> GetAllAdvanceRecievableSPReport(string CustomerId)
+        {
+
+            try
+            {
+                var results = await _tipsSalesServiceDbContext.Set<AdvanceRecievableSPReportDto>()
+                    .FromSqlInterpolated($"CALL Advance_Recievable_Report({CustomerId})")
+                    .ToListAsync();
+
+                return results;
+            }
+            catch (Exception ex)
+            {
+
+                Console.WriteLine($"An error occurred while executing the GetAllAdvanceRecievableSPReport : {ex.Message}");
+                return Enumerable.Empty<AdvanceRecievableSPReportDto>();
+            }
+        }
+
+
         public async Task<PagedList<SalesOrderSPReport>> GetSalesOrderSPReport(PagingParameter pagingParameter)
         {
             var results = _tipsSalesServiceDbContext.Set<SalesOrderSPReport>()
@@ -151,6 +171,28 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
+        public async Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSPReportWithParamForTrans(string ProjectNumber, string CustomerName, string SalesOrderNumber, string SOStatus, string KPN)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SalesOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL SalesOrder_withparameter_Report_tras({ProjectNumber},{CustomerName},{SalesOrderNumber},{SOStatus},{KPN})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSOStatusSPReportWithParamForTrans(string ProjectNumber, string CustomerName, string SalesOrderNumber, string SOStatus, string KPN)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SalesOrderSPReportForTrans>()
+            .FromSqlInterpolated($"CALL SalesOrder_withparameter_Report_tras_SOStatus({ProjectNumber},{CustomerName},{SalesOrderNumber},{SOStatus},{KPN})")
+            .ToList();
+
+            return result;
+
+        }
+
         public async Task<List<SalesOrderDashboardSPReport>> GetSalesOrderDashboardSPReportWithParam(string Bucket_Id)
         {
             var result = _tipsSalesServiceDbContext
@@ -226,6 +268,15 @@ namespace Tips.SalesService.Api.Repository
         {
             var results = _tipsSalesServiceDbContext.Set<SalesOrderSPReport>()
                         .FromSqlInterpolated($"CALL SalesOrder_withparameter_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<SalesOrderSPReportForTrans>()
+                        .FromSqlInterpolated($"CALL SalesOrder_withparameter_withdate_tras({FromDate},{ToDate})")
                         .ToList();
 
             return results;

@@ -65,9 +65,9 @@ namespace Repository
                 GetDownloadUrlswithitemnumber? getDownloadDetails = await TipsMasterDbContext.imageUploads
                 .Where(b => b.Id == imageId).Select(x => new GetDownloadUrlswithitemnumber
                 {
-                     Id = x.Id,
-                     FileName = x.FileName,
-                     FileExtension = x.FileExtension                                     
+                    Id = x.Id,
+                    FileName = x.FileName,
+                    FileExtension = x.FileExtension
                 })
                 .FirstOrDefaultAsync();
 
@@ -93,7 +93,7 @@ namespace Repository
             .Include(t => t.ItemMasterApprovedVendor)
             //.Include(t => t.ItemMasterFileUpload)
             .Include(d => d.ItemMasterRouting)
-            .Include(d => d.ItemMasterWarehouse)
+            .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts)
             .ToListAsync();
             return allActiveCompanyMasters;
         }
@@ -120,7 +120,9 @@ namespace Repository
                 .Include(x => x.ItemmasterAlternate)
                 .Include(M => M.ItemMasterWarehouse)
                 .Include(M => M.ItemMasterApprovedVendor)
-                .Include(M => M.ItemMasterRouting);
+                .Include(M => M.ItemMasterRouting)
+                .Include(M => M.ItemMasterSchedules)
+                .ThenInclude(x => x.ItemMasterScheduleParts);
             return PagedList<ItemMaster>.ToPagedList(itemMasterDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
         }
         //public async Task<PagedList<ItemMaster>> GetAllItemMasters([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)     // inv.ItemNumber.Contains(searchParams.SearchValue)
@@ -205,7 +207,7 @@ namespace Repository
                              .Include(t => t.ItemMasterApprovedVendor)
                              //.Include(t => t.ItemMasterFileUpload)
                              .Include(d => d.ItemMasterRouting)
-                             .Include(d => d.ItemMasterWarehouse)
+                             .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts)
                              .ToList();
             return itemMasterDetails;
         }
@@ -234,7 +236,7 @@ namespace Repository
                              .Include(t => t.ItemMasterApprovedVendor)
                              //.Include(t => t.ItemMasterFileUpload)
                              .Include(d => d.ItemMasterRouting)
-                             .Include(d => d.ItemMasterWarehouse);
+                             .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts);
                 }
                 return query.ToList();
             }
@@ -301,7 +303,7 @@ namespace Repository
                                     id = c.Id,
                                     ItemNumber = c.ItemNumber,
                                     Description = c.Description,
-                                    PartType=c.ItemType
+                                    PartType = c.ItemType
                                 })
                               .ToListAsync();
 
@@ -325,7 +327,7 @@ namespace Repository
                              .Include(t => t.ItemMasterApprovedVendor)
                              //.Include(t => t.ItemMasterFileUpload)
                              .Include(d => d.ItemMasterRouting)
-                             .Include(d => d.ItemMasterWarehouse);
+                             .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts);
                 }
                 return query.ToList();
             }
@@ -340,7 +342,7 @@ namespace Repository
             .Include(t => t.ItemMasterApprovedVendor)
             //.Include(t => t.ItemMasterFileUpload)
             .Include(d => d.ItemMasterRouting)
-            .Include(d => d.ItemMasterWarehouse);
+            .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts);
             return itemmasterFgDetails;
         }
         public async Task<IEnumerable<string>> GetAllFGItemNumberList()
@@ -349,7 +351,7 @@ namespace Repository
                 .Where(inv => (inv.ItemType == PartType.FG) && inv.IsActive == true)
                 .Select(x => x.ItemNumber)
                 .ToList();
-                
+
             return itemmasterFgItemNumbers;
         }
         public async Task<IEnumerable<ItemMaster>> GetAllSAPurchasePartItems()
@@ -368,7 +370,7 @@ namespace Repository
        .Include(t => t.ItemmasterAlternate)
        .Include(t => t.ItemMasterApprovedVendor)
        .Include(d => d.ItemMasterRouting)
-       .Include(d => d.ItemMasterWarehouse)
+       .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts)
        .ToListAsync();  // Ensure the query is executed asynchronously
 
             return itemmasterFgDetails;
@@ -395,13 +397,13 @@ namespace Repository
             .Include(t => t.ItemMasterApprovedVendor)
             //.Include(t => t.ItemMasterFileUpload)
             .Include(d => d.ItemMasterRouting)
-            .Include(d => d.ItemMasterWarehouse);
+            .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts);
             return itemmasterSADetails;
         }
         public async Task<IEnumerable<ItemMaster>> GetAllFgSaItems()
         {
             var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id).Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.FG) && inv.IsActive == true);
-            
+
             return itemmasterSADetails;
         }
         //sa,fg, and fru
@@ -416,7 +418,7 @@ namespace Repository
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 //.Include(m => m.ItemMasterFileUpload)
                                 .Include(s => s.ItemMasterRouting)
-                                .Include(f => f.ItemMasterWarehouse).ToList();
+                                .Include(f => f.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts).ToList();
             return itemmasterFgSaFRUDetails;
 
 
@@ -432,7 +434,7 @@ namespace Repository
                             .Include(x => x.ItemMasterApprovedVendor)
                             //.Include(m => m.ItemMasterFileUpload)
                             .Include(s => s.ItemMasterRouting)
-                            .Include(p => p.ItemMasterWarehouse).FirstOrDefaultAsync();
+                            .Include(p => p.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts).FirstOrDefaultAsync();
 
 
             return getItemMasterById;
@@ -554,20 +556,20 @@ namespace Repository
                                 //.Include(m => m.ItemMasterFileUpload)
                                 .Include(s => s.ItemMasterRouting)
                                 .Include(p => p.ItemMasterWarehouse)
-
+                                .Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts)
                              .FirstOrDefaultAsync();
             return getItemMasterByItemNo;
         }
 
-        public async Task<ItemMaster> GetItemMasterByItemNumberAndPartType(string ItemNumber,PartType partType)
+        public async Task<ItemMaster> GetItemMasterByItemNumberAndPartType(string ItemNumber, PartType partType)
         {
             var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == ItemNumber && x.IsActive == true && x.ItemType == partType)
-               
+
                  .Include(t => t.ItemmasterAlternate)
                                 .Include(x => x.ItemMasterApprovedVendor)
                                 .Include(s => s.ItemMasterRouting)
                                 .Include(p => p.ItemMasterWarehouse)
-
+                                .Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts)
                              .FirstOrDefaultAsync();
             return getItemMasterByItemNo;
         }
@@ -575,11 +577,11 @@ namespace Repository
         public async Task<bool> CheckItemMasterExists(string itemnumber)
         {
             var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == itemnumber).FirstOrDefaultAsync();
-            return getItemMasterByItemNo != null ;
+            return getItemMasterByItemNo != null;
         }
         public async Task<Dictionary<string, int?>> GetItemsImageIds(List<string> ItemNumbers)
         {
-            Dictionary<string, int?> imageIds = await FindAll().Where(x => ItemNumbers.Contains(x.ItemNumber) &&x.IsActive==true && x.ImageUpload != null).Select(x => new { x.ItemNumber, x.ImageUpload }).ToDictionaryAsync(x => x.ItemNumber, x => x.ImageUpload);
+            Dictionary<string, int?> imageIds = await FindAll().Where(x => ItemNumbers.Contains(x.ItemNumber) && x.IsActive == true && x.ImageUpload != null).Select(x => new { x.ItemNumber, x.ImageUpload }).ToDictionaryAsync(x => x.ItemNumber, x => x.ImageUpload);
             return imageIds;
         }
         public async Task<string> GetClosedIqcItemMasterItemNo(string ItemNumber)
@@ -594,7 +596,7 @@ namespace Repository
         public async Task<List<ItemWithPartTypeDto>> GetItemPartTypeByItemNo(List<string> ItemNumberList)
         {
             var itemWithPartTypes = await FindByCondition(x => ItemNumberList.Contains(x.ItemNumber) && x.IsActive == true)
-                .SelectMany(s => s.ItemmasterAlternate.Where(x =>x.IsDefault == true).Select(a => new ItemWithPartTypeDto
+                .SelectMany(s => s.ItemmasterAlternate.Where(x => x.IsDefault == true).Select(a => new ItemWithPartTypeDto
                 {
                     ItemNumber = s.ItemNumber,
                     PartType = s.ItemType,
@@ -673,7 +675,7 @@ namespace Repository
         }
         public async void Delete(FileUpload fileUpload)
         {
-           TipsMasterDbContext.fileUploads.Remove(fileUpload);
+            TipsMasterDbContext.fileUploads.Remove(fileUpload);
         }
         public async Task<FileUpload> GetFileUploadByIdAsync(int id)
         {

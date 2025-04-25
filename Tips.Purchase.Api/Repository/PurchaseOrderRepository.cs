@@ -2128,10 +2128,10 @@ namespace Tips.Purchase.Api.Repository
         {
             var poStatus = new List<PoStatus> { PoStatus.Open, PoStatus.PartiallyClosed, PoStatus.Closed };
 
-            var poItemIds = await _tipsPurchaseDbContext.PoAddProjects
-                .Where(x => x.ProjectNumber == projectNo)
-                .Select(x => x.POItemDetailId)
-                 .ToListAsync();
+            //var poItemIds = await _tipsPurchaseDbContext.PoAddProjects
+            //    .Where(x => x.ProjectNumber == projectNo)
+            //    .Select(x => x.POItemDetailId)
+            //     .ToListAsync();
 
             var latestPONumbersIds = await _tipsPurchaseDbContext.PurchaseOrders
                                          .Where(x => poStatus.Contains(x.PoStatus)
@@ -2143,26 +2143,43 @@ namespace Tips.Purchase.Api.Repository
                                          .Select(x=>x.Id)
                                          .ToListAsync();
 
+                        var openPoQtyList = await _tipsPurchaseDbContext.PoAddProjects
+                                                    .Where(pro =>
+                                               pro.ProjectNumber == projectNo
+                                               && itemNumberList.Contains(pro.POItemDetail.ItemNumber)
+                                               && latestPONumbersIds.Contains(pro.POItemDetail.PurchaseOrderId)
+                                               && poStatus.Contains(pro.POItemDetail.PoStatus)
+                                           )
+                                           .GroupBy(pro => pro.POItemDetail.ItemNumber)
+                                           .Select(gr => new OpenPoQuantityDto
+                                           {
+                                               ItemNumber = gr.Key,
+                                               OpenPoQty = gr.Sum(x => x.ProjectQty)
+                                           })
+                                           .ToListAsync();
 
-            List<OpenPoQuantityDto> openPoQtyList = await _tipsPurchaseDbContext.PoItems
-                .Include(x => x.PurchaseOrder)
-                .Where(x => /*poStatus.Contains(x.PurchaseOrder.PoStatus)*/
-                /*&&*/ poItemIds.Contains(x.Id)
-                && latestPONumbersIds.Contains(x.PurchaseOrderId)
-                && poStatus.Contains(x.PoStatus) && itemNumberList.Contains(x.ItemNumber)
-                //&& (x.PurchaseOrder.ApprovalCount == 4 && x.PurchaseOrder.POApprovalI == true && x.PurchaseOrder.POApprovalII == true && x.PurchaseOrder.POApprovalIII == true
-                //&& x.PurchaseOrder.POApprovalIV == true) ||
-                //(x.PurchaseOrder.ApprovalCount == 2 && x.PurchaseOrder.POApprovalI == true && x.PurchaseOrder.POApprovalII == true)
-                //&& x.PurchaseOrder.IsDeleted == false
-                //&& x.PurchaseOrder.IsModified == false
-                && x.POAddprojects.Any(pr => pr.ProjectNumber == projectNo))
-                .GroupBy(i => new { i.ItemNumber })
-                .Select(gr => new OpenPoQuantityDto
-                {
-                    ItemNumber = gr.Key.ItemNumber,
-                    OpenPoQty = gr.Sum(x => x.Qty)
-                }).ToListAsync();
-            return openPoQtyList;
+                        return openPoQtyList;
+
+
+            //List<OpenPoQuantityDto> openPoQtyList = await _tipsPurchaseDbContext.PoItems
+            //    .Include(x => x.PurchaseOrder)
+            //    .Where(x => /*poStatus.Contains(x.PurchaseOrder.PoStatus)*/
+            //    /*&&*/ poItemIds.Contains(x.Id)
+            //    && latestPONumbersIds.Contains(x.PurchaseOrderId)
+            //    && poStatus.Contains(x.PoStatus) && itemNumberList.Contains(x.ItemNumber)
+            //    //&& (x.PurchaseOrder.ApprovalCount == 4 && x.PurchaseOrder.POApprovalI == true && x.PurchaseOrder.POApprovalII == true && x.PurchaseOrder.POApprovalIII == true
+            //    //&& x.PurchaseOrder.POApprovalIV == true) ||
+            //    //(x.PurchaseOrder.ApprovalCount == 2 && x.PurchaseOrder.POApprovalI == true && x.PurchaseOrder.POApprovalII == true)
+            //    //&& x.PurchaseOrder.IsDeleted == false
+            //    //&& x.PurchaseOrder.IsModified == false
+            //    && x.POAddprojects.Any(pr => pr.ProjectNumber == projectNo))
+            //    .GroupBy(i => new { i.ItemNumber })
+            //    .Select(gr => new OpenPoQuantityDto
+            //    {
+            //        ItemNumber = gr.Key.ItemNumber,
+            //        OpenPoQty = gr.Sum(x => x.Qty)
+            //    }).ToListAsync();
+            //return openPoQtyList;
 
         }
 

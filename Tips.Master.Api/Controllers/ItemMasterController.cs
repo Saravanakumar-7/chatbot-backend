@@ -1259,12 +1259,14 @@ namespace Tips.Master.Api.Controllers
                 }
 
                 var itemMasterEntity = _mapper.Map<ItemMaster>(itemMasterDtoPost);
-                var itemMasterAlternate = _mapper.Map<IEnumerable<ItemmasterAlternate>>(itemMasterDtoPost.ItemmasterAlternate);
-                var itemMasterApprovedVendor = _mapper.Map<IEnumerable<ItemMasterApprovedVendor>>(itemMasterDtoPost.ItemMasterApprovedVendor);
-                var itemMasterRouting = _mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoPost.ItemMasterRouting);
-                var itemMasterWarehouse = _mapper.Map<IEnumerable<ItemMasterWarehouse>>(itemMasterDtoPost.ItemMasterWarehouse);
+                itemMasterEntity.Manufacture_Year = itemMasterDtoPost.Manufacture_Year?.ToString("MM/yyyy");
+                //var itemMasterAlternate = _mapper.Map<IEnumerable<ItemmasterAlternate>>(itemMasterDtoPost.ItemmasterAlternate);
+                //var itemMasterApprovedVendor = _mapper.Map<IEnumerable<ItemMasterApprovedVendor>>(itemMasterDtoPost.ItemMasterApprovedVendor);
+                //var itemMasterRouting = _mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoPost.ItemMasterRouting);
+                //var itemMasterWarehouse = _mapper.Map<IEnumerable<ItemMasterWarehouse>>(itemMasterDtoPost.ItemMasterWarehouse);
+                //var itemMasterSchedules = _mapper.Map<IEnumerable<ItemMasterSchedules>>(itemMasterDtoPost.ItemMasterSchedules);
 
-                _repository.ItemMasterRepository.CreateItemMaster(itemMasterEntity);
+                await _repository.ItemMasterRepository.CreateItemMaster(itemMasterEntity);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "ItemMaster Successfully Created";
@@ -1409,12 +1411,14 @@ namespace Tips.Master.Api.Controllers
                 var itemMasterApprovedVendor = _mapper.Map<IEnumerable<ItemMasterApprovedVendor>>(itemMasterDtoUpdate.ItemMasterApprovedVendor);
                 var itemMasterRouting = _mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoUpdate.ItemMasterRouting);
                 var itemMasterWarehouse = _mapper.Map<IEnumerable<ItemMasterWarehouse>>(itemMasterDtoUpdate.ItemMasterWarehouse);
+                var itemMasterSchedules = _mapper.Map<IEnumerable<ItemMasterSchedules>>(itemMasterDtoUpdate.ItemMasterSchedules);
                 updateItemMasterEntity.ItemmasterAlternate = null;
                 updateItemMasterEntity.ItemMasterApprovedVendor = null;
                 updateItemMasterEntity.ItemMasterRouting = null;
                 updateItemMasterEntity.ItemMasterWarehouse = null;
+                updateItemMasterEntity.ItemMasterSchedules = null;
                 var itemMaster = _mapper.Map(itemMasterDtoUpdate, updateItemMasterEntity);
-
+                itemMaster.Manufacture_Year = itemMasterDtoUpdate.Manufacture_Year?.ToString("MM/yyyy");
                 itemMaster.ItemmasterAlternate = itemMasterAlternate.ToList();
                 itemMaster.ItemMasterApprovedVendor = itemMasterApprovedVendor.ToList();
                 //itemMaster.ItemMasterFileUpload=itemMasterFileUpload.ToList();
@@ -1422,6 +1426,7 @@ namespace Tips.Master.Api.Controllers
                 //itemMaster.FileUpload = null;
                 itemMaster.ItemMasterRouting = itemMasterRouting.ToList();
                 itemMaster.ItemMasterWarehouse = itemMasterWarehouse.ToList();
+                itemMaster.ItemMasterSchedules = itemMasterSchedules.ToList();
 
                 string result = await _repository.ItemMasterRepository.UpdateItemMaster(itemMaster);
                 _logger.LogInfo(result);
