@@ -97,6 +97,7 @@ builder.Services.AddScoped<IPrItemsRepository, PurchaseRequisitionItemRepository
 builder.Services.AddScoped<IPoAddprojectRepository, PoAddprojectRepository>();
 builder.Services.AddScoped<IPoItemHistoryRepository, PoItemHistoryRepository>();
 builder.Services.AddScoped<IPOInitialConfirmationDateHistoryRepository, POInitialConfirmationDateHistoryRepository>();
+builder.Services.AddScoped<ITokenValidationService, TokenValidationService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -123,6 +124,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 app.UseRouting();
 
 app.UseCors("CorsPolicy");
+app.UseMiddleware<TokenValidationMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

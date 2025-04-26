@@ -3141,7 +3141,7 @@ namespace Tips.Warehouse.Api.Controllers
                 }
                 var createInvetory = _mapper.Map<Inventory>(inventoryDtoPost);
                 createInvetory.IsStockAvailable = true;
-                _inventoryRepository.CreateInventory(createInvetory);
+                await _inventoryRepository.CreateInventory(createInvetory);
                 _inventoryRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Inventory Successfully Created";

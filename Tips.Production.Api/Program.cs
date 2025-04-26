@@ -107,6 +107,7 @@ builder.Services.AddScoped<IMaterialIssueHistoryRepository, MaterialIssueHistory
 builder.Services.AddScoped<IMaterialIssueItemRepository, MaterialIssueItemRepository>();
 builder.Services.AddScoped<IOQCBinningRepository, OQCBinningRepository>();
 builder.Services.AddScoped<IAdvitaShopOrderDetailsRepository, AdvitaShopOrderDetailsRepository>();
+builder.Services.AddScoped<ITokenValidationService, TokenValidationService>();
 
 //builder.Services.AddTransient<IMaterialReturnNoteItemRepository, Mater>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -135,6 +136,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 
 app.UseCors("CorsPolicy");
 app.UseRouting();
+app.UseMiddleware<TokenValidationMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

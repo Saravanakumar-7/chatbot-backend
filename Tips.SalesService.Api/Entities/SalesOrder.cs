@@ -78,6 +78,10 @@ namespace Tips.SalesService.Api.Entities
         public bool ApproveStatus { get; set; }
         public DateTime? ConfirmDate { get; set; }
         public bool SoConfirmationStatus { get; set; }
+        public string? AdvanceType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? AdvanceAmount { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }

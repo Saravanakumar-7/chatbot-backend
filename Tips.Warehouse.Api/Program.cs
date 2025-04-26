@@ -118,6 +118,7 @@ builder.Services.AddScoped<IInvoiceAdditionalChargeRepository, InvoiceAdditional
 builder.Services.AddScoped<IInventoryForServiceItemsRepository, InventoryForServiceItemsRepository>();
 builder.Services.AddScoped<ILocationTransferPartNoRepository, LocationTransferPartNoRepository>();
 builder.Services.AddScoped<MySqlConnection>();
+builder.Services.AddScoped<ITokenValidationService, TokenValidationService>();
 
 
 
@@ -151,6 +152,8 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 app.UseCors("CorsPolicy");
 
 app.UseRouting();
+app.UseMiddleware<TokenValidationMiddleware>();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSwaggerUI(c =>

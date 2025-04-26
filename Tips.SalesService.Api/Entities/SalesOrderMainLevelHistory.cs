@@ -87,6 +87,10 @@ namespace Tips.SalesService.Api.Entities
         public DateTime? SoCreatedOn { get; set; }
         public string? SoLastModifiedBy { get; set; }
         public DateTime? SoLastModifiedOn { get; set; }
+        public string? AdvanceType { get; set; }
+
+        [Precision(18, 3)]
+        public decimal? AdvanceAmount { get; set; }
         public List<SalesOrderItemLevelHistory>? SalesOrderItemLevelHistory { get; set; }
         public List<SOAdditionalChargesHistory>? SOAdditionalChargesHistory { get; set; }
     }
