@@ -150,22 +150,14 @@ builder.Services.AddScoped<ISalesOrderItemLevelHistoryRepository, SalesOrderItem
 builder.Services.AddScoped<ISOAdditionalChargesHistoryRepository, SOAdditionalChargesHistoryRepository>();
 builder.Services.AddScoped<ISOInitialConfirmationDateHistoryRepository, SOInitialConfirmationDateHistoryRepository>();
 builder.Services.AddScoped<IGoogleGCPstorageService, GoogleGCPstorageService>();
-
-//builder.Services.AddScoped<IRfqCustomerSupportNotesRepository, RfqCustomerSupportNotes>();
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-
+builder.Services.AddScoped<ITokenValidationService, TokenValidationService>();
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
 app.UseSwagger();
 
 
 app.UseHttpsRedirection();
 
-//app.UseStaticFiles();
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
@@ -176,7 +168,7 @@ app.UseCors("CorsPolicy");
 
 app.UseRouting();
 
-
+app.UseMiddleware<TokenValidationMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSwaggerUI(c =>

@@ -117,6 +117,7 @@ builder.Services.AddScoped<IOpenGrinForIQCItemRepository, OpenGrinForIQCItemRepo
 builder.Services.AddScoped<IOpenGrinForBinningRepository, OpenGrinForBinningRepository>();
 builder.Services.AddScoped<IOpenGrinForBinningItemsRepository, OpenGrinForBinningItemsRepository>();
 builder.Services.AddScoped<IIQCReturnToVendorRepository, IQCReturnToVendorRepository>();
+builder.Services.AddScoped<ITokenValidationService, TokenValidationService>();
 
 var app = builder.Build();
 app.UseSwagger();
@@ -129,6 +130,7 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 
 app.UseCors("CorsPolicy");
 app.UseRouting();
+app.UseMiddleware<TokenValidationMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
