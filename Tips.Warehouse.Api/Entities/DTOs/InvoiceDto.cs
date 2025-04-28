@@ -195,6 +195,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? ReturnQty { get; set; }
         public string? Remarks { get; set; }
         public string? ProjectNumber { get; set; }
+        public string? PONumber { get; set; }
     }
 
     public class DoNoInvoiceDto
