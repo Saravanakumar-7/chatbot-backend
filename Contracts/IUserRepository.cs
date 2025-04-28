@@ -13,6 +13,6 @@ namespace Contracts
     {
         Task<(LoginResult Result, int UserId, string UserName)> ConfirmUser(ResetPW loginDto);
         Task<string> ResetPassword(int Id, string NewPW, string ConfirmPW);
-       
+        Task<RegistrationForm?> FindUserDetailsByuserId(int userId);
     }
 }

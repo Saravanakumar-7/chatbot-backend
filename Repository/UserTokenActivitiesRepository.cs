@@ -29,9 +29,19 @@ namespace Repository
             else if (User.TokenIsActive == true || User.Validity > DateTime.UtcNow) return 1;
             else return 0;
         }
+        public async Task<UserTokenActivities?> GetUserTokenDetailsByUserId(int UserId)
+        {
+            return await TipsMasterDbContext.UserTokenActivities.Where(x => x.RegistrationId == UserId).FirstOrDefaultAsync();
+        }
         public async Task CreateUserTokenActivity(UserTokenActivities userTokenActivities)
         {
             await Create(userTokenActivities);
+        }
+        public async Task DeactivateUserTokenByUserId(int userId)
+        {
+            var User = await TipsMasterDbContext.UserTokenActivities.Where(x => x.RegistrationId == userId).FirstOrDefaultAsync();
+            User.TokenIsActive = false;
+            Update(User);
         }
         public async Task UpdateToken(int RegistrationId, string NewToken, DateTime Validity)
         {
