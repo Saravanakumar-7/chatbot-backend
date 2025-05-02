@@ -12,6 +12,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public PoPartType PartType { get; set; }
         public string? ProjectNumber { get; set; }
         public decimal KitComponentQty { get; set; }
+        public decimal KitComponentUnitPrice { get; set; }
         public decimal BalanceQty { get; set; }
         public decimal ReceivedQty { get; set; }
         public PoStatus PoAddKitProjectStatus { get; set; }
@@ -27,6 +28,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public PoPartType PartType { get; set; }
         public string? ProjectNumber { get; set; }
         public decimal KitComponentQty { get; set; }
+        public decimal KitComponentUnitPrice { get; set; }
     }
     public class PoAddKitProjectUpdateDto
     {
@@ -35,6 +37,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public PoPartType PartType { get; set; }
         public string? ProjectNumber { get; set; }
         public decimal KitComponentQty { get; set; }
+        public decimal KitComponentUnitPrice { get; set; }
         public decimal BalanceQty { get; set; }
         public decimal ReceivedQty { get; set; }
     }

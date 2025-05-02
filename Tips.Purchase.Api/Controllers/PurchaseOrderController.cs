@@ -1716,37 +1716,17 @@ namespace Tips.Purchase.Api.Controllers
 
                                 //Implement KitComponent
 
-                                var kitItemNo = poItemDetails.ItemNumber;
-                                var kitRevNo = poItemDetails.KitRevisionNo;
-
-                                var client = _clientFactory.CreateClient();
-                                var token = HttpContext.Request.Headers["Authorization"].ToString();
-                                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"], $"GetKitBomChildDetails?kitItemNumber={kitItemNo}&kitRevNo={kitRevNo}"));
-                                request.Headers.Add("Authorization", token);
-                                var response = await client.SendAsync(request);
-
-                                var enggBomKitDetailsJsonString = await response.Content.ReadAsStringAsync();
-                                dynamic enggBomKitDetailsJson = JsonConvert.DeserializeObject(enggBomKitDetailsJsonString);
-                                var data = enggBomKitDetailsJson.data;
-                                enggBomKitDetailsDynamic = data.ToObject<List<EnggBomKitItemNumberWithQtyDto>>();
-
-                                if (enggBomKitDetailsDynamic.Count() > 0)
-                                {
-                                    foreach (var enggBomKitDetail in enggBomKitDetailsDynamic)
+                                    foreach (var poAddkitproject in poAddprojectDetails[j].PoAddKitProjects)
                                     {
-
-                                        if (poAddprojectDetails[j].PoAddKitProjects == null)
-                                        {
-                                            poAddprojectDetails[j].PoAddKitProjects = new List<PoAddKitProject>();
-                                        }
 
                                         PoAddKitProject poAddKitProject = new PoAddKitProject
                                         {
-                                            PartNumber = enggBomKitDetail.PartNumber,
-                                            Description = enggBomKitDetail.Description,
+                                            PartNumber = poAddkitproject.PartNumber,
+                                            Description = poAddkitproject.Description,
                                             ProjectNumber = poaddproject.ProjectNumber,
                                             PartType = PoPartType.kitComponent,
-                                            KitComponentQty = poaddproject.ProjectQty * enggBomKitDetail.KitComponentQty,
+                                            KitComponentQty = poaddproject.ProjectQty * poAddkitproject.KitComponentQty,
+                                            KitComponentUnitPrice = poAddkitproject.KitComponentUnitPrice,
                                             BalanceQty = 0,
                                             ReceivedQty = 0,
                                             PoAddKitProjectStatus = PoStatus.Open,
@@ -1758,17 +1738,6 @@ namespace Tips.Purchase.Api.Controllers
                                         poAddprojectDetails[j].PoAddKitProjects.Add(poAddKitProject);
 
                                     }
-
-                                }
-                                else
-                                {
-                                    _logger.LogError($"Something went wrong inside EnggBomKitDetails action While Create Po:");
-                                    serviceResponse.Data = null;
-                                    serviceResponse.Message = $"Something went wrong inside EnggBomKitDetails ,try again";
-                                    serviceResponse.Success = false;
-                                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                                    return StatusCode(500, serviceResponse);
-                                }
                                 
                             }
                             poItemDetails.POAddprojects = poAddprojectDetails;
