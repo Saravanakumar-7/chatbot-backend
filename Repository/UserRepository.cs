@@ -58,5 +58,10 @@ namespace Repository
             Update(user);
             return user.Password;
         }
+        public async Task<RegistrationForm?> FindUserDetailsByuserId(int userId)
+        {
+            return await _tipsMasterDbContext.RegistrationForms
+                .Where(m => m.Id == userId).FirstOrDefaultAsync();
+        }
     }
 }

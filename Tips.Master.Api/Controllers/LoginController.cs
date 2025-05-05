@@ -4,6 +4,7 @@ using Contracts;
 using Entities;
 using Entities.DTOs;
 using Entities.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using NuGet.Common;
@@ -299,10 +300,55 @@ namespace Tips.Master.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occured in ResetPassword: {ex.Message} \n  {ex.InnerException}");
-                return StatusCode(500, serviceResponse); ;
+                return StatusCode(500, serviceResponse);
             }
         }
-       
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> UserLogOut(int userId)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                var Userdetails = await _userRepository.FindUserDetailsByuserId(userId);
+                if (Userdetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Unable to find the user data for UserID:{userId}";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    _logger.LogError($"Unable to find the user data for UserID:{userId}");
+                    return NotFound(serviceResponse);
+                }
+                var UserToken = await _repository.UserTokenActivitiesRepository.GetUserTokenDetailsByUserId(userId);
+                if (UserToken == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Unable to find the UserToken data for UserID:{userId}";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    _logger.LogError($"Unable to find the UserToken data for UserID:{userId}");
+                    return NotFound(serviceResponse);
+                }
+                await _repository.UserTokenActivitiesRepository.DeactivateUserTokenByUserId(userId);
+                _repository.SaveAsync();
+                serviceResponse.Data = $"User: {Userdetails.UserName} has been Loged Out";
+                serviceResponse.Message = $"User: {Userdetails.UserName} has been Loged Out";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                _logger.LogInfo($"User: {Userdetails.UserName} has been Loged Out");
+                return StatusCode(200, serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in UserLogOut for UserID:{userId} : {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Error Occured in UserLogOut for UserID:{userId} : {ex.Message} \n  {ex.InnerException}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
         //[HttpPut]
         //public async Task<IActionResult> ResetPassword(int Id, string NewPW, string ConfirmPW)
         //{

@@ -13,5 +13,7 @@ namespace Contracts
         Task<int> ValidateUser(int RegistrationId);
         Task UpdateToken(int RegistrationId, string NewToken, DateTime Validity);
         Task DisableTokenInvalidTokenUse(string token);
+        Task<UserTokenActivities?> GetUserTokenDetailsByUserId(int UserId);
+        Task DeactivateUserTokenByUserId(int userId);
     }
 }
