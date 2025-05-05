@@ -2644,6 +2644,31 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetReleasedKitNoAndLatestVersion()
+        {
+            ServiceResponse<IEnumerable<GetAllReleaseProductBomItemNumberVersionList>> serviceResponse = new ServiceResponse<IEnumerable<GetAllReleaseProductBomItemNumberVersionList>>();
+            try
+            {
+                var releaseProductkitBomDetails = await _releaseProductBomRepository.GetReleasedKitNoAndLatestVersion();
+                var result = _mapper.Map<IEnumerable<GetAllReleaseProductBomItemNumberVersionList>>(releaseProductkitBomDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all KitNoAndLatestVersion";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetKitNoAndLatestVersion action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //[HttpGet("{itemNumber}")]
         //public async Task<IActionResult> GetAllEnggBomRevisionNumberList(string itemNumber)
         //{

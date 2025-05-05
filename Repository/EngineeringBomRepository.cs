@@ -1214,6 +1214,18 @@ namespace Repository
             })
         .ToDictionaryAsync(x => x.ItemNumber, x => x.LatestVersion);
         }
+
+        public async Task<IEnumerable<ProductionBomKitRevNoDto>> GetReleasedKitNoAndLatestVersion()
+        {
+            return await _tipsMasterDbContext.ProductionBoms.Where(x => x.ItemType == PartType.Kit).GroupBy(p => p.ItemNumber)
+            .Select(g => new ProductionBomKitRevNoDto
+            {
+                KitItemNumber = g.Key,
+                KitRevisionNumber = g.Max(p => p.ReleaseVersion)
+            })
+        .ToListAsync();
+        }
+
         public async Task<List<ProductionBom>?> GetLatestProBomCountByItemNumber(string itemNumber)
         {
             List<ProductionBom>? latestReleaseVersionsCount = await _tipsMasterDbContext.ProductionBoms

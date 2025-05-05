@@ -220,6 +220,12 @@ namespace Entities.DTOs
         public decimal RevisionNumber { get; set; }
     }
 
+    public class ProductionBomKitRevNoDto
+    {
+        public string? KitItemNumber { get; set; }
+        public decimal KitRevisionNumber { get; set; }
+    }
+
     public class EnggBomDetailsDto
     {
         public string? ItemNumber { get; set; }
