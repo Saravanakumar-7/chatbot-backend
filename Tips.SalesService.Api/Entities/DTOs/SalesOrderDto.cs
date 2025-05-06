@@ -847,8 +847,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerId { get; set; }
         public string? SalesOrderNumber { get; set; }
         public DateTime? sodate { get; set; }
+        public int? SOStatus { get; set; }
         public string? KPN { get; set; }
         public string? KPNDescription { get; set; }
+        public string? ProjectNumber { get; set; }
+        public DateTime? RequestedDate { get; set; }
         public decimal? OrderQty { get; set; }
         public decimal? TotalAmount { get; set; }
         public string? UOC { get; set; }
