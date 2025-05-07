@@ -1717,29 +1717,18 @@ namespace Tips.Purchase.Api.Controllers
                                     poaddproject.BalanceQty = poaddproject.ProjectQty;
 
                                     //Implement KitComponent
-
-                                    foreach (var poAddkitproject in poAddprojectDetails[j].PoAddKitProjects)
+                                    var poAddprojectDetail = _mapper.Map<List<PoAddKitProject>>(poAddprojectDetails[j].PoAddKitProjects);
+                                    for (int k = 0; k < poAddprojectDetail.Count; k++)
                                     {
 
-                                        PoAddKitProject poAddKitProject = new PoAddKitProject
-                                        {
-                                            PartNumber = poAddkitproject.PartNumber,
-                                            Description = poAddkitproject.Description,
-                                            ProjectNumber = poaddproject.ProjectNumber,
-                                            PartType = PoPartType.kitComponent,
-                                            KitComponentQty = poaddproject.ProjectQty * poAddkitproject.KitComponentQty,
-                                            KitComponentUnitPrice = poAddkitproject.KitComponentUnitPrice,
-                                            BalanceQty = 0,
-                                            ReceivedQty = 0,
-                                            PoAddKitProjectStatus = PoStatus.Open,
-                                            CreatedBy = _createdBy,
-                                            CreatedOn = DateTime.Now
-
-                                        };
-
-                                        poAddprojectDetails[j].PoAddKitProjects.Add(poAddKitProject);
+                                        PoAddKitProject poAddKitProject = poAddprojectDetail[k];
+                                        poAddKitProject.ProjectNumber = poaddproject.ProjectNumber;
+                                        poAddKitProject.KitComponentQty = poaddproject.ProjectQty * poAddKitProject.KitComponentQty;
+                                        poAddKitProject.CreatedBy = _createdBy;
+                                        poAddKitProject.CreatedOn = DateTime.Now;
 
                                     }
+                                    poAddprojectDetails[j].PoAddKitProjects = poAddprojectDetail;
 
                                 }
                                 poItemDetails.POAddprojects = poAddprojectDetails;
@@ -1753,9 +1742,9 @@ namespace Tips.Purchase.Api.Controllers
                             {
                                 serviceResponse.Message = $"Error Occured in CreatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}";
                                 serviceResponse.Success = false;
-                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                                 _logger.LogError($"Error Occured in CreatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}");
-                                return BadRequest(serviceResponse);
+                                return StatusCode(500, serviceResponse); 
                             }
                         }
                     }
@@ -1763,22 +1752,33 @@ namespace Tips.Purchase.Api.Controllers
                     {
                         for (int i = 0; i < poItemDto.Count; i++)
                         {
-                            PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
-                            poItemDetails.BalanceQty = poItemDto[i].Qty;
-                            poItemDetails.PoPartsStatus = false;
-                            poItemDetails.PONumber = purchaseOrderDetails.PONumber;
-                            poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
-                            for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                            if (poItemDto[i].PartType != PoPartType.Kit)
                             {
-                                PoAddProject poaddproject = poItemDetails.POAddprojects[j];
-                                poaddproject.BalanceQty = poaddproject.ProjectQty;
-                            }
+                                PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+                                poItemDetails.BalanceQty = poItemDto[i].Qty;
+                                poItemDetails.PoPartsStatus = false;
+                                poItemDetails.PONumber = purchaseOrderDetails.PONumber;
+                                poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                                for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                                {
+                                    PoAddProject poaddproject = poItemDetails.POAddprojects[j];
+                                    poaddproject.BalanceQty = poaddproject.ProjectQty;
+                                }
 
-                            poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
-                            poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
-                            //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
-                            poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
-                            poItemDtoList.Add(poItemDetails);
+                                poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
+                                poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                                //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
+                                poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
+                                poItemDtoList.Add(poItemDetails);
+                            }
+                            else
+                            {
+                                serviceResponse.Message = $"Error Occured in CreatePurchaseOrder: The PoItemDto.Parttype is kit,But PoType is General:{poItemDto[i].PartType}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                _logger.LogError($"Error Occured in CreatePurchaseOrder: The PoItemDto.Parttype is kit,But PoType is General:{poItemDto[i].PartType}");
+                                return StatusCode(500, serviceResponse);
+                            }
                         }
                     }
                 }
@@ -2696,29 +2696,18 @@ namespace Tips.Purchase.Api.Controllers
                                     poaddproject.BalanceQty = poaddproject.ProjectQty;
 
                                     //Implement KitComponent
-
-                                    foreach (var poAddkitproject in poAddprojectDetails[j].PoAddKitProjects)
+                                    var poAddprojectDetail = _mapper.Map<List<PoAddKitProject>>(poAddprojectDetails[j].PoAddKitProjects);
+                                    for (int k = 0; k < poAddprojectDetail.Count; k++)
                                     {
 
-                                        PoAddKitProject poAddKitProject = new PoAddKitProject
-                                        {
-                                            PartNumber = poAddkitproject.PartNumber,
-                                            Description = poAddkitproject.Description,
-                                            ProjectNumber = poaddproject.ProjectNumber,
-                                            PartType = PoPartType.kitComponent,
-                                            KitComponentQty = poaddproject.ProjectQty * poAddkitproject.KitComponentQty,
-                                            KitComponentUnitPrice = poAddkitproject.KitComponentUnitPrice,
-                                            BalanceQty = 0,
-                                            ReceivedQty = 0,
-                                            PoAddKitProjectStatus = PoStatus.Open,
-                                            CreatedBy = _createdBy,
-                                            CreatedOn = DateTime.Now
-
-                                        };
-
-                                        poAddprojectDetails[j].PoAddKitProjects.Add(poAddKitProject);
+                                        PoAddKitProject poAddKitProject = poAddprojectDetail[k];
+                                        poAddKitProject.ProjectNumber = poaddproject.ProjectNumber;
+                                        poAddKitProject.KitComponentQty = poaddproject.ProjectQty * poAddKitProject.KitComponentQty;
+                                        poAddKitProject.CreatedBy = _createdBy;
+                                        poAddKitProject.CreatedOn = DateTime.Now;
 
                                     }
+                                    poAddprojectDetails[j].PoAddKitProjects = poAddprojectDetail;
 
                                 }
                                 poItemDetails.POAddprojects = poAddprojectDetails;
@@ -2730,11 +2719,11 @@ namespace Tips.Purchase.Api.Controllers
                             }
                             else
                             {
-                                serviceResponse.Message = $"Error Occured in CreatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}";
+                                serviceResponse.Message = $"Error Occured in UpdatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}";
                                 serviceResponse.Success = false;
-                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                                _logger.LogError($"Error Occured in CreatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}");
-                                return BadRequest(serviceResponse);
+                                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                _logger.LogError($"Error Occured in UpdatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}");
+                                return StatusCode(500,serviceResponse);
                             }
                         }
                     }
@@ -2742,22 +2731,33 @@ namespace Tips.Purchase.Api.Controllers
                     {
                         for (int i = 0; i < poItemDto.Count; i++)
                         {
-                            PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
-                            poItemDetails.BalanceQty = poItemDto[i].Qty;
-                            poItemDetails.PoPartsStatus = false;
-                            poItemDetails.PONumber = purchaseOrderDetails.PONumber;
-                            poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
-                            for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                            if (poItemDto[i].PartType != PoPartType.Kit)
                             {
-                                PoAddProject poaddproject = poItemDetails.POAddprojects[j];
-                                poaddproject.BalanceQty = poaddproject.ProjectQty;
-                            }
+                                PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+                                poItemDetails.BalanceQty = poItemDto[i].Qty;
+                                poItemDetails.PoPartsStatus = false;
+                                poItemDetails.PONumber = purchaseOrderDetails.PONumber;
+                                poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                                for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                                {
+                                    PoAddProject poaddproject = poItemDetails.POAddprojects[j];
+                                    poaddproject.BalanceQty = poaddproject.ProjectQty;
+                                }
 
-                            poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
-                            poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
-                            //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
-                            poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
-                            poItemDtoList.Add(poItemDetails);
+                                poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
+                                poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                                //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
+                                poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
+                                poItemDtoList.Add(poItemDetails);
+                            }
+                            else
+                            {
+                                serviceResponse.Message = $"Error Occured in UpdatePurchaseOrder: The PoItemDto.Parttype is kit,But PoType is General:{poItemDto[i].PartType}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                _logger.LogError($"Error Occured in UpdatePurchaseOrder: The PoItemDto.Parttype is kit,But PoType is General:{poItemDto[i].PartType}");
+                                return StatusCode(500,serviceResponse);
+                            }
                         }
                     }
                 }
