@@ -2645,13 +2645,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetReleasedKitNoAndLatestVersion()
+        public async Task<IActionResult> GetProductionBomReleasedKitNoAndLatestVersion()
         {
-            ServiceResponse<IEnumerable<GetAllReleaseProductBomItemNumberVersionList>> serviceResponse = new ServiceResponse<IEnumerable<GetAllReleaseProductBomItemNumberVersionList>>();
+            ServiceResponse<IEnumerable<ProductionBomKitRevNoDto>> serviceResponse = new ServiceResponse<IEnumerable<ProductionBomKitRevNoDto>>();
             try
             {
-                var releaseProductkitBomDetails = await _releaseProductBomRepository.GetReleasedKitNoAndLatestVersion();
-                var result = _mapper.Map<IEnumerable<GetAllReleaseProductBomItemNumberVersionList>>(releaseProductkitBomDetails);
+                var releaseProductkitBomDetails = await _releaseProductBomRepository.GetProductionBomReleasedKitNoAndLatestVersion();
+                var result = _mapper.Map<IEnumerable<ProductionBomKitRevNoDto>>(releaseProductkitBomDetails);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all KitNoAndLatestVersion";
                 serviceResponse.Success = true;
