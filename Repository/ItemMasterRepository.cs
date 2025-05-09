@@ -560,6 +560,11 @@ namespace Repository
                              .FirstOrDefaultAsync();
             return getItemMasterByItemNo;
         }
+        public async Task<List<ItemMaster>> GetItemDetailsByItemNumberList(List<string> ItemNumbers)
+        {
+            var getItemMasterByItemNo = await FindByCondition(x => ItemNumbers.Contains(x.ItemNumber) && x.IsActive == true).ToListAsync();
+            return getItemMasterByItemNo;
+        }
 
         public async Task<ItemMaster> GetItemMasterByItemNumberAndPartType(string ItemNumber, PartType partType)
         {

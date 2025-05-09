@@ -202,6 +202,15 @@ namespace Tips.Grin.Api
             CreateMap<IQCReturnToVendorItems, IQCReturnToVendorItemsPostDto>().ReverseMap();
             CreateMap<IQCReturnToVendorItems, IQCReturnToVendorItemsDto>().ReverseMap();
             CreateMap<IQCReturnToVendor, IQCReturnToVendorDto>().ReverseMap();
+
+            CreateMap<KIT_GRIN, KIT_GRINPostDto>().ReverseMap();
+            CreateMap<KIT_GRINParts, KIT_GRINPartsPostDto>().ReverseMap();
+            CreateMap<KIT_GRIN_ProjectNumbers, KIT_GRIN_ProjectNumbersPostDto>().ReverseMap();
+            CreateMap<KIT_GRIN_KITComponents, KIT_GRIN_KITComponentsPostDto>().ReverseMap();
+            CreateMap<KIT_GRIN_KITComponentscalculationofAvgcost, KIT_GRIN_KITComponents>().ReverseMap();
+
+
+
         }
     }
 }

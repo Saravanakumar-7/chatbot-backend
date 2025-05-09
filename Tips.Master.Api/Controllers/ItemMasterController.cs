@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Mysqlx.Crud;
 using Newtonsoft.Json;
 using Repository;
 using static System.Net.Mime.MediaTypeNames;
@@ -1705,7 +1706,55 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> GetItemDetailsByItemNumberList([FromBody]List<string> ItemNumber)
+        {
+            ServiceResponse<List<ItemMasterDto>> serviceResponse = new ServiceResponse<List<ItemMasterDto>>();
 
+            try
+            {
+                var getItemMasterByItemNumber = await _repository.ItemMasterRepository.GetItemDetailsByItemNumberList(ItemNumber);
+                if (getItemMasterByItemNumber == null)
+                {
+                    var str = string.Join(", ",ItemNumber);
+                    _logger.LogError($"In the GetItemDetailsByItemNumberList API the following items where not found in the Database: {str}");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"In the GetItemDetailsByItemNumberList API the following items where not found in the Database: {str}";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var notFoundItems = ItemNumber.Except(getItemMasterByItemNumber.Select(x=>x.ItemNumber).ToList()).ToList();
+                    if (notFoundItems.Count()>0)
+                    {
+                        var str = string.Join(", ", notFoundItems);
+                        _logger.LogError($"In the GetItemDetailsByItemNumberList API the following items where not found in the Database: {str}");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"In the GetItemDetailsByItemNumberList API the following items where not found in the Database: {str}";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        return NotFound(serviceResponse);
+                    }
+                    _logger.LogInfo($"GetItemDetailsByItemNumberList: Returning ItemMaster Details for the following items:{string.Join(", ", ItemNumber)}");                    
+                    serviceResponse.Data = _mapper.Map<List<ItemMasterDto>>(getItemMasterByItemNumber);
+                    serviceResponse.Message = $"GetItemDetailsByItemNumberList: Returning ItemMaster Details for the following items:{string.Join(", ", ItemNumber)}";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetItemDetailsByItemNumberList API for the following items:{string.Join(", ", ItemNumber)}:\n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetItemDetailsByItemNumberList API for the following items:{string.Join(", ", ItemNumber)}:\n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> GetItemMasterByItemNumber(string ItemNumber)
         {
@@ -1724,8 +1773,7 @@ namespace Tips.Master.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                 else
-                {
-                    _logger.LogInfo("ItemmasterControlle" + Convert.ToString(getItemMasterByItemNumber));
+                {                    
                     _logger.LogInfo($"Returned Itemmasters with id: {ItemNumber}");
                     var result = _mapper.Map<ItemMasterDto>(getItemMasterByItemNumber);
                     serviceResponse.Data = result;
@@ -1737,9 +1785,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetItemMasterByItemNumber action: {ex.Message}");
+                _logger.LogError($"Something went wrong inside GetItemMasterByItemNumber action: {ex.Message}\n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Internal server error: {ex.Message}{ex.InnerException}";
+                serviceResponse.Message = $"Internal server error: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

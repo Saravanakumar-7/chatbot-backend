@@ -1556,6 +1556,31 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
         [HttpGet("{vendorId}")]
+        public async Task<IActionResult> GetKIT_PoNumberListByVendorId(string vendorId)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pONumberDetailsbyVendorId = await _repository.GetKIT_PoNumberListByVendorId(vendorId);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);                
+                serviceResponse.Data = result;
+                serviceResponse.Message = $"Returned KIT_PoNumberList By VendorId: {vendorId}";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                _logger.LogInfo($"Returned KIT_PoNumberList By VendorId: {vendorId}");
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)    
+            {
+                _logger.LogError($"Error occured in GetKIT_PoNumberListByVendorId for the VendorID: {vendorId}\n{ex.Message}\n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error occured in GetKIT_PoNumberListByVendorId for the VendorID: {vendorId}\n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("{vendorId}")]
         public async Task<IActionResult> GetAllServicePoNumberListByVendorIdForAvision(string vendorId)
         {
             ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();

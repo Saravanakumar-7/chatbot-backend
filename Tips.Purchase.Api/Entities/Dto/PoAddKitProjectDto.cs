@@ -9,6 +9,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public int Id { get; set; }
         public string? PartNumber { get; set; }
         public string? Description { get; set; }
+        public string? MftrItemNumbers { get; set; }
         public PoPartType PartType { get; set; }
         public string? ProjectNumber { get; set; }
         public decimal KitComponentQty { get; set; }
@@ -25,6 +26,7 @@ namespace Tips.Purchase.Api.Entities.Dto
     {
         public string? PartNumber { get; set; }
         public string? Description { get; set; }
+        public string? MftrItemNumbers { get; set; }
         public PoPartType PartType { get; set; }
         public string? ProjectNumber { get; set; }
         public decimal KitComponentQty { get; set; }
@@ -34,6 +36,7 @@ namespace Tips.Purchase.Api.Entities.Dto
     {
         public string? PartNumber { get; set; }
         public string? Description { get; set; }
+        public string? MftrItemNumbers { get; set; }
         public PoPartType PartType { get; set; }
         public string? ProjectNumber { get; set; }
         public decimal KitComponentQty { get; set; }

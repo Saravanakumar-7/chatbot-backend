@@ -76,6 +76,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPoNumberListByVendorIdForAvision(string vendorId);
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllServicePoNumberListByVendorId(string vendorId);
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllNonServicePoNumberListByVendorId(string vendorId);
+        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetKIT_PoNumberListByVendorId(string vendorId);
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllServicePoNumberListByVendorIdForAvision(string vendorId);
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllNonServicePoNumberListByVendorIdForAvision(string vendorId);
         Task<PagedList<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIIIListForAvision([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParams);

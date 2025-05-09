@@ -13,7 +13,9 @@ namespace Tips.Purchase.Api.Entities.Enums
         TG,
         SA,
         FRU,
-        Phantom,
+        Phantom, 
+        Tools,
+        CapitalGoods,
         Kit,
         kitComponent
     }
