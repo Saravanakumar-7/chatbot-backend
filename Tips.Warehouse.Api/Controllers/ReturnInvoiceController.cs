@@ -312,6 +312,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                                 InventoryTranction inventoryTranction = new InventoryTranction();
                                 inventoryTranction.PartNumber = inventory.PartNumber;
+                                inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
                                 inventoryTranction.LotNumber = eachbin.LotNumber;
                                 inventoryTranction.MftrPartNumber = inventory.MftrPartNumber;
                                 inventoryTranction.Description = inventory.Description;
@@ -344,6 +345,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                                 InventoryTranction inventoryTranction = new InventoryTranction();
                                 inventoryTranction.PartNumber = exInv.PartNumber;
+                                inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
                                 inventoryTranction.LotNumber = eachbin.LotNumber;
                                 inventoryTranction.MftrPartNumber = exInv.MftrPartNumber;
                                 inventoryTranction.Description = exInv.Description;

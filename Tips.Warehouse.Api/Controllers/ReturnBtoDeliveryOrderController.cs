@@ -629,6 +629,7 @@ namespace Tips.Warehouse.Api.Controllers
                                 InventoryTranction inventoryTranction = new InventoryTranction();
                                 inventoryTranction.PartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
                                 inventoryTranction.LotNumber = eachbin.LotNumber;
+                                inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
                                 inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                                 inventoryTranction.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
                                 inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
@@ -661,6 +662,7 @@ namespace Tips.Warehouse.Api.Controllers
                                 InventoryTranction inventoryTranction = new InventoryTranction();
                                 inventoryTranction.PartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
                                 inventoryTranction.LotNumber = eachbin.LotNumber;
+                                inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
                                 inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                                 inventoryTranction.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
                                 inventoryTranction.Issued_Quantity = eachbin.DistributingQty;

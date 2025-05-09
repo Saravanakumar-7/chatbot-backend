@@ -4977,6 +4977,43 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> GetInitialAdvanceCollectionTrackerForCustomerIdSPReport(InitialAdvanceCustomerSPReportDto initialAdvanceCustomerSPReportDto)
+        {
+            ServiceResponse<IEnumerable<InitialAdvanceCustomerSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InitialAdvanceCustomerSPReport>>();
+            try
+            {
+                var products = await _repository.GetInitialAdvanceCollectionTrackerForCustomerIdSPReport(initialAdvanceCustomerSPReportDto.CustomerId);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InitialAdvanceCollectionTrackerForCustomerId hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"InitialAdvanceCollectionTrackerForCustomerId hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InitialAdvanceCollectionTracker Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetInitialAdvanceCollectionTrackerForCustomerIdSPReport action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> GetReceivableReportsForMultiCustomerID(ReceivableReportsForMultiCustomerIdDto receivableReportsForMultiCustomerIdDto)
         {
             ServiceResponse<IEnumerable<RecievableCustomer>> serviceResponse = new ServiceResponse<IEnumerable<RecievableCustomer>>();
