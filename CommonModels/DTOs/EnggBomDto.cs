@@ -146,9 +146,23 @@ namespace Entities.DTOs
     public class EnggBomKitItemNumberWithQtyDto
     {
         public string? PartNumber { set; get; }
+        public string? MftrItemNumbers { get; set; }
         public string? Description { set; get; }
         public decimal KitComponentQty { set; get; }
         public PartType PartType { set; get; }
+        public string? UOM { get; set; }
+
+        public string? Remarks { get; set; }
+
+        public string? Version { get; set; }
+
+        public string? ScrapAllowance { get; set; }
+
+        public string? ScrapAllowanceType { get; set; }
+        public string? CustomFields { get; set; }
+        public string? Designator { get; set; }
+        public string? FootPrint { get; set; }
+        public bool IsActive { get; set; }
 
     }
 

@@ -1724,6 +1724,7 @@ namespace Tips.Purchase.Api.Controllers
                                         PoAddKitProject poAddKitProject = poAddprojectDetail[k];
                                         poAddKitProject.ProjectNumber = poaddproject.ProjectNumber;
                                         poAddKitProject.KitComponentQty = poaddproject.ProjectQty * poAddKitProject.KitComponentQty;
+                                        poAddKitProject.DrawingRevNo = poItemDetails.drawingRevNo;
                                         poAddKitProject.CreatedBy = _createdBy;
                                         poAddKitProject.CreatedOn = DateTime.Now;
 
@@ -2703,6 +2704,7 @@ namespace Tips.Purchase.Api.Controllers
                                         PoAddKitProject poAddKitProject = poAddprojectDetail[k];
                                         poAddKitProject.ProjectNumber = poaddproject.ProjectNumber;
                                         poAddKitProject.KitComponentQty = poaddproject.ProjectQty * poAddKitProject.KitComponentQty;
+                                        poAddKitProject.DrawingRevNo = poItemDetails.drawingRevNo;
                                         poAddKitProject.CreatedBy = _createdBy;
                                         poAddKitProject.CreatedOn = DateTime.Now;
 
