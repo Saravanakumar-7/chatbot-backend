@@ -1742,9 +1742,9 @@ namespace Tips.Purchase.Api.Controllers
                             {
                                 serviceResponse.Message = $"Error Occured in CreatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}";
                                 serviceResponse.Success = false;
-                                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                                 _logger.LogError($"Error Occured in CreatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}");
-                                return StatusCode(500, serviceResponse); 
+                                return BadRequest(serviceResponse); 
                             }
                         }
                     }
@@ -1775,9 +1775,9 @@ namespace Tips.Purchase.Api.Controllers
                             {
                                 serviceResponse.Message = $"Error Occured in CreatePurchaseOrder: The PoItemDto.Parttype is kit,But PoType is General:{poItemDto[i].PartType}";
                                 serviceResponse.Success = false;
-                                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                                 _logger.LogError($"Error Occured in CreatePurchaseOrder: The PoItemDto.Parttype is kit,But PoType is General:{poItemDto[i].PartType}");
-                                return StatusCode(500, serviceResponse);
+                                return BadRequest(serviceResponse);
                             }
                         }
                     }
@@ -2721,9 +2721,9 @@ namespace Tips.Purchase.Api.Controllers
                             {
                                 serviceResponse.Message = $"Error Occured in UpdatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}";
                                 serviceResponse.Success = false;
-                                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                                 _logger.LogError($"Error Occured in UpdatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}");
-                                return StatusCode(500,serviceResponse);
+                                return BadRequest(serviceResponse);
                             }
                         }
                     }
@@ -2754,9 +2754,9 @@ namespace Tips.Purchase.Api.Controllers
                             {
                                 serviceResponse.Message = $"Error Occured in UpdatePurchaseOrder: The PoItemDto.Parttype is kit,But PoType is General:{poItemDto[i].PartType}";
                                 serviceResponse.Success = false;
-                                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                                 _logger.LogError($"Error Occured in UpdatePurchaseOrder: The PoItemDto.Parttype is kit,But PoType is General:{poItemDto[i].PartType}");
-                                return StatusCode(500,serviceResponse);
+                                return BadRequest(serviceResponse);
                             }
                         }
                     }
