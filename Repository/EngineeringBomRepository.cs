@@ -609,9 +609,19 @@ namespace Repository
                         {
                             EnggBomKitItemNumberWithQtyDto addKitComponent = new EnggBomKitItemNumberWithQtyDto();
                             addKitComponent.PartNumber = childofKit.ItemNumber;
+                            addKitComponent.MftrItemNumbers = childofKit.MftrItemNumbers;
                             addKitComponent.Description = childofKit.Description;
                             addKitComponent.KitComponentQty = childofKit.Quantity;
                             addKitComponent.PartType = childofKit.PartType;
+                            addKitComponent.UOM = childofKit.UOM;
+                            addKitComponent.Remarks = childofKit.Remarks;
+                            addKitComponent.Version = childofKit.Version;
+                            addKitComponent.ScrapAllowance = childofKit.ScrapAllowance;
+                            addKitComponent.ScrapAllowanceType = childofKit.ScrapAllowanceType;
+                            addKitComponent.CustomFields = childofKit.CustomFields;
+                            addKitComponent.Designator = childofKit.Designator;
+                            addKitComponent.FootPrint = childofKit.FootPrint;
+                            addKitComponent.IsActive = childofKit.IsActive;
                             enggBomKitItemNumberWithQtyDtos.Add(addKitComponent);
                         }
                     }
@@ -1215,15 +1225,18 @@ namespace Repository
         .ToDictionaryAsync(x => x.ItemNumber, x => x.LatestVersion);
         }
 
-        public async Task<IEnumerable<ProductionBomKitRevNoDto>> GetReleasedKitNoAndLatestVersion()
+        public async Task<IEnumerable<ProductionBomKitRevNoDto>> GetProductionBomReleasedKitNoAndLatestVersion()
         {
-            return await _tipsMasterDbContext.ProductionBoms.Where(x => x.ItemType == PartType.Kit).GroupBy(p => p.ItemNumber)
-            .Select(g => new ProductionBomKitRevNoDto
-            {
-                KitItemNumber = g.Key,
-                KitRevisionNumber = g.Max(p => p.ReleaseVersion)
-            })
-        .ToListAsync();
+            var productionBomLastestVersion =  await _tipsMasterDbContext.ProductionBoms
+                                    .Where(x => x.ItemType == PartType.Kit).GroupBy(p => p.ItemNumber)
+                                    .Select(g => new ProductionBomKitRevNoDto
+                                    {
+                                        KitItemNumber = g.Key,
+                                        KitRevisionNumber = g.Max(p => p.ReleaseVersion)
+                                    })
+                                    .ToListAsync();
+
+            return productionBomLastestVersion;
         }
 
         public async Task<List<ProductionBom>?> GetLatestProBomCountByItemNumber(string itemNumber)

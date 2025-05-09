@@ -182,6 +182,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ProductType { get; set; }
         public string? OrderType { get; set; }
         public string? ProjectNumber { get; set; }
+        public string? WorkOrderNumber { get; set; }
         public string? ItemNumber { get; set; }
         public string? MPN { get; set; }
         public string? Description { get; set; }

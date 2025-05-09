@@ -1011,6 +1011,7 @@ namespace Tips.Warehouse.Api.Controllers
 
             InventoryTranction inventoryTranction = new InventoryTranction();
             inventoryTranction.PartNumber = invoiceChildItemsEntityList[i].FGItemNumber;
+            inventoryTranction.ProjectNumber = invoice.ProjectNumber;
             inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
             inventoryTranction.Description = invoiceChildItemsEntityList[i].Description;
             inventoryTranction.Issued_Quantity = invoiceChildItem.InvoicedQty;
