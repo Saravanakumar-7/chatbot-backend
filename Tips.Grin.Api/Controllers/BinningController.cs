@@ -86,19 +86,19 @@ namespace Tips.Grin.Api.Controllers
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-                _logger.LogInfo("Returned all Binnings");
+                _logger.LogInfo("Returned all BinningDetails");
                 var result = _mapper.Map<IEnumerable<GrinAndBinningDetailsDto>>(getAllBinnings);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all Binnings";
+                serviceResponse.Message = "Returned all Binning Details";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllBinningDetails API :{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllBinningDetails,try again";
+                serviceResponse.Message = $"Error Occured in GetAllBinningDetails API :{ex.Message} \n{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -113,18 +113,18 @@ namespace Tips.Grin.Api.Controllers
             try
             {
                 var binningDetailsByGrinNo = await _binningRepository.GetBinningDetailsByGrinNo(grinNo);
-                if (binningDetailsByGrinNo == null)
+                if (binningDetailsByGrinNo.Count() == 0)
                 {
                     _logger.LogError($"Binning Details with GrinNumber: {grinNo}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Binning Details with GrinNumber: {grinNo}, hasn't been found in db.";
+                    serviceResponse.Message = $"Binning Details with GrinNumber: {grinNo}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound();
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned Binning Details with id: {grinNo}");
+                    _logger.LogInfo($"Returned Binning Details with GrinNo: {grinNo}");
 
                     var binningDto = _mapper.Map<IEnumerable<BinningDto>>(binningDetailsByGrinNo);
                     var binningDto1 = new List<BinningDto>();
@@ -137,7 +137,7 @@ namespace Tips.Grin.Api.Controllers
                     }
 
                     serviceResponse.Data = binningDto1;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Returned Binning Details with GrinNo Successfully";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(binningDto1);
@@ -145,9 +145,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside BinningByGrinNo action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetAllBinningDetails API for the following GrinNo :{grinNo}:\n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetAllBinningDetails API for the following GrinNo :{grinNo}:\n{ex.Message} \n{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");
@@ -426,7 +426,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 if (binningDto is null)
                 {
-                    _logger.LogError("Binning details object sent from client is null.");
+                    _logger.LogError("Update Binning details object sent from client is null.");
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Update Binning details object is null";
                     serviceResponse.Success = false;
@@ -435,9 +435,9 @@ namespace Tips.Grin.Api.Controllers
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid BinningUpdate details object sent from client.");
+                    _logger.LogError("Invalid Update Binning details object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Message = "Invalid Update Binning details object.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -446,9 +446,9 @@ namespace Tips.Grin.Api.Controllers
                 var getBinningDetailById = await _binningRepository.GetBinningDetailsbyId(id);
                 if (getBinningDetailById is null)
                 {
-                    _logger.LogError($"Binning details with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Update Binning details with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update Grin with id hasn't been found in db.";
+                    serviceResponse.Message = $"Update Binning details with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
@@ -484,16 +484,16 @@ namespace Tips.Grin.Api.Controllers
 
                 _binningRepository.SaveAsync();
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Update Successfully";
+                serviceResponse.Message = "Binning Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside Update Update action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateBinning API:{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateBinning API:{ex.Message} \n{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");
@@ -509,18 +509,18 @@ namespace Tips.Grin.Api.Controllers
             {
                 if (binningPostDto == null)
                 {
-                    _logger.LogError("Binning details object sent from client is null.");
+                    _logger.LogError("Create Binning details object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Binning details object is null";
+                    serviceResponse.Message = "Create Binning details object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest();
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid Binning details object sent from client.");
+                    _logger.LogError("Invalid Create Binning details object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Message = "Invalid Create Binning details object";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -809,9 +809,9 @@ namespace Tips.Grin.Api.Controllers
                     }
                     else
                     {
-                        _logger.LogError($"Something went wrong inside Create Binning action: Other Service Calling");
+                        _logger.LogError($"Error Occured in Create Binning API,other Service Calling");
                         serviceResponse.Data = null;
-                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Message = $"Error Occured in Create Binning API,other Service Calling";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                         return StatusCode(500, serviceResponse);
@@ -1080,9 +1080,9 @@ namespace Tips.Grin.Api.Controllers
                     }
                     else
                     {
-                        _logger.LogError($"Something went wrong inside Create Binning action: Other Service Calling");
+                        _logger.LogError($"Error Occured in Create Binning API,other Service Calling");
                         serviceResponse.Data = null;
-                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Message = "Error Occured in Create Binning API,other Service Calling";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                         return StatusCode(500, serviceResponse);
@@ -1097,15 +1097,12 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-
-                _logger.LogError($"Something went wrong inside Create Binning action: {ex.Message}");
+                _logger.LogError($"Error Occured in Create Binning API:{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in Create Binning API:{ex.Message} \n{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal Server Error");
-
-
             }
         }
 
@@ -1123,14 +1120,14 @@ namespace Tips.Grin.Api.Controllers
                 {
                     _logger.LogError($"Binning details with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Binning details hasn't been found";
+                    serviceResponse.Message = $"Binning details with id: {id}, hasn't been found";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned Binnings with id: {id}");
+                    _logger.LogInfo($"Returned Binnings Details with id: {id}");
                     List<BinningItemsDto> binningItemList = new List<BinningItemsDto>();
                     var binningGrinNo = binningsById.GrinNumber;
                     var binningItemDetails = binningsById.BinningItems;
@@ -1205,9 +1202,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside BinningById action: {ex.Message}");
+                _logger.LogError($"Error Occured in BinningById API for the following Id:{id}:\n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in BinningById API for the following Id:{id}:\n {ex.Message} \n{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1224,9 +1221,9 @@ namespace Tips.Grin.Api.Controllers
                 var binningDetailById = await _binningRepository.GetBinningDetailsbyId(id);
                 if (binningDetailById == null)
                 {
-                    _logger.LogError($"deleteBinning with id: {id}, hasn't been found in db.");
+                    _logger.LogError($"Delete Binning with id: {id}, hasn't been found in db.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Binning with id: {id}, hasn't been found in db.";
+                    serviceResponse.Message = $"Delete Binning with id: {id}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
@@ -1234,17 +1231,18 @@ namespace Tips.Grin.Api.Controllers
 
                 binningDetailById.IsDeleted = true;
                 string result = await _binningRepository.UpdateBinning(binningDetailById);
+                _logger.LogInfo($"Binning with id: {id},has been Deleted Successfully");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Delete Successfully";
+                serviceResponse.Message = "Binning Deleted Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside Delete Binning action: {ex.Message}");
+                _logger.LogError($"Error Occured in Delete Binning API for the following Id:{id}:\n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in Delete Binning API for the following Id:{id}:\n {ex.Message} \n{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1271,9 +1269,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllBinningItems API:{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetAllBinningItems API:{ex.Message} \n{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");
@@ -1289,6 +1287,7 @@ namespace Tips.Grin.Api.Controllers
                 var listOfActiveBinningName = await _binningRepository.GetAllActiveBinningNameList();
 
                 var result = _mapper.Map<IEnumerable<BinningIdNameListDto>>(listOfActiveBinningName);
+                _logger.LogInfo("Returned all ActiveBinningIdNameList");
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned All ActiveBinningIdNameList";
                 serviceResponse.Success = true;
@@ -1297,9 +1296,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllActiveBinningIdNameList API:{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllActiveBinningIdNameList action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetAllActiveBinningIdNameList API:{ex.Message} \n{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1313,18 +1312,18 @@ namespace Tips.Grin.Api.Controllers
             {
                 if (binningSaveDto == null)
                 {
-                    _logger.LogError("Binning details object sent from client is null.");
+                    _logger.LogError("Create BinningItem details object sent from client is null.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Binning details object is null";
+                    serviceResponse.Message = "Create BinningItem details object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest();
                 }
                 if (!ModelState.IsValid)
                 {
-                    _logger.LogError("Invalid Binning details object sent from client.");
+                    _logger.LogError("Invalid Create BinningItem details object sent from client.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Message = "Invalid Create BinningItem details object";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
@@ -1612,14 +1611,15 @@ namespace Tips.Grin.Api.Controllers
                     }
                     else
                     {
-                        _logger.LogError($"Something went wrong inside Create BinningWithItems action: Other Service Calling");
+                        _logger.LogError($"Error Occured in  Create BinningWithItems API: Other Service Calling");
                         serviceResponse.Data = null;
-                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Message = $"Error Occured in  Create BinningWithItems API: Other Service Calling";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                         return StatusCode(500, serviceResponse);
                     }
 
+                    _logger.LogInfo("BinningItems Created Successfully");
                     serviceResponse.Data = null;
                     serviceResponse.Message = "BinningItems Created Successfully";
                     serviceResponse.Success = true;
