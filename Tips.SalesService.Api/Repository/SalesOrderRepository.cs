@@ -150,6 +150,15 @@ namespace Tips.SalesService.Api.Repository
             }
         }
 
+        public async Task<IEnumerable<InitialAdvanceCustomerSPReport>> GetInitialAdvanceCollectionTrackerForCustomerIdSPReport(string CustomerId)
+        {
+                var results = await _tipsSalesServiceDbContext.Set<InitialAdvanceCustomerSPReport>()
+                    .FromSqlInterpolated($"CALL Initial_Advance_for_each_customer({CustomerId})")
+                    .ToListAsync();
+
+                return results;
+            
+        }
 
         public async Task<PagedList<SalesOrderSPReport>> GetSalesOrderSPReport(PagingParameter pagingParameter)
         {
