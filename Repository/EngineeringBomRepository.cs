@@ -1231,7 +1231,8 @@ namespace Repository
                                     .Where(x => x.ItemType == PartType.Kit).GroupBy(p => p.ItemNumber)
                                     .Select(g => new ProductionBomKitRevNoDto
                                     {
-                                        KitItemNumber = g.Key,
+                                        ItemNumber = g.Key,
+                                        ItemDescription = g.OrderByDescending(p=>p.ReleaseVersion).Select(p=>p.ItemDescription).First(),
                                         KitRevisionNumber = g.Max(p => p.ReleaseVersion)
                                     })
                                     .ToListAsync();
