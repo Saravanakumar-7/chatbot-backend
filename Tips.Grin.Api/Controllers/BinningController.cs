@@ -1886,14 +1886,15 @@ namespace Tips.Grin.Api.Controllers
                     }
                     else
                     {
-                        _logger.LogError($"Something went wrong inside Create BinningWithItems action: Other Service Calling");
+                        _logger.LogError($"Error Occured in  Create BinningWithItems API: Other Service Calling");
                         serviceResponse.Data = null;
-                        serviceResponse.Message = "Saving Failed";
+                        serviceResponse.Message = $"Error Occured in  Create BinningWithItems API: Other Service Calling";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                         return StatusCode(500, serviceResponse);
                     }
 
+                    _logger.LogInfo("Binning and BinningItems Created Successfully");
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Binning and BinningItems Created Successfully";
                     serviceResponse.Success = true;
@@ -1904,12 +1905,12 @@ namespace Tips.Grin.Api.Controllers
             catch (Exception ex)
             {
 
-                _logger.LogError($"Something went wrong inside Create Binning action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateBinningItems API:{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateBinningItems API:{ex.Message} \n{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal Server Error");
+                return StatusCode(500, serviceResponse);
 
 
             }
@@ -1924,6 +1925,7 @@ namespace Tips.Grin.Api.Controllers
 
 
                 var result = _mapper.Map<IEnumerable<BinningQuantityDto>>(revNumberDetailsbyPONumber);
+                _logger.LogInfo($"GetListOfBinningQtyByItemNo:{itemNumber} has Returned Successfully");
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned  BinningQty  By ItemNo";
                 serviceResponse.Success = true;
@@ -1932,9 +1934,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetListOfBinningQtyByItemNo API for the following item:{itemNumber}:\n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetListOfBinningQtyByItemNo action";
+                serviceResponse.Message = $"Error Occured in GetListOfBinningQtyByItemNo API for the following item:{itemNumber}:\n{ex.Message} \n{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1950,6 +1952,7 @@ namespace Tips.Grin.Api.Controllers
 
             
                 var result = _mapper.Map<IEnumerable<BinningQuantityDto>>(revNumberDetailsbyPONumber);
+                _logger.LogInfo($"GetListOfBinningQtyByItemNoListByProjectNo:{itemNumber} and {projectNo} has Returned Successfully");
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned  BinningQty  By ProjectNo and ItemNo List";
                 serviceResponse.Success = true;
@@ -1958,9 +1961,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetListOfBinningQtyByItemNoListByProjectNo API for the following item:{itemNumber} and projectNo:{projectNo} \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetListOfBinningQtyByItemNoListByProjectNo action";
+                serviceResponse.Message = $"Error Occured in GetListOfBinningQtyByItemNoListByProjectNo API for the following item:{itemNumber} and projectNo:{projectNo} \n{ex.Message} \n{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1977,6 +1980,7 @@ namespace Tips.Grin.Api.Controllers
 
 
                 var result = _mapper.Map<IEnumerable<BinningQuantityDto>>(revNumberDetailsbyPONumber);
+                _logger.LogInfo($"GetListOfBinningQtyByItemNoListByMultipleProjectNo Returned Successfully");
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned  BinningQty  By ProjectNo and ItemNo List";
                 serviceResponse.Success = true;
@@ -1985,9 +1989,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetListOfBinningQtyByItemNoListByMultipleProjectNo API:{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetListOfBinningQtyByItemNoListByProjectNo action";
+                serviceResponse.Message = $"Error Occured in GetListOfBinningQtyByItemNoListByMultipleProjectNo API:{ex.Message} \n{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

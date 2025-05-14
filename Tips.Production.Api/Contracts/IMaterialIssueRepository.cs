@@ -26,8 +26,11 @@ namespace Tips.Production.Api.Contracts
                                                                                                    string? salesOrderNo);
         Task<IEnumerable<MaterialIssueSPReportForTrans>> GetMaterialIssueSPReportWithParamForTrans(string? WorkorderNo, string? ItemNumber, string? projectNo,
                                                                                                   string? salesOrderNo);
+        Task<IEnumerable<MaterialIssueSPReportForAvision>> GetMaterialIssueSPReportWithParamForAvision(string? WorkorderNo, string? ItemNumber, string? projectNo,
+                                                                                                  string? salesOrderNo);
         Task<IEnumerable<MaterialIssueSPReport>> GetMaterialIssueSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<MaterialIssueSPReportForTrans>> GetMaterialIssueSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<MaterialIssueSPReportForAvision>> GetMaterialIssueSPReportWithDateForAvision(DateTime? FromDate, DateTime? ToDate);
 
     }
 }
