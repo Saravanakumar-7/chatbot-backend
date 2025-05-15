@@ -79,11 +79,11 @@ namespace Tips.Production.Api.Repository
             return result;
         }
         public async Task<IEnumerable<ShopOrderSPReportForTrans>> GetShopOrderSPReportWithParamForTrans(string? WorkOrderNumber, string? projectType,
-                                                                                                 string? projectNo, string? salesOrderNo, string? KPN, string? MPN)
+                                                                                                 string? projectNo, string? salesOrderNo, string? KPN, string? MPN,int? Status)
         {
             var result = _tipsProductionDbContext
             .Set<ShopOrderSPReportForTrans>()
-            .FromSqlInterpolated($"Shop_Order_Report_withparameter_tras({WorkOrderNumber},{projectType},{projectNo},{salesOrderNo},{KPN},{MPN})")
+            .FromSqlInterpolated($"Shop_Order_Report_withparameter_tras({WorkOrderNumber},{projectType},{projectNo},{salesOrderNo},{KPN},{MPN},{Status})")
             .ToList();
 
             return result;
