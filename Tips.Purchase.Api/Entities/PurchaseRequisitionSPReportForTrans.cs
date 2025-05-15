@@ -11,6 +11,7 @@
         public string? MftrItemNumber { get; set; }
         public string? Description { get; set; }
         public string? UOM { get; set; }
+        public string? SpecialInstruction { get; set; }
         public decimal? PRScheduledQty { get; set; }
         public DateTime? PRScheduledDate { get; set; }
         public bool? PrApprovalI { get; set; }

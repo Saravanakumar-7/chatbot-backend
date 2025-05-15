@@ -250,7 +250,7 @@ namespace Tips.Production.Api.Controllers
                 var products = await _shopOrderRepository.GetShopOrderSPReportWithParamForTrans(shopOrderReportWithParamDto.WorkOrderNumber,
                                                                             shopOrderReportWithParamDto.ProjectType, shopOrderReportWithParamDto.ProjectNumber,
                                                                             shopOrderReportWithParamDto.SalesOrderNumber, shopOrderReportWithParamDto.KPN,
-                                                                            shopOrderReportWithParamDto.MPN);
+                                                                            shopOrderReportWithParamDto.MPN, shopOrderReportWithParamDto.Status);
 
                 if (products == null)
                 {

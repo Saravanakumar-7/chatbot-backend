@@ -163,6 +163,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? SalesOrderNumber { get; set; }
         public string? KPN { get; set; }
         public string? MPN { get; set; }
+        public int? Status { get; set; }
     }
     public class ShopOrderSPReportForTrans
     {

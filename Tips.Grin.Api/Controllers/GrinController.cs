@@ -110,20 +110,20 @@ namespace Tips.Grin.Api.Controllers
                 if (Ponumber is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Ponumber object sent from client is null.";
+                    serviceResponse.Message = $"GetGrinAndIqcsByPurchaseOrder:{Ponumber} sent from client is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Ponumber object sent from client is null.");
+                    _logger.LogError($"GetGrinAndIqcsByPurchaseOrder:{Ponumber} sent from client is null.");
                     return BadRequest(serviceResponse);
                 }
                 if (!ModelState.IsValid)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Ponumber object sent from client.";
+                    serviceResponse.Message = $"Invalid Ponumber :{Ponumber} sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid Ponumber object sent from client.");
-                    return BadRequest("Invalid model object");
+                    _logger.LogError($"Invalid Ponumber :{Ponumber} sent from client.");
+                    return BadRequest(serviceResponse);
                 }
                 var getGrinIds = await _grinPartsRepository.GetGrinIdsByPonumber(Ponumber);
 
@@ -171,9 +171,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"GetGrinAndIqcsByPurchaseOrder Faced issue :\n{ex.Message}\n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetGrinAndIqcsByPurchaseOrder API for the following PoNo:{Ponumber}:\n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Internal server error {ex.Message}:\n{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in GetGrinAndIqcsByPurchaseOrder API for the following PoNo:{Ponumber}:\n {ex.Message} \n{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -193,7 +193,7 @@ namespace Tips.Grin.Api.Controllers
                 if (GetallGrins == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Grin data not found in db.";
+                    serviceResponse.Message = $"Grin data not found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"Grin data not found in db");
@@ -211,7 +211,7 @@ namespace Tips.Grin.Api.Controllers
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
 
-                _logger.LogInfo("Returned all Grins");
+                _logger.LogInfo("Returned all Grin Detials");
                 var result = _mapper.Map<IEnumerable<GrinDto>>(GetallGrins);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all Grins Successfully";
@@ -221,9 +221,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllGrin API:{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Internal server error {ex.Message}{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in GetAllGrin API:{ex.Message} \n{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -519,7 +519,7 @@ namespace Tips.Grin.Api.Controllers
                 if (GrinDetailsbyId == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"Grin with id hasn't been found in db.";
+                    serviceResponse.Message = $"Grin with id:{id}, hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     _logger.LogError($"Grin with id: {id}, hasn't been found in db.");
@@ -586,9 +586,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetGrinById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetGrinById API for the following Id:{id}:\n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetGrinById API for the following Id:{id}:\n {ex.Message} \n{ex.InnerException}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
