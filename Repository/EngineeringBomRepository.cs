@@ -1232,7 +1232,7 @@ namespace Repository
                                     .Select(g => new ProductionBomKitRevNoDto
                                     {
                                         ItemNumber = g.Key,
-                                        ItemDescription = g.OrderByDescending(p=>p.ReleaseVersion).Select(p=>p.ItemDescription).First(),
+                                        Description = g.OrderByDescending(p=>p.ReleaseVersion).Select(p=>p.ItemDescription).First(),
                                         KitRevisionNumber = g.Max(p => p.ReleaseVersion)
                                     })
                                     .ToListAsync();
