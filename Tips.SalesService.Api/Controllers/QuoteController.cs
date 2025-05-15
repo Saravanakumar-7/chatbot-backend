@@ -888,20 +888,20 @@ namespace Tips.SalesService.Api.Controllers
                 string base64;
                 var builder = new BodyBuilder();
                 builder.HtmlBody = body;
-                //using (HttpClient client1 = new HttpClient())
-                //{
-                //    client1.Timeout = TimeSpan.FromMinutes(5);
-                //    var request2 = new HttpRequestMessage(HttpMethod.Get, quoteEmailPostDto.jasperfileUrl);
+                using (HttpClient client1 = new HttpClient())
+                {
+                    client1.Timeout = TimeSpan.FromMinutes(5);
+                    var request2 = new HttpRequestMessage(HttpMethod.Get, quoteEmailPostDto.jasperfileUrl);
 
-                //    request2.Headers.Add("Authorization", "Basic amFzcGVyYWRtaW46Uk11aExncXdkOXBJUGI0");
-                //    request2.Headers.Add("X-Remote-Domain", "1");
-                //    var response2 = await client1.SendAsync(request2);
-                //    response2.EnsureSuccessStatusCode();
+                    request2.Headers.Add("Authorization", "Basic amFzcGVyYWRtaW46Uk11aExncXdkOXBJUGI0");
+                    request2.Headers.Add("X-Remote-Domain", "1");
+                    var response2 = await client1.SendAsync(request2);
+                    response2.EnsureSuccessStatusCode();
 
-                //    byte[] fileBytes = await response2.Content.ReadAsByteArrayAsync();
-                //    builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
-                //    base64 = Convert.ToBase64String(fileBytes);
-                //}
+                    byte[] fileBytes = await response2.Content.ReadAsByteArrayAsync();
+                    builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
+                    base64 = Convert.ToBase64String(fileBytes);
+                }
                 //Guid guids = Guid.NewGuid();
                 //byte[] fileContent = Convert.FromBase64String(base64);
                 //string fileName = /*guids.ToString() + "_" +*/ FileName + ".pdf";
