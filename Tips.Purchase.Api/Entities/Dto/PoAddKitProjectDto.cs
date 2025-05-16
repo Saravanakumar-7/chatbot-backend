@@ -15,6 +15,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public PoPartType PartType { get; set; }
         public string? UOM { get; set; }
         public string? ProjectNumber { get; set; }
+        public decimal KitComponentBOMQty { get; set; }
         public decimal KitComponentQty { get; set; }
         public decimal KitComponentUnitPrice { get; set; }
         public decimal BalanceQty { get; set; }
@@ -35,6 +36,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public PoPartType PartType { get; set; }
         public string? UOM { get; set; }
         public string? ProjectNumber { get; set; }
+        public decimal KitComponentBOMQty { get; set; }
         public decimal KitComponentQty { get; set; }
         public decimal KitComponentUnitPrice { get; set; }
     }
@@ -48,6 +50,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public PoPartType PartType { get; set; }
         public string? UOM { get; set; }
         public string? ProjectNumber { get; set; }
+        public decimal KitComponentBOMQty { get; set; }
         public decimal KitComponentQty { get; set; }
         public decimal KitComponentUnitPrice { get; set; }
         public decimal BalanceQty { get; set; }

@@ -17,6 +17,8 @@ namespace Tips.Purchase.Api.Entities
         public string? UOM { get; set; }
         public string? ProjectNumber { get; set; }
         [Precision(13, 3)]
+        public decimal KitComponentBOMQty { get; set; }
+        [Precision(13, 3)]
         public decimal KitComponentQty { get; set; }
         [Precision(18, 3)]
         public decimal KitComponentUnitPrice { get; set; }
