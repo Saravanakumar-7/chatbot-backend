@@ -152,12 +152,11 @@ namespace Tips.Grin.Api.Repository
             return result;
         }
         public async Task<IEnumerable<GrinSPReportForTrans>> GetGrinSPReportWithParamForTrans(string? GrinNumber, string? VendorName, string? PONumber,
-                                                                                                    string? ItemNumber, string? MPN, string? Warehouse, string? Location,
-                                                                                                    string? ProjectNumber)
+                                                                                                    string? ItemNumber, string? MPN, string? ProjectNumber)
         {
             var result = _tipsGrinDbContext
             .Set<GrinSPReportForTrans>()
-            .FromSqlInterpolated($"CALL Grin_Report_withparameter_tras({GrinNumber},{VendorName},{PONumber},{ItemNumber},{MPN},{Warehouse},{Location},{ProjectNumber})")
+            .FromSqlInterpolated($"CALL Grin_Report_withparameter_tras({GrinNumber},{VendorName},{PONumber},{ItemNumber},{MPN},{ProjectNumber})")
             .ToList();
 
             return result;

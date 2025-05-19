@@ -1982,8 +1982,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 var products = await _repository.GetGrinSPReportWithParamForTrans(grinReportWithParam.GrinNumber, grinReportWithParam.VendorName,
                                                                             grinReportWithParam.PONumber, grinReportWithParam.ItemNumber,
-                                                                            grinReportWithParam.MPN, grinReportWithParam.Warehouse,
-                                                                            grinReportWithParam.Location, grinReportWithParam.ProjectNumber);
+                                                                            grinReportWithParam.MPN,grinReportWithParam.ProjectNumber);
 
                 if (products == null)
                 {

@@ -226,7 +226,7 @@ namespace Tips.Grin.Api.Controllers
             ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>>();
             try
             {
-                var products = await _openGrinRepository.GetOpenGrinSPReportWithParamForTrans(openGrinReportWithParamDto.OpenGrinNumber, openGrinReportWithParamDto.SenderName,
+                var products = await _openGrinRepository.GetOpenGrinSPReportWithParamForTrans(openGrinReportWithParamDto.ItemNumber, openGrinReportWithParamDto.OpenGrinNumber, openGrinReportWithParamDto.SenderName,
                                                                                           openGrinReportWithParamDto.ReceiptRefNo, openGrinReportWithParamDto.ProjectNumber);
 
                 if (products == null)

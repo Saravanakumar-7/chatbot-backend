@@ -485,6 +485,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? UnitPrice { get; set; }
         public decimal? TotalValue { get; set; }
         public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public string? LotNumber { get; set; }
+        
     }
     public class CrossMarginSPReportDto
     {
