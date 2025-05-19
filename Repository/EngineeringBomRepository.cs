@@ -579,16 +579,17 @@ namespace Repository
             return enggBomSAItemNumberWithQtyDtos;
         }
 
-        public async Task<List<EnggBomKitItemNumberWithQtyDto>> GetKitBomChildDetails(string kitItemMaster , decimal kitRevNo)
+        public async Task<List<EnggBomKitItemNumberWithQtyDto>> GetKitBomChildDetails(string kitItemNumber, decimal kitQty)
         {
             List<EnggBomKitItemNumberWithQtyDto> enggBomKitItemNumberWithQtyDtos = new List<EnggBomKitItemNumberWithQtyDto>();
 
-            int bomId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == kitItemMaster && x.RevisionNumber == kitRevNo && x.IsActive == true)
+            int bomId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == kitItemNumber && x.IsActive == true)
                 .OrderByDescending(x => x.RevisionNumber)
                 .Select(x => x.BOMId)
                 .FirstOrDefaultAsync();
 
             var kitbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == bomId && x.IsActive == true).ToListAsync();
+
             if (kitbomdetails != null)
             {
                 foreach (var childofKit in kitbomdetails)
@@ -600,7 +601,7 @@ namespace Repository
                         {
                             if (existingKitComponent.PartNumber == childofKit.ItemNumber)
                             {
-                                existingKitComponent.KitComponentQty = existingKitComponent.KitComponentQty + (childofKit.Quantity);
+                                existingKitComponent.KitComponentQty = existingKitComponent.KitComponentQty + (childofKit.Quantity * kitQty);
                                 flag = 1;
                                 break;
                             }
@@ -611,7 +612,7 @@ namespace Repository
                             addKitComponent.PartNumber = childofKit.ItemNumber;
                             addKitComponent.MftrItemNumbers = childofKit.MftrItemNumbers;
                             addKitComponent.Description = childofKit.Description;
-                            addKitComponent.KitComponentQty = childofKit.Quantity;
+                            addKitComponent.KitComponentQty = childofKit.Quantity* kitQty;
                             addKitComponent.PartType = childofKit.PartType;
                             addKitComponent.UOM = childofKit.UOM;
                             addKitComponent.Remarks = childofKit.Remarks;
@@ -623,6 +624,42 @@ namespace Repository
                             addKitComponent.FootPrint = childofKit.FootPrint;
                             addKitComponent.IsActive = childofKit.IsActive;
                             enggBomKitItemNumberWithQtyDtos.Add(addKitComponent);
+                        }
+                    }
+                    if (childofKit.PartType == PartType.Kit)
+                    {
+                        var subKit = await GetKitBomChildDetails(childofKit.ItemNumber,childofKit.Quantity);
+                        foreach (var existingkc in subKit)
+                        {
+                            int flag = 0;
+                            foreach (var existingKitComponent in enggBomKitItemNumberWithQtyDtos)
+                            {
+                                if (existingkc.PartNumber == existingKitComponent.PartNumber)
+                                {
+                                    existingKitComponent.KitComponentQty = existingKitComponent.KitComponentQty + (existingkc.KitComponentQty * kitQty);
+                                    flag = 1;
+                                    break;
+                                }
+                            }
+                            if (flag == 0)
+                            {
+                                EnggBomKitItemNumberWithQtyDto addKitComponent = new EnggBomKitItemNumberWithQtyDto();
+                                addKitComponent.PartNumber = childofKit.ItemNumber;
+                                addKitComponent.MftrItemNumbers = childofKit.MftrItemNumbers;
+                                addKitComponent.Description = childofKit.Description;
+                                addKitComponent.KitComponentQty = childofKit.Quantity * kitQty;
+                                addKitComponent.PartType = childofKit.PartType;
+                                addKitComponent.UOM = childofKit.UOM;
+                                addKitComponent.Remarks = childofKit.Remarks;
+                                addKitComponent.Version = childofKit.Version;
+                                addKitComponent.ScrapAllowance = childofKit.ScrapAllowance;
+                                addKitComponent.ScrapAllowanceType = childofKit.ScrapAllowanceType;
+                                addKitComponent.CustomFields = childofKit.CustomFields;
+                                addKitComponent.Designator = childofKit.Designator;
+                                addKitComponent.FootPrint = childofKit.FootPrint;
+                                addKitComponent.IsActive = childofKit.IsActive;
+                                enggBomKitItemNumberWithQtyDtos.Add(addKitComponent);
+                            }
                         }
                     }
                 }
