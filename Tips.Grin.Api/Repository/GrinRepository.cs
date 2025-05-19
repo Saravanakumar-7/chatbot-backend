@@ -161,6 +161,18 @@ namespace Tips.Grin.Api.Repository
 
             return result;
         }
+
+        public async Task<IEnumerable<GrinSPReportForAvi>> GetGrinSPReportWithParamForAvi(string? GrinNumber, string? VendorName, string? PONumber,
+                                                                                                    string? ItemNumber, string? MPN, string? Warehouse, string? Location, string? ProjectNumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<GrinSPReportForAvi>()
+            .FromSqlInterpolated($"CALL Grin_Report_withparameter_Avi({GrinNumber},{VendorName},{PONumber},{ItemNumber},{MPN},{Warehouse},{Location},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+
         public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsGrinDbContext.Set<Grin_ReportSP>()
@@ -173,6 +185,15 @@ namespace Tips.Grin.Api.Repository
         {
             var results = _tipsGrinDbContext.Set<GrinSPReportForTrans>()
                       .FromSqlInterpolated($"CALL Grin_Report_withparameter_withdate_tras({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+
+        public async Task<IEnumerable<GrinSPReportForAvi>> GetGrinSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<GrinSPReportForAvi>()
+                      .FromSqlInterpolated($"CALL Grin_Report_withparameter_withdate_Avi({FromDate},{ToDate})")
                       .ToList();
 
             return results;

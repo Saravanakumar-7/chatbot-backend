@@ -185,6 +185,14 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ProjectNumber { get; set; }
         
     }
+    public class OpenGrinReportWithParamForAviDto
+    {
+        public string? OpenGrinNumber { get; set; }
+        public string? SenderName { get; set; }
+        public string? ReceiptRefNo { get; set; }
+        public string? ProjectNumber { get; set; }
+
+    }
     public class OpenGrinInvDetails
     {
         public Datas data { get; set; }

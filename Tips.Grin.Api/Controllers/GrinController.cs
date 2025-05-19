@@ -2015,6 +2015,47 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> GetGrinSPReportWithParamForAvi([FromBody] GrinReportWithParamForAviDto grinReportWithParam)
+        {
+            ServiceResponse<IEnumerable<GrinSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<GrinSPReportForAvi>>();
+            try
+            {
+                var products = await _repository.GetGrinSPReportWithParamForAvi(grinReportWithParam.GrinNumber, grinReportWithParam.VendorName,
+                                                                            grinReportWithParam.PONumber, grinReportWithParam.ItemNumber,
+                                                                            grinReportWithParam.MPN, grinReportWithParam.Warehouse, grinReportWithParam.Location,
+                                                                            grinReportWithParam.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Grin hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Grin hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Grin Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithParamForAvi action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> GetPurchaseInventorySPReportWithParam([FromBody] PurchaseInventorySPReportDto purchaseInventorySPReportDto)
         {
             ServiceResponse<IEnumerable<PurchaseInventorySPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseInventorySPReport>>();
@@ -2183,6 +2224,43 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithDateForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetGrinSPReportWithDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<GrinSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<GrinSPReportForAvi>>();
+            try
+            {
+                var products = await _repository.GetGrinSPReportWithDateForAvi(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Grin hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Grin hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned GetGrinSPReportWithDateForAvi Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithDateForAvi action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
