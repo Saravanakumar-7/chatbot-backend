@@ -1082,8 +1082,8 @@ namespace Tips.Master.Api.Controllers
                 }
                 enggBomList.EnggChildItems = enggChildItemList;
 
-                var data = _mapper.Map(enggBomUpdateDto, enggBomList);
-                await _repository.EnggBomRepository.UpdateEnggBomVersion(data);
+                //var data = _mapper.Map(enggBomUpdateDto, enggBomList);
+                //await _repository.EnggBomRepository.UpdateEnggBomVersion(data);
                 if (revisionType == 0)
                 {
                     enggBomList.RevisionNumber = enggBomList.RevisionNumber + Convert.ToDecimal(0.1);
@@ -1096,8 +1096,9 @@ namespace Tips.Master.Api.Controllers
                     var revRound = Math.Ceiling(enggBomList.RevisionNumber + Convert.ToDecimal(0.1));
                     enggBomList.RevisionNumber = revRound;
                 }
-                _logger.LogInfo("Engineering BOM Updated successfully");
+                await _repository.EnggBomRepository.UpdateEnggBomVersion(enggBomList);
                 _repository.SaveAsync();
+                _logger.LogInfo("Engineering BOM Updated successfully");
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Update Successfully";
                 serviceResponse.Success = true;

@@ -72,6 +72,7 @@ namespace Entities.DTOs
 
         [StringLength(500, ErrorMessage = "ItemDescription can't be longer than 500 characters")]
         public string? ItemDescription { get; set; }
+        public decimal RevisionNumber { get; set; }
 
         public PartType ItemType { get; set; }
 
