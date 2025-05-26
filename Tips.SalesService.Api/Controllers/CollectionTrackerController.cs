@@ -814,5 +814,84 @@ namespace Tips.SalesService.Api.Controllers
             }
 
         }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetAdvanceReceivedEntryLevelSPReportWithParam([FromBody] AdvanceReceivedEntryLevelSPResportDTO advanceReceivedEntryLevelSPResportDTO)
+
+        {
+            ServiceResponse<IEnumerable<AdvanceReceivedEntryLevelSPResport>> serviceResponse = new ServiceResponse<IEnumerable<AdvanceReceivedEntryLevelSPResport>>();
+            try
+            {
+                var advanceReceivedEntryLevelSPReportWithParam = await _repository.GetAdvanceReceivedEntryLevelSPReportWithParam(advanceReceivedEntryLevelSPResportDTO.CustomerId, advanceReceivedEntryLevelSPResportDTO.TypeOfSolution);
+
+                if (advanceReceivedEntryLevelSPReportWithParam == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"AdvanceReceivedEntryLevel SPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"AdvanceReceivedEntryLevel SPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogError($"AdvanceReceivedEntryLevel SPReport Returned Successfully.");
+                    serviceResponse.Data = advanceReceivedEntryLevelSPReportWithParam;
+                    serviceResponse.Message = "Returned AdvanceReceivedEntryLevel SPResport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAdvanceReceivedEntryLevelSPReportWithParam API: {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAdvanceReceivedEntryLevelSPReportWithParam API: {ex.Message} \n{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetAdvanceReceivedEntryLevelSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<AdvanceReceivedEntryLevelSPResport>> serviceResponse = new ServiceResponse<IEnumerable<AdvanceReceivedEntryLevelSPResport>>();
+            try
+            {
+                var advanceReceivedEntryLevelSPReportWithDate = await _repository.GetAdvanceReceivedEntryLevelSPReportWithDate(FromDate, ToDate);
+                if (advanceReceivedEntryLevelSPReportWithDate == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"AdvanceReceivedEntryLevel hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"AdvanceReceivedEntryLevel hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogError($"AdvanceReceivedEntryLevel SPResportWithDate Returned Successfully.");
+                    serviceResponse.Data = advanceReceivedEntryLevelSPReportWithDate;
+                    serviceResponse.Message = "Returned AdvanceReceivedEntryLevel SPResportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAdvanceReceivedEntryLevelSPReportWithDate API: {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAdvanceReceivedEntryLevelSPReportWithDate API: {ex.Message} \n{ex.InnerException}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
     }
+
 }

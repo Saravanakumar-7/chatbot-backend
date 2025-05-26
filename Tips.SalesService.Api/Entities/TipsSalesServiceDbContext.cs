@@ -177,6 +177,7 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<SalesOrderSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<AdvanceRecievableSPReportDto>().HasNoKey();
             modelBuilder.Entity<InitialAdvanceCustomerSPReport>().HasNoKey();
+            modelBuilder.Entity<AdvanceReceivedEntryLevelSPResport>().HasNoKey();
             
 
         }

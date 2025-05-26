@@ -1,4 +1,5 @@
-﻿using Tips.SalesService.Api.Entities.Dto;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Tips.SalesService.Api.Entities.Dto;
 
 namespace Tips.SalesService.Api.Entities.DTOs
 {
@@ -88,6 +89,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public string? CustomerId { get; set; }
     }
+    
     public class CollectionTrackerByCustomerIdSPReportDTO
     {
         public string? CustomerId { get; set; }
@@ -99,6 +101,25 @@ namespace Tips.SalesService.Api.Entities.DTOs
     public class CollectionTrackerWithSalesOrderNoWiseSPReportDTO
     {
         public string? SalesOrderNumber { get; set; }
+    }
+    public class AdvanceReceivedEntryLevelSPResportDTO
+    {
+        public string? CustomerId { get; set; }
+        public string? TypeOfSolution { get; set; }
+    }
+    public class AdvanceReceivedEntryLevelSPResport
+    {
+        public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public DateTime? so_createddate { get; set; }
+        public decimal? TotalSumOfSOAmount { get; set; }
+        public decimal? AlreadyRecieved { get; set; }
+        public decimal? AmountRecieved { get; set; }
+        public decimal? totaladvance { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+        public DateTime? entrydate { get; set; }
     }
 
 }

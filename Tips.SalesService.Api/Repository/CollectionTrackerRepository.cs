@@ -195,6 +195,17 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
+        public async Task<IEnumerable<AdvanceReceivedEntryLevelSPResport>> GetAdvanceReceivedEntryLevelSPReportWithParam(string CustomerId, string TypeOfSolution)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<AdvanceReceivedEntryLevelSPResport>()
+            .FromSqlInterpolated($"CALL AdvanceReceived_EntryLevel_WithParameter({CustomerId},{TypeOfSolution})")
+            .ToList();
+
+            return result;
+
+        }
+
         public async Task<IEnumerable<CollectionTrackerWithSalesOrderNoWiseSPReport>> GetCollectionTrackerWithSalesOrderNoWiseSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsSalesServiceDbContext.Set<CollectionTrackerWithSalesOrderNoWiseSPReport>()
@@ -204,6 +215,17 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
+
+        public async Task<IEnumerable<AdvanceReceivedEntryLevelSPResport>> GetAdvanceReceivedEntryLevelSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<AdvanceReceivedEntryLevelSPResport>()
+                        .FromSqlInterpolated($"CALL AdvanceReceived_EntryLevel_WithParameter_WithDate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+
         public async Task<List<OpenSalesOrderDetailsDto>> GetOpenSODetailsByCustomerId(string customerId)
         {
             var salesOrderTotalValue = _tipsSalesServiceDbContext.SalesOrders.Where(x => x.CustomerId == customerId).Sum(s => s.Total);
