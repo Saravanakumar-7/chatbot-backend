@@ -1628,7 +1628,7 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetKitBomChildDetails( string kitItemNumber ,decimal KitQty)
+        public async Task<IActionResult> GetKitBomChildDetails( string kitItemNumber ,decimal KitRev)
         {
             ServiceResponse<List<EnggBomKitItemNumberWithQtyDto>> serviceResponse = new ServiceResponse<List<EnggBomKitItemNumberWithQtyDto>>();
             
@@ -1644,7 +1644,7 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                var kitBomDetails = await _enggBomRepository.GetKitBomChildDetails(kitItemNumber, KitQty);
+                var kitBomDetails = await _enggBomRepository.GetKitBomChildDetails(kitItemNumber, KitRev);
                 serviceResponse.Data = kitBomDetails;
                 serviceResponse.Message = "List Of Kit BOM Child ItemNumber ";
                 serviceResponse.Success = true;

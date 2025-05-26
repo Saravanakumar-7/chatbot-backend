@@ -365,7 +365,7 @@ namespace Repository
             //return itemmasterFgDetails;
 
             var itemmasterFgDetails = await TipsMasterDbContext.ItemMasters
-       .Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart) && inv.IsActive)
+       .Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart || inv.ItemType == PartType.Kit) && inv.IsActive)
        .OrderByDescending(a => a.Id)
        .Include(t => t.ItemmasterAlternate)
        .Include(t => t.ItemMasterApprovedVendor)
