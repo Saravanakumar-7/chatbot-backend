@@ -481,6 +481,23 @@ namespace Repository
             return itemMasterIdNoListDto;
         }
 
+        public async Task<IEnumerable<ItemMasterAlterMtrPartNoDto>> GetAllItemMasterMftrNoList()
+        {
+                var itemMasterId= await TipsMasterDbContext.ItemMasters.Where(x => x.IsActive == true).Select(x=>x.Id).ToListAsync();
+
+            IEnumerable<ItemMasterAlterMtrPartNoDto> itemMasterIdNoListDto = await TipsMasterDbContext.ItemmasterAlternates
+                            .Where(x => itemMasterId.Contains(x.ItemMasterId))
+                            .GroupBy(g => new { g.ManufacturerPartNo,g.Manufacturer })
+                              .Select(c => new ItemMasterAlterMtrPartNoDto()
+                              {
+                                  ManufacturerPartNo = c.Key.ManufacturerPartNo,
+                                  Manufacturer = c.Key.Manufacturer
+                              })
+                              .ToListAsync();
+
+            return itemMasterIdNoListDto;
+        }
+
         public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllOpenGrinStatusTrueItemMasterIdNoList()
         {
             IEnumerable<ItemMasterIdNoListDto> itemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters

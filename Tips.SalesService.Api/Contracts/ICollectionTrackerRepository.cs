@@ -31,6 +31,10 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<CollectionTrackerWithSalesOrderNoWiseSPReport>> GetCollectionTrackerWithSalesOrderNoWiseSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<AdvanceReceivedEntryLevelSPResport>> GetAdvanceReceivedEntryLevelSPReportWithParam(string CustomerId, string TypeOfSolution);
         Task<IEnumerable<AdvanceReceivedEntryLevelSPResport>> GetAdvanceReceivedEntryLevelSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<AdvanceReceivedEntryLevelSPResport>> GetFirstAdvanceReceivedEntryLevelSPReportWithParam(string CustomerId, string TypeOfSolution);
+        Task<IEnumerable<AdvanceReceivedEntryLevelSPResport>> GetFirstAdvanceReceivedEntryLevelSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<AdvanceReceivedEntryLevelSPResport>> GetLatestAdvanceReceivedEntryLevelSPReportWithParam(string CustomerId, string TypeOfSolution);
+        Task<IEnumerable<AdvanceReceivedEntryLevelSPResport>> GetLatestAdvanceReceivedEntryLevelSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
 
     }
 }
