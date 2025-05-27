@@ -579,11 +579,11 @@ namespace Repository
             return enggBomSAItemNumberWithQtyDtos;
         }
 
-        public async Task<List<EnggBomKitItemNumberWithQtyDto>> GetKitBomChildDetails(string kitItemNumber, decimal kitRev)
+        public async Task<List<EnggBomKitItemNumberWithQtyDto>> GetKitBomChildDetails(string kitItemNumber, decimal kitRevNo)
         {
             List<EnggBomKitItemNumberWithQtyDto> enggBomKitItemNumberWithQtyDtos = new List<EnggBomKitItemNumberWithQtyDto>();
 
-            int bomId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == kitItemNumber && x.RevisionNumber == kitRev && x.IsActive == true)
+            int bomId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == kitItemNumber && x.RevisionNumber == kitRevNo && x.IsActive == true)
                 .Select(x => x.BOMId)
                 .FirstOrDefaultAsync();
 
