@@ -205,20 +205,20 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
-        public async Task<IEnumerable<AdvanceReceivedEntryLevelSPResport>> GetFirstAdvanceReceivedEntryLevelSPReportWithParam(string CustomerId, string TypeOfSolution)
+        public async Task<IEnumerable<FirstAdvanceReceivedEntryLevelSPResport>> GetFirstSOAdvanceReceivedSPReportWithParam(string CustomerId, string TypeOfSolution)
         {
             var result = _tipsSalesServiceDbContext
-            .Set<AdvanceReceivedEntryLevelSPResport>()
+            .Set<FirstAdvanceReceivedEntryLevelSPResport>()
             .FromSqlInterpolated($"CALL First_Advance_received_based_on_SO({CustomerId},{TypeOfSolution})")
             .ToList();
 
             return result;
 
         }
-        public async Task<IEnumerable<AdvanceReceivedEntryLevelSPResport>> GetLatestAdvanceReceivedEntryLevelSPReportWithParam(string CustomerId, string TypeOfSolution)
+        public async Task<IEnumerable<LatestAdvanceReceivedEntryLevelSPResport>> GetLatestSOAdvanceReceivedSPReportWithParam(string CustomerId, string TypeOfSolution)
         {
             var result = _tipsSalesServiceDbContext
-            .Set<AdvanceReceivedEntryLevelSPResport>()
+            .Set<LatestAdvanceReceivedEntryLevelSPResport>()
             .FromSqlInterpolated($"CALL Latest_Advance_received_based_on_SO_report({CustomerId},{TypeOfSolution})")
             .ToList();
 
@@ -245,9 +245,9 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
-        public async Task<IEnumerable<AdvanceReceivedEntryLevelSPResport>> GetFirstAdvanceReceivedEntryLevelSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        public async Task<IEnumerable<FirstAdvanceReceivedEntryLevelSPResport>> GetFirstSOAdvanceReceivedSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
-            var results = _tipsSalesServiceDbContext.Set<AdvanceReceivedEntryLevelSPResport>()
+            var results = _tipsSalesServiceDbContext.Set<FirstAdvanceReceivedEntryLevelSPResport>()
                         .FromSqlInterpolated($"CALL First_Advance_received_based_on_SO_with_date({FromDate},{ToDate})")
                         .ToList();
 
@@ -255,9 +255,9 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
-        public async Task<IEnumerable<AdvanceReceivedEntryLevelSPResport>> GetLatestAdvanceReceivedEntryLevelSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        public async Task<IEnumerable<LatestAdvanceReceivedEntryLevelSPResport>> GetLatestSOAdvanceReceivedSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
-            var results = _tipsSalesServiceDbContext.Set<AdvanceReceivedEntryLevelSPResport>()
+            var results = _tipsSalesServiceDbContext.Set<LatestAdvanceReceivedEntryLevelSPResport>()
                         .FromSqlInterpolated($"CALL Latest_Advance_received_based_on_SO_report_with_date({FromDate},{ToDate})")
                         .ToList();
 
