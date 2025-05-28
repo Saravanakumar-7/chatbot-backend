@@ -207,10 +207,26 @@ namespace Tips.Grin.Api
             CreateMap<KIT_GRINParts, KIT_GRINPartsPostDto>().ReverseMap();
             CreateMap<KIT_GRIN_ProjectNumbers, KIT_GRIN_ProjectNumbersPostDto>().ReverseMap();
             CreateMap<KIT_GRIN_KITComponents, KIT_GRIN_KITComponentsPostDto>().ReverseMap();
+            CreateMap<KIT_GRIN_OtherCharges, KIT_GRIN_OtherChargesPostDto>().ReverseMap();
             CreateMap<KIT_GRIN_KITComponentscalculationofAvgcost, KIT_GRIN_KITComponents>().ReverseMap();
 
-
-
+            CreateMap<KIT_GRIN, KIT_GRINDto>().ReverseMap();
+            CreateMap<KIT_GRINParts, KIT_GRINPartsDto>().ReverseMap();
+            CreateMap<KIT_GRIN_ProjectNumbers, KIT_GRIN_ProjectNumbersDto>().ReverseMap();
+            CreateMap<KIT_GRIN_KITComponents, KIT_GRIN_KITComponentsDto>().ReverseMap();
+            CreateMap<KIT_GRIN_OtherCharges, KIT_GRIN_OtherChargesDto>().ReverseMap();
+            CreateMap<KIT_GRIN, KIT_GRINUpdateDto>().ReverseMap();
+            CreateMap<KIT_GRINParts, KIT_GRINPartsUpdateDto>().ReverseMap();
+            CreateMap<KIT_GRIN_ProjectNumbers, KIT_GRIN_ProjectNumbersUpdateDto>().ReverseMap();
+            CreateMap<KIT_GRIN_KITComponents, KIT_GRIN_KITComponentsUpdateDto>().ReverseMap();
+            CreateMap<KIT_GRIN_OtherCharges, KIT_GRIN_OtherChargesUpdateDto>().ReverseMap();
+            CreateMap<KIT_IQC, KIT_IQCPostDto>().ReverseMap();
+            CreateMap<KIT_IQCItems, KIT_IQCItemsPostDto>().ReverseMap();
+            CreateMap<KIT_IQC, KIT_IQCDto>().ReverseMap();
+            CreateMap<KIT_IQCItems, KIT_IQCItemsDto>().ReverseMap();
+            CreateMap<KIT_Binning, KIT_BinningPostDto>().ReverseMap();
+            CreateMap<KIT_BinningItems, KIT_BinningItemsPostDto>().ReverseMap();
+            CreateMap<KIT_BinningItemsLocation, KIT_BinningItemsLocationPostDto>().ReverseMap();
         }
     }
 }

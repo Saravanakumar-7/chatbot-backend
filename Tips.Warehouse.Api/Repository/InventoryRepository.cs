@@ -1213,6 +1213,14 @@ namespace Tips.Warehouse.Api.Repository
 
             return getInventoryDetailsById;
         }
+        public async Task<List<Inventory>> GetAllIQCInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber)
+        {
+            var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventories.Where(x => x.GrinNo == GrinNo && x.Warehouse == "IQC" && x.Location == "IQC" &&
+                                        x.GrinPartId == GrinPartsId && x.PartNumber == ItemNumber &&
+                                        x.ProjectNumber == ProjectNumber && x.IsStockAvailable == true).ToListAsync();
+
+            return getInventoryDetailsById;
+        }
         public async Task<List<Inventory>> GetIQCItemInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber)
         {
             var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventories.Where(x => x.GrinNo == GrinNo && x.Warehouse == "IQC" && x.Location == "IQC" &&

@@ -1562,7 +1562,7 @@ namespace Tips.Purchase.Api.Controllers
             try
             {
                 var pONumberDetailsbyVendorId = await _repository.GetKIT_PoNumberListByVendorId(vendorId);
-                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);                
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);
                 serviceResponse.Data = result;
                 serviceResponse.Message = $"Returned KIT_PoNumberList By VendorId: {vendorId}";
                 serviceResponse.Success = true;
@@ -1570,7 +1570,7 @@ namespace Tips.Purchase.Api.Controllers
                 _logger.LogInfo($"Returned KIT_PoNumberList By VendorId: {vendorId}");
                 return Ok(serviceResponse);
             }
-            catch (Exception ex)    
+            catch (Exception ex)
             {
                 _logger.LogError($"Error occured in GetKIT_PoNumberListByVendorId for the VendorID: {vendorId}\n{ex.Message}\n{ex.InnerException}");
                 serviceResponse.Data = null;
@@ -1686,7 +1686,7 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError("Invalid PurchaseOrder object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                if (purchaseOrderPostDto.Currency!="INR" && purchaseOrderPostDto.ConvertionRateId == null && serverKey != "keus")
+                if (purchaseOrderPostDto.Currency != "INR" && purchaseOrderPostDto.ConvertionRateId == null && serverKey != "keus")
                 {
                     serviceResponse.Message = $"Error Occured in CreatePurchaseOrder: The ConvertionRateId is required for the UOC:{purchaseOrderPostDto.Currency}";
                     serviceResponse.Success = false;
@@ -1770,7 +1770,7 @@ namespace Tips.Purchase.Api.Controllers
                                 serviceResponse.Success = false;
                                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                                 _logger.LogError($"Error Occured in CreatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}");
-                                return BadRequest(serviceResponse); 
+                                return BadRequest(serviceResponse);
                             }
                         }
                     }
@@ -1845,7 +1845,8 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     foreach (var poItems in poItemDtoList)
                     {
-                        if (poItems.PrDetails != null) {
+                        if (poItems.PrDetails != null)
+                        {
                             foreach (var prDetails in poItems.PrDetails.Where(x => x.ToClosePR == true).ToList())
                             {
                                 var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, poItems.ItemNumber);
@@ -1860,7 +1861,7 @@ namespace Tips.Purchase.Api.Controllers
                                 var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
                                 prDetail.PrStatus = prItemClosedStatusCount;
                                 await _purchaseRequisitionRepository.UpdatePurchaseRequisition_ForApproval(prDetail);
-                            } 
+                            }
                         }
                     }
                 }
@@ -2584,11 +2585,11 @@ namespace Tips.Purchase.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid PurchaseOrderReturns object sent from client.");
                     return BadRequest(serviceResponse);
-                }                
+                }
                 foreach (var po in purchaseOrderReturns)
                 {
                     var PurchaseOrder = await _repository.GetLastestPurchaseOrderByPONumber(po.PurchaseOrderNo);
-                    if (PurchaseOrder==null)
+                    if (PurchaseOrder == null)
                     {
                         serviceResponse.Data = null;
                         serviceResponse.Message = $"In ReturnToVendorPOs: PONumber: {po.PurchaseOrderNo} was not Found";
@@ -2829,10 +2830,10 @@ namespace Tips.Purchase.Api.Controllers
                                 var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, poItems.ItemNumber);
                                 if (prItemDetail != null)
                                 {
-                                    if (prDetails.ToClosePR==true) prItemDetail.PrStatus = PrStatus.Closed;
+                                    if (prDetails.ToClosePR == true) prItemDetail.PrStatus = PrStatus.Closed;
                                     else prItemDetail.PrStatus = PrStatus.Open;
                                     await _purchaseRequisitionItemRepository.UpdatePrItem(prItemDetail);
-                                        _purchaseRequisitionItemRepository.SaveAsync(); 
+                                    _purchaseRequisitionItemRepository.SaveAsync();
                                 }
 
                                 var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
@@ -3853,8 +3854,8 @@ namespace Tips.Purchase.Api.Controllers
                 purchaseOrderDetailByPONumber[0].POApprovalI = true;
                 purchaseOrderDetailByPONumber[0].POApprovedIBy = _createdBy;
                 purchaseOrderDetailByPONumber[0].POApprovedIDate = DateTime.Now;
-                purchaseOrderDetailByPONumber.ForEach(x=>x.InApproval=true);
-                foreach(var po in purchaseOrderDetailByPONumber) await _repository.UpdatePurchaseOrder_ForApproval(po);
+                purchaseOrderDetailByPONumber.ForEach(x => x.InApproval = true);
+                foreach (var po in purchaseOrderDetailByPONumber) await _repository.UpdatePurchaseOrder_ForApproval(po);
                 _logger.LogInfo($"ActivatePurchaseOrderApprovalI for PO: {PONumber}");
                 _repository.SaveAsync();
                 if (serverKey == "avision")
@@ -4475,11 +4476,11 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     if (poid_1.Any())
                     {
-                        var poItem = poid_1.First();  
+                        var poItem = poid_1.First();
                         if (poItem != null)
                         {
-                            PoId = poItem.PoId;  
-                            break;  
+                            PoId = poItem.PoId;
+                            break;
                         }
                     }
                 }
@@ -5201,7 +5202,7 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError( ex.Message);
+                _logger.LogError(ex.Message);
                 return StatusCode(500, $"An error occurred: {ex.Message},{ex.InnerException}");
             }
         }
@@ -5740,7 +5741,7 @@ namespace Tips.Purchase.Api.Controllers
                     row.CreateCell(14).SetCellValue(item.Currency ?? ""); // Currency
                     row.CreateCell(15).SetCellValue(item.UOM ?? ""); // UOM
                     row.CreateCell(16).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
-                    row.CreateCell(17).SetCellValue(item.PaymentTerms ?? ""); 
+                    row.CreateCell(17).SetCellValue(item.PaymentTerms ?? "");
                     row.CreateCell(18).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
                     row.CreateCell(19).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
                     row.CreateCell(20).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
@@ -5900,7 +5901,8 @@ namespace Tips.Purchase.Api.Controllers
                     if (po.Currency != "INR")
                     {
                         var converion = approvalRangesRequest.ConvertionRates.Where(x => x.UOC == po.Currency).FirstOrDefault();
-                        if (converion == null) {
+                        if (converion == null)
+                        {
                             _logger.LogError($"Error occured in UpdatePurchaseOrdersApprovalRange: The UOM {po.Currency} doesnot have any convertionrate");
                             serviceResponse.Data = null;
                             serviceResponse.Message = $"Error occured in UpdatePurchaseOrdersApprovalRange: The UOM {po.Currency} doesnot have any convertionrate";
@@ -5914,7 +5916,7 @@ namespace Tips.Purchase.Api.Controllers
                             po.ConvertionRateId = converion.Id;
                         }
                     }
-                    var range = approvalRangesRequest.ApprovalRanges.Ranges.FirstOrDefault(r => totalamount >= r.RangeFrom && (r.RangeTo != null ? totalamount <= r.RangeTo: true));
+                    var range = approvalRangesRequest.ApprovalRanges.Ranges.FirstOrDefault(r => totalamount >= r.RangeFrom && (r.RangeTo != null ? totalamount <= r.RangeTo : true));
                     int count = (range.Approval1 ? 1 : 0) + (range.Approval2 ? 1 : 0) + (range.Approval3 ? 1 : 0) + (range.Approval4 ? 1 : 0);
                     po.ApprovalCount = count;
                     po.ApprovalRangeId = approvalRangesRequest.ApprovalRanges.Id;
@@ -5933,6 +5935,79 @@ namespace Tips.Purchase.Api.Controllers
                 _logger.LogError($"Error occured in UpdatePurchaseOrdersApprovalRange: {ex.Message} \n {ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error occured in UpdatePurchaseOrdersApprovalRange: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateKIT_PODetails([FromBody] List<KIT_GRIN_POUpdate> kIT_GRIN_POUpdates)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                if (kIT_GRIN_POUpdates is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "UpdateKIT_PODetails object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("UpdateKIT_PODetails object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid UpdateKIT_PODetails object.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid UpdateKIT_PODetails object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                foreach (var po in kIT_GRIN_POUpdates)
+                {
+                    var PurOrder = await _repository.GetLastestPurchaseOrderByPONumber(po.PONumber);
+                    foreach (var poitem in po.POItems)
+                    {
+                        var POItem = PurOrder.POItems.Where(x => x.ItemNumber == poitem.ItemNumber).FirstOrDefault();
+                        foreach (var prj in poitem.POProjects)
+                        {
+                            var Proj = POItem.POAddprojects.Where(x => x.ProjectNumber == prj.ProjectNumber).FirstOrDefault();
+                            foreach (var comp in prj.POComponents)
+                            {
+                                var Component = Proj.PoAddKitProjects.Where(x => x.PartNumber == comp.PartNumber).FirstOrDefault();
+                                Component.BalanceQty -= comp.KitComponentQty;
+                                Component.ReceivedQty += comp.KitComponentQty;
+                                if (Component.BalanceQty == 0) Component.PoAddKitProjectStatus = PoStatus.Closed;
+                                else if (Component.BalanceQty != 0 && Component.ReceivedQty > 0) Component.PoAddKitProjectStatus = PoStatus.PartiallyClosed;
+                            }
+                            Proj.BalanceQty -= prj.ProjectQty;
+                            Proj.ReceivedQty += prj.ProjectQty;
+                            if (Proj.BalanceQty == 0) Proj.PoAddProjectStatus = PoStatus.Closed;
+                            else if(Proj.BalanceQty != 0 && Proj.ReceivedQty > 0) Proj.PoAddProjectStatus = PoStatus.PartiallyClosed;
+                        }
+                        POItem.BalanceQty -= poitem.Qty;
+                        POItem.ReceivedQty += poitem.Qty;
+                        if (POItem.BalanceQty == 0) POItem.PoStatus = PoStatus.Closed;
+                        else if (POItem.BalanceQty != 0 && POItem.ReceivedQty > 0) POItem.PoStatus = PoStatus.PartiallyClosed;
+                    }
+                    if (PurOrder.POItems.Count(x => x.PoStatus == PoStatus.Closed) == PurOrder.POItems.Count()) PurOrder.PoStatus = PoStatus.Closed;
+                    else PurOrder.PoStatus = PoStatus.PartiallyClosed;
+                    await _repository.UpdatePurchaseOrder_ForApproval(PurOrder);
+                }
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"UpdateKIT_PODetails Was successfull";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in UpdateKIT_PODetails:\n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error occured in UpdateKIT_PODetails: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

@@ -64,43 +64,43 @@ namespace Tips.Grin.Api.Controllers
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllIqcDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
-        {
-            ServiceResponse<IEnumerable<IQCConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationDto>>();
-
-            try
+            [HttpGet]
+            public async Task<IActionResult> GetAllIqcDetails([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
             {
-                var getAllIQCDetails = await _iQCConfirmationRepository.GetAllIqcDetails(pagingParameter, searchParams);
+                ServiceResponse<IEnumerable<IQCConfirmationDto>> serviceResponse = new ServiceResponse<IEnumerable<IQCConfirmationDto>>();
 
-                var metadata = new
+                try
                 {
-                    getAllIQCDetails.TotalCount,
-                    getAllIQCDetails.PageSize,
-                    getAllIQCDetails.CurrentPage,
-                    getAllIQCDetails.HasNext,
-                    getAllIQCDetails.HasPreviuos
-                };
+                    var getAllIQCDetails = await _iQCConfirmationRepository.GetAllIqcDetails(pagingParameter, searchParams);
 
-                Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
-                _logger.LogInfo("Returned all IQCConfirmation details()s");
-                var result = _mapper.Map<IEnumerable<IQCConfirmationDto>>(getAllIQCDetails);
-                serviceResponse.Data = result;
-                serviceResponse.Message = "Successfully Returned all IQCConfirmation";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
+                    var metadata = new
+                    {
+                        getAllIQCDetails.TotalCount,
+                        getAllIQCDetails.PageSize,
+                        getAllIQCDetails.CurrentPage,
+                        getAllIQCDetails.HasNext,
+                        getAllIQCDetails.HasPreviuos
+                    };
+
+                    Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+                    _logger.LogInfo("Returned all IQCConfirmation details()s");
+                    var result = _mapper.Map<IEnumerable<IQCConfirmationDto>>(getAllIQCDetails);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Successfully Returned all IQCConfirmation";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Inter server error";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, "Internal server error");
+                }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, "Internal server error");
-            }
-        }
 
         [HttpPost]
         public async Task<IActionResult> GetIQCConfirmationSPReportWithParam([FromBody] IQCConfirmationReportWithParamDto iQCConfirmationReportWithParamDto)

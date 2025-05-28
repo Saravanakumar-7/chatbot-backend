@@ -532,6 +532,27 @@ namespace Tips.Purchase.Api.Entities.DTOs
     {
         public string ProjectNo { get; set; }
         public decimal ReturnQty { get; set; }
-    }    
-    
+    }
+    public class KIT_GRIN_POUpdate
+    {
+        public string PONumber { get; set; }
+        public List<KIT_GRIN_POItemsUpdate> POItems { get; set; }
+    }
+    public class KIT_GRIN_POItemsUpdate
+    {
+        public string ItemNumber { get; set; }
+        public decimal Qty { get; set; }
+        public List<KIT_GRIN_POProjectUpdate> POProjects { get; set; }
+    }
+    public class KIT_GRIN_POProjectUpdate
+    {
+        public string? ProjectNumber { get; set; }
+        public decimal ProjectQty { get; set; }
+        public List<KIT_GRIN_POComponentsUpdate> POComponents { get; set; }
+    }
+    public class KIT_GRIN_POComponentsUpdate
+    {
+        public string? PartNumber { get; set; }
+        public decimal KitComponentQty { get; set; }
+    }
 }

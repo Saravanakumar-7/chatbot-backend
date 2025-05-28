@@ -17,13 +17,15 @@ namespace Tips.Purchase.Api.Entities
         public string? UOM { get; set; }
         public string? ProjectNumber { get; set; }
         [Precision(13, 3)]
+        public decimal KitComponentBOMQty { get; set; }
+        [Precision(13, 3)]
         public decimal KitComponentQty { get; set; }
         [Precision(18, 3)]
         public decimal KitComponentUnitPrice { get; set; }
         [Precision(13, 3)]
         public decimal BalanceQty { get; set; }
         [Precision(13, 3)]
-        public decimal ReceivedQty { get; set; }
+        public decimal ReceivedQty { get; set; } = 0;
         public PoStatus PoAddKitProjectStatus { get; set; }
       
         public string? CreatedBy { get; set; }

@@ -1489,8 +1489,6 @@ namespace Tips.Purchase.Api.Repository
 
         public async Task<string> UpdatePurchaseOrder_ForApproval(PurchaseOrder purchaseOrder)
         {
-            // purchaseOrder.LastModifiedBy = _createdBy;
-            // purchaseOrder.LastModifiedOn = DateTime.Now;
             Update(purchaseOrder);
             string result = $"PurchaseOrder of Detail {purchaseOrder.Id} is updated successfully!";
             return result;

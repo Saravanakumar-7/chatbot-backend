@@ -64,6 +64,11 @@ namespace Tips.Grin.Api.Entities
         public DbSet<KIT_GRIN_OtherCharges> KIT_GRIN_OtherCharges { get; set; }
         public DbSet<KIT_GRIN_ProjectNumbers> KIT_GRIN_ProjectNumbers { get; set; }
         public DbSet<KIT_GRIN_KITComponents> KIT_GRIN_KITComponents { get; set; }
+        public DbSet<KIT_IQC> KIT_IQC { get; set; }
+        public DbSet<KIT_IQCItems> KIT_IQCItems { get; set; }
+        public DbSet<KIT_Binning> KIT_Binning { get; set; }
+        public DbSet<KIT_BinningItems> KIT_BinningItems { get; set; }
+        public DbSet<KIT_BinningItemsLocation> KIT_BinningItemsLocation { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Grin_ReportSP>().HasNoKey();
@@ -80,7 +85,5 @@ namespace Tips.Grin.Api.Entities
             modelBuilder.Entity<PurchaseInventorySPReport>().HasNoKey();
             modelBuilder.Entity<IQCConfirmationSPReportForAvi>().HasNoKey();
         }
-
-
     }
 }

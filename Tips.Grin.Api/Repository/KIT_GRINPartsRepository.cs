@@ -27,8 +27,6 @@ namespace Tips.Grin.Api.Repository
         }
         public async Task<string> UpdateKIT_GRINPartsQty(KIT_GRINParts grinParts)
         {
-            grinParts.LastModifiedBy = _createdBy;
-            grinParts.LastModifiedOn = DateTime.Now;
             Update(grinParts);
             string result = $"KIT_GRINParts Detail {grinParts.Id} is updated successfully!";
             return result;

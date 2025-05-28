@@ -14,7 +14,7 @@ namespace Tips.Grin.Api.Entities
         public PartType ItemType { get; set; }
         [Required]
         [Precision(18, 3)]
-        public decimal? Qty { get; set; }
+        public decimal Qty { get; set; }
         [Required]
         public string ItemDescription { get; set; }
         public string? PONumber { get; set; }
@@ -22,27 +22,20 @@ namespace Tips.Grin.Api.Entities
         public string MftrItemNumber { get; set; }
         [Required]
         public string ManufactureBatchNumber { get; set; }
-        public bool IsKIT_IqcCompleted { get; set; }
-        public bool IsKIT_BinningCompleted { get; set; }
+        public bool IsKIT_IqcCompleted { get; set; } = false;
+        public bool IsKIT_BinningCompleted { get; set; } = false;
         [Required]
         [Precision(18, 3)]
         public decimal UnitPrice { get; set; }
-        [Required]
         [Precision(13, 3)]
-        public decimal POOrderQty { get; set; }
-        [Required]
+        public decimal AcceptedQty { get; set; } = 0;
         [Precision(13, 3)]
-        public decimal POBalancedQty { get; set; }
-        [Required]
-        [Precision(18, 3)]
-        public decimal POUnitPrice { get; set; }
+        public decimal RejectedQty { get; set; } = 0;
+
         [Precision(13, 3)]
-        public decimal AcceptedQty { get; set; }
+        public decimal RejectReturnQty { get; set; } = 0; 
         [Precision(13, 3)]
-        public decimal RejectedQty { get; set; }
-       
-        [Precision(13, 3)]
-        public decimal RejectReturnQty { get; set; }
+        public decimal BinnedQty { get; set; } = 0;
         [Required]
         public string UOM { get; set; }
         public string? UOC { get; set; }
@@ -61,11 +54,7 @@ namespace Tips.Grin.Api.Entities
         public decimal? CGST { get; set; }
         [Precision(13, 3)]
         public decimal? UTGST { get; set; }
-        public decimal? Duties { get; set; }
-        public string? CreatedBy { get; set; }
-        public DateTime? CreatedOn { get; set; }
-        public string? LastModifiedBy { get; set; }
-        public DateTime? LastModifiedOn { get; set; }
+        public decimal? Duties { get; set; }        
         public string? SerialNo { get; set; }
         public int KIT_GRINId { get; set; }
         public KIT_GRIN? KIT_GRIN { get; set; }

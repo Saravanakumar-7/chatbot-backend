@@ -8,6 +8,27 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal? ProjectQty { get; set; }
         public List<KIT_GRIN_KITComponentsPostDto> KIT_GRIN_KITComponents { get; set; }
-
+    }
+    public class KIT_GRIN_ProjectNumbersDto {
+        public int Id { get; set; }
+        public string? ProjectNumber { get; set; }
+        [Precision(18, 3)]
+        public decimal? ProjectQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? AcceptedQty { get; set; }
+        [Precision(13, 3)]
+        public decimal? RejectedQty { get; set; }
+        [Precision(18, 3)]
+        public decimal RejectReturnQty { get; set; }
+        public int KIT_GRINPartsId { get; set; }
+        public List<KIT_GRIN_KITComponentsDto> KIT_GRIN_KITComponents { get; set; }
+    }
+    public class KIT_GRIN_ProjectNumbersUpdateDto
+    {
+        public int Id { get; set; }
+        public string? ProjectNumber { get; set; }
+        [Precision(18, 3)]
+        public decimal? ProjectQty { get; set; }
+        public List<KIT_GRIN_KITComponentsUpdateDto> KIT_GRIN_KITComponents { get; set; }
     }
 }

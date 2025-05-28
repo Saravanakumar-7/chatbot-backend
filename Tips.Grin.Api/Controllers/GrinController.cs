@@ -1720,16 +1720,16 @@ namespace Tips.Grin.Api.Controllers
                     }
                 }
                 serviceResponse.Data = id_s;
-                serviceResponse.Message = " GrinFile Successfully Created";
+                serviceResponse.Message = "CreateGrinFileUpload Successfull";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GrinFile action: {ex.Message},{ex.InnerException}");
+                _logger.LogError($"Something went wrong inside CreateGrinFileUpload action: \n{ex.Message}\n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Something went wrong inside CreateGrinFileUpload action: \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

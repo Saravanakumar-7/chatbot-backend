@@ -56,9 +56,8 @@ namespace Tips.Grin.Api.Entities
         public decimal? BECurrencyValue { get; set; }
         [DefaultValue(0)]
         public Status Status { get; set; }
-        public bool IsKIT_GrinCompleted { get; set; }
-        public bool IsKIT_IqcCompleted { get; set; }
-        public bool IsKIT_BinningCompleted { get; set; }
+        public bool IsKIT_IqcCompleted { get; set; } = false;
+        public bool IsKIT_BinningCompleted { get; set; } = false;
         public string? KIT_GrinDocuments { get; set; }
         public bool TallyStatus { get; set; } = false;
         public string Unit { get; set; }

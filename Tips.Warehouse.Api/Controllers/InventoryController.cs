@@ -354,6 +354,43 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
         [HttpGet]
+        public async Task<IActionResult> GetAllIQCInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber)
+        {
+            ServiceResponse<List<InventoryDto>> serviceResponse = new ServiceResponse<List<InventoryDto>>();
+            try
+            {
+                var getInventoryDetailsByGrinNoandGrinId = await _inventoryRepository.GetAllIQCInventoryDetailsByGrinNoandGrinId(GrinNo, GrinPartsId, ItemNumber, ProjectNumber);
+                if (getInventoryDetailsByGrinNoandGrinId == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory with id: {GrinNo}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with id: {GrinNo}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with id: {GrinNo}");
+                    var result = _mapper.Map<List<InventoryDto>>(getInventoryDetailsByGrinNoandGrinId);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned Inventory with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in GetAllIQCInventoryDetailsByGrinNoandGrinId:\n{ex.Message}\n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error occured in GetAllIQCInventoryDetailsByGrinNoandGrinId:\n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
         public async Task<IActionResult> GetIQCItemInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber)
         {
             ServiceResponse<List<InventoryDto>> serviceResponse = new ServiceResponse<List<InventoryDto>>();
