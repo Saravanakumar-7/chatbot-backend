@@ -236,7 +236,8 @@ namespace Entities.DTOs
 
     public class ProductionBomKitRevNoDto
     {
-        public string? KitItemNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
         public decimal KitRevisionNumber { get; set; }
     }
 

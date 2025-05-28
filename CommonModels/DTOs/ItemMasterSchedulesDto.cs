@@ -10,17 +10,20 @@ namespace Entities.DTOs
     {
         public int Id { get; set; }
         public DateTime SchedulesDate { get; set; }
+        public string? ScheduleName { get; set; }
         public List<ItemMasterSchedulePartsDto>? ItemMasterScheduleParts { get; set; }
     }
     public class ItemMasterSchedulesDtoPost
     {
         public DateTime SchedulesDate { get; set; }
+        public string? ScheduleName { get; set; }
         public List<ItemMasterSchedulePartsDtoPost>? ItemMasterScheduleParts { get; set; }
     }
     public class ItemMasterSchedulesDtoUpdate
     {
         public int Id { get; set; }
         public DateTime SchedulesDate { get; set; }
+        public string? ScheduleName { get; set; }
         public List<ItemMasterSchedulePartsDtoUpdate>? ItemMasterScheduleParts { get; set; }
     }
 }

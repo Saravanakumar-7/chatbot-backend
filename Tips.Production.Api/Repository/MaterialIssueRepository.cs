@@ -74,6 +74,16 @@ namespace Tips.Production.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<MaterialIssueSPReportForAvision>> GetMaterialIssueSPReportWithParamForAvision(string? WorkorderNo, string? ItemNumber, string? projectNo,
+                                                                                                  string? salesOrderNo)
+        {
+            var result = _tipsProductionDbContext
+            .Set<MaterialIssueSPReportForAvision>()
+            .FromSqlInterpolated($"Material_Issue_Report_withparameter_Avi({WorkorderNo},{ItemNumber},{projectNo},{salesOrderNo})")
+            .ToList();
+
+            return result;
+        }
         public async Task<IEnumerable<MaterialIssueSPReport>> GetMaterialIssueSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsProductionDbContext.Set<MaterialIssueSPReport>()
@@ -86,6 +96,14 @@ namespace Tips.Production.Api.Repository
         {
             var results = _tipsProductionDbContext.Set<MaterialIssueSPReportForTrans>()
                       .FromSqlInterpolated($"Material_Issue_Report_withparameter_withdate_tras({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<MaterialIssueSPReportForAvision>> GetMaterialIssueSPReportWithDateForAvision(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsProductionDbContext.Set<MaterialIssueSPReportForAvision>()
+                      .FromSqlInterpolated($"Material_Issue_Report_withparameter_withdate_Avi({FromDate},{ToDate})")
                       .ToList();
 
             return results;

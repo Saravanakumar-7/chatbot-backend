@@ -42,7 +42,7 @@ namespace Repository
             {
                 FGItemNumber = FGItemNumber,
                 FinalLandindPrice = 0,
-                FinalMoqcost = 0
+                FinalMoqcost = 0,
             };
             SAFinalLandedandMoqPrice sAFinalLandedandMoqPrice = new SAFinalLandedandMoqPrice()
             {
@@ -579,16 +579,16 @@ namespace Repository
             return enggBomSAItemNumberWithQtyDtos;
         }
 
-        public async Task<List<EnggBomKitItemNumberWithQtyDto>> GetKitBomChildDetails(string kitItemMaster , decimal kitRevNo)
+        public async Task<List<EnggBomKitItemNumberWithQtyDto>> GetKitBomChildDetails(string kitItemNumber, decimal kitRevNo)
         {
             List<EnggBomKitItemNumberWithQtyDto> enggBomKitItemNumberWithQtyDtos = new List<EnggBomKitItemNumberWithQtyDto>();
 
-            int bomId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == kitItemMaster && x.RevisionNumber == kitRevNo && x.IsActive == true)
-                .OrderByDescending(x => x.RevisionNumber)
+            int bomId = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == kitItemNumber && x.RevisionNumber == kitRevNo && x.IsActive == true)
                 .Select(x => x.BOMId)
                 .FirstOrDefaultAsync();
 
             var kitbomdetails = await _tipsMasterDbContext.EnggChildItems.Where(x => x.EnggBomId == bomId && x.IsActive == true).ToListAsync();
+
             if (kitbomdetails != null)
             {
                 foreach (var childofKit in kitbomdetails)
@@ -600,7 +600,7 @@ namespace Repository
                         {
                             if (existingKitComponent.PartNumber == childofKit.ItemNumber)
                             {
-                                existingKitComponent.KitComponentQty = existingKitComponent.KitComponentQty + (childofKit.Quantity);
+                                existingKitComponent.KitComponentQty = existingKitComponent.KitComponentQty + childofKit.Quantity;
                                 flag = 1;
                                 break;
                             }
@@ -1231,7 +1231,8 @@ namespace Repository
                                     .Where(x => x.ItemType == PartType.Kit).GroupBy(p => p.ItemNumber)
                                     .Select(g => new ProductionBomKitRevNoDto
                                     {
-                                        KitItemNumber = g.Key,
+                                        ItemNumber = g.Key,
+                                        Description = g.OrderByDescending(p=>p.ReleaseVersion).Select(p=>p.ItemDescription).First(),
                                         KitRevisionNumber = g.Max(p => p.ReleaseVersion)
                                     })
                                     .ToListAsync();
