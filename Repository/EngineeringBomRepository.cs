@@ -42,7 +42,7 @@ namespace Repository
             {
                 FGItemNumber = FGItemNumber,
                 FinalLandindPrice = 0,
-                FinalMoqcost = 0
+                FinalMoqcost = 0,
             };
             SAFinalLandedandMoqPrice sAFinalLandedandMoqPrice = new SAFinalLandedandMoqPrice()
             {
