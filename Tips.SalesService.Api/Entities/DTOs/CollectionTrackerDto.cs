@@ -116,7 +116,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? TotalSumOfSOAmount { get; set; }
         public decimal? AlreadyRecieved { get; set; }
         public decimal? AmountRecieved { get; set; }
-        public decimal? totaladvance { get; set; }
+        public decimal? TotalAdvance { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
         public DateTime? entrydate { get; set; }
@@ -131,7 +131,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
         public decimal? TotalSumOfSOAmount { get; set; }
-        public decimal? AlreadyRecieved { get; set; }
+        public decimal? AdvanceReceived { get; set; }
         public decimal? Percentage_of_Adv_rec { get; set; }
         public DateTime? entrydate { get; set; }
         public string? CreatedBy { get; set; }
@@ -148,7 +148,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
         public decimal? TotalSumOfSOAmount { get; set; }
-        public decimal? AlreadyRecieved { get; set; }
+        public decimal? AdvanceReceived { get; set; }
         public decimal? Percentage_of_Adv_rec { get; set; }
     }
 
