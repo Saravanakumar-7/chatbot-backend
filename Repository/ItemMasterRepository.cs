@@ -400,6 +400,18 @@ namespace Repository
             .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts);
             return itemmasterSADetails;
         }
+
+        public async Task<IEnumerable<ItemMaster>> GetAllKITItems()
+        {
+            var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id).Where(inv => (inv.ItemType == PartType.Kit) && inv.IsActive == true)
+            .Include(t => t.ItemmasterAlternate)
+            .Include(t => t.ItemMasterApprovedVendor)
+            //.Include(t => t.ItemMasterFileUpload)
+            .Include(d => d.ItemMasterRouting)
+            .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts);
+            return itemmasterSADetails;
+        }
+
         public async Task<IEnumerable<ItemMaster>> GetAllFgSaItems()
         {
             var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id).Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.FG) && inv.IsActive == true);

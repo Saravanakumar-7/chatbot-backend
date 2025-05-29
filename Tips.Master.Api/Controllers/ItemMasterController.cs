@@ -175,6 +175,34 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllKITItems()
+        {
+            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+
+            try
+            {
+                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllKITItems();
+                _logger.LogInfo("Returned all KitItems");
+
+                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGSAItemsList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all KitItems Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         // get all fg,sa,fru item list
 
         [HttpGet]
