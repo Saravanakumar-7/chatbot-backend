@@ -9,7 +9,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string VendorId { get; set; }
         public string VendorName { get; set; }
         public string? VendorNumber { get; set; }
-        public bool IsKIT_BinningCompleted { get; set; }
         public List<KIT_IQCItemsPostDto> kIT_IQCItems { get; set; }
     }
     public class KIT_IQCDto

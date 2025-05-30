@@ -32,7 +32,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LoggerService\LoggerService.csproj" />
-    <ProjectReference Include="..\Tips.Purchase.Api\Tips.Purchase.Api.csproj" />
   </ItemGroup>
 
   <ItemGroup>

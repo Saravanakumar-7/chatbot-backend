@@ -61,9 +61,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public PartType ItemType { get; set; }
         [Precision(18, 3)]
-        public decimal? Qty { get; set; }
+        public decimal Qty { get; set; }
         public string ItemDescription { get; set; }
-        public string? PONumber { get; set; }
+        public string PONumber { get; set; }
         public string MftrItemNumber { get; set; }
         public string ManufactureBatchNumber { get; set; }
         public bool IsKIT_IqcCompleted { get; set; }
