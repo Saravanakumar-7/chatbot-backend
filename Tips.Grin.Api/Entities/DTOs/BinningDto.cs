@@ -213,5 +213,33 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string VendorNumber { get; set; }
         public BinningItemsSaveDto? BinningItems { get; set; }
     }
+    public class BinningSPReportAviDto
+    {
+        public string? ponumber { get; set; }
+        public string? grinnumber { get; set; }
+        public string? itemnumber { get; set; }
+        public string? projectnumber { get; set; }
+    }
+    public class BinningSPReportAvi
+    {
+        public string? PONumber { get; set; }
+        public DateTime? PODate { get; set; }
+        public string? GrinNumber { get; set; }
+        public DateTime? GrinDate { get; set; }
+        public string? GateEntryNo { get; set; }
+        public DateTime? GateEntryDate { get; set; }
+        public string? VendorName { get; set; }
+        public string? InvoiceNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? MftrItemNumber { get; set; }
+        public string? ItemDescription { get; set; }
+        public string? UOM { get; set; }
+        public decimal? BinningQty { get; set; }
+        public string? BinningLocation { get; set; }
+        public string? BinningWarehouse { get; set; }
+        public DateTime? BinningDate { get; set; }
+    }
+
 
 }
