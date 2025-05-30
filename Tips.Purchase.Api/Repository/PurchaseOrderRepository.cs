@@ -1243,7 +1243,7 @@ namespace Tips.Purchase.Api.Repository
             inv.VendorName.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue) ||
             inv.RevisionNumber.Equals(searchrev) || inv.PODate.Equals(searchDate)))
             .OrderByDescending(on => on.Id)//.Include(o => o.POFiles)
-            .Include(t => t.POItems).ThenInclude(x => x.POAddprojects)
+            .Include(t => t.POItems).ThenInclude(x => x.POAddprojects).ThenInclude(x=>x.PoAddKitProjects)
             .Include(m => m.POItems).ThenInclude(i => i.POAddDeliverySchedules)
             .Include(itm => itm.POItems).ThenInclude(po => po.POSpecialInstructions)
             .Include(itm => itm.POItems).ThenInclude(po => po.POConfirmationDates)
@@ -1321,7 +1321,7 @@ namespace Tips.Purchase.Api.Repository
             inv.VendorName.Contains(searchParams.SearchValue) || inv.PONumber.Contains(searchParams.SearchValue) ||
             inv.RevisionNumber.Equals(searchrev) || inv.PODate.Equals(searchDate)) && (inv.RevisionNumber == _tipsPurchaseDbContext.PurchaseOrders.Where(r => r.PONumber == inv.PONumber).Max(r => r.RevisionNumber)))
             .OrderByDescending(on => on.Id)//.Include(o => o.POFiles)
-            .Include(t => t.POItems).ThenInclude(x => x.POAddprojects)
+            .Include(t => t.POItems).ThenInclude(x => x.POAddprojects).ThenInclude(x=>x.PoAddKitProjects)
             .Include(m => m.POItems).ThenInclude(i => i.POAddDeliverySchedules).Include(itm => itm.POItems)
             .ThenInclude(po => po.POSpecialInstructions).Include(itm => itm.POItems).ThenInclude(po => po.POConfirmationDates)
             .Include(itm => itm.POItems).ThenInclude(po => po.PrDetails).Include(itm => itm.POIncoTerms).Include(itm => itm.PurchaseOrderAdditionalCharges);
@@ -1337,6 +1337,7 @@ namespace Tips.Purchase.Api.Repository
 
                 .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
+                                .ThenInclude(x=>x.PoAddKitProjects)
                                 .Include(m => m.POItems)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
                                 .Include(itm => itm.POItems)
@@ -1360,6 +1361,7 @@ namespace Tips.Purchase.Api.Repository
                 //.Include(o => o.POFiles)
                 .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
+                                .ThenInclude(x => x.PoAddKitProjects)
                                 .Include(m => m.POItems)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
                                 .Include(itm => itm.POItems)
@@ -1381,6 +1383,7 @@ namespace Tips.Purchase.Api.Repository
                 //.Include(o => o.POFiles)
                 .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
+                                .ThenInclude(x => x.PoAddKitProjects)
                                 .Include(m => m.POItems)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
                                 .Include(itm => itm.POItems)
@@ -1401,6 +1404,7 @@ namespace Tips.Purchase.Api.Repository
                 //.Include(o => o.POFiles)
                 .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
+                                .ThenInclude(x => x.PoAddKitProjects)
                                 .Include(m => m.POItems)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
                                 .Include(itm => itm.POItems)
@@ -1424,6 +1428,7 @@ namespace Tips.Purchase.Api.Repository
                 .Where(x => x.PONumber == poNumber && x.RevisionNumber == (_tipsPurchaseDbContext.PurchaseOrders.Where(x => x.PONumber == poNumber).Max(x => x.RevisionNumber)))
                 .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
+                                .ThenInclude(x => x.PoAddKitProjects)
                                 .Include(m => m.POItems)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
                                 .Include(itm => itm.POItems)
@@ -1445,6 +1450,7 @@ namespace Tips.Purchase.Api.Repository
                 //.Include(o => o.POFiles)
                 .Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
+                                .ThenInclude(x => x.PoAddKitProjects)
                                 .Include(m => m.POItems)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
                                 .Include(itm => itm.POItems)
@@ -1464,6 +1470,7 @@ namespace Tips.Purchase.Api.Repository
             var purchaseOrderDetail = await _tipsPurchaseDbContext.PurchaseOrders
                 .Where(x => x.PONumber == poNumber).OrderByDescending(x => x.RevisionNumber).Include(t => t.POItems)
                                 .ThenInclude(x => x.POAddprojects)
+                                .ThenInclude(x => x.PoAddKitProjects)
                                 .Include(m => m.POItems)
                                 .ThenInclude(i => i.POAddDeliverySchedules)
                                 .Include(itm => itm.POItems)
