@@ -413,6 +413,25 @@ namespace Tips.Grin.Api.Repository
 
             return binningQuantityList;
         }
+        public async Task<IEnumerable<BinningSPReportAvi>> GetBinningSPReportWithParamForAvi(string? ponumber, string? grinnumber, string? itemnumber,
+                                                                                                    string? projectnumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<BinningSPReportAvi>()
+            .FromSqlInterpolated($"CALL Binning_Report_With_Parameter_Avi({ponumber},{grinnumber},{itemnumber},{projectnumber})")
+            .ToList();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<BinningSPReportAvi>> GetBinningSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<BinningSPReportAvi>()
+                      .FromSqlInterpolated($"CALL Binning_Report_Withdate_Avi({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
 
     }
 }
