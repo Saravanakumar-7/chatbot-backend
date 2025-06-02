@@ -1644,7 +1644,28 @@ namespace Tips.Purchase.Api.Repository
             PoStatus[] status = { PoStatus.Open, PoStatus.PartiallyClosed };
 
             IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
-                                     .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.ProcurementType != "Service" &&
+                                     .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.PoType==PoType.General && x.ProcurementType != "Service" &&
+                                     (
+                                        (x.ApprovalCount == 4 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == true) ||
+                                        (x.ApprovalCount == 3 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == false) ||
+                                        (x.ApprovalCount == 2 && x.POApprovalI == true && x.POApprovalII == true)
+                                     )
+                                )
+                                    .Select(x => new PurchaseOrderIdNameListDto()
+                                    {
+                                        Id = x.Id,
+                                        PONumber = x.PONumber
+                                    }).ToListAsync();
+
+            return pONameListbyVendorId;
+
+        }
+        public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllKIT_PoNumberListByVendorIdForAvision(string vendorId)
+        {
+            PoStatus[] status = { PoStatus.Open, PoStatus.PartiallyClosed };
+
+            IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorId = await _tipsPurchaseDbContext.PurchaseOrders
+                                     .Where(x => x.VendorId == vendorId && status.Contains(x.PoStatus) && x.PoType == PoType.Kit && x.ProcurementType != "Service" &&
                                      (
                                         (x.ApprovalCount == 4 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == true) ||
                                         (x.ApprovalCount == 3 && x.POApprovalI == true && x.POApprovalII == true && x.POApprovalIII == true && x.POApprovalIV == false) ||

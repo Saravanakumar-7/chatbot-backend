@@ -44,7 +44,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrder([FromQuery] SearchParamess searchParammes, PoVersion poVersion);
         Task<IEnumerable<PurchaseOrder>> SearchPurchaseOrderDate([FromQuery] SearchDatesParams searchDatesParams, PoVersion poVersion);
         Task<IEnumerable<PurchaseOrderRevNoListDto>> GetAllRevisionNumberListByPoNumber(string poNumber);
-
+        Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllKIT_PoNumberListByVendorIdForAvision(string vendorId);
         Task<decimal> GetOpenPoQuantityByItemNumber(string itemNumber);
         Task<string> GeneratePONumberForAvision();
         Task <IEnumerable<PurchaseOrderUnitListSPReportWithParamForTrans>> GetPurchaseOrderUnitListSPReportWithParamForTrans(string itemNumber);
