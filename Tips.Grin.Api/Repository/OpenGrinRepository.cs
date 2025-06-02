@@ -43,16 +43,28 @@ namespace Tips.Grin.Api.Repository
 
             return result;
         }
-        public async Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithParamForTrans(string? openGrinNumber, string? senderName, string? receiptRefNo
+        public async Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithParamForTrans(string? itemNumber, string? openGrinNumber, string? senderName, string? receiptRefNo
                                                                                                                                          , string? ProjectNumber)
         {
             var result = _tipsGrinDbContext
             .Set<OpenGrinSpReportForTrans>()
-            .FromSqlInterpolated($"CALL Open_Grin_Report_withparameter_tras({openGrinNumber},{senderName},{receiptRefNo},{ProjectNumber})")
+            .FromSqlInterpolated($"CALL Open_Grin_Report_withparameter_tras({itemNumber},{openGrinNumber},{senderName},{receiptRefNo},{ProjectNumber})")
             .ToList();
 
             return result;
         }
+
+        public async Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithParamForAvi(string? openGrinNumber, string? senderName, string? receiptRefNo
+                                                                                                                                         , string? ProjectNumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<OpenGrinSpReportForTrans>()
+            .FromSqlInterpolated($"CALL Open_Grin_Report_withparameter_Avi({openGrinNumber},{senderName},{receiptRefNo},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+
         public async Task<IEnumerable<OpenGrin_SPReport>> GetOpenGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsGrinDbContext.Set<OpenGrin_SPReport>()
@@ -69,6 +81,16 @@ namespace Tips.Grin.Api.Repository
 
             return results;
         }
+
+        public async Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<OpenGrinSpReportForTrans>()
+                      .FromSqlInterpolated($"CALL Open_Grin_Report_withdate_Avi({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+
         public async Task<string> DeleteOpenGrin(OpenGrin openGrin)
         {
             Delete(openGrin);

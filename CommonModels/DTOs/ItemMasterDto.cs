@@ -491,6 +491,13 @@ namespace Entities.DTOs
         public string? Description { get; set; }
         public string? Uom { get; set; }
     }
+
+    public class ItemMasterAlterMtrPartNoDto
+    {
+        public string? ManufacturerPartNo { get; set; }
+        public string? Manufacturer { get; set; }
+    }
+
     public class ItemMasterSearchDto
     {
         public List<PartType> ItemType { get; set; }

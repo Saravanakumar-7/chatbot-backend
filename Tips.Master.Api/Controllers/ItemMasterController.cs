@@ -1708,6 +1708,34 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllItemMasterMftrNoList()
+        {
+            ServiceResponse<IEnumerable<ItemMasterAlterMtrPartNoDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterAlterMtrPartNoDto>>();
+            try
+            {
+                var itemMasterDetails = await _repository.ItemMasterRepository.GetAllItemMasterMftrNoList();
+                _logger.LogInfo("Returned all ItemMasterMftrNoList");
+                var result = _mapper.Map<IEnumerable<ItemMasterAlterMtrPartNoDto>>(itemMasterDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all  ItemMasterMftrNoList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllItemMasterMftrNoList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAllOpenGrinStatusTrueItemMasterIdNoList()
         {

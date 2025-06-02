@@ -454,14 +454,20 @@ namespace Tips.SalesService.Api.Repository
         }
         public async Task<IEnumerable<CustomerWiseTransactionSPReport>> GetCustomerWiseTransactionSPReportWithParam(string CustomerId)
         {
-            var result = _tipsSalesServiceDbContext
-            .Set<CustomerWiseTransactionSPReport>()
-            .FromSqlInterpolated($"CALL CustomerWise_Transaction_Report_WithParameter({CustomerId})")
-            .ToList();
+            //var result = _tipsSalesServiceDbContext
+            //.Set<CustomerWiseTransactionSPReport>()
+            //.FromSqlInterpolated($"CALL CustomerWise_Transaction_Report_WithParameter({CustomerId})")
+            //.ToList();
+            var result = await _tipsSalesServiceDbContext
+                        .Set<CustomerWiseTransactionSPReport>()
+                        .FromSqlInterpolated($"CALL CustomerWise_Transaction_Report_WithParameter({CustomerId})")
+                        .AsNoTracking()
+                        .ToListAsync();
 
             return result;
 
         }
+
         public async Task<IEnumerable<SOMonthlyConsumptionSPReport>> GetSOMonthlyConsumptionSPReportWithParam(string CustomerId)
         {
             var result = _tipsSalesServiceDbContext

@@ -39,13 +39,19 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithParam(string? GrinNumber, string? VendorName, string? PONumber, string? KPN, string? MPN, 
                                                                                                                             string? Warehouse, string? Location);
         Task<IEnumerable<GrinSPReportForTrans>> GetGrinSPReportWithParamForTrans(string? GrinNumber, string? VendorName, string? PONumber,
-                                                                                                    string? ItemNumber, string? MPN, string? Warehouse, string? Location,
-                                                                                                    string? ProjectNumber);
+                                                                                                    string? ItemNumber, string? MPN, string? ProjectNumber);
+        Task<IEnumerable<GrinSPReportForAvi>> GetGrinSPReportWithParamForAvi(string? GrinNumber, string? VendorName, string? PONumber,
+                                                                                                    string? ItemNumber, string? MPN, string? Warehouse, string? Location, string? ProjectNumber);
+
+        Task<IEnumerable<PoAndGrinUnitPriceSPReport>> GetPoAndGrinUnitPriceSPReportWithParam(string? GrinNumber, string? VendorName, string? PONumber,
+                                                                                                    string? ItemNumber, string? ProjectNumber);
         Task<PagedList<Grin_ReportSP>> GetGrinSPReport(PagingParameter pagingParameter);
         Task<PagedList<GrinSPReportForTrans>> GetGrinSPReportForTrans(PagingParameter pagingParameter);
         Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<GrinSPReportForTrans>> GetGrinSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<GrinSPReportForAvi>> GetGrinSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<PurchaseInventorySPReport>> GetPurchaseInventorySPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<PoAndGrinUnitPriceSPReport>> GetPoAndGrinUnitPriceSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<List<GrinComsumpReportDto>> GetGrinComsumptionDetialsByPartNos(List<string> PartNoListString);
     }
 }

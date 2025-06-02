@@ -47,7 +47,7 @@ namespace Tips.Master.Api.Controllers
             var ToSAHistory = _mapper.Map<List<SA_Weighted_AvgCost_History>>(SA_Weighted);
             await _repository.SA_Weighted_AvgCost_History_Repository.TranferToSAWeightedHistory(ToSAHistory);
             await _repository.SA_Weighted_AvgCostRepository.DeleteExistingData();
-            _repository.Save();
+            _repository.SaveAsync();
         }
         private async Task<decimal> Weighted_Calculation(string ItemNumber, decimal Version, Dictionary<string,decimal> ProductionBOMList)
         {
@@ -83,7 +83,7 @@ namespace Tips.Master.Api.Controllers
                 };
 
                 _repository.SA_Weighted_AvgCostRepository.CreateSA_Weighted_AvgCost(sA_Weighted_AvgCost);
-                _repository.Save();
+                _repository.SaveAsync();
             }
             else
             {

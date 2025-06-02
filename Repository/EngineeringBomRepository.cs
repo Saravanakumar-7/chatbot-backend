@@ -143,17 +143,22 @@ namespace Repository
         }
         public async Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom)
         {
+            
+            var getOldRevisionNumber = await _tipsMasterDbContext.EnggBoms
+                .Where(x => x.ItemNumber == enggBom.ItemNumber)
+                .OrderByDescending(x => x.BOMId)
+                .FirstOrDefaultAsync();
+
+            if (getOldRevisionNumber != null)
+            {
+                getOldRevisionNumber.LastModifiedBy = _createdBy;
+                getOldRevisionNumber.LastModifiedOn = DateTime.Now;
+                Update(getOldRevisionNumber);
+            }
+            //enggBom.RevisionNumber = getOldRevisionNumber.RevisionNumber;
             enggBom.CreatedBy = _createdBy;
             enggBom.CreatedOn = DateTime.Now;
             enggBom.Unit = _unitname;
-            var getOldRevisionNumber = _tipsMasterDbContext.EnggBoms
-                .Where(x => x.ItemNumber == enggBom.ItemNumber)
-                .OrderByDescending(x => x.BOMId)
-                .FirstOrDefault();
-            getOldRevisionNumber.LastModifiedBy = _createdBy;
-            getOldRevisionNumber.LastModifiedOn = DateTime.Now;
-            Update(getOldRevisionNumber);
-            enggBom.RevisionNumber = getOldRevisionNumber.RevisionNumber;
             var result = await Create(enggBom);
             return result;
 

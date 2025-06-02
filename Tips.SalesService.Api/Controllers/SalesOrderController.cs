@@ -5699,6 +5699,17 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
+
+                if (salesOrderDtoUpdate.SalesOrderItemsUpdateDtos == null || salesOrderDtoUpdate.SalesOrderItemsUpdateDtos.Count == 0)
+                {
+                    _logger.LogError($"SalesOrder ShortClose with SalesOrderItems hasn't been found from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesOrder ShortClose with SalesOrderItems hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+
                 if (!ModelState.IsValid)
                 {
                     _logger.LogError("Invalid  SalesOrder ShortClose object sent from client.");
@@ -5720,6 +5731,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
+              
                 var salesOrderDetails = _mapper.Map<SalesOrder>(salesOrderDtoUpdate);
                 var salesOrderItemsDto = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos;
                 var salesAdditionalChargesDto = salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos;

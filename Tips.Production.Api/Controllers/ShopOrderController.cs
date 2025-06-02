@@ -354,13 +354,13 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
-        [HttpGet] // Adjust your route as needed
-        public async Task<IActionResult> GetShopOrderSPReportWithDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetShopOrderSPReportWithDateForTrans([FromBody] ShopOrderReportWithDateDtoForTrans shopOrderReportWithDateDtoForTrans)
         {
             ServiceResponse<IEnumerable<ShopOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderSPReportForTrans>>();
             try
             {
-                var products = await _shopOrderRepository.GetShopOrderSPReportWithDateForTrans(FromDate, ToDate);
+                var products = await _shopOrderRepository.GetShopOrderSPReportWithDateForTrans(shopOrderReportWithDateDtoForTrans.FromDate, shopOrderReportWithDateDtoForTrans.ToDate, shopOrderReportWithDateDtoForTrans.Status);
 
                 if (products == null)
                 {
