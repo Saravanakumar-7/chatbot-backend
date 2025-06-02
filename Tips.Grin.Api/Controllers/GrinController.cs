@@ -2056,6 +2056,84 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> GetPoAndGrinUnitPriceSPReportWithParam([FromBody] PoAndGrinUnitPriceSPReportDto poAndGrinUnitPriceSPReportDto)
+        {
+            ServiceResponse<IEnumerable<PoAndGrinUnitPriceSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PoAndGrinUnitPriceSPReport>>();
+            try
+            {
+                var products = await _repository.GetPoAndGrinUnitPriceSPReportWithParam(poAndGrinUnitPriceSPReportDto.GrinNumber, poAndGrinUnitPriceSPReportDto.VendorName,
+                                                                            poAndGrinUnitPriceSPReportDto.PONumber, poAndGrinUnitPriceSPReportDto.ItemNumber,
+                                                                            poAndGrinUnitPriceSPReportDto.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PoAndGrinUnitPrice hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PoAndGrinUnitPrice hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"PoAndGrinUnitPrice Details Returned Successfully");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PoAndGrinUnitPrice Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetPoAndGrinUnitPriceSPReportWithParam API: \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetPoAndGrinUnitPriceSPReportWithParam API: \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetPoAndGrinUnitPriceSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<PoAndGrinUnitPriceSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PoAndGrinUnitPriceSPReport>>();
+            try
+            {
+                var products = await _repository.GetPoAndGrinUnitPriceSPReportWithDate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PoAndGrinUnitPrice hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PoAndGrinUnitPrice hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"PoAndGrinUnitPriceWithDate Details Returned Successfully");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PoAndGrinUnitPriceWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetPoAndGrinUnitPriceSPReportWithDate API: \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetPoAndGrinUnitPriceSPReportWithDate API: \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> GetPurchaseInventorySPReportWithParam([FromBody] PurchaseInventorySPReportDto purchaseInventorySPReportDto)
         {
             ServiceResponse<IEnumerable<PurchaseInventorySPReport>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseInventorySPReport>>();

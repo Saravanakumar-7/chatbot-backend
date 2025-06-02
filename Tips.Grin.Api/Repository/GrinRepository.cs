@@ -173,6 +173,17 @@ namespace Tips.Grin.Api.Repository
             return result;
         }
 
+        public async Task<IEnumerable<PoAndGrinUnitPriceSPReport>> GetPoAndGrinUnitPriceSPReportWithParam(string? GrinNumber, string? VendorName, string? PONumber,
+                                                                                                    string? ItemNumber, string? ProjectNumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<PoAndGrinUnitPriceSPReport>()
+            .FromSqlInterpolated($"CALL PO_unitprice_vs_GRIN_unitprice({GrinNumber},{VendorName},{PONumber},{ItemNumber},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+
         public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsGrinDbContext.Set<Grin_ReportSP>()
@@ -194,6 +205,15 @@ namespace Tips.Grin.Api.Repository
         {
             var results = _tipsGrinDbContext.Set<GrinSPReportForAvi>()
                       .FromSqlInterpolated($"CALL Grin_Report_withparameter_withdate_Avi({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+
+        public async Task<IEnumerable<PoAndGrinUnitPriceSPReport>> GetPoAndGrinUnitPriceSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<PoAndGrinUnitPriceSPReport>()
+                      .FromSqlInterpolated($"CALL PO_unitprice_vs_GRIN_unitprice_date({FromDate},{ToDate})")
                       .ToList();
 
             return results;
