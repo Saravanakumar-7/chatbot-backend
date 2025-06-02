@@ -9,14 +9,13 @@ namespace Tips.Grin.Api.Entities
     {
         [Key]
         public int Id { get; set; }
-        public string? PartNumber { get; set; }
+        public string PartNumber { get; set; }
         public string? MftrItemNumbers { get; set; }
-        public string? Description { get; set; }
-        public decimal? KitRevisionNo { get; set; }
+        public string Description { get; set; }
+        public decimal KitRevisionNo { get; set; }
         public string? DrawingRevNo { get; set; }
         public PartType PartType { get; set; }
         public string? UOM { get; set; }
-        public string? ProjectNumber { get; set; }
         [Precision(13, 3)]
         public decimal KitComponentBOMQty { get; set; }
         [Precision(13, 3)]
@@ -31,7 +30,7 @@ namespace Tips.Grin.Api.Entities
         public decimal BinnedQty { get; set; } = 0;
         [Precision(13, 3)]
         public decimal? AverageCost { get; set; }
-        public string? LotNumber { get; set; }
+        public string LotNumber { get; set; }
         public int KIT_GRIN_ProjectNumbersId { get; set; }
         public KIT_GRIN_ProjectNumbers? KIT_GRIN_ProjectNumbers { get; set; }
 

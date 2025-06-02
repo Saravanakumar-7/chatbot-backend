@@ -9,7 +9,7 @@ namespace Tips.Grin.Api.Entities
     {
         [Key]
         public int Id { get; set; }
-        public string? KIT_GrinNumber { get; set; }
+        public string KIT_GrinNumber { get; set; }
 
         [Required]
         public string VendorName { get; set; }

@@ -25,7 +25,9 @@ namespace Tips.Grin.Api.Repository
         {
             kIT_Binning.CreatedBy = _createdBy;
             kIT_Binning.CreatedOn = DateTime.Now;
-            kIT_Binning.KIT_BinningItems.Where(x => x.CreatedBy == null && x.CreatedOn == null).ToList().ForEach(x => { x.CreatedBy = _createdBy; x.CreatedOn = DateTime.Now; });
+            kIT_Binning.KIT_BinningItems.Where(x => x.CreatedBy == null && x.CreatedOn == null).ToList().ForEach(x => { x.CreatedBy = _createdBy; x.CreatedOn = DateTime.Now; 
+                x.KIT_BinningItemsLocation.Where(a => a.CreatedBy == null && a.CreatedOn == null).ToList().ForEach(a => { a.CreatedBy = _createdBy; a.CreatedOn = DateTime.Now; }); 
+            });
             kIT_Binning.Unit = _unitname;
             var result = await Create(kIT_Binning);
             return result.Id;
@@ -38,7 +40,14 @@ namespace Tips.Grin.Api.Repository
         {
             kIT_Binning.LastModifiedBy = _createdBy;
             kIT_Binning.LastModifiedOn = DateTime.Now;
-            kIT_Binning.KIT_BinningItems.Where(x => x.CreatedBy == null && x.CreatedOn == null).ToList().ForEach(x => { x.CreatedBy = _createdBy; x.CreatedOn = DateTime.Now; });
+            kIT_Binning.KIT_BinningItems.ForEach(x => {
+                if (x.CreatedBy == null && x.CreatedOn == null) { x.CreatedBy = _createdBy; x.CreatedOn = DateTime.Now; }
+                else { x.LastModifiedBy = _createdBy; x.LastModifiedOn = DateTime.Now; }
+                x.KIT_BinningItemsLocation.ForEach(a => {
+                    if (a.CreatedBy == null && a.CreatedOn == null) { a.CreatedBy = _createdBy; a.CreatedOn = DateTime.Now; }
+                    else { a.LastModifiedBy = _createdBy; a.LastModifiedOn = DateTime.Now; }
+                });
+            });
             kIT_Binning.Unit = _unitname;
             Update(kIT_Binning);
             return $"KIT_Binning of Id:{kIT_Binning.Id} is updated successfully";

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Newtonsoft.Json;
-using NPOI.SS.Formula.Functions;
 using System.Data;
 using System.Net;
 using System.Security.Claims;
@@ -714,7 +713,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateKIT_GRIN(int id, [FromBody] KIT_GRINUpdateDto kIT_GRINUpdateDto)
         {
-            ServiceResponse<GrinDto> serviceResponse = new ServiceResponse<GrinDto>();
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
             try
             {
                 if (kIT_GRINUpdateDto is null)
@@ -816,6 +815,132 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogError($"Error occured in GetAllKIT_GrinNumberForKIT_Binning:\n{ex.Message}\n{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error occured in GetAllKIT_GrinNumberForKIT_Binning:\n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetKIT_GRINDetailsForKIT_IQC([FromQuery] string KIT_GrinNumber)
+        {
+            ServiceResponse<KIT_GRINDto> serviceResponse = new ServiceResponse<KIT_GRINDto>();
+            try
+            {
+                var GrinDetailsbyId = await _repository.GetKIT_GrinByKIT_GrinNumber(KIT_GrinNumber);
+                if (GrinDetailsbyId == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"KIT_Grin with KIT_GrinNumber:{KIT_GrinNumber} hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"KIT_Grin with KIT_GrinNumber:{KIT_GrinNumber} hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                GrinDetailsbyId.KIT_GRINParts.RemoveAll(x=>x.AcceptedQty+x.RejectedQty==x.Qty);
+                GrinDetailsbyId.KIT_GRINParts.ForEach(a => a.KIT_GRIN_ProjectNumbers.RemoveAll(x => x.AcceptedQty + x.RejectedQty == x.ProjectQty));
+                var clientz = _clientFactory.CreateClient();
+                var tokenz = HttpContext.Request.Headers["Authorization"].ToString();
+                var jsonz = JsonConvert.SerializeObject(GrinDetailsbyId.KIT_GRINParts.Select(x => x.ItemNumber).ToList());
+                var dataz = new StringContent(jsonz, Encoding.UTF8, "application/json");
+                var requestz = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ItemMasterEnggAPI"],
+                    $"GetItemDetailsByItemNumberList"))
+                {
+                    Content = dataz
+                };
+                requestz.Headers.Add("Authorization", tokenz);
+                var itemMasterObjectResultz = await clientz.SendAsync(requestz);
+                if (itemMasterObjectResultz.StatusCode != HttpStatusCode.OK) throw new Exception("Data not Found in GetItemDetailsByItemNumberList");
+                var itemString1z = await itemMasterObjectResultz.Content.ReadAsStringAsync();
+                var ItemStringdetails1z = JsonConvert.DeserializeObject<ItemMasterDto>(itemString1z);
+                var PartsObject = ItemStringdetails1z.data;
+
+                var grin = _mapper.Map<KIT_GRINDto>(GrinDetailsbyId);
+                grin.KIT_GRINParts.ForEach(t =>
+                {
+                    var match = PartsObject.FirstOrDefault(x => x.ItemNumber == t.ItemNumber);
+                    t.DrawingNo = match?.DrawingNo;
+                    t.DocRet = match?.DocRet;
+                    t.RevNo = match?.RevNo;
+                    t.IsCocRequired = match?.IsCocRequired ?? false;
+                    t.IsRohsItem = match?.IsRohsItem ?? false;
+                    t.IsShelfLife = match?.IsShelfLife ?? false;
+                    t.IsReachItem = match?.IsReachItem ?? false;
+                });
+
+                serviceResponse.Data = grin;
+                serviceResponse.Message = $"Returned GetKIT_GRINDetailsForKIT_IQC for KIT_GrinNumber:{KIT_GrinNumber}";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in GetKIT_GRINDetailsForKIT_IQC for KIT_GrinNumber:{KIT_GrinNumber}:\n{ex.Message}\n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error occured in GetKIT_GRINDetailsForKIT_IQC action for KIT_GrinNumber:{KIT_GrinNumber}:\n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetKIT_GRINDetailsForKIT_Binning([FromQuery] string KIT_GrinNumber)
+        {
+            ServiceResponse<KIT_GRINDto> serviceResponse = new ServiceResponse<KIT_GRINDto>();
+            try
+            {
+                var GrinDetailsbyId = await _repository.GetKIT_GrinByKIT_GrinNumber(KIT_GrinNumber);
+                if (GrinDetailsbyId == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"KIT_Grin with KIT_GrinNumber:{KIT_GrinNumber} hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"KIT_Grin with KIT_GrinNumber:{KIT_GrinNumber} hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                GrinDetailsbyId.KIT_GRINParts.RemoveAll(x => x.AcceptedQty != x.BinnedQty);
+                GrinDetailsbyId.KIT_GRINParts.ForEach(a => a.KIT_GRIN_ProjectNumbers.RemoveAll(x => x.AcceptedQty != x.BinnedQty));
+                var clientz = _clientFactory.CreateClient();
+                var tokenz = HttpContext.Request.Headers["Authorization"].ToString();
+                var jsonz = JsonConvert.SerializeObject(GrinDetailsbyId.KIT_GRINParts.Select(x => x.ItemNumber).ToList());
+                var dataz = new StringContent(jsonz, Encoding.UTF8, "application/json");
+                var requestz = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ItemMasterEnggAPI"],
+                    $"GetItemDetailsByItemNumberList"))
+                {
+                    Content = dataz
+                };
+                requestz.Headers.Add("Authorization", tokenz);
+                var itemMasterObjectResultz = await clientz.SendAsync(requestz);
+                if (itemMasterObjectResultz.StatusCode != HttpStatusCode.OK) throw new Exception("Data not Found in GetItemDetailsByItemNumberList");
+                var itemString1z = await itemMasterObjectResultz.Content.ReadAsStringAsync();
+                var ItemStringdetails1z = JsonConvert.DeserializeObject<ItemMasterDto>(itemString1z);
+                var PartsObject = ItemStringdetails1z.data;
+
+                var grin = _mapper.Map<KIT_GRINDto>(GrinDetailsbyId);
+                grin.KIT_GRINParts.ForEach(t =>
+                {
+                    var match = PartsObject.FirstOrDefault(x => x.ItemNumber == t.ItemNumber);
+                    t.DrawingNo = match?.DrawingNo;
+                    t.DocRet = match?.DocRet;
+                    t.RevNo = match?.RevNo;
+                    t.IsCocRequired = match?.IsCocRequired ?? false;
+                    t.IsRohsItem = match?.IsRohsItem ?? false;
+                    t.IsShelfLife = match?.IsShelfLife ?? false;
+                    t.IsReachItem = match?.IsReachItem ?? false;
+                });
+
+                serviceResponse.Data = grin;
+                serviceResponse.Message = $"Returned GetKIT_GRINDetailsForKIT_Binning for KIT_GrinNumber:{KIT_GrinNumber}";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in GetKIT_GRINDetailsForKIT_Binning for KIT_GrinNumber:{KIT_GrinNumber}:\n{ex.Message}\n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error occured in GetKIT_GRINDetailsForKIT_Binning action for KIT_GrinNumber:{KIT_GrinNumber}:\n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

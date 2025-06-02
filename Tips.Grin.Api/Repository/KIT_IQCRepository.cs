@@ -39,7 +39,9 @@ namespace Tips.Grin.Api.Repository
         {
             kIT_IQC.LastModifiedBy = _createdBy;
             kIT_IQC.LastModifiedOn = DateTime.Now;
-            kIT_IQC.kIT_IQCItems.Where(x => x.CreatedBy == null && x.CreatedOn == null).ToList().ForEach(x => { x.CreatedBy = _createdBy; x.CreatedOn = DateTime.Now; });
+            kIT_IQC.kIT_IQCItems.ForEach(x => { if (x.CreatedBy == null && x.CreatedOn == null) { x.CreatedBy = _createdBy; x.CreatedOn = DateTime.Now; }
+                else { x.LastModifiedBy = _createdBy; x.LastModifiedOn = DateTime.Now; }
+            });
             kIT_IQC.Unit = _unitname;
             Update(kIT_IQC);
             return $"KIT_IQC of Id:{kIT_IQC.Id} is updated successfully";

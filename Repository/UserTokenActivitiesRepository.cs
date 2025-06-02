@@ -26,7 +26,7 @@ namespace Repository
                 Update(User);
                 return 0;
             }
-            else if (User.TokenIsActive == true || User.Validity > DateTime.UtcNow) return 1;
+            else if (User.TokenIsActive == true && User.Validity > DateTime.UtcNow) return 1;
             else return 0;
         }
         public async Task<UserTokenActivities?> GetUserTokenDetailsByUserId(int UserId)
