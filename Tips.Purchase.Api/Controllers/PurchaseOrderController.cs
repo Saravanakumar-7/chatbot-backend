@@ -1353,7 +1353,8 @@ namespace Tips.Purchase.Api.Controllers
                             {
                                 poItemDtos.ShortClosedQty = poItemHistoryReceivedQty.Sum(x => x.ShortClosedQty);
                             }
-                            poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
+
+                            poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDtos.POAddprojects);
                             poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
                             poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
                             poItemDtos.POConfirmationDates = _mapper.Map<List<PoConfirmationDateDto>>(poItemDetails.POConfirmationDates);
