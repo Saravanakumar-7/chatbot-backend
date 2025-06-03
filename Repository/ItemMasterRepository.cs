@@ -379,7 +379,7 @@ namespace Repository
         public async Task<IEnumerable<ItemMaster>> GetAllKitComponentItemList()
         {
             var itemmasterKitComponentDetails = await TipsMasterDbContext.ItemMasters
-                                   .Where(inv => (inv.ItemType == PartType.kitComponent) && inv.IsActive)
+                                   .Where(inv => (inv.ItemType == PartType.KitComponent) && inv.IsActive)
                                    .OrderByDescending(a => a.Id)
                                    .Include(t => t.ItemmasterAlternate)
                                    .Include(t => t.ItemMasterApprovedVendor)

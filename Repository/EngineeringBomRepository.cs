@@ -64,7 +64,7 @@ namespace Repository
                     sAFinalLandedandMoqPrice.SAFinalLandindPrice = sAFinalLandedandMoqPrice.SAFinalLandindPrice + ChildsAFinalLandedandMoqPrice.SAFinalLandindPrice;
                     sAFinalLandedandMoqPrice.SAFinalMoqcost = sAFinalLandedandMoqPrice.SAFinalMoqcost + ChildsAFinalLandedandMoqPrice.SAFinalMoqcost;
                 }
-                if (fgitem.PartType == PartType.PurchasePart)
+                if (fgitem.PartType == PartType.PurchasePart || fgitem.PartType == PartType.Kit)
                 {
                     foreach (var FPPdetails in rfqSourcingPPdetails)
                     {
@@ -115,7 +115,7 @@ namespace Repository
                     ChildsAFinalLandedandMoqPrice.SAFinalLandindPrice = TotalChildsAFinalLandedandMoqPrice.SAFinalLandindPrice + ChildsAFinalLandedandMoqPrice.SAFinalLandindPrice;
                     ChildsAFinalLandedandMoqPrice.SAFinalMoqcost = TotalChildsAFinalLandedandMoqPrice.SAFinalMoqcost + ChildsAFinalLandedandMoqPrice.SAFinalMoqcost;
                 }
-                if (saitem.PartType == PartType.PurchasePart)
+                if (saitem.PartType == PartType.PurchasePart || saitem.PartType == PartType.Kit)
                 {
                     foreach (var SPPdetails in rfqSourcingPPdetails)
                     {
@@ -404,7 +404,7 @@ namespace Repository
                 {
                     foreach (var childofFG in fgbomdetails)
                     {
-                        if (childofFG.PartType == PartType.PurchasePart)
+                        if (childofFG.PartType == PartType.PurchasePart || childofFG.PartType == PartType.Kit)
                         {
                             int flag = 0;
                             foreach (var existingPP in enggBomFGItemNumberWithQtyDtos)
@@ -533,7 +533,7 @@ namespace Repository
             {
                 foreach (var childofSA in sabomdetails)
                 {
-                    if (childofSA.PartType == PartType.PurchasePart)
+                    if (childofSA.PartType == PartType.PurchasePart || childofSA.PartType == PartType.Kit)
                     {
                         int flag = 0;
                         foreach (var existingPP in enggBomSAItemNumberWithQtyDtos)
@@ -598,7 +598,7 @@ namespace Repository
             {
                 foreach (var childofKit in kitbomdetails)
                 {
-                    if (childofKit.PartType == PartType.kitComponent)
+                    if (childofKit.PartType == PartType.KitComponent)
                     {
                         int flag = 0;
                         foreach (var existingKitComponent in enggBomKitItemNumberWithQtyDtos)

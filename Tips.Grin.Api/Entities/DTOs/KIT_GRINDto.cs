@@ -154,7 +154,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? GateEntryNo { get; set; }
         public string? KIT_GrinDocuments { get; set; }
         public bool TallyStatus { get; set; } = false;
-        public List<KIT_GRINUpdateDto> KIT_GRINParts { get; set; }
+        public List<KIT_GRINPartsUpdateDto> KIT_GRINParts { get; set; }
         public List<KIT_GRIN_OtherChargesUpdateDto>? KIT_GRIN_OtherCharges { get; set; }
     }
 }
