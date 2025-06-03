@@ -17,6 +17,6 @@ namespace Tips.Purchase.Api.Entities.Enums
         Tools,
         CapitalGoods,
         Kit,
-        kitComponent
+        KitComponent
     }
 }

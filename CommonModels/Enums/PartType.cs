@@ -17,6 +17,6 @@ namespace Entities.Enums
         Tools,
         CapitalGoods,
         Kit,
-        kitComponent        
+        KitComponent        
     }
 }
