@@ -1957,8 +1957,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 var products = await _repository.GetGrinSPReportWithParamForTrans(grinReportWithParam.GrinNumber, grinReportWithParam.VendorName,
                                                                             grinReportWithParam.PONumber, grinReportWithParam.ItemNumber,
-                                                                            grinReportWithParam.MPN, grinReportWithParam.Warehouse,
-                                                                            grinReportWithParam.Location, grinReportWithParam.ProjectNumber);
+                                                                            grinReportWithParam.MPN,grinReportWithParam.ProjectNumber);
 
                 if (products == null)
                 {
@@ -1984,6 +1983,125 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetGrinSPReportWithParamForAvi([FromBody] GrinReportWithParamForAviDto grinReportWithParam)
+        {
+            ServiceResponse<IEnumerable<GrinSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<GrinSPReportForAvi>>();
+            try
+            {
+                var products = await _repository.GetGrinSPReportWithParamForAvi(grinReportWithParam.GrinNumber, grinReportWithParam.VendorName,
+                                                                            grinReportWithParam.PONumber, grinReportWithParam.ItemNumber,
+                                                                            grinReportWithParam.MPN, grinReportWithParam.Warehouse, grinReportWithParam.Location,
+                                                                            grinReportWithParam.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Grin hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Grin hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Grin Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithParamForAvi action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetPoAndGrinUnitPriceSPReportWithParam([FromBody] PoAndGrinUnitPriceSPReportDto poAndGrinUnitPriceSPReportDto)
+        {
+            ServiceResponse<IEnumerable<PoAndGrinUnitPriceSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PoAndGrinUnitPriceSPReport>>();
+            try
+            {
+                var products = await _repository.GetPoAndGrinUnitPriceSPReportWithParam(poAndGrinUnitPriceSPReportDto.GrinNumber, poAndGrinUnitPriceSPReportDto.VendorName,
+                                                                            poAndGrinUnitPriceSPReportDto.PONumber, poAndGrinUnitPriceSPReportDto.ItemNumber,
+                                                                            poAndGrinUnitPriceSPReportDto.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PoAndGrinUnitPrice hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PoAndGrinUnitPrice hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"PoAndGrinUnitPrice Details Returned Successfully");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PoAndGrinUnitPrice Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetPoAndGrinUnitPriceSPReportWithParam API: \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetPoAndGrinUnitPriceSPReportWithParam API: \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetPoAndGrinUnitPriceSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<PoAndGrinUnitPriceSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PoAndGrinUnitPriceSPReport>>();
+            try
+            {
+                var products = await _repository.GetPoAndGrinUnitPriceSPReportWithDate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"PoAndGrinUnitPrice hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"PoAndGrinUnitPrice hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"PoAndGrinUnitPriceWithDate Details Returned Successfully");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned PoAndGrinUnitPriceWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetPoAndGrinUnitPriceSPReportWithDate API: \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetPoAndGrinUnitPriceSPReportWithDate API: \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2159,6 +2277,43 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithDateForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetGrinSPReportWithDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<GrinSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<GrinSPReportForAvi>>();
+            try
+            {
+                var products = await _repository.GetGrinSPReportWithDateForAvi(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Grin hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Grin hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned GetGrinSPReportWithDateForAvi Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithDateForAvi action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

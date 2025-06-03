@@ -152,16 +152,38 @@ namespace Tips.Grin.Api.Repository
             return result;
         }
         public async Task<IEnumerable<GrinSPReportForTrans>> GetGrinSPReportWithParamForTrans(string? GrinNumber, string? VendorName, string? PONumber,
-                                                                                                    string? ItemNumber, string? MPN, string? Warehouse, string? Location,
-                                                                                                    string? ProjectNumber)
+                                                                                                    string? ItemNumber, string? MPN, string? ProjectNumber)
         {
             var result = _tipsGrinDbContext
             .Set<GrinSPReportForTrans>()
-            .FromSqlInterpolated($"CALL Grin_Report_withparameter_tras({GrinNumber},{VendorName},{PONumber},{ItemNumber},{MPN},{Warehouse},{Location},{ProjectNumber})")
+            .FromSqlInterpolated($"CALL Grin_Report_withparameter_tras({GrinNumber},{VendorName},{PONumber},{ItemNumber},{MPN},{ProjectNumber})")
             .ToList();
 
             return result;
         }
+
+        public async Task<IEnumerable<GrinSPReportForAvi>> GetGrinSPReportWithParamForAvi(string? GrinNumber, string? VendorName, string? PONumber,
+                                                                                                    string? ItemNumber, string? MPN, string? Warehouse, string? Location, string? ProjectNumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<GrinSPReportForAvi>()
+            .FromSqlInterpolated($"CALL Grin_Report_withparameter_Avi({GrinNumber},{VendorName},{PONumber},{ItemNumber},{MPN},{Warehouse},{Location},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<PoAndGrinUnitPriceSPReport>> GetPoAndGrinUnitPriceSPReportWithParam(string? GrinNumber, string? VendorName, string? PONumber,
+                                                                                                    string? ItemNumber, string? ProjectNumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<PoAndGrinUnitPriceSPReport>()
+            .FromSqlInterpolated($"CALL PO_unitprice_vs_GRIN_unitprice({GrinNumber},{VendorName},{PONumber},{ItemNumber},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+
         public async Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsGrinDbContext.Set<Grin_ReportSP>()
@@ -174,6 +196,24 @@ namespace Tips.Grin.Api.Repository
         {
             var results = _tipsGrinDbContext.Set<GrinSPReportForTrans>()
                       .FromSqlInterpolated($"CALL Grin_Report_withparameter_withdate_tras({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+
+        public async Task<IEnumerable<GrinSPReportForAvi>> GetGrinSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<GrinSPReportForAvi>()
+                      .FromSqlInterpolated($"CALL Grin_Report_withparameter_withdate_Avi({FromDate},{ToDate})")
+                      .ToList();
+
+            return results;
+        }
+
+        public async Task<IEnumerable<PoAndGrinUnitPriceSPReport>> GetPoAndGrinUnitPriceSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<PoAndGrinUnitPriceSPReport>()
+                      .FromSqlInterpolated($"CALL PO_unitprice_vs_GRIN_unitprice_date({FromDate},{ToDate})")
                       .ToList();
 
             return results;

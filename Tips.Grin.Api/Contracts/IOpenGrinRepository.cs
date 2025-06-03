@@ -14,7 +14,6 @@ namespace Tips.Grin.Api.Contracts
         Task<string> GenerateOpenGrinNumber();
         Task<OpenGrin> CreateOpenGrin(OpenGrin openGrin);
         Task<string> DeleteOpenGrin(OpenGrin openGrin);
-        Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
         Task<OpenGrinDetails> GetOpenGrinPartDetailsbyId(int id);
         Task<OpenGrinParts> GetOpenGrinPartsbyId(int id);
         Task<IEnumerable<OpenGrin>> GetAllOpenGrinWithItems(OpenGrinSearchDto openGrinSearchDto);
@@ -25,9 +24,13 @@ namespace Tips.Grin.Api.Contracts
         Task<PagedList<OpenGrin_SPReport>> GetOpenGrinSPReport(PagingParameter pagingParameter);
         Task<PagedList<OpenGrinSpReportForTrans>> GetOpenGrinSPReportForTrans(PagingParameter pagingParameter);
         Task<IEnumerable<OpenGrin_SPReport>> GetOpenGrinSPReportWithParam(string? openGrinNumber, string? senderName, string? receiptRefNo);
-        Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithParamForTrans(string? openGrinNumber, string? senderName, string? receiptRefNo
+        Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithParamForTrans(string? itemNumber, string? openGrinNumber, string? senderName, string? receiptRefNo
+                                                                                                                                         , string? ProjectNumber);
+        Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithParamForAvi(string? openGrinNumber, string? senderName, string? receiptRefNo
                                                                                                                                          , string? ProjectNumber);
         Task<IEnumerable<OpenGrin_SPReport>> GetOpenGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<OpenGrinPartSORefDto>> GetAllOpenGrinSORefDetails();
     }
 }

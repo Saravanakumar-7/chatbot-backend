@@ -17,38 +17,23 @@ namespace Tips.Grin.Api.Entities
         public DateTime? InvoiceDate { get; set; }
         public string? ProjectNumber { get; set; }
         public string? ItemNumber { get; set; }
-        public string? MPN { get; set; }
         public string? ItemDescription { get; set; }
+        public string? MPN { get; set; }
         public string? ManufactureBatchNumber { get; set; }
-        public string? LotNumber { get; set; }
-        [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }
-        public string? UOC { get; set; }
-
-        [Precision(18, 3)]
         public decimal? Qty { get; set; }
-
-        [Precision(13, 3)]
-        public decimal? AcceptedQty { get; set; }
+        public decimal? ProjectAcceptedQty { get; set; }
+        public string? LotNumber { get; set; }
+        public string? UOC { get; set; }
         public string? UOM { get; set; }
-
-        [Precision(13, 3)]
         public decimal? SGST { get; set; }
-
-        [Precision(13, 3)]
-        public decimal? IGST { get; set; }
-
-        [Precision(13, 3)]
         public decimal? CGST { get; set; }
-
-        [Precision(13, 3)]
+        public decimal? IGST { get; set; }
         public decimal? UTGST { get; set; }
         public decimal? totalvalue { get; set; }
-        public string? Warehouse { get; set; }
-        public string? Location { get; set; }
         public string? Remarks { get; set; }
-        public decimal? ProjectQty{ get; set; }
         public bool? TallyStatus { get; set; }
-        public string? BENumber { get; set; }    
+        public string? BENumber { get; set; }
+        public decimal? GrinAcceptedQty { get; set; } 
     }
 }

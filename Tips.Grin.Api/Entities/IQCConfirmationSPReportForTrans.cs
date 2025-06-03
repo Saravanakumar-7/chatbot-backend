@@ -3,9 +3,9 @@
     public class IQCConfirmationSPReportForTrans
     {
         public string? GrinNumber { get; set; }
-        public DateTime? GrinDate { get; set; }
         public string? VendorName { get; set; }
         public string? InvoiceNumber { get; set; }
+        public DateTime? IqcClearedDate { get; set; }
         public DateTime? InvoiceDate { get; set; }
         public decimal? InvoiceValue { get; set; }
         public string? PONumber { get; set; }
@@ -26,7 +26,6 @@
         public int? Status { get; set; }
         public string? Remarks { get; set; }
         public decimal? TotalInvoiceValue { get; set; }
-        public DateTime? IQCDate { get; set; }
         public string? AWBNumber1 { get; set; }
         public DateTime? AWBDate1 { get; set; }
         public decimal? ReceivedQty { get; set; }

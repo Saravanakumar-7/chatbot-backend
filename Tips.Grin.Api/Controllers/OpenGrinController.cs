@@ -226,7 +226,7 @@ namespace Tips.Grin.Api.Controllers
             ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>>();
             try
             {
-                var products = await _openGrinRepository.GetOpenGrinSPReportWithParamForTrans(openGrinReportWithParamDto.OpenGrinNumber, openGrinReportWithParamDto.SenderName,
+                var products = await _openGrinRepository.GetOpenGrinSPReportWithParamForTrans(openGrinReportWithParamDto.ItemNumber, openGrinReportWithParamDto.OpenGrinNumber, openGrinReportWithParamDto.SenderName,
                                                                                           openGrinReportWithParamDto.ReceiptRefNo, openGrinReportWithParamDto.ProjectNumber);
 
                 if (products == null)
@@ -290,6 +290,82 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside GetOpenGrinSPReportWithDateForTrans action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetOpenGrinSPReportWithParamForAvi([FromBody] OpenGrinReportWithParamForAviDto openGrinReportWithParamDto)
+        {
+            ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>>();
+            try
+            {
+                var products = await _openGrinRepository.GetOpenGrinSPReportWithParamForAvi(openGrinReportWithParamDto.OpenGrinNumber, openGrinReportWithParamDto.SenderName,
+                                                                                          openGrinReportWithParamDto.ReceiptRefNo, openGrinReportWithParamDto.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Grin hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Grin hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OpenGrinSPReportWithParamForAvi Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetOpenGrinSPReportWithParamForAvi action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetOpenGrinSPReportWithDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>>();
+            try
+            {
+                var products = await _openGrinRepository.GetOpenGrinSPReportWithDateForAvi(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OpenGrin hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OpenGrin hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OpenGrinSPReportWithDateForAvi Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetOpenGrinSPReportWithDateForAvi action";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

@@ -79,7 +79,7 @@ namespace Tips.Production.Api.Repository
             return result;
         }
         public async Task<IEnumerable<ShopOrderSPReportForTrans>> GetShopOrderSPReportWithParamForTrans(string? WorkOrderNumber, string? projectType,
-                                                                                                 string? projectNo, string? salesOrderNo, string? KPN, string? MPN,int? Status)
+                                                                                                 string? projectNo, string? salesOrderNo, string? KPN, string? MPN,string? Status)
         {
             var result = _tipsProductionDbContext
             .Set<ShopOrderSPReportForTrans>()
@@ -114,10 +114,10 @@ namespace Tips.Production.Api.Repository
 
             return results;
         }
-        public async Task<IEnumerable<ShopOrderSPReportForTrans>> GetShopOrderSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        public async Task<IEnumerable<ShopOrderSPReportForTrans>> GetShopOrderSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate, string Status)
         {
             var results = _tipsProductionDbContext.Set<ShopOrderSPReportForTrans>()
-                      .FromSqlInterpolated($"Shop_Order_Report_withparameter_withdate_tras({FromDate},{ToDate})")
+                      .FromSqlInterpolated($"Shop_Order_Report_withparameter_withdate_tras({FromDate},{ToDate},{Status})")
                       .ToList();
 
             return results;

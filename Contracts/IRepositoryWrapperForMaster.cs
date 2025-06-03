@@ -159,6 +159,6 @@ namespace Contracts
         IPrioritizeRepository PrioritizeRepository { get; }
         IUserTokenActivitiesRepository UserTokenActivitiesRepository { get; }
         void SaveAsync();
-        void Save();
+        //void Save();
     }
 }

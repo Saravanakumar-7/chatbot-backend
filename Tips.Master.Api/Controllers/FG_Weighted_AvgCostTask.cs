@@ -73,7 +73,7 @@ namespace Tips.Master.Api.Controllers
                 };
 
                 await _repository.FG_Weighted_AvgCostRepository.CreateFG_Weighted_AvgCost(fgWeightedAvgCost);
-                _repository.Save();
+                _repository.SaveAsync();
             }
         }
         private async void TransferCurrent_FG_Weighted_AvgCost_TO_FG_Weighted_AvgCost_History()
@@ -82,7 +82,7 @@ namespace Tips.Master.Api.Controllers
             var ToFGHistory = _mapper.Map<List<FG_Weighted_AvgCost_History>>(FG_Weighted);
             await _repository.FG_Weighted_AvgCost_History_Repository.TranferToFGWeightedHistory(ToFGHistory);
             await _repository.FG_Weighted_AvgCostRepository.DeleteExistingData();
-            _repository.Save();
+            _repository.SaveAsync();
         }
 
         //[HttpPost]

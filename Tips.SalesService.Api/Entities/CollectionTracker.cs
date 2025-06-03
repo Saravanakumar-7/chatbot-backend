@@ -11,6 +11,7 @@
         public decimal AlreadyRecievedWithPercentage { get; set; }
         public string? Remarks { get; set; }
         public string PaymentMode { get; set; }
+        public string PaymentType { get; set; }
         public string PaymentRefNo { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }

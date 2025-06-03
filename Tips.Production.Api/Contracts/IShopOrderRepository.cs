@@ -46,12 +46,12 @@ namespace Tips.Production.Api.Contracts
         Task<IEnumerable<ShopOrderNumberSPReport>> GetShopOrderSPReportWithParam(string? shopOrderNo, string? projectType,
                                                                                                   string? projectNo, string? salesOrderNo, string? KPN, string? MPN);
         Task<IEnumerable<ShopOrderSPReportForTrans>> GetShopOrderSPReportWithParamForTrans(string? WorkOrderNumber, string? projectType,
-                                                                                                 string? projectNo, string? salesOrderNo, string? KPN, string? MPN, int? Status);
+                                                                                                 string? projectNo, string? salesOrderNo, string? KPN, string? MPN, string? Status);
         Task<IEnumerable<ShopOrderNumberSPReportForAvi>> GetShopOrderSPReportWithParamForAvi(string? shopOrderNo, string? projectType,
                                                                                                  string? projectNo, string? salesOrderNo, string? KPN, string? MPN);
         Task<IEnumerable<ShopOrderNumberSPReport>> GetShopOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<ShopOrderNumberSPReportForAvi>> GetShopOrderSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate);
-        Task<IEnumerable<ShopOrderSPReportForTrans>> GetShopOrderSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<ShopOrderSPReportForTrans>> GetShopOrderSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate, string Status);
         Task<IEnumerable<ShopOrderWipQtyDto>> GetShopOrderWipQtyByProjectNo(List<string> itemNumberList,string projectNo);
         Task<ShopOrderWipQtyDto> GetSAShopOrderWipQtyByProjectNo(string itemNumber, string projectNo);
         public void SaveAsync();

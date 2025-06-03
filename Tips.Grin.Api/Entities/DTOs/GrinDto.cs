@@ -446,10 +446,57 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string PONumber { get; set; }
         public string ItemNumber { get; set; }
         public string MPN { get; set; }
+        public string ProjectNumber { get; set; }
+
+    }
+
+    public class GrinReportWithParamForAviDto
+    {
+        public string GrinNumber { get; set; }
+        public string VendorName { get; set; }
+        public string PONumber { get; set; }
+        public string ItemNumber { get; set; }
+        public string MPN { get; set; }
         public string Warehouse { get; set; }
         public string Location { get; set; }
         public string ProjectNumber { get; set; }
 
+    }
+    public class GrinSPReportForAvi
+    {
+        public string? PONumber { get; set; }
+        public DateTime? PODate { get; set; }
+        public string? GrinNumber { get; set; }
+        public DateTime? GrinDate { get; set; }
+        public string? GateEntryNo { get; set; }
+        public DateTime? GateEntryDate { get; set; }
+        public string? VendorName { get; set; }
+        public string? VendorId { get; set; }
+        public string? VendorAddress { get; set; }
+        public string? InvoiceNumber { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ItemDescription { get; set; }
+        public string? MPN { get; set; }
+        public string? ManufactureBatchNumber { get; set; }
+        public string? LotNumber { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public decimal? Qty { get; set; }
+        public decimal? AcceptedQty { get; set; }
+        public string? UOC { get; set; }
+        public string? UOM { get; set; }
+        public decimal? SGST { get; set; }
+        public decimal? CGST { get; set; }
+        public decimal? IGST { get; set; }
+        public decimal? UTGST { get; set; }
+        public decimal? totalvalue { get; set; }
+        public string? Remarks { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public decimal? ProjectQty { get; set; }
+        public bool? TallyStatus { get; set; }
+        public string? BENumber { get; set; }
     }
     public class GrinIQCConfirmationSaveDto
     {
@@ -600,6 +647,35 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? Doc_or_AirWay_BillNo { get; set; }
         public string? DocDate { get; set; }
         public string? Transporter_ID { get; set; }
+    }
+    public class PoAndGrinUnitPriceSPReportDto
+    {
+        public string? GrinNumber { get; set; }
+        public string? VendorName { get; set; }
+        public string? PONumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+
+    }
+    public class PoAndGrinUnitPriceSPReport
+    {
+        public string? PONumber { get; set; }
+        public string? PartNumber { get; set; }
+        public string? MPN { get; set; }
+        public string? Description { get; set; }
+        public decimal? POQty { get; set; }
+        public string? POUOM { get; set; }
+        public decimal? POUnitPrice { get; set; }
+        public string? POUOC { get; set; }
+        public string? GrinNumber { get; set; }
+        public decimal? GRINQty { get; set; }
+        public string? GRINUOM { get; set; }
+        public decimal? GRINUnitPrice { get; set; }
+        public string? GRINUOC { get; set; }
+        public decimal? UnitPriceDifference { get; set; }
+        public string? projectnumber { get; set; }
+        public string? VendorName { get; set; }
+        public DateTime? grindate { get; set; }
     }
 
 

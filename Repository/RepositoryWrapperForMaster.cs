@@ -1470,11 +1470,11 @@ namespace Repository
 
 
 
+        //public void SaveAsync()
+        //{
+        //    _tipsMasterDbContext.SaveChangesAsync();
+        //}
         public void SaveAsync()
-        {
-            _tipsMasterDbContext.SaveChangesAsync();
-        }
-        public void Save()
         {
             _tipsMasterDbContext.SaveChanges();
         }
