@@ -79,6 +79,7 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
+
         public async Task<IEnumerable<SoSummaryQuotationDto>> GetSoSummaryQuotationSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsSalesServiceDbContext.Set<SoSummaryQuotationDto>()
@@ -88,6 +89,28 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
+
+        public async Task<IEnumerable<QuoteRevNoSPReportParam>> GetAllQuoteRevisionSPReportWithParam(string? LeadId, string? QuoteNumber, string? ItemNumber)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<QuoteRevNoSPReportParam>()
+            .FromSqlInterpolated($"CALL All_Revision_Quote_report({LeadId},{QuoteNumber},{ItemNumber})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<QuoteRevNoSPReportParam>> GetAllQuoteRevisionSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<QuoteRevNoSPReportParam>()
+                        .FromSqlInterpolated($"CALL All_Revision_Quote_report_date({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+
         public async Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithParam(string? CustomerId,string? QuoteNumber,string? QuotationVersionNo)
         {
             var result = await _tipsSalesServiceDbContext

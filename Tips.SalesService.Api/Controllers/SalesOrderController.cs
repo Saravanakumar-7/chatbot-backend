@@ -6745,6 +6745,83 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetAllSalesRevisionSPReportWithParam([FromBody] SalesRevNoSPReportParamDTO salesRevNoSPResportParamDTO)
+
+        {
+            ServiceResponse<IEnumerable<SalesRevNoSPReportParam>> serviceResponse = new ServiceResponse<IEnumerable<SalesRevNoSPReportParam>>();
+            try
+            {
+                var products = await _repository.GetAllSalesRevisionSPReportWithParam(salesRevNoSPResportParamDTO.LeadId, salesRevNoSPResportParamDTO.SalesOrderNumber, salesRevNoSPResportParamDTO.ItemNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesRevisionSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesRevisionSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned All SalesRevisionSPReport Successfully");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned All SalesRevisionSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllSalesRevisionSPReportWithParam API : \n{ex.Message} \n{ex.InnerException}"); ;
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllSalesRevisionSPReportWithParam API : \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetAllSalesRevisionSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<SalesRevNoSPReportParam>> serviceResponse = new ServiceResponse<IEnumerable<SalesRevNoSPReportParam>>();
+            try
+            {
+                var products = await _repository.GetAllSalesRevisionSPReportWithDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesRevisionSPReportWithDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesRevisionSPReportWithDate hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned All SalesRevisionSPReportWithDate Successfully");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned All SalesRevisionSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllSalesRevisionSPReportWithDate API : \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllSalesRevisionSPReportWithDate API : \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
         //[HttpGet]
         //public async Task<IActionResult> GetSalesOrderNoDetailsByCustomerId(string Customerid)
         //{

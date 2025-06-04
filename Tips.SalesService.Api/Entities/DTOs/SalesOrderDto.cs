@@ -904,5 +904,32 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public string? CustomerId { get; set; }
     }
+    public class SalesRevNoSPReportParamDTO
+    {
+        public string? LeadId { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? ItemNumber { get; set; }
+    }
+    public class SalesRevNoSPReportParam
+    {
+        public string? LeadId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public int? RevisionNumber { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+        public DateTime? created_date { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? OrderType { get; set; }
+        public string? KPN { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public decimal? OrderQty { get; set; }
+        public string? Discount { get; set; }
+        public double? DiscountValue { get; set; }
+        public double? NetQuote_PostDiscount { get; set; }
+        public decimal? TotalAmountWithInstallationCharges { get; set; }
+        public decimal? TotalFinalAmount { get; set; }
+    }
+
 
 }

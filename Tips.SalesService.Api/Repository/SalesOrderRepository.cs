@@ -335,6 +335,28 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
+
+        public async Task<IEnumerable<SalesRevNoSPReportParam>> GetAllSalesRevisionSPReportWithParam(string? LeadId, string? SalesOrderNumber, string? ItemNumber)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SalesRevNoSPReportParam>()
+            .FromSqlInterpolated($"CALL All_Revision_Sales_Order_Report({LeadId},{SalesOrderNumber},{ItemNumber})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<SalesRevNoSPReportParam>> GetAllSalesRevisionSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<SalesRevNoSPReportParam>()
+                        .FromSqlInterpolated($"CALL All_Revision_Sales_Order_Report_Date({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+
         public async Task<IEnumerable<RfqSalesOrderSPReport>> GetRfqSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus, string CustomerId)
         {
             var result = _tipsSalesServiceDbContext
