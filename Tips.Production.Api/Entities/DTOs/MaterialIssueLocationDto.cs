@@ -9,6 +9,8 @@
         public string? Location { get; set; }
         public decimal? LocationStock { get; set; }
         public decimal? DistributingQty { get; set; }
+        public DateTime? IssuedOn { get; set; }
+        public string? IssuedBy { get; set; }
     }
     public class MaterialIssueLocationPostDto
     {
@@ -27,6 +29,8 @@
         public string? Location { get; set; }
         public decimal? LocationStock { get; set; }
         public decimal? DistributingQty { get; set; }
+        public DateTime? IssuedOn { get; set; }
+        public string? IssuedBy { get; set; }
     }
     public class IssueMaterialIssueLocationUpdateDto
     {
@@ -36,5 +40,7 @@
         public string Location { get; set; }
         public decimal? LocationStock { get; set; }
         public decimal DistributingQty { get; set; }
+        public DateTime? IssuedOn { get; set; }
+        public string? IssuedBy { get; set; }
     }
 }

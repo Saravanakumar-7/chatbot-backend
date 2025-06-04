@@ -13,7 +13,9 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal LocationStock { get; set; }
-        public bool IsMRNIssueDone { get; set; } 
+        public bool IsMRNIssueDone { get; set; }
+        public DateTime? IssuedOn { get; set; }
+        public string? IssuedBy { get; set; }
     }
     public class MRNWarehouseDetailsPostDto
     {
@@ -24,7 +26,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal LocationStock { get; set; }
-        public bool IsMRNIssueDone { get; set; } 
+        public bool IsMRNIssueDone { get; set; }
     }
     public class MRNWarehouseDetailsUpdateDto
     {
@@ -37,6 +39,8 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal LocationStock { get; set; }
-        public bool IsMRNIssueDone { get; set; } 
+        public bool IsMRNIssueDone { get; set; }
+        public DateTime? IssuedOn { get; set; }
+        public string? IssuedBy { get; set; }
     }
 }

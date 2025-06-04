@@ -16,6 +16,8 @@ namespace Tips.Production.Api.Entities
         public decimal LocationStock { get; set; }
         public bool IsMRIssueDone { get; set; } 
         public string? SerialNo { get; set; }
+        public DateTime? IssuedOn { get; set; }
+        public string? IssuedBy { get; set; }
         public int? MaterialRequestItemsId { get; set; }
         public MaterialRequestItems? MaterialRequestItems { get; set; }
     }

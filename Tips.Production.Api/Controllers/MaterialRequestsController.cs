@@ -10,6 +10,8 @@ using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.Enums;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using System.Security.Claims;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,8 +30,11 @@ namespace Tips.Production.Api.Controllers
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
         private TipsProductionDbContext _tipsProductionDbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
 
-        public MaterialRequestsController(IHttpClientFactory clientFactory, TipsProductionDbContext repositoryContext, IConfiguration config, HttpClient httpClient,IMaterialRequestsRepository materialRequestRepository, IMapper mapper, ILoggerManager logger)
+        public MaterialRequestsController(IHttpClientFactory clientFactory, TipsProductionDbContext repositoryContext, IConfiguration config, HttpClient httpClient,IMaterialRequestsRepository materialRequestRepository, IMapper mapper, ILoggerManager logger, IHttpContextAccessor httpContextAccessor)
         {
             _materialRequestRepository = materialRequestRepository;
             _mapper = mapper;
@@ -38,6 +43,10 @@ namespace Tips.Production.Api.Controllers
             _config = config;
             _clientFactory = clientFactory;
             _tipsProductionDbContext = repositoryContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
 
@@ -1061,6 +1070,11 @@ namespace Tips.Production.Api.Controllers
                     MaterialRequestItems materialItemDetail = _mapper.Map<MaterialRequestItems>(materialReqItemDto[i]);
                     materialItemDetail.Id = 0;
                     List<MRStockDetails> mrStockDetails = _mapper.Map<List<MRStockDetails>>(materialReqItemDto[i].MRStockDetails);
+                    foreach (var item in mrStockDetails)
+                    {
+                        item.IssuedOn = DateTime.Now;
+                        item.IssuedBy = _createdBy;
+                    }
                     materialItemDetail.MRStockDetails = mrStockDetails;
                     var issuestock = mrStockDetails.Select(x => x.Qty).ToArray();
                     materialItemDetail.IssuedQty = issuestock.Sum();

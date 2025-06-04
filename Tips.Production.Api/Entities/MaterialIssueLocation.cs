@@ -10,6 +10,8 @@
         public decimal? LocationStock { get; set; }
         public decimal? DistributingQty { get; set; }
         public int MaterialIssueItemId { get; set; }
+        public DateTime? IssuedOn {  get; set; }
+        public string? IssuedBy { get; set; }
         public MaterialIssueItem MaterialIssueItem { get; set; }
     }
 }
