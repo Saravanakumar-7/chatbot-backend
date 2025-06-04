@@ -177,6 +177,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? OrderType { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
+        public string? WorkOrderNumber { get; set; }
         public string? issuedby { get; set; }
         public string? IssuedTo { get; set; }
         public string? KPN { get; set; }

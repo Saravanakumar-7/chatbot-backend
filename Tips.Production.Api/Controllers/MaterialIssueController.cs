@@ -11,6 +11,7 @@ using Org.BouncyCastle.Utilities;
 using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
@@ -37,10 +38,14 @@ namespace Tips.Production.Api.Controllers
         private readonly IConfiguration _config;
         private IMapper _mapper;
         private readonly IHttpClientFactory _clientFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
 
         public MaterialIssueController(IMaterialIssueItemRepository materialIssueItemRepository, IHttpClientFactory clientFactory,
             IMaterialIssueHistoryRepository materialIssueHistoryRepository, IMaterialIssueRepository materialIssueRepository,
-            ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, IShopOrderRepository shopOrderRepository)
+            ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, IShopOrderRepository shopOrderRepository
+            , IHttpContextAccessor httpContextAccessor)
         {
             _materialIssueItemRepository = materialIssueItemRepository;
             _materialIssueHistoryRepository = materialIssueHistoryRepository;
@@ -51,6 +56,10 @@ namespace Tips.Production.Api.Controllers
             _mapper = mapper;
             _shopOrderRepository = shopOrderRepository;
             _clientFactory = clientFactory;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
         // GET: api/<MaterialIssueController>
@@ -939,9 +948,15 @@ namespace Tips.Production.Api.Controllers
                         if (existingItem != null)
                         {
                             List<MaterialIssueLocation> materialIssueLocationDetails = _mapper.Map<List<MaterialIssueLocation>>(updatedItem.MaterialIssueLocationDto.ToList());
+                            foreach(var item in materialIssueLocationDetails)
+                            {
+                                item.IssuedOn = DateTime.Now;
+                                item.IssuedBy = _createdBy;
+                            }
 
                             existingItem.IssuedQty += updatedItem.NewIssueQty;
                             existingItem.MaterialIssueLocations = materialIssueLocationDetails;
+                            
 
                             var projectNo = existingItem.ProjectNumber;
                             decimal newIssuedQty = updatedItem.NewIssueQty;
