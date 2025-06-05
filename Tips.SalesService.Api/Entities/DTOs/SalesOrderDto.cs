@@ -853,13 +853,13 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? MaterialGroup { get; set; }
         public string? ItemType { get; set; }
         public string? PONumber { get; set; }
+        public DateTime? PoCreatedon { get; set; }
         public string? SalesPerson { get; set; }
         public DateTime? sodate { get; set; }
         public int? SOStatus { get; set; }
         public string? KPN { get; set; }
         public string? KPNDescription { get; set; }
         public string? ProjectNumber { get; set; }
-        public DateTime? RequestedDate { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
         public string? PriceList { get; set; }

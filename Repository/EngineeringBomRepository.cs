@@ -1391,6 +1391,12 @@ namespace Repository
             var releaseProductBomDetails = _tipsMasterDbContext.ProductionBoms
                  .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
                  .Select(x => x.ReleaseVersion).ToArray();
+
+            var releaseProductBomItemType = _tipsMasterDbContext.ProductionBoms
+                .Where(x => x.ItemNumber == itemNumber && x.IsActive == true)
+                .Select(x => x.ItemType).FirstOrDefault();
+
+
             decimal requiredQty = 1;
             Dictionary<string, decimal> fgItemNumberListWithQty = new Dictionary<string, decimal>();
             fgItemNumberListWithQty = await GetFgItemNoListForAnSaItemNo(itemNumber, fgItemNumberListWithQty, requiredQty);
@@ -1399,7 +1405,7 @@ namespace Repository
             {
                 ItemNumber = itemNumber,
                 FGItemNumberWithSaBomQty = fgItemNumberListWithQty,
-                ItemType = PartType.SA,
+                ItemType = releaseProductBomItemType,
                 BomVersionNo = releaseProductBomDetails
             };
 

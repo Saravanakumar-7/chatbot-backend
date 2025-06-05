@@ -17,6 +17,8 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal LocationStock { get; set; }
         public bool IsMRIssueDone { get; set; }
         public string? SerialNo { get; set; }
+        public DateTime? IssuedOn { get; set; }
+        public string? IssuedBy { get; set; }
 
     }
     public class MRStockDetailsPostDto
@@ -45,7 +47,9 @@ namespace Tips.Production.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal LocationStock { get; set; }
-        public bool IsMRIssueDone { get; set; } 
+        public bool IsMRIssueDone { get; set; }
+        public DateTime? IssuedOn { get; set; }
+        public string? IssuedBy { get; set; }
     }
     public class IssueMRStockDetailsUpdateDto
     {
@@ -60,6 +64,8 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal LocationStock { get; set; }
         public bool IsMRIssueDone { get; set; }
         public string? SerialNo { get; set; }
+        public DateTime? IssuedOn { get; set; }
+        public string? IssuedBy { get; set; }
     }
 
 

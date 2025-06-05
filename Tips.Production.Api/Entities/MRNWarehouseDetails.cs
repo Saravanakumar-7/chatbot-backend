@@ -14,7 +14,9 @@ namespace Tips.Production.Api.Entities
 
         [Precision(13, 3)]
         public decimal Qty { get; set; }
-        public bool IsMRNIssueDone { get; set; } 
+        public bool IsMRNIssueDone { get; set; }
+        public DateTime? IssuedOn { get; set; }
+        public string? IssuedBy { get; set; }
 
         public int? MaterialReturnNoteItemId { get; set; }
         public MaterialReturnNoteItem? MaterialReturnNoteItem { get; set; }

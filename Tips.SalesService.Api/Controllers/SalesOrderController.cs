@@ -2591,17 +2591,17 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(5).SetCellValue("KPN");
                 headerRow.CreateCell(6).SetCellValue("KPN Description");
                 headerRow.CreateCell(7).SetCellValue("ProjectNumber");
-                headerRow.CreateCell(8).SetCellValue("RequestedDate");
-                headerRow.CreateCell(9).SetCellValue("Order Qty");
-                headerRow.CreateCell(10).SetCellValue("Total Amount");
-                headerRow.CreateCell(11).SetCellValue("UOC");
-                headerRow.CreateCell(12).SetCellValue("UOM");
-                headerRow.CreateCell(13).SetCellValue("Balance Qty");
-                headerRow.CreateCell(14).SetCellValue("Dispatch Qty");
-                headerRow.CreateCell(15).SetCellValue("Type Of Solution");
-                headerRow.CreateCell(16).SetCellValue("Material Group");
-                headerRow.CreateCell(17).SetCellValue("Item Type");
-                headerRow.CreateCell(18).SetCellValue("PO Number");
+                headerRow.CreateCell(8).SetCellValue("Order Qty");
+                headerRow.CreateCell(9).SetCellValue("Total Amount");
+                headerRow.CreateCell(10).SetCellValue("UOC");
+                headerRow.CreateCell(11).SetCellValue("UOM");
+                headerRow.CreateCell(12).SetCellValue("Balance Qty");
+                headerRow.CreateCell(13).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(14).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(15).SetCellValue("Material Group");
+                headerRow.CreateCell(16).SetCellValue("Item Type");
+                headerRow.CreateCell(17).SetCellValue("PO Number");
+                headerRow.CreateCell(18).SetCellValue("PoCreatedOn");
                 headerRow.CreateCell(19).SetCellValue("Product Type");
                 headerRow.CreateCell(20).SetCellValue("Order Type");
                 headerRow.CreateCell(21).SetCellValue("Unit Price");
@@ -2616,6 +2616,8 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(30).SetCellValue("IGST");
                 headerRow.CreateCell(31).SetCellValue("UTGST");
                 headerRow.CreateCell(32).SetCellValue("Price List");
+                headerRow.CreateCell(33).SetCellValue("ScheduleDate");
+                headerRow.CreateCell(34).SetCellValue("ScheduleQnty");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -2630,17 +2632,17 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(5).SetCellValue(item.KPN ?? "");
                     row.CreateCell(6).SetCellValue(item.KPNDescription ?? "");
                     row.CreateCell(7).SetCellValue(item.ProjectNumber ?? "");
-                    row.CreateCell(8).SetCellValue(item.RequestedDate?.ToString("MM/dd/yyyy") ?? "");
-                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.OrderQty ?? 0));
-                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.TotalAmount ?? 0));
-                    row.CreateCell(11).SetCellValue(item.UOC ?? "");
-                    row.CreateCell(12).SetCellValue(item.UOM ?? "");
-                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0));
-                    row.CreateCell(14).SetCellValue(Convert.ToDouble(item.DispatchQty ?? 0));
-                    row.CreateCell(15).SetCellValue(item.TypeOfSolution ?? "");
-                    row.CreateCell(16).SetCellValue(item.MaterialGroup ?? "");
-                    row.CreateCell(17).SetCellValue(item.ItemType ?? "");
-                    row.CreateCell(18).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(8).SetCellValue(Convert.ToDouble(item.OrderQty ?? 0));
+                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.TotalAmount ?? 0));
+                    row.CreateCell(10).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(11).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0));
+                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.DispatchQty ?? 0));
+                    row.CreateCell(14).SetCellValue(item.TypeOfSolution ?? "");
+                    row.CreateCell(15).SetCellValue(item.MaterialGroup ?? "");
+                    row.CreateCell(16).SetCellValue(item.ItemType ?? "");
+                    row.CreateCell(17).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(18).SetCellValue(item.PoCreatedon?.ToString("MM/dd/yyyy") ?? "");
                     row.CreateCell(19).SetCellValue(item.ProductType ?? "");
                     row.CreateCell(20).SetCellValue(item.OrderType ?? "");
                     row.CreateCell(21).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0));
@@ -2655,6 +2657,8 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(30).SetCellValue(Convert.ToDouble(item.IGST ?? 0));
                     row.CreateCell(31).SetCellValue(Convert.ToDouble(item.UTGST ?? 0));
                     row.CreateCell(32).SetCellValue(item.PriceList ?? "");
+                    row.CreateCell(33).SetCellValue(item.scheduledate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(34).SetCellValue(Convert.ToDouble(item.scheduleqnty ?? 0));
                 }
 
                 // Write to memory stream
@@ -2813,17 +2817,17 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(5).SetCellValue("KPN");
                 headerRow.CreateCell(6).SetCellValue("KPN Description");
                 headerRow.CreateCell(7).SetCellValue("ProjectNumber");
-                headerRow.CreateCell(8).SetCellValue("RequestedDate");
-                headerRow.CreateCell(9).SetCellValue("Order Qty");
-                headerRow.CreateCell(10).SetCellValue("Total Amount");
-                headerRow.CreateCell(11).SetCellValue("UOC");
-                headerRow.CreateCell(12).SetCellValue("UOM");
-                headerRow.CreateCell(13).SetCellValue("Balance Qty");
-                headerRow.CreateCell(14).SetCellValue("Dispatch Qty");
-                headerRow.CreateCell(15).SetCellValue("Type Of Solution");
-                headerRow.CreateCell(16).SetCellValue("Material Group");
-                headerRow.CreateCell(17).SetCellValue("Item Type");
-                headerRow.CreateCell(18).SetCellValue("PO Number");
+                headerRow.CreateCell(8).SetCellValue("Order Qty");
+                headerRow.CreateCell(9).SetCellValue("Total Amount");
+                headerRow.CreateCell(10).SetCellValue("UOC");
+                headerRow.CreateCell(11).SetCellValue("UOM");
+                headerRow.CreateCell(12).SetCellValue("Balance Qty");
+                headerRow.CreateCell(13).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(14).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(15).SetCellValue("Material Group");
+                headerRow.CreateCell(16).SetCellValue("Item Type");
+                headerRow.CreateCell(17).SetCellValue("PO Number");
+                headerRow.CreateCell(18).SetCellValue("PoCreatedOn");
                 headerRow.CreateCell(19).SetCellValue("Product Type");
                 headerRow.CreateCell(20).SetCellValue("Order Type");
                 headerRow.CreateCell(21).SetCellValue("Unit Price");
@@ -2838,6 +2842,8 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(30).SetCellValue("IGST");
                 headerRow.CreateCell(31).SetCellValue("UTGST");
                 headerRow.CreateCell(32).SetCellValue("Price List");
+                headerRow.CreateCell(33).SetCellValue("ScheduleDate");
+                headerRow.CreateCell(34).SetCellValue("ScheduleQnty");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -2852,17 +2858,17 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(5).SetCellValue(item.KPN ?? "");
                     row.CreateCell(6).SetCellValue(item.KPNDescription ?? "");
                     row.CreateCell(7).SetCellValue(item.ProjectNumber ?? "");
-                    row.CreateCell(8).SetCellValue(item.RequestedDate?.ToString("MM/dd/yyyy") ?? "");
-                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.OrderQty ?? 0));
-                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.TotalAmount ?? 0));
-                    row.CreateCell(11).SetCellValue(item.UOC ?? "");
-                    row.CreateCell(12).SetCellValue(item.UOM ?? "");
-                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0));
-                    row.CreateCell(14).SetCellValue(Convert.ToDouble(item.DispatchQty ?? 0));
-                    row.CreateCell(15).SetCellValue(item.TypeOfSolution ?? "");
-                    row.CreateCell(16).SetCellValue(item.MaterialGroup ?? "");
-                    row.CreateCell(17).SetCellValue(item.ItemType ?? "");
-                    row.CreateCell(18).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(8).SetCellValue(Convert.ToDouble(item.OrderQty ?? 0));
+                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.TotalAmount ?? 0));
+                    row.CreateCell(10).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(11).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0));
+                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.DispatchQty ?? 0));
+                    row.CreateCell(14).SetCellValue(item.TypeOfSolution ?? "");
+                    row.CreateCell(15).SetCellValue(item.MaterialGroup ?? "");
+                    row.CreateCell(16).SetCellValue(item.ItemType ?? "");
+                    row.CreateCell(17).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(18).SetCellValue(item.PoCreatedon?.ToString("MM/dd/yyyy") ?? "");
                     row.CreateCell(19).SetCellValue(item.ProductType ?? "");
                     row.CreateCell(20).SetCellValue(item.OrderType ?? "");
                     row.CreateCell(21).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0));
@@ -2877,6 +2883,8 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(30).SetCellValue(Convert.ToDouble(item.IGST ?? 0));
                     row.CreateCell(31).SetCellValue(Convert.ToDouble(item.UTGST ?? 0));
                     row.CreateCell(32).SetCellValue(item.PriceList ?? "");
+                    row.CreateCell(33).SetCellValue(item.scheduledate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(34).SetCellValue(Convert.ToDouble(item.scheduleqnty ?? 0));
                 }
 
                 // Write to memory stream
@@ -2957,17 +2965,17 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(5).SetCellValue("KPN");
                 headerRow.CreateCell(6).SetCellValue("KPN Description");
                 headerRow.CreateCell(7).SetCellValue("ProjectNumber");
-                headerRow.CreateCell(8).SetCellValue("RequestedDate");
-                headerRow.CreateCell(9).SetCellValue("Order Qty");
-                headerRow.CreateCell(10).SetCellValue("Total Amount");
-                headerRow.CreateCell(11).SetCellValue("UOC");
-                headerRow.CreateCell(12).SetCellValue("UOM");
-                headerRow.CreateCell(13).SetCellValue("Balance Qty");
-                headerRow.CreateCell(14).SetCellValue("Dispatch Qty");
-                headerRow.CreateCell(15).SetCellValue("Type Of Solution");
-                headerRow.CreateCell(16).SetCellValue("Material Group");
-                headerRow.CreateCell(17).SetCellValue("Item Type");
-                headerRow.CreateCell(18).SetCellValue("PO Number");
+                headerRow.CreateCell(8).SetCellValue("Order Qty");
+                headerRow.CreateCell(9).SetCellValue("Total Amount");
+                headerRow.CreateCell(10).SetCellValue("UOC");
+                headerRow.CreateCell(11).SetCellValue("UOM");
+                headerRow.CreateCell(12).SetCellValue("Balance Qty");
+                headerRow.CreateCell(13).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(14).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(15).SetCellValue("Material Group");
+                headerRow.CreateCell(16).SetCellValue("Item Type");
+                headerRow.CreateCell(17).SetCellValue("PO Number");
+                headerRow.CreateCell(18).SetCellValue("PoCreatedOn");
                 headerRow.CreateCell(19).SetCellValue("Product Type");
                 headerRow.CreateCell(20).SetCellValue("Order Type");
                 headerRow.CreateCell(21).SetCellValue("Unit Price");
@@ -2982,6 +2990,8 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(30).SetCellValue("IGST");
                 headerRow.CreateCell(31).SetCellValue("UTGST");
                 headerRow.CreateCell(32).SetCellValue("Price List");
+                headerRow.CreateCell(33).SetCellValue("ScheduleDate");
+                headerRow.CreateCell(34).SetCellValue("ScheduleQnty");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -2996,17 +3006,17 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(5).SetCellValue(item.KPN ?? "");
                     row.CreateCell(6).SetCellValue(item.KPNDescription ?? "");
                     row.CreateCell(7).SetCellValue(item.ProjectNumber ?? "");
-                    row.CreateCell(8).SetCellValue(item.RequestedDate?.ToString("MM/dd/yyyy") ?? "");
-                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.OrderQty ?? 0));
-                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.TotalAmount ?? 0));
-                    row.CreateCell(11).SetCellValue(item.UOC ?? "");
-                    row.CreateCell(12).SetCellValue(item.UOM ?? "");
-                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0));
-                    row.CreateCell(14).SetCellValue(Convert.ToDouble(item.DispatchQty ?? 0));
-                    row.CreateCell(15).SetCellValue(item.TypeOfSolution ?? "");
-                    row.CreateCell(16).SetCellValue(item.MaterialGroup ?? "");
-                    row.CreateCell(17).SetCellValue(item.ItemType ?? "");
-                    row.CreateCell(18).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(8).SetCellValue(Convert.ToDouble(item.OrderQty ?? 0));
+                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.TotalAmount ?? 0));
+                    row.CreateCell(10).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(11).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0));
+                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.DispatchQty ?? 0));
+                    row.CreateCell(14).SetCellValue(item.TypeOfSolution ?? "");
+                    row.CreateCell(15).SetCellValue(item.MaterialGroup ?? "");
+                    row.CreateCell(16).SetCellValue(item.ItemType ?? "");
+                    row.CreateCell(17).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(18).SetCellValue(item.PoCreatedon?.ToString("MM/dd/yyyy") ?? "");
                     row.CreateCell(19).SetCellValue(item.ProductType ?? "");
                     row.CreateCell(20).SetCellValue(item.OrderType ?? "");
                     row.CreateCell(21).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0));
@@ -3021,6 +3031,8 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(30).SetCellValue(Convert.ToDouble(item.IGST ?? 0));
                     row.CreateCell(31).SetCellValue(Convert.ToDouble(item.UTGST ?? 0));
                     row.CreateCell(32).SetCellValue(item.PriceList ?? "");
+                    row.CreateCell(33).SetCellValue(item.scheduledate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(34).SetCellValue(Convert.ToDouble(item.scheduleqnty ?? 0));
                 }
 
                 // Write to memory stream
