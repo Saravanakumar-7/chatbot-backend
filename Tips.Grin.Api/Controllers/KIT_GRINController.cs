@@ -669,7 +669,7 @@ namespace Tips.Grin.Api.Controllers
         public async Task<IActionResult> GetAllKIT_GRIN([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
 
         {
-            ServiceResponse<IEnumerable<KIT_GRINPostDto>> serviceResponse = new ServiceResponse<IEnumerable<KIT_GRINPostDto>>();
+            ServiceResponse<IEnumerable<KIT_GRINDto>> serviceResponse = new ServiceResponse<IEnumerable<KIT_GRINDto>>();
             try
             {
                 var GetallGrins = await _repository.GetAllKIT_GRIN(pagingParameter, searchParams);
@@ -693,7 +693,7 @@ namespace Tips.Grin.Api.Controllers
 
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
                 _logger.LogInfo("Returned all KIT_GRIN Successfully");
-                var result = _mapper.Map<IEnumerable<KIT_GRINPostDto>>(GetallGrins);
+                var result = _mapper.Map<IEnumerable<KIT_GRINDto>>(GetallGrins);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all KIT_GRIN Successfully";
                 serviceResponse.Success = true;
