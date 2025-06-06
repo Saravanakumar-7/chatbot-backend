@@ -19,6 +19,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
 using MimeKit;
+using Mysqlx;
 using MySqlX.XDevAPI;
 using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
@@ -3289,6 +3290,160 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError(ex.Message);
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Something went wrong inside FQToFSSPReportWithParam action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetFQToFSFirstSOSPReportWithParam([FromBody] FQToFSFirstSOSPReportDto FQToFSSPReportDto)
+
+        {
+            ServiceResponse<IEnumerable<FQToFSFirstSOSPReport>> serviceResponse = new ServiceResponse<IEnumerable<FQToFSFirstSOSPReport>>();
+            try
+            {
+                var products = await _repository.GetFQToFSFirstSOSPReportWithParam(FQToFSSPReportDto.Leadid);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"FQToFSFirstSOSPReportWithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"FQToFSFirstSOSPReportWithParam hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"FQToFSFirstSOSPReportWithParam hasn't been found in db.");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned FQToFSFirstSOSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetFQToFSFirstSOSPReportWithParam API: \n{ ex.Message} \n{ ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetFQToFSFirstSOSPReportWithParam API: \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetFQToFSLatestSOSPReportWithParam([FromBody] FQToFSFirstSOSPReportDto FQToFSSPReportDto)
+
+        {
+            ServiceResponse<IEnumerable<FQToFSLatestSOSPReport>> serviceResponse = new ServiceResponse<IEnumerable<FQToFSLatestSOSPReport>>();
+            try
+            {
+                var products = await _repository.GetFQToFSLatestSOSPReportWithParam(FQToFSSPReportDto.Leadid);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"FQToFSLatestSOSPReportWithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"FQToFSLatestSOSPReportWithParam hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"FQToFSLatestSOSPReportWithParam hasn't been found in db.");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned FQToFSLatestSOSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetFQToFSLatestSOSPReportWithParam API: \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetFQToFSLatestSOSPReportWithParam API: \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetFQToFSFirstQuoteSPReportWithParam([FromBody] FQToFSFirstSOSPReportDto FQToFSSPReportDto)
+
+        {
+            ServiceResponse<IEnumerable<FQToFSFirstQuoteSPReport>> serviceResponse = new ServiceResponse<IEnumerable<FQToFSFirstQuoteSPReport>>();
+            try
+            {
+                var products = await _repository.GetFQToFSFirstQuoteSPReportWithParam(FQToFSSPReportDto.Leadid);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"FQToFSFirstQuoteSPReportWithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"FQToFSFirstQuoteSPReportWithParam hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"FQToFSFirstQuoteSPReportWithParam hasn't been found in db.");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned FQToFSFirstQuoteSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetFQToFSFirstQuoteSPReportWithParam API: \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetFQToFSFirstQuoteSPReportWithParam API: \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetFQToFSFirstQuoteSentSPReportWithParam([FromBody] FQToFSFirstSOSPReportDto FQToFSSPReportDto)
+
+        {
+            ServiceResponse<IEnumerable<FQToFSFirstQuoteSentSPReport>> serviceResponse = new ServiceResponse<IEnumerable<FQToFSFirstQuoteSentSPReport>>();
+            try
+            {
+                var products = await _repository.GetFQToFSFirstQuoteSentSPReportWithParam(FQToFSSPReportDto.Leadid);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"FQToFSFirstQuoteSentSPReportWithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"FQToFSFirstQuoteSentSPReportWithParam hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"FQToFSFirstQuoteSentSPReportWithParam hasn't been found in db.");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned FQToFSFirstQuoteSentSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetFQToFSFirstQuoteSentSPReportWithParam API: \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetFQToFSFirstQuoteSentSPReportWithParam API: \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -6743,6 +6898,83 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetAllSalesRevisionSPReportWithParam([FromBody] SalesRevNoSPReportParamDTO salesRevNoSPResportParamDTO)
+
+        {
+            ServiceResponse<IEnumerable<SalesRevNoSPReportParam>> serviceResponse = new ServiceResponse<IEnumerable<SalesRevNoSPReportParam>>();
+            try
+            {
+                var products = await _repository.GetAllSalesRevisionSPReportWithParam(salesRevNoSPResportParamDTO.LeadId, salesRevNoSPResportParamDTO.SalesOrderNumber, salesRevNoSPResportParamDTO.ItemNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesRevisionSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesRevisionSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned All SalesRevisionSPReport Successfully");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned All SalesRevisionSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllSalesRevisionSPReportWithParam API : \n{ex.Message} \n{ex.InnerException}"); ;
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllSalesRevisionSPReportWithParam API : \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetAllSalesRevisionSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<SalesRevNoSPReportParam>> serviceResponse = new ServiceResponse<IEnumerable<SalesRevNoSPReportParam>>();
+            try
+            {
+                var products = await _repository.GetAllSalesRevisionSPReportWithDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesRevisionSPReportWithDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesRevisionSPReportWithDate hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned All SalesRevisionSPReportWithDate Successfully");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned All SalesRevisionSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllSalesRevisionSPReportWithDate API : \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllSalesRevisionSPReportWithDate API : \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
         }
 
         //[HttpGet]

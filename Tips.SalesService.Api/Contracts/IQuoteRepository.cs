@@ -36,6 +36,8 @@ namespace Tips.SalesService.Api.Contracts
                                                                                                            string CustomerName, string TypeOfSolution, string ProductType);
         Task<IEnumerable<SoSummaryQuotationDto>> GetSoSummaryQuotationSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<QuoteRevNoSPReportParam>> GetAllQuoteRevisionSPReportWithParam(string? LeadId, string? QuoteNumber, string? ItemNumber);
+        Task<IEnumerable<QuoteRevNoSPReportParam>> GetAllQuoteRevisionSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<SoSummaryQuotationDto>> GetSoSummaryQuotationSPReport();
     }
 }
