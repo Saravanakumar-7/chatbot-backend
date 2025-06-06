@@ -1687,8 +1687,8 @@ namespace Tips.Master.Api.Controllers
             {
                 var itemMasterDetails = await _repository.ItemMasterRepository.GetAllOpenGrinStatusTrueItemMasterIdNoList();
                 //_logger.LogInfo("Returned all CustomerMaster");
-                var result = _mapper.Map<IEnumerable<ItemMasterIdNoListDto>>(itemMasterDetails);
-                serviceResponse.Data = result;
+                //var result = _mapper.Map<IEnumerable<ItemMasterIdNoListDto>>(itemMasterDetails);
+                serviceResponse.Data = itemMasterDetails;
                 serviceResponse.Message = "Returned all OpenGrinStatusTrue ItemMasterIdNoList";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;

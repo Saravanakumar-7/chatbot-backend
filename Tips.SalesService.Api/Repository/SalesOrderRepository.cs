@@ -315,6 +315,50 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
+        public async Task<IEnumerable<FQToFSFirstSOSPReport>> GetFQToFSFirstSOSPReportWithParam(string LeadId)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<FQToFSFirstSOSPReport>()
+            .FromSqlInterpolated($"CALL FQ_to_FS_report_First_SO({LeadId})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<FQToFSLatestSOSPReport>> GetFQToFSLatestSOSPReportWithParam(string LeadId)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<FQToFSLatestSOSPReport>()
+            .FromSqlInterpolated($"CALL FQ_to_FS_report_Latest_SO({LeadId})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<FQToFSFirstQuoteSPReport>> GetFQToFSFirstQuoteSPReportWithParam( string LeadId)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<FQToFSFirstQuoteSPReport>()
+            .FromSqlInterpolated($"CALL FQ_to_FS_report_FirstQuote({LeadId})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<FQToFSFirstQuoteSentSPReport>> GetFQToFSFirstQuoteSentSPReportWithParam( string LeadId)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<FQToFSFirstQuoteSentSPReport>()
+            .FromSqlInterpolated($"CALL FQ_to_FS_report_FirstQuoteSent({LeadId})")
+            .ToList();
+
+            return result;
+
+        }
+
         public async Task<IEnumerable<SOSummarySPReport>> GetSOSummarySPReportWithParam(string CustomerId, string SalesOrderNumber, string KPN)
         {
             var result = _tipsSalesServiceDbContext
