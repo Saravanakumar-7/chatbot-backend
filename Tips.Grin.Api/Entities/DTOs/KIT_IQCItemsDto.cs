@@ -12,7 +12,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal RejectedQty { get; set; }
         public string? Remarks { get; set; }
-        public bool IsKIT_BinningCompleted { get; set; }
     }
     public class KIT_IQCItemsDto
     {

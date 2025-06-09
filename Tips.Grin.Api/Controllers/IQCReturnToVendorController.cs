@@ -216,7 +216,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDtos.ReferenceID = Inv.GrinNo;
                             iqcInventoryTranctionDtos.ReferenceIDFrom = "IQCRejectRecovery";
                             iqcInventoryTranctionDtos.GrinMaterialType = "GRIN";
-                            iqcInventoryTranctionDtos.ShopOrderNo = "";
+                            iqcInventoryTranctionDtos.shopOrderNo = "";
                             iqcInventoryTranctionDtos.Remarks = "RTV Done";
 
                             string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
@@ -335,7 +335,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDtos.ReferenceID = Inv.GrinNo;
                             iqcInventoryTranctionDtos.ReferenceIDFrom = "IQCRejectRecovery";
                             iqcInventoryTranctionDtos.GrinMaterialType = "GRIN";
-                            iqcInventoryTranctionDtos.ShopOrderNo = "";
+                            iqcInventoryTranctionDtos.shopOrderNo = "";
                             iqcInventoryTranctionDtos.Remarks = "RTV Done";
 
                             string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);

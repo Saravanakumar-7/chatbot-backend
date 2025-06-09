@@ -437,7 +437,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;/* Convert.ToString(grinPartsDetails.Id);*/
                                 iqcInventoryTranctionDto.ReferenceIDFrom = "IQCForServiceItems";
                                 iqcInventoryTranctionDto.GrinMaterialType = "GRINForServiceItems";
-                                iqcInventoryTranctionDto.ShopOrderNo = "";
+                                iqcInventoryTranctionDto.shopOrderNo = "";
                                 iqcInventoryTranctionDto.Remarks = "IQCForServiceItems Done";
 
                                 string rfqSourcingPPdetailsJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
@@ -524,7 +524,7 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDtos.ReferenceID = grinInventoryDto.GrinNo;/* Convert.ToString(grinPartsDetails.Id);*/
                                     iqcInventoryTranctionDtos.ReferenceIDFrom = "IQCForServiceItems";
                                     iqcInventoryTranctionDtos.GrinMaterialType = "GRINForServiceItems";
-                                    iqcInventoryTranctionDtos.ShopOrderNo = "";
+                                    iqcInventoryTranctionDtos.shopOrderNo = "";
                                     iqcInventoryTranctionDtos.Remarks = "IQCForServiceItems Done";
 
                                     string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
@@ -789,7 +789,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;/* Convert.ToString(grinPartsDetails.Id);*/
                                 iqcInventoryTranctionDto.ReferenceIDFrom = "IQCForServiceItems";
                                 iqcInventoryTranctionDto.GrinMaterialType = "GRINForServiceItems";
-                                iqcInventoryTranctionDto.ShopOrderNo = "";
+                                iqcInventoryTranctionDto.shopOrderNo = "";
                                 iqcInventoryTranctionDto.Remarks = "IQCForServiceItems Done";
 
                                 string rfqSourcingPPdetailsJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
@@ -882,7 +882,7 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDtos.ReferenceID = grinInventoryDto.GrinNo;/* Convert.ToString(grinPartsDetails.Id);*/
                                     iqcInventoryTranctionDtos.ReferenceIDFrom = "IQCForServiceItems";
                                     iqcInventoryTranctionDtos.GrinMaterialType = "GRINForServiceItems";
-                                    iqcInventoryTranctionDtos.ShopOrderNo = "";
+                                    iqcInventoryTranctionDtos.shopOrderNo = "";
                                     iqcInventoryTranctionDtos.Remarks = "IQCForServiceItems Done";
 
                                     string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
@@ -1235,7 +1235,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;/* Convert.ToString(grinPartsDetails.Id);*/
                             iqcInventoryTranctionDto.ReferenceIDFrom = "IQCForServiceItems";
                             iqcInventoryTranctionDto.GrinMaterialType = "GRINForServiceItems";
-                            iqcInventoryTranctionDto.ShopOrderNo = "";
+                            iqcInventoryTranctionDto.shopOrderNo = "";
                             iqcInventoryTranctionDto.Remarks = "IQCForServiceItems_Items Done";
 
                             string rfqSourcingPPdetailsJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
@@ -1320,7 +1320,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.ReferenceID = grinInventoryDto.GrinNo;/* Convert.ToString(grinPartsDetails.Id);*/
                                 iqcInventoryTranctionDtos.ReferenceIDFrom = "IQCForServiceItems";
                                 iqcInventoryTranctionDtos.GrinMaterialType = "GRINForServiceItems";
-                                iqcInventoryTranctionDtos.ShopOrderNo = "";
+                                iqcInventoryTranctionDtos.shopOrderNo = "";
                                 iqcInventoryTranctionDtos.Remarks = "IQCForServiceItems_Items Done";
 
                                 string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
@@ -1581,7 +1581,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;/* Convert.ToString(grinPartsDetails.Id);*/
                             iqcInventoryTranctionDto.ReferenceIDFrom = "IQCForServiceItems";
                             iqcInventoryTranctionDto.GrinMaterialType = "GRINForServiceItems";
-                            iqcInventoryTranctionDto.ShopOrderNo = "";
+                            iqcInventoryTranctionDto.shopOrderNo = "";
                             iqcInventoryTranctionDto.Remarks = "IQCForServiceItems_Items Done";
 
                             string rfqSourcingPPdetailsJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
@@ -1667,7 +1667,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.ReferenceID = grinInventoryDto.GrinNo;/* Convert.ToString(grinPartsDetails.Id);*/
                                 iqcInventoryTranctionDtos.ReferenceIDFrom = "IQCForServiceItems";
                                 iqcInventoryTranctionDtos.GrinMaterialType = "GRINForServiceItems";
-                                iqcInventoryTranctionDtos.ShopOrderNo = "";
+                                iqcInventoryTranctionDtos.shopOrderNo = "";
                                 iqcInventoryTranctionDtos.Remarks = "IQCForServiceItems_Items Done";
 
                                 string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);

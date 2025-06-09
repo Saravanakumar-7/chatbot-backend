@@ -899,8 +899,8 @@ namespace Tips.Grin.Api.Controllers
                     _logger.LogError($"KIT_Grin with KIT_GrinNumber:{KIT_GrinNumber} hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
-                GrinDetailsbyId.KIT_GRINParts.RemoveAll(x => x.AcceptedQty != x.BinnedQty);
-                GrinDetailsbyId.KIT_GRINParts.ForEach(a => a.KIT_GRIN_ProjectNumbers.RemoveAll(x => x.AcceptedQty != x.BinnedQty));
+                GrinDetailsbyId.KIT_GRINParts.RemoveAll(x => x.AcceptedQty == x.BinnedQty);
+                GrinDetailsbyId.KIT_GRINParts.ForEach(a => a.KIT_GRIN_ProjectNumbers.RemoveAll(x => x.AcceptedQty == x.BinnedQty));
                 var clientz = _clientFactory.CreateClient();
                 var tokenz = HttpContext.Request.Headers["Authorization"].ToString();
                 var jsonz = JsonConvert.SerializeObject(GrinDetailsbyId.KIT_GRINParts.Select(x => x.ItemNumber).ToList());

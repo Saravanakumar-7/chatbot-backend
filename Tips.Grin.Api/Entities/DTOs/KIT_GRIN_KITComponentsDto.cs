@@ -61,7 +61,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? DrawingRevNo { get; set; }
         public PartType PartType { get; set; }
         public string? UOM { get; set; }
-        public string? ProjectNumber { get; set; }
         [Precision(13, 3)]
         public decimal KitComponentBOMQty { get; set; }
         [Precision(13, 3)]
@@ -69,13 +68,14 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal KitComponentUnitPrice { get; set; }
         [Precision(13, 3)]
-        public decimal? AcceptedQty { get; set; }
+        public decimal AcceptedQty { get; set; } = 0;
         [Precision(13, 3)]
-        public decimal? RejectedQty { get; set; }
-        public PoStatus KIT_GRIN_KITComponentsStatus { get; set; }
+        public decimal RejectedQty { get; set; } = 0;
+        [Precision(13, 3)]
+        public decimal BinnedQty { get; set; } = 0;
         [Precision(13, 3)]
         public decimal? AverageCost { get; set; }
-        public string? LotNumber { get; set; }
+        public string LotNumber { get; set; }
         public int KIT_GRIN_ProjectNumbersId { get; set; }
     }
     public class KIT_GRIN_KITComponentsUpdateDto

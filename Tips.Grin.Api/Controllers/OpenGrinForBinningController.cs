@@ -358,7 +358,7 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                     iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                                     iqcInventoryTranctionDto.GrinMaterialType = "OPGBinning";
-                                    iqcInventoryTranctionDto.ShopOrderNo = "";
+                                    iqcInventoryTranctionDto.shopOrderNo = "";
                                     iqcInventoryTranctionDto.Remarks = "OpenGrinForBinning Done";
 
                                     var jsonss = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
@@ -440,7 +440,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryTranctionObjectNew.ReferenceID = inventoryObjectNew.ReferenceID;
                                     inventoryTranctionObjectNew.ReferenceIDFrom = inventoryObjectNew.ReferenceIDFrom;
                                     inventoryTranctionObjectNew.GrinMaterialType = "OPGBinning";
-                                    inventoryTranctionObjectNew.ShopOrderNo = "";
+                                    inventoryTranctionObjectNew.shopOrderNo = "";
                                     inventoryTranctionObjectNew.Remarks = "OpenGrinForBinning Done";
 
                                     var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
@@ -616,7 +616,7 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                     iqcInventoryTranctionDto.ReferenceIDFrom = "OPGBinning";
                                     iqcInventoryTranctionDto.GrinMaterialType = "OPGBinning";
-                                    iqcInventoryTranctionDto.ShopOrderNo = "";
+                                    iqcInventoryTranctionDto.shopOrderNo = "";
                                     iqcInventoryTranctionDto.Remarks = "OpenGrinForBinning Done";
 
                                     var jsonss = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
@@ -697,7 +697,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryTranctionObjectNew.ReferenceID = inventoryObjectNew.ReferenceID;
                                     inventoryTranctionObjectNew.ReferenceIDFrom = inventoryObjectNew.ReferenceIDFrom;
                                     inventoryTranctionObjectNew.GrinMaterialType = "OPGBinning";
-                                    inventoryTranctionObjectNew.ShopOrderNo = "";
+                                    inventoryTranctionObjectNew.shopOrderNo = "";
                                     inventoryTranctionObjectNew.Remarks = "OpenGrinForBinning Done";
 
                                     var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
@@ -975,7 +975,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                 iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                                 iqcInventoryTranctionDto.GrinMaterialType = "OPGBinning";
-                                iqcInventoryTranctionDto.ShopOrderNo = "";
+                                iqcInventoryTranctionDto.shopOrderNo = "";
                                 iqcInventoryTranctionDto.Remarks = "OpenGrinForBinningItem Done";
 
                                 var jsonss = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
@@ -1056,7 +1056,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryTranctionObjectNew.ReferenceID = inventoryObjectNew.ReferenceID;
                                 inventoryTranctionObjectNew.ReferenceIDFrom = inventoryObjectNew.ReferenceIDFrom;
                                 inventoryTranctionObjectNew.GrinMaterialType = "OPGBinning";
-                                inventoryTranctionObjectNew.ShopOrderNo = "";
+                                inventoryTranctionObjectNew.shopOrderNo = "";
                                 inventoryTranctionObjectNew.Remarks = "OpenGrinForBinningItem Done";
 
                                 var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
@@ -1255,7 +1255,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                 iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                                 iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
-                                iqcInventoryTranctionDto.ShopOrderNo = "";
+                                iqcInventoryTranctionDto.shopOrderNo = "";
 
                                 var jsonss = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
                                 var datass = new StringContent(jsonss, Encoding.UTF8, "application/json");

@@ -308,5 +308,11 @@ namespace Tips.Grin.Api.Repository
             string result = $"OpenGrin details of {openGrin.Id} is updated successfully!";
             return result;
         }
+        public async Task<string> UpdateOpenGrinDetails(OpenGrin openGrin)
+        {
+            Update(openGrin);
+            string result = $"OpenGrin details of {openGrin.Id} is updated successfully!";
+            return result;
+        }
     }
 }

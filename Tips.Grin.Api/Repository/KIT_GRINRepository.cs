@@ -54,7 +54,7 @@ namespace Tips.Grin.Api.Repository
                 int currentYear = financeYearStart.Year % 100; // Get the last two digits of the current finance year
                 int nextYear = (financeYearStart.Year + 1) % 100; // Get the last two digits of the next finance year
 
-                return $"ASPL|KGRN|{currentYear:D2}-{nextYear:D2}|{grinNumberEntity.CurrentValue:D4}";
+                return $"ASPL|KIT_GRN|{currentYear:D2}-{nextYear:D2}|{grinNumberEntity.CurrentValue:D4}";
             }
             catch (Exception ex)
             {
@@ -73,7 +73,7 @@ namespace Tips.Grin.Api.Repository
                 _tipsGrinDbContext.Update(grinNumberEntity);
                 await _tipsGrinDbContext.SaveChangesAsync();
                 await transaction.CommitAsync();
-                return $"G-{grinNumberEntity.CurrentValue:D6}";
+                return $"KIT_G-{grinNumberEntity.CurrentValue:D6}";
             }
             catch (Exception ex)
             {

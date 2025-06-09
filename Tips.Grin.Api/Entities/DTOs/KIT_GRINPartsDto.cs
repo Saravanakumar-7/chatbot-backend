@@ -69,17 +69,13 @@ namespace Tips.Grin.Api.Entities.DTOs
         public bool IsKIT_IqcCompleted { get; set; }
         public bool IsKIT_BinningCompleted { get; set; }
         [Precision(18, 3)]
-        public decimal UnitPrice { get; set; }
-        [Precision(13, 3)]
-        public decimal POOrderQty { get; set; }
-        [Precision(13, 3)]
-        public decimal POBalancedQty { get; set; }
-        [Precision(18, 3)]
-        public decimal POUnitPrice { get; set; }
+        public decimal UnitPrice { get; set; }        
         [Precision(13, 3)]
         public decimal AcceptedQty { get; set; }
         [Precision(13, 3)]
         public decimal RejectedQty { get; set; }
+        [Precision(13, 3)]
+        public decimal BinnedQty { get; set; }
         [Precision(13, 3)]
         public decimal RejectReturnQty { get; set; }
         public string UOM { get; set; }
