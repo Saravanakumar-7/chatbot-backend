@@ -1764,10 +1764,12 @@ namespace Tips.Production.Api.Controllers
 
                 //Get Matterial Issue Details
                 var materialIssue = await _materialIssueRepository.GetMaterialIssueByShopOrderNo(shopOrderDetails.ShopOrderNumber);
-                materialIssue.IsShortClosed = true;
-                await _materialIssueRepository.UpdateMaterialIssue(materialIssue);
-
-                _materialIssueRepository.SaveAsync();
+                if (materialIssue != null)
+                {
+                    materialIssue.IsShortClosed = true;
+                    await _materialIssueRepository.UpdateMaterialIssue(materialIssue);
+                    _materialIssueRepository.SaveAsync();
+                }
                 _shopOrderRepository.SaveAsync();
 
                 serviceResponse.Data = null;
