@@ -68,10 +68,10 @@ namespace Tips.Warehouse.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Message = $"Error Occured in CreateInventoryForServiceItemsFromGrin API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside CreateInventoryForServiceItemsFromGrin action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateInventoryForServiceItemsFromGrin API : \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -106,9 +106,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetInventoryForServiceDetailsByGrinNoandGrinId action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetInventoryForServiceDetailsByGrinNoandGrinId API ; \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetInventoryForServiceDetailsByGrinNoandGrinId API ; \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -163,10 +163,10 @@ namespace Tips.Warehouse.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Message = $"Error Occured in UpdateInventoryForServiceDetails API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside UpdateInventoryForServiceDetails action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateInventoryForServiceDetails API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }

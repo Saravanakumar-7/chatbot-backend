@@ -41,6 +41,9 @@ using MailKit.Security;
 using System.Security.Claims;
 using MySqlX.XDevAPI;
 using Newtonsoft.Json.Linq;
+using Mysqlx.Session;
+using Google.Protobuf.WellKnownTypes;
+using Mysqlx;
 
 //Test
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -171,9 +174,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetGrinAndIqcsByPurchaseOrder API for the following PoNo:{Ponumber}:\n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetGrinAndIqcsByPurchaseOrder API for the following PoNo:{Ponumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetGrinAndIqcsByPurchaseOrder API for the following PoNo:{Ponumber}:\n {ex.Message} \n{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in GetGrinAndIqcsByPurchaseOrder API for the following PoNo:{Ponumber}:\n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -307,9 +310,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in SearchGrinsDate API:{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Message = $"Error Occured in SearchGrinsDate API:{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -498,9 +501,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllGrinsWithItems API:{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Message = $"Error Occured in GetAllGrinsWithItems API:{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -586,9 +589,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetGrinById API for the following Id:{id}:\n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetGrinById API for the following Id :{id}:\n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetGrinById API for the following Id:{id}:\n {ex.Message} \n{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in GetGrinById API for the following Id:{id}:\n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1025,9 +1028,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateGrin action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateGrin API: \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateGrin API: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1364,6 +1367,7 @@ namespace Tips.Grin.Api.Controllers
                         serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                         return StatusCode(500, serviceResponse);
                     }
+                    _logger.LogInfo($"IQCConfirmationItems Created Successfully");
                     serviceResponse.Data = null;
                     serviceResponse.Message = "IQCConfirmationItems Created Successfully";
                     serviceResponse.Success = true;
@@ -1671,6 +1675,7 @@ namespace Tips.Grin.Api.Controllers
                         serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                         return StatusCode(500, serviceResponse);
                     }
+                    _logger.LogInfo($"IQCConfirmation and IQCConfirmationItems Created Successfully");
                     serviceResponse.Data = null;
                     serviceResponse.Message = "IQCConfirmation and IQCConfirmationItems Created Successfully";
                     serviceResponse.Success = true;
@@ -1681,9 +1686,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateIQCConfirmationItems action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateIQCConfirmationItems API: \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateIQCConfirmationItems API: \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1744,6 +1749,7 @@ namespace Tips.Grin.Api.Controllers
 
                     }
                 }
+                _logger.LogInfo($"GrinFile Successfully Created");
                 serviceResponse.Data = id_s;
                 serviceResponse.Message = " GrinFile Successfully Created";
                 serviceResponse.Success = true;
@@ -1752,9 +1758,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GrinFile action: {ex.Message},{ex.InnerException}");
+                _logger.LogError($"Error Occured in CreateGrinFileUpload API: {ex.Message},{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Error Occured in CreateGrinFileUpload API: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1814,9 +1820,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside Grin action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetDownloadUrlDetailsforGrinFiles API: {ex.Message} ,\n {ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetDownloadUrlDetailsforGrinFiles API: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1914,7 +1920,7 @@ namespace Tips.Grin.Api.Controllers
                 data.GrinParts = GrinpartsList;
 
                 string result = await _repository.UpdateGrin(data);
-                _logger.LogInfo(result);
+                _logger.LogInfo($"Grin Updated Successfully:{result}");
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Grin Updated Successfully";
@@ -1924,9 +1930,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateGrin action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateGrin API : \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateGrin API : \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1955,7 +1961,7 @@ namespace Tips.Grin.Api.Controllers
                 }
                 else
                 {
-
+                    _logger.LogInfo($"Returned Grin Details:{products}");
                     serviceResponse.Data = products;
                     serviceResponse.Message = "Returned Grin Details";
                     serviceResponse.Success = true;
@@ -1965,9 +1971,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetGrinSPReportWithParam API : \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithParam action";
+                serviceResponse.Message = $"Error Occured in GetGrinSPReportWithParam API : \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1995,7 +2001,7 @@ namespace Tips.Grin.Api.Controllers
                 }
                 else
                 {
-
+                    _logger.LogInfo($"Returned Grin Details:{products}");
                     serviceResponse.Data = products;
                     serviceResponse.Message = "Returned Grin Details";
                     serviceResponse.Success = true;
@@ -2005,9 +2011,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetGrinSPReportWithParamForTrans API : \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithParam action";
+                serviceResponse.Message = $"Error Occured in GetGrinSPReportWithParamForTrans API : \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2036,7 +2042,7 @@ namespace Tips.Grin.Api.Controllers
                 }
                 else
                 {
-
+                    _logger.LogInfo($"Returned Grin Details:{products}");
                     serviceResponse.Data = products;
                     serviceResponse.Message = "Returned Grin Details";
                     serviceResponse.Success = true;
@@ -2046,9 +2052,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetGrinSPReportWithParamForAvi API : \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithParamForAvi action";
+                serviceResponse.Message = $"Error Occured in GetGrinSPReportWithParamForAvi API : \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2075,7 +2081,7 @@ namespace Tips.Grin.Api.Controllers
                 }
                 else
                 {
-
+                    _logger.LogInfo($"Returned PurchaseInventory Details:{products}");
                     serviceResponse.Data = products;
                     serviceResponse.Message = "Returned PurchaseInventory Details";
                     serviceResponse.Success = true;
@@ -2085,9 +2091,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetPurchaseInventorySPReportWithParam API : \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetPurchaseInventorySPReportWithParam action";
+                serviceResponse.Message = $"Error Occured in GetPurchaseInventorySPReportWithParam API : \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2126,6 +2132,7 @@ namespace Tips.Grin.Api.Controllers
                 }
                 else
                 {
+                    _logger.LogInfo($"Returned Grin Details:{products}");
                     serviceResponse.Data = products;
                     serviceResponse.Message = "Returned Grin Details";
                     serviceResponse.Success = true;
@@ -2135,9 +2142,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetGrinSPReport API : \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside Grin action";
+                serviceResponse.Message = $"Error Occured in GetGrinSPReport API : \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2175,6 +2182,7 @@ namespace Tips.Grin.Api.Controllers
                 }
                 else
                 {
+                    _logger.LogInfo($"Returned GrinSPReportForTrans Details:{products}");
                     serviceResponse.Data = products;
                     serviceResponse.Message = "Returned GrinSPReportForTrans Details";
                     serviceResponse.Success = true;
@@ -2184,9 +2192,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetGrinSPReportForTrans API:\n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportForTrans action";
+                serviceResponse.Message = $"Error Occured in GetGrinSPReportForTrans API:\n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2212,6 +2220,7 @@ namespace Tips.Grin.Api.Controllers
                 }
                 else
                 {
+                    _logger.LogInfo($"Returned GrinSPReportWithDateForTrans Details:{products}");
                     serviceResponse.Data = products;
                     serviceResponse.Message = "Returned GrinSPReportWithDateForTrans Details";
                     serviceResponse.Success = true;
@@ -2221,9 +2230,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetGrinSPReportWithDateForTrans API:\n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithDateForTrans action";
+                serviceResponse.Message = $"Error Occured in GetGrinSPReportWithDateForTrans API:\n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2249,6 +2258,7 @@ namespace Tips.Grin.Api.Controllers
                 }
                 else
                 {
+                    _logger.LogInfo($"Returned GetGrinSPReportWithDateForAvi Details:{products}");
                     serviceResponse.Data = products;
                     serviceResponse.Message = "Returned GetGrinSPReportWithDateForAvi Details";
                     serviceResponse.Success = true;
@@ -2258,9 +2268,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetGrinSPReportWithDateForAvi API: \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithDateForAvi action";
+                serviceResponse.Message = $"Error Occured in GetGrinSPReportWithDateForAvi API: \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2286,6 +2296,7 @@ namespace Tips.Grin.Api.Controllers
                 }
                 else
                 {
+                    _logger.LogInfo($"Returned Grin Details:{products}");
                     serviceResponse.Data = products;
                     serviceResponse.Message = "Returned Grin Details";
                     serviceResponse.Success = true;
@@ -2295,9 +2306,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetItemDetailsByItemNumberList API : \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetGrinSPReportWithDate action";
+                serviceResponse.Message = $"Error Occured in GetItemDetailsByItemNumberList API : \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2332,9 +2343,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetPurchaseInventorySPReportWithDate API : \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetPurchaseInventorySPReportWithDate action";
+                serviceResponse.Message = $"Error Occured in GetPurchaseInventorySPReportWithDate API : \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2360,9 +2371,9 @@ namespace Tips.Grin.Api.Controllers
             catch (Exception ex)
 
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllGrinNumberWhereBinningComplete API : \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllGrinNumberWhereBinningComplete action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetAllGrinNumberWhereBinningComplete API : \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2398,9 +2409,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteGrin action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteGrin API for the following Id :{id}, \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeleteGrin API for the following Id :{id}, \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2459,9 +2470,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetGrinDownloadUrlDetails API for the following grinNumber :{grinNumber}, \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetGrinDownloadUrlDetails API for the following grinNumber :{grinNumber}, \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2507,9 +2518,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetGrinPartsDownloadUrlDetails API for the following grinNumber :{grinNumber}, \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetGrinPartsDownloadUrlDetails API for the following grinNumber :{grinNumber}, \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2580,9 +2591,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateGrinUploadDocument action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateGrinUploadDocument API for the following grinNumber :{grinNumber}, \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Error Occured in UpdateGrinUploadDocument API for the following grinNumber :{grinNumber}, \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2644,7 +2655,7 @@ namespace Tips.Grin.Api.Controllers
                         _documentUploadRepository.SaveAsync();
                     }
                 }
-
+                _logger.LogInfo("GrinCOCUploadDocument Successfully Created");
                 serviceResponse.Data = null;
                 serviceResponse.Message = " GrinCOCUploadDocument Successfully Created";
                 serviceResponse.Success = true;
@@ -2653,9 +2664,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateGrinPartsUploadDocument action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateGrinPartsUploadDocument API for the following grinNumber :{grinNumber}, \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Error Occured in UpdateGrinPartsUploadDocument API for the following grinNumber :{grinNumber}, \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2679,6 +2690,7 @@ namespace Tips.Grin.Api.Controllers
                     _logger.LogInfo(result);
                     _documentUploadRepository.SaveAsync();
 
+                    _logger.LogInfo("GrinCOCUploadDocument Successfully Deleted");
                     serviceResponse.Data = null;
                     serviceResponse.Message = " GrinCoCUploadDocument Deleted Successfully";
                     serviceResponse.Success = true;
@@ -2697,9 +2709,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteGrinCoCUploadDocument action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteGrinCoCUploadDocument API for the following id :{id}, \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Error Occured in DeleteGrinCoCUploadDocument API for the following id :{id}, \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2723,7 +2735,7 @@ namespace Tips.Grin.Api.Controllers
                     string result = await _documentUploadRepository.DeleteUploadFile(documentUploadDetails);
                     _logger.LogInfo(result);
                     _documentUploadRepository.SaveAsync();
-
+                    _logger.LogInfo("GrinUploadDocument Successfully Deleted");
                     serviceResponse.Data = null;
                     serviceResponse.Message = " GrinUploadDocument Deleted Successfully";
                     serviceResponse.Success = true;
@@ -2742,9 +2754,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteGrinUploadDocument action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteGrinUploadDocument API for the following id :{id}, \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Error Occured in DeleteGrinUploadDocument API for the following id :{id}, \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2816,9 +2828,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateGrin action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateGrinParts API for the following id :{id}, \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateGrinParts API for the following id :{id}, \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2868,9 +2880,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteGrinParts action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteGrinParts API for the following id :{id}, \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeleteGrinParts API for the following id :{id}, \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2894,9 +2906,9 @@ namespace Tips.Grin.Api.Controllers
             catch (Exception ex)
 
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllGrinNoList API : \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllActiveGrinNoList action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetAllGrinNoList API : \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2920,9 +2932,9 @@ namespace Tips.Grin.Api.Controllers
             catch (Exception ex)
 
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllGrinNumberForIqc API : \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllGrinNumberForIqc action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetAllGrinNumberForIqc API : \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2946,9 +2958,9 @@ namespace Tips.Grin.Api.Controllers
             catch (Exception ex)
 
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllGrinNumberForBinning API : \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllGrinNumberForBinning action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetAllGrinNumberForBinning API : \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2988,9 +3000,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllGrinParts API : \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllGrinParts API : \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3015,9 +3027,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in UpdateGrinTallyStatus API for the following id: {Id} \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside UpdateGrinTallyStatus action";
+                serviceResponse.Message = $"Error Occured in UpdateGrinTallyStatus API for the following id: {Id} \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3101,9 +3113,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in UpdateGRINAvgCost API for the following GrinNumbers: {GrinNumbers} \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside UpdateGRINAvgCost action : {ex.Message} \n {ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in UpdateGRINAvgCost API for the following GrinNumbers: {GrinNumbers} \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3127,9 +3139,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetGrinComsumptionDetialsByPartNos API for the following PartNoListString: {PartNoListString} \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetGrinComsumptionDetialsByPartNos action";
+                serviceResponse.Message = $"Error Occured in GetGrinComsumptionDetialsByPartNos API for the following PartNoListString: {PartNoListString} \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

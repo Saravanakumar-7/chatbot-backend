@@ -45,9 +45,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something Error Occured in GetAllLatestConvertionrate: {ex.Message} \n {ex.InnerException}");
+                _logger.LogError($"Error Occured in GetAllLatestConvertionrate API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something Error Occured in GetAllLatestConvertionrate: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetAllLatestConvertionrate API : \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -83,9 +83,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetConvertionrateById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetConvertionrateById API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetConvertionrateById action: {ex.Message} \n {ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in GetConvertionrateById API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -138,10 +138,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateConvertionrate action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in CreateConvertionrate API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside CreateConvertionrate action: {ex.Message} \n {ex.InnerException}");
+                _logger.LogError($"Error Occured in CreateConvertionrate API : \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -198,10 +198,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside UpdateConvertionrate action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in UpdateConvertionrate API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside UpdateConvertionrate action: {ex.Message} \n {ex.InnerException}");
+                _logger.LogError($"Error Occured in UpdateConvertionrate API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -224,10 +224,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetLatestConvertionrateByUOC action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetLatestConvertionrateByUOC API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside GetLatestConvertionrateByUOC action: {ex.Message} \n {ex.InnerException}");
+                _logger.LogError($"Error Occured in GetLatestConvertionrateByUOC API : \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
