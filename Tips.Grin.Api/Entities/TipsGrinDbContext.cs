@@ -75,7 +75,9 @@ namespace Tips.Grin.Api.Entities
             modelBuilder.Entity<PurchaseInventorySPReport>().HasNoKey();
             modelBuilder.Entity<IQCConfirmationSPReportForAvi>().HasNoKey();
             modelBuilder.Entity<GrinSPReportForAvi>().HasNoKey();
-          
+            modelBuilder.Entity<BinningSPReportAvi>().HasNoKey();
+            modelBuilder.Entity<PoAndGrinUnitPriceSPReport>().HasNoKey();
+            
         }
 
 

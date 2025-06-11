@@ -315,6 +315,50 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
+        public async Task<IEnumerable<FQToFSFirstSOSPReport>> GetFQToFSFirstSOSPReportWithParam(string LeadId)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<FQToFSFirstSOSPReport>()
+            .FromSqlInterpolated($"CALL FQ_to_FS_report_First_SO({LeadId})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<FQToFSLatestSOSPReport>> GetFQToFSLatestSOSPReportWithParam(string LeadId)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<FQToFSLatestSOSPReport>()
+            .FromSqlInterpolated($"CALL FQ_to_FS_report_Latest_SO({LeadId})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<FQToFSFirstQuoteSPReport>> GetFQToFSFirstQuoteSPReportWithParam( string LeadId)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<FQToFSFirstQuoteSPReport>()
+            .FromSqlInterpolated($"CALL FQ_to_FS_report_FirstQuote({LeadId})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<FQToFSFirstQuoteSentSPReport>> GetFQToFSFirstQuoteSentSPReportWithParam( string LeadId)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<FQToFSFirstQuoteSentSPReport>()
+            .FromSqlInterpolated($"CALL FQ_to_FS_report_FirstQuoteSent({LeadId})")
+            .ToList();
+
+            return result;
+
+        }
+
         public async Task<IEnumerable<SOSummarySPReport>> GetSOSummarySPReportWithParam(string CustomerId, string SalesOrderNumber, string KPN)
         {
             var result = _tipsSalesServiceDbContext
@@ -335,6 +379,28 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
+
+        public async Task<IEnumerable<SalesRevNoSPReportParam>> GetAllSalesRevisionSPReportWithParam(string? LeadId, string? SalesOrderNumber, string? ItemNumber)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SalesRevNoSPReportParam>()
+            .FromSqlInterpolated($"CALL All_Revision_Sales_Order_Report({LeadId},{SalesOrderNumber},{ItemNumber})")
+            .ToList();
+
+            return result;
+
+        }
+
+        public async Task<IEnumerable<SalesRevNoSPReportParam>> GetAllSalesRevisionSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<SalesRevNoSPReportParam>()
+                        .FromSqlInterpolated($"CALL All_Revision_Sales_Order_Report_Date({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+
         public async Task<IEnumerable<RfqSalesOrderSPReport>> GetRfqSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus, string CustomerId)
         {
             var result = _tipsSalesServiceDbContext

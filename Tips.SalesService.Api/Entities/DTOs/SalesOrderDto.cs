@@ -841,41 +841,113 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? TypeOfSolution { get; set; }
     }
 
+    public class FQToFSFirstSOSPReportDto
+    {
+        public string? Leadid { get; set; }
+    }
+
+    public class FQToFSFirstSOSPReport
+    {
+        public string? LeadId { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? FirstSOSalesOrderNumber { get; set; }
+        public DateTime? FirstSOCreatedOn { get; set; }
+        public int? FirstSORevisionnumber { get; set; }
+        public string? FirstSOKPN { get; set; }
+        public string? FirstSOKPNDescription { get; set; }
+        public string? FirstSOStatusEnum { get; set; }
+        public decimal? FirstSOOrderQty { get; set; }
+        public decimal? FirstSOBalanceQty { get; set; }
+        public decimal? FirstSODispatchQty { get; set; }
+        public string? FirstSODiscount { get; set; }
+        public decimal? FirstSOTaxedValue { get; set; }
+        public string? FirstSOQuoteNumber { get; set; }
+    }
+
+    public class FQToFSFirstQuoteSPReport
+    {
+        public string? LeadId { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? FirstQuoteCreatedNumber { get; set; }
+        public decimal? FirstQuoteRevisionNumber { get; set; }
+        public DateTime? FirstQuoteCreatedOn { get; set; }
+        public decimal? FirstQuotetotalamount { get; set; }
+        public string? FirstQuoteKPN { get; set; }
+        public string? FirstQuoteKPNDescription { get; set; }
+        public decimal? FirstQuoteQty { get; set; }
+        public decimal? FirstQuoteDiscountAmount { get; set; }
+        public decimal? FirstQuoteTotalFinalAmount { get; set; }
+    }
+    public class FQToFSFirstQuoteSentSPReport
+    {
+    public string? LeadId { get; set; }
+    public string? TypeOfSolution { get; set; }
+    public string? FirstQuoteSentNumber { get; set; }
+    public decimal? FirstQuoteSentRevisionnumber { get; set; }
+    public DateTime? FirstQuoteSentCreatedOn { get; set; }
+    public string? FirstQuoteSentKPN { get; set; }
+    public string? FirstQuoteSentKPNDescription { get; set; }
+    public decimal? FirstQuoteSentQty { get; set; }
+    public decimal? FirstQuoteSentDiscountAmount { get; set; }
+    public decimal? FirstQuoteSentTotalFinalAmount { get; set; }
+}
+
+    public class FQToFSLatestSOSPReport
+    {
+        public string? LeadId { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? LatestSalesOrderSentNumber { get; set; }
+        public DateTime? LatestSOSentCreatedOn { get; set; }
+        public int? LatestSOSentRevisionnumber { get; set; }
+        public string? LatestSOSentKPN { get; set; }
+        public string? LatestSOSentKPNDescription { get; set; }
+        public int? LatestSOSentStatusEnum { get; set; }
+        public decimal? LatestSOSentOrderQty { get; set; }
+        public decimal? LatestSOBalanceQty { get; set; }
+        public decimal? LatestSODispatchQty { get; set; }
+        public string? LatestSODiscount { get; set; }
+        public decimal? LatestSOTaxedValue { get; set; }
+        public string? LatestSOQuoteNumber { get; set; }
+    }
+
     public class SalesOrderSPReportForTrans
     {
-        public string? CustomerName { get; set; }
-        public string? CustomerId { get; set; }
         public string? SalesOrderNumber { get; set; }
+        public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? LeadId { get; set; }
+        public string? OrderType { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+        public string? MaterialGroup { get; set; }
+        public string? ItemType { get; set; }
+        public string? PONumber { get; set; }
+        public DateTime? PoCreatedon { get; set; }
+        public string? SalesPerson { get; set; }
         public DateTime? sodate { get; set; }
         public int? SOStatus { get; set; }
         public string? KPN { get; set; }
         public string? KPNDescription { get; set; }
         public string? ProjectNumber { get; set; }
-        public DateTime? RequestedDate { get; set; }
-        public decimal? OrderQty { get; set; }
-        public decimal? TotalAmount { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
-        public decimal? BalanceQty { get; set; }
-        public decimal? DispatchQty { get; set; }
-        public string? TypeOfSolution { get; set; }
-        public string? MaterialGroup { get; set; }
-        public string? ItemType { get; set; }
-        public string? PONumber { get; set; }
-        public string? ProductType { get; set; }
-        public string? OrderType { get; set; }
+        public string? PriceList { get; set; }
         public decimal? UnitPrice { get; set; }
-        public decimal? itempricelist { get; set; }
         public decimal? BasicAmount { get; set; }
-        public string? LeadId { get; set; }
-        public string? SalesPerson { get; set; }
         public string? DiscountType { get; set; }
         public string? Discount { get; set; }
         public decimal? SGST { get; set; }
         public decimal? CGST { get; set; }
         public decimal? IGST { get; set; }
         public decimal? UTGST { get; set; }
-        public string? PriceList { get; set; }
+        public decimal? itempricelist { get; set; }
+        public decimal? TotalAmount { get; set; }
+        public decimal? OrderQty { get; set; }
+        public decimal? DispatchQty { get; set; }
+        public decimal? BalanceQty { get; set; }
+        public DateTime? scheduledate { get; set; }
+        public decimal? scheduleqnty { get; set; }
+
 
     }
     public class InitialAdvanceCustomerSPReport
@@ -901,5 +973,32 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public string? CustomerId { get; set; }
     }
+    public class SalesRevNoSPReportParamDTO
+    {
+        public string? LeadId { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? ItemNumber { get; set; }
+    }
+    public class SalesRevNoSPReportParam
+    {
+        public string? LeadId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public int? RevisionNumber { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+        public DateTime? created_date { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? OrderType { get; set; }
+        public string? KPN { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public decimal? OrderQty { get; set; }
+        public string? Discount { get; set; }
+        public double? DiscountValue { get; set; }
+        public double? NetQuote_PostDiscount { get; set; }
+        public decimal? TotalAmountWithInstallationCharges { get; set; }
+        public decimal? TotalFinalAmount { get; set; }
+    }
+
 
 }

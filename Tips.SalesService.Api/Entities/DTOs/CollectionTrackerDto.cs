@@ -14,6 +14,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal AlreadyRecieved { get; set; }
         public decimal AlreadyRecievedWithPercentage { get; set; }
         public string PaymentMode { get; set; }
+        public string PaymentType { get; set; }
         public string PaymentRefNo { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
@@ -32,6 +33,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal AlreadyRecieved { get; set; }
         public decimal AlreadyRecievedWithPercentage { get; set; }
         public string PaymentMode { get; set; }
+        public string PaymentType { get; set; }
         public string PaymentRefNo { get; set; }
         public List<SOBreakDownPostDto>? SOBreakDown { get; set; }
 
@@ -47,6 +49,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal AlreadyRecieved { get; set; }
         public decimal AlreadyRecievedWithPercentage { get; set; }
         public string PaymentMode { get; set; }
+        public string PaymentType { get; set; }
         public string PaymentRefNo { get; set; }
         public string Unit { get; set; }
         public List<SOBreakDownUpdateDto>? SOBreakDown { get; set; }
@@ -116,10 +119,40 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? TotalSumOfSOAmount { get; set; }
         public decimal? AlreadyRecieved { get; set; }
         public decimal? AmountRecieved { get; set; }
-        public decimal? totaladvance { get; set; }
+        public decimal? TotalAdvance { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
         public DateTime? entrydate { get; set; }
+    }
+
+    public class FirstAdvanceReceivedEntryLevelSPResport
+    {
+        public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public DateTime? so_createddate { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+        public decimal? TotalSumOfSOAmount { get; set; }
+        public decimal? AdvanceReceived { get; set; }
+        public decimal? Percentage_of_Adv_rec { get; set; }
+        public DateTime? entrydate { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? PaymentMode { get; set; }
+        public string? PaymentRefNo { get; set; }
+    }
+
+    public class LatestAdvanceReceivedEntryLevelSPResport
+    {
+        public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public DateTime? so_createddate { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+        public decimal? TotalSumOfSOAmount { get; set; }
+        public decimal? AdvanceReceived { get; set; }
+        public decimal? Percentage_of_Adv_rec { get; set; }
     }
 
 }

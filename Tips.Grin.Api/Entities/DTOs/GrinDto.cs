@@ -648,6 +648,35 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? DocDate { get; set; }
         public string? Transporter_ID { get; set; }
     }
+    public class PoAndGrinUnitPriceSPReportDto
+    {
+        public string? GrinNumber { get; set; }
+        public string? VendorName { get; set; }
+        public string? PONumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+
+    }
+    public class PoAndGrinUnitPriceSPReport
+    {
+        public string? PONumber { get; set; }
+        public string? PartNumber { get; set; }
+        public string? MPN { get; set; }
+        public string? Description { get; set; }
+        public decimal? POQty { get; set; }
+        public string? POUOM { get; set; }
+        public decimal? POUnitPrice { get; set; }
+        public string? POUOC { get; set; }
+        public string? GrinNumber { get; set; }
+        public decimal? GRINQty { get; set; }
+        public string? GRINUOM { get; set; }
+        public decimal? GRINUnitPrice { get; set; }
+        public string? GRINUOC { get; set; }
+        public decimal? UnitPriceDifference { get; set; }
+        public string? projectnumber { get; set; }
+        public string? VendorName { get; set; }
+        public DateTime? grindate { get; set; }
+    }
 
 
 }

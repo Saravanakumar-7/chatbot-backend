@@ -178,8 +178,15 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<AdvanceRecievableSPReportDto>().HasNoKey();
             modelBuilder.Entity<InitialAdvanceCustomerSPReport>().HasNoKey();
             modelBuilder.Entity<AdvanceReceivedEntryLevelSPResport>().HasNoKey();
+            modelBuilder.Entity<FirstAdvanceReceivedEntryLevelSPResport>().HasNoKey();
+            modelBuilder.Entity<LatestAdvanceReceivedEntryLevelSPResport>().HasNoKey();
+            modelBuilder.Entity<QuoteRevNoSPReportParam>().HasNoKey();
+            modelBuilder.Entity<SalesRevNoSPReportParam>().HasNoKey();
+            modelBuilder.Entity<FQToFSFirstSOSPReport>().HasNoKey();
+            modelBuilder.Entity<FQToFSFirstQuoteSPReport>().HasNoKey();
+            modelBuilder.Entity<FQToFSFirstQuoteSentSPReport>().HasNoKey();
+            modelBuilder.Entity<FQToFSLatestSOSPReport>().HasNoKey();
             
-
         }
 
     }

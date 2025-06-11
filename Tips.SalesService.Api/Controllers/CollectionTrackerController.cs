@@ -893,28 +893,28 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetFirstAdvanceReceivedEntryLevelSPReportWithParam([FromBody] AdvanceReceivedEntryLevelSPResportDTO advanceReceivedEntryLevelSPResportDTO)
+        public async Task<IActionResult> GetFirstSOAdvanceReceivedSPReportWithParam([FromBody] AdvanceReceivedEntryLevelSPResportDTO advanceReceivedEntryLevelSPResportDTO)
 
         {
-            ServiceResponse<IEnumerable<AdvanceReceivedEntryLevelSPResport>> serviceResponse = new ServiceResponse<IEnumerable<AdvanceReceivedEntryLevelSPResport>>();
+            ServiceResponse<IEnumerable<FirstAdvanceReceivedEntryLevelSPResport>> serviceResponse = new ServiceResponse<IEnumerable<FirstAdvanceReceivedEntryLevelSPResport>>();
             try
             {
-                var advanceReceivedEntryLevelSPReportWithParam = await _repository.GetFirstAdvanceReceivedEntryLevelSPReportWithParam(advanceReceivedEntryLevelSPResportDTO.CustomerId, advanceReceivedEntryLevelSPResportDTO.TypeOfSolution);
+                var advanceReceivedEntryLevelSPReportWithParam = await _repository.GetFirstSOAdvanceReceivedSPReportWithParam(advanceReceivedEntryLevelSPResportDTO.CustomerId, advanceReceivedEntryLevelSPResportDTO.TypeOfSolution);
 
                 if (advanceReceivedEntryLevelSPReportWithParam == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"FirstAdvanceReceivedEntryLevel SPReport hasn't been found.";
+                    serviceResponse.Message = $"FirstSOAdvanceReceived SPReport hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"FirstAdvanceReceivedEntryLevel SPReport hasn't been found in db.");
+                    _logger.LogError($"FirstSOAdvanceReceived SPReport hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogError($"FirstAdvanceReceivedEntryLevel SPReport Returned Successfully.");
+                    _logger.LogError($"FirstSOAdvanceReceived SPReport Returned Successfully.");
                     serviceResponse.Data = advanceReceivedEntryLevelSPReportWithParam;
-                    serviceResponse.Message = "Returned FirstAdvanceReceivedEntryLevel SPResport Details";
+                    serviceResponse.Message = "Returned FirstSOAdvanceReceived SPReport Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -922,35 +922,35 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetFirstAdvanceReceivedEntryLevelSPReportWithParam API: {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetFirstSOAdvanceReceivedSPReportWithParam API: \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetFirstAdvanceReceivedEntryLevelSPReportWithParam API: {ex.Message} ";
+                serviceResponse.Message = $"Error Occured in GetFirstSOAdvanceReceivedSPReportWithParam API: \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
         [HttpGet] // Adjust your route as needed
-        public async Task<IActionResult> GetFirstAdvanceReceivedEntryLevelSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        public async Task<IActionResult> GetFirstSOAdvanceReceivedSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            ServiceResponse<IEnumerable<AdvanceReceivedEntryLevelSPResport>> serviceResponse = new ServiceResponse<IEnumerable<AdvanceReceivedEntryLevelSPResport>>();
+            ServiceResponse<IEnumerable<FirstAdvanceReceivedEntryLevelSPResport>> serviceResponse = new ServiceResponse<IEnumerable<FirstAdvanceReceivedEntryLevelSPResport>>();
             try
             {
-                var firstAdvanceReceivedEntryLevelSPReportWithDate = await _repository.GetFirstAdvanceReceivedEntryLevelSPReportWithDate(FromDate, ToDate);
+                var firstAdvanceReceivedEntryLevelSPReportWithDate = await _repository.GetFirstSOAdvanceReceivedSPReportWithDate(FromDate, ToDate);
                 if (firstAdvanceReceivedEntryLevelSPReportWithDate == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"FirstAdvanceReceivedEntryLevel hasn't been found.";
+                    serviceResponse.Message = $"FirstSOAdvanceReceived hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"FirstAdvanceReceivedEntryLevel hasn't been found in db.");
+                    _logger.LogError($"FirstSOAdvanceReceived hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogError($"FirstAdvanceReceivedEntryLevel SPResportWithDate Returned Successfully.");
+                    _logger.LogError($"FirstSOAdvanceReceived SPReportWithDate Returned Successfully.");
                     serviceResponse.Data = firstAdvanceReceivedEntryLevelSPReportWithDate;
-                    serviceResponse.Message = "Returned FirstAdvanceReceivedEntryLevel SPResportWithDate Details";
+                    serviceResponse.Message = "Returned FirstSOAdvanceReceived SPReportWithDate Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -958,9 +958,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetFirstAdvanceReceivedEntryLevelSPReportWithDate API: {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetFirstSOAdvanceReceivedSPReportWithDate API: \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetFirstAdvanceReceivedEntryLevelSPReportWithDate API: {ex.Message} ";
+                serviceResponse.Message = $"Error Occured in GetFirstSOAdvanceReceivedSPReportWithDate API: \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -969,28 +969,28 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetLatestAdvanceReceivedEntryLevelSPReportWithParam([FromBody] AdvanceReceivedEntryLevelSPResportDTO advanceReceivedEntryLevelSPResportDTO)
+        public async Task<IActionResult> GetLatestSOAdvanceReceivedSPReportWithParam([FromBody] AdvanceReceivedEntryLevelSPResportDTO advanceReceivedEntryLevelSPResportDTO)
 
         {
-            ServiceResponse<IEnumerable<AdvanceReceivedEntryLevelSPResport>> serviceResponse = new ServiceResponse<IEnumerable<AdvanceReceivedEntryLevelSPResport>>();
+            ServiceResponse<IEnumerable<LatestAdvanceReceivedEntryLevelSPResport>> serviceResponse = new ServiceResponse<IEnumerable<LatestAdvanceReceivedEntryLevelSPResport>>();
             try
             {
-                var latestAdvanceReceivedEntryLevelSPReportWithParam = await _repository.GetLatestAdvanceReceivedEntryLevelSPReportWithParam(advanceReceivedEntryLevelSPResportDTO.CustomerId, advanceReceivedEntryLevelSPResportDTO.TypeOfSolution);
+                var latestAdvanceReceivedEntryLevelSPReportWithParam = await _repository.GetLatestSOAdvanceReceivedSPReportWithParam(advanceReceivedEntryLevelSPResportDTO.CustomerId, advanceReceivedEntryLevelSPResportDTO.TypeOfSolution);
 
                 if (latestAdvanceReceivedEntryLevelSPReportWithParam == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"LatestAdvanceReceivedEntryLevel SPReport hasn't been found.";
+                    serviceResponse.Message = $"LatestSOAdvanceReceived SPReport hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"LatestAdvanceReceivedEntryLevel SPReport hasn't been found in db.");
+                    _logger.LogError($"LatestSOAdvanceReceived SPReport hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogError($"LatestAdvanceReceivedEntryLevel SPReport Returned Successfully.");
+                    _logger.LogError($"LatestSOAdvanceReceived SPReport Returned Successfully.");
                     serviceResponse.Data = latestAdvanceReceivedEntryLevelSPReportWithParam;
-                    serviceResponse.Message = "Returned LatestAdvanceReceivedEntryLevel SPResport Details";
+                    serviceResponse.Message = "Returned LatestSOAdvanceReceived SPReport Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -998,35 +998,35 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetLatestAdvanceReceivedEntryLevelSPReportWithParam API: {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetLatestSOAdvanceReceivedSPReportWithParam API: \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetLatestAdvanceReceivedEntryLevelSPReportWithParam API: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetLatestSOAdvanceReceivedSPReportWithParam API: \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
         [HttpGet] // Adjust your route as needed
-        public async Task<IActionResult> GetLatestAdvanceReceivedEntryLevelSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        public async Task<IActionResult> GetLatestSOAdvanceReceivedSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            ServiceResponse<IEnumerable<AdvanceReceivedEntryLevelSPResport>> serviceResponse = new ServiceResponse<IEnumerable<AdvanceReceivedEntryLevelSPResport>>();
+            ServiceResponse<IEnumerable<LatestAdvanceReceivedEntryLevelSPResport>> serviceResponse = new ServiceResponse<IEnumerable<LatestAdvanceReceivedEntryLevelSPResport>>();
             try
             {
-                var latestAdvanceReceivedEntryLevelSPReportWithDate = await _repository.GetFirstAdvanceReceivedEntryLevelSPReportWithDate(FromDate, ToDate);
-                if (latestAdvanceReceivedEntryLevelSPReportWithDate == null)
+                var latestSOAdvanceReceivedSPReportWithDate = await _repository.GetLatestSOAdvanceReceivedSPReportWithDate(FromDate, ToDate);
+                if (latestSOAdvanceReceivedSPReportWithDate == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"LatestAdvanceReceivedEntryLevel hasn't been found.";
+                    serviceResponse.Message = $"LatestSOAdvanceReceived hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"LatestAdvanceReceivedEntryLevel hasn't been found in db.");
+                    _logger.LogError($"LatestSOAdvanceReceived hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogError($"LatestAdvanceReceivedEntryLevel SPResportWithDate Returned Successfully.");
-                    serviceResponse.Data = latestAdvanceReceivedEntryLevelSPReportWithDate;
-                    serviceResponse.Message = "Returned LatestAdvanceReceivedEntryLevel SPResportWithDate Details";
+                    _logger.LogError($"LatestSOAdvanceReceived SPReportWithDate Returned Successfully.");
+                    serviceResponse.Data = latestSOAdvanceReceivedSPReportWithDate;
+                    serviceResponse.Message = "Returned LatestSOAdvanceReceived SPReportWithDate Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
@@ -1034,9 +1034,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetLatestAdvanceReceivedEntryLevelSPReportWithDate API: {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetLatestSOAdvanceReceivedSPReportWithDate API: \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetLatestAdvanceReceivedEntryLevelSPReportWithDate API: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetLatestSOAdvanceReceivedSPReportWithDate API: \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

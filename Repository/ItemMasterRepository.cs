@@ -483,11 +483,11 @@ namespace Repository
 
         public async Task<IEnumerable<ItemMasterAlterMtrPartNoDto>> GetAllItemMasterMftrNoList()
         {
-                var itemMasterId= await TipsMasterDbContext.ItemMasters.Where(x => x.IsActive == true).Select(x=>x.Id).ToListAsync();
+            var itemMasterId = await TipsMasterDbContext.ItemMasters.Where(x => x.IsActive == true).Select(x => x.Id).ToListAsync();
 
             IEnumerable<ItemMasterAlterMtrPartNoDto> itemMasterIdNoListDto = await TipsMasterDbContext.ItemmasterAlternates
                             .Where(x => itemMasterId.Contains(x.ItemMasterId))
-                            .GroupBy(g => new { g.ManufacturerPartNo,g.Manufacturer })
+                            .GroupBy(g => new { g.ManufacturerPartNo, g.Manufacturer })
                               .Select(c => new ItemMasterAlterMtrPartNoDto()
                               {
                                   ManufacturerPartNo = c.Key.ManufacturerPartNo,
@@ -497,6 +497,25 @@ namespace Repository
 
             return itemMasterIdNoListDto;
         }
+
+        //public async Task<IEnumerable<ItemMasterAlterMtrPartNoDto>> GetAllItemMasterMftrNoList()
+        //{
+        //    var result = await (from alt in TipsMasterDbContext.ItemmasterAlternates
+        //                        join master in TipsMasterDbContext.ItemMasters
+        //                            on alt.ItemMasterId equals master.Id
+        //                        where master.IsActive
+        //                        group alt by new { alt.ManufacturerPartNo, alt.Manufacturer } into g
+        //                        select new ItemMasterAlterMtrPartNoDto
+        //                        {
+        //                            ManufacturerPartNo = g.Key.ManufacturerPartNo,
+        //                            Manufacturer = g.Key.Manufacturer
+        //                        }).ToListAsync();
+
+        //    return result;
+        //}
+
+
+
 
         public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllOpenGrinStatusTrueItemMasterIdNoList()
         {

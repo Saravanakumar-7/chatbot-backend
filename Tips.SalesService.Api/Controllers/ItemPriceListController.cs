@@ -173,7 +173,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var getItemPriceList = await _repository.GetItemPriceListByItemNo(itemNo);
-                if (getItemPriceList == null)
+                if (getItemPriceList.Count()== 0)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"ItemPriceList with id: {itemNo}, hasn't been found in db.";
@@ -314,7 +314,7 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 var getItemPriceList = await _repository.GetItemPriceListByItemNoAndPriceListName(ItemNo, priceListName);
-                if (getItemPriceList == null)
+                if (getItemPriceList.Count() == 0)
                 {
                     _logger.LogError($"ItemPriceListdetail with id: {ItemNo}, hasn't been found in db.");
                     serviceResponse.Data = null;

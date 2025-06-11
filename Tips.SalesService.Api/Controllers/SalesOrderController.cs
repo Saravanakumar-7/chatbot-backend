@@ -19,6 +19,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualBasic;
 using MimeKit;
+using Mysqlx;
 using MySqlX.XDevAPI;
 using MySqlX.XDevAPI.Common;
 using Newtonsoft.Json;
@@ -2592,17 +2593,17 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(5).SetCellValue("KPN");
                 headerRow.CreateCell(6).SetCellValue("KPN Description");
                 headerRow.CreateCell(7).SetCellValue("ProjectNumber");
-                headerRow.CreateCell(8).SetCellValue("RequestedDate");
-                headerRow.CreateCell(9).SetCellValue("Order Qty");
-                headerRow.CreateCell(10).SetCellValue("Total Amount");
-                headerRow.CreateCell(11).SetCellValue("UOC");
-                headerRow.CreateCell(12).SetCellValue("UOM");
-                headerRow.CreateCell(13).SetCellValue("Balance Qty");
-                headerRow.CreateCell(14).SetCellValue("Dispatch Qty");
-                headerRow.CreateCell(15).SetCellValue("Type Of Solution");
-                headerRow.CreateCell(16).SetCellValue("Material Group");
-                headerRow.CreateCell(17).SetCellValue("Item Type");
-                headerRow.CreateCell(18).SetCellValue("PO Number");
+                headerRow.CreateCell(8).SetCellValue("Order Qty");
+                headerRow.CreateCell(9).SetCellValue("Total Amount");
+                headerRow.CreateCell(10).SetCellValue("UOC");
+                headerRow.CreateCell(11).SetCellValue("UOM");
+                headerRow.CreateCell(12).SetCellValue("Balance Qty");
+                headerRow.CreateCell(13).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(14).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(15).SetCellValue("Material Group");
+                headerRow.CreateCell(16).SetCellValue("Item Type");
+                headerRow.CreateCell(17).SetCellValue("PO Number");
+                headerRow.CreateCell(18).SetCellValue("PoCreatedOn");
                 headerRow.CreateCell(19).SetCellValue("Product Type");
                 headerRow.CreateCell(20).SetCellValue("Order Type");
                 headerRow.CreateCell(21).SetCellValue("Unit Price");
@@ -2617,6 +2618,8 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(30).SetCellValue("IGST");
                 headerRow.CreateCell(31).SetCellValue("UTGST");
                 headerRow.CreateCell(32).SetCellValue("Price List");
+                headerRow.CreateCell(33).SetCellValue("ScheduleDate");
+                headerRow.CreateCell(34).SetCellValue("ScheduleQnty");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -2631,17 +2634,17 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(5).SetCellValue(item.KPN ?? "");
                     row.CreateCell(6).SetCellValue(item.KPNDescription ?? "");
                     row.CreateCell(7).SetCellValue(item.ProjectNumber ?? "");
-                    row.CreateCell(8).SetCellValue(item.RequestedDate?.ToString("MM/dd/yyyy") ?? "");
-                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.OrderQty ?? 0));
-                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.TotalAmount ?? 0));
-                    row.CreateCell(11).SetCellValue(item.UOC ?? "");
-                    row.CreateCell(12).SetCellValue(item.UOM ?? "");
-                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0));
-                    row.CreateCell(14).SetCellValue(Convert.ToDouble(item.DispatchQty ?? 0));
-                    row.CreateCell(15).SetCellValue(item.TypeOfSolution ?? "");
-                    row.CreateCell(16).SetCellValue(item.MaterialGroup ?? "");
-                    row.CreateCell(17).SetCellValue(item.ItemType ?? "");
-                    row.CreateCell(18).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(8).SetCellValue(Convert.ToDouble(item.OrderQty ?? 0));
+                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.TotalAmount ?? 0));
+                    row.CreateCell(10).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(11).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0));
+                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.DispatchQty ?? 0));
+                    row.CreateCell(14).SetCellValue(item.TypeOfSolution ?? "");
+                    row.CreateCell(15).SetCellValue(item.MaterialGroup ?? "");
+                    row.CreateCell(16).SetCellValue(item.ItemType ?? "");
+                    row.CreateCell(17).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(18).SetCellValue(item.PoCreatedon?.ToString("MM/dd/yyyy") ?? "");
                     row.CreateCell(19).SetCellValue(item.ProductType ?? "");
                     row.CreateCell(20).SetCellValue(item.OrderType ?? "");
                     row.CreateCell(21).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0));
@@ -2656,6 +2659,8 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(30).SetCellValue(Convert.ToDouble(item.IGST ?? 0));
                     row.CreateCell(31).SetCellValue(Convert.ToDouble(item.UTGST ?? 0));
                     row.CreateCell(32).SetCellValue(item.PriceList ?? "");
+                    row.CreateCell(33).SetCellValue(item.scheduledate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(34).SetCellValue(Convert.ToDouble(item.scheduleqnty ?? 0));
                 }
 
                 // Write to memory stream
@@ -2814,17 +2819,17 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(5).SetCellValue("KPN");
                 headerRow.CreateCell(6).SetCellValue("KPN Description");
                 headerRow.CreateCell(7).SetCellValue("ProjectNumber");
-                headerRow.CreateCell(8).SetCellValue("RequestedDate");
-                headerRow.CreateCell(9).SetCellValue("Order Qty");
-                headerRow.CreateCell(10).SetCellValue("Total Amount");
-                headerRow.CreateCell(11).SetCellValue("UOC");
-                headerRow.CreateCell(12).SetCellValue("UOM");
-                headerRow.CreateCell(13).SetCellValue("Balance Qty");
-                headerRow.CreateCell(14).SetCellValue("Dispatch Qty");
-                headerRow.CreateCell(15).SetCellValue("Type Of Solution");
-                headerRow.CreateCell(16).SetCellValue("Material Group");
-                headerRow.CreateCell(17).SetCellValue("Item Type");
-                headerRow.CreateCell(18).SetCellValue("PO Number");
+                headerRow.CreateCell(8).SetCellValue("Order Qty");
+                headerRow.CreateCell(9).SetCellValue("Total Amount");
+                headerRow.CreateCell(10).SetCellValue("UOC");
+                headerRow.CreateCell(11).SetCellValue("UOM");
+                headerRow.CreateCell(12).SetCellValue("Balance Qty");
+                headerRow.CreateCell(13).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(14).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(15).SetCellValue("Material Group");
+                headerRow.CreateCell(16).SetCellValue("Item Type");
+                headerRow.CreateCell(17).SetCellValue("PO Number");
+                headerRow.CreateCell(18).SetCellValue("PoCreatedOn");
                 headerRow.CreateCell(19).SetCellValue("Product Type");
                 headerRow.CreateCell(20).SetCellValue("Order Type");
                 headerRow.CreateCell(21).SetCellValue("Unit Price");
@@ -2839,6 +2844,8 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(30).SetCellValue("IGST");
                 headerRow.CreateCell(31).SetCellValue("UTGST");
                 headerRow.CreateCell(32).SetCellValue("Price List");
+                headerRow.CreateCell(33).SetCellValue("ScheduleDate");
+                headerRow.CreateCell(34).SetCellValue("ScheduleQnty");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -2853,17 +2860,17 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(5).SetCellValue(item.KPN ?? "");
                     row.CreateCell(6).SetCellValue(item.KPNDescription ?? "");
                     row.CreateCell(7).SetCellValue(item.ProjectNumber ?? "");
-                    row.CreateCell(8).SetCellValue(item.RequestedDate?.ToString("MM/dd/yyyy") ?? "");
-                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.OrderQty ?? 0));
-                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.TotalAmount ?? 0));
-                    row.CreateCell(11).SetCellValue(item.UOC ?? "");
-                    row.CreateCell(12).SetCellValue(item.UOM ?? "");
-                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0));
-                    row.CreateCell(14).SetCellValue(Convert.ToDouble(item.DispatchQty ?? 0));
-                    row.CreateCell(15).SetCellValue(item.TypeOfSolution ?? "");
-                    row.CreateCell(16).SetCellValue(item.MaterialGroup ?? "");
-                    row.CreateCell(17).SetCellValue(item.ItemType ?? "");
-                    row.CreateCell(18).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(8).SetCellValue(Convert.ToDouble(item.OrderQty ?? 0));
+                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.TotalAmount ?? 0));
+                    row.CreateCell(10).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(11).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0));
+                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.DispatchQty ?? 0));
+                    row.CreateCell(14).SetCellValue(item.TypeOfSolution ?? "");
+                    row.CreateCell(15).SetCellValue(item.MaterialGroup ?? "");
+                    row.CreateCell(16).SetCellValue(item.ItemType ?? "");
+                    row.CreateCell(17).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(18).SetCellValue(item.PoCreatedon?.ToString("MM/dd/yyyy") ?? "");
                     row.CreateCell(19).SetCellValue(item.ProductType ?? "");
                     row.CreateCell(20).SetCellValue(item.OrderType ?? "");
                     row.CreateCell(21).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0));
@@ -2878,6 +2885,8 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(30).SetCellValue(Convert.ToDouble(item.IGST ?? 0));
                     row.CreateCell(31).SetCellValue(Convert.ToDouble(item.UTGST ?? 0));
                     row.CreateCell(32).SetCellValue(item.PriceList ?? "");
+                    row.CreateCell(33).SetCellValue(item.scheduledate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(34).SetCellValue(Convert.ToDouble(item.scheduleqnty ?? 0));
                 }
 
                 // Write to memory stream
@@ -2958,17 +2967,17 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(5).SetCellValue("KPN");
                 headerRow.CreateCell(6).SetCellValue("KPN Description");
                 headerRow.CreateCell(7).SetCellValue("ProjectNumber");
-                headerRow.CreateCell(8).SetCellValue("RequestedDate");
-                headerRow.CreateCell(9).SetCellValue("Order Qty");
-                headerRow.CreateCell(10).SetCellValue("Total Amount");
-                headerRow.CreateCell(11).SetCellValue("UOC");
-                headerRow.CreateCell(12).SetCellValue("UOM");
-                headerRow.CreateCell(13).SetCellValue("Balance Qty");
-                headerRow.CreateCell(14).SetCellValue("Dispatch Qty");
-                headerRow.CreateCell(15).SetCellValue("Type Of Solution");
-                headerRow.CreateCell(16).SetCellValue("Material Group");
-                headerRow.CreateCell(17).SetCellValue("Item Type");
-                headerRow.CreateCell(18).SetCellValue("PO Number");
+                headerRow.CreateCell(8).SetCellValue("Order Qty");
+                headerRow.CreateCell(9).SetCellValue("Total Amount");
+                headerRow.CreateCell(10).SetCellValue("UOC");
+                headerRow.CreateCell(11).SetCellValue("UOM");
+                headerRow.CreateCell(12).SetCellValue("Balance Qty");
+                headerRow.CreateCell(13).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(14).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(15).SetCellValue("Material Group");
+                headerRow.CreateCell(16).SetCellValue("Item Type");
+                headerRow.CreateCell(17).SetCellValue("PO Number");
+                headerRow.CreateCell(18).SetCellValue("PoCreatedOn");
                 headerRow.CreateCell(19).SetCellValue("Product Type");
                 headerRow.CreateCell(20).SetCellValue("Order Type");
                 headerRow.CreateCell(21).SetCellValue("Unit Price");
@@ -2983,6 +2992,8 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(30).SetCellValue("IGST");
                 headerRow.CreateCell(31).SetCellValue("UTGST");
                 headerRow.CreateCell(32).SetCellValue("Price List");
+                headerRow.CreateCell(33).SetCellValue("ScheduleDate");
+                headerRow.CreateCell(34).SetCellValue("ScheduleQnty");
 
                 // Populate data rows
                 int rowIndex = 1;
@@ -2997,17 +3008,17 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(5).SetCellValue(item.KPN ?? "");
                     row.CreateCell(6).SetCellValue(item.KPNDescription ?? "");
                     row.CreateCell(7).SetCellValue(item.ProjectNumber ?? "");
-                    row.CreateCell(8).SetCellValue(item.RequestedDate?.ToString("MM/dd/yyyy") ?? "");
-                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.OrderQty ?? 0));
-                    row.CreateCell(10).SetCellValue(Convert.ToDouble(item.TotalAmount ?? 0));
-                    row.CreateCell(11).SetCellValue(item.UOC ?? "");
-                    row.CreateCell(12).SetCellValue(item.UOM ?? "");
-                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0));
-                    row.CreateCell(14).SetCellValue(Convert.ToDouble(item.DispatchQty ?? 0));
-                    row.CreateCell(15).SetCellValue(item.TypeOfSolution ?? "");
-                    row.CreateCell(16).SetCellValue(item.MaterialGroup ?? "");
-                    row.CreateCell(17).SetCellValue(item.ItemType ?? "");
-                    row.CreateCell(18).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(8).SetCellValue(Convert.ToDouble(item.OrderQty ?? 0));
+                    row.CreateCell(9).SetCellValue(Convert.ToDouble(item.TotalAmount ?? 0));
+                    row.CreateCell(10).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(11).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(12).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0));
+                    row.CreateCell(13).SetCellValue(Convert.ToDouble(item.DispatchQty ?? 0));
+                    row.CreateCell(14).SetCellValue(item.TypeOfSolution ?? "");
+                    row.CreateCell(15).SetCellValue(item.MaterialGroup ?? "");
+                    row.CreateCell(16).SetCellValue(item.ItemType ?? "");
+                    row.CreateCell(17).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(18).SetCellValue(item.PoCreatedon?.ToString("MM/dd/yyyy") ?? "");
                     row.CreateCell(19).SetCellValue(item.ProductType ?? "");
                     row.CreateCell(20).SetCellValue(item.OrderType ?? "");
                     row.CreateCell(21).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0));
@@ -3022,6 +3033,8 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(30).SetCellValue(Convert.ToDouble(item.IGST ?? 0));
                     row.CreateCell(31).SetCellValue(Convert.ToDouble(item.UTGST ?? 0));
                     row.CreateCell(32).SetCellValue(item.PriceList ?? "");
+                    row.CreateCell(33).SetCellValue(item.scheduledate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(34).SetCellValue(Convert.ToDouble(item.scheduleqnty ?? 0));
                 }
 
                 // Write to memory stream
@@ -3278,6 +3291,160 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError($"Error Occured in GetFQToFSSPReportWithParam API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error Occured in GetFQToFSSPReportWithParam API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetFQToFSFirstSOSPReportWithParam([FromBody] FQToFSFirstSOSPReportDto FQToFSSPReportDto)
+
+        {
+            ServiceResponse<IEnumerable<FQToFSFirstSOSPReport>> serviceResponse = new ServiceResponse<IEnumerable<FQToFSFirstSOSPReport>>();
+            try
+            {
+                var products = await _repository.GetFQToFSFirstSOSPReportWithParam(FQToFSSPReportDto.Leadid);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"FQToFSFirstSOSPReportWithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"FQToFSFirstSOSPReportWithParam hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"FQToFSFirstSOSPReportWithParam hasn't been found in db.");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned FQToFSFirstSOSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetFQToFSFirstSOSPReportWithParam API: \n{ ex.Message} \n{ ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetFQToFSFirstSOSPReportWithParam API: \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetFQToFSLatestSOSPReportWithParam([FromBody] FQToFSFirstSOSPReportDto FQToFSSPReportDto)
+
+        {
+            ServiceResponse<IEnumerable<FQToFSLatestSOSPReport>> serviceResponse = new ServiceResponse<IEnumerable<FQToFSLatestSOSPReport>>();
+            try
+            {
+                var products = await _repository.GetFQToFSLatestSOSPReportWithParam(FQToFSSPReportDto.Leadid);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"FQToFSLatestSOSPReportWithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"FQToFSLatestSOSPReportWithParam hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"FQToFSLatestSOSPReportWithParam hasn't been found in db.");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned FQToFSLatestSOSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetFQToFSLatestSOSPReportWithParam API: \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetFQToFSLatestSOSPReportWithParam API: \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetFQToFSFirstQuoteSPReportWithParam([FromBody] FQToFSFirstSOSPReportDto FQToFSSPReportDto)
+
+        {
+            ServiceResponse<IEnumerable<FQToFSFirstQuoteSPReport>> serviceResponse = new ServiceResponse<IEnumerable<FQToFSFirstQuoteSPReport>>();
+            try
+            {
+                var products = await _repository.GetFQToFSFirstQuoteSPReportWithParam(FQToFSSPReportDto.Leadid);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"FQToFSFirstQuoteSPReportWithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"FQToFSFirstQuoteSPReportWithParam hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"FQToFSFirstQuoteSPReportWithParam hasn't been found in db.");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned FQToFSFirstQuoteSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetFQToFSFirstQuoteSPReportWithParam API: \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetFQToFSFirstQuoteSPReportWithParam API: \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetFQToFSFirstQuoteSentSPReportWithParam([FromBody] FQToFSFirstSOSPReportDto FQToFSSPReportDto)
+
+        {
+            ServiceResponse<IEnumerable<FQToFSFirstQuoteSentSPReport>> serviceResponse = new ServiceResponse<IEnumerable<FQToFSFirstQuoteSentSPReport>>();
+            try
+            {
+                var products = await _repository.GetFQToFSFirstQuoteSentSPReportWithParam(FQToFSSPReportDto.Leadid);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"FQToFSFirstQuoteSentSPReportWithParam hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"FQToFSFirstQuoteSentSPReportWithParam hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"FQToFSFirstQuoteSentSPReportWithParam hasn't been found in db.");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned FQToFSFirstQuoteSentSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetFQToFSFirstQuoteSentSPReportWithParam API: \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetFQToFSFirstQuoteSentSPReportWithParam API: \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -6732,6 +6899,83 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetAllSalesRevisionSPReportWithParam([FromBody] SalesRevNoSPReportParamDTO salesRevNoSPResportParamDTO)
+
+        {
+            ServiceResponse<IEnumerable<SalesRevNoSPReportParam>> serviceResponse = new ServiceResponse<IEnumerable<SalesRevNoSPReportParam>>();
+            try
+            {
+                var products = await _repository.GetAllSalesRevisionSPReportWithParam(salesRevNoSPResportParamDTO.LeadId, salesRevNoSPResportParamDTO.SalesOrderNumber, salesRevNoSPResportParamDTO.ItemNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesRevisionSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesRevisionSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned All SalesRevisionSPReport Successfully");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned All SalesRevisionSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllSalesRevisionSPReportWithParam API : \n{ex.Message} \n{ex.InnerException}"); ;
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllSalesRevisionSPReportWithParam API : \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetAllSalesRevisionSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<SalesRevNoSPReportParam>> serviceResponse = new ServiceResponse<IEnumerable<SalesRevNoSPReportParam>>();
+            try
+            {
+                var products = await _repository.GetAllSalesRevisionSPReportWithDate(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SalesRevisionSPReportWithDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SalesRevisionSPReportWithDate hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned All SalesRevisionSPReportWithDate Successfully");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned All SalesRevisionSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllSalesRevisionSPReportWithDate API : \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllSalesRevisionSPReportWithDate API : \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
         }
 
         //[HttpGet]

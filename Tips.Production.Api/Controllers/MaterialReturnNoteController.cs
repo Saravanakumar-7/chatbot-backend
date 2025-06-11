@@ -2,9 +2,11 @@
 using Contracts;
 using Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
@@ -31,8 +33,11 @@ namespace Tips.Production.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
 
-        public MaterialReturnNoteController(IHttpClientFactory clientFactory, IConfiguration config, HttpClient httpClient, IMaterialRequestsRepository materialRequestRepository, IMaterialIssueRepository materialIssueRepository, IMaterialReturnNoteRepository materialReturnNoteRepository, IMapper mapper, ILoggerManager logger)
+        public MaterialReturnNoteController(IHttpClientFactory clientFactory, IConfiguration config, HttpClient httpClient, IMaterialRequestsRepository materialRequestRepository, IMaterialIssueRepository materialIssueRepository, IMaterialReturnNoteRepository materialReturnNoteRepository, IMapper mapper, ILoggerManager logger,IHttpContextAccessor httpContextAccessor)
         {
             _materialReturnNoteRepository = materialReturnNoteRepository;
             _materialIssueRepository = materialIssueRepository;
@@ -42,6 +47,10 @@ namespace Tips.Production.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _clientFactory = clientFactory;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
         }
 
 
@@ -501,6 +510,11 @@ namespace Tips.Production.Api.Controllers
                         materialReturnNoteItem.ProjectNumber = materialReturnNoteUpdateDto.ProjectNumber;
                         materialReturnNoteItem.ShopOrderNumber = materialReturnNoteUpdateDto.ShopOrderNumber;
                         materialReturnNoteItem.MRNWarehouseList = _mapper.Map<List<MRNWarehouseDetails>>(materialReturnNotesItemDto[i].MRNWarehouseList);
+                        foreach (var item in materialReturnNoteItem.MRNWarehouseList)
+                        {
+                            item.IssuedOn = DateTime.Now;
+                            item.IssuedBy = _createdBy;
+                        }
                         materialReturnNoteItemList.Add(materialReturnNoteItem);
 
                     }

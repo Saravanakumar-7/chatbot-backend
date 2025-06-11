@@ -1998,5 +1998,82 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> GetBinningSPReportWithParamForAvi([FromBody] BinningSPReportAviDto binningSPReportAviDto)
+        {
+            ServiceResponse<IEnumerable<BinningSPReportAvi>> serviceResponse = new ServiceResponse<IEnumerable<BinningSPReportAvi>>();
+            try
+            {
+                var products = await _binningRepository.GetBinningSPReportWithParamForAvi(binningSPReportAviDto.ponumber, binningSPReportAviDto.grinnumber, 
+                                                    binningSPReportAviDto.itemnumber, binningSPReportAviDto.projectnumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Binning hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Binning hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogError($"Returned BinningSPReportWithParamForAvi Successfully");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned BinningSPReportWithParamForAvi Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetBinningSPReportWithParamForAvi API : \n{ex.Message} \n{ex.InnerException}"); ;
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetBinningSPReportWithParamForAvi API : \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetBinningSPReportWithDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<BinningSPReportAvi>> serviceResponse = new ServiceResponse<IEnumerable<BinningSPReportAvi>>();
+            try
+            {
+                var products = await _binningRepository.GetBinningSPReportWithDateForAvi(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Binning hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Binning hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogError($"Returned BinningSPReportWithDateForAvi Successfully");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned BinningSPReportWithDateForAvi Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in BinningSPReportWithDateForAvi API : \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in BinningSPReportWithDateForAvi API : \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 }

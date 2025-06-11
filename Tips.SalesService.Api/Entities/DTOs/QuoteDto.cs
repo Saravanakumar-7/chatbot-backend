@@ -426,6 +426,34 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? LatestSOSentTaxedValue { get; set; }
         public decimal? LatestSOSentUntaxedValue { get; set; }
     }
+
+    public class QuoteRevNoSPReportParamDTO
+    {
+        public string? LeadId { get; set; }
+        public string? QuoteNumber { get; set; }
+        public string? ItemNumber { get; set; }
+    }
+    public class QuoteRevNoSPReportParam
+    {
+        public string? Leadid { get; set; }
+        public string? CustomerName { get; set; }
+        public string? QuoteNumber { get; set; }
+        public decimal? RevisionNumber { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+        public DateTime? Created_date { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? KPN { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public decimal? Qty { get; set; }
+        public decimal? Discountper { get; set; }
+        public decimal? Discount_value { get; set; }
+        public decimal? NetQuote_PostDiscount { get; set; }
+        public decimal? TotalAdditionalCharges { get; set; }
+        public decimal? TotalFinalAmount { get; set; }
+    }
+
+
     public class QuoteItemMasterDetails
     {
         public Datas data { get; set; }
