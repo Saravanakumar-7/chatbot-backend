@@ -300,8 +300,6 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryTranctionDto.Description = KC.Description;
                             grinInventoryTranctionDto.ProjectNumber = prj.ProjectNumber;
                             grinInventoryTranctionDto.Issued_Quantity = KC.KitComponentQty;
-                            grinInventoryTranctionDto.Issued_DateTime = DateTime.Now;
-                            grinInventoryTranctionDto.Issued_By = _createdBy;
                             grinInventoryTranctionDto.UOM = parts.UOM;
                             if (PartsObject.Where(x => x.IsIQCRequired == false).Select(x => x.ItemNumber).ToList().Contains(parts.ItemNumber))
                             {

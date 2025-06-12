@@ -117,6 +117,7 @@ builder.Services.AddScoped<IBTODeliveryOrderInventoryHistoryRepository, BTODeliv
 builder.Services.AddScoped<IInvoiceAdditionalChargeRepository, InvoiceAdditionalChargeRepository>();
 builder.Services.AddScoped<IInventoryForServiceItemsRepository, InventoryForServiceItemsRepository>();
 builder.Services.AddScoped<ILocationTransferPartNoRepository, LocationTransferPartNoRepository>();
+builder.Services.AddScoped<IInventoryTranctionforServiceItemsRepository, InventoryTranctionforServiceItemsRepository>();
 builder.Services.AddScoped<MySqlConnection>();
 builder.Services.AddScoped<ITokenValidationService, TokenValidationService>();
 

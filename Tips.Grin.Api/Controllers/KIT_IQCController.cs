@@ -240,8 +240,6 @@ namespace Tips.Grin.Api.Controllers
                                     grinInventoryTranctionDto.Description = inventoryObject.Description;
                                     grinInventoryTranctionDto.ProjectNumber = inventoryObject.ProjectNumber;
                                     grinInventoryTranctionDto.Issued_Quantity = inventoryObject.Balance_Quantity;
-                                    grinInventoryTranctionDto.Issued_DateTime = DateTime.Now;
-                                    grinInventoryTranctionDto.Issued_By = _createdBy;
                                     grinInventoryTranctionDto.UOM = inventoryObject.UOM;
                                     grinInventoryTranctionDto.Warehouse = grinInventoryDto.Warehouse;
                                     grinInventoryTranctionDto.From_Location = "KIT_GRIN";
@@ -453,8 +451,6 @@ namespace Tips.Grin.Api.Controllers
                                     grinInventoryTranctionDto.Description = inventoryObject.Description;
                                     grinInventoryTranctionDto.ProjectNumber = inventoryObject.ProjectNumber;
                                     grinInventoryTranctionDto.Issued_Quantity = inventoryObject.Balance_Quantity;
-                                    grinInventoryTranctionDto.Issued_DateTime = DateTime.Now;
-                                    grinInventoryTranctionDto.Issued_By = _createdBy;
                                     grinInventoryTranctionDto.UOM = inventoryObject.UOM;
                                     grinInventoryTranctionDto.Warehouse = grinInventoryDto.Warehouse;
                                     grinInventoryTranctionDto.From_Location = "KIT_GRIN";

@@ -195,7 +195,7 @@ namespace Tips.Warehouse.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Internal Server Error!";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Something went wrong inside CreateInventoryTranction action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }

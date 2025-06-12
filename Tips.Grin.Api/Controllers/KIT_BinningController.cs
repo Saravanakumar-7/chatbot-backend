@@ -169,8 +169,6 @@ namespace Tips.Grin.Api.Controllers
                                     grinInventoryTranctionDto.Description = inventoryObject[0].Description;
                                     grinInventoryTranctionDto.ProjectNumber = inventoryObject[0].ProjectNumber;
                                     grinInventoryTranctionDto.Issued_Quantity = inventoryObject[0].Balance_Quantity;
-                                    grinInventoryTranctionDto.Issued_DateTime = DateTime.Now;
-                                    grinInventoryTranctionDto.Issued_By = _createdBy;
                                     grinInventoryTranctionDto.UOM = inventoryObject[0].UOM;
                                     grinInventoryTranctionDto.Warehouse = grinInventoryDto.Warehouse;
                                     grinInventoryTranctionDto.From_Location = "KIT_IQC";
@@ -246,9 +244,9 @@ namespace Tips.Grin.Api.Controllers
                     ExistingkIT_Binning.KIT_BinningItems.Where(x => kIT_Binning.KIT_BinningItems.Select(s => s.KIT_GrinPartId).ToList().Contains(x.KIT_GrinPartId)).ToList().ForEach(a =>
                     {
                         var binitem = kIT_Binning.KIT_BinningItems.Where(x => x.KIT_GrinPartId == a.KIT_GrinPartId).First();
-                        a.KIT_BinningItemsLocation.Where(b => binitem.KIT_BinningItemsLocation.Select(s => s.Id).ToList().Contains(b.Id)).ToList().ForEach(b =>
+                        a.KIT_BinningItemsLocation.Where(b => binitem.KIT_BinningItemsLocation.Select(s => new { s.Warehouse, s.Location}).ToList().Contains(new { b.Warehouse, b.Location })).ToList().ForEach(b =>
                         {
-                            b.Qty += binitem.KIT_BinningItemsLocation.Where(x => x.Id == b.Id).Select(s => s.Qty).First();
+                            b.Qty += binitem.KIT_BinningItemsLocation.Where(x => x.Warehouse == b.Warehouse && x.Location==b.Location).Select(s => s.Qty).First();
                         });
                         a.KIT_BinningItemsLocation.AddRange(binitem.KIT_BinningItemsLocation.Where(x=>x.Id==0));
                     });
@@ -330,8 +328,6 @@ namespace Tips.Grin.Api.Controllers
                                     grinInventoryTranctionDto.Description = inventoryObject[0].Description;
                                     grinInventoryTranctionDto.ProjectNumber = inventoryObject[0].ProjectNumber;
                                     grinInventoryTranctionDto.Issued_Quantity = inventoryObject[0].Balance_Quantity;
-                                    grinInventoryTranctionDto.Issued_DateTime = DateTime.Now;
-                                    grinInventoryTranctionDto.Issued_By = _createdBy;
                                     grinInventoryTranctionDto.UOM = inventoryObject[0].UOM;
                                     grinInventoryTranctionDto.Warehouse = grinInventoryDto.Warehouse;
                                     grinInventoryTranctionDto.From_Location = "KIT_IQC";

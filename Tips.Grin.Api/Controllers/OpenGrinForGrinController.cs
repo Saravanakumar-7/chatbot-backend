@@ -803,8 +803,6 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
                             iqcInventoryTranctionDto.IsStockAvailable = true;
                             iqcInventoryTranctionDto.UOM = inventoryObject.uom;
-                            iqcInventoryTranctionDto.Issued_By = _createdBy;
-                            iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                             iqcInventoryTranctionDto.Warehouse = "OPGIQC";
                             iqcInventoryTranctionDto.From_Location = "OPGGRIN";
                             iqcInventoryTranctionDto.TO_Location = "OPGIQC";
@@ -890,8 +888,6 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.ProjectNumber = grinInventoryDto.ProjectNumber;
                                 iqcInventoryTranctionDtos.Issued_Quantity = grinInventoryDto.Balance_Quantity;
                                 iqcInventoryTranctionDtos.IsStockAvailable = false;
-                                iqcInventoryTranctionDtos.Issued_By = _createdBy;
-                                iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDtos.UOM = grinInventoryDto.UOM;
                                 iqcInventoryTranctionDtos.Warehouse = grinInventoryDto.Warehouse;
                                 iqcInventoryTranctionDtos.From_Location = "OPGGRIN";
@@ -1117,8 +1113,6 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
                             iqcInventoryTranctionDto.IsStockAvailable = true;
                             iqcInventoryTranctionDto.UOM = inventoryObject.uom;
-                            iqcInventoryTranctionDto.Issued_By = _createdBy;
-                            iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                             iqcInventoryTranctionDto.Warehouse = "OPGIQC";
                             iqcInventoryTranctionDto.From_Location = "OPGGRIN";
                             iqcInventoryTranctionDto.TO_Location = "OPGIQC";
@@ -1204,8 +1198,6 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.ProjectNumber = grinInventoryDto.ProjectNumber;
                                 iqcInventoryTranctionDtos.Issued_Quantity = grinInventoryDto.Balance_Quantity;
                                 iqcInventoryTranctionDtos.IsStockAvailable = false;
-                                iqcInventoryTranctionDtos.Issued_By = _createdBy;
-                                iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDtos.UOM = grinInventoryDto.UOM;
                                 iqcInventoryTranctionDtos.Warehouse = grinInventoryDto.Warehouse;
                                 iqcInventoryTranctionDtos.From_Location = "OPGGRIN";

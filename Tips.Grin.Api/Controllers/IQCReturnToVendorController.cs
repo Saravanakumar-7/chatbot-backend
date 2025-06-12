@@ -204,8 +204,6 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDtos.ProjectNumber = Inv.ProjectNumber;
                             iqcInventoryTranctionDtos.Issued_Quantity = Inv.Balance_Quantity;
                             iqcInventoryTranctionDtos.IsStockAvailable = Inv.IsStockAvailable;
-                            iqcInventoryTranctionDtos.Issued_By = _createdBy;
-                            iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
                             iqcInventoryTranctionDtos.UOM = Inv.UOM;
                             iqcInventoryTranctionDtos.Warehouse = Inv.Warehouse;
                             iqcInventoryTranctionDtos.From_Location = Inv.Location;
@@ -323,8 +321,6 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDtos.ProjectNumber = Inv.ProjectNumber;
                             iqcInventoryTranctionDtos.Issued_Quantity = returnqty; 
                             iqcInventoryTranctionDtos.IsStockAvailable = Inv.IsStockAvailable;
-                            iqcInventoryTranctionDtos.Issued_By = _createdBy;
-                            iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
                             iqcInventoryTranctionDtos.UOM = Inv.UOM;
                             iqcInventoryTranctionDtos.Warehouse = Inv.Warehouse;
                             iqcInventoryTranctionDtos.From_Location = Inv.Location;

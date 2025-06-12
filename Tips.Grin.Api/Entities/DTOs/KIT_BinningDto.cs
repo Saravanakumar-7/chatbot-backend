@@ -4,7 +4,6 @@ namespace Tips.Grin.Api.Entities.DTOs
 {
     public class KIT_BinningPostDto
     {
-        public int Id { get; set; }
         public string KIT_GrinNumber { get; set; }
         public string VendorId { get; set; }
         public string VendorName { get; set; }
