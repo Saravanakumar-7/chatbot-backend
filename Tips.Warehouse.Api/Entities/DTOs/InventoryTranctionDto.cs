@@ -122,15 +122,11 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string Description { get; set; }
         public PartType PartType { get; set; }
         public string ProjectNumber { get; set; }
-        public InventoryType TransactionType { get; set; }
+        public InventoryType? TransactionType { get; set; }
         [Precision(18, 2)]
         public decimal Issued_Quantity { get; set; }
 
         public string? UOM { get; set; }
-
-        public DateTime Issued_DateTime { get; set; }
-
-        public string Issued_By { get; set; }
         public string? ShopOrderId { get; set; }
         public string ReferenceID { get; set; }
         public string ReferenceIDFrom { get; set; }

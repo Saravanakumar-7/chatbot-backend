@@ -143,7 +143,7 @@ namespace Tips.Grin.Api.Controllers
                                     grinInventoryDto.GrinPartId = inventoryObject[0].GrinPartId;
                                     grinInventoryDto.PartType = inventoryObject[0].PartType;
                                     grinInventoryDto.ReferenceID = inventoryObject[0].ReferenceID;
-                                    grinInventoryDto.ReferenceIDFrom = inventoryObject[0].ReferenceIDFrom;
+                                    grinInventoryDto.ReferenceIDFrom = "KIT_Binning";
                                     grinInventoryDto.GrinMaterialType = "";
                                     grinInventoryDto.ShopOrderNo = "";
 
@@ -209,7 +209,7 @@ namespace Tips.Grin.Api.Controllers
                                             upInv.Balance_Quantity -= MoveQty;
                                             MoveQty = 0;
                                         }
-                                        var json = JsonConvert.SerializeObject(inventoryObject);
+                                        var json = JsonConvert.SerializeObject(upInv);
                                         var data = new StringContent(json, Encoding.UTF8, "application/json");
                                         var request5 = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["InventoryAPI"],
                                         "UpdateInventory?id=", upInv.Id))
@@ -238,6 +238,7 @@ namespace Tips.Grin.Api.Controllers
                     await _kIT_IQCRepository.UpdateKIT_IQC(kIT_IQC);
                     _kIT_GRINRepository.SaveAsync();
                     _kIT_IQCRepository.SaveAsync();
+                    _kIT_BinningRepository.SaveAsync();
                 }
                 else
                 {
@@ -302,7 +303,7 @@ namespace Tips.Grin.Api.Controllers
                                     grinInventoryDto.GrinPartId = inventoryObject[0].GrinPartId;
                                     grinInventoryDto.PartType = inventoryObject[0].PartType;
                                     grinInventoryDto.ReferenceID = inventoryObject[0].ReferenceID;
-                                    grinInventoryDto.ReferenceIDFrom = inventoryObject[0].ReferenceIDFrom;
+                                    grinInventoryDto.ReferenceIDFrom = "KIT_Binning";
                                     grinInventoryDto.GrinMaterialType = "";
                                     grinInventoryDto.ShopOrderNo = "";
 
