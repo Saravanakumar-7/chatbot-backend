@@ -5,6 +5,7 @@
         public string? SalesOrderNumber { get; set; }
         public string? CustomerId { get; set; }
         public string? TypeOfSolution { get; set; }
+        public string? SalesPerson { get; set; }
         public decimal? SOValue { get; set; }
         public decimal? DOValue { get; set; }
         public decimal? SOBalance { get; set; }

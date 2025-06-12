@@ -747,6 +747,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? salesordernumber { get; set; }
         public string? producttype { get; set; }
         public string? typeofsolution { get; set; }
+        public string? SalesPerson { get; set; }
+        
     }
 
     public class AdvanceRecievableSPReportDto
