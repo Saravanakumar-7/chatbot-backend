@@ -27,7 +27,7 @@ namespace Tips.Master.Api.Controllers
 
         // GET: api/<ShipmentInstructionsController>
         [HttpGet]
-        public async Task<IActionResult> GetAllShipmentInstructions([FromQuery]SearchParames searchParams)
+        public async Task<IActionResult> GetAllShipmentInstructions([FromQuery] SearchParames searchParams)
         {
             ServiceResponse<IEnumerable<ShipmentInstructionsDto>> serviceResponse = new ServiceResponse<IEnumerable<ShipmentInstructionsDto>>();
             try
@@ -43,52 +43,52 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllShipmentInstructions API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again ";
+                serviceResponse.Message = $"Error Occured in GetAllShipmentInstructions API : \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
             }
         }
-            // GET api/<ShipmentInstructionsController>/5
-            [HttpGet("{id}")]
-            public async Task<IActionResult> GetShipmentInstructionsById(int id)
-            {
+        // GET api/<ShipmentInstructionsController>/5
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetShipmentInstructionsById(int id)
+        {
             ServiceResponse<ShipmentInstructionsDto> serviceResponse = new ServiceResponse<ShipmentInstructionsDto>();
             try
+            {
+                var shipmentInstructions = await _repository.ShipmentInstructionsRepository.GetShipmentInstructionsById(id);
+                if (shipmentInstructions == null)
                 {
-                    var shipmentInstructions = await _repository.ShipmentInstructionsRepository.GetShipmentInstructionsById(id);
-                    if (shipmentInstructions == null)
-                    {
-                      _logger.LogError($"ShipmentInstructions with id: {id}, hasn't been found in db.");
-                       serviceResponse.Data = null;
-                       serviceResponse.Message = "ShipmentInstructions hasn't been found in db";
-                       serviceResponse.Success = false;
-                       serviceResponse.StatusCode = HttpStatusCode.OK;
-                       return Ok(serviceResponse);
+                    _logger.LogError($"ShipmentInstructions with id: {id}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ShipmentInstructions hasn't been found in db";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
                 }
-                    else
-                    {
-                        _logger.LogInfo($"Returned owner with id: {id}");
-                        var result = _mapper.Map<ShipmentInstructionsDto>(shipmentInstructions);
+                else
+                {
+                    _logger.LogInfo($"Returned owner with id: {id}");
+                    var result = _mapper.Map<ShipmentInstructionsDto>(shipmentInstructions);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "ShipmentInstructions Successfully Returned";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
                 }
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Something went wrong inside GetShipmentInstructionsById action: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetShipmentInstructionsById API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetShipmentInstructionsById API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
             }
-            }
+        }
 
         // POST api/<ShipmentInstructionsController>
         [HttpPost]
@@ -128,9 +128,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateShipmentInstructions API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again";
+                serviceResponse.Message = $"Error Occured in CreateShipmentInstructions API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -184,9 +184,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateShipmentInstructions action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateShipmentInstructions API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again";
+                serviceResponse.Message = $"Error Occured in UpdateShipmentInstructions API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -221,9 +221,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteShipmentInstructions API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Serever Error";
+                serviceResponse.Message = $"Error Occured in DeleteShipmentInstructions API for the following id : {id} \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -259,9 +259,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside ActivateShipmentInstructions action: {ex.Message}");
+                _logger.LogError($"Error Occured in ActivateShipmentInstructions API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again";
+                serviceResponse.Message = $"Error Occured in ActivateShipmentInstructions API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -296,9 +296,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeactivateShipmentInstructions action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeactivateShipmentInstructions API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again";
+                serviceResponse.Message = $"Error Occured in DeactivateShipmentInstructions API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);

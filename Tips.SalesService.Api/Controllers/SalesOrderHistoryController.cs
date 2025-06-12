@@ -148,9 +148,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetSalesOrderMainLevelHistoryRevNoListBySOIdAndRevNo action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetSalesOrderMainLevelHistoryRevNoListBySOIdAndRevNo API for the following SalesOrderId : {SalesOrderId} and  RevNo : {RevNo} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetSalesOrderMainLevelHistoryRevNoListBySOIdAndRevNo API for the following SalesOrderId : {SalesOrderId} and  RevNo : {RevNo} \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -192,9 +192,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetSalesOrderMainLevelHistoryDetialsBySOHistoryIdAndRevNo action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetSalesOrderMainLevelHistoryDetialsBySOHistoryId API for the following SalesOrderHistoryId:{SalesOrderHistoryId} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetSalesOrderMainLevelHistoryDetialsBySOHistoryId API for the following SalesOrderHistoryId:{SalesOrderHistoryId} \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -243,9 +243,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetSalesOrderMainLevelHistoryDetialsBySOHistoryId_SP action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetSalesOrderMainLevelHistoryDetialsBySOHistoryId_SP API for the following SalesOrderHistoryId:{SalesOrderHistoryId} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Message = $"Error Occured in GetSalesOrderMainLevelHistoryDetialsBySOHistoryId_SP API for the following SalesOrderHistoryId:{SalesOrderHistoryId} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

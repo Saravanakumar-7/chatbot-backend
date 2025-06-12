@@ -45,9 +45,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllAdditionalCharges API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllAdditionalCharges API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -73,9 +73,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllActiveAdditionalCharges API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllActiveAdditionalCharges API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -113,9 +113,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetAdditionalChargesById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetAdditionalChargesById API for the following id: {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetAdditionalChargesById API for the following id: {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -159,11 +159,11 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error Occured in CreateAdditionalCharges API: \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateAdditionalCharges API: \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside CreateAdditionalCharges action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -212,11 +212,11 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error Occured in UpdateAdditionalCharges API for the following id: {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateAdditionalCharges API for the following id: {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside UpdateAdditionalCharges action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -249,11 +249,11 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error Occured in DeleteAdditionalCharges API for the following id: {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside AdditionalCharges action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in DeleteAdditionalCharges API for the following id: {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeleteAdditionalCharges action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -286,11 +286,11 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error Occured in ActivateAdditionalCharges API for the following id: {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in ActivateAdditionalCharges API for the following id: {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside ActivateAdditionalCharges action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -324,11 +324,11 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error Occured in DeactivateAdditionalCharges API for the following id: {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeactivateAdditionalCharges API for the following id: {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside DeactivateAdditionalCharges action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }

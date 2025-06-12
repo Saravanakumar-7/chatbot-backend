@@ -50,7 +50,8 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 // _logger.LogError(ex, "Error calculating FG weighted average cost");
-                serviceResponse.Message = "Internal server error";
+                _logger.LogError($"Error Occured in Calculate_FG_Weighted_AvgCost API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Message = $"Error Occured in Calculate_FG_Weighted_AvgCost API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -127,9 +128,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in FG_Weighted_AvgCost_Report_withParameter API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside FG_Weighted_AvgCost_Report_withParameter action";
+                serviceResponse.Message = $"Error Occured in FG_Weighted_AvgCost_Report_withParameter API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -165,9 +166,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in FG_Weighted_AvgCost_Report_withDate API :\n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside FG_Weighted_AvgCost_Report_withDate action";
+                serviceResponse.Message = $"Error Occured in FG_Weighted_AvgCost_Report_withDate API :\n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -201,9 +202,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in Weighted_AvgCost_Report_withParameter API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside Weighted_AvgCost_Report_withParameter action";
+                serviceResponse.Message = $"Error Occured in Weighted_AvgCost_Report_withParameter API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
