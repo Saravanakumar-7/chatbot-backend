@@ -80,9 +80,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllOpenGrinForBinningDetails API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllOpenGrinForBinningDetails,try again";
+                serviceResponse.Message = $"Error Occured in GetAllOpenGrinForBinningDetails API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -147,9 +147,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetOpenGrinForBinningDetailsbyId action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetOpenGrinForBinningDetailsbyId API for the following id :{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetOpenGrinForBinningDetailsbyId API for the following id :{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -757,9 +757,9 @@ namespace Tips.Grin.Api.Controllers
             catch (Exception ex)
             {
 
-                _logger.LogError($"Something went wrong inside Create CreateOpenGrinForBinning action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateOpenGrinForBinning API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateOpenGrinForBinning API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal Server Error");
@@ -1366,9 +1366,9 @@ namespace Tips.Grin.Api.Controllers
             catch (Exception ex)
             {
 
-                _logger.LogError($"Something went wrong inside Create Binning action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateOpenGrinForBinningItems API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateOpenGrinForBinningItems API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal Server Error");

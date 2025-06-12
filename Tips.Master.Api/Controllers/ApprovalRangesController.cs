@@ -175,11 +175,11 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error Occured in CreateApprovalRanges API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside CreateApprovalRanges: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in CreateApprovalRanges API : \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside CreateApprovalRanges action: {ex.Message} and {ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -213,9 +213,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetApprovalRangesById action: {ex.Message} \n {ex.InnerException}");
+                _logger.LogError($"Error Occured in GetApprovalRangesById API for the following id: {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong {ex.Message}. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetApprovalRangesById API for the following id: {id} \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -251,9 +251,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetApprovalRangesByProcurementType action: {ex.Message} \n {ex.InnerException}");
+                _logger.LogError($"Error Occured in GetApprovalRangesByProcurementType API for the following ProcurementType: {ProcurementType} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetApprovalRangesByProcurementType action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetApprovalRangesByProcurementType API for the following ProcurementType: {ProcurementType} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -288,9 +288,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in GetAllApprovalRanges: {ex.Message} \n {ex.InnerException}");
+                _logger.LogError($"Error Occured in GetAllApprovalRanges API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error occured in GetAllApprovalRanges: {ex.Message}";
+                serviceResponse.Message = $"Error occured in GetAllApprovalRanges API: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -311,9 +311,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in GetListofProcurementType: {ex.Message} \n {ex.InnerException}");
+                _logger.LogError($"Error Occured in GetListofProcurementType API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error occured in GetListofProcurementType: {ex.Message}";
+                serviceResponse.Message = $"Error occured in GetListofProcurementType API: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -498,9 +498,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error occured in UpdateApprovalRange: {ex.Message} \n {ex.InnerException}");
+                _logger.LogError($"Error occured in UpdateApprovalRange in API: {ex.Message} \n {ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error occured in UpdateApprovalRange: {ex.Message}";
+                serviceResponse.Message = $"Error occured in UpdateApprovalRange in API: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

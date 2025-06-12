@@ -49,9 +49,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllBasisOfApproval API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetAllBasisOfApproval API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -77,9 +77,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllActiveBasisOfApprovals API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetAllActiveBasisOfApprovals API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -117,9 +117,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetBasisOfApprovalById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetBasisOfApprovalById API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetBasisOfApprovalById API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500,serviceResponse);
@@ -167,11 +167,11 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error Occured in CreateBasisOfApproval API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Message = $"Error Occured in CreateBasisOfApproval API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -224,11 +224,11 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error Occured in UpdateBasisOfApproval API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Message = $"Error Occured in UpdateBasisOfApproval API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside UpdateBasisOfApproval action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -261,11 +261,11 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error Occured in DeleteBasisOfApproval API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Message = $"Error Occured in DeleteBasisOfApproval API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -298,11 +298,11 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error Occured in ActivateBasisOfApproval API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Message = $"Error Occured in ActivateBasisOfApproval API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside ActivateBasisOfApproval action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -335,11 +335,11 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Error Occured in DeactivateBasisOfApproval API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Message = $"Error Occured in DeactivateBasisOfApproval API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside DeactivateBasisOfApproval action: {ex.Message}");
                 return StatusCode(500, serviceResponse);
             }
         }

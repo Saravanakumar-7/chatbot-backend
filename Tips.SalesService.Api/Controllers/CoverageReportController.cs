@@ -68,9 +68,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GenerateCoverageFGLevelReport action: {ex.Message}");
+                _logger.LogError($"Error Occured in GenerateCoverageFGLevelReport API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GenerateCoverageFGLevelReport API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -510,9 +510,9 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
 
-                _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItems action: {ex.Message}");
+                _logger.LogError($"Error Occured in GenerateCoverageReportForFgChildIt API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GenerateCoverageReportForFgChildIt API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -652,9 +652,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GenerateCoverageFGLevelReportByProjectNumber action: {ex.Message}");
+                _logger.LogError($"Error Occured in GenerateCoverageFGLevelReportByProjectNumber API for the following projectNumber:{projectNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GenerateCoverageFGLevelReportByProjectNumber API for the following projectNumber:{projectNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1154,9 +1154,9 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
 
-                _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItByProjectNumber action: {ex.Message}");
+                _logger.LogError($"Error Occured in GenerateCoverageReportForFgChildItByProjectNumber API for the following projectNumber:{projectNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GenerateCoverageReportForFgChildItByProjectNumber API for the following projectNumber:{projectNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1263,9 +1263,9 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
 
-                _logger.LogError($"Something went wrong inside GenerateCoverageReportForSAChildItByProjectNumber action: {ex.Message}");
+                _logger.LogError($"Error Occured in GenerateCoverageReportForSAChildItemByProjectNumber API for the following projectNumber:{projectNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GenerateCoverageReportForSAChildItemByProjectNumber API for the following projectNumber:{projectNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1494,9 +1494,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GenerateCoverageFGLevelReportByMultipleProjectNumber action: {ex.Message}");
+                _logger.LogError($"Error Occured in GenerateCoverageFGLevelReportByMultipleProjectNumber API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GenerateCoverageFGLevelReportByMultipleProjectNumber API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1838,9 +1838,9 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
 
-                _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItByCustomerId action: {ex.Message}");
+                _logger.LogError($"Error Occured in GenerateCoverageReportForFgChildItByCustomerId API for the following customerId:{customerId} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GenerateCoverageReportForFgChildItByCustomerId API for the following customerId:{customerId} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1958,9 +1958,9 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
 
-                _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItByMultipleProjectNumber action: {ex.Message}");
+                _logger.LogError($"Error Occured in GenerateCoverageReportForFgChildItByMultipleProjectNumber API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GenerateCoverageReportForFgChildItByMultipleProjectNumber API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2126,9 +2126,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GenerateCoverageFGLevelReportByProjectNumber action: {ex.Message}");
+                _logger.LogError($"Error Occured in GenerateCoverageFGLevelReportByProjectNumberAndItemNo API for the following projectNumber:{projectNumber} and ItemNumber : {ItemNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GenerateCoverageFGLevelReportByProjectNumberAndItemNo API for the following projectNumber:{projectNumber} and ItemNumber : {ItemNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2439,9 +2439,9 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
 
-                _logger.LogError($"Something went wrong inside GenerateCoverageReportForFgChildItByProjectNumber action: {ex.Message}");
+                _logger.LogError($"Error Occured in GenerateCoverageReportForFgChildItByProjectNumberAndItemNo API for the following projectNumber:{projectNumber} and itemNumber : {itemNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GenerateCoverageReportForFgChildItByProjectNumberAndItemNo API for the following projectNumber:{projectNumber} and itemNumber : {itemNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
