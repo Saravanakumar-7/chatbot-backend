@@ -65,9 +65,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetCollectionTrackerById API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Message = $"Error Occured in GetCollectionTrackerById API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -105,9 +105,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetInventoryTranctionById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetInventoryTranctionById API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetInventoryTranctionById API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -145,9 +145,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetInventoryTranctionDetailsByGrinNoandGrinId action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetInventoryTranctionDetailsByGrinNoandGrinId API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetInventoryTranctionDetailsByGrinNoandGrinId API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -194,10 +194,10 @@ namespace Tips.Warehouse.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Message = $"Error Occured in CreateInventoryTranction API : \n {ex.Message}";
                 serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside CreateInventoryTranction action: {ex.Message}");
+                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                _logger.LogError($"Error Occured in CreateInventoryTranction API : \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -231,9 +231,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Invalid inventoryTranction action: {ex.Message},{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetInventoryTranctionStockByItemAndProjectNo API for the following itemNumber:{itemNumber} and projectNumber : {projectNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Invalid inventoryTranction{ex.Message},{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in GetInventoryTranctionStockByItemAndProjectNo API for the following itemNumber:{itemNumber} and projectNumber : {projectNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -280,10 +280,10 @@ namespace Tips.Warehouse.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Message = $"Error Occured in CreateInventoryTranctionFromGrin API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside CreateInventoryTranction action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateInventoryTranctionFromGrin API : \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -338,10 +338,10 @@ namespace Tips.Warehouse.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Message = $"Error Occured in UpdateInventoryTranction API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside UpdateCommodity action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateInventoryTranction API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -375,9 +375,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteInventoryTranction action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteInventoryTranction API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeleteInventoryTranction API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -465,9 +465,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Invalid inventoryTranction action: {ex.Message},{ex.InnerException}");
+                _logger.LogError($"Error Occured in UpdateInventoryTranctionOnShopOrderConfirmation API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Message = $"Error Occured in UpdateInventoryTranctionOnShopOrderConfirmation API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -538,9 +538,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetInventoryTranctionSPReports API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetInventoryTranctionSPReports action";
+                serviceResponse.Message = $"Error Occured in GetInventoryTranctionSPReports API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -637,7 +637,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, $"error occurred in ExportInventoryTranctionSPReportToExcel API: {ex.Message}");
             }
         }
         //MaterialRequest

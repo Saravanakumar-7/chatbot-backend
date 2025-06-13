@@ -85,9 +85,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllBTODeliveryOrders API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Message = $"Error Occured in GetAllBTODeliveryOrders API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -135,9 +135,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in DeliveryOrderSPReport API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside DeliveryOrder action";
+                serviceResponse.Message = $"Error Occured in DeliveryOrderSPReport API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -171,9 +171,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in DeliveryOrderSPReportdate API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside DeliveryOrder action";
+                serviceResponse.Message = $"Error Occured in DeliveryOrderSPReportdate API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -207,9 +207,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in DeliveryOrderSPReportdateForTrans API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside DeliveryOrderSPReportdateForTrans action";
+                serviceResponse.Message = $"Error Occured in DeliveryOrderSPReportdateForTrans API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -244,9 +244,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in DOSPReportdateForTrans API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside DOSPReportdateForTrans action";
+                serviceResponse.Message = $"Error Occured in DOSPReportdateForTrans API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -285,9 +285,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetDeliveryOrderSPReportsWithParam API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetDeliveryOrderSPReportsWithParam action";
+                serviceResponse.Message = $"Error Occured in GetDeliveryOrderSPReportsWithParam API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -325,9 +325,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetDeliveryOrderSPReportsWithParamForTrans API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetDeliveryOrderSPReportsWithParamForTrans action";
+                serviceResponse.Message = $"Error Occured in GetDeliveryOrderSPReportsWithParamForTrans API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -365,9 +365,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetDOSPReportsWithParamForTrans API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetDOSPReportsWithParamForTrans action";
+                serviceResponse.Message = $"Error Occured in GetDOSPReportsWithParamForTrans API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -436,9 +436,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetBTODeliveryOrderById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetBTODeliveryOrderById API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Message = $"Error Occured in GetBTODeliveryOrderById API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -491,9 +491,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in SearchBTODeliveryOrderDate API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Message = $"Error Occured in SearchBTODeliveryOrderDate API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -554,9 +554,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in SearchBTODeliveryOrder API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Message = $"Error Occured in SearchBTODeliveryOrder API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -618,9 +618,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllBTODeliveryOrderWithItems API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Message = $"Error Occured in GetAllBTODeliveryOrderWithItems API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -666,9 +666,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetBTODeliveryOrderNumberList action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetBtoNumberListByCustomerId API for the following customerLeadId:{customerLeadId} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Message = $"Error Occured in GetBtoNumberListByCustomerId API for the following customerLeadId:{customerLeadId} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -908,9 +908,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateBTODelivaryOrder action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateBTODeliveryOrder API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Error Occured in CreateBTODeliveryOrder API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1120,9 +1120,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateBTODelivaryOrder action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateBTODeliveryOrder_AV API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Error Occured in CreateBTODeliveryOrder_AV API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1169,9 +1169,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetBtoNumberListBySalesOrderId action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetBTONumberListBySalesOrderId API for the following salesOrderId:{salesOrderId} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Message = $"Error Occured in GetBTONumberListBySalesOrderId API for the following salesOrderId:{salesOrderId} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1403,9 +1403,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateBTODeliveryOrder action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateBTODeliveryOrder API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Error Occured in UpdateBTODeliveryOrder API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1440,9 +1440,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteBTODeliveryOrder action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteBTODeliveryOrder API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Message = $"Error Occured in DeleteBTODeliveryOrder API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1481,9 +1481,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong BtoDeliveryOrder Details: {ex.Message}");
+                _logger.LogError($"Error Occured in GetBtoDeliveryOrderNumberList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetBtoDeliveryOrderNumberList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1519,9 +1519,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside SalesDetail action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetInventoryListByItemNo API for the following ItemNumber:{ItemNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetInventoryListByItemNo API for the following ItemNumber:{ItemNumber} \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1544,9 +1544,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllBTOIdNameIdNameList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllBTOIdNameIdNameList action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetAllBTOIdNameIdNameList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1568,9 +1568,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetSalesOrderNoAndIdByBTONo API for the following btoNumber:{btoNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllSalesOrderNoAndIdByBTONo action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetSalesOrderNoAndIdByBTONo API for the following btoNumber:{btoNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1639,9 +1639,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetBTODeliveryOrderByIdExcludingClosed for the DO Id's:{id} action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetBTODeliveryOrderByIdExcludingClosed API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Message = $"Error Occured in GetBTODeliveryOrderByIdExcludingClosed API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1681,9 +1681,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetBtoNumberListByCustomerIdExcludingClosed action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetBtoNumberListByCustomerIdExcludingClosed API for the following customerLeadId:{customerLeadId} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Message = $"Error Occured in GetBtoNumberListByCustomerIdExcludingClosed API for the following customerLeadId:{customerLeadId} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1706,9 +1706,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetDOLotNumberListByBTONoAndItemNo API for the following btoNumber:{btoNumber} and itemNumber : {itemNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetDOLotNumberListByBTONoAndItemNo action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetDOLotNumberListByBTONoAndItemNo API for the following btoNumber:{btoNumber} and itemNumber : {itemNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

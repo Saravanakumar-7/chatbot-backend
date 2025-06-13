@@ -52,8 +52,8 @@ namespace Tips.Master.Api.Controllers
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Error Occured in MonthlyTaskService: " + ex.Message + $": \n {ex.InnerException}");
-                    return StatusCode(500, $"Error Occured in MonthlyTaskService: " + ex.Message + $": \n {ex.InnerException}");
+                    _logger.LogError($"Error Occured in MonthlyTaskService API: " + ex.Message + $": \n {ex.InnerException}");
+                    return StatusCode(500, $"Error Occured in MonthlyTaskService API: " + ex.Message + $": \n {ex.InnerException}");
                 }
             }
         }

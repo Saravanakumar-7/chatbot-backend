@@ -47,9 +47,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllPackingInstructions API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllPackingInstructions API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -76,9 +76,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllActivePackingInstructions API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllActivePackingInstructions API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -117,9 +117,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetPackingInstructionById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetPackingInstructionById API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetPackingInstructionById API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -166,10 +166,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreatePackingInstruction API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreatePackingInstruction API : \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -224,10 +224,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdatePackingInstruction API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside UpdatePackingInstruction action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdatePackingInstruction API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -261,10 +261,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeletePackingInstruction API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeletePackingInstruction API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -298,10 +298,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in ActivatePackingInstruction API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside ActivatedauditFrequency action: {ex.Message}");
+                _logger.LogError($"Error Occured in ActivatePackingInstruction API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -335,10 +335,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeactivatePackingInstruction API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeactivatedauditFrequency action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeactivatePackingInstruction API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }

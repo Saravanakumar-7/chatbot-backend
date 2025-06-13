@@ -42,9 +42,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllRiskCategory API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again ";
+                serviceResponse.Message = $"Error Occured in GetAllRiskCategory API : \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -81,9 +81,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetRiskCategoryById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRiskCategoryById API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetRiskCategoryById API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -127,9 +127,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateRiskCategory API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again";
+                serviceResponse.Message = $"Error Occured in CreateRiskCategory API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -183,9 +183,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateRiskCategory action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateRiskCategory API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again";
+                serviceResponse.Message = $"Error Occured in UpdateRiskCategory API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -221,9 +221,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteRiskCategory API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again";
+                serviceResponse.Message = $"Error Occured in DeleteRiskCategory API for the following id : {id} \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -258,9 +258,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside ActivateRiskCategory action: {ex.Message}");
+                _logger.LogError($"Error Occured in ActivateRiskCategory API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again";
+                serviceResponse.Message = $"Error Occured in ActivateRiskCategory API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);
@@ -295,9 +295,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeactivateRiskCategory action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeactivateRiskCategory API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong,Try again";
+                serviceResponse.Message = $"Error Occured in DeactivateRiskCategory API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return StatusCode(500, serviceResponse);

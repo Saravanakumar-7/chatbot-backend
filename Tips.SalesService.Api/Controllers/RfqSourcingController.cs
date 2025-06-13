@@ -74,9 +74,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllRfqSourcings API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllRfqSourcings API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -132,9 +132,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetrfqsourcingById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqSourcingById API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetRfqSourcingById API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -190,9 +190,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetrfqsourcingDetailsByRfqNo action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqSourcingDetailsByRfqNo API for the following rfqNo:{rfqNo} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetRfqSourcingDetailsByRfqNo API for the following rfqNo:{rfqNo} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -471,9 +471,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateRfqSource action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateRfqSourcing API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateRfqSourcing API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -643,9 +643,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateRfqSourcing action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateRfqSourcing API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateRfqSourcing API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -681,9 +681,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteRfqSource action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteRfqSourcing API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeleteRfqSourcing API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -720,9 +720,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetRfqSourcingVendorDetails action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqSourcingVendorDetails API for the following ProjectNumber:{ProjectNumber} ,ItemNumber : {ItemNumber} and VendorId : {VendorId}  \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Message = $"Error Occured in GetRfqSourcingVendorDetails API for the following ProjectNumber:{ProjectNumber} ,ItemNumber : {ItemNumber} and VendorId : {VendorId}  \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -761,9 +761,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetSourcingSPReportWithParam API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetSourcingSPReportWithParam action";
+                serviceResponse.Message = $"Error Occured in GetSourcingSPReportWithParam API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

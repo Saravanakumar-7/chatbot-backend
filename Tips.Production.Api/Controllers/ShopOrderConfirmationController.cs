@@ -71,9 +71,9 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllShopOrderConfirmation API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllShopOrderConfirmation API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -111,9 +111,9 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetshopOrderConfirmationById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetShopOrderConfirmationById API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetShopOrderConfirmationById API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -318,9 +318,9 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateShopOrderConfirmation action: {ex.Message} {ex.InnerException}");
+                _logger.LogError($"Error Occured in CreateShopOrderConfirmation API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateShopOrderConfirmation API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -373,9 +373,9 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateShopOrderConfirmation action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateShopOrderConfirmation API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateShopOrderConfirmation API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -411,9 +411,9 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteShopOrderConfirmation action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteShopOrderConfirmation API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeleteShopOrderConfirmation API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -450,9 +450,9 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetAllShopOrderConfirmationByShopOrderNo action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetAllShopOrderConfirmationByShopOrderNo API for the following id : {shopOrderNo} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllShopOrderConfirmationByShopOrderNo API for the following id : {shopOrderNo} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -490,9 +490,9 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetOpenDataForOqcByShopOrderNo action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetOpenDataForOqcByShopOrderNo API for the following id : {shopOrderNo} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetOpenDataForOqcByShopOrderNo API for the following id : {shopOrderNo} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -530,9 +530,9 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetShopOrderItemNoByFGItemType action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetShopOrderItemNoByFGItemType API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetShopOrderItemNoByFGItemType API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -570,9 +570,49 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetShopOrderItemNoBySAItemType action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetShopOrderItemNoBySAItemType API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetShopOrderItemNoBySAItemType API : \n {ex.Message} ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetShopOrderItemNoByKITItemType()
+        {
+            ServiceResponse<IEnumerable<ShopOrderItemNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderItemNoListDto>>();
+
+            try
+            {
+                var shopOrderItemNoList = await _shopOrderConfirmationRepository.GetShopOrderItemNoByKITItemType();
+                if (shopOrderItemNoList == null)
+                {
+                    _logger.LogError($"KITItemType hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"KITItemType hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    _logger.LogInfo($"Returned ShopOrderItemNo By KITItemType");
+                    var result = _mapper.Map<IEnumerable<ShopOrderItemNoListDto>>(shopOrderItemNoList);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "ShopOrderItemNoList By KITItemType  Successfully Returned";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetShopOrderItemNoByKITItemType API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetShopOrderItemNoByKITItemType API : \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -610,9 +650,9 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetShopOrderFGSAItemTypeDetailsByItemNo action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetShopOrderFGSAItemTypeDetailsByItemNo API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetShopOrderFGSAItemTypeDetailsByItemNo API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -649,9 +689,9 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetShopOrderConformationDetailsByItemNo action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetShopOrderConformationDetailsByItemNo API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetShopOrderConformationDetailsByItemNo API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

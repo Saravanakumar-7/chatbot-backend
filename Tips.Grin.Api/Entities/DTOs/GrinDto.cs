@@ -59,6 +59,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? BECurrencyValue { get; set; }
         public string? GrinDocuments { get; set; }
         public bool TallyStatus { get; set; } = false;
+        public string? TallyVoucher { get; set; }
         //public string? GrinDocuments { get; set; }
         public string? GateEntryNo { get; set; }
         public string Unit { get; set; }
@@ -127,6 +128,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? GateEntryNo { get; set; }
         public string? GrinDocuments { get; set; }
         public bool TallyStatus { get; set; } = false;
+        public string? TallyVoucher { get; set; }
 
         //public string? GrinDocuments { get; set; }
 
@@ -186,6 +188,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? GateEntryNo { get; set; }
         public decimal? TotalInvoiceValue { get; set; }
         public bool TallyStatus { get; set; } = false;
+        public string? TallyVoucher { get; set; }
 
         //public string? GrinDocuments { get; set; }
 
@@ -360,6 +363,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? BECurrencyValue { get; set; }
         public string? GateEntryNo { get; set; }
         public string? GrinDocuments { get; set; }
+        public string? TallyVoucher { get; set; }
 
         //public string? GrinDocuments { get; set; }
 

@@ -46,9 +46,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllVendorCategory API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllVendorCategory API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -74,9 +74,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllActiveVendorCatefories API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllActiveVendorCatefories API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -114,9 +114,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetVendorCategoryById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetVendorCategoryById API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetVendorCategoryById API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -165,10 +165,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateVendorCategory API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateVendorCategory API : \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -222,10 +222,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateVendorCategory API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside UpdateVendorCategory action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateVendorCategory API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500,serviceResponse);
             }
         }
@@ -259,10 +259,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeleteVendorCategory API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteVendorCategory API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -296,10 +296,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in ActivateVendorCategory API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside ActivateVendorCategory action: {ex.Message}");
+                _logger.LogError($"Error Occured in ActivateVendorCategory API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -333,11 +333,11 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             { 
                   serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeactivateVendorCategory API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                   serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                   _logger.LogError($"Something went wrong inside DeactivateVendorCategory action: {ex.Message}");
-                   return StatusCode(500, serviceResponse);
+                _logger.LogError($"Error Occured in DeactivateVendorCategory API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
+                return StatusCode(500, serviceResponse);
             }
         }
     }

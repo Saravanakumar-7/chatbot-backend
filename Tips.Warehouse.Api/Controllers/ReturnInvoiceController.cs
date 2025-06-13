@@ -108,9 +108,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllReturnInvoice API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllReturnInvoice API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -166,9 +166,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetReturnInvoiceById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetReturnInvoiceById API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetReturnInvoiceById API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -666,9 +666,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateReturnInvoice action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateReturnInvoice API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateReturnInvoice API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -921,9 +921,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateInvoice action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateReturnInvoice_AV API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateReturnInvoice_AV API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -975,9 +975,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateInvoice action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateReturnInvoice API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateReturnInvoice API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");
@@ -1011,9 +1011,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteInvoice action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteReturnInvoice API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeleteReturnInvoice API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1051,9 +1051,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetReturnInvoiceSPResport API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetReturnInvoiceSPResport API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1086,9 +1086,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in ReturnInvoiceSPReportDate API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside Invoice action";
+                serviceResponse.Message = $"Error Occured in ReturnInvoiceSPReportDate API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1123,9 +1123,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in ReturnInvoiceSPReportWithParameter API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside ReturnInvoiceSPReport action";
+                serviceResponse.Message = $"Error Occured in ReturnInvoiceSPReportWithParameter API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1164,9 +1164,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in ReturnInvoiceSPReportWithParameterForTrans API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside ReturnInvoiceSPReportWithParameterForTrans action";
+                serviceResponse.Message = $"Error Occured in ReturnInvoiceSPReportWithParameterForTrans API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1202,9 +1202,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong GetReturnInvoiceNumberList Details: {ex.Message}");
+                _logger.LogError($"Error Occured in GetReturnInvoiceNumberList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetReturnInvoiceNumberList API : \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

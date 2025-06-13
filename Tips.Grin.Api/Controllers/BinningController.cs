@@ -99,7 +99,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError($"Error Occured in GetAllBinningDetails API :{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetAllBinningDetails API :{ex.Message} \n{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in GetAllBinningDetails API :{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -148,7 +148,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError($"Error Occured in GetAllBinningDetails API for the following GrinNo :{grinNo}:\n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetAllBinningDetails API for the following GrinNo :{grinNo}:\n{ex.Message} \n{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in GetAllBinningDetails API for the following GrinNo :{grinNo}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");
@@ -494,7 +494,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError($"Error Occured in UpdateBinning API:{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in UpdateBinning API:{ex.Message} \n{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in UpdateBinning API:{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");
@@ -1169,7 +1169,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError($"Error Occured in Create Binning API:{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in Create Binning API:{ex.Message} \n{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in Create Binning API:{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal Server Error");
@@ -1274,7 +1274,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError($"Error Occured in BinningById API for the following Id:{id}:\n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in BinningById API for the following Id:{id}:\n {ex.Message} \n{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in BinningById API for the following Id:{id}:\n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1312,7 +1312,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError($"Error Occured in Delete Binning API for the following Id:{id}:\n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in Delete Binning API for the following Id:{id}:\n {ex.Message} \n{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in Delete Binning API for the following Id:{id}:\n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1341,7 +1341,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError($"Error Occured in GetAllBinningItems API:{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetAllBinningItems API:{ex.Message} \n{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in GetAllBinningItems API:{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");
@@ -1368,7 +1368,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError($"Error Occured in GetAllActiveBinningIdNameList API:{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetAllActiveBinningIdNameList API:{ex.Message} \n{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in GetAllActiveBinningIdNameList API:{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2045,7 +2045,7 @@ namespace Tips.Grin.Api.Controllers
 
                 _logger.LogError($"Error Occured in CreateBinningItems API:{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in CreateBinningItems API:{ex.Message} \n{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in CreateBinningItems API:{ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2074,7 +2074,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError($"Error Occured in GetListOfBinningQtyByItemNo API for the following item:{itemNumber}:\n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetListOfBinningQtyByItemNo API for the following item:{itemNumber}:\n{ex.Message} \n{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in GetListOfBinningQtyByItemNo API for the following item:{itemNumber}:\n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2101,7 +2101,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError($"Error Occured in GetListOfBinningQtyByItemNoListByProjectNo API for the following item:{itemNumber} and projectNo:{projectNo} \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetListOfBinningQtyByItemNoListByProjectNo API for the following item:{itemNumber} and projectNo:{projectNo} \n{ex.Message} \n{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in GetListOfBinningQtyByItemNoListByProjectNo API for the following item:{itemNumber} and projectNo:{projectNo} \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2129,7 +2129,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 _logger.LogError($"Error Occured in GetListOfBinningQtyByItemNoListByMultipleProjectNo API:{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetListOfBinningQtyByItemNoListByMultipleProjectNo API:{ex.Message} \n{ex.InnerException}";
+                serviceResponse.Message = $"Error Occured in GetListOfBinningQtyByItemNoListByMultipleProjectNo API:{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

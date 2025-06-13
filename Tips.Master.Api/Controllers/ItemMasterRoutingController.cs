@@ -116,9 +116,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateRfq action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetItemsRoutingDetailsForLpCosting API for the following itemNumbers : {itemNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetItemsRoutingDetailsForLpCosting API for the following itemNumbers : {itemNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

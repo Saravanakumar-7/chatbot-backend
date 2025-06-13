@@ -85,9 +85,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllIQCForServiceItemsDetails API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllIQCForServiceItemsDetails API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");
@@ -124,9 +124,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetIQCForServiceItemsSPReportWithParam API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetIQCForServiceItemsSPReportWithParam action";
+                serviceResponse.Message = $"Error Occured in GetIQCForServiceItemsSPReportWithParam API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -163,9 +163,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetIQCForServiceItemsSPReportWithParamForTrans API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetIQCForServiceItemsSPReportWithParam action";
+                serviceResponse.Message = $"Error Occured in GetIQCForServiceItemsSPReportWithParamForTrans API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -200,9 +200,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetIQCForServiceItemsSPReportWithDate API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetIQCForServiceItemsSPReportWithDate action";
+                serviceResponse.Message = $"Error Occured in GetIQCForServiceItemsSPReportWithDate API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1064,9 +1064,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside Create IQCForServiceItems action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateIQCForServiceItems API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateIQCForServiceItems API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1846,9 +1846,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateIQCForServiceItems_Items action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateIQCForServiceItems_Items API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateIQCForServiceItems_Items API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1905,9 +1905,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside IQCForServiceItemsById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetIQCForServiceItemsDetailsbyId API for the following id :{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetIQCForServiceItemsDetailsbyId API for the following id :{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");

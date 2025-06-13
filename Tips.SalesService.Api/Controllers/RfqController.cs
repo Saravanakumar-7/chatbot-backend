@@ -219,9 +219,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllRfq API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllRfq API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -367,9 +367,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllRfqForKeus API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllRfqForKeus API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -409,9 +409,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside RfqDetailsByRFQNoAndRevNo action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqDeatailsByRfqNoAndRevNo API for the following rfqNumber:{rfqNumber} and revisionNumber : {revisionNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Message = $"Error Occured in GetRfqDeatailsByRfqNoAndRevNo API for the following rfqNumber:{rfqNumber} and revisionNumber : {revisionNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -450,9 +450,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllRfqCustomerSupport API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllRfqCustomerSupport API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -475,9 +475,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllActiveRfqNumberList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllActiveRfqNumberList action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetAllActiveRfqNumberList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -501,9 +501,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllRfqNumberList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllRfqNumberList action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetAllRfqNumberList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -541,9 +541,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllRfqLPCosting API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllRfqLPCosting API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -580,9 +580,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllRfqEngg API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllRfqEngg API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -671,9 +671,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetFGBomChildItemDetails API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside getAllRfqEnggRelesedList action";
+                serviceResponse.Message = $"Error Occured in GetFGBomChildItemDetails API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -724,9 +724,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside RfqCustomerSupportByRfqNumber action: {ex.Message}");
+                _logger.LogError($"Error Occured in RfqCustomerSupportByRfqNumber API for the following RfqNumber:{RfqNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in RfqCustomerSupportByRfqNumber API for the following RfqNumber:{RfqNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -751,9 +751,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetRfqCsandForecastCsProjectNumberList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetRfqCsandForecastCsDetailList action";
+                serviceResponse.Message = $"Error Occured in GetRfqCsandForecastCsProjectNumberList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -778,9 +778,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetRfqCsandForecastCsDetailListByItemNumber API for the following itemNumber:{itemNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetRfqCsandForecastCsDetailListByItemNumber action";
+                serviceResponse.Message = $"Error Occured in GetRfqCsandForecastCsDetailListByItemNumber API for the following itemNumber:{itemNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -803,9 +803,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetRfqEnggandForecastCsDetailListByItemNumber API for the following itemNumber:{itemNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetRfqEnggandForecastCsDetailListByItemNumber action";
+                serviceResponse.Message = $"Error Occured in GetRfqEnggandForecastCsDetailListByItemNumber API for the following itemNumber:{itemNumber} \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -828,9 +828,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetRfqEnggandForecastCsProjectNumberList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetRfqEnggandForecastCsProjectList action";
+                serviceResponse.Message = $"Error Occured in GetRfqEnggandForecastCsProjectNumberList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -854,9 +854,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllActiveRfqCustomerSupportItemsByRfqNumber API for the following RfqNumber:{RfqNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllActiveRfqCustomerSupportItemsByRfqNumber action";
+                serviceResponse.Message = $"Error Occured in GetAllActiveRfqCustomerSupportItemsByRfqNumber API for the following RfqNumber:{RfqNumber} \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -879,9 +879,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllActiveRfqNumberListByCustomerId API for the following CustomerId:{CustomerId} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllActiveRfqNumberListByCustomerId action";
+                serviceResponse.Message = $"Error Occured in GetAllActiveRfqNumberListByCustomerId API for the following CustomerId:{CustomerId} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -904,9 +904,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllActiveRfqEnggItemByRfqNumber API for the following RfqNumber:{RfqNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllActiveRfqEnggItemByRfqNumber action";
+                serviceResponse.Message = $"Error Occured in GetAllActiveRfqEnggItemByRfqNumber API for the following RfqNumber:{RfqNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1018,9 +1018,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside RfqCustomerSupportByRfqNumber action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetDetailsForLPCostingByRfqNumber API for the following rfqNumber:{rfqNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetDetailsForLPCostingByRfqNumber API for the following rfqNumber:{rfqNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1077,9 +1077,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside RfqCustomerSupportByRfqNumber action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqLPCostingByRfqNumber API for the following RfqNumber:{RfqNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetRfqLPCostingByRfqNumber API for the following RfqNumber:{RfqNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1130,9 +1130,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside RfqCustomerSupportByRfqNumber action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqEnggByRfqNumber API for the following RfqNumber:{RfqNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetRfqEnggByRfqNumber API for the following RfqNumber:{RfqNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1174,9 +1174,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetrfqById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqById API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetRfqById API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1215,9 +1215,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetrfqEnggById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqEnggById API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetRfqEnggById API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1257,9 +1257,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetRfqEnggByRfqNoandRevNo action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqEnggByRfqNoAndRevNo API for the following rfqNumber:{rfqNumber} and  revisionNumber : {revisionNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetRfqEnggByRfqNoAndRevNo API for the following rfqNumber:{rfqNumber} and  revisionNumber : {revisionNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1298,9 +1298,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetRfqEnggLatestRevNoByRfqnumber action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqEnggLatestRevNoByRfqNumber API for the following rfqNumber:{rfqNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetRfqEnggLatestRevNoByRfqNumber API for the following rfqNumber:{rfqNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1357,9 +1357,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside getRfqLPCostingById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqLPCostingById API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetRfqLPCostingById API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1409,9 +1409,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetRfqCustomerSupportById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqCustomerSupportById API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetRfqCustomerSupportById API for the following id:{id} \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1463,9 +1463,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetRfqCsbyRfqNumberandRevNo action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqCsbyRfqNumberandRevNo API for the following rfqNumber:{rfqNumber} and revisionNumber : {revisionNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetRfqCsbyRfqNumberandRevNo API for the following rfqNumber:{rfqNumber} and revisionNumber : {revisionNumber} \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1506,9 +1506,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetRfqCsLatestRevNoByRfqnumber action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqCsLatestRevNoByRfqnumber API for the following rfqNumber:{rfqNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetRfqCsLatestRevNoByRfqnumber API for the following rfqNumber:{rfqNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1588,9 +1588,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateRfq action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateRfqCustomerSupportRelease API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateRfqCustomerSupportRelease API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1643,9 +1643,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateRfqItem action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateRfqEnggItemRelease API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateRfqEnggItemRelease API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1797,9 +1797,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateRfqCustomerSupport action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateRfqCustomerSupport API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateRfqCustomerSupport API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1871,9 +1871,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside RfqCustomerSupportItemFile action: {ex.Message},{ex.InnerException}");
+                _logger.LogError($"Error Occured in CreateRfqCustomerSupportItemFileUpload API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Error Occured in CreateRfqCustomerSupportItemFileUpload API : \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1936,9 +1936,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside ItemmasterFiles action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetDownloadUrlDetailsforRfqCustomerSupportItemFiles API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetDownloadUrlDetailsforRfqCustomerSupportItemFiles API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1962,9 +1962,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllActiveLatestRfqNumbers API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllActiveLatestRfqNumbers action";
+                serviceResponse.Message = $"Error Occured in GetAllActiveLatestRfqNumbers API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2039,9 +2039,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateRfq action: {ex.Message} {ex.InnerException}");
+                _logger.LogError($"Error Occured in CreateRfq API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateRfq API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2102,9 +2102,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetRevNumberByRfqNumberList API for the following RfqNumber:{RfqNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside RevNumberByRfqNumberListDto action";
+                serviceResponse.Message = $"Error Occured in GetRevNumberByRfqNumberList API for the following RfqNumber:{RfqNumber} \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2171,9 +2171,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateRfqLPCostong action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateRfqLPcosting API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateRfqLPcosting API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2234,9 +2234,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreateRfqEngg action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateRfqEngg API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateRfqEngg API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2287,9 +2287,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateRfq action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateRfq API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateRfq API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2461,9 +2461,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateRfqEngg action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateRfqEngg API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateRfqEngg API : \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2536,9 +2536,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateRfqLPCosting action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateRfqLPCosting API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateRfqLPCosting API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2831,9 +2831,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateRfqCustomerSupport action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateRfqCustomerSupport API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateRfqCustomerSupport API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2983,9 +2983,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateRfqCustomerSupport action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateRfqCustomerSupportForKeus API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateRfqCustomerSupportForKeus API : \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3162,9 +3162,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteRfq action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteRfq API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeleteRfq API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3199,9 +3199,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went RfqEngg inside DeleteRfq action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteRfqengg API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeleteRfqengg API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3237,9 +3237,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went RfqLPCosting inside DeleteRfq action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteRfqLPCosting API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeleteRfqLPCosting API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3274,9 +3274,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeleteRfqCustomerSupport action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteRfqCustomerSupport API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeleteRfqCustomerSupport API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3300,9 +3300,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetRfqReleaseLpByRfqNumber API for the following RfqNumber:{RfqNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetRfqReleaseLpByRfqNumber action";
+                serviceResponse.Message = $"Error Occured in GetRfqReleaseLpByRfqNumber API for the following RfqNumber:{RfqNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3381,9 +3381,9 @@ namespace Tips.SalesService.Api.Controllers
 
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside Create ReleaseLp action: {ex.Message}");
+                _logger.LogError($"Error Occured in BulkRelease API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in BulkRelease API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, "Internal server error");
@@ -3423,9 +3423,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateRfqEnggItemUnRelease action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateRfqEnggItemUnRelease API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateRfqEnggItemUnRelease API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3465,9 +3465,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateRfqCustomerSupportItemUnRelease action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateRfqRfqCustomerSupportItemUnRelease API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateRfqRfqCustomerSupportItemUnRelease API for the following id:{id} \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3503,9 +3503,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllRfqCustomGroup API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Message = $"Error Occured in GetAllRfqCustomGroup API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3543,9 +3543,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetRfqCustomGroupById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqCustomGroupById API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetRfqCustomGroupById API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3568,9 +3568,9 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
 
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllCustomGroupList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllCustomGroupList action: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetAllCustomGroupList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3620,10 +3620,10 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateRfqCustomGroup API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside CreateRfqCustomGroup action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateRfqCustomGroup API : \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -3679,10 +3679,10 @@ namespace Tips.SalesService.Api.Controllers
             {
                 serviceResponse.Data = null;
 
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateRfqCustomGroup API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside UpdateRfqCustomGroup action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateRfqCustomGroup API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -3716,10 +3716,10 @@ namespace Tips.SalesService.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeleteRfqCustomGroup API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeleteRfqCustomGroup action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteRfqCustomGroup API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -3753,9 +3753,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllRfqCustomField API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Message = $"Error Occured in GetAllRfqCustomField API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3795,9 +3795,9 @@ namespace Tips.SalesService.Api.Controllers
                     }
                     catch (Exception ex)
                     {
-                        _logger.LogError($"Something went wrong inside GetRfqCustomFieldById action: {ex.Message}");
+                         _logger.LogError($"Error Occured in GetRfqCustomFieldById API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                         serviceResponse.Data = null;
-                        serviceResponse.Message = "Something went wrong. Please try again!";
+                        serviceResponse.Message = $"Error Occured in GetRfqCustomFieldById API for the following id:{id} \n {ex.Message}";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                         return StatusCode(500, serviceResponse);
@@ -3834,9 +3834,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetRfqCustomFieldByCustomGroup action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetRfqCustomFieldByCustomGroup API for the following CustomGroup:{CustomGroup} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetRfqCustomFieldByCustomGroup API for the following CustomGroup:{CustomGroup} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -3888,10 +3888,10 @@ namespace Tips.SalesService.Api.Controllers
                     catch (Exception ex)
                     {
                         serviceResponse.Data = null;
-                        serviceResponse.Message = "Internal server error";
+                        serviceResponse.Message = $"Error Occured in CreateRfqCustomField API : \n {ex.Message} ";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                        _logger.LogError($"Something went wrong inside CreateRfqCustomField action: {ex.Message}");
+                        _logger.LogError($"Error Occured in CreateRfqCustomField API : \n {ex.Message} \n{ex.InnerException}");
                         return StatusCode(500, serviceResponse);
                     }
                 }
@@ -3945,10 +3945,10 @@ namespace Tips.SalesService.Api.Controllers
                     catch (Exception ex)
                     {
                         serviceResponse.Data = null;
-                        serviceResponse.Message = "Internal server error";
+                        serviceResponse.Message = $"Error Occured in UpdateRfqCustomField API for the following id:{id} \n {ex.Message}";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                        _logger.LogError($"Something went wrong inside UpdateRfqCustomField action: {ex.Message}");
+                        _logger.LogError($"Error Occured in UpdateRfqCustomField API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                         return StatusCode(500, serviceResponse);
                     }
                 }
@@ -3982,10 +3982,10 @@ namespace Tips.SalesService.Api.Controllers
                     catch (Exception ex)
                     {
                         serviceResponse.Data = null;
-                        serviceResponse.Message = "Internal server error";
+                        serviceResponse.Message = $"Error Occured in DeleteRfqCustomField API for the following id:{id} \n {ex.Message}";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                        _logger.LogError($"Something went wrong inside DeleteRfqCustomField action: {ex.Message}");
+                        _logger.LogError($"Error Occured in DeleteRfqCustomField API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                         return StatusCode(500, serviceResponse);
                     }
                 }
@@ -4020,9 +4020,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetRfqSPReport API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetRfqSPReport action";
+                serviceResponse.Message = $"Error Occured in GetRfqSPReport API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -4056,9 +4056,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetRfqSPReportWithDate API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetRfqSPReportWithDate action";
+                serviceResponse.Message = $"Error Occured in GetRfqSPReportWithDate API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -4097,9 +4097,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetRFQSalesorderConfirmationSPReportWithParamForTrans API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetRFQSalesorderConfirmationSPReportWithParamForTrans action";
+                serviceResponse.Message = $"Error Occured in GetRFQSalesorderConfirmationSPReportWithParamForTrans API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -4133,9 +4133,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetRFQSalesorderConfirmationSPReportWithDateForTrans API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetRFQSalesorderConfirmationSPReportWithDateForTrans action";
+                serviceResponse.Message = $"Error Occured in GetRFQSalesorderConfirmationSPReportWithDateForTrans API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -4244,7 +4244,7 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"An error occurred: {ex.Message}");
+                return StatusCode(500, $"error occurred in ExportRFQSalesorderConfirmationSPReportToExcel API: {ex.Message}");
             }
         }
 

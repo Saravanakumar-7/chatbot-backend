@@ -47,9 +47,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllVolumeUom API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllVolumeUom API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -75,9 +75,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllActiveVolumeUoms API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetAllActiveVolumeUoms API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -115,9 +115,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetvolumeUomById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetVolumeUomById API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong. Please try again!";
+                serviceResponse.Message = $"Error Occured in GetVolumeUomById API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -162,10 +162,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in CreateVolumeUoms API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside CreateOwner action: {ex.Message}");
+                _logger.LogError($"Error Occured in CreateVolumeUoms API : \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -219,10 +219,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in UpdateVolumeUom API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside UpdateVolumeUom action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdateVolumeUom API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -256,10 +256,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeleteVolumeUom API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeleteOwner action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeleteVolumeUom API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -293,10 +293,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in ActivateVolumeUom API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside ActivateVolumeUom action: {ex.Message}");
+                _logger.LogError($"Error Occured in ActivateVolumeUom API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -330,10 +330,10 @@ namespace Tips.Master.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in DeactivateVolumeUom API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Something went wrong inside DeactivatevolumeUom action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeactivateVolumeUom API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }

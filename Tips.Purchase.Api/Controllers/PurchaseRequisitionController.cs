@@ -92,9 +92,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllPurchaseRequistions API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Message = $"Error Occured in GetAllPurchaseRequistions API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -129,9 +129,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllLastestPurchaseRequistions API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Message = $"Error Occured in GetAllLastestPurchaseRequistions API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -170,9 +170,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetPurchaseRequisitionsSPReportWithParam API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetPurchaseRequisitionsSPReportWithParam action";
+                serviceResponse.Message = $"Error Occured in GetPurchaseRequisitionsSPReportWithParam API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -219,9 +219,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetPurchaseRequisitionsSPReportForTrans API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetPurchaseRequisitionsSPReportForTrans action";
+                serviceResponse.Message = $"Error Occured in GetPurchaseRequisitionsSPReportForTrans API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -259,9 +259,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetPurchaseRequisitionsSPReportWithParamForTrans API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetPurchaseRequisitionsSPReportWithParam action";
+                serviceResponse.Message = $"Error Occured in GetPurchaseRequisitionsSPReportWithParamForTrans API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -297,9 +297,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetPurchaseRequisitionsSPReportWithDateForTrans API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetPurchaseRequisitionsSPReportWithDateForTrans action";
+                serviceResponse.Message = $"Error Occured in GetPurchaseRequisitionsSPReportWithDateForTrans API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -346,9 +346,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetPurchaseRequisitionsSPReportForAvi API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetPurchaseRequisitionsSPReportForTrans action";
+                serviceResponse.Message = $"Error Occured in GetPurchaseRequisitionsSPReportForAvi API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -385,9 +385,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetPurchaseRequisitionsSPReportWithParamForAvi API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetPurchaseRequisitionsSPReportWithParam action";
+                serviceResponse.Message = $"Error Occured in GetPurchaseRequisitionsSPReportWithParamForAvi API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -422,9 +422,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetPurchaseRequisitionsSPReportWithDateForAvi API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetPurchaseRequisitionsSPReportWithDateForTrans action";
+                serviceResponse.Message = $"Error Occured in GetPurchaseRequisitionsSPReportWithDateForAvi API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -459,9 +459,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetPurchaseRequisitionsSPReportWithDate API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetPurchaseRequisitionsSPReportWithDate action";
+                serviceResponse.Message = $"Error Occured in GetPurchaseRequisitionsSPReportWithDate API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -513,9 +513,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetPurchaseRequisitionByPONoAndRevNo action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetPurchaseRequisitionByPRNoAndRevNo API for the following prNumber:{prNumber} and revisionNumber : {revisionNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Message = $"Error Occured in GetPurchaseRequisitionByPRNoAndRevNo API for the following prNumber : {prNumber} and revisionNumber : {revisionNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -566,9 +566,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetPurchaseRequisitionByPONo action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetPurchaseRequisitionByPRNo API for the following prNumber:{prNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Message = $"Error Occured in GetPurchaseRequisitionByPRNo API for the following prNumber:{prNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -591,9 +591,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllRevisionNumberListByPRNumber API for the following PRNumber:{PRNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllRevisionNumberListByPRNumber action";
+                serviceResponse.Message = $"Error Occured in GetAllRevisionNumberListByPRNumber API for the following PRNumber:{PRNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -662,9 +662,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in SearchPurchaseRequisitionDate API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Message = $"Error Occured in SearchPurchaseRequisitionDate API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -736,9 +736,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in SearchPurchaseRequisition API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Message = $"Error Occured in SearchPurchaseRequisition API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -808,9 +808,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllPurchaseRequisitionWithItems API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error";
+                serviceResponse.Message = $"Error Occured in GetAllPurchaseRequisitionWithItems API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -864,9 +864,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetPurchaseRequisitionById action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetPurchaseRequisitionById API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again ";
+                serviceResponse.Message = $"Error Occured in GetPurchaseRequisitionById API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1020,9 +1020,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside PRFileUpload action: {ex.Message},{ex.InnerException}");
+                _logger.LogError($"Error Occured in CreatePRFileUpload API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Error Occured in CreatePRFileUpload API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1184,9 +1184,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside CreatePurchaseRequisition action: {ex.Message},{ex.InnerException}");
+                _logger.LogError($"Error Occured in CreatePurchaseRequisition API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Error Occured in CreatePurchaseRequisition API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1299,9 +1299,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside PRFiles action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetDownloadUrlDetails_Pritems API for the following prNumber : {prNumber} and prItemNumber : {prItemNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetDownloadUrlDetails_Pritems API for the following prNumber : {prNumber} and prItemNumber : {prItemNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1367,9 +1367,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside PRFiles action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetDownloadUrlDetails_PritemsFiles API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in GetDownloadUrlDetails_PritemsFiles API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1445,9 +1445,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdatePurchaseRequisition action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdatePurchaseRequisition API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Error Occured in UpdatePurchaseRequisition API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1556,9 +1556,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside DeletePurchaseRequisition action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeletePurchaseRequisition API for the following id :{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong,try again";
+                serviceResponse.Message = $"Error Occured in DeletePurchaseRequisition API for the following id :{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1581,9 +1581,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllActivePurchaseRequisitionNameList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllActivePurchaseRequisitionNameList action";
+                serviceResponse.Message = $"Error Occured in GetAllActivePurchaseRequisitionNameList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1637,9 +1637,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetItemMasterFileUploadListByPRItemNumber API for the following itemNumber :{itemNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetItemMasterFileUploadListByPRItemNumber action";
+                serviceResponse.Message = $"Error Occured in GetItemMasterFileUploadListByPRItemNumber API for the following itemNumber :{itemNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1663,9 +1663,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllPurchaseRequisitionNameList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllPurchaseRequisitionNameList action";
+                serviceResponse.Message = $"Error Occured in GetAllPurchaseRequisitionNameList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1688,9 +1688,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllPendingPurchaseRequisitionApprovalINameList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllPendingPRApprovalINameList action";
+                serviceResponse.Message = $"Error Occured in GetAllPendingPurchaseRequisitionApprovalINameList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1712,9 +1712,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllPendingPurchaseRequisitionApprovalIINameList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllPendingPRApprovalIINameList action";
+                serviceResponse.Message = $"Error Occured in GetAllPendingPurchaseRequisitionApprovalIINameList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1746,9 +1746,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllPendingPurchaseRequisitionApprovalIList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllPendingPRApprovalINameList action";
+                serviceResponse.Message = $"Error Occured in GetAllPendingPurchaseRequisitionApprovalIList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1781,9 +1781,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllLastestPendingPurchaseRequisitionApprovalIList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllLastestPendingPRApprovalINameList action";
+                serviceResponse.Message = $"Error Occured in GetAllLastestPendingPurchaseRequisitionApprovalIList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1816,9 +1816,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllPendingPurchaseRequisitionApprovalIIList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllPendingPRApprovalIINameList action";
+                serviceResponse.Message = $"Error Occured in GetAllPendingPurchaseRequisitionApprovalIIList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1851,9 +1851,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message);
+                _logger.LogError($"Error Occured in GetAllLastestPendingPurchaseRequisitionApprovalIIList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong inside GetAllLastestPendingPRApprovalIINameList action";
+                serviceResponse.Message = $"Error Occured in GetAllLastestPendingPurchaseRequisitionApprovalIIList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1982,11 +1982,11 @@ namespace Tips.Purchase.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Message = $"Error Occured in ActivatePurchaseRequisitionApprovalI API for the following  PRNumber : {PRNumber} and RevNo : {RevNo} \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside ActivatePurchaseRequisitionApprovalI action: {ex.Message}");
-                return StatusCode(500, serviceResponse);
+                _logger.LogError($"Error Occured in ActivatePurchaseRequisitionApprovalI API for the following  PRNumber : {PRNumber} and RevNo : {RevNo} \n {ex.Message} \n{ex.InnerException}");
+                return StatusCode(500, serviceResponse); 
             }
         }
 
@@ -2104,10 +2104,10 @@ namespace Tips.Purchase.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal Server Error!";
+                serviceResponse.Message = $"Error Occured in ActivatePurchaseRequisitionApprovalII API for the following  PRNumber : {PRNumber} and RevNo : {RevNo} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Something went wrong inside ActivatePurchaseRequisitionApprovalII action: {ex.Message}");
+                _logger.LogError($"Error Occured in ActivatePurchaseRequisitionApprovalII API for the following  PRNumber : {PRNumber} and RevNo : {RevNo} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
@@ -2184,9 +2184,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdatePRUploadDocument action: {ex.Message}");
+                _logger.LogError($"Error Occured in UpdatePRUploadDocument API for the following  prNumber : {prNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Error Occured in UpdatePRUploadDocument API for the following  prNumber : {prNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2229,9 +2229,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside UpdateUploadDocument action: {ex.Message}");
+                _logger.LogError($"Error Occured in DeletePRUploadDocument API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Something went wrong ,try again";
+                serviceResponse.Message = $"Error Occured in DeletePRUploadDocument API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2308,9 +2308,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside GetDownloadUrlDetails action: {ex.Message}");
+                _logger.LogError($"Error Occured in GetDownloadUrlDetail API for the following prNumber:{prNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Inter server error";
+                serviceResponse.Message = $"Error Occured in GetDownloadUrlDetail API for the following prNumber:{prNumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -2366,9 +2366,9 @@ namespace Tips.Purchase.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong inside ChangePrItemSatusByPrItemId action: {ex.Message}");
+                _logger.LogError($"Error Occured in ShortClosePrItemSatusByPrItemId API for the following prItemId:{prItemId} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Internal server error";
+                serviceResponse.Message = $"Error Occured in ShortClosePrItemSatusByPrItemId API for the following prItemId:{prItemId} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
