@@ -227,6 +227,9 @@ namespace Tips.Grin.Api
             CreateMap<KIT_Binning, KIT_BinningPostDto>().ReverseMap();
             CreateMap<KIT_BinningItems, KIT_BinningItemsPostDto>().ReverseMap();
             CreateMap<KIT_BinningItemsLocation, KIT_BinningItemsLocationPostDto>().ReverseMap();
+            CreateMap<KIT_Binning, KIT_BinningDto>().ReverseMap();
+            CreateMap<KIT_BinningItems, KIT_BinningItemsDto>().ReverseMap();
+            CreateMap<KIT_BinningItemsLocation, KIT_BinningItemsLocationDto>().ReverseMap();
         }
     }
 }

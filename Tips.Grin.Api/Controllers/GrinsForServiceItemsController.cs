@@ -935,7 +935,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.GrinsForServiceItemsNumber = inventoryObject.grinNo;
                             iqcInventoryTranctionDto.GrinsForServiceItemsPartsId = inventoryObject.grinPartId;
                             iqcInventoryTranctionDto.PartType = inventoryObject.partType;
-                            iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;/* Convert.ToString(grinPartsDetails.Id);*/
+                            iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;
                             iqcInventoryTranctionDto.ReferenceIDFrom = "IQCForServiceItems";
                             iqcInventoryTranctionDto.GrinsForServiceItemsMaterialType = "";
                             iqcInventoryTranctionDto.shopOrderNo = "";
