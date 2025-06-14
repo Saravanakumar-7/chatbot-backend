@@ -34,8 +34,10 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<OpenDeliveryOrderSPReportForTrans>> OpenDeliveryOrderSPReportWithParamForTrans(string OpenDONumber, string CustomerName,
                                                                                                                  string IssuedTo, string ItemNumber, string MPN, string Warehouse,
                                                                                                                  string Location, string ODOType, string ProjectNumber);
+        Task<IEnumerable<OpenDeliveryOrderSPReportForAvi>> OpenDeliveryOrderSPReportWithParamForAvi(string OpenDONumber, string VendorName, string ItemNumber, string ODOType);
         Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReportDates(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<OpenDeliveryOrderSPReportForTrans>> OpenDeliveryOrderSPReportDateForTrans(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<OpenDeliveryOrderSPReportForAvi>> OpenDeliveryOrderSPReportDateForAvi(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<ODOMonthlyConsumptionSPReport>> GetODOMonthlyConsumptionSPReportWithParam(string CustomerId);
         Task<IEnumerable<ODOMonthlyConsumptionSPReport>> GetODOMonthlyConsumptionSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<ODOQuantityDto> GetListOfSAODOQtyByItemNo(string saItemNumber,string projectNumber);

@@ -152,6 +152,17 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ODOtype { get; set; }
         public string? ProjectNumber { get; set; }
     }
+
+    public class OpenDeliveryOrderSPReportWithParamForAviDto
+    {
+        public string? OpenDoNumber { get; set; }
+        public string? VendorName { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ODOtype { get; set; }
+        
+    }
+
+
     public class OpenDeliveryOrderSPReportForTrans
     {
         public string? OpenDONumber { get; set; }
@@ -173,7 +184,22 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? SerialNo { get; set; }
         public string? Remarks { get; set; }
     }
-
+    public class OpenDeliveryOrderSPReportForAvi
+    {
+        public string? OpenDONumber { get; set; }
+        public DateTime? ODODate { get; set; }
+        public DateTime? DueDate { get; set; }
+        public string? ODOtype { get; set; }
+        public string? VendorName { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ItemDescription { get; set; }
+        public decimal? SentQty { get; set; }
+        public decimal? ReceivedQty { get; set; }
+        public decimal? BalanceQtyReceive { get; set; }
+        public string? ReasonForSending { get; set; }
+        public string? ResponsibleBy { get; set; }
+        public string? Remarks { get; set; }
+    }
     public class ODOMonthlyConsumptionDto
     {
         public string? CustomerId { get; set; }
