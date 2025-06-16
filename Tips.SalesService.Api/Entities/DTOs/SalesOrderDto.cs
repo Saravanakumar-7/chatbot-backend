@@ -924,6 +924,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? MaterialGroup { get; set; }
         public string? ItemType { get; set; }
         public string? PONumber { get; set; }
+        public DateTime? PODate { get; set; }
         public DateTime? PoCreatedon { get; set; }
         public string? SalesPerson { get; set; }
         public DateTime? sodate { get; set; }
