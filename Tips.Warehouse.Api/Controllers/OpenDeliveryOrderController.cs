@@ -912,6 +912,43 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> OpenDeliveryOrderSPReportDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<OpenDeliveryOrderSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReportForAvi>>();
+            try
+            {
+                var products = await _repository.OpenDeliveryOrderSPReportDateForAvi(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OpenDeliveryOrderSPReportDates hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OpenDeliveryOrderSPReportDates hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OpenDeliveryOrderSPReportDates Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in OpenDeliveryOrderSPReportDateForAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in OpenDeliveryOrderSPReportDateForAvi API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOpenDeliveryOrder(int id, [FromBody] OpenDeliveryOrderDtoUpdate openDeliveryOrderDtoUpdate)
         {
@@ -1178,6 +1215,48 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError($"Error Occured in OpenDeliveryOrderSPReportWithParamForTrans API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error Occured in OpenDeliveryOrderSPReportWithParamForTrans API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> OpenDeliveryOrderSPReportWithParamForAvi([FromBody] OpenDeliveryOrderSPReportWithParamForAviDto openDeliveryOrderSPReport)
+
+        {
+            ServiceResponse<IEnumerable<OpenDeliveryOrderSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderSPReportForAvi>>();
+            try
+            {
+                var products = await _repository.OpenDeliveryOrderSPReportWithParamForAvi(openDeliveryOrderSPReport.OpenDoNumber, openDeliveryOrderSPReport.VendorName,
+                                                                                            openDeliveryOrderSPReport.ItemNumber, 
+                                                                                            openDeliveryOrderSPReport.ODOtype);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OpenDeliveryOrderSPReportDto hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OpenDeliveryOrderSPReportDto hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    //var result = _mapper.Map<IEnumerable<OpenDeliveryOrderSPReport>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OpenDeliveryOrderSPReportDto Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in OpenDeliveryOrderSPReportWithParamForAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in OpenDeliveryOrderSPReportWithParamForAvi API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

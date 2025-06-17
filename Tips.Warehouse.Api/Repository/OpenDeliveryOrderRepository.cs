@@ -138,6 +138,18 @@ namespace Tips.Warehouse.Api.Repository
 
 
         }
+        public async Task<IEnumerable<OpenDeliveryOrderSPReportForAvi>> OpenDeliveryOrderSPReportWithParamForAvi(string OpenDONumber, string VendorName, string ItemNumber, string ODOType)
+        {
+
+            var result = _tipsWarehouseDbContext
+            .Set<OpenDeliveryOrderSPReportForAvi>()
+            .FromSqlInterpolated($"CALL Open_Delivery_Order_Report_withparameter_av({OpenDONumber},{VendorName},{ItemNumber},{ODOType})")
+            .ToList();
+
+            return result;
+
+
+        }
         public async Task<IEnumerable<OpenDeliveryOrderSPReportForTrans>> OpenDeliveryOrderSPReportDateForTrans(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsWarehouseDbContext.Set<OpenDeliveryOrderSPReportForTrans>()
@@ -146,6 +158,16 @@ namespace Tips.Warehouse.Api.Repository
 
             return results;
         }
+
+        public async Task<IEnumerable<OpenDeliveryOrderSPReportForAvi>> OpenDeliveryOrderSPReportDateForAvi(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<OpenDeliveryOrderSPReportForAvi>()
+                          .FromSqlInterpolated($"CALL Open_Delivery_Order_Report_withparameter_withdate_Av({FromDate},{ToDate})")
+                          .ToList();
+
+            return results;
+        }
+
         public async Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReportDates(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsWarehouseDbContext.Set<OpenDeliveryOrderSPReport>()

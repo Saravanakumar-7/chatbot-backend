@@ -845,9 +845,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetAdvanceReceivedEntryLevelSPReportWithParam API: {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetAdvanceReceivedEntryLevelSPReportWithParam API: \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetAdvanceReceivedEntryLevelSPReportWithParam API: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetAdvanceReceivedEntryLevelSPReportWithParam API: \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -882,9 +882,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetAdvanceReceivedEntryLevelSPReportWithDate API: {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetAdvanceReceivedEntryLevelSPReportWithDate API: \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetAdvanceReceivedEntryLevelSPReportWithDate API: {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetAdvanceReceivedEntryLevelSPReportWithDate API: \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

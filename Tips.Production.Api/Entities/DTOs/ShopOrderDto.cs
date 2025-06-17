@@ -180,6 +180,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ProjectType { get; set; }
         public int? ItemType { get; set; }
         public string? ItemNumber { get; set; }
+        public string? CustomerName { get; set; }
         public decimal? BOMversion { get; set; }
         public string? ProjectNumber { get; set; }
         public string? SalesOrderNumber { get; set; }
