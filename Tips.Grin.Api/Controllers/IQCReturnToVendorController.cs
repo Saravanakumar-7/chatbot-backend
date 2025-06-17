@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities;
+using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Mysqlx.Crud;
@@ -92,7 +93,6 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-
 
                 var client1 = _clientFactory.CreateClient();
                 var token1 = HttpContext.Request.Headers["Authorization"].ToString();
@@ -203,7 +203,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDtos.Description = Inv.Description;
                             iqcInventoryTranctionDtos.ProjectNumber = Inv.ProjectNumber;
                             iqcInventoryTranctionDtos.Issued_Quantity = Inv.Balance_Quantity;
-                            iqcInventoryTranctionDtos.IsStockAvailable = Inv.IsStockAvailable;
+                            iqcInventoryTranctionDtos.IsStockAvailable = false;
                             iqcInventoryTranctionDtos.UOM = Inv.UOM;
                             iqcInventoryTranctionDtos.Warehouse = Inv.Warehouse;
                             iqcInventoryTranctionDtos.From_Location = Inv.Location;
@@ -212,10 +212,11 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDtos.GrinPartId = Inv.GrinPartId;
                             iqcInventoryTranctionDtos.PartType = Inv.PartType;
                             iqcInventoryTranctionDtos.ReferenceID = Inv.GrinNo;
-                            iqcInventoryTranctionDtos.ReferenceIDFrom = "IQCRejectRecovery";
+                            iqcInventoryTranctionDtos.ReferenceIDFrom = "IQC";
                             iqcInventoryTranctionDtos.GrinMaterialType = "GRIN";
                             iqcInventoryTranctionDtos.shopOrderNo = "";
-                            iqcInventoryTranctionDtos.Remarks = "RTV Done";
+                            iqcInventoryTranctionDtos.Remarks = "IQCRejectRecovery Done";
+                            iqcInventoryTranctionDtos.TransactionType = InventoryType.Inward;
 
                             string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
                             var contents1 = new StringContent(iqcInventoryTranctionDtoJsons, Encoding.UTF8, "application/json");
@@ -319,8 +320,8 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDtos.MftrPartNumber = Inv.MftrPartNumber;
                             iqcInventoryTranctionDtos.Description = Inv.Description;
                             iqcInventoryTranctionDtos.ProjectNumber = Inv.ProjectNumber;
-                            iqcInventoryTranctionDtos.Issued_Quantity = returnqty; 
-                            iqcInventoryTranctionDtos.IsStockAvailable = Inv.IsStockAvailable;
+                            iqcInventoryTranctionDtos.Issued_Quantity = Inv.Balance_Quantity;
+                            iqcInventoryTranctionDtos.IsStockAvailable = false;
                             iqcInventoryTranctionDtos.UOM = Inv.UOM;
                             iqcInventoryTranctionDtos.Warehouse = Inv.Warehouse;
                             iqcInventoryTranctionDtos.From_Location = Inv.Location;
@@ -329,10 +330,11 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDtos.GrinPartId = Inv.GrinPartId;
                             iqcInventoryTranctionDtos.PartType = Inv.PartType;
                             iqcInventoryTranctionDtos.ReferenceID = Inv.GrinNo;
-                            iqcInventoryTranctionDtos.ReferenceIDFrom = "IQCRejectRecovery";
+                            iqcInventoryTranctionDtos.ReferenceIDFrom = "IQC";
                             iqcInventoryTranctionDtos.GrinMaterialType = "GRIN";
                             iqcInventoryTranctionDtos.shopOrderNo = "";
-                            iqcInventoryTranctionDtos.Remarks = "RTV Done";
+                            iqcInventoryTranctionDtos.Remarks = "IQCRejectRecovery Done";
+                            iqcInventoryTranctionDtos.TransactionType = InventoryType.Inward;
 
                             string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
                             var contents1 = new StringContent(iqcInventoryTranctionDtoJsons, Encoding.UTF8, "application/json");
@@ -398,9 +400,9 @@ namespace Tips.Grin.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in CreateIQCReturnToVendor API for the following Grin Number: {iQCRejectRecoveryPostDto.GrinNumber}:: \n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in CreateIQCReturnToVendor API for the following Grin Number: {iQCRejectRecoveryPostDto.GrinNumber}:\n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in CreateIQCReturnToVendor API for the following Grin Number: {iQCRejectRecoveryPostDto.GrinNumber}:: \n {ex.Message}";
+                serviceResponse.Message = $"Error Occured in CreateIQCReturnToVendor API for the following Grin Number: {iQCRejectRecoveryPostDto.GrinNumber}:\n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

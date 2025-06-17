@@ -7,6 +7,7 @@ namespace Tips.Grin.Api.Entities
         [Key]
         public int Id { get; set; }
         public string KIT_GrinNumber { get; set; }
+        public int KIT_GrinId { get; set; }
         public string VendorId { get; set; }
         public string VendorName { get; set; }
         public string VendorNumber { get; set; }

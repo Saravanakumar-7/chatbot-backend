@@ -181,6 +181,7 @@ namespace Tips.Warehouse.Api.Controllers
                     _logger.LogError("Invalid InventoryTranction object sent from client.");
                     return BadRequest(serviceResponse);
                 }
+                inventoryTranctionDtoPost.TransactionType ??= InventoryType.Inward;
                 var createInventoryTranction = _mapper.Map<InventoryTranction>(inventoryTranctionDtoPost);
 
                 await _inventoryTranctionRepository.CreateInventoryTransaction(createInventoryTranction);
