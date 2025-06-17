@@ -7,6 +7,7 @@ namespace Tips.Production.Api.Entities
     {
         public string? ShopOrderNumber { get; set; }
         public DateTime ShopOrder_date { get; set; }
+        public string? CreatedBy { get; set; }
         public string? ProjectType { get; set; }
         public PartType ItemType { get; set; }
         public string? ItemNumber { get; set; }
@@ -25,6 +26,7 @@ namespace Tips.Production.Api.Entities
         public decimal? UnitPrice { get; set; }
         public string? UOC { get; set; }
         public decimal? ShopOrder_qty { get; set; }
+        public decimal? WipQty { get; set; }
         public decimal? RequiredQty { get; set; }
         public string? UOM { get; set; }
         public string? Remarks { get; set; }
