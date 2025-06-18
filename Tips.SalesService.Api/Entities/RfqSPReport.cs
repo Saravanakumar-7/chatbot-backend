@@ -16,4 +16,22 @@
         public decimal? Qty { get; set; }
         public string? RoomName { get; set; }
     }
+
+    public class RfqSPReportForKeus
+    {
+        public string? LeadId { get; set; }
+        public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? City { get; set; }
+        public string? Address { get; set; }
+        public int? RevisionNumber { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+        public DateTime CreatedOn { get; set; }
+        public string? CreatedBy { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
+        public decimal? Qty { get; set; }
+        public string? RoomName { get; set; }
+    }
 }
