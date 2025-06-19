@@ -99,6 +99,52 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetLatestBOMVersionNobyItemnumber([FromQuery] string ItemNumber)
+        {
+            ServiceResponse<decimal> serviceResponse = new ServiceResponse<decimal>();
+
+            try
+            {
+                serviceResponse.Data = await _repository.EnggBomRepository.GetLatestBOMVersionNobyItemnumber(ItemNumber);
+                serviceResponse.Message = $"Returned Latest BOM Version of {ItemNumber}";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetLatestBOMVersionNobyItemnumber API for Itemnuber:{ItemNumber}: \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = 0;
+                serviceResponse.Message = $"Error Occured in GetLatestBOMVersionNobyItemnumber API for Itemnuber:{ItemNumber}: \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllParentBOMsofItemNumber([FromQuery] string ItemNumber)
+        {
+            ServiceResponse<List<EnggBomDetails>> serviceResponse = new ServiceResponse<List<EnggBomDetails>>();
+            try
+            {
+                serviceResponse.Data = await _repository.EnggBomRepository.GetAllParentBOMsofItemNumber(ItemNumber);
+                serviceResponse.Message = $"Returned all parent boms of ItemNumber:{ItemNumber}";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllParentBOMsofItemNumber API for Itemnuber:{ItemNumber}: \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllParentBOMsofItemNumber API for Itemnuber:{ItemNumber}: \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         private async Task<List<EnggBomLevelSPReport>?> GetLevelSPReports(List<EnggBomLevelSPReport> SAspresent, int currentLevel)
         {
 

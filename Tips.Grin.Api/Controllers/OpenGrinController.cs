@@ -724,7 +724,7 @@ namespace Tips.Grin.Api.Controllers
                                 if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
 
 
-                                OGInventoryTranctionDto inventoryTranction = new OGInventoryTranctionDto();
+                                grinInventoryTrasactionPostDto inventoryTranction = new grinInventoryTrasactionPostDto();
 
                                 inventoryTranction.PartNumber = openGrinParts.ItemNumber;
                                 inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
@@ -756,7 +756,7 @@ namespace Tips.Grin.Api.Controllers
                                 var token2 = HttpContext.Request.Headers["Authorization"].ToString();
 
                                 var request2 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
-                                "CreateInventoryTranction"))
+                                "CreateInventoryTranctionFromGrin"))
                                 {
                                     Content = datas
                                 };

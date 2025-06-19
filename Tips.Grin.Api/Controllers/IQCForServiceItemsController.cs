@@ -785,7 +785,6 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObject.referenceID = iQCCreate.IQCForServiceItemsNumber;
                                     inventoryObject.referenceIDFrom = "IQCForServiceItems";
                                     acceptedQty -= balanceQty;
-
                                 }
                                 else if (inventoryObject.balance_Quantity > acceptedQty)
                                 {
@@ -797,8 +796,6 @@ namespace Tips.Grin.Api.Controllers
                                         inventoryObject.referenceID = iQCCreate.IQCForServiceItemsNumber;
                                         inventoryObject.referenceIDFrom = "IQCForServiceItems";
                                         flag1 = 1;
-
-
                                     }
                                     else
                                     {
@@ -813,8 +810,6 @@ namespace Tips.Grin.Api.Controllers
                                         inventoryObject.referenceID = iQCCreate.IQCForServiceItemsNumber;
                                         inventoryObject.referenceIDFrom = "IQCForServiceItems";
                                         acceptedQty = 0;
-
-
                                     }
                                 }
                                 if (inventoryObject.balance_Quantity == 0) { inventoryObject.isStockAvailable = 0; }

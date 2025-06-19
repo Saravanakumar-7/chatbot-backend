@@ -2,6 +2,7 @@
 using Azure;
 using Contracts;
 using Entities;
+using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
@@ -325,6 +326,7 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryTranctionDto.ReferenceID = grins.KIT_GrinNumber;
                             grinInventoryTranctionDto.shopOrderNo = "";
                             grinInventoryTranctionDto.IsStockAvailable = true;
+                            grinInventoryTranctionDto.TransactionType = InventoryType.Inward;
 
                             var json1q = JsonConvert.SerializeObject(grinInventoryTranctionDto);
                             var data1q = new StringContent(json1q, Encoding.UTF8, "application/json");
