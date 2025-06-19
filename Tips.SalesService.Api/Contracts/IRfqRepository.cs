@@ -37,6 +37,10 @@ namespace Tips.SalesService.Api.Contracts
         Task<Rfq> UpdateRfqRevNo(Rfq rfq, string serverKey);
         Task<Rfq> RfqDetailsById(int rfqId);
         Task<string> GenerateRFQNumberForTransccon();
+   
+        Task<IEnumerable<RfqSPReportForKeus>> GetRfqSPReportForKeus(string CustomerName, string CustomerId, string RfqNumber);
+        Task<IEnumerable<RfqSPReportForKeus>> GetRfqSPReportWithDateForKeus(DateTime? FromDate, DateTime? ToDate);
+
         Task<IEnumerable<RfqSPReport>> GetRfqSPReport(string CustomerName, string CustomerId, string RfqNumber);
         Task<IEnumerable<RfqSPReport>> GetRfqSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<RFQSalesorderConfirmationSPReport>> GetRFQSalesorderConfirmationSPReportWithParamForTrans(string CustomerName, string SalesOrderNumber, string KPN
