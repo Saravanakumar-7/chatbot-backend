@@ -324,5 +324,12 @@ namespace Entities.DTOs
         public bool Child_IsActive { get; set; }
         public int? Level { get; set; }
     }
+    public class EnggBomDetails
+    {
+        public string ItemNumber { set; get; }
+        public decimal RevisionNumber { get; set; }
+        public string? ItemDescription { set; get; }
+        public PartType ItemType { set; get; }
 
+    }
 }

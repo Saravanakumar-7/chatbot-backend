@@ -53,5 +53,7 @@ namespace Contracts
         Task<List<EnggChildItem>> GetChildItemsLists();
         Task<IEnumerable<EnggBomSPReport>> GetEnggBomSPReportWithParam(int? bomId);
         Task<IEnumerable<EnggBomSPReport>> GetEnggBomRevSPReportWithParam(string itemNumber, decimal revisionNumber);
+        Task<decimal> GetLatestBOMVersionNobyItemnumber(string ItemNumber);
+        Task<List<EnggBomDetails>> GetAllParentBOMsofItemNumber(string ItemNumber);
     }
 }

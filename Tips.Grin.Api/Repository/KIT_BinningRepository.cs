@@ -66,7 +66,7 @@ namespace Tips.Grin.Api.Repository
         }
         public async Task<KIT_Binning> GetKIT_BinningbyId(int Id)
         {
-            return await FindByCondition(x => x.Id == Id).Include(a => a.KIT_BinningItems).FirstOrDefaultAsync();
+            return await FindByCondition(x => x.Id == Id).Include(a => a.KIT_BinningItems).ThenInclude(b=>b.KIT_BinningItemsLocation).FirstOrDefaultAsync();
         }
     }
 }

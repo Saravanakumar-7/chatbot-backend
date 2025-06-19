@@ -284,7 +284,7 @@ namespace Repository
         public async Task<IEnumerable<ItemNoListDtos>> GetAllIsPRRequiredStatusTruePPItemNoList()
         {
             IEnumerable<ItemNoListDtos> itemNumberListDto = await TipsMasterDbContext.ItemMasters
-                               .Where(x => (x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG) && x.IsPRRequired == true && x.IsActive == true)
+                               .Where(x => (x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG || x.ItemType==PartType.Kit) && x.IsPRRequired == true && x.IsActive == true)
                                .Select(c => new ItemNoListDtos()
                                {
                                    ItemNumber = c.ItemNumber,

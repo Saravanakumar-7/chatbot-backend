@@ -297,7 +297,21 @@ namespace Repository
             var list = await _tipsMasterDbContext.EnggChildItems.ToListAsync();
             return list;
         }
-
+        public async Task<decimal> GetLatestBOMVersionNobyItemnumber(string ItemNumber)
+        {
+            return await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == ItemNumber).MaxAsync(x => x.RevisionNumber);
+        }
+        public async Task<List<EnggBomDetails>> GetAllParentBOMsofItemNumber(string ItemNumber)
+        {
+            var listofparents =await _tipsMasterDbContext.EnggChildItems.Where(x => x.ItemNumber == ItemNumber).Select(a=>a.EnggBomId).ToListAsync();
+            var result = await _tipsMasterDbContext.EnggBoms.Where(x =>listofparents.Contains(x.BOMId)).Select(s=> new EnggBomDetails
+            {
+                ItemNumber=s.ItemNumber.ToString(),
+                ItemDescription=s.ItemDescription,
+                RevisionNumber=s.RevisionNumber
+            }).ToListAsync();
+            return result;
+        }
         public async Task<PagedList<EnggBom>> GetAllEnggBOM([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
             PartType? check;

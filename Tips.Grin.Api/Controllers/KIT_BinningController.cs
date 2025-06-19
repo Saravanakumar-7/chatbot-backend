@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities;
+using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -182,6 +183,7 @@ namespace Tips.Grin.Api.Controllers
                                     grinInventoryTranctionDto.ReferenceID = inventoryObject[0].GrinNo;
                                     grinInventoryTranctionDto.shopOrderNo = "";
                                     grinInventoryTranctionDto.IsStockAvailable = true;
+                                    grinInventoryTranctionDto.TransactionType = InventoryType.Inward;
 
                                     var json1q = JsonConvert.SerializeObject(grinInventoryTranctionDto);
                                     var data1q = new StringContent(json1q, Encoding.UTF8, "application/json");
@@ -194,6 +196,43 @@ namespace Tips.Grin.Api.Controllers
 
                                     var response1q = await client.SendAsync(request2q);
                                     if (response1q.StatusCode != HttpStatusCode.OK)
+                                    {
+                                        //createinvTrancResp = response1q.StatusCode;
+                                    }
+
+                                    grinInventoryTrasactionPostDto grinInventoryTranctionDto_1 = new grinInventoryTrasactionPostDto();
+                                    grinInventoryTranctionDto_1.PartNumber = inventoryObject[0].PartNumber;
+                                    grinInventoryTranctionDto_1.LotNumber = inventoryObject[0].LotNumber;
+                                    grinInventoryTranctionDto_1.MftrPartNumber = inventoryObject[0].MftrPartNumber;
+                                    grinInventoryTranctionDto_1.Description = inventoryObject[0].Description;
+                                    grinInventoryTranctionDto_1.ProjectNumber = inventoryObject[0].ProjectNumber;
+                                    grinInventoryTranctionDto_1.Issued_Quantity = inventoryObject[0].Balance_Quantity;
+                                    grinInventoryTranctionDto_1.UOM = inventoryObject[0].UOM;
+                                    grinInventoryTranctionDto_1.Warehouse = "KIT_IQC";
+                                    grinInventoryTranctionDto_1.From_Location = "KIT_IQC";
+                                    grinInventoryTranctionDto_1.TO_Location = grinInventoryDto.Location;
+                                    grinInventoryTranctionDto_1.ReferenceIDFrom = "KIT_Binning";
+                                    grinInventoryTranctionDto_1.GrinMaterialType = "KIT_Binning";
+                                    grinInventoryTranctionDto_1.Remarks = "KIT_Binning";
+                                    grinInventoryTranctionDto_1.GrinNo = inventoryObject[0].GrinNo;
+                                    grinInventoryTranctionDto_1.GrinPartId = inventoryObject[0].GrinPartId;
+                                    grinInventoryTranctionDto_1.PartType = inventoryObject[0].PartType;
+                                    grinInventoryTranctionDto_1.ReferenceID = inventoryObject[0].GrinNo;
+                                    grinInventoryTranctionDto_1.shopOrderNo = "";
+                                    grinInventoryTranctionDto_1.IsStockAvailable = false;
+                                    grinInventoryTranctionDto_1.TransactionType = InventoryType.Outward;
+
+                                    var json1q_1 = JsonConvert.SerializeObject(grinInventoryTranctionDto_1);
+                                    var data1q_1 = new StringContent(json1q_1, Encoding.UTF8, "application/json");
+                                    var request2q_1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                                    "CreateInventoryTranctionFromGrin"))
+                                    {
+                                        Content = data1q_1
+                                    };
+                                    request2q_1.Headers.Add("Authorization", token);
+
+                                    var response1q_1 = await client.SendAsync(request2q_1);
+                                    if (response1q_1.StatusCode != HttpStatusCode.OK)
                                     {
                                         //createinvTrancResp = response1q.StatusCode;
                                     }
@@ -354,6 +393,42 @@ namespace Tips.Grin.Api.Controllers
 
                                     var response1q = await client.SendAsync(request2q);
                                     if (response1q.StatusCode != HttpStatusCode.OK)
+                                    {
+                                        //createinvTrancResp = response1q.StatusCode;
+                                    }
+                                    grinInventoryTrasactionPostDto grinInventoryTranctionDto_1 = new grinInventoryTrasactionPostDto();
+                                    grinInventoryTranctionDto_1.PartNumber = inventoryObject[0].PartNumber;
+                                    grinInventoryTranctionDto_1.LotNumber = inventoryObject[0].LotNumber;
+                                    grinInventoryTranctionDto_1.MftrPartNumber = inventoryObject[0].MftrPartNumber;
+                                    grinInventoryTranctionDto_1.Description = inventoryObject[0].Description;
+                                    grinInventoryTranctionDto_1.ProjectNumber = inventoryObject[0].ProjectNumber;
+                                    grinInventoryTranctionDto_1.Issued_Quantity = inventoryObject[0].Balance_Quantity;
+                                    grinInventoryTranctionDto_1.UOM = inventoryObject[0].UOM;
+                                    grinInventoryTranctionDto_1.Warehouse = "KIT_IQC";
+                                    grinInventoryTranctionDto_1.From_Location = "KIT_IQC";
+                                    grinInventoryTranctionDto_1.TO_Location = grinInventoryDto.Location;
+                                    grinInventoryTranctionDto_1.ReferenceIDFrom = "KIT_Binning";
+                                    grinInventoryTranctionDto_1.GrinMaterialType = "KIT_Binning";
+                                    grinInventoryTranctionDto_1.Remarks = "KIT_Binning";
+                                    grinInventoryTranctionDto_1.GrinNo = inventoryObject[0].GrinNo;
+                                    grinInventoryTranctionDto_1.GrinPartId = inventoryObject[0].GrinPartId;
+                                    grinInventoryTranctionDto_1.PartType = inventoryObject[0].PartType;
+                                    grinInventoryTranctionDto_1.ReferenceID = inventoryObject[0].GrinNo;
+                                    grinInventoryTranctionDto_1.shopOrderNo = "";
+                                    grinInventoryTranctionDto_1.IsStockAvailable = false;
+                                    grinInventoryTranctionDto_1.TransactionType = InventoryType.Outward;
+
+                                    var json1q_1 = JsonConvert.SerializeObject(grinInventoryTranctionDto_1);
+                                    var data1q_1 = new StringContent(json1q_1, Encoding.UTF8, "application/json");
+                                    var request2q_1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                                    "CreateInventoryTranctionFromGrin"))
+                                    {
+                                        Content = data1q_1
+                                    };
+                                    request2q_1.Headers.Add("Authorization", token);
+
+                                    var response1q_1 = await client.SendAsync(request2q_1);
+                                    if (response1q_1.StatusCode != HttpStatusCode.OK)
                                     {
                                         //createinvTrancResp = response1q.StatusCode;
                                     }
