@@ -4,6 +4,8 @@
     {
         public string? SalesOrderNumber { get; set; }
         public string? CustomerId { get; set; }
+        public string? City { get; set; }
+        public string? Address { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? SalesPerson { get; set; }
         public decimal? SOValue { get; set; }
