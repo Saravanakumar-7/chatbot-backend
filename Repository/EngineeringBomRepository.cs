@@ -1115,8 +1115,9 @@ namespace Repository
         public async Task<IEnumerable<ReleasedCostingFGTGItemNoListDto>> GetAllCostingReleasedFGTGItemNoList()
         {
             List<ReleasedCostingFGTGItemNoListDto> releasedCostingFGTGItemNoListDtos = new List<ReleasedCostingFGTGItemNoListDto>();
-            IEnumerable<ReleasedCostingFGTGItemNoListDto> costingReleasedItemNoListDto = await TipsMasterDbContext.CostingBoms
-                                .Where(c => (c.ItemType == PartType.FG || c.ItemType == PartType.TG) && c.IsActive == true && c.IsReleaseCostCompleted == true)
+
+            IEnumerable<ReleasedCostingFGTGItemNoListDto> costingReleasedFGItemNoListDto = await TipsMasterDbContext.CostingBoms
+                                .Where(c => c.ItemType == PartType.FG && c.IsActive == true && c.IsReleaseCostCompleted == true)
                                 .Select(c => new ReleasedCostingFGTGItemNoListDto()
                                 {
                                     id = c.Id,
@@ -1125,7 +1126,7 @@ namespace Repository
                                     PartType = c.ItemType
                                 })
                               .ToListAsync();
-            releasedCostingFGTGItemNoListDtos.AddRange(costingReleasedItemNoListDto);
+            releasedCostingFGTGItemNoListDtos.AddRange(costingReleasedFGItemNoListDto);
 
             IEnumerable<ReleasedCostingFGTGItemNoListDto> itemMasterTGItemNoListDto = await TipsMasterDbContext.ItemMasters
                                .Where(c => c.ItemType == PartType.TG && c.IsActive == true)

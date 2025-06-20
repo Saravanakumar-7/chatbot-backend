@@ -1146,7 +1146,7 @@ namespace Tips.Warehouse.Api.Repository
                 var loc = Location.Split(',');
                 query = query.Where(x => loc.Contains(x.Location));
             }
-            var result = await query.OrderByDescending(x => x.Id).ToListAsync();
+            var result = await query.Where(x=>x.Balance_Quantity > 0).OrderByDescending(x => x.Id).ToListAsync();
 
             return result;
         }
