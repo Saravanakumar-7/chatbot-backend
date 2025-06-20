@@ -105,8 +105,8 @@ namespace Tips.Grin.Api.Controllers
                     });
                     kIT_IQC.IsKIT_BinningCompleted = kIT_IQC.kIT_IQCItems.All(x => x.IsKIT_BinningCompleted);
                     await _kIT_IQCRepository.CreateKIT_IQC(kIT_IQC);
-                    _kIT_IQCRepository.SaveAsync();
-                    kIT_GRIN.KIT_GRINParts.ForEach(x =>
+                    //_kIT_IQCRepository.SaveAsync();
+                    kIT_GRIN.KIT_GRINParts.Where(w=> kIT_IQC.kIT_IQCItems.Select(s=>s.KIT_GrinPartId).Distinct().ToList().Contains(w.Id)).ToList().ForEach(x =>
                     {
                         x.AcceptedQty += kIT_IQC.kIT_IQCItems.Where(a => a.KIT_GrinPartId == x.Id).Select(q => q.AcceptedQty).First();
                         x.RejectedQty += kIT_IQC.kIT_IQCItems.Where(a => a.KIT_GrinPartId == x.Id).Select(q => q.RejectedQty).First();
@@ -355,7 +355,7 @@ namespace Tips.Grin.Api.Controllers
                     ExistingKit_IQC.IsKIT_BinningCompleted = ExistingKit_IQC.kIT_IQCItems.All(x => x.IsKIT_BinningCompleted);
                     await _kIT_IQCRepository.UpdateKIT_IQC(ExistingKit_IQC);
                     _kIT_IQCRepository.SaveAsync();
-                    kIT_GRIN.KIT_GRINParts.ForEach(x =>
+                    kIT_GRIN.KIT_GRINParts.Where(w => kIT_IQC.kIT_IQCItems.Select(s => s.KIT_GrinPartId).Distinct().ToList().Contains(w.Id)).ToList().ForEach(x =>
                     {
                         x.AcceptedQty += kIT_IQC.kIT_IQCItems.Where(a => a.KIT_GrinPartId == x.Id).Select(q => q.AcceptedQty).First();
                         x.RejectedQty += kIT_IQC.kIT_IQCItems.Where(a => a.KIT_GrinPartId == x.Id).Select(q => q.RejectedQty).First();
