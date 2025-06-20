@@ -96,7 +96,7 @@ namespace Tips.Grin.Api.Controllers
                 {
                     if (serverKey == "avision")
                     {
-                        kIT_IQC.KIT_IQCNumber = kIT_IQC.KIT_GrinNumber.Replace("KGRN", "KIQC");
+                        kIT_IQC.KIT_IQCNumber = kIT_IQC.KIT_GrinNumber.Replace("KIT_GRN", "KIT_IQC");
                     }
                     kIT_IQC.kIT_IQCItems.ForEach(x =>
                     {
@@ -108,8 +108,8 @@ namespace Tips.Grin.Api.Controllers
                     _kIT_IQCRepository.SaveAsync();
                     kIT_GRIN.KIT_GRINParts.ForEach(x =>
                     {
-                        x.AcceptedQty += kIT_IQC.kIT_IQCItems.Where(a => a.Id == x.KIT_GRINId).Select(q => q.AcceptedQty).First();
-                        x.RejectedQty += kIT_IQC.kIT_IQCItems.Where(a => a.Id == x.KIT_GRINId).Select(q => q.RejectedQty).First();
+                        x.AcceptedQty += kIT_IQC.kIT_IQCItems.Where(a => a.KIT_GrinPartId == x.Id).Select(q => q.AcceptedQty).First();
+                        x.RejectedQty += kIT_IQC.kIT_IQCItems.Where(a => a.KIT_GrinPartId == x.Id).Select(q => q.RejectedQty).First();
                         if (x.AcceptedQty + x.RejectedQty == x.Qty) { x.IsKIT_IqcCompleted = true; if (x.RejectedQty == x.Qty) x.IsKIT_BinningCompleted = true; }
                         if (x.BinnedQty != x.AcceptedQty) x.IsKIT_BinningCompleted = false;
                     });
@@ -279,11 +279,11 @@ namespace Tips.Grin.Api.Controllers
                                     grinInventoryTranctionDto_1.ProjectNumber = inventoryObject.ProjectNumber;
                                     grinInventoryTranctionDto_1.Issued_Quantity = inventoryObject.Balance_Quantity;
                                     grinInventoryTranctionDto_1.UOM = inventoryObject.UOM;
-                                    grinInventoryTranctionDto_1.Warehouse = "KIT_GRIN";
-                                    grinInventoryTranctionDto_1.From_Location = "KIT_GRIN";
+                                    grinInventoryTranctionDto_1.Warehouse = "GRIN";
+                                    grinInventoryTranctionDto_1.From_Location = "GRIN";
                                     grinInventoryTranctionDto_1.TO_Location = grinInventoryDto.Location;
                                     grinInventoryTranctionDto_1.ReferenceIDFrom = "KIT_IQC";
-                                    grinInventoryTranctionDto_1.GrinMaterialType = "KIT_IQC";
+                                    grinInventoryTranctionDto_1.GrinMaterialType = "";
                                     grinInventoryTranctionDto_1.Remarks = "KIT_IQC";
                                     grinInventoryTranctionDto_1.GrinNo = inventoryObject.GrinNo;
                                     grinInventoryTranctionDto_1.GrinPartId = inventoryObject.GrinPartId;
@@ -357,8 +357,8 @@ namespace Tips.Grin.Api.Controllers
                     _kIT_IQCRepository.SaveAsync();
                     kIT_GRIN.KIT_GRINParts.ForEach(x =>
                     {
-                        x.AcceptedQty += kIT_IQC.kIT_IQCItems.Where(a => a.Id == x.KIT_GRINId).Select(q => q.AcceptedQty).First();
-                        x.RejectedQty += kIT_IQC.kIT_IQCItems.Where(a => a.Id == x.KIT_GRINId).Select(q => q.RejectedQty).First();
+                        x.AcceptedQty += kIT_IQC.kIT_IQCItems.Where(a => a.KIT_GrinPartId == x.Id).Select(q => q.AcceptedQty).First();
+                        x.RejectedQty += kIT_IQC.kIT_IQCItems.Where(a => a.KIT_GrinPartId == x.Id).Select(q => q.RejectedQty).First();
                         if (x.AcceptedQty + x.RejectedQty == x.Qty) { x.IsKIT_IqcCompleted = true; if (x.RejectedQty == x.Qty) x.IsKIT_BinningCompleted = true; }
                         if (x.BinnedQty != x.AcceptedQty) x.IsKIT_BinningCompleted = false;
                     });

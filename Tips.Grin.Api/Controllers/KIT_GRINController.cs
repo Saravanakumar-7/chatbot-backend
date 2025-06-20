@@ -222,7 +222,7 @@ namespace Tips.Grin.Api.Controllers
                     _repository.SaveAsync();
                     if (serverKey == "avision")
                     {
-                        kIT_IQC.KIT_IQCNumber = kIT_IQC.KIT_GrinNumber.Replace("KGRN", "KIQC");
+                        kIT_IQC.KIT_IQCNumber = kIT_IQC.KIT_GrinNumber.Replace("KIT_GRN", "KIT_IQC");
                     }
                     await _KIT_IQCRepository.CreateKIT_IQC(kIT_IQC);
                     _KIT_IQCRepository.SaveAsync();
