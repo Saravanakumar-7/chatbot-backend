@@ -57,4 +57,11 @@ namespace Entities.DTOs
         public decimal[] ReleaseVersion { get; set; }
 
     }
+    public class ReleasedCostingFGTGItemNoListDto
+    {
+        public long id { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
+        public PartType PartType { get; set; }
+    }
 }

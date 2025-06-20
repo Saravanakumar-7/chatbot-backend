@@ -1525,6 +1525,34 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllCostingReleasedFGTGItemNoList()
+        {
+            ServiceResponse<IEnumerable<ReleasedCostingFGTGItemNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<ReleasedCostingFGTGItemNoListDto>>();
+            try
+            {
+                var releasedCostingfgTgItemNoList = await _repository.ReleaseCostBomRepository.GetAllCostingReleasedFGTGItemNoList();
+
+                _logger.LogInfo("Returned all Released CostingBom FG and TG ItemNoList Sucessfully");
+                serviceResponse.Data = releasedCostingfgTgItemNoList;
+                serviceResponse.Message = "Returned all Released CostingBom FG and TG ItemNoList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+
+            {
+                _logger.LogError($"Error Occured in GetAllCostingReleasedFGTGItemNoList API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetAllCostingReleasedFGTGItemNoList action: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAllEnggBOMItemNumber()
         {
