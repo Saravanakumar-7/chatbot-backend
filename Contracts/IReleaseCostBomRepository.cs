@@ -17,5 +17,6 @@ namespace Contracts
         Task<IEnumerable<object>> GetAllReleaseCostBomItemNumberVersionList();
         Task<CostingBom> ReleasedCostBomByItemAndRevisionNumber(string itemNumber, decimal revisionNumber);
         Task<IEnumerable<CostingBom>> GetAllCostingBomVersionListByItemNumber(string itemNumber);
+        Task<IEnumerable<ReleasedCostingFGTGItemNoListDto>> GetAllCostingReleasedFGTGItemNoList();
     }
 }

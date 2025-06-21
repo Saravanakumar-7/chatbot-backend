@@ -1111,6 +1111,39 @@ namespace Repository
 
             return costingBomDetails;
         }
+
+        public async Task<IEnumerable<ReleasedCostingFGTGItemNoListDto>> GetAllCostingReleasedFGTGItemNoList()
+        {
+            List<ReleasedCostingFGTGItemNoListDto> releasedCostingFGTGItemNoListDtos = new List<ReleasedCostingFGTGItemNoListDto>();
+
+            IEnumerable<ReleasedCostingFGTGItemNoListDto> costingReleasedFGItemNoListDto = await TipsMasterDbContext.CostingBoms
+                                .Where(c => c.ItemType == PartType.FG && c.IsActive == true && c.IsReleaseCostCompleted == true)
+                                .Select(c => new ReleasedCostingFGTGItemNoListDto()
+                                {
+                                    id = c.Id,
+                                    ItemNumber = c.ItemNumber,
+                                    Description = c.ItemDescription,
+                                    PartType = c.ItemType
+                                })
+                              .ToListAsync();
+            releasedCostingFGTGItemNoListDtos.AddRange(costingReleasedFGItemNoListDto);
+
+            IEnumerable<ReleasedCostingFGTGItemNoListDto> itemMasterTGItemNoListDto = await TipsMasterDbContext.ItemMasters
+                               .Where(c => c.ItemType == PartType.TG && c.IsActive == true)
+                               .Select(c => new ReleasedCostingFGTGItemNoListDto()
+                               {
+                                   id = c.Id,
+                                   ItemNumber = c.ItemNumber,
+                                   Description = c.Description,
+                                   PartType = c.ItemType
+                               })
+                             .ToListAsync();
+
+            releasedCostingFGTGItemNoListDtos.AddRange(itemMasterTGItemNoListDto);
+
+            return releasedCostingFGTGItemNoListDtos;
+        }
+
     }
 
     public class ReleaseProductBomRepository : RepositoryBase<ProductionBom>, IReleaseProductBomRepository
