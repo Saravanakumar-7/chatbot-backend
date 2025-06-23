@@ -6270,6 +6270,7 @@ namespace Tips.SalesService.Api.Controllers
                         salesOrderMainLevelHistory.SalesOrderId = salesOrder.Id;
                         salesOrderMainLevelHistory.SalesOrderNumber = salesOrder.SalesOrderNumber;
                         salesOrderMainLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
+                        salesOrderMainLevelHistory.IsShortClosed = true;
                         salesOrderMainLevelHistory.SoCreatedBy = salesOrder.CreatedBy;
                         salesOrderMainLevelHistory.SoCreatedOn = salesOrder.CreatedOn;
                         salesOrderMainLevelHistory.SoLastModifiedBy = salesOrder.LastModifiedBy;

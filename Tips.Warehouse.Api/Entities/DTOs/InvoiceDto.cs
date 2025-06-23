@@ -59,9 +59,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? Unit { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public List<InvoiceAdditionalCharges>? InvoiceAdditionalCharges { get; set; }
 
-        public List<InvoiceAdditionalChargesUpdateDto>? InvoiceChildItems { get; set; }
+        public List<InvoiceChildItemUpdateDto>? InvoiceChildItems { get; set; }
+        public List<InvoiceAdditionalChargesUpdateDto>? InvoiceAdditionalCharges { get; set; }
     }
 
     public class InvoiceIdNameList
