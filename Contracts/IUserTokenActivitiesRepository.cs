@@ -15,5 +15,6 @@ namespace Contracts
         Task DisableTokenInvalidTokenUse(string token);
         Task<UserTokenActivities?> GetUserTokenDetailsByUserId(int UserId);
         Task DeactivateUserTokenByUserId(int userId);
+        Task DeactivateAllUsers();
     }
 }

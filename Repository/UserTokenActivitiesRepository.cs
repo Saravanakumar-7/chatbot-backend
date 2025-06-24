@@ -43,6 +43,12 @@ namespace Repository
             User.TokenIsActive = false;
             Update(User);
         }
+        public async Task DeactivateAllUsers()
+        {
+            var User = await TipsMasterDbContext.UserTokenActivities.Where(x => x.TokenIsActive==true || x.Validity>=DateTime.UtcNow).ToListAsync();
+            User.ForEach(a => a.TokenIsActive = false);
+            User.ForEach(a => Update(a));            
+        }
         public async Task UpdateToken(int RegistrationId, string NewToken, DateTime Validity)
         {
             var User = await TipsMasterDbContext.UserTokenActivities.Where(x => x.RegistrationId == RegistrationId).FirstOrDefaultAsync();
