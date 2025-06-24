@@ -2,6 +2,7 @@
 using Azure;
 using Contracts;
 using Entities;
+using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Mysqlx.Crud;
@@ -94,7 +95,7 @@ namespace Tips.Production.Api.Controllers
                 }
                 postoqcbinning.oQCBinningLocations = oqcBinningLocationList;
                 int cretedoqcbin = await _oQCBinningRepository.CreateOQCBinning(postoqcbinning);
-                _oQCBinningRepository.SaveAsync();
+                //_oQCBinningRepository.SaveAsync();
 
                 //var httpClientHandler = new HttpClientHandler();
                 //httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
@@ -224,7 +225,6 @@ namespace Tips.Production.Api.Controllers
                     var ItemNo = itemMasterTranctionObject.itemNumber;
                     var Desc = itemMasterTranctionObject.description;
                     var uom = itemMasterTranctionObject.uom;
-                    var ProjectNo = itemMasterTranctionObject.projectNumber;
                     var ItemType = itemMasterTranctionObject.itemType;
 
                     InventoryTranctionDto inventoryTranction = new InventoryTranctionDto();
@@ -232,7 +232,7 @@ namespace Tips.Production.Api.Controllers
                     inventoryTranction.LotNumber = newinv.LotNumber;
                     inventoryTranction.MftrPartNumber = newinv.MftrPartNumber;
                     inventoryTranction.Description = Desc;
-                    inventoryTranction.ProjectNumber = ProjectNo;
+                    inventoryTranction.ProjectNumber = newinv.ProjectNumber;
                     inventoryTranction.PartType = ItemType;
                     inventoryTranction.Issued_Quantity = loc.Quantity;
                     inventoryTranction.UOM = uom;
@@ -248,6 +248,8 @@ namespace Tips.Production.Api.Controllers
                     inventoryTranction.TO_Location = loc.Location;
                     inventoryTranction.Warehouse = loc.Warehouse;
                     inventoryTranction.Remarks = "OQCBinning Done";
+                    inventoryTranction.IsStockAvailable = true;
+                    inventoryTranction.TransactionType = InventoryType.Inward;
 
                     var json2 = JsonConvert.SerializeObject(inventoryTranction);
                     var data2 = new StringContent(json2, Encoding.UTF8, "application/json");
