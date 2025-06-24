@@ -67,7 +67,7 @@ namespace Tips.Warehouse.Api.Entities
         public decimal? FGOrderQty { get; set; }
         public decimal? DODispatchQty { get; set; }
         public decimal? OrderBalanceQty { get; set; }
-        public decimal? OverallReturnDispatchedQty { get; set; }
+        public decimal? DoReturnQty  { get; set; }
         public string? SerialNo { get; set; }
         public string? Remarks { get; set; }
     }
