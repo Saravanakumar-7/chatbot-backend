@@ -140,6 +140,27 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
+
+        public async Task<IEnumerable<DeliveryOrderSPReportForAvi>> GetDeliveryOrderSPReportsWithParamForAvi(string DONumber, string CustomerName, string CustomerAliasName,
+                                                                                                  string CustomerID, string SalesOrderNumber, string ProductType,
+                                                                                                  string Warehouse, string Location, string KPN, string MPN, string ProjectNumber)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<DeliveryOrderSPReportForAvi>()
+            .FromSqlInterpolated($"CALL Delivery_Order_Report_withparameter_av({DONumber},{CustomerName},{CustomerAliasName},{CustomerID},{SalesOrderNumber},{ProductType},{Warehouse},{Location},{KPN},{MPN},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+
+        public async Task<IEnumerable<DeliveryOrderSPReportForAvi>> DeliveryOrderSPReportdateForAvi(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<DeliveryOrderSPReportForAvi>()
+                         .FromSqlInterpolated($"CALL Delivery_Order_Report_withparameter_withdate_av({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
         public async Task<IEnumerable<DeliveryOrderSPReportForTrans>> GetDeliveryOrderSPReportsWithParamForTrans(string DONumber, string CustomerName,string SalesOrderNumber, string ProductType,
                                                                                                     string Warehouse, string Location, string ItemNumber, string MPN, string ProjectNumber)
         {

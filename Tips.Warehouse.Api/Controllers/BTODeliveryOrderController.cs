@@ -293,7 +293,82 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetDeliveryOrderSPReportsWithParamForAvi([FromBody] DeliveryOrderReportWithParamDTO deliveryOrderSPReport)
+        {
+            ServiceResponse<IEnumerable<DeliveryOrderSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderSPReportForAvi>>();
+            try
+            {
+                var products = await _repository.GetDeliveryOrderSPReportsWithParamForAvi(deliveryOrderSPReport.DoNumber, deliveryOrderSPReport.CustomerName,
+                                                                                    deliveryOrderSPReport.CustomerAliasName, deliveryOrderSPReport.CustomerId,
+                                                                                    deliveryOrderSPReport.SalesOrderNumber, deliveryOrderSPReport.ProductType,
+                                                                                    deliveryOrderSPReport.Warehouse, deliveryOrderSPReport.Location,
+                                                                                    deliveryOrderSPReport.KPN, deliveryOrderSPReport.MPN, deliveryOrderSPReport.ProjectNumber);
 
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DeliveryOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"DeliveryOrder hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned DeliveryOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetDeliveryOrderSPReportsWithParamForAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetDeliveryOrderSPReportsWithParamForAvi API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeliveryOrderSPReportdateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<DeliveryOrderSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderSPReportForAvi>>();
+            try
+            {
+                var products = await _repository.DeliveryOrderSPReportdateForAvi(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DeliveryOrder hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"DeliveryOrder hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned DeliveryOrder Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in DeliveryOrderSPReportdateForAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in DeliveryOrderSPReportdateForAvi API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetDeliveryOrderSPReportsWithParamForTrans([FromBody] DeliveryOrderReportWithParamDTOForTrans deliveryOrderSPReport)
         {

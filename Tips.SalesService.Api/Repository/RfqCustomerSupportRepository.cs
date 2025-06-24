@@ -597,20 +597,20 @@ namespace Tips.SalesService.Api.Repository
             return rfqDetailsByRfqNumber;
         }
 
-        public async Task<IEnumerable<RfqSPReportForKeus>> GetRfqSPReportForKeus(string CustomerName, string CustomerId, string RfqNumber)
+        public async Task<IEnumerable<RfqSPReportForTras>> GetRfqSPReportForTras(string CustomerName, string CustomerId, string RfqNumber)
         {
             var result = _tipsSalesServiceDbContext
-            .Set<RfqSPReportForKeus>()
-            .FromSqlInterpolated($"CALL RFQ_Report({CustomerName},{CustomerId},{RfqNumber})")
+            .Set<RfqSPReportForTras>()
+            .FromSqlInterpolated($"CALL RFQ_Report_tras({CustomerName},{CustomerId},{RfqNumber})")
             .ToList();
 
             return result;
 
         }
-        public async Task<IEnumerable<RfqSPReportForKeus>> GetRfqSPReportWithDateForKeus(DateTime? FromDate, DateTime? ToDate)
+        public async Task<IEnumerable<RfqSPReportForTras>> GetRfqSPReportWithDateForTras(DateTime? FromDate, DateTime? ToDate)
         {
-            var results = _tipsSalesServiceDbContext.Set<RfqSPReportForKeus>()
-                        .FromSqlInterpolated($"CALL RFQ_Report_With_Date({FromDate},{ToDate})")
+            var results = _tipsSalesServiceDbContext.Set<RfqSPReportForTras>()
+                        .FromSqlInterpolated($"CALL RFQ_Report_With_Date_tras({FromDate},{ToDate})")
                         .ToList();
 
             return results;
