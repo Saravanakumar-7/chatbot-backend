@@ -13,6 +13,7 @@ using Tips.Purchase.Api.Entities.Enums;
 using System.Collections.Generic;
 using Entities.DTOs;
 using MySqlX.XDevAPI.Common;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Tips.Purchase.Api.Repository
 {
@@ -35,7 +36,7 @@ namespace Tips.Purchase.Api.Repository
         {
             var PRid = await _tipsPurchaseDbContext.PurchaseRequisitions.Where(x => x.PrNumber == prNumber).Select(x => x.Id).FirstOrDefaultAsync();
             var FileIds = await _tipsPurchaseDbContext.PrItems.Where(x => x.PurchaseRequistionId == PRid && x.ItemNumber == prItemNumber).Select(x => x.PRFileIds).FirstOrDefaultAsync();
-            if (FileIds != null)
+            if (!string.IsNullOrWhiteSpace(FileIds))
             {
                 string[]? ids = FileIds.Split(',');
                 List<GetDownloadUrlDto> getDownloadDetails = new List<GetDownloadUrlDto>();

@@ -1251,7 +1251,7 @@ namespace Tips.Purchase.Api.Controllers
 
                 var getDownloadDetailByPrNumber = await _repository.GetDownloadUrlDetails(prNumber, prItemNumber);
 
-                if (getDownloadDetailByPrNumber.Count() == 0)
+                if (getDownloadDetailByPrNumber==null || getDownloadDetailByPrNumber.Count() == 0)
                 {
                     _logger.LogError($"DownloadDetail with id: {prItemNumber}, hasn't been found in db.");
                     serviceResponse.Data = null;

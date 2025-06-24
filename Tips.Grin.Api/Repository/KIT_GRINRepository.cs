@@ -118,6 +118,15 @@ namespace Tips.Grin.Api.Repository
 
             return grinDetailsbyId;
         }
+        public async Task<KIT_GRIN> GetKIT_GrinByIdWithNoTracking(int id)
+        {
+            var grinDetailsbyId = await _tipsGrinDbContext.KIT_GRIN.Where(x => x.Id == id)
+              .Include(t => t.KIT_GRINParts)
+               .ThenInclude(d => d.KIT_GRIN_ProjectNumbers).ThenInclude(x => x.KIT_GRIN_KITComponents)
+               .Include(d => d.KIT_GRIN_OtherCharges).AsNoTracking().FirstOrDefaultAsync();
+
+            return grinDetailsbyId;
+        }
         public async Task<string> UpdateKIT_GRINDetails(KIT_GRIN kIT_GRIN)
         {
             Update(kIT_GRIN);
