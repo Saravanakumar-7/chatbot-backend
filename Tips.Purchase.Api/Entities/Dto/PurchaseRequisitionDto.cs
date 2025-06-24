@@ -40,6 +40,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? RetentionPeriod { get; set; }
 
         public string? SpecialTermsConditions { get; set; }
+        public PoType PrType { get; set; }
 
         public string? Unit { get; set; }
 
@@ -75,7 +76,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? RetentionPeriod { get; set; }
 
         public string? SpecialTermsConditions { get; set; }
-     
+        public PoType PrType { get; set; }
         public List<PrItemsPostDto>? PrItemsDtoPostList { get; set; }
 
     }
@@ -107,7 +108,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         public string? SpecialTermsConditions { get; set; }
         public PrStatus PrStatus { get; set; }
-
+        public PoType PrType { get; set; }
         public string? Unit { get; set; }
 
         //public string? LastModifiedBy { get; set; }
