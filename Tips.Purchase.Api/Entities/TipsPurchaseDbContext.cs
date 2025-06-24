@@ -67,7 +67,6 @@ namespace Tips.Purchase.Api.Entities
             modelBuilder.Entity<PurchaseOrderSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<PurchaseRequisitionSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<PurchaseOrderSPReportForAvision>().HasNoKey();
-            modelBuilder.Entity<PurchaseRequisitionSPReportForAvision>().HasNoKey();
             modelBuilder.Entity<PurchaseOrderUnitListSPReportWithParamForTrans>().HasNoKey();
             modelBuilder.Entity<PayableSPReport>().HasNoKey();
             modelBuilder.Entity<PurchaseOrderDashboardSPReport>().HasNoKey();
