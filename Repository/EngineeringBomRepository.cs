@@ -141,21 +141,30 @@ namespace Repository
             sAFinalLandedandMoqPrice.SAFinalMoqcost = (SAmsum + ChildsAFinalLandedandMoqPrice.SAFinalMoqcost) * SAQty;
             return sAFinalLandedandMoqPrice;
         }
-        public async Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom)
+        public async Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom, RevisionType revisionType)
         {
-            
             var getOldRevisionNumber = await _tipsMasterDbContext.EnggBoms
                 .Where(x => x.ItemNumber == enggBom.ItemNumber)
                 .OrderByDescending(x => x.BOMId)
                 .FirstOrDefaultAsync();
 
-            if (getOldRevisionNumber != null)
+            var edittingEnggBom= await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == enggBom.ItemNumber && x.RevisionNumber==enggBom.RevisionNumber).FirstOrDefaultAsync();
+
+            if (revisionType == 0)
             {
-                getOldRevisionNumber.LastModifiedBy = _createdBy;
-                getOldRevisionNumber.LastModifiedOn = DateTime.Now;
-                Update(getOldRevisionNumber);
+                enggBom.RevisionNumber = getOldRevisionNumber.RevisionNumber + Convert.ToDecimal(0.1);
             }
-            //enggBom.RevisionNumber = getOldRevisionNumber.RevisionNumber;
+            else
+            {
+                enggBom.RevisionNumber =Math.Ceiling(getOldRevisionNumber.RevisionNumber + Convert.ToDecimal(0.1));
+              
+            }
+            if (edittingEnggBom != null)
+            {
+                edittingEnggBom.LastModifiedBy = _createdBy;
+                edittingEnggBom.LastModifiedOn = DateTime.Now;
+                Update(edittingEnggBom);
+            }
             enggBom.CreatedBy = _createdBy;
             enggBom.CreatedOn = DateTime.Now;
             enggBom.Unit = _unitname;

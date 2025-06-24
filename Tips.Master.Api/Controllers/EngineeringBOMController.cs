@@ -1102,7 +1102,6 @@ namespace Tips.Master.Api.Controllers
                 }
 
                 var enggBomList = _mapper.Map<EnggBom>(enggBomUpdateDto);
-
                 var enggNre = enggBomUpdateDto.BomNREConsumableUpdateDto;
                 var nreList = new List<NREConsumable>();
                 for (int i = 0; i < enggNre.Count; i++)
@@ -1112,8 +1111,6 @@ namespace Tips.Master.Api.Controllers
 
                 }
                 enggBomList.NREConsumable = nreList;
-
-
                 var enggChildItemDto = enggBomUpdateDto.EnggChildItemUpdates;
                 var enggChildItemList = new List<EnggChildItem>();
                 if (enggChildItemDto != null)
@@ -1123,26 +1120,10 @@ namespace Tips.Master.Api.Controllers
                         EnggChildItem enggChildItemDetail = _mapper.Map<EnggChildItem>(enggChildItemDto[i]);
                         enggChildItemDetail.EnggAlternates = _mapper.Map<List<EnggAlternates>>(enggChildItemDto[i].EnggAlternatesUpdateDtos);
                         enggChildItemList.Add(enggChildItemDetail);
-
                     }
                 }
                 enggBomList.EnggChildItems = enggChildItemList;
-
-                //var data = _mapper.Map(enggBomUpdateDto, enggBomList);
-                //await _repository.EnggBomRepository.UpdateEnggBomVersion(data);
-                if (revisionType == 0)
-                {
-                    enggBomList.RevisionNumber = enggBomList.RevisionNumber + Convert.ToDecimal(0.1);
-                }
-                else
-                {
-                    //int revNo =(int)enggBomList.RevisionNumber;
-                    //enggBomList.RevisionNumber = Convert.ToDecimal(revNo + 1);
-
-                    var revRound = Math.Ceiling(enggBomList.RevisionNumber + Convert.ToDecimal(0.1));
-                    enggBomList.RevisionNumber = revRound;
-                }
-                await _repository.EnggBomRepository.UpdateEnggBomVersion(enggBomList);
+                await _repository.EnggBomRepository.UpdateEnggBomVersion(enggBomList,revisionType);
                 _repository.SaveAsync();
                 _logger.LogInfo("Engineering BOM Updated successfully");
                 serviceResponse.Data = null;

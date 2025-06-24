@@ -734,7 +734,7 @@ namespace Tips.Grin.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-                var updategrin = await _repository.GetKIT_GrinById(id);
+                var updategrin = await _repository.GetKIT_GrinByIdWithNoTracking(id);
                 if (updategrin is null)
                 {
                     _logger.LogError($"UpdateKIT_GRIN with id: {id}, hasn't been found in db.");
