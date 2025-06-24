@@ -389,7 +389,7 @@ namespace Tips.Grin.Api.Controllers
                 var data1w = new StringContent(jsonsw, Encoding.UTF8, "application/json");
                 var client2w = _clientFactory.CreateClient();
                 var token2w = HttpContext.Request.Headers["Authorization"].ToString();
-                var request2w = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
+                var request2w = new HttpRequestMessage(HttpMethod.Put, string.Concat(_config["PurchaseAPI"],
                 "UpdateKIT_PODetails"))
                 {
                     Content = data1w
