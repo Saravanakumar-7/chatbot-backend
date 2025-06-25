@@ -1104,6 +1104,15 @@ namespace Tips.Production.Api.Controllers
                             materialIssueItemList.Add(materialIssueItem);
                         }
                     }
+                    else
+                    {
+                            _logger.LogError($"Error Occurs inside GetProductionBomByItemAndBomVersionNo action");
+                            serviceResponse.Data = null;
+                            serviceResponse.Message = $"Error Occurs inside GetProductionBomByItemAndBomVersionNo action:";
+                            serviceResponse.Success = false;
+                            serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                            return StatusCode(500, serviceResponse);
+                    }
                 }
 
                 // Group and assign items to the MaterialIssue object

@@ -1249,6 +1249,50 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateInvoiceRemark(int id, string remark)
+        {
+            ServiceResponse<InvoiceUpdateDto> serviceResponse = new ServiceResponse<InvoiceUpdateDto>();
+
+            try
+            {
+                if (remark is null)
+                {
+                    _logger.LogError("UpdateInvoice Remark object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "UpdateInvoice Remark object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                var getinvoiceDetailById = await _invoiceRepository.GetInvoiceById(id);
+                if (getinvoiceDetailById is null)
+                {
+                    _logger.LogError($"UpdateInvoice with id: {id}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                getinvoiceDetailById.Remarks = remark;
+                string result = await _invoiceRepository.UpdateInvoice(getinvoiceDetailById);
+                _logger.LogInfo(result);
+                _invoiceRepository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Invoice Remark Updated Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in UpdateInvoiceRemark API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in UpdateInvoiceRemark API for the following id:{id} \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }
 

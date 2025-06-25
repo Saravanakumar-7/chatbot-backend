@@ -596,6 +596,26 @@ namespace Tips.SalesService.Api.Repository
               .Where(x => x.Id == rfqId).FirstOrDefaultAsync();
             return rfqDetailsByRfqNumber;
         }
+
+        public async Task<IEnumerable<RfqSPReportForTras>> GetRfqSPReportForTras(string CustomerName, string CustomerId, string RfqNumber)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<RfqSPReportForTras>()
+            .FromSqlInterpolated($"CALL RFQ_Report_tras({CustomerName},{CustomerId},{RfqNumber})")
+            .ToList();
+
+            return result;
+
+        }
+        public async Task<IEnumerable<RfqSPReportForTras>> GetRfqSPReportWithDateForTras(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<RfqSPReportForTras>()
+                        .FromSqlInterpolated($"CALL RFQ_Report_With_Date_tras({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
         public async Task<IEnumerable<RfqSPReport>> GetRfqSPReport(string CustomerName, string CustomerId, string RfqNumber)
         {
             var result = _tipsSalesServiceDbContext

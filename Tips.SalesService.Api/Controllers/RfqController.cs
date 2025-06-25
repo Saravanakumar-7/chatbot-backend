@@ -3991,6 +3991,82 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
         [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetRfqSPReportForTras(RfqSpReportDto rfqSpReportDto)
+
+        {
+            ServiceResponse<IEnumerable<RfqSPReportForTras>> serviceResponse = new ServiceResponse<IEnumerable<RfqSPReportForTras>>();
+            try
+            {
+                var products = await _rfqRepository.GetRfqSPReportForTras(rfqSpReportDto.CustomerName, rfqSpReportDto.CustomerId, rfqSpReportDto.RfqNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqSPReportForKeus hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqSPReportForKeus hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RfqSPReportForKeus Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetRfqSPReportForTras API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetRfqSPReportForTras API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetRfqSPReportWithDateForTras([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<RfqSPReportForTras>> serviceResponse = new ServiceResponse<IEnumerable<RfqSPReportForTras>>();
+            try
+            {
+                var products = await _rfqRepository.GetRfqSPReportWithDateForTras(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqSPReportForKeus hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqSPReportForKeus hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned RfqSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetRfqSPReportWithDateForTras API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetRfqSPReportWithDateForTras API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetRfqSPReport(RfqSpReportDto rfqSpReportDto)
 
         {

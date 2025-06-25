@@ -115,6 +115,7 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<RfqSalesOrderSPReport> RfqSalesOrderSPReports { get; set; }
         public DbSet<ForecastSalesOrderSPReport> ForecastSalesOrderSPReports { get; set; }
         public DbSet<RfqSPReport> RfqSPReports { get; set; }
+        public DbSet<RfqSPReportForTras> RfqSPReportForKeus { get; set; }
         public DbSet<QuoteSPReport> QuoteSPReports { get; set; }
         public DbSet<RfqSalesOrderSPReportForTrans> RfqSalesOrderSPReportsForTrans { get; set; }
         public DbSet<ForecastSalesOrderSPReportForTrans> ForecastSalesOrderSPReportsForTrans { get; set; }
@@ -147,6 +148,7 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<CollectionTrackerWithSalesOrderNoWiseSPReport>().HasNoKey();
             modelBuilder.Entity<RfqSalesOrderSPReport>().HasNoKey();
             modelBuilder.Entity<ForecastSalesOrderSPReport>().HasNoKey();
+            modelBuilder.Entity<RfqSPReportForTras>().HasNoKey();
             modelBuilder.Entity<RfqSPReport>().HasNoKey();
             modelBuilder.Entity<QuoteSPReport>().HasNoKey();
             modelBuilder.Entity<RfqSalesOrderSPReportForTrans>().HasNoKey();
