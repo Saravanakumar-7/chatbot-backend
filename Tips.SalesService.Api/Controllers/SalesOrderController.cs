@@ -6648,7 +6648,7 @@ namespace Tips.SalesService.Api.Controllers
 
                     var response2 = await client1.SendAsync(request2);
                     byte[] fileBytes = await response2.Content.ReadAsByteArrayAsync();
-                    builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
+                    //builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
                     base64 = Convert.ToBase64String(fileBytes);
                 }
                 //Guid guids = Guid.NewGuid();

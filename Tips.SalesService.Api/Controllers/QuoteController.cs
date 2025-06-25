@@ -899,7 +899,7 @@ namespace Tips.SalesService.Api.Controllers
                     response2.EnsureSuccessStatusCode();
 
                     byte[] fileBytes = await response2.Content.ReadAsByteArrayAsync();
-                    builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
+                    //builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
                     base64 = Convert.ToBase64String(fileBytes);
                 }
                 //Guid guids = Guid.NewGuid();
