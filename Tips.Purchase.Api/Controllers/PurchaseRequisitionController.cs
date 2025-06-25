@@ -1031,19 +1031,49 @@ namespace Tips.Purchase.Api.Controllers
                 // var CSitemDocumentUploadDtoList = new List<PRItemsDocumentUpload>();
                 if (prItemDto != null)
                 {
-                    for (int i = 0; i < prItemDto.Count; i++)
+                    if (purchaseRequisitionDetails.PrType == PoType.Kit)
                     {
-                        //List<PRItemsDocumentUpload>? files = null;
-                        PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
-                        //if (prItemDto[i].Upload != null && prItemDto[i].Upload.Count > 0)
-                        //{
-                        //    files = CoCDocumentSave(prItemDto, purchaseRequisitionDetails, prItemDetails.Id.ToString(), i, CSitemDocumentUploadDtoList);
-                        //}
-                        //prItemDetails.Upload = _mapper.Map<List<PRItemsDocumentUpload>>(files);
-                        prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoPostList);
-                        prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoPostList);
-                        prItemDetails.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstruction>>(prItemDto[i].prSpecialInstructionsPostList);
-                        prItemDtoList.Add(prItemDetails);
+                        for (int i = 0; i < prItemDto.Count; i++)
+                        {
+                            if (prItemDto[i].PartType == PoPartType.Kit)
+                            {
+                                PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
+                                prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoPostList);
+                                prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoPostList);
+                                prItemDetails.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstruction>>(prItemDto[i].prSpecialInstructionsPostList);
+                                prItemDtoList.Add(prItemDetails);
+                            }
+                            else
+                            {
+                                serviceResponse.Message = $"Error Occured in CreatePurchaseRequisition: The PrType is kit,But PrItemDto.Parttype is not Kit:{prItemDto[i].PartType}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                                _logger.LogError($"Error Occured in CreatePurchaseRequisition: The PrType is kit,But PrItemDto.Parttype is not Kit:{prItemDto[i].PartType}");
+                                return BadRequest(serviceResponse);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < prItemDto.Count; i++)
+                        {
+                            if (prItemDto[i].PartType != PoPartType.Kit)
+                            {
+                                PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
+                                prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoPostList);
+                                prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoPostList);
+                                prItemDetails.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstruction>>(prItemDto[i].prSpecialInstructionsPostList);
+                                prItemDtoList.Add(prItemDetails);
+                            }
+                            else
+                            {
+                                serviceResponse.Message = $"Error Occured in CreatePurchaseRequisition: The PrType is kit,But PrItemDto.Parttype is not Kit:{prItemDto[i].PartType}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                                _logger.LogError($"Error Occured in CreatePurchaseRequisition: The PrType is kit,But PrItemDto.Parttype is not Kit:{prItemDto[i].PartType}");
+                                return BadRequest(serviceResponse);
+                            }
+                        }
                     }
                 }
                 purchaseRequisitionDetails.PrItemsDtoList = prItemDtoList;
@@ -1283,19 +1313,49 @@ namespace Tips.Purchase.Api.Controllers
                 //var CSitemDocumentUploadDtoList = new List<PRItemsDocumentUpload>();
                 if (prItemDto != null)
                 {
-                    for (int i = 0; i < prItemDto.Count; i++)
+                    if (purchaseRequisitionDetails.PrType == PoType.Kit)
                     {
-                        // List<PRItemsDocumentUpload>? files = null;
-                        PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
-                        //if (prItemDto[i].Upload != null && prItemDto[i].Upload.Count > 0)
-                        //{
-                        //    files = CocDocumentSave(prItemDto, purchaseRequisitionDetails, prItemDetails.Id.ToString(), i, CSitemDocumentUploadDtoList);
-                        //}
-                        //prItemDetails.Upload = _mapper.Map<List<PRItemsDocumentUpload>>(files);
-                        prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoUpdateList);
-                        prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoUpdateList);
-                        prItemDetails.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstruction>>(prItemDto[i].prSpecialInstructionsUpdateList);
-                        prItemDtoList.Add(prItemDetails);
+                        for (int i = 0; i < prItemDto.Count; i++)
+                        {
+                            if (prItemDto[i].PartType == PoPartType.Kit)
+                            {
+                                PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
+                                prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoUpdateList);
+                                prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoUpdateList);
+                                prItemDetails.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstruction>>(prItemDto[i].prSpecialInstructionsUpdateList);
+                                prItemDtoList.Add(prItemDetails);
+                            }
+                            else
+                            {
+                                serviceResponse.Message = $"Error Occured in CreatePurchaseRequisition: The PrType is kit,But PrItemDto.Parttype is not Kit:{prItemDto[i].PartType}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                                _logger.LogError($"Error Occured in CreatePurchaseRequisition: The PrType is kit,But PrItemDto.Parttype is not Kit:{prItemDto[i].PartType}");
+                                return BadRequest(serviceResponse);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < prItemDto.Count; i++)
+                        {
+                            if (prItemDto[i].PartType != PoPartType.Kit)
+                            {
+                                PrItem prItemDetails = _mapper.Map<PrItem>(prItemDto[i]);
+                                prItemDetails.prAddprojectsDtoList = _mapper.Map<List<PrAddProject>>(prItemDto[i].PrAddprojectsDtoUpdateList);
+                                prItemDetails.prAddDeliverySchedulesDtoList = _mapper.Map<List<PrAddDeliverySchedule>>(prItemDto[i].PrAddDeliverySchedulesDtoUpdateList);
+                                prItemDetails.prSpecialInstructionsDtoList = _mapper.Map<List<PrSpecialInstruction>>(prItemDto[i].prSpecialInstructionsUpdateList);
+                                prItemDtoList.Add(prItemDetails);
+                            }
+                            else
+                            {
+                                serviceResponse.Message = $"Error Occured in CreatePurchaseRequisition: The PrType is kit,But PrItemDto.Parttype is not Kit:{prItemDto[i].PartType}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                                _logger.LogError($"Error Occured in CreatePurchaseRequisition: The PrType is kit,But PrItemDto.Parttype is not Kit:{prItemDto[i].PartType}");
+                                return BadRequest(serviceResponse);
+                            }
+                        }
                     }
                 }
                 //if (prItemDto != null)
