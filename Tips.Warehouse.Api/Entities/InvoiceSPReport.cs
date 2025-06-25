@@ -10,6 +10,7 @@
         public string? leadid { get; set; }
         public string? City { get; set; }
         public string? Address { get; set; }
+        public string? State { get; set; }
         public string? SalesOrderNumber { get; set; }
         public int? RevisionNumber { get; set; }
         public DateTime? DODate { get; set; }

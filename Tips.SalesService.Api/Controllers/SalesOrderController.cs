@@ -4285,41 +4285,41 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(3).SetCellValue("Customer Name");
                 headerRow.CreateCell(4).SetCellValue("Lead ID");
                 headerRow.CreateCell(5).SetCellValue("City");
-                headerRow.CreateCell(6).SetCellValue("Address");
-                headerRow.CreateCell(7).SetCellValue("Order Type");
-                headerRow.CreateCell(8).SetCellValue("Type Of Solution");
-                headerRow.CreateCell(9).SetCellValue("Product Type");
-                headerRow.CreateCell(10).SetCellValue("Material Group");
-                headerRow.CreateCell(11).SetCellValue("Item Type");
-                headerRow.CreateCell(12).SetCellValue("Sales Person");
-                headerRow.CreateCell(13).SetCellValue("SO Date");
-                headerRow.CreateCell(14).SetCellValue("KPN");
-                headerRow.CreateCell(15).SetCellValue("KPN Description");
-                headerRow.CreateCell(16).SetCellValue("UOC");
-                headerRow.CreateCell(17).SetCellValue("UOM");
-                headerRow.CreateCell(18).SetCellValue("Price List");
-                headerRow.CreateCell(19).SetCellValue("Unit Price");
-                headerRow.CreateCell(20).SetCellValue("Basic Amount");
-                headerRow.CreateCell(21).SetCellValue("DiscountType");
-                headerRow.CreateCell(22).SetCellValue("Discount");
-                headerRow.CreateCell(23).SetCellValue("SGST");
-                headerRow.CreateCell(24).SetCellValue("CGST");
-                headerRow.CreateCell(25).SetCellValue("IGST");
-                headerRow.CreateCell(26).SetCellValue("UTGST");
-                headerRow.CreateCell(27).SetCellValue("ItemPriceList");
-                headerRow.CreateCell(28).SetCellValue("Total Amount");
-                headerRow.CreateCell(29).SetCellValue("Order Qty");
-                headerRow.CreateCell(30).SetCellValue("Dispatch Qty");
-                headerRow.CreateCell(31).SetCellValue("Balance Qty");
-                headerRow.CreateCell(32).SetCellValue("Indent Qnty");
-                headerRow.CreateCell(33).SetCellValue("SOStatus");
-                headerRow.CreateCell(34).SetCellValue("MSL");
-                headerRow.CreateCell(35).SetCellValue("STD");
-                headerRow.CreateCell(36).SetCellValue("SValue");
-                headerRow.CreateCell(37).SetCellValue("InstallationCharges");
-                headerRow.CreateCell(38).SetCellValue("City");
-                headerRow.CreateCell(39).SetCellValue("State");
-                headerRow.CreateCell(40).SetCellValue("ArchitectName");
+                headerRow.CreateCell(6).SetCellValue("Address");       // Address at index 6
+                headerRow.CreateCell(7).SetCellValue("State");         // State comes after Address
+                headerRow.CreateCell(8).SetCellValue("Order Type");
+                headerRow.CreateCell(9).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(10).SetCellValue("Product Type");
+                headerRow.CreateCell(11).SetCellValue("Material Group");
+                headerRow.CreateCell(12).SetCellValue("Item Type");
+                headerRow.CreateCell(13).SetCellValue("Sales Person");
+                headerRow.CreateCell(14).SetCellValue("SO Date");
+                headerRow.CreateCell(15).SetCellValue("KPN");
+                headerRow.CreateCell(16).SetCellValue("KPN Description");
+                headerRow.CreateCell(17).SetCellValue("UOC");
+                headerRow.CreateCell(18).SetCellValue("UOM");
+                headerRow.CreateCell(19).SetCellValue("Price List");
+                headerRow.CreateCell(20).SetCellValue("Unit Price");
+                headerRow.CreateCell(21).SetCellValue("Basic Amount");
+                headerRow.CreateCell(22).SetCellValue("DiscountType");
+                headerRow.CreateCell(23).SetCellValue("Discount");
+                headerRow.CreateCell(24).SetCellValue("SGST");
+                headerRow.CreateCell(25).SetCellValue("CGST");
+                headerRow.CreateCell(26).SetCellValue("IGST");
+                headerRow.CreateCell(27).SetCellValue("UTGST");
+                headerRow.CreateCell(28).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(29).SetCellValue("Total Amount");
+                headerRow.CreateCell(30).SetCellValue("Order Qty");
+                headerRow.CreateCell(31).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(32).SetCellValue("Balance Qty");
+                headerRow.CreateCell(33).SetCellValue("Indent Qnty");
+                headerRow.CreateCell(34).SetCellValue("SOStatus");
+                headerRow.CreateCell(35).SetCellValue("MSL");
+                headerRow.CreateCell(36).SetCellValue("STD");
+                headerRow.CreateCell(37).SetCellValue("SValue");
+                headerRow.CreateCell(38).SetCellValue("InstallationCharges");
+                headerRow.CreateCell(39).SetCellValue("ArchitectName");
+
 
 
                 // Populate data rows
@@ -4334,40 +4334,40 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(4).SetCellValue(item.LeadId);
                     row.CreateCell(5).SetCellValue(item.City);
                     row.CreateCell(6).SetCellValue(item.Address);
-                    row.CreateCell(7).SetCellValue(item.OrderType);
-                    row.CreateCell(8).SetCellValue(item.TypeOfSolution);
-                    row.CreateCell(9).SetCellValue(item.ProductType);
-                    row.CreateCell(10).SetCellValue(item.MaterialGroup);
-                    row.CreateCell(11).SetCellValue(item.ItemType);
-                    row.CreateCell(12).SetCellValue(item.SalesPerson);
-                    row.CreateCell(13).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : "");
-                    row.CreateCell(14).SetCellValue(item.KPN);
-                    row.CreateCell(15).SetCellValue(item.KPNDescription);
-                    row.CreateCell(16).SetCellValue(item.UOC);
-                    row.CreateCell(17).SetCellValue(item.UOM);
-                    row.CreateCell(18).SetCellValue(item.PriceList);
-                    row.CreateCell(19).SetCellValue(Convert.ToDouble(item.UnitPrice));
-                    row.CreateCell(20).SetCellValue(Convert.ToDouble(item.BasicAmount));
-                    row.CreateCell(21).SetCellValue(item.DiscountType);
-                    row.CreateCell(22).SetCellValue(item.Discount);
-                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.SGST));
-                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.CGST));
-                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.IGST));
-                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.UTGST));
-                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.itempricelist));
-                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.TotalAmount));
-                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.OrderQty));
-                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.DispatchQty));
-                    row.CreateCell(31).SetCellValue(Convert.ToDouble(item.BalanceQty));
-                    row.CreateCell(32).SetCellValue(Convert.ToDouble(item.indent_qnty));
-                    row.CreateCell(33).SetCellValue(item.SOStatus.HasValue ? Enum.GetName(typeof(OrderStatus), item.SOStatus) : "");
-                    row.CreateCell(34).SetCellValue(Convert.ToDouble(item.MSL));
-                    row.CreateCell(35).SetCellValue(Convert.ToDouble(item.StdCost));
-                    row.CreateCell(36).SetCellValue(Convert.ToDouble(item.SValue));
-                    row.CreateCell(37).SetCellValue(Convert.ToDouble(item.InstallationCharges));
-                    row.CreateCell(38).SetCellValue(item.City);
-                    row.CreateCell(39).SetCellValue(item.State);
-                    row.CreateCell(40).SetCellValue(item.ArchitectName);
+                    row.CreateCell(7).SetCellValue(item.State); // ✅ Now correctly placed after Address
+                    row.CreateCell(8).SetCellValue(item.OrderType);
+                    row.CreateCell(9).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(10).SetCellValue(item.ProductType);
+                    row.CreateCell(11).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(12).SetCellValue(item.ItemType);
+                    row.CreateCell(13).SetCellValue(item.SalesPerson);
+                    row.CreateCell(14).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(15).SetCellValue(item.KPN);
+                    row.CreateCell(16).SetCellValue(item.KPNDescription);
+                    row.CreateCell(17).SetCellValue(item.UOC);
+                    row.CreateCell(18).SetCellValue(item.UOM);
+                    row.CreateCell(19).SetCellValue(item.PriceList);
+                    row.CreateCell(20).SetCellValue(Convert.ToDouble(item.UnitPrice));
+                    row.CreateCell(21).SetCellValue(Convert.ToDouble(item.BasicAmount));
+                    row.CreateCell(22).SetCellValue(item.DiscountType);
+                    row.CreateCell(23).SetCellValue(item.Discount);
+                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.SGST));
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.CGST));
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.IGST));
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.UTGST));
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.itempricelist));
+                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.TotalAmount));
+                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.OrderQty));
+                    row.CreateCell(31).SetCellValue(Convert.ToDouble(item.DispatchQty));
+                    row.CreateCell(32).SetCellValue(Convert.ToDouble(item.BalanceQty));
+                    row.CreateCell(33).SetCellValue(Convert.ToDouble(item.indent_qnty));
+                    row.CreateCell(34).SetCellValue(item.SOStatus.HasValue ? Enum.GetName(typeof(OrderStatus), item.SOStatus) : "");
+                    row.CreateCell(35).SetCellValue(Convert.ToDouble(item.MSL));
+                    row.CreateCell(36).SetCellValue(Convert.ToDouble(item.StdCost));
+                    row.CreateCell(37).SetCellValue(Convert.ToDouble(item.SValue));
+                    row.CreateCell(38).SetCellValue(Convert.ToDouble(item.InstallationCharges));
+                    row.CreateCell(39).SetCellValue(item.ArchitectName); // ✅ Shifted to 39 to maintain alignment
+
 
                 }
 
@@ -4434,8 +4434,9 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(29).SetCellValue("Indent Qnty");
                 headerRow.CreateCell(30).SetCellValue("InstallationCharges");
                 headerRow.CreateCell(31).SetCellValue("City");
-                headerRow.CreateCell(32).SetCellValue("State");
-                headerRow.CreateCell(33).SetCellValue("ArchitectName");
+                headerRow.CreateCell(32).SetCellValue("Address");
+                headerRow.CreateCell(33).SetCellValue("State");
+                headerRow.CreateCell(34).SetCellValue("ArchitectName");
 
 
                 // Populate data rows
@@ -4475,8 +4476,9 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(29).SetCellValue(Convert.ToDouble(item.indent_qnty)); // Assuming BalanceQty is decimal
                     row.CreateCell(30).SetCellValue(Convert.ToDouble(item.InstallationCharges)); // Assuming BalanceQty is decimal
                     row.CreateCell(31).SetCellValue(item.City);
-                    row.CreateCell(32).SetCellValue(item.State);
-                    row.CreateCell(33).SetCellValue(item.ArchitectName);
+                    row.CreateCell(32).SetCellValue(item.Address);
+                    row.CreateCell(33).SetCellValue(item.State);
+                    row.CreateCell(34).SetCellValue(item.ArchitectName);
                 }
 
 
@@ -4730,39 +4732,39 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(5).SetCellValue("Lead ID");
                 headerRow.CreateCell(6).SetCellValue("City");
                 headerRow.CreateCell(7).SetCellValue("Address");
-                headerRow.CreateCell(8).SetCellValue("Order Type");
-                headerRow.CreateCell(9).SetCellValue("Type Of Solution");
-                headerRow.CreateCell(10).SetCellValue("Product Type");
-                headerRow.CreateCell(11).SetCellValue("Material Group");
-                headerRow.CreateCell(12).SetCellValue("Item Type");
-                headerRow.CreateCell(13).SetCellValue("Sales Person");
-                headerRow.CreateCell(14).SetCellValue("SO Date");
-                headerRow.CreateCell(15).SetCellValue("KPN");
-                headerRow.CreateCell(16).SetCellValue("KPN Description");
-                headerRow.CreateCell(17).SetCellValue("UOC");
-                headerRow.CreateCell(18).SetCellValue("UOM");
-                headerRow.CreateCell(19).SetCellValue("Price List");
-                headerRow.CreateCell(20).SetCellValue("Unit Price");
-                headerRow.CreateCell(21).SetCellValue("Basic Amount");
-                headerRow.CreateCell(22).SetCellValue("DiscountType");
-                headerRow.CreateCell(23).SetCellValue("Discount");
-                headerRow.CreateCell(24).SetCellValue("SGST");
-                headerRow.CreateCell(25).SetCellValue("CGST");
-                headerRow.CreateCell(26).SetCellValue("IGST");
-                headerRow.CreateCell(27).SetCellValue("UTGST");
-                headerRow.CreateCell(28).SetCellValue("ItemPriceList");
-                headerRow.CreateCell(29).SetCellValue("Total Amount");
-                headerRow.CreateCell(30).SetCellValue("Order Qty");
-                headerRow.CreateCell(31).SetCellValue("Dispatch Qty");
-                headerRow.CreateCell(32).SetCellValue("Balance Qty");
-                headerRow.CreateCell(33).SetCellValue("RequestedDate");
-                headerRow.CreateCell(34).SetCellValue("MSL");
-                headerRow.CreateCell(35).SetCellValue("StdCost");
-                headerRow.CreateCell(36).SetCellValue("SValue");
-                headerRow.CreateCell(37).SetCellValue("InstallationCharges");
-                headerRow.CreateCell(38).SetCellValue("City");   // Possibly repeated — confirm if needed
-                headerRow.CreateCell(39).SetCellValue("State");
-                headerRow.CreateCell(40).SetCellValue("ArchitectName");
+                headerRow.CreateCell(8).SetCellValue("State"); // ✅ Now correctly placed after Address
+                headerRow.CreateCell(9).SetCellValue("Order Type");
+                headerRow.CreateCell(10).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(11).SetCellValue("Product Type");
+                headerRow.CreateCell(12).SetCellValue("Material Group");
+                headerRow.CreateCell(13).SetCellValue("Item Type");
+                headerRow.CreateCell(14).SetCellValue("Sales Person");
+                headerRow.CreateCell(15).SetCellValue("SO Date");
+                headerRow.CreateCell(16).SetCellValue("KPN");
+                headerRow.CreateCell(17).SetCellValue("KPN Description");
+                headerRow.CreateCell(18).SetCellValue("UOC");
+                headerRow.CreateCell(19).SetCellValue("UOM");
+                headerRow.CreateCell(20).SetCellValue("Price List");
+                headerRow.CreateCell(21).SetCellValue("Unit Price");
+                headerRow.CreateCell(22).SetCellValue("Basic Amount");
+                headerRow.CreateCell(23).SetCellValue("DiscountType");
+                headerRow.CreateCell(24).SetCellValue("Discount");
+                headerRow.CreateCell(25).SetCellValue("SGST");
+                headerRow.CreateCell(26).SetCellValue("CGST");
+                headerRow.CreateCell(27).SetCellValue("IGST");
+                headerRow.CreateCell(28).SetCellValue("UTGST");
+                headerRow.CreateCell(29).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(30).SetCellValue("Total Amount");
+                headerRow.CreateCell(31).SetCellValue("Order Qty");
+                headerRow.CreateCell(32).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(33).SetCellValue("Balance Qty");
+                headerRow.CreateCell(34).SetCellValue("RequestedDate");
+                headerRow.CreateCell(35).SetCellValue("MSL");
+                headerRow.CreateCell(36).SetCellValue("StdCost");
+                headerRow.CreateCell(37).SetCellValue("SValue");
+                headerRow.CreateCell(38).SetCellValue("InstallationCharges");
+                headerRow.CreateCell(39).SetCellValue("ArchitectName");
+
 
 
                 // Populate data rows
@@ -4778,39 +4780,39 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(5).SetCellValue(item.LeadId);
                     row.CreateCell(6).SetCellValue(item.City);
                     row.CreateCell(7).SetCellValue(item.Address);
-                    row.CreateCell(8).SetCellValue(item.OrderType);
-                    row.CreateCell(9).SetCellValue(item.TypeOfSolution);
-                    row.CreateCell(10).SetCellValue(item.ProductType);
-                    row.CreateCell(11).SetCellValue(item.MaterialGroup);
-                    row.CreateCell(12).SetCellValue(item.ItemType);
-                    row.CreateCell(13).SetCellValue(item.SalesPerson);
-                    row.CreateCell(14).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : "");
-                    row.CreateCell(15).SetCellValue(item.KPN);
-                    row.CreateCell(16).SetCellValue(item.KPNDescription);
-                    row.CreateCell(17).SetCellValue(item.UOC);
-                    row.CreateCell(18).SetCellValue(item.UOM);
-                    row.CreateCell(19).SetCellValue(item.PriceList);
-                    row.CreateCell(20).SetCellValue(Convert.ToDouble(item.UnitPrice));
-                    row.CreateCell(21).SetCellValue(Convert.ToDouble(item.BasicAmount));
-                    row.CreateCell(22).SetCellValue(item.DiscountType);
-                    row.CreateCell(23).SetCellValue(item.Discount);
-                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.SGST));
-                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.CGST));
-                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.IGST));
-                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.UTGST));
-                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.itempricelist));
-                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.TotalAmount));
-                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.OrderQty));
-                    row.CreateCell(31).SetCellValue(Convert.ToDouble(item.DispatchQty));
-                    row.CreateCell(32).SetCellValue(Convert.ToDouble(item.BalanceQty));
-                    row.CreateCell(33).SetCellValue(item.RequestedDate.HasValue ? item.RequestedDate.Value.ToString("MM/dd/yyyy") : "");
-                    row.CreateCell(34).SetCellValue(Convert.ToDouble(item.MSL));
-                    row.CreateCell(35).SetCellValue(Convert.ToDouble(item.StdCost));
-                    row.CreateCell(36).SetCellValue(Convert.ToDouble(item.SValue));
-                    row.CreateCell(37).SetCellValue(Convert.ToDouble(item.InstallationCharges));
-                    row.CreateCell(38).SetCellValue(item.City);
-                    row.CreateCell(39).SetCellValue(item.State);
-                    row.CreateCell(40).SetCellValue(item.ArchitectName);
+                    row.CreateCell(8).SetCellValue(item.State); // ✅ Correctly placed after Address
+                    row.CreateCell(9).SetCellValue(item.OrderType);
+                    row.CreateCell(10).SetCellValue(item.TypeOfSolution);
+                    row.CreateCell(11).SetCellValue(item.ProductType);
+                    row.CreateCell(12).SetCellValue(item.MaterialGroup);
+                    row.CreateCell(13).SetCellValue(item.ItemType);
+                    row.CreateCell(14).SetCellValue(item.SalesPerson);
+                    row.CreateCell(15).SetCellValue(item.sodate.HasValue ? item.sodate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(16).SetCellValue(item.KPN);
+                    row.CreateCell(17).SetCellValue(item.KPNDescription);
+                    row.CreateCell(18).SetCellValue(item.UOC);
+                    row.CreateCell(19).SetCellValue(item.UOM);
+                    row.CreateCell(20).SetCellValue(item.PriceList);
+                    row.CreateCell(21).SetCellValue(Convert.ToDouble(item.UnitPrice));
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.BasicAmount));
+                    row.CreateCell(23).SetCellValue(item.DiscountType);
+                    row.CreateCell(24).SetCellValue(item.Discount);
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.SGST));
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.CGST));
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.IGST));
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.UTGST));
+                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.itempricelist));
+                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.TotalAmount));
+                    row.CreateCell(31).SetCellValue(Convert.ToDouble(item.OrderQty));
+                    row.CreateCell(32).SetCellValue(Convert.ToDouble(item.DispatchQty));
+                    row.CreateCell(33).SetCellValue(Convert.ToDouble(item.BalanceQty));
+                    row.CreateCell(34).SetCellValue(item.RequestedDate.HasValue ? item.RequestedDate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(35).SetCellValue(Convert.ToDouble(item.MSL));
+                    row.CreateCell(36).SetCellValue(Convert.ToDouble(item.StdCost));
+                    row.CreateCell(37).SetCellValue(Convert.ToDouble(item.SValue));
+                    row.CreateCell(38).SetCellValue(Convert.ToDouble(item.InstallationCharges));
+                    row.CreateCell(39).SetCellValue(item.ArchitectName);
+
 
                 }
 
