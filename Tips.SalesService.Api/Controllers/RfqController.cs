@@ -3991,13 +3991,13 @@ namespace Tips.SalesService.Api.Controllers
                 }
 
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetRfqSPReportForKeus(RfqSpReportDto rfqSpReportDto)
+        public async Task<IActionResult> GetRfqSPReportForTras(RfqSpReportDto rfqSpReportDto)
 
         {
-            ServiceResponse<IEnumerable<RfqSPReportForKeus>> serviceResponse = new ServiceResponse<IEnumerable<RfqSPReportForKeus>>();
+            ServiceResponse<IEnumerable<RfqSPReportForTras>> serviceResponse = new ServiceResponse<IEnumerable<RfqSPReportForTras>>();
             try
             {
-                var products = await _rfqRepository.GetRfqSPReportForKeus(rfqSpReportDto.CustomerName, rfqSpReportDto.CustomerId, rfqSpReportDto.RfqNumber);
+                var products = await _rfqRepository.GetRfqSPReportForTras(rfqSpReportDto.CustomerName, rfqSpReportDto.CustomerId, rfqSpReportDto.RfqNumber);
 
                 if (products == null)
                 {
@@ -4020,9 +4020,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetRfqSPReportForKeus API : \n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetRfqSPReportForTras API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetRfqSPReportForKeus API : \n {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetRfqSPReportForTras API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -4030,12 +4030,12 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpGet] // Adjust your route as needed
-        public async Task<IActionResult> GetRfqSPReportWithDateForKeus([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        public async Task<IActionResult> GetRfqSPReportWithDateForTras([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            ServiceResponse<IEnumerable<RfqSPReportForKeus>> serviceResponse = new ServiceResponse<IEnumerable<RfqSPReportForKeus>>();
+            ServiceResponse<IEnumerable<RfqSPReportForTras>> serviceResponse = new ServiceResponse<IEnumerable<RfqSPReportForTras>>();
             try
             {
-                var products = await _rfqRepository.GetRfqSPReportWithDateForKeus(FromDate, ToDate);
+                var products = await _rfqRepository.GetRfqSPReportWithDateForTras(FromDate, ToDate);
                 if (products == null)
                 {
                     serviceResponse.Data = null;
@@ -4056,9 +4056,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetRfqSPReportWithDateForKeus API : \n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetRfqSPReportWithDateForTras API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetRfqSPReportWithDateForKeus API : \n {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetRfqSPReportWithDateForTras API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

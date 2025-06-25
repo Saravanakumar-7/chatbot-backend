@@ -45,5 +45,6 @@ namespace Tips.Grin.Api.Entities
         public DateTime? GrinDate { get; set; }
         public string? ProjectNumber { get; set; }
         public string? UOC { get; set; }
+        public string? TallyVoucher { get; set; }
     }
 }

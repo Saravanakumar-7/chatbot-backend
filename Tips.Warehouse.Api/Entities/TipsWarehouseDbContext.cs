@@ -76,6 +76,7 @@ namespace Tips.Warehouse.Api.Entities
         {
             modelBuilder.Entity<ConsumptionReport>().HasNoKey();
             modelBuilder.Entity<DeliveryOrderSPReport>().HasNoKey();
+            modelBuilder.Entity<DeliveryOrderSPReportForAvi>().HasNoKey();
             modelBuilder.Entity<InvoiceSPReport>().HasNoKey();
             modelBuilder.Entity<LocationTransferSPReport>().HasNoKey();
             modelBuilder.Entity<OpenDeliveryOrderSPReport>().HasNoKey();

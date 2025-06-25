@@ -118,16 +118,7 @@ namespace Tips.Purchase.Api.Repository
 
             return PagedList<PurchaseRequisitionSPReportForTrans>.ToPagedList(result.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-        public async Task<PagedList<PurchaseRequisitionSPReportForAvision>> GetPurchaseRequisitionsSPReportForAvi(PagingParameter pagingParameter)
-        {
-
-            var result = _tipsPurchaseDbContext
-            .Set<PurchaseRequisitionSPReportForAvision>()
-            .FromSqlInterpolated($"CALL Purchaserequisition_without_parameter_avi()")
-            .ToList();
-
-            return PagedList<PurchaseRequisitionSPReportForAvision>.ToPagedList(result.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
-        }
+     
         public async Task<IEnumerable<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportWithParamForTrans(string PrNumber, string ProcurementType, string PrStatus, string ProjectNumber
                                                                                                                   , string RecordType, string Approval)
         {
@@ -139,16 +130,7 @@ namespace Tips.Purchase.Api.Repository
 
             return result;
         }
-        public async Task<IEnumerable<PurchaseRequisitionSPReportForAvision>> GetPurchaseRequisitionsSPReportWithParamForAvi(string PrNumber, string ProcurementType, string PrStatus)
-        {
-
-            var result = _tipsPurchaseDbContext
-            .Set<PurchaseRequisitionSPReportForAvision>()
-            .FromSqlInterpolated($"CALL Purchaserequisition_with_parameters_avi({PrNumber},{ProcurementType},{PrStatus})")
-            .ToList();
-
-            return result;
-        }
+    
         public async Task<IEnumerable<PurchaseRequisitionSPReportForTrans>> GetPurchaseRequisitionsSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate, string RecordType, string Approval)
         {
             var results = _tipsPurchaseDbContext.Set<PurchaseRequisitionSPReportForTrans>()
@@ -157,14 +139,7 @@ namespace Tips.Purchase.Api.Repository
 
             return results;
         }
-        public async Task<IEnumerable<PurchaseRequisitionSPReportForAvision>> GetPurchaseRequisitionsSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate)
-        {
-            var results = _tipsPurchaseDbContext.Set<PurchaseRequisitionSPReportForAvision>()
-                        .FromSqlInterpolated($"CALL Purchaserequisition_with_date_parameters_avi({FromDate},{ToDate})")
-                        .ToList();
-
-            return results;
-        }
+     
         public async Task<IEnumerable<PurchaseRequisitionSPReport>> GetPurchaseRequisitionsSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsPurchaseDbContext.Set<PurchaseRequisitionSPReport>()
