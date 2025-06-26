@@ -13,6 +13,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string? RfqNumber { get; set; }
         public string? CustomerName { get; set; }
+        public decimal? GENLabourCost { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -28,7 +29,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? RfqNumber { get; set; }       
         public decimal? RevisionNumber { get; set; }
         public string? CustomerName { get; set; }
-       
+        public decimal? GENLabourCost { get; set; }
+
         public List<RfqLPCostingItemDtoPost>? RfqLPCostingItems { get; set; }
 
     }
@@ -39,7 +41,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [StringLength(500, ErrorMessage = "CustomerName can't be longer than 500 characters")]
 
         public string? CustomerName { get; set; }
-
+        public decimal? GENLabourCost { get; set; }
         public string Unit { get; set; }
         public List<RfqLPCostingItemDtoUpdate>? RfqLPCostingItems { get; set; }
 

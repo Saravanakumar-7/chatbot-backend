@@ -10,6 +10,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? CustomerLeadid { get; set; }
         public string? City { get; set; }
         public string? Address { get; set; }
+        public string? State { get; set; }
         public string? SalesOrderNumber { get; set; }
         public int? SalesOrderRevisionNumber { get; set; }
         public DateTime? DODate { get; set; }

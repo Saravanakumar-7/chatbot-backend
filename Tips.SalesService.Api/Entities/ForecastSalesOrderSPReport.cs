@@ -10,6 +10,7 @@
         public string? LeadId { get; set; }
         public string? City { get; set; }
         public string? Address { get; set; }
+        public string? State { get; set; }
         public string? OrderType { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
@@ -40,7 +41,6 @@
         public decimal? StdCost { get; set; }
         public decimal? SValue { get; set; }
         public decimal? InstallationCharges { get; set; }
-        public string? State { get; set; }
         public string? ArchitectName { get; set; }
     }
 }
