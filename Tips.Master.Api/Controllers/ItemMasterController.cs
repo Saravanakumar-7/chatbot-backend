@@ -339,6 +339,34 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllIsPRRequiredStatusTrueKITItemNoList()
+        {
+            ServiceResponse<IEnumerable<ItemNoListDtos>> serviceResponse = new ServiceResponse<IEnumerable<ItemNoListDtos>>();
+
+            try
+            {
+                var kitItemNoList = await _repository.ItemMasterRepository.GetAllIsPRRequiredStatusTrueKITItemNoList();
+                _logger.LogInfo("Returned all IsPRRequiredStatus True KITItemNumberList Successfully");
+                var result = _mapper.Map<IEnumerable<ItemNoListDtos>>(kitItemNoList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all IsPRRequiredStatusTrue KITItemNumberList Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllIsPRRequiredStatusTrueKITItemNoList API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllIsPRRequiredStatusTrueKITItemNoList API : \n {ex.Message} ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //test file path 
         //[HttpGet("{filename}")]
         //public async Task<ActionResult> GetFilePath(string filename)

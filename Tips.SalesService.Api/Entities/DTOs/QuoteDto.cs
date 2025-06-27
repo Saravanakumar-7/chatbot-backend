@@ -50,6 +50,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? GeneralDiscount { get; set; }
+        public string? LeadTime { get; set; }
         public string? Remarks { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
@@ -115,7 +116,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? FirstEmailQuoteValue { get; set; }
         public decimal? QuoteUntaxedValue { get; set; }
         public DateTime? RevCreatedOnDate { get; set; }
-        
+        public string? LeadTime { get; set; }
 
         // public decimal? EmailSentValue { get; set; }
         public string? Remarks { get; set; }
@@ -165,7 +166,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? TotalAmountWithInstallationCharges { get; set; }
-
+        public string? LeadTime { get; set; }
 
         [Precision(13, 3)]
         public decimal? GeneralDiscount { get; set; }
@@ -214,6 +215,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? GeneralDiscount { get; set; }
+        public string? LeadTime { get; set; }
         public string? Remarks { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
@@ -392,6 +394,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? City { get; set; }
         public string? Address { get; set; }
+        public string? State { get; set; }
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
         public string? FirstQuoteNumber { get; set; }
@@ -441,6 +444,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? City { get; set; }
         public string? Address { get; set; }
+        public string? State { get; set; }
         public string? QuoteNumber { get; set; }
         public decimal? RevisionNumber { get; set; }
         public string? TypeOfSolution { get; set; }
