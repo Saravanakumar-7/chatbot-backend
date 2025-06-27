@@ -50,6 +50,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? GeneralDiscount { get; set; }
+        public string? LeadTime { get; set; }
         public string? Remarks { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
@@ -115,7 +116,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? FirstEmailQuoteValue { get; set; }
         public decimal? QuoteUntaxedValue { get; set; }
         public DateTime? RevCreatedOnDate { get; set; }
-        
+        public string? LeadTime { get; set; }
 
         // public decimal? EmailSentValue { get; set; }
         public string? Remarks { get; set; }
@@ -165,7 +166,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? TotalAmountWithInstallationCharges { get; set; }
-
+        public string? LeadTime { get; set; }
 
         [Precision(13, 3)]
         public decimal? GeneralDiscount { get; set; }
@@ -214,6 +215,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? GeneralDiscount { get; set; }
+        public string? LeadTime { get; set; }
         public string? Remarks { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }

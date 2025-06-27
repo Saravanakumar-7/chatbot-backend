@@ -16,7 +16,6 @@ namespace Tips.SalesService.Api.Entities
         public string? RfqNumber { get; set; }
         public string? CustomerName { get; set; }
         public decimal? RevisionNumber { get; set; }
-        public decimal? GENLabourCost {  get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

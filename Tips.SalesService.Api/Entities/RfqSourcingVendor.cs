@@ -35,7 +35,9 @@ namespace Tips.SalesService.Api.Entities
 
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }       
-        public bool Primary { get; set; } = true;        
+        public bool Primary { get; set; } = true;
+        public string? PaymentTerms { get; set; }
+        public string? Remarks { get; set; }
         public int RfqSourcingItemsId { get; set; }
         public RfqSourcingItems? RfqSourcingItems { get; set; }
     }
