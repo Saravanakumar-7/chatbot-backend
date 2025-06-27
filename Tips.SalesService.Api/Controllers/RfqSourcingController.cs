@@ -30,6 +30,7 @@ namespace Tips.SalesService.Api.Controllers
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IRfqRepository _rfqRepository;
+        private ISalesServiceFileUploadRepository _salesServiceFileUploadRepository;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
@@ -43,6 +44,25 @@ namespace Tips.SalesService.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _clientFactory = clientFactory;
+        }
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
         }
         // GET: api/<RfqSourcingController>
         [HttpGet]
@@ -200,118 +220,140 @@ namespace Tips.SalesService.Api.Controllers
 
         }
 
-        //[HttpPost]
-        //public async Task<IActionResult> CreateRfqSourcing([FromBody] RfqSourcingPostDto rfqSourcingPostDto)
-        //{
-        //    ServiceResponse<RfqSourcingDto> serviceResponse = new ServiceResponse<RfqSourcingDto>();
+        [HttpPost]
+        public async Task<IActionResult> CreateRfqSourcingFileUpload([FromBody] List<SalesServiceFileUploadPostDto> fileUploadPostDtos)
+        {
+            ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
+            try
+            {
+                if (fileUploadPostDtos is null)
+                {
+                    _logger.LogError("RfqSourcingFile object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "RfqSourcingFile object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid RfqSourcingFile object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
 
-        //    try
-        //    {
-        //        if (rfqSourcingPostDto is null)
-        //        {
-        //            _logger.LogError("RfqSourcing object sent from client is null.");
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = "RfqSourcing object sent from client is null.";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-        //            return BadRequest(serviceResponse);
-        //        }
-        //        if (!ModelState.IsValid)
-        //        {
-        //            _logger.LogError("Invalid RfqSourcing object sent from client.");
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = "Invalid RfqSourcing object sent from client.";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-        //            return BadRequest(serviceResponse);
-        //        }
-
-
-
-        //        var createRfqSource = _mapper.Map<RfqSourcing>(rfqSourcingPostDto);
-
-        //        var rfqSourceData = createRfqSource.RFQNumber;
-
-        //        var rfqIsSourcingUpdate = await _rfqRepository.RfqSourcingByRfqNumbers(rfqSourceData);
-
-        //        rfqIsSourcingUpdate.IsSourcing = true;
-
-        //        var rfqSourceDto = rfqSourcingPostDto.RfqSourcingItemsPostDtos;
-
-        //        var sourceItemList = new List<RfqSourcingItems>();
-
-        //            if (rfqSourceDto != null)
-        //            {
-        //                for (int i = 0; i < rfqSourceDto.Count; i++)
-        //                {
-        //                    RfqSourcingItems rfqSourcingItems = _mapper.Map<RfqSourcingItems>(rfqSourceDto[i]);
-        //                    rfqSourcingItems.RfqSourcingVendors = _mapper.Map<List<RfqSourcingVendor>>(rfqSourceDto[i].RfqSourcingVendorDtos);
-        //                    sourceItemList.Add(rfqSourcingItems);
-        //                }
-        //            }
-        //            createRfqSource.RfqSourcingItems = sourceItemList;
-
-        //            await _repository.CreateRfqSourcing(createRfqSource);
-        //            _rfqRepository.Update(rfqIsSourcingUpdate);
-
-        //        // LandedPrice and MoqCost Calculation
-        //        int rfqId = rfqSourcingPostDto.RFQId;
-        //        //Taking the Sourcing PP And is Primary Vendor Details 
-        //        List<RfqSourcingPPdetails> rfqSourcingPPdetailsList = new List<RfqSourcingPPdetails>();
-        //        foreach (var ppinsource in createRfqSource.RfqSourcingItems)
-        //        {
-        //            RfqSourcingPPdetails rfqSourcingPPdetails = new RfqSourcingPPdetails();
-        //            rfqSourcingPPdetails.PPItemNumber = ppinsource.ItemNumber;
-        //            foreach (var ppvendor in ppinsource.RfqSourcingVendors)
-        //            {
-        //                if (ppvendor.Primary == true)
-        //                {
-        //                    rfqSourcingPPdetails.VLandindPrice = ppvendor.LandindPrice;
-        //                    rfqSourcingPPdetails.VMoqcost = ppvendor.MoqCost;
-        //                }
-        //            }
-        //            rfqSourcingPPdetailsList.Add(rfqSourcingPPdetails);
-        //        }
-        //        //Getting the FG's of that RFQ
-        //        List<RfqEnggItem> listofFgs = await _rfqEnggItemRepository.GetRfqEnggItemsbyRfqId(rfqId);
-        //        foreach (var fgitemnumber in listofFgs)
-        //        {
-        //            //Calculating for the Fg LandedPrice and MOQCost
-        //            var httpClientHandler = new HttpClientHandler();
-        //            httpClientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => true;
-        //            var httpClient = new HttpClient(httpClientHandler);
-        //            string rfqSourcingPPdetailsJson = JsonConvert.SerializeObject(rfqSourcingPPdetailsList);
-        //            var rfqApiUrl = _config["EngineeringBomAPI"];
-        //            var content = new StringContent(rfqSourcingPPdetailsJson, Encoding.UTF8, "application/json");
-        //            var rfqCustomerIdResponse = await _httpClient.PostAsync($"{rfqApiUrl}GetEngganditsPP?FGItemNumber={fgitemnumber.ItemNumber}&FGRevno={fgitemnumber.CostingBomVersionNo}", content);
-        //            var rfqCustomerIdString = await rfqCustomerIdResponse.Content.ReadAsStringAsync();
-        //            var rfqCustomerIdObjectData = JsonConvert.DeserializeObject<EnggItemsLandedandMoq>(rfqCustomerIdString);
-        //            var rfqEnggItemsDetails = await _rfqEnggItemRepository.GetRfqEnggItemByItemNumber(rfqCustomerIdObjectData.data.fgItemNumber);
-        //            rfqEnggItemsDetails.LandedPrice = rfqCustomerIdObjectData.data.finalLandindPrice;
-        //            rfqEnggItemsDetails.MOQCost = rfqCustomerIdObjectData.data.finalMoqcost;
-        //            await _rfqEnggItemRepository.UpdateRfqEnggItemLandedandMOQ(rfqEnggItemsDetails);
-        //        }
-        //        _rfqEnggItemRepository.SaveAsync();
-        //        _repository.SaveAsync();
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = "RfqSourcing Created Successfully";
-        //            serviceResponse.Success = true;
-        //            serviceResponse.StatusCode = HttpStatusCode.OK;
-        //            return Created("GetRfqSourceById", serviceResponse);
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Something went wrong inside CreateRfqSource action: {ex.Message}");
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = "Internal server error";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    }
-        //}
-
-        // PUT api/<RfqSourcingController>/5
+                List<string>? id_s = new List<string>();
+                var FileUploadDetails = fileUploadPostDtos;
+                foreach (var FileUploadDetail in FileUploadDetails)
+                {
+                    Guid guids = Guid.NewGuid();
+                    byte[] fileContent = Convert.FromBase64String(FileUploadDetail.FileByte);
+                    string fileName = guids.ToString() + "_" + FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
+                    string FileExt = Path.GetExtension(fileName).ToUpper();
+                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "RfqSourcingDocuments", fileName);
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                        var uploadedFile = new SalesServiceFileUpload
+                        {
+                            FileName = fileName,
+                            FileExtension = FileExt,
+                            FilePath = filePath,
+                            ParentId = "RfqSourcing",
+                            DocumentFrom = "RfqSourcing File Document",
+                            FileByte = FileUploadDetail.FileByte
+                        };
+                        await _salesServiceFileUploadRepository.CreateSalesServiceFileUploadDocument(uploadedFile);
+                        _salesServiceFileUploadRepository.SaveAsync();
+                        id_s.Add(uploadedFile.Id.ToString());
+                    }
+                }
+                serviceResponse.Data = id_s;
+                serviceResponse.Message = "RfqSourcingFile Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in CreateRfqSourcingFileUpload API : \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in CreateRfqSourcingFileUpload API : \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetDownloadUrlDetailsforRfqSourcingFiles(string fileids)
+        {
+            ServiceResponse<List<SalesServiceFileUploadDto>> serviceResponse = new ServiceResponse<List<SalesServiceFileUploadDto>>();
+            try
+            {
+                string serverKey = GetServerKey();
+                var itemsFiles = await _salesServiceFileUploadRepository.GetDownloadUrlDetails(fileids);
+                if (itemsFiles == null)
+                {
+                    _logger.LogError($"DownloadDetail with id: {fileids}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {fileids}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid SalesServiceFileUpload UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid SalesServiceFileUpload UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<SalesServiceFileUploadDto> fileUploads = new List<SalesServiceFileUploadDto>();
+                if (itemsFiles != null)
+                {
+                    foreach (var fileUploadDetails in itemsFiles)
+                    {
+                        SalesServiceFileUploadDto fileUploadDto = _mapper.Map<SalesServiceFileUploadDto>(fileUploadDetails);
+                        var filename = Uri.EscapeDataString(fileUploadDto.FileName);
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["SalesServiceBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadFile?Filename={filename}";
+                        }
+                        else
+                        {
+                            var baseUrl = $"{_config["SalesServiceBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={filename}";
+                        }
+                        fileUploads.Add(fileUploadDto);
+                    }
+                }
+                _logger.LogInfo($"Returned DownloadDetail with id: {fileids}");
+                serviceResponse.Data = fileUploads;
+                serviceResponse.Message = "Successfully Returned RfqSourcingFiles";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetDownloadUrlDetailsforRfqSourcingFiles API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetDownloadUrlDetailsforRfqSourcingFiles API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpPost]
         public async Task<IActionResult> CreateRfqSourcing([FromBody] RfqSourcingPostDto rfqSourcingPostDto)
         {

@@ -131,6 +131,8 @@ namespace Entities.DTOs
     {
         public string ItemNumber { set; get; }
         public string? ItemDescription { set; get; }
+        public string? Manufacturer_Mftr_PartNumber { get; set; }
+        public string? Customer_Mftr_PartNumber { get; set; }
         public decimal QtyReq { set; get; }
 
     }

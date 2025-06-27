@@ -671,9 +671,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetFGBomChildItemDetails API : \n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetFGBomChildItemDetails API for RfqNumber:{RfqNumber} : \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetFGBomChildItemDetails API : \n {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetFGBomChildItemDetails API for RfqNumber:{RfqNumber} : \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
