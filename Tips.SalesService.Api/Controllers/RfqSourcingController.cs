@@ -272,7 +272,7 @@ namespace Tips.SalesService.Api.Controllers
                             DocumentFrom = "RfqSourcing File Document",
                             FileByte = FileUploadDetail.FileByte
                         };
-                       await _salesServiceFileUploadRepository.CreateSalesServiceFileUploadDocument(uploadedFile);
+                        await _salesServiceFileUploadRepository.CreateSalesServiceFileUploadDocument(uploadedFile);
                         _salesServiceFileUploadRepository.SaveAsync();
                         id_s.Add(uploadedFile.Id.ToString());
                     }
@@ -794,7 +794,6 @@ namespace Tips.SalesService.Api.Controllers
 
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetSourcingSPReportWithParam([FromBody] SourcingSPReportDto sourcingSPReportDto)
-
         {
             ServiceResponse<IEnumerable<SourcingSPReport>> serviceResponse = new ServiceResponse<IEnumerable<SourcingSPReport>>();
             try
@@ -830,6 +829,24 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        //[HttpGet]
+        //public async Task<IActionResult> GetGreatestLeadTimewithNoofDaysbyRfqNumber([FromQuery] string RfqNumber)
+        //{
+        //    ServiceResponse<LeadTimeandNoofdays> serviceResponse = new ServiceResponse<LeadTimeandNoofdays>();
+        //    try
+        //    {
+        //        var Sourcing = await _repository.GetRfqSourcingDetailsByRfqNo(RfqNumber);
 
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Error Occured in GetGreatestLeadTimewithNoofDaysbyRfqNumber API for RfqNumber:{RfqNumber} : \n {ex.Message} \n{ex.InnerException}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Error Occured in GetGreatestLeadTimewithNoofDaysbyRfqNumber API for RfqNumber:{RfqNumber} : \n {ex.Message}";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
     }
 }
