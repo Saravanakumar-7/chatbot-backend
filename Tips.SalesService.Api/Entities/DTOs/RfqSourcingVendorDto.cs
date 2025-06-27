@@ -37,7 +37,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public bool Primary { get; set; }
         public string? PaymentTerms { get; set; }
         public string? Remarks { get; set; }
-
+        public string? FileIds { get; set; }
     }
     public class RfqSourcingVendorPostDto
     {
@@ -74,7 +74,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public bool Primary { get; set; } = true;
         public string? PaymentTerms { get; set; }
         public string? Remarks { get; set; }
-
+        public string? FileIds { get; set; }
     }
     public class RfqSourcingVendorUpdateDto
     {
@@ -111,6 +111,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public bool Primary { get; set; } = true;
         public string? PaymentTerms { get; set; }
         public string? Remarks { get; set; }
+        public string? FileIds { get; set; }
     }
     public class RfqSourcingConvertionrateDto
     {

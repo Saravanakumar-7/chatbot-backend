@@ -151,6 +151,7 @@ builder.Services.AddScoped<ISOAdditionalChargesHistoryRepository, SOAdditionalCh
 builder.Services.AddScoped<ISOInitialConfirmationDateHistoryRepository, SOInitialConfirmationDateHistoryRepository>();
 builder.Services.AddScoped<IGoogleGCPstorageService, GoogleGCPstorageService>();
 builder.Services.AddScoped<ITokenValidationService, TokenValidationService>();
+builder.Services.AddScoped<ISalesServiceFileUploadRepository, SalesServiceFileUploadRepository>();
 var app = builder.Build();
 
 app.UseSwagger();

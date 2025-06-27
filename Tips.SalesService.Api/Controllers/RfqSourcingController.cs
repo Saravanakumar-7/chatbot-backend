@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authorization;
 using MySqlX.XDevAPI;
 using NuGet.Common;
 using NPOI.Util;
+using Microsoft.AspNetCore.StaticFiles;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -34,7 +35,7 @@ namespace Tips.SalesService.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
-        public RfqSourcingController(IRfqSourcingRepository repository, IHttpClientFactory clientFactory, IRfqRepository rfqRepository, IRfqEnggItemRepository rfqEnggItemRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config)
+        public RfqSourcingController(IRfqSourcingRepository repository, IHttpClientFactory clientFactory, IRfqRepository rfqRepository, IRfqEnggItemRepository rfqEnggItemRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, ISalesServiceFileUploadRepository salesServiceFileUploadRepository)
         {
             _repository = repository;
             _logger = logger;
@@ -44,6 +45,7 @@ namespace Tips.SalesService.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _clientFactory = clientFactory;
+            _salesServiceFileUploadRepository = salesServiceFileUploadRepository;
         }
         private string GetServerKey()
         {
@@ -261,7 +263,7 @@ namespace Tips.SalesService.Api.Controllers
                         {
                             ms.WriteTo(fileStream);
                         }
-                        var uploadedFile = new SalesServiceFileUpload
+                        SalesServiceFileUpload uploadedFile = new SalesServiceFileUpload
                         {
                             FileName = fileName,
                             FileExtension = FileExt,
@@ -270,7 +272,7 @@ namespace Tips.SalesService.Api.Controllers
                             DocumentFrom = "RfqSourcing File Document",
                             FileByte = FileUploadDetail.FileByte
                         };
-                        await _salesServiceFileUploadRepository.CreateSalesServiceFileUploadDocument(uploadedFile);
+                       await _salesServiceFileUploadRepository.CreateSalesServiceFileUploadDocument(uploadedFile);
                         _salesServiceFileUploadRepository.SaveAsync();
                         id_s.Add(uploadedFile.Id.ToString());
                     }
@@ -353,6 +355,23 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
+        }
+        [HttpGet]
+        public async Task<ActionResult> DownloadFile(string Filename)
+        {
+            ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+            var filename = Uri.UnescapeDataString(Filename);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "RfqSourcingDocuments", filename);
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out var ContentType))
+            {
+                ContentType = "application/octet-stream";
+            }
+            var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+            var DownloadFilename = filename.Split('_');
+            var downloadFilename = string.IsNullOrWhiteSpace(DownloadFilename[1]) ? Path.GetFileName(filePath) : DownloadFilename[1];
+
+            return File(bytes, ContentType, downloadFilename);
         }
         [HttpPost]
         public async Task<IActionResult> CreateRfqSourcing([FromBody] RfqSourcingPostDto rfqSourcingPostDto)
