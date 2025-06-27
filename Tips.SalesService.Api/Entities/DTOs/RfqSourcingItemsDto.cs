@@ -1,11 +1,5 @@
-﻿using Entities.DTOs;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
+﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tips.SalesService.Api.Entities.DTOs
 {
@@ -14,10 +8,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? ItemDescription { get; set; }
-
+        public string? Manufacturer_Mftr_PartNumber { get; set; }
+        public string? Customer_Mftr_PartNumber { get; set; }
         [Precision(13, 3)]
         public decimal? QtyReq { get; set; }
-
         [Precision(13, 3)]
         public decimal? Count { get; set; }
         public List<RfqSourcingVendorDto>? RfqSourcingVendorDtos { get; set; }
@@ -29,7 +23,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "ItemDescription can't be longer than 500 characters")]
         public string? ItemDescription { get; set; }
-
+        public string? Manufacturer_Mftr_PartNumber { get; set; }
+        public string? Customer_Mftr_PartNumber { get; set; }
         [Precision(13, 3)]
         public decimal? QtyReq { get; set; }
 
@@ -47,7 +42,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [StringLength(500, ErrorMessage = "ItemDescription can't be longer than 500 characters")]
         public string? ItemDescription { get; set; }
-
+        public string? Manufacturer_Mftr_PartNumber { get; set; }
+        public string? Customer_Mftr_PartNumber { get; set; }
         [Precision(13, 3)]
         public decimal? QtyReq { get; set; }
 

@@ -730,7 +730,6 @@ namespace Repository
 
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
-
         }
         public async Task<int?> CreateFileUploadDocument(FileUpload fileUpload)
         {

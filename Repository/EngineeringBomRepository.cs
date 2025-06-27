@@ -148,7 +148,7 @@ namespace Repository
                 .OrderByDescending(x => x.BOMId)
                 .FirstOrDefaultAsync();
 
-            var edittingEnggBom= await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == enggBom.ItemNumber && x.RevisionNumber==enggBom.RevisionNumber).FirstOrDefaultAsync();
+            var edittingEnggBom = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == enggBom.ItemNumber && x.RevisionNumber == enggBom.RevisionNumber).FirstOrDefaultAsync();
 
             if (revisionType == 0)
             {
@@ -156,8 +156,8 @@ namespace Repository
             }
             else
             {
-                enggBom.RevisionNumber =Math.Ceiling(getOldRevisionNumber.RevisionNumber + Convert.ToDecimal(0.1));
-              
+                enggBom.RevisionNumber = Math.Ceiling(getOldRevisionNumber.RevisionNumber + Convert.ToDecimal(0.1));
+
             }
             if (edittingEnggBom != null)
             {
@@ -294,7 +294,7 @@ namespace Repository
                 .Select(e => new EnggBomRevSPReportDto
                 {
                     ItemNumber = e.Key,
-                    RevisionNumber = e.Max(e=>e.RevisionNumber)
+                    RevisionNumber = e.Max(e => e.RevisionNumber)
                 })
                 .FirstOrDefaultAsync();
 
@@ -312,12 +312,12 @@ namespace Repository
         }
         public async Task<List<EnggBomDetails>> GetAllParentBOMsofItemNumber(string ItemNumber)
         {
-            var listofparents =await _tipsMasterDbContext.EnggChildItems.Where(x => x.ItemNumber == ItemNumber).Select(a=>a.EnggBomId).ToListAsync();
-            var result = await _tipsMasterDbContext.EnggBoms.Where(x =>listofparents.Contains(x.BOMId)).Select(s=> new EnggBomDetails
+            var listofparents = await _tipsMasterDbContext.EnggChildItems.Where(x => x.ItemNumber == ItemNumber).Select(a => a.EnggBomId).ToListAsync();
+            var result = await _tipsMasterDbContext.EnggBoms.Where(x => listofparents.Contains(x.BOMId)).Select(s => new EnggBomDetails
             {
-                ItemNumber=s.ItemNumber.ToString(),
-                ItemDescription=s.ItemDescription,
-                RevisionNumber=s.RevisionNumber
+                ItemNumber = s.ItemNumber.ToString(),
+                ItemDescription = s.ItemDescription,
+                RevisionNumber = s.RevisionNumber
             }).ToListAsync();
             return result;
         }
@@ -445,6 +445,8 @@ namespace Repository
                                 addPP.ItemNumber = childofFG.ItemNumber;
                                 addPP.ItemDescription = childofFG.Description;
                                 addPP.QtyReq = childofFG.Quantity * rfqfgitem.Qty;
+                                addPP.Manufacturer_Mftr_PartNumber = string.Join(" | ", _tipsMasterDbContext.ItemmasterAlternates?.Where(x => x.ItemMasterId == _tipsMasterDbContext.ItemMasters.Where(x => x.ItemNumber == addPP.ItemNumber).Select(s => s.Id).FirstOrDefault() && x.AlternateSource == true).Select(s => $"{s.ManufacturerPartNo} - {s.Manufacturer}").ToList());
+                                addPP.Customer_Mftr_PartNumber = string.Join(" | ", _tipsMasterDbContext.ItemmasterAlternates?.Where(x => x.ItemMasterId == _tipsMasterDbContext.ItemMasters.Where(x => x.ItemNumber == addPP.ItemNumber).Select(s => s.Id).FirstOrDefault() && x.AlternateSource == false).Select(s => $"{s.ManufacturerPartNo} - {s.Manufacturer}").ToList());
                                 enggBomFGItemNumberWithQtyDtos.Add(addPP);
                             }
                         }
@@ -469,6 +471,8 @@ namespace Repository
                                     addPP.ItemNumber = existingpp.ItemNumber;
                                     addPP.ItemDescription = existingpp.ItemDescription;
                                     addPP.QtyReq = existingpp.QtyReq * rfqfgitem.Qty;
+                                    addPP.Manufacturer_Mftr_PartNumber = string.Join(" | ", _tipsMasterDbContext.ItemmasterAlternates?.Where(x => x.ItemMasterId == _tipsMasterDbContext.ItemMasters.Where(x => x.ItemNumber == addPP.ItemNumber).Select(s => s.Id).FirstOrDefault() && x.AlternateSource == true).Select(s => $"{s.ManufacturerPartNo} - {s.Manufacturer}").ToList());
+                                    addPP.Customer_Mftr_PartNumber = string.Join(" | ", _tipsMasterDbContext.ItemmasterAlternates?.Where(x => x.ItemMasterId == _tipsMasterDbContext.ItemMasters.Where(x => x.ItemNumber == addPP.ItemNumber).Select(s => s.Id).FirstOrDefault() && x.AlternateSource == false).Select(s => $"{s.ManufacturerPartNo} - {s.Manufacturer}").ToList());
                                     enggBomFGItemNumberWithQtyDtos.Add(addPP);
                                 }
                             }
@@ -719,7 +723,7 @@ namespace Repository
 
             var getAllBomGroupList = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == itemNumber).CountAsync();
 
-            return getAllBomGroupList>0;
+            return getAllBomGroupList > 0;
         }
 
         public async Task<IEnumerable<EnggChildBomDetailsDto>> GetAllEnggChildBomDetailsByItemNumber(string itemNumber)
@@ -1288,12 +1292,12 @@ namespace Repository
 
         public async Task<IEnumerable<ProductionBomKitRevNoDto>> GetProductionBomReleasedKitNoAndLatestVersion()
         {
-            var productionBomLastestVersion =  await _tipsMasterDbContext.ProductionBoms
+            var productionBomLastestVersion = await _tipsMasterDbContext.ProductionBoms
                                     .Where(x => x.ItemType == PartType.Kit).GroupBy(p => p.ItemNumber)
                                     .Select(g => new ProductionBomKitRevNoDto
                                     {
                                         ItemNumber = g.Key,
-                                        Description = g.OrderByDescending(p=>p.ReleaseVersion).Select(p=>p.ItemDescription).First(),
+                                        Description = g.OrderByDescending(p => p.ReleaseVersion).Select(p => p.ItemDescription).First(),
                                         KitRevisionNumber = g.Max(p => p.ReleaseVersion)
                                     })
                                     .ToListAsync();
