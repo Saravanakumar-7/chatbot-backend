@@ -145,4 +145,11 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? MoqCost { get; set; }
     }
+    public class RfqSourcingVendorRemarksDetailsDto
+    {
+        public string? ItemNumber { get; set; }
+        public string? VendorId { get; set; }
+        public string? Vendor { get; set; }
+        public string? Remarks { get; set; }
+    }
 }
