@@ -157,7 +157,6 @@ namespace Repository
             else
             {
                 enggBom.RevisionNumber = Math.Ceiling(getOldRevisionNumber.RevisionNumber + Convert.ToDecimal(0.1));
-
             }
             if (edittingEnggBom != null)
             {
@@ -170,7 +169,6 @@ namespace Repository
             enggBom.Unit = _unitname;
             var result = await Create(enggBom);
             return result;
-
         }
         public async Task<IEnumerable<EnggBomSPReport>> GetEnggBomSPReportWithParam(int? bomId)
         {
