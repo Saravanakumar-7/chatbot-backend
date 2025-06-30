@@ -220,6 +220,54 @@ namespace Tips.SalesService.Api.Controllers
 
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetRfqSourcingVendorDetailsByRfqNo(string rfqNo)
+        {
+            ServiceResponse<List<RfqSourcingVendorRemarksDetailsDto>> serviceResponse = new ServiceResponse<List<RfqSourcingVendorRemarksDetailsDto>>();
+
+            try
+            {
+                var rfqSourcingByRfqNo = await _repository.GetRfqSourcingDetailsByRfqNo(rfqNo);
+
+                if (rfqSourcingByRfqNo == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"rfqsourcingVendor with rfqNo: {rfqNo}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"rfqsourcingVendor with rfqNo: {rfqNo}, hasn't been found.");
+                    return Ok(serviceResponse);
+                }
+                var result =new List<RfqSourcingVendorRemarksDetailsDto>();
+                //foreach(var item in rfqSourcingByRfqNo.RfqSourcingItems)
+                rfqSourcingByRfqNo.RfqSourcingItems.ForEach(f =>
+                {
+                    result.Add(new RfqSourcingVendorRemarksDetailsDto
+                    {
+                        ItemNumber = f.ItemNumber,
+                        Vendor = f.RfqSourcingVendors.Where(x => x.Primary == true).Select(x => x.Vendor).FirstOrDefault(),
+                        VendorId = f.RfqSourcingVendors.Where(x => x.Primary == true).Select(x => x.VendorId).FirstOrDefault(),
+                        Remarks = f.RfqSourcingVendors.Where(x => x.Primary == true).Select(x => x.Remarks).FirstOrDefault(),
+                    });
+                });
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = $"Returned RfqsourcingVendorDetails with rfqNo: {rfqNo}";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetRfqSourcingVendorDetailsByRfqNo API for the following rfqNo:{rfqNo} \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetRfqSourcingVendorDetailsByRfqNo API for the following rfqNo:{rfqNo} \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateRfqSourcingFileUpload([FromBody] List<SalesServiceFileUploadPostDto> fileUploadPostDtos)
         {
