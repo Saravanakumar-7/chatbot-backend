@@ -2217,7 +2217,7 @@ namespace Tips.Grin.Api.Controllers
 
                     var iQCConformationDetailsDto = _mapper.Map<IQCConfirmationDto>(grinDetailsbyGrinNo);
                     iQCConformationDetailsDto.Id = id;
-                   // iQCConformationDetailsDto.GrinId = iQCConformationDetailsDto.Id;
+                    iQCConformationDetailsDto.GrinId = grinDetailsbyGrinNo.Id;
                     var grinParts = grinDetailsbyGrinNo.GrinParts.Where(x => x.RejectedQty != 0 || x.AcceptedQty != 0).ToList();
                     if (grinParts.Count() != 0)
                     {
