@@ -598,92 +598,112 @@ namespace Tips.Warehouse.Api.Controllers
                             var itemMasterObjectData = JsonConvert.DeserializeObject<ReturnBTONumberInvDetails>(itemMasterObjectString);
                             var itemMasterObject = itemMasterObjectData.data;
 
-                            var exInv = await _inventoryRepository.GetInventorybyItemProjectWarehouseLocation(returnBtoDeliveryOrderItems.FGPartNumber, eachbin.ProjectNumber, eachbin.Warehouse, eachbin.Location, eachbin.LotNumber);
-                            if (exInv == null)
-                            {
-                                Inventory inventory = new Inventory();
-                                inventory.PartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
-                                inventory.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
-                                inventory.LotNumber = eachbin.LotNumber;
-                                inventory.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
-                                inventory.ProjectNumber = eachbin.ProjectNumber;
-                                inventory.Balance_Quantity = eachbin.DistributingQty;
-                                inventory.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
-                                inventory.Max = itemMasterObject.max;
-                                inventory.Min = itemMasterObject.min;
-                                inventory.IsStockAvailable = true;
-                                inventory.Warehouse = eachbin.Warehouse;
-                                inventory.Location = eachbin.Location;
-                                inventory.GrinNo = returnBtoDeliveryOrderItems.BTONumber;
-                                inventory.GrinPartId = 0;
-                                inventory.PartType = PartType.FG;
-                                inventory.GrinMaterialType = "";
-                                inventory.ReferenceID = returnBtoDeliveryOrder.ReturnBTONumber;
-                                inventory.ReferenceIDFrom = "Return BTO Delivery Order";
-                                inventory.shopOrderNo = "";
-                                //inventory.PartType = returnBtoDeliveryOrderItems.PartType;
+                            //var exInv = await _inventoryRepository.GetInventorybyItemProjectWarehouseLocation(returnBtoDeliveryOrderItems.FGPartNumber, eachbin.ProjectNumber, eachbin.Warehouse, eachbin.Location, eachbin.LotNumber);
+                            //if (exInv == null)
+                            //{
+                            Inventory inventory = new Inventory();
+                            inventory.PartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
+                            inventory.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                            inventory.LotNumber = eachbin.LotNumber;
+                            inventory.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
+                            inventory.ProjectNumber = eachbin.ProjectNumber;
+                            inventory.Balance_Quantity = eachbin.DistributingQty;
+                            inventory.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
+                            inventory.Max = itemMasterObject.max;
+                            inventory.Min = itemMasterObject.min;
+                            inventory.IsStockAvailable = true;
+                            inventory.Warehouse = eachbin.Warehouse;
+                            inventory.Location = eachbin.Location;
+                            inventory.GrinNo = returnBtoDeliveryOrderItems.BTONumber;
+                            inventory.GrinPartId = 0;
+                            inventory.PartType = returnBtoDeliveryOrderItemsDtoList[i].PartType;
+                            inventory.GrinMaterialType = "";
+                            inventory.ReferenceID = returnBtoDeliveryOrder.ReturnBTONumber;
+                            inventory.ReferenceIDFrom = "Return BTO Delivery Order";
+                            inventory.shopOrderNo = "";
+                            //inventory.PartType = returnBtoDeliveryOrderItems.PartType;
 
-                                await _inventoryRepository.CreateInventory(inventory);
-                                _inventoryRepository.SaveAsync();
+                            await _inventoryRepository.CreateInventory(inventory);
+                            _inventoryRepository.SaveAsync();
 
-                                InventoryTranction inventoryTranction = new InventoryTranction();
-                                inventoryTranction.PartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
-                                inventoryTranction.LotNumber = eachbin.LotNumber;
-                                inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
-                                inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
-                                inventoryTranction.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
-                                inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
-                                inventoryTranction.IsStockAvailable = true;
-                                inventoryTranction.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
-                                inventoryTranction.Issued_DateTime = DateTime.Now;
-                                inventoryTranction.Issued_By = _createdBy;
-                                inventoryTranction.ReferenceID = returnBtoDeliveryOrder.ReturnBTONumber;
-                                inventoryTranction.ReferenceIDFrom = "Return BTO Delivery Order";
-                                inventoryTranction.From_Location = "BTO";
-                                inventoryTranction.TO_Location = eachbin.Location;
-                                inventoryTranction.Remarks = "Return BTO Delivery Order";
-                                inventoryTranction.Warehouse = eachbin.Warehouse;
-                                inventoryTranction.PartType = PartType.FG;
+                            //InventoryTranction inventoryTranction = new InventoryTranction();
+                            //inventoryTranction.PartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
+                            //inventoryTranction.LotNumber = eachbin.LotNumber;
+                            //inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
+                            //inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                            //inventoryTranction.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
+                            //inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
+                            //inventoryTranction.IsStockAvailable = true;
+                            //inventoryTranction.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
+                            //inventoryTranction.Issued_DateTime = DateTime.Now;
+                            //inventoryTranction.Issued_By = _createdBy;
+                            //inventoryTranction.ReferenceID = returnBtoDeliveryOrder.ReturnBTONumber;
+                            //inventoryTranction.ReferenceIDFrom = "Return BTO Delivery Order";
+                            //inventoryTranction.From_Location = "BTO";
+                            //inventoryTranction.TO_Location = eachbin.Location;
+                            //inventoryTranction.Remarks = "Return BTO Delivery Order";
+                            //inventoryTranction.Warehouse = eachbin.Warehouse;
+                            //inventoryTranction.PartType = PartType.FG;
 
-                                //var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+                            ////var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
-                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
-                                _inventoryTranctionRepository.SaveAsync();
-                            }
-                            else
-                            {
-                                exInv.ReferenceID = returnBtoDeliveryOrder.ReturnBTONumber;
-                                exInv.ReferenceIDFrom = "Return BTO Delivery Order";
-                                exInv.IsStockAvailable = true;
-                                exInv.Balance_Quantity += eachbin.DistributingQty;
-                                await _inventoryRepository.UpdateInventory(exInv);
-                                _inventoryRepository.SaveAsync();
+                            //await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
+                            InventoryTranction inventoryTranctionPost1 = new InventoryTranction();
+                            inventoryTranctionPost1.PartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
+                            inventoryTranctionPost1.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                            inventoryTranctionPost1.ProjectNumber = eachbin.ProjectNumber;
+                            inventoryTranctionPost1.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
+                            inventoryTranctionPost1.Issued_Quantity = eachbin.DistributingQty;
+                            inventoryTranctionPost1.LotNumber = eachbin.LotNumber;
+                            inventoryTranctionPost1.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
+                            inventoryTranctionPost1.Unit = _unitname;
+                            inventoryTranctionPost1.IsStockAvailable = true;
+                            inventoryTranctionPost1.Warehouse = eachbin.Warehouse;
+                            inventoryTranctionPost1.From_Location = "BTO";
+                            inventoryTranctionPost1.TO_Location = eachbin.Location;
+                            inventoryTranctionPost1.PartType = returnBtoDeliveryOrderItemsDtoList[i].PartType;
+                            inventoryTranctionPost1.ReferenceID = returnBtoDeliveryOrder.ReturnBTONumber;
+                            inventoryTranctionPost1.ReferenceIDFrom = "Return BTO Delivery Order";
+                            inventoryTranctionPost1.Remarks = "Return BTO Delivery Order";
+                            inventoryTranctionPost1.TransactionType = InventoryType.Inward;
+                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost1);
 
-                                InventoryTranction inventoryTranction = new InventoryTranction();
-                                inventoryTranction.PartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
-                                inventoryTranction.LotNumber = eachbin.LotNumber;
-                                inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
-                                inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
-                                inventoryTranction.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
-                                inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
-                                inventoryTranction.IsStockAvailable = true;
-                                inventoryTranction.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
-                                inventoryTranction.Issued_DateTime = DateTime.Now;
-                                inventoryTranction.ReferenceID = returnBtoDeliveryOrder.ReturnBTONumber;
-                                inventoryTranction.ReferenceIDFrom = "Return BTO Delivery Order";
-                                inventoryTranction.Issued_By = _createdBy;
-                                inventoryTranction.From_Location = "BTO";
-                                inventoryTranction.TO_Location = eachbin.Location;
-                                inventoryTranction.Remarks = "Return BTO Delivery Order";
-                                inventoryTranction.Warehouse = eachbin.Warehouse;
-                                inventoryTranction.PartType = PartType.FG;
+                            _inventoryTranctionRepository.SaveAsync();
+                            //}
+                            //else
+                            //{
+                            //    exInv.ReferenceID = returnBtoDeliveryOrder.ReturnBTONumber;
+                            //    exInv.ReferenceIDFrom = "Return BTO Delivery Order";
+                            //    exInv.IsStockAvailable = true;
+                            //    exInv.Balance_Quantity += eachbin.DistributingQty;
+                            //    await _inventoryRepository.UpdateInventory(exInv);
+                            //    _inventoryRepository.SaveAsync();
 
-                                //var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+                            //    InventoryTranction inventoryTranction = new InventoryTranction();
+                            //    inventoryTranction.PartNumber = returnBtoDeliveryOrderItemsDtoList[i].FGPartNumber;
+                            //    inventoryTranction.LotNumber = eachbin.LotNumber;
+                            //    inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
+                            //    inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                            //    inventoryTranction.Description = returnBtoDeliveryOrderItemsDtoList[i].Description;
+                            //    inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
+                            //    inventoryTranction.IsStockAvailable = true;
+                            //    inventoryTranction.UOM = returnBtoDeliveryOrderItemsDtoList[i].UOM;
+                            //    inventoryTranction.Issued_DateTime = DateTime.Now;
+                            //    inventoryTranction.ReferenceID = returnBtoDeliveryOrder.ReturnBTONumber;
+                            //    inventoryTranction.ReferenceIDFrom = "Return BTO Delivery Order";
+                            //    inventoryTranction.Issued_By = _createdBy;
+                            //    inventoryTranction.From_Location = "BTO";
+                            //    inventoryTranction.TO_Location = eachbin.Location;
+                            //    inventoryTranction.Remarks = "Return BTO Delivery Order";
+                            //    inventoryTranction.Warehouse = eachbin.Warehouse;
+                            //    inventoryTranction.PartType = PartType.FG;
 
-                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
-                                _inventoryTranctionRepository.SaveAsync();
+                            //    //var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
-                            }
+                            //    await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
+                            //    _inventoryTranctionRepository.SaveAsync();
+
+                            //}
                             //}
 
 

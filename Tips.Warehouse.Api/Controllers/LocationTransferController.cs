@@ -411,7 +411,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                                     await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost_1);
 
-                                    _inventoryTranctionRepository.SaveAsync();
+                                    //_inventoryTranctionRepository.SaveAsync();
 
                                     balQty = 0;
                                 }
@@ -443,7 +443,7 @@ namespace Tips.Warehouse.Api.Controllers
                                     inventoryTranctionPost.TransactionType = InventoryType.Outward;
                                     await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost);
 
-                                    _inventoryTranctionRepository.SaveAsync();
+                                   // _inventoryTranctionRepository.SaveAsync();
 
                                     Inventory inventoryPost = new Inventory();
                                     inventoryPost.PartNumber = toPartNumber;
