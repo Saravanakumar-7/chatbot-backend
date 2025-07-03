@@ -33,6 +33,7 @@ namespace Tips.Production.Api.Controllers
         private IMaterialIssueRepository _materialIssueRepository;
         private IMaterialIssueItemRepository _materialIssueItemRepository;
         private IShopOrderRepository _shopOrderRepository;
+        private IMaterialIssueLocationRepository _materialIssueLocationRepository;
         private ILoggerManager _logger;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
@@ -42,7 +43,7 @@ namespace Tips.Production.Api.Controllers
         private readonly String _createdBy;
         private readonly String _unitname;
 
-        public MaterialIssueController(IMaterialIssueItemRepository materialIssueItemRepository, IHttpClientFactory clientFactory,
+        public MaterialIssueController(IMaterialIssueLocationRepository materialIssueLocationRepository, IMaterialIssueItemRepository materialIssueItemRepository, IHttpClientFactory clientFactory,
             IMaterialIssueHistoryRepository materialIssueHistoryRepository, IMaterialIssueRepository materialIssueRepository,
             ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, IShopOrderRepository shopOrderRepository
             , IHttpContextAccessor httpContextAccessor)
@@ -50,6 +51,7 @@ namespace Tips.Production.Api.Controllers
             _materialIssueItemRepository = materialIssueItemRepository;
             _materialIssueHistoryRepository = materialIssueHistoryRepository;
             _materialIssueRepository = materialIssueRepository;
+            _materialIssueLocationRepository = materialIssueLocationRepository;
             _logger = logger;
             _httpClient = httpClient;
             _config = config;
@@ -801,6 +803,82 @@ namespace Tips.Production.Api.Controllers
                             var projectNo = existingItem.ProjectNumber;
                             decimal newIssuedQty = updatedItem.NewIssueQty;
                             var partnumber = updatedItem.PartNumber;
+
+                            //Add MaterialIssueLocations
+                            var client = _clientFactory.CreateClient();
+                            var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                                $"GetInventoryDetailsByItemNo?itemNumber={partnumber}&projectNo={projectNo}"));
+                            request.Headers.Add("Authorization", token);
+
+                            var inventoryObjectResult = await client.SendAsync(request);
+
+                            var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
+                            var materialIssueInvDetails = JsonConvert.DeserializeObject<List<MaterialIssueInvDetails>>(inventoryObjectString);
+                            
+
+                            if (materialIssueInvDetails != null || materialIssueInvDetails.Count > 0)
+                            {
+                                var issuedQty = newIssuedQty;
+                                for (int i = 0; i < materialIssueInvDetails.Count; i++)
+                                {
+                                    decimal balanceqty = materialIssueInvDetails[i].data.Balance_Quantity;
+
+                                    if (materialIssueInvDetails[i].data.Balance_Quantity <= newIssuedQty)
+                                    {
+                                        MaterialIssueLocation materialIssueLocation = new MaterialIssueLocation();
+                                        materialIssueLocation.PartNumber = partnumber;
+                                        materialIssueLocation.LotNumber = materialIssueInvDetails[i].data.LotNumber;
+                                        materialIssueLocation.Warehouse = materialIssueInvDetails[i].data.Warehouse;
+                                        materialIssueLocation.Location = materialIssueInvDetails[i].data.Location;
+                                        materialIssueLocation.LocationStock = materialIssueInvDetails[i].data.Balance_Quantity;
+                                        materialIssueLocation.DistributingQty = newIssuedQty;
+                                        materialIssueLocation.MaterialIssueItemId = existingItem.Id;
+                                        materialIssueLocation.IssuedBy = _createdBy;
+                                        materialIssueLocation.IssuedOn = DateTime.Now;
+
+                                        await _materialIssueLocationRepository.CreateMaterialIssueLocation(materialIssueLocation);
+
+                                        issuedQty -= balanceqty;
+                                        balanceqty = 0;
+                                    }
+                                    else
+                                    {
+                                        MaterialIssueLocation materialIssueLocation = new MaterialIssueLocation();
+                                        materialIssueLocation.PartNumber = partnumber;
+                                        materialIssueLocation.LotNumber = materialIssueInvDetails[i].data.LotNumber;
+                                        materialIssueLocation.Warehouse = materialIssueInvDetails[i].data.Warehouse;
+                                        materialIssueLocation.Location = materialIssueInvDetails[i].data.Location;
+                                        materialIssueLocation.LocationStock = materialIssueInvDetails[i].data.Balance_Quantity;
+                                        materialIssueLocation.DistributingQty = newIssuedQty;
+                                        materialIssueLocation.MaterialIssueItemId = existingItem.Id;
+                                        materialIssueLocation.IssuedBy = _createdBy;
+                                        materialIssueLocation.IssuedOn = DateTime.Now;
+
+                                        await _materialIssueLocationRepository.CreateMaterialIssueLocation(materialIssueLocation);
+
+                                        issuedQty = 0;
+                                    }
+
+                                    if (issuedQty <= 0)
+                                    {
+                                        break;
+                                    }
+
+                                }
+                            }
+                            else
+                            {
+                                serviceResponse.Data = null;
+                                serviceResponse.Message = $"Inventory Details hasn't been found To Add MaterialIssueLocation";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                                _logger.LogError($"Inventory with itemNumber: {partnumber} and ProjectNo:{projectNo}, is invalid");
+                                return NotFound(serviceResponse);
+                            }
+
+                            _materialIssueLocationRepository.SaveAsync();
 
                             //Add SO Material Issue tracker table
 

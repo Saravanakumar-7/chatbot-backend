@@ -1172,7 +1172,7 @@ namespace Tips.SalesService.Api.Controllers
 
                 int? soAddStatusCount = updateData.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
 
-                if (soItemShortCloseCount != 0)
+                if (soItemShortCloseCount != 0 && soAddStatusCount != 0)
                 {
                     if (soItemOpenCount == 0 && soAddOpenCount == 0)
                     {
