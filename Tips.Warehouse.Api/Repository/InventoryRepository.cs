@@ -1302,7 +1302,6 @@ namespace Tips.Warehouse.Api.Repository
         }
 
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandLocationandwarehouse(string ItemNumber, string Location, string Warehouse, string projectNumber, string lotNumber)
-
         {
             var getInventoryDetailsByItemAndLoc = await _tipsWarehouseDbContext.Inventories
                 .Where(x => x.PartNumber == ItemNumber && x.Location == Location && x.Warehouse == Warehouse

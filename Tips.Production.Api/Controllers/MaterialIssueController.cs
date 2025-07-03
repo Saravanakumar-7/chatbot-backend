@@ -975,7 +975,7 @@ namespace Tips.Production.Api.Controllers
                                 inventoryDtoForIssue.Location = materialIssueLocation.Location;
                                 inventoryDtoForIssue.DistributingQty = materialIssueLocation.DistributingQty;
                                 inventoryDtoForIssue.LotNumber = materialIssueLocation.LotNumber;
-
+                               
                                 var json = JsonConvert.SerializeObject(inventoryDtoForIssue);
                                 var data = new StringContent(json, Encoding.UTF8, "application/json");
 
