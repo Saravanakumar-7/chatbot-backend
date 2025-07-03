@@ -98,7 +98,7 @@ namespace Entities.DTOs
         public string? FootPrint { get; set; }
         [DefaultValue(true)]
         public bool IsActive { get; set; }
-        public List<EnggChildItemPostDtoWithValidation>? EnggAlternatesPostDtos { get; set; }
+        public List<EnggAlternatesPostDto>? EnggAlternatesPostDtos { get; set; }
 
     }
     public class EnggChildItemUpdateDto
