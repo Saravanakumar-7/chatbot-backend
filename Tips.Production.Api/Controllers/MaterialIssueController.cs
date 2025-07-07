@@ -815,25 +815,26 @@ namespace Tips.Production.Api.Controllers
                             var inventoryObjectResult = await client.SendAsync(request);
 
                             var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
-                            var materialIssueInvDetails = JsonConvert.DeserializeObject<List<MaterialIssueInvDetails>>(inventoryObjectString);
-                            
 
-                            if (materialIssueInvDetails != null || materialIssueInvDetails.Count > 0)
+                            var materialIssueInvDetails = JsonConvert.DeserializeObject<MaterialIssueInvDetails>(inventoryObjectString);
+                            var materialIssueInvData = materialIssueInvDetails.data;
+
+                            if (materialIssueInvData != null && materialIssueInvData.Count > 0)
                             {
                                 var issuedQty = newIssuedQty;
-                                for (int i = 0; i < materialIssueInvDetails.Count; i++)
+                                for( int i=0; i< materialIssueInvData.Count;i++)
                                 {
-                                    decimal balanceqty = materialIssueInvDetails[i].data.Balance_Quantity;
+                                    decimal balanceqty = materialIssueInvData[i].Balance_Quantity;
 
-                                    if (materialIssueInvDetails[i].data.Balance_Quantity <= newIssuedQty)
+                                    if (materialIssueInvData[i].Balance_Quantity <= issuedQty)
                                     {
                                         MaterialIssueLocation materialIssueLocation = new MaterialIssueLocation();
                                         materialIssueLocation.PartNumber = partnumber;
-                                        materialIssueLocation.LotNumber = materialIssueInvDetails[i].data.LotNumber;
-                                        materialIssueLocation.Warehouse = materialIssueInvDetails[i].data.Warehouse;
-                                        materialIssueLocation.Location = materialIssueInvDetails[i].data.Location;
-                                        materialIssueLocation.LocationStock = materialIssueInvDetails[i].data.Balance_Quantity;
-                                        materialIssueLocation.DistributingQty = newIssuedQty;
+                                        materialIssueLocation.LotNumber = materialIssueInvData[i].LotNumber;
+                                        materialIssueLocation.Warehouse = materialIssueInvData[i].Warehouse;
+                                        materialIssueLocation.Location = materialIssueInvData[i].Location;
+                                        materialIssueLocation.LocationStock = materialIssueInvData[i].Balance_Quantity;//Here we are storig as row wise not sumofbalanceQty
+                                        materialIssueLocation.DistributingQty = balanceqty;
                                         materialIssueLocation.MaterialIssueItemId = existingItem.Id;
                                         materialIssueLocation.IssuedBy = _createdBy;
                                         materialIssueLocation.IssuedOn = DateTime.Now;
@@ -847,11 +848,11 @@ namespace Tips.Production.Api.Controllers
                                     {
                                         MaterialIssueLocation materialIssueLocation = new MaterialIssueLocation();
                                         materialIssueLocation.PartNumber = partnumber;
-                                        materialIssueLocation.LotNumber = materialIssueInvDetails[i].data.LotNumber;
-                                        materialIssueLocation.Warehouse = materialIssueInvDetails[i].data.Warehouse;
-                                        materialIssueLocation.Location = materialIssueInvDetails[i].data.Location;
-                                        materialIssueLocation.LocationStock = materialIssueInvDetails[i].data.Balance_Quantity;
-                                        materialIssueLocation.DistributingQty = newIssuedQty;
+                                        materialIssueLocation.LotNumber = materialIssueInvData[i].LotNumber;
+                                        materialIssueLocation.Warehouse = materialIssueInvData[i].Warehouse;
+                                        materialIssueLocation.Location = materialIssueInvData[i].Location;
+                                        materialIssueLocation.LocationStock = materialIssueInvData[i].Balance_Quantity;//Here we are storig as row wise not sumofbalanceQty
+                                        materialIssueLocation.DistributingQty = issuedQty;
                                         materialIssueLocation.MaterialIssueItemId = existingItem.Id;
                                         materialIssueLocation.IssuedBy = _createdBy;
                                         materialIssueLocation.IssuedOn = DateTime.Now;

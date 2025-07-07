@@ -169,7 +169,7 @@ namespace Tips.Production.Api.Entities.DTOs
 
     public class MaterialIssueInvDetails
     {
-        public Datass data { get; set; }
+        public List<Datass> data { get; set; }
         public string message { get; set; }
         public bool success { get; set; }
         public int statusCode { get; set; }
