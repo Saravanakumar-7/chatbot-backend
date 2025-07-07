@@ -26,7 +26,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         public string? MarkUpForProcessSteps { get; set; }
         public int NoOfDays { get; set; }
-        public decimal? GENLabourCost { get; set; }
+        public decimal? GenLabourCost { get; set; }
         [Precision(13, 3)]
         public decimal? LandedPrice { get; set; }
         [Precision(13, 3)]
@@ -53,7 +53,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? MarkUpForMaterial { get; set; }
         public string? MarkUpForProcessSteps { get; set; }
         public int NoOfDays { get; set; }
-        public decimal? GENLabourCost { get; set; }
+        public decimal? GenLabourCost { get; set; }
         public decimal? LandedPrice { get; set; }
        
         public decimal? MOQCost { get; set; }
@@ -80,7 +80,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         public string? MarkUpForProcessSteps { get; set; }
         public int NoOfDays { get; set; }
-        public decimal? GENLabourCost { get; set; }
+        public decimal? GenLabourCost { get; set; }
         [Precision(13, 3)]
         public decimal? LandedPrice { get; set; }
         [Precision(13, 3)]
