@@ -377,12 +377,12 @@ namespace Tips.SalesService.Api.Controllers
                         if (serverKey == "avision")
                         {
                             var baseUrl = $"{_config["SalesServiceBaseUrl"]}";
-                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadFile?Filename={filename}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/RfqSourcing/DownloadFile?Filename={filename}";
                         }
                         else
                         {
                             var baseUrl = $"{_config["SalesServiceBaseUrl"]}";
-                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={filename}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/RfqSourcing/DownloadFile?Filename={filename}";
                         }
                         fileUploads.Add(fileUploadDto);
                     }
