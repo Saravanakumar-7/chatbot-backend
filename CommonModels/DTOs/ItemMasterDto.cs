@@ -332,10 +332,18 @@ namespace Entities.DTOs
         public string? BeamAngle { get; set; }
         public string? TrimColor { get; set; }
         public string? Reflector { get; set; }
+        public string? Make { get; set; }
+        public string? Model { get; set; }
+        public string? Manufacturer { get; set; }
+        public string? Manufacture_Year { get; set; }
+        public string? SubModel { get; set; }
+        public string? Serial_Number { get; set; }
+        public string? Asset_Number { get; set; }
         public List<ItemmasterAlternateDtoPost> ItemmasterAlternate { get; set; }
         public List<ItemMasterWarehouseDtoPost>? ItemMasterWarehouse { get; set; }
         public List<ItemMasterApprovedVendorDtoPost>? ItemMasterApprovedVendor { get; set; }
         //public List<ItemMasterFileUploadDtoPost>? ItemMasterFileUpload { get; set; }
+        public List<ItemMasterSchedulesDtoPost>? ItemMasterSchedules { get; set; }
         public List<ItemMasterRoutingDtoPost>? ItemMasterRouting { get; set; }
     }
 
