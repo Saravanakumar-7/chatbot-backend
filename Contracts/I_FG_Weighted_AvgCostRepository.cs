@@ -14,7 +14,7 @@ namespace Contracts
         Task<List<FG_Weighted_AvgCost>> GetAllFG_Weighted_AvgCost();
         Task DeleteExistingData();
         Task<FG_Weighted_AvgCost?> GetFG_Weighted_AvgCost(string Itemnumber);
-        Task<WeightedAvgRate> GetPPWeightedAvgCost(string Itemnumber);
+        Task<WeightedAvgRate?> GetPPWeightedAvgCost(string Itemnumber);
         Task CreateFG_Weighted_AvgCost(FG_Weighted_AvgCost fG_Weighted_AvgCost);
         Task<List<FG_Weighted_AvgCost_Report>> FG_Weighted_AvgCost_Report_withParameter(string FGItemNumber);
         Task<List<FG_Weighted_AvgCost_Report_withDate>> FG_Weighted_AvgCost_Report_withDate(string FromDate, string ToDate);
