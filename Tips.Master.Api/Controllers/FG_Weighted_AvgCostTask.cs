@@ -52,15 +52,23 @@ namespace Tips.Master.Api.Controllers
             {
                 foreach (var bomItem in bomDetails.EnggChildItems)
                 {
-                    if (bomItem.PartType == PartType.PurchasePart)
+                    try
                     {
-                        var ppWeight = await _repository.FG_Weighted_AvgCostRepository.GetPPWeightedAvgCost(bomItem.ItemNumber);
-                        if (ppWeight != null) ppQtyAndWeight += (ppWeight.Avg_cost * bomItem.Quantity);
+
+                        if (bomItem.PartType == PartType.PurchasePart)
+                        {
+                            var ppWeight = await _repository.FG_Weighted_AvgCostRepository.GetPPWeightedAvgCost(bomItem.ItemNumber);
+                            if (ppWeight != null) ppQtyAndWeight += (ppWeight.Avg_cost * bomItem.Quantity);
+                        }
+                        else
+                        {
+                            var persentSA = sA_Weighted_AvgCosts?.Where(x => x.Itemnumber == bomItem.ItemNumber).FirstOrDefault();
+                            if (persentSA != null) ppQtyAndWeight += (persentSA.Avg_cost * bomItem.Quantity);
+                        }
                     }
-                    else
+                    catch(Exception ex) 
                     {
-                        var persentSA = sA_Weighted_AvgCosts.Where(x => x.Itemnumber == bomItem.ItemNumber).FirstOrDefault();
-                        if (persentSA != null) ppQtyAndWeight += (persentSA.Avg_cost * bomItem.Quantity);
+                        _logger.LogError($"Error Occured In FGWeighted_Calculation:"+ bomItem.ItemNumber + itemNumber + version + ex.Message);
                     }
                 }
 

@@ -1009,9 +1009,10 @@ namespace Tips.SalesService.Api.Controllers
                 rfqLPCostingDetail.RfqLPCostingItems = rfqLPCostingItems;
                 rfqLPCostingDetail.RevisionNumber= rfqEnggDetails.RevisionNumber;
                 RfqLPCostingDto rfqLPCostingDto = _mapper.Map<RfqLPCostingDto>(rfqLPCostingDetail);
-                
+
+                _logger.LogInfo($"Returned DetailsForRfqLPCosting with rfqNumber: {rfqNumber} Successfully");
                 serviceResponse.Data = rfqLPCostingDto;
-                serviceResponse.Message = $"Returned RfqEnggByRfqNumber with rfqNumber: {rfqNumber}";
+                serviceResponse.Message = $"Returned DetailsForRfqLPCosting with rfqNumber: {rfqNumber}";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

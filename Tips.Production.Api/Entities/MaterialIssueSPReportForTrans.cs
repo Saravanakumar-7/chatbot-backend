@@ -10,6 +10,7 @@
         public string? ProjectNumber { get; set; }
         public string? ItemNumber { get; set; }
         public string? ItemNumberchildlevel { get; set; }
+        public int? Childparttype { get; set; }
         public string? latestMPN { get; set; }
         public decimal? BOMversion { get; set; }
         public string? SalesOrderNumber { get; set; }

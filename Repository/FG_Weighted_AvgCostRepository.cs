@@ -51,9 +51,9 @@ namespace Repository
         {
             await _tipsMasterDbContext.Database.ExecuteSqlRawAsync("TRUNCATE TABLE FG_Weighted_AvgCost");
         }
-        public async Task<WeightedAvgRate> GetPPWeightedAvgCost(string Itemnumber)
+        public async Task<WeightedAvgRate?> GetPPWeightedAvgCost(string Itemnumber)
         {
-            var WeightedAvgRate = await _tipsMasterDbContext.weighted_avg_rate.Where(x => x.Itemnumber == Itemnumber).FirstOrDefaultAsync();
+            var WeightedAvgRate = await _tipsMasterDbContext.weighted_avg_rate?.Where(x => x.Itemnumber == Itemnumber).FirstOrDefaultAsync();
             return WeightedAvgRate;
         }
         public async Task CreateFG_Weighted_AvgCost(FG_Weighted_AvgCost fG_Weighted_AvgCost)
