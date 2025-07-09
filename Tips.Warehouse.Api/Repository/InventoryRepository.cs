@@ -1342,8 +1342,8 @@ namespace Tips.Warehouse.Api.Repository
         {
             if (MRNumber=="NULL")
             {
-                var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber
-                && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.shopOrderNo == ShopOrderNumber && x.ReferenceIDFrom == "Material Issue")
+                var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true && x.Location == "WIP" 
+                && x.Warehouse == "WIP" && x.shopOrderNo == ShopOrderNumber && x.ReferenceIDFrom == "Material Issue")
                               .ToListAsync();
                 return inventoryDetail;
             }
