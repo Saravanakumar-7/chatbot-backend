@@ -425,6 +425,8 @@ namespace Tips.Warehouse.Api.Controllers
                                     inventoryTranctionPost.MftrPartNumber = itemObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                                     inventoryTranctionPost.ProjectNumber = inventoryItem.ProjectNumber;
                                     inventoryTranctionPost.Description = inventoryItem.Description;
+                                    inventoryTranctionPost.Issued_Quantity = inventoryItem.Balance_Quantity;
+                                    //inventoryTranctionPost.Issued_By = inventoryItem.LastModifiedBy;
                                     inventoryTranctionPost.LotNumber = inventoryItem.LotNumber;
                                     inventoryTranctionPost.UOM = inventoryItem.UOM;
                                     inventoryTranctionPost.GrinMaterialType = "";
