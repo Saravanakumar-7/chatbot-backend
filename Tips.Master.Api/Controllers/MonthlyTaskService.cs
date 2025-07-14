@@ -42,11 +42,11 @@ namespace Tips.Master.Api.Controllers
             {
                 try
                 {
-                    //var weightedAvgCostTask = scope.ServiceProvider.GetRequiredService<I_SA_Weighted_AvgCostTask>();
+                    var weightedAvgCostTask = scope.ServiceProvider.GetRequiredService<I_SA_Weighted_AvgCostTask>();
                     var FGweightedAvgCostTask = scope.ServiceProvider.GetRequiredService<I_FG_Weighted_AvgCostTask>();
 
-                    //await weightedAvgCostTask.Calculate_SA_Weighted_AvgCost();
-                    //await Task.Delay(100);
+                    await weightedAvgCostTask.Calculate_SA_Weighted_AvgCost();
+                    await Task.Delay(100);
                     await FGweightedAvgCostTask.Calculate_FG_Weighted_AvgCost();
                     return StatusCode(200, "Successfull");
                 }
