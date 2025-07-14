@@ -24,17 +24,19 @@ namespace Tips.Master.Api.Controllers
         }
 
         public async Task Calculate_FG_Weighted_AvgCost()
-        {           
+        {
             try
             {
                 TransferCurrent_FG_Weighted_AvgCost_TO_FG_Weighted_AvgCost_History();
 
                 var production_FGs = await _repository.FG_Weighted_AvgCostRepository.GetFGsAndLatestVersion();
                 var Weighted_SAs = await _repository.SA_Weighted_AvgCostRepository.GetAllSA_Weighted_AvgCost();
+                var AllPPWeight = await _repository.FG_Weighted_AvgCostRepository.GetAllPPWeightedAvgCost();
                 foreach (var productinFG in production_FGs.Keys)
                 {
-                    await Weighted_Calculation(productinFG, production_FGs[productinFG], Weighted_SAs);
+                    await Weighted_Calculation(productinFG, production_FGs[productinFG], Weighted_SAs, AllPPWeight);
                 }
+                _repository.SaveAsync();
                 _logger.LogInfo("Calculate_FG_Weighted_AvgCost was Sucessfull ");
             }
             catch (Exception ex)
@@ -43,26 +45,24 @@ namespace Tips.Master.Api.Controllers
                 throw;
             }
         }
-        private async Task Weighted_Calculation(string itemNumber, decimal version, List<SA_Weighted_AvgCost> sA_Weighted_AvgCosts)
+        private async Task Weighted_Calculation(string itemNumber, decimal version, List<SA_Weighted_AvgCost> sA_Weighted_AvgCosts, List<WeightedAvgRate> AllPPWeight)
         {
             decimal ppQtyAndWeight = 0;
-            var bomDetails = await _repository.SA_Weighted_AvgCostRepository.GetEnggBomByItemNoAndRevNo(itemNumber, version);
-
+            var bomDetails = await _repository.SA_Weighted_AvgCostRepository.GetEnggBomByItemNoAndRevNo(itemNumber, version);            
             if (bomDetails?.EnggChildItems != null)
             {
                 foreach (var bomItem in bomDetails.EnggChildItems)
                 {
                     try
                     {
-
                         if (bomItem.PartType == PartType.PurchasePart)
                         {
-                            var ppWeight = await _repository.FG_Weighted_AvgCostRepository.GetPPWeightedAvgCost(bomItem.ItemNumber);
+                            var ppWeight = AllPPWeight.Where(a => a.Itemnumber == bomItem.ItemNumber).FirstOrDefault();//await _repository.FG_Weighted_AvgCostRepository.GetPPWeightedAvgCost(bomItem.ItemNumber);
                             if (ppWeight != null) ppQtyAndWeight += (ppWeight.Avg_cost * bomItem.Quantity);
                         }
                         else
                         {
-                            var persentSA = sA_Weighted_AvgCosts?.Where(x => x.Itemnumber == bomItem.ItemNumber).FirstOrDefault();
+                            var persentSA = sA_Weighted_AvgCosts.Where(x => x.Itemnumber == bomItem.ItemNumber).FirstOrDefault();
                             if (persentSA != null) ppQtyAndWeight += (persentSA.Avg_cost * bomItem.Quantity);
                         }
                     }
@@ -80,8 +80,7 @@ namespace Tips.Master.Api.Controllers
                     update_date_time = DateTime.Now
                 };
 
-                await _repository.FG_Weighted_AvgCostRepository.CreateFG_Weighted_AvgCost(fgWeightedAvgCost);
-                _repository.SaveAsync();
+                await _repository.FG_Weighted_AvgCostRepository.CreateFG_Weighted_AvgCost(fgWeightedAvgCost);                
             }
         }
         private async void TransferCurrent_FG_Weighted_AvgCost_TO_FG_Weighted_AvgCost_History()

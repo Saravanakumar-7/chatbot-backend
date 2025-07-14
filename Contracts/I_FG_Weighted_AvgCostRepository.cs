@@ -19,5 +19,6 @@ namespace Contracts
         Task<List<FG_Weighted_AvgCost_Report>> FG_Weighted_AvgCost_Report_withParameter(string FGItemNumber);
         Task<List<FG_Weighted_AvgCost_Report_withDate>> FG_Weighted_AvgCost_Report_withDate(string FromDate, string ToDate);
         Task<List<Weighted_AvgCost_Report>> Weighted_AvgCost_Report_withParameter(string? FGItemNumber);
+        Task<List<WeightedAvgRate>> GetAllPPWeightedAvgCost();
     }
 }

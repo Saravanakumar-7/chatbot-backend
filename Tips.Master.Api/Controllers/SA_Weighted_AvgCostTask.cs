@@ -10,7 +10,7 @@ using System.Net;
 
 namespace Tips.Master.Api.Controllers
 {
-    public class SA_Weighted_AvgCostTask: I_SA_Weighted_AvgCostTask
+    public class SA_Weighted_AvgCostTask : I_SA_Weighted_AvgCostTask
     {
         private ILoggerManager _logger;
         private IMapper _mapper;
@@ -21,24 +21,25 @@ namespace Tips.Master.Api.Controllers
             _mapper = mapper;
             _logger = logger;
         }
-      
+
         public async Task Calculate_SA_Weighted_AvgCost()
-        {         
+        {
             try
             {
                 TransferCurrent_SA_Weighted_AvgCost_TO_SA_Weighted_AvgCost_History();
                 var production_SAs = await _repository.SA_Weighted_AvgCostRepository.GetSAsAndLatestVersion();
+                var AllPPWeight = await _repository.FG_Weighted_AvgCostRepository.GetAllPPWeightedAvgCost();
                 foreach (var productinSA in production_SAs.Keys)
                 {
-                    var SAValue = await Weighted_Calculation(productinSA, production_SAs[productinSA], production_SAs);
+                    var SAValue = await Weighted_Calculation(productinSA, production_SAs[productinSA], production_SAs, AllPPWeight);
                 }
                 _logger.LogInfo("Calculate_SA_Weighted_AvgCost was Sucessfull ");
-                
+
             }
             catch (Exception ex)
             {
                 _logger.LogError("Error Occured In Calculate_SA_Weighted_AvgCost: " + ex.Message);
-                throw;               
+                throw;
             }
         }
         private async void TransferCurrent_SA_Weighted_AvgCost_TO_SA_Weighted_AvgCost_History()
@@ -49,7 +50,7 @@ namespace Tips.Master.Api.Controllers
             await _repository.SA_Weighted_AvgCostRepository.DeleteExistingData();
             _repository.SaveAsync();
         }
-        private async Task<decimal> Weighted_Calculation(string ItemNumber, decimal Version, Dictionary<string,decimal> ProductionBOMList)
+        private async Task<decimal> Weighted_Calculation(string ItemNumber, decimal Version, Dictionary<string, decimal> ProductionBOMList, List<WeightedAvgRate> AllPPWeight)
         {
             var ExistingSAWeight = await _repository.SA_Weighted_AvgCostRepository.GetSA_Weighted_AvgCost(ItemNumber);
             decimal ppQtyandWeight = 0;
@@ -60,8 +61,8 @@ namespace Tips.Master.Api.Controllers
                 {
                     if (bomitems.PartType == PartType.PurchasePart)
                     {
-                        var PPWeight = await _repository.SA_Weighted_AvgCostRepository.GetPPWeightedAvgCost(bomitems.ItemNumber);
-                        if(PPWeight!=null) ppQtyandWeight += (PPWeight.Avg_cost * bomitems.Quantity);
+                        var PPWeight = AllPPWeight.Where(a => a.Itemnumber == bomitems.ItemNumber).FirstOrDefault();//await _repository.SA_Weighted_AvgCostRepository.GetPPWeightedAvgCost(bomitems.ItemNumber);
+                        if (PPWeight != null) ppQtyandWeight += (PPWeight.Avg_cost * bomitems.Quantity);
                     }
                     else
                     {
@@ -72,14 +73,14 @@ namespace Tips.Master.Api.Controllers
                         }
                     }
 
-                 }
+                }
 
                 SA_Weighted_AvgCost sA_Weighted_AvgCost = new SA_Weighted_AvgCost()
                 {
                     Itemnumber = ItemNumber,
                     Version = Version,
                     Avg_cost = ppQtyandWeight,
-                    update_date_time=DateTime.Now
+                    update_date_time = DateTime.Now
                 };
 
                 _repository.SA_Weighted_AvgCostRepository.CreateSA_Weighted_AvgCost(sA_Weighted_AvgCost);

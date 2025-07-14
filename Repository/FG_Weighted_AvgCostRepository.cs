@@ -87,5 +87,10 @@ namespace Repository
 
             return result;
         }
+        public async Task<List<WeightedAvgRate>> GetAllPPWeightedAvgCost()
+        {
+            var WeightedAvgRate = await _tipsMasterDbContext.weighted_avg_rate.ToListAsync();
+            return WeightedAvgRate;
+        }
     }
 }
