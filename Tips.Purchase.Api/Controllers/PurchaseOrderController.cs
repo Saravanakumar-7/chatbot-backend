@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Buffers.Text;
+using System.Diagnostics.Eventing.Reader;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -1352,7 +1353,8 @@ namespace Tips.Purchase.Api.Controllers
                             {
                                 poItemDtos.ShortClosedQty = poItemHistoryReceivedQty.Sum(x => x.ShortClosedQty);
                             }
-                            poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDetails.POAddprojects);
+
+                            poItemDtos.POAddprojects = _mapper.Map<List<PoAddProjectDto>>(poItemDtos.POAddprojects);
                             poItemDtos.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliveryScheduleDto>>(poItemDetails.POAddDeliverySchedules);
                             poItemDtos.POSpecialInstructions = _mapper.Map<List<PoSpecialInstructionDto>>(poItemDetails.POSpecialInstructions);
                             poItemDtos.POConfirmationDates = _mapper.Map<List<PoConfirmationDateDto>>(poItemDetails.POConfirmationDates);
@@ -1555,6 +1557,31 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
         [HttpGet("{vendorId}")]
+        public async Task<IActionResult> GetKIT_PoNumberListByVendorId(string vendorId)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pONumberDetailsbyVendorId = await _repository.GetKIT_PoNumberListByVendorId(vendorId);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);
+                serviceResponse.Data = result;
+                serviceResponse.Message = $"Returned KIT_PoNumberList By VendorId: {vendorId}";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                _logger.LogInfo($"Returned KIT_PoNumberList By VendorId: {vendorId}");
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in GetKIT_PoNumberListByVendorId for the VendorID: {vendorId}\n{ex.Message}\n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error occured in GetKIT_PoNumberListByVendorId for the VendorID: {vendorId}\n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("{vendorId}")]
         public async Task<IActionResult> GetAllServicePoNumberListByVendorIdForAvision(string vendorId)
         {
             ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
@@ -1597,6 +1624,30 @@ namespace Tips.Purchase.Api.Controllers
                 _logger.LogError($"Error Occured in GetAllNonServicePoNumberListByVendorIdForAvision API for the following vendorId:{vendorId} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error Occured in GetAllNonServicePoNumberListByVendorIdForAvision API for the following vendorId:{vendorId} \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet("{vendorId}")]
+        public async Task<IActionResult> GetAllKIT_PoNumberListByVendorIdForAvision(string vendorId)
+        {
+            ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>> serviceResponse = new ServiceResponse<IEnumerable<PurchaseOrderIdNameListDto>>();
+            try
+            {
+                var pONumberDetailsbyVendorId = await _repository.GetAllKIT_PoNumberListByVendorIdForAvision(vendorId);
+                var result = _mapper.Map<IEnumerable<PurchaseOrderIdNameListDto>>(pONumberDetailsbyVendorId);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all KIT_PONumberListId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in GetAllKIT_PoNumberListByVendorIdForAvision:\n{ex.Message}\n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error occured in GetAllKIT_PoNumberListByVendorIdForAvision:\n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1660,7 +1711,7 @@ namespace Tips.Purchase.Api.Controllers
                     _logger.LogError("Invalid PurchaseOrder object sent from client.");
                     return BadRequest(serviceResponse);
                 }
-                if (purchaseOrderPostDto.Currency!="INR" && purchaseOrderPostDto.ConvertionRateId == null && serverKey != "keus")
+                if (purchaseOrderPostDto.Currency != "INR" && purchaseOrderPostDto.ConvertionRateId == null && serverKey != "keus")
                 {
                     serviceResponse.Message = $"Error Occured in CreatePurchaseOrder: The ConvertionRateId is required for the UOC:{purchaseOrderPostDto.Currency}";
                     serviceResponse.Success = false;
@@ -1675,8 +1726,10 @@ namespace Tips.Purchase.Api.Controllers
                 var prDetailsPostDto = poItemDto[0].PrDetails;
                 var poFile = purchaseOrderPostDto.POFiles;
                 var poItemDtoList = new List<PoItem>();
+                var poAddKitProjectList = new List<PoAddKitProject>();
                 var poIncoTermList = _mapper.Map<IEnumerable<PoIncoTerm>>(purchaseOrderPostDto.POIncoTerms);
                 var poAdditionalChargeList = _mapper.Map<IEnumerable<PurchaseOrderAdditionalCharges>>(purchaseOrderPostDto.PurchaseOrderAdditionalCharges);
+                List<EnggBomKitItemNumberWithQtyDto>? enggBomKitDetailsDynamic = new List<EnggBomKitItemNumberWithQtyDto>();
 
                 var date = DateTime.Now;
                 purchaseOrderPostDto.QuotationDate = date;
@@ -1696,27 +1749,88 @@ namespace Tips.Purchase.Api.Controllers
                 }
                 if (poItemDto != null)
                 {
-                    for (int i = 0; i < poItemDto.Count; i++)
+                    if (purchaseOrderDetails.PoType == PoType.Kit)
                     {
-                        PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
-                        poItemDetails.BalanceQty = poItemDto[i].Qty;
-                        poItemDetails.PoPartsStatus = false;
-                        poItemDetails.PONumber = purchaseOrderDetails.PONumber;
-                        poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
-                        for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                        for (int i = 0; i < poItemDto.Count; i++)
                         {
-                            PoAddProject poaddproject = poItemDetails.POAddprojects[j];
-                            poaddproject.BalanceQty = poaddproject.ProjectQty;
-                        }
+                            //Implement Kit
+                            if (poItemDto[i].PartType == PoPartType.Kit)
+                            {
+                                PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+                                poItemDetails.BalanceQty = poItemDto[i].Qty;
+                                poItemDetails.PoPartsStatus = false;
+                                poItemDetails.PONumber = purchaseOrderDetails.PONumber;
+                                var poAddprojectDetails = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                                for (int j = 0; j < poAddprojectDetails.Count; j++)
+                                {
+                                    PoAddProject poaddproject = poAddprojectDetails[j];
+                                    poaddproject.BalanceQty = poaddproject.ProjectQty;
 
-                        poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
-                        poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
-                        //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
-                        poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
-                        poItemDtoList.Add(poItemDetails);
+                                    //Implement KitComponent
+                                    var poAddprojectDetail = _mapper.Map<List<PoAddKitProject>>(poAddprojectDetails[j].PoAddKitProjects);
+                                    for (int k = 0; k < poAddprojectDetail.Count; k++)
+                                    {
+
+                                        PoAddKitProject poAddKitProject = poAddprojectDetail[k];
+                                        poAddKitProject.DrawingRevNo = poItemDetails.drawingRevNo;
+                                        poAddKitProject.CreatedBy = _createdBy;
+                                        poAddKitProject.CreatedOn = DateTime.Now;
+
+                                    }
+                                    poAddprojectDetails[j].PoAddKitProjects = poAddprojectDetail;
+
+                                }
+                                poItemDetails.POAddprojects = poAddprojectDetails;
+                                poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
+                                poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                                //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
+                                poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
+                                poItemDtoList.Add(poItemDetails);
+                            }
+                            else
+                            {
+                                serviceResponse.Message = $"Error Occured in CreatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                                _logger.LogError($"Error Occured in CreatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}");
+                                return BadRequest(serviceResponse);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < poItemDto.Count; i++)
+                        {
+                            if (poItemDto[i].PartType != PoPartType.Kit)
+                            {
+                                PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+                                poItemDetails.BalanceQty = poItemDto[i].Qty;
+                                poItemDetails.PoPartsStatus = false;
+                                poItemDetails.PONumber = purchaseOrderDetails.PONumber;
+                                poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                                for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                                {
+                                    PoAddProject poaddproject = poItemDetails.POAddprojects[j];
+                                    poaddproject.BalanceQty = poaddproject.ProjectQty;
+                                }
+
+                                poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
+                                poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                                //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
+                                poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
+                                poItemDtoList.Add(poItemDetails);
+                            }
+                            else
+                            {
+                                serviceResponse.Message = $"Error Occured in CreatePurchaseOrder: The PoItemDto.Parttype is kit,But PoType is General:{poItemDto[i].PartType}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                                _logger.LogError($"Error Occured in CreatePurchaseOrder: The PoItemDto.Parttype is kit,But PoType is General:{poItemDto[i].PartType}");
+                                return BadRequest(serviceResponse);
+                            }
+                        }
                     }
                 }
-
                 purchaseOrderDetails.POItems = poItemDtoList;
                 // purchaseOrderDetails.POFiles = poDocumentUploadDtoList;
                 purchaseOrderDetails.POIncoTerms = poIncoTermList.ToList();
@@ -1754,7 +1868,8 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     foreach (var poItems in poItemDtoList)
                     {
-                        if (poItems.PrDetails != null) {
+                        if (poItems.PrDetails != null)
+                        {
                             foreach (var prDetails in poItems.PrDetails.Where(x => x.ToClosePR == true).ToList())
                             {
                                 var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, poItems.ItemNumber);
@@ -1769,7 +1884,7 @@ namespace Tips.Purchase.Api.Controllers
                                 var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
                                 prDetail.PrStatus = prItemClosedStatusCount;
                                 await _purchaseRequisitionRepository.UpdatePurchaseRequisition_ForApproval(prDetail);
-                            } 
+                            }
                         }
                     }
                 }
@@ -2493,11 +2608,11 @@ namespace Tips.Purchase.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     _logger.LogError("Invalid PurchaseOrderReturns object sent from client.");
                     return BadRequest(serviceResponse);
-                }                
+                }
                 foreach (var po in purchaseOrderReturns)
                 {
                     var PurchaseOrder = await _repository.GetLastestPurchaseOrderByPONumber(po.PurchaseOrderNo);
-                    if (PurchaseOrder==null)
+                    if (PurchaseOrder == null)
                     {
                         serviceResponse.Data = null;
                         serviceResponse.Message = $"In ReturnToVendorPOs: PONumber: {po.PurchaseOrderNo} was not Found";
@@ -2519,7 +2634,7 @@ namespace Tips.Purchase.Api.Controllers
                             var project = POChild.POAddprojects.Where(x => x.ProjectNumber == prj.ProjectNo).FirstOrDefault();
                             project.BalanceQty += prj.ReturnQty;
                             project.ReceivedQty -= prj.ReturnQty;
-                            project.PoAddProjectStatus = false;
+                            //project.PoAddProjectStatus = false;
                         }
                     }
                     if (PurchaseOrder.POItems.Where(x => x.PoStatus == PoStatus.Open).Count() == PurchaseOrder.POItems.Count()) PurchaseOrder.PoStatus = PoStatus.Open;
@@ -2585,6 +2700,8 @@ namespace Tips.Purchase.Api.Controllers
                 var poItemDtoList = new List<PoItem>();
                 var poIncoTermDto = purchaseOrderUpdateDto.POIncoTerms;
                 var poIncoTermsList = new List<PoIncoTerm>();
+                var poAddKitProjectList = new List<PoAddKitProject>();
+                List<EnggBomKitItemNumberWithQtyDto>? enggBomKitDetailsDynamic = new List<EnggBomKitItemNumberWithQtyDto>();
 
                 if (poIncoTermDto != null)
                 {
@@ -2611,23 +2728,86 @@ namespace Tips.Purchase.Api.Controllers
 
                 if (poItemDto != null)
                 {
-                    for (int i = 0; i < poItemDto.Count; i++)
+                    if (purchaseOrderDetails.PoType == PoType.Kit)
                     {
-                        PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
-                        poItemDetails.BalanceQty = poItemDto[i].Qty;
-                        poItemDetails.PoPartsStatus = false;
-                        poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
-                        for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                        for (int i = 0; i < poItemDto.Count; i++)
                         {
-                            PoAddProject poaddproject = poItemDetails.POAddprojects[j];
-                            poaddproject.BalanceQty = poaddproject.ProjectQty;
-                        }
+                            //Implement Kit
+                            if (poItemDto[i].PartType == PoPartType.Kit)
+                            {
+                                PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+                                poItemDetails.BalanceQty = poItemDto[i].Qty;
+                                poItemDetails.PoPartsStatus = false;
+                                poItemDetails.PONumber = purchaseOrderDetails.PONumber;
+                                var poAddprojectDetails = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                                for (int j = 0; j < poAddprojectDetails.Count; j++)
+                                {
+                                    PoAddProject poaddproject = poAddprojectDetails[j];
+                                    poaddproject.BalanceQty = poaddproject.ProjectQty;
 
-                        poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
-                        poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
-                        poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
-                        poItemDetails.PONumber = purchaseOrderUpdateDto.PONumber;
-                        poItemDtoList.Add(poItemDetails);
+                                    //Implement KitComponent
+                                    var poAddprojectDetail = _mapper.Map<List<PoAddKitProject>>(poAddprojectDetails[j].PoAddKitProjects);
+                                    for (int k = 0; k < poAddprojectDetail.Count; k++)
+                                    {
+
+                                        PoAddKitProject poAddKitProject = poAddprojectDetail[k];
+                                        poAddKitProject.DrawingRevNo = poItemDetails.drawingRevNo;
+                                        poAddKitProject.CreatedBy = _createdBy;
+                                        poAddKitProject.CreatedOn = DateTime.Now;
+
+                                    }
+                                    poAddprojectDetails[j].PoAddKitProjects = poAddprojectDetail;
+
+                                }
+                                poItemDetails.POAddprojects = poAddprojectDetails;
+                                poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
+                                poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                                //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
+                                poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
+                                poItemDtoList.Add(poItemDetails);
+                            }
+                            else
+                            {
+                                serviceResponse.Message = $"Error Occured in UpdatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                                _logger.LogError($"Error Occured in UpdatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}");
+                                return BadRequest(serviceResponse);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < poItemDto.Count; i++)
+                        {
+                            if (poItemDto[i].PartType != PoPartType.Kit)
+                            {
+                                PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+                                poItemDetails.BalanceQty = poItemDto[i].Qty;
+                                poItemDetails.PoPartsStatus = false;
+                                poItemDetails.PONumber = purchaseOrderDetails.PONumber;
+                                poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                                for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                                {
+                                    PoAddProject poaddproject = poItemDetails.POAddprojects[j];
+                                    poaddproject.BalanceQty = poaddproject.ProjectQty;
+                                }
+
+                                poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
+                                poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                                //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
+                                poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
+                                poItemDtoList.Add(poItemDetails);
+                            }
+                            else
+                            {
+                                serviceResponse.Message = $"Error Occured in UpdatePurchaseOrder: The PoItemDto.Parttype is kit,But PoType is General:{poItemDto[i].PartType}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                                _logger.LogError($"Error Occured in UpdatePurchaseOrder: The PoItemDto.Parttype is kit,But PoType is General:{poItemDto[i].PartType}");
+                                return BadRequest(serviceResponse);
+                            }
+                        }
                     }
                 }
 
@@ -2671,10 +2851,10 @@ namespace Tips.Purchase.Api.Controllers
                                 var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, poItems.ItemNumber);
                                 if (prItemDetail != null)
                                 {
-                                    if (prDetails.ToClosePR==true) prItemDetail.PrStatus = PrStatus.Closed;
+                                    if (prDetails.ToClosePR == true) prItemDetail.PrStatus = PrStatus.Closed;
                                     else prItemDetail.PrStatus = PrStatus.Open;
                                     await _purchaseRequisitionItemRepository.UpdatePrItem(prItemDetail);
-                                        _purchaseRequisitionItemRepository.SaveAsync(); 
+                                    _purchaseRequisitionItemRepository.SaveAsync();
                                 }
 
                                 var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
@@ -3091,7 +3271,7 @@ namespace Tips.Purchase.Api.Controllers
                     {
                         if (poProjectNos.BalanceQty == dispatchedQty)
                         {
-                            poProjectNos.PoAddProjectStatus = true;
+                            //poProjectNos.PoAddProjectStatus = true;
                         }
                         poProjectNos.BalanceQty -= dispatchedQty;
                         dispatchedQty = 0;
@@ -3695,8 +3875,8 @@ namespace Tips.Purchase.Api.Controllers
                 purchaseOrderDetailByPONumber[0].POApprovalI = true;
                 purchaseOrderDetailByPONumber[0].POApprovedIBy = _createdBy;
                 purchaseOrderDetailByPONumber[0].POApprovedIDate = DateTime.Now;
-                purchaseOrderDetailByPONumber.ForEach(x=>x.InApproval=true);
-                foreach(var po in purchaseOrderDetailByPONumber) await _repository.UpdatePurchaseOrder_ForApproval(po);
+                purchaseOrderDetailByPONumber.ForEach(x => x.InApproval = true);
+                foreach (var po in purchaseOrderDetailByPONumber) await _repository.UpdatePurchaseOrder_ForApproval(po);
                 _logger.LogInfo($"ActivatePurchaseOrderApprovalI for PO: {PONumber}");
                 _repository.SaveAsync();
                 if (serverKey == "avision")
@@ -4317,11 +4497,11 @@ namespace Tips.Purchase.Api.Controllers
                 {
                     if (poid_1.Any())
                     {
-                        var poItem = poid_1.First();  
+                        var poItem = poid_1.First();
                         if (poItem != null)
                         {
-                            PoId = poItem.PoId;  
-                            break;  
+                            PoId = poItem.PoId;
+                            break;
                         }
                     }
                 }
@@ -4831,6 +5011,222 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //[HttpPost]
+        //public async Task<IActionResult> ExportPOReportToExcel([FromBody] PurchaseOrder_ReportGetDto paramsforPurchase)
+        //{
+
+        //    try
+        //    {
+        //        var poConfirmationReports = await _repository.GetPoConfirmationSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName,
+        //                                                                           paramsforPurchase.POStatus, paramsforPurchase.Approval, paramsforPurchase.RecordType);
+
+        //        var poDeliveryScheduleReports = await _repository.GetPoDeliverySchedulewithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName,
+        //                                                                                        paramsforPurchase.POStatus, paramsforPurchase.Approval, paramsforPurchase.RecordType);
+
+        //        var poProjectReports = await _repository.GetPoProjectSPReportwithParam(paramsforPurchase.ItemNumber, paramsforPurchase.PONumbers, paramsforPurchase.VendorName,
+        //                                                                               paramsforPurchase.POStatus, paramsforPurchase.Approval, paramsforPurchase.ProjectNumber,
+        //                                                                               paramsforPurchase.RecordType);
+
+        //        // Create a new Excel workbook
+        //        XSSFWorkbook workbook = new XSSFWorkbook();
+        //        ISheet sheet1 = workbook.CreateSheet("POConfirmationReport");
+        //        ISheet sheet2 = workbook.CreateSheet("PODeliveryScheduleReport");
+        //        ISheet sheet3 = workbook.CreateSheet("PoProjectSPReport");
+
+        //        // Set header row
+        //        var headerRow1 = sheet1.CreateRow(0);
+        //        headerRow1.CreateCell(0).SetCellValue("Vendor ID");
+        //        headerRow1.CreateCell(1).SetCellValue("Vendor Name");
+        //        headerRow1.CreateCell(2).SetCellValue("PO Number");
+        //        headerRow1.CreateCell(3).SetCellValue("PO Date");
+        //        headerRow1.CreateCell(4).SetCellValue("PR Qty");
+        //        headerRow1.CreateCell(5).SetCellValue("Revision Number");
+        //        headerRow1.CreateCell(6).SetCellValue("Item Number");
+        //        headerRow1.CreateCell(7).SetCellValue("Mftr Item Number");
+        //        headerRow1.CreateCell(8).SetCellValue("Item Description");
+        //        headerRow1.CreateCell(9).SetCellValue("PO Qty");
+        //        headerRow1.CreateCell(10).SetCellValue("Received Qty");
+        //        headerRow1.CreateCell(11).SetCellValue("Balance Qty");
+        //        headerRow1.CreateCell(12).SetCellValue("Currency");
+        //        headerRow1.CreateCell(13).SetCellValue("UOM");
+        //        headerRow1.CreateCell(14).SetCellValue("Unit Price");
+        //        headerRow1.CreateCell(15).SetCellValue("Balance Value");
+        //        headerRow1.CreateCell(16).SetCellValue("PO Approved I By");
+        //        headerRow1.CreateCell(17).SetCellValue("PO Approved I Date");
+        //        headerRow1.CreateCell(18).SetCellValue("PO Approved II By");
+        //        headerRow1.CreateCell(19).SetCellValue("PO Approved II Date");
+        //        headerRow1.CreateCell(20).SetCellValue("PO Status");
+        //        headerRow1.CreateCell(21).SetCellValue("Created By");
+        //        headerRow1.CreateCell(22).SetCellValue("Created On");
+        //        headerRow1.CreateCell(23).SetCellValue("Confirmation Date");
+        //        headerRow1.CreateCell(24).SetCellValue("Confirmation Qty");
+
+
+        //        var headerRow2 = sheet2.CreateRow(0);
+        //        headerRow2.CreateCell(0).SetCellValue("Vendor ID");
+        //        headerRow2.CreateCell(1).SetCellValue("Vendor Name");
+        //        headerRow2.CreateCell(2).SetCellValue("PO Number");
+        //        headerRow2.CreateCell(3).SetCellValue("PO Date");
+        //        headerRow2.CreateCell(4).SetCellValue("PR Qty");
+        //        headerRow2.CreateCell(5).SetCellValue("Revision Number");
+        //        headerRow2.CreateCell(6).SetCellValue("Item Number");
+        //        headerRow2.CreateCell(7).SetCellValue("Mftr Item Number");
+        //        headerRow2.CreateCell(8).SetCellValue("Item Description");
+        //        headerRow2.CreateCell(9).SetCellValue("PO Qty");
+        //        headerRow2.CreateCell(10).SetCellValue("Schedule Qty");
+        //        headerRow2.CreateCell(11).SetCellValue("Received Qty");
+        //        headerRow2.CreateCell(12).SetCellValue("Balance Qty");
+        //        headerRow2.CreateCell(13).SetCellValue("Currency");
+        //        headerRow2.CreateCell(14).SetCellValue("UOM");
+        //        headerRow2.CreateCell(15).SetCellValue("Unit Price");
+        //        headerRow2.CreateCell(16).SetCellValue("Balance Value");
+        //        headerRow2.CreateCell(17).SetCellValue("PO Approved I By");
+        //        headerRow2.CreateCell(18).SetCellValue("PO Approved I Date");
+        //        headerRow2.CreateCell(19).SetCellValue("PO Approved II By");
+        //        headerRow2.CreateCell(20).SetCellValue("PO Approved II Date");
+        //        headerRow2.CreateCell(21).SetCellValue("PO Status");
+        //        headerRow2.CreateCell(22).SetCellValue("Created By");
+        //        headerRow2.CreateCell(23).SetCellValue("Created On");
+        //        headerRow2.CreateCell(24).SetCellValue("Schedule Date");
+
+
+        //        var headerRow3 = sheet3.CreateRow(0);
+        //        headerRow3.CreateCell(0).SetCellValue("Vendor ID");
+        //        headerRow3.CreateCell(1).SetCellValue("Vendor Name");
+        //        headerRow3.CreateCell(2).SetCellValue("PO Number");
+        //        headerRow3.CreateCell(3).SetCellValue("PO Date");
+        //        headerRow3.CreateCell(4).SetCellValue("PR Qty");
+        //        headerRow3.CreateCell(5).SetCellValue("Revision Number");
+        //        headerRow3.CreateCell(6).SetCellValue("Project Number");
+        //        headerRow3.CreateCell(7).SetCellValue("Project Qty");
+        //        headerRow3.CreateCell(8).SetCellValue("Item Number");
+        //        headerRow3.CreateCell(9).SetCellValue("Mftr Item Number");
+        //        headerRow3.CreateCell(10).SetCellValue("Item Description");
+        //        headerRow3.CreateCell(11).SetCellValue("PO Qty");
+        //        headerRow3.CreateCell(12).SetCellValue("Received Qty");
+        //        headerRow3.CreateCell(13).SetCellValue("Balance Qty");
+        //        headerRow3.CreateCell(14).SetCellValue("Currency");
+        //        headerRow3.CreateCell(15).SetCellValue("UOM");
+        //        headerRow3.CreateCell(16).SetCellValue("Unit Price");
+        //        headerRow3.CreateCell(17).SetCellValue("Balance Value");
+        //        headerRow3.CreateCell(18).SetCellValue("PO Approved I By");
+        //        headerRow3.CreateCell(19).SetCellValue("PO Approved I Date");
+        //        headerRow3.CreateCell(20).SetCellValue("PO Approved II By");
+        //        headerRow3.CreateCell(21).SetCellValue("PO Approved II Date");
+        //        headerRow3.CreateCell(22).SetCellValue("PO Status");
+        //        headerRow3.CreateCell(23).SetCellValue("Created By");
+        //        headerRow3.CreateCell(24).SetCellValue("Created On");
+
+        //        // Populate data rows
+        //        int rowIndex1 = 1;
+        //        foreach (var item in poConfirmationReports)
+        //        {
+        //            var row = sheet1.CreateRow(rowIndex1++);
+        //            row.CreateCell(0).SetCellValue(item.VendorId ?? ""); // VendorId
+        //            row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
+        //            row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
+        //            row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("dd/MM/yyyy") : ""); // PODate
+        //            row.CreateCell(4).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+        //            row.CreateCell(5).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+        //            row.CreateCell(6).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+        //            row.CreateCell(7).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+        //            row.CreateCell(8).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+        //            row.CreateCell(9).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+        //            row.CreateCell(10).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
+        //            row.CreateCell(11).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
+        //            row.CreateCell(12).SetCellValue(item.Currency ?? ""); // Currency
+        //            row.CreateCell(13).SetCellValue(item.UOM ?? ""); // UOM
+        //            row.CreateCell(14).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
+        //            row.CreateCell(15).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
+        //            row.CreateCell(16).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
+        //            row.CreateCell(17).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("dd/MM/yyyy") : ""); // POApprovedIDate
+        //            row.CreateCell(18).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
+        //            row.CreateCell(19).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("dd/MM/yyyy") : ""); // POApprovedIIDate
+        //            row.CreateCell(20).SetCellValue(item.PoStatus ?? 0); // POStatus
+        //            row.CreateCell(21).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
+        //            row.CreateCell(22).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("dd/MM/yyyy") : ""); // CreatedOn
+        //            row.CreateCell(23).SetCellValue(item.ConfirmationDate.HasValue ? item.ConfirmationDate.Value.ToString("dd/MM/yyyy") : ""); // ConfirmationDate
+        //            row.CreateCell(24).SetCellValue(Convert.ToDouble(item.ConfirmationQty ?? 0)); // ConfirmationQty
+        //        }
+
+        //        int rowIndex2 = 1;
+        //        foreach (var item in poDeliveryScheduleReports)
+        //        {
+        //            var row = sheet2.CreateRow(rowIndex2++);
+        //            row.CreateCell(0).SetCellValue(item.VendorId ?? ""); // VendorId
+        //            row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
+        //            row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
+        //            row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("dd/MM/yyyy") : ""); // PODate
+        //            row.CreateCell(4).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+        //            row.CreateCell(5).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+        //            row.CreateCell(6).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+        //            row.CreateCell(7).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+        //            row.CreateCell(8).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+        //            row.CreateCell(9).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+        //            row.CreateCell(10).SetCellValue(Convert.ToDouble(item.ScheduleQty ?? 0)); // ScheduleQty
+        //            row.CreateCell(11).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
+        //            row.CreateCell(12).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
+        //            row.CreateCell(13).SetCellValue(item.Currency ?? ""); // Currency
+        //            row.CreateCell(14).SetCellValue(item.UOM ?? ""); // UOM
+        //            row.CreateCell(15).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
+        //            row.CreateCell(16).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
+        //            row.CreateCell(17).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
+        //            row.CreateCell(18).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("dd/MM/yyyy") : ""); // POApprovedIDate
+        //            row.CreateCell(19).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
+        //            row.CreateCell(20).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("dd/MM/yyyy") : ""); // POApprovedIIDate
+        //            row.CreateCell(21).SetCellValue(item.PoStatus ?? 0); // POStatus
+        //            row.CreateCell(22).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
+        //            row.CreateCell(23).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("dd/MM/yyyy") : ""); // CreatedOn
+        //            row.CreateCell(24).SetCellValue(item.ScheduleDate.HasValue ? item.ScheduleDate.Value.ToString("dd/MM/yyyy") : ""); // ScheduleDate
+        //        }
+
+        //        int rowIndex3 = 1;
+        //        foreach (var item in poProjectReports)
+        //        {
+        //            var row = sheet3.CreateRow(rowIndex3++);
+        //            row.CreateCell(0).SetCellValue(item.VendorId ?? ""); // VendorId
+        //            row.CreateCell(1).SetCellValue(item.VendorName ?? ""); // VendorName
+        //            row.CreateCell(2).SetCellValue(item.PONumber ?? ""); // PONumber
+        //            row.CreateCell(3).SetCellValue(item.PODate.HasValue ? item.PODate.Value.ToString("dd/MM/yyyy") : ""); // PODate
+        //            row.CreateCell(4).SetCellValue(Convert.ToDouble(item.PRQty ?? 0)); // PRQty
+        //            row.CreateCell(5).SetCellValue(item.RevisionNumber ?? 0); // RevisionNumber
+        //            row.CreateCell(6).SetCellValue(item.ProjectNumber ?? ""); // ProjectNumber
+        //            row.CreateCell(7).SetCellValue(Convert.ToDouble(item.ProjectQty ?? 0)); // ProjectQty
+        //            row.CreateCell(8).SetCellValue(item.ItemNumber ?? ""); // ItemNumber
+        //            row.CreateCell(9).SetCellValue(item.MftrItemNumber ?? ""); // MftrItemNumber
+        //            row.CreateCell(10).SetCellValue(item.ItemDescription ?? ""); // ItemDescription
+        //            row.CreateCell(11).SetCellValue(Convert.ToDouble(item.POQnty ?? 0)); // POQnty
+        //            row.CreateCell(12).SetCellValue(Convert.ToDouble(item.ReceivedQty ?? 0)); // ReceivedQty
+        //            row.CreateCell(13).SetCellValue(Convert.ToDouble(item.BalanceQty ?? 0)); // BalanceQty
+        //            row.CreateCell(14).SetCellValue(item.Currency ?? ""); // Currency
+        //            row.CreateCell(15).SetCellValue(item.UOM ?? ""); // UOM
+        //            row.CreateCell(16).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
+        //            row.CreateCell(17).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
+        //            row.CreateCell(18).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
+        //            row.CreateCell(19).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("dd/MM/yyyy") : ""); // POApprovedIDate
+        //            row.CreateCell(20).SetCellValue(item.POApprovedIIBy ?? ""); // POApprovedIIBy
+        //            row.CreateCell(21).SetCellValue(item.POApprovedIIDate.HasValue ? item.POApprovedIIDate.Value.ToString("dd/MM/yyyy") : ""); // POApprovedIIDate
+        //            row.CreateCell(22).SetCellValue(item.PoStatus ?? 0); // POStatus
+        //            row.CreateCell(23).SetCellValue(item.CreatedBy ?? ""); // CreatedBy
+        //            row.CreateCell(24).SetCellValue(item.CreatedOn.HasValue ? item.CreatedOn.Value.ToString("dd/MM/yyyy") : ""); // CreatedOn
+        //        }
+
+
+        //        using (var memoryStream = new MemoryStream())
+        //        {
+        //            workbook.Write(memoryStream);
+        //            var excelBytes = memoryStream.ToArray();
+
+        //            return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "POReports.xlsx");
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError(ex.Message);
+        //        return StatusCode(500, $"An error occurred: {ex.Message},{ex.InnerException}");
+        //    }
+        //}
 
         [HttpPost]
         public async Task<IActionResult> ExportPOConfirmationReportWithDateToExcel([FromBody] PurchaseOrderDate_ReportGetDto purchaseOrderDate_ReportGetDto)
@@ -5367,7 +5763,7 @@ namespace Tips.Purchase.Api.Controllers
                     row.CreateCell(14).SetCellValue(item.Currency ?? ""); // Currency
                     row.CreateCell(15).SetCellValue(item.UOM ?? ""); // UOM
                     row.CreateCell(16).SetCellValue(Convert.ToDouble(item.UnitPrice ?? 0)); // UnitPrice
-                    row.CreateCell(17).SetCellValue(item.PaymentTerms ?? ""); 
+                    row.CreateCell(17).SetCellValue(item.PaymentTerms ?? "");
                     row.CreateCell(18).SetCellValue(Convert.ToDouble(item.BalanceValue ?? 0)); // BalanceValue
                     row.CreateCell(19).SetCellValue(item.POApprovedIBy ?? ""); // POApprovedIBy
                     row.CreateCell(20).SetCellValue(item.POApprovedIDate.HasValue ? item.POApprovedIDate.Value.ToString("MM/dd/yyyy") : ""); // POApprovedIDate
@@ -5991,7 +6387,8 @@ namespace Tips.Purchase.Api.Controllers
                     if (po.Currency != "INR")
                     {
                         var converion = approvalRangesRequest.ConvertionRates.Where(x => x.UOC == po.Currency).FirstOrDefault();
-                        if (converion == null) {
+                        if (converion == null)
+                        {
                             _logger.LogError($"Error occured in UpdatePurchaseOrdersApprovalRange: The UOM {po.Currency} doesnot have any convertionrate");
                             serviceResponse.Data = null;
                             serviceResponse.Message = $"Error occured in UpdatePurchaseOrdersApprovalRange: The UOM {po.Currency} doesnot have any convertionrate";
@@ -6005,7 +6402,7 @@ namespace Tips.Purchase.Api.Controllers
                             po.ConvertionRateId = converion.Id;
                         }
                     }
-                    var range = approvalRangesRequest.ApprovalRanges.Ranges.FirstOrDefault(r => totalamount >= r.RangeFrom && (r.RangeTo != null ? totalamount <= r.RangeTo: true));
+                    var range = approvalRangesRequest.ApprovalRanges.Ranges.FirstOrDefault(r => totalamount >= r.RangeFrom && (r.RangeTo != null ? totalamount <= r.RangeTo : true));
                     int count = (range.Approval1 ? 1 : 0) + (range.Approval2 ? 1 : 0) + (range.Approval3 ? 1 : 0) + (range.Approval4 ? 1 : 0);
                     po.ApprovalCount = count;
                     po.ApprovalRangeId = approvalRangesRequest.ApprovalRanges.Id;
@@ -6024,6 +6421,79 @@ namespace Tips.Purchase.Api.Controllers
                 _logger.LogError($"Error occured in UpdatePurchaseOrdersApprovalRange API: {ex.Message} \n {ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error occured in UpdatePurchaseOrdersApprovalRange: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> UpdateKIT_PODetails([FromBody] List<KIT_GRIN_POUpdate> kIT_GRIN_POUpdates)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                if (kIT_GRIN_POUpdates is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "UpdateKIT_PODetails object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("UpdateKIT_PODetails object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid UpdateKIT_PODetails object.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid UpdateKIT_PODetails object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                foreach (var po in kIT_GRIN_POUpdates)
+                {
+                    var PurOrder = await _repository.GetLastestPurchaseOrderByPONumber(po.PONumber);
+                    foreach (var poitem in po.POItems)
+                    {
+                        var POItem = PurOrder.POItems.Where(x => x.ItemNumber == poitem.ItemNumber).FirstOrDefault();
+                        foreach (var prj in poitem.POProjects)
+                        {
+                            var Proj = POItem.POAddprojects.Where(x => x.ProjectNumber == prj.ProjectNumber).FirstOrDefault();
+                            foreach (var comp in prj.POComponents)
+                            {
+                                var Component = Proj.PoAddKitProjects.Where(x => x.PartNumber == comp.PartNumber).FirstOrDefault();
+                                Component.BalanceQty -= comp.KitComponentQty;
+                                Component.ReceivedQty += comp.KitComponentQty;
+                                if (Component.BalanceQty == 0) Component.PoAddKitProjectStatus = PoStatus.Closed;
+                                else if (Component.BalanceQty != 0 && Component.ReceivedQty > 0) Component.PoAddKitProjectStatus = PoStatus.PartiallyClosed;
+                            }
+                            Proj.BalanceQty -= prj.ProjectQty;
+                            Proj.ReceivedQty += prj.ProjectQty;
+                            if (Proj.BalanceQty == 0) Proj.PoAddProjectStatus = PoStatus.Closed;
+                            else if(Proj.BalanceQty != 0 && Proj.ReceivedQty > 0) Proj.PoAddProjectStatus = PoStatus.PartiallyClosed;
+                        }
+                        POItem.BalanceQty -= poitem.Qty;
+                        POItem.ReceivedQty += poitem.Qty;
+                        if (POItem.BalanceQty == 0) POItem.PoStatus = PoStatus.Closed;
+                        else if (POItem.BalanceQty != 0 && POItem.ReceivedQty > 0) POItem.PoStatus = PoStatus.PartiallyClosed;
+                    }
+                    if (PurOrder.POItems.Count(x => x.PoStatus == PoStatus.Closed) == PurOrder.POItems.Count()) PurOrder.PoStatus = PoStatus.Closed;
+                    else PurOrder.PoStatus = PoStatus.PartiallyClosed;
+                    await _repository.UpdatePurchaseOrder_ForApproval(PurOrder);
+                }
+                _repository.SaveAsync();
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"UpdateKIT_PODetails Was successfull";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error occured in UpdateKIT_PODetails:\n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error occured in UpdateKIT_PODetails: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

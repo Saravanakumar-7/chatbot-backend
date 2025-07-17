@@ -37,7 +37,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Uploads\GoogleGCP_TempStorage\" />
+    <Folder Include="Upload\GoogleGCP_TempStorage\" />
+    <Folder Include="Upload\RfqSourcingDocuments\" />
   </ItemGroup>
 
 </Project>

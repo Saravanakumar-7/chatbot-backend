@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities;
+using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -180,9 +181,10 @@ namespace Tips.Warehouse.Api.Controllers
                     _logger.LogError("Invalid InventoryTranction object sent from client.");
                     return BadRequest(serviceResponse);
                 }
+                inventoryTranctionDtoPost.TransactionType ??= InventoryType.Inward;
                 var createInventoryTranction = _mapper.Map<InventoryTranction>(inventoryTranctionDtoPost);
 
-                _inventoryTranctionRepository.CreateInventoryTransaction(createInventoryTranction);
+                await _inventoryTranctionRepository.CreateInventoryTransaction(createInventoryTranction);
                 _inventoryTranctionRepository.SaveAsync();
                 serviceResponse.Data = null;
                 serviceResponse.Message = "InventoryTranction Successfully Created";
@@ -265,6 +267,7 @@ namespace Tips.Warehouse.Api.Controllers
                     _logger.LogError("Invalid InventoryTranction object sent from client.");
                     return BadRequest(serviceResponse);
                 }
+                inventoryTranctionDto.TransactionType ??= InventoryType.Inward;
                 var createInventoryTranction = _mapper.Map<InventoryTranction>(inventoryTranctionDto);
 
                 _inventoryTranctionRepository.CreateInventoryTransaction(createInventoryTranction);

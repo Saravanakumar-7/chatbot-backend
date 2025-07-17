@@ -12,6 +12,7 @@ namespace Tips.Purchase.Api.Entities.Dto
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? MftrItemNumber { get; set; }
+        public decimal? KitRevisionNo { get; set; }
         public string? Description { get; set; }
         public string? PONumber { get; set; }
         public string? UOM { get; set; }
@@ -58,6 +59,7 @@ namespace Tips.Purchase.Api.Entities.Dto
     {
         public string? ItemNumber { get; set; }
         public string? MftrItemNumber { get; set; }
+        public decimal? KitRevisionNo { get; set; }
         public string? Description { get; set; }
         public string? UOM { get; set; }
         [Precision(18, 3)]
@@ -97,6 +99,7 @@ namespace Tips.Purchase.Api.Entities.Dto
     {
         public string? ItemNumber { get; set; }
         public string? MftrItemNumber { get; set; }
+        public decimal? KitRevisionNo { get; set; }
         public string? Description { get; set; }
         public string? UOM { get; set; }
         public PoPartType? PartType { get; set; }

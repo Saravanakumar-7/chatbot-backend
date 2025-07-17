@@ -12,6 +12,7 @@ namespace Tips.Purchase.Api.Entities
         public string? ItemNumber { get; set; }
         public string? MftrItemNumber { get; set; }
         public string? Description { get; set; }
+        public decimal? KitRevisionNo { get; set; }
         public string? UOM { get; set; }
         [Precision(18, 3)]
         public decimal UnitPrice { get; set; }

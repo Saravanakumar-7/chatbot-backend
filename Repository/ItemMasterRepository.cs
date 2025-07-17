@@ -245,7 +245,7 @@ namespace Repository
         public async Task<IEnumerable<ItemNoListDtos>> GetAllOnlyServiceItemsPurchasePartItemNoList()
         {
             IEnumerable<ItemNoListDtos> itemNumberListDto = await TipsMasterDbContext.ItemMasters
-                               .Where(x => (x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG) && x.IsActive == true && x.PoMaterialType == "ServiceItem")
+                               .Where(x => (x.ItemType == PartType.PurchasePart || x.ItemType == PartType.TG) && x.IsActive == true && x.PoMaterialType== "ServiceItem")
                                .Select(c => new ItemNoListDtos()
                                {
                                    ItemNumber = c.ItemNumber,
@@ -294,6 +294,21 @@ namespace Repository
 
             return itemNumberListDto;
         }
+
+        public async Task<IEnumerable<ItemNoListDtos>> GetAllIsPRRequiredStatusTrueKITItemNoList()
+        {
+            IEnumerable<ItemNoListDtos> itemNumberListDto = await TipsMasterDbContext.ItemMasters
+                               .Where(x => (x.ItemType == PartType.Kit) && x.IsPRRequired == true && x.IsActive == true)
+                               .Select(c => new ItemNoListDtos()
+                               {
+                                   ItemNumber = c.ItemNumber,
+                                   Description = c.Description,
+                               })
+                             .ToListAsync();
+
+            return itemNumberListDto;
+        }
+
         public async Task<IEnumerable<ItemMasterIdNoListDto>> GetAllFgTgItemMasterItemNoList()
         {
             IEnumerable<ItemMasterIdNoListDto> getAllActiveItemMasterIdNoListDto = await TipsMasterDbContext.ItemMasters
@@ -356,27 +371,36 @@ namespace Repository
         }
         public async Task<IEnumerable<ItemMaster>> GetAllSAPurchasePartItems()
         {
-            //var itemmasterFgDetails = FindAll().OrderByDescending(a => a.Id).Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart) && inv.IsActive == true)
-            //.Include(t => t.ItemmasterAlternate)
-            //.Include(t => t.ItemMasterApprovedVendor)
-            ////.Include(t => t.ItemMasterFileUpload)
-            //.Include(d => d.ItemMasterRouting)
-            //.Include(d => d.ItemMasterWarehouse);
-            //return itemmasterFgDetails;
 
             var itemmasterFgDetails = await TipsMasterDbContext.ItemMasters
-       .Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart) && inv.IsActive)
-       .OrderByDescending(a => a.Id)
-       .Include(t => t.ItemmasterAlternate)
-       .Include(t => t.ItemMasterApprovedVendor)
-       .Include(d => d.ItemMasterRouting)
-       .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts)
-       .ToListAsync();  // Ensure the query is executed asynchronously
+                                       .Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.PurchasePart || inv.ItemType == PartType.Kit) && inv.IsActive == true)
+                                       .OrderByDescending(inv => inv.Id)
+                                       .Include(inv => inv.ItemmasterAlternate)
+                                       .Include(inv => inv.ItemMasterApprovedVendor)
+                                       .Include(inv => inv.ItemMasterRouting)
+                                       .Include(inv => inv.ItemMasterWarehouse)
+                                       .Include(inv => inv.ItemMasterSchedules)
+                                            .ThenInclude(x => x.ItemMasterScheduleParts)
+                                       .ToListAsync();  // Ensure the query is executed asynchronously
 
             return itemmasterFgDetails;
         }
 
+        public async Task<IEnumerable<ItemMaster>> GetAllKitComponentItemList()
+        {
+            var itemmasterKitComponentDetails = await TipsMasterDbContext.ItemMasters
+                                   .Where(inv => (inv.ItemType == PartType.KitComponent) && inv.IsActive == true)
+                                   .OrderByDescending(a => a.Id)
+                                   .Include(t => t.ItemmasterAlternate)
+                                   .Include(t => t.ItemMasterApprovedVendor)
+                                   .Include(d => d.ItemMasterRouting)
+                                   .Include(d => d.ItemMasterWarehouse)
+                                   .Include(inv => inv.ItemMasterSchedules)
+                                        .ThenInclude(x => x.ItemMasterScheduleParts)
+                                   .ToListAsync();
 
+            return itemmasterKitComponentDetails;
+        }
 
         public async Task<IEnumerable<ItemMaster>> GetAllSAItems()
         {
@@ -388,6 +412,18 @@ namespace Repository
             .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts);
             return itemmasterSADetails;
         }
+
+        public async Task<IEnumerable<ItemMaster>> GetAllKITItems()
+        {
+            var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id).Where(inv => (inv.ItemType == PartType.Kit) && inv.IsActive == true)
+            .Include(t => t.ItemmasterAlternate)
+            .Include(t => t.ItemMasterApprovedVendor)
+            //.Include(t => t.ItemMasterFileUpload)
+            .Include(d => d.ItemMasterRouting)
+            .Include(d => d.ItemMasterWarehouse).Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts);
+            return itemmasterSADetails;
+        }
+
         public async Task<IEnumerable<ItemMaster>> GetAllFgSaItems()
         {
             var itemmasterSADetails = FindAll().OrderByDescending(a => a.Id).Where(inv => (inv.ItemType == PartType.SA || inv.ItemType == PartType.FG) && inv.IsActive == true);
@@ -399,7 +435,7 @@ namespace Repository
         public async Task<IEnumerable<ItemMaster>> GetAllFgSaFruItems()
         {
             var itemmasterFgSaFRUDetails = FindAll().OrderByDescending(a => a.Id)
-               .Where(a => (a.ItemType == PartType.SA || a.ItemType == PartType.FG || a.ItemType == PartType.FRU) && a.IsActive == true)
+               .Where(a => (a.ItemType == PartType.SA || a.ItemType == PartType.FG || a.ItemType == PartType.FRU || a.ItemType == PartType.Kit) && a.IsActive == true)
                             //.Include(c => c.FileUpload)
                             //  .Include(x => x.ImageUpload)
                             .Include(t => t.ItemmasterAlternate)
@@ -584,6 +620,11 @@ namespace Repository
                              .FirstOrDefaultAsync();
             return getItemMasterByItemNo;
         }
+        public async Task<List<ItemMaster>> GetItemDetailsByItemNumberList(List<string> ItemNumbers)
+        {
+            var getItemMasterByItemNo = await FindByCondition(x => ItemNumbers.Contains(x.ItemNumber) && x.IsActive == true).ToListAsync();
+            return getItemMasterByItemNo;
+        }
 
         public async Task<ItemMaster> GetItemMasterByItemNumberAndPartType(string ItemNumber, PartType partType)
         {
@@ -686,7 +727,6 @@ namespace Repository
 
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
-
         }
         public async Task<int?> CreateFileUploadDocument(FileUpload fileUpload)
         {

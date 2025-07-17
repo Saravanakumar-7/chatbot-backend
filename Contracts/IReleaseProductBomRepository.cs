@@ -28,6 +28,7 @@ namespace Contracts
         Task<Dictionary<string, decimal>> GetFGsAndLatestVersion();
         Task<Dictionary<string, decimal>> GetSAsAndLatestVersionbyItemNo(string itemNumber);
         Task<IEnumerable<ReleaseProductionBomSPReport>> GetBOMReleaseSPReportWithParamForTrans(string? ItemNumber);
+        Task<IEnumerable<ProductionBomKitRevNoDto>> GetProductionBomReleasedKitNoAndLatestVersion();
 
     }
 }

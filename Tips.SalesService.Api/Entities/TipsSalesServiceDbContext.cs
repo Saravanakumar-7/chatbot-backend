@@ -133,6 +133,7 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<SOInitialConfirmationDateHistory> SOInitialConfirmationDateHistories { get; set; }
         public DbSet<FGSalesOrderSPReport> FGSalesOrderSPReports { get; set; }
         public DbSet<SalesOrderQtyDetailsDto> SalesOrderQtyDetailsDtos { get; set; }
+        public DbSet<SalesServiceFileUpload> SalesServiceFileUpload { get; set; }
         
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

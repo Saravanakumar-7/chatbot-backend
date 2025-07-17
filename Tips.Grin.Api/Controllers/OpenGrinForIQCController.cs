@@ -489,8 +489,6 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
                                 iqcInventoryTranctionDto.IsStockAvailable = true;
                                 iqcInventoryTranctionDto.UOM = inventoryObject.uom;
-                                iqcInventoryTranctionDto.Issued_By = _createdBy;
-                                iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDto.Warehouse = "OPGIQC";
                                 iqcInventoryTranctionDto.From_Location = "OPGGRIN";
                                 iqcInventoryTranctionDto.TO_Location = "OPGIQC";
@@ -500,7 +498,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                 iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                                 iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
-                                iqcInventoryTranctionDto.ShopOrderNo = "";
+                                iqcInventoryTranctionDto.shopOrderNo = "";
                                 iqcInventoryTranctionDto.Remarks = "OPGIQC Done";
 
                                 string rfqSourcingPPdetailsJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
@@ -579,8 +577,6 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDtos.Issued_Quantity = grinInventoryDto.Balance_Quantity;
                                     iqcInventoryTranctionDtos.IsStockAvailable = false;
                                     iqcInventoryTranctionDtos.UOM = grinInventoryDto.UOM;
-                                    iqcInventoryTranctionDtos.Issued_By = _createdBy;
-                                    iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
                                     iqcInventoryTranctionDtos.Warehouse = grinInventoryDto.Warehouse;
                                     iqcInventoryTranctionDtos.From_Location = "OPGGRIN";
                                     iqcInventoryTranctionDtos.TO_Location = grinInventoryDto.Location;
@@ -590,7 +586,7 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDtos.ReferenceID = grinInventoryDto.ReferenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                     iqcInventoryTranctionDtos.ReferenceIDFrom = "OPGIQC";
                                     iqcInventoryTranctionDtos.GrinMaterialType = "OPGGRIN";
-                                    iqcInventoryTranctionDtos.ShopOrderNo = "";
+                                    iqcInventoryTranctionDtos.shopOrderNo = "";
                                     iqcInventoryTranctionDtos.Remarks = "OPGIQC Done";
 
                                     string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
@@ -852,8 +848,6 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
                                 iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
                                 iqcInventoryTranctionDto.UOM = inventoryObject.uom;
-                                iqcInventoryTranctionDto.Issued_By = _createdBy;
-                                iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDto.Warehouse = "OPGIQC";
                                 iqcInventoryTranctionDto.From_Location = "OPGGRIN";
                                 iqcInventoryTranctionDto.TO_Location = "OPGIQC";
@@ -863,7 +857,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                 iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                                 iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
-                                iqcInventoryTranctionDto.ShopOrderNo = "";
+                                iqcInventoryTranctionDto.shopOrderNo = "";
                                 iqcInventoryTranctionDto.Remarks = "OpenGrinForIqc Done";
 
                                 string rfqSourcingPPdetailsJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
@@ -942,8 +936,6 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDtos.Issued_Quantity = grinInventoryDto.Balance_Quantity;
                                     iqcInventoryTranctionDtos.IsStockAvailable = false;
                                     iqcInventoryTranctionDtos.UOM = grinInventoryDto.UOM;
-                                    iqcInventoryTranctionDtos.Issued_By = _createdBy;
-                                    iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
                                     iqcInventoryTranctionDtos.Warehouse = grinInventoryDto.Warehouse;
                                     iqcInventoryTranctionDtos.From_Location = "OPGGRIN";
                                     iqcInventoryTranctionDtos.TO_Location = grinInventoryDto.Location;
@@ -953,7 +945,7 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDtos.ReferenceID = grinInventoryDto.ReferenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                     iqcInventoryTranctionDtos.ReferenceIDFrom = "OPGIQC";
                                     iqcInventoryTranctionDtos.GrinMaterialType = "OPGGRIN";
-                                    iqcInventoryTranctionDtos.ShopOrderNo = "";
+                                    iqcInventoryTranctionDtos.shopOrderNo = "";
                                     iqcInventoryTranctionDtos.Remarks = "OpenGrinForIqc Done";
 
                                     string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
@@ -1306,8 +1298,6 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
                             iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
                             iqcInventoryTranctionDto.UOM = inventoryObject.uom;
-                            iqcInventoryTranctionDto.Issued_By = _createdBy;
-                            iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                             iqcInventoryTranctionDto.Warehouse = "OPGIQC";
                             iqcInventoryTranctionDto.From_Location = "OPGGRIN";
                             iqcInventoryTranctionDto.TO_Location = "OPGIQC";
@@ -1317,7 +1307,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                             iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                             iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
-                            iqcInventoryTranctionDto.ShopOrderNo = "";
+                            iqcInventoryTranctionDto.shopOrderNo = "";
                             iqcInventoryTranctionDto.Remarks = "OpenGrinForIqcItem Done";
 
                             string rfqSourcingPPdetailsJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
@@ -1394,8 +1384,6 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.ProjectNumber = grinInventoryDto.ProjectNumber;
                                 iqcInventoryTranctionDtos.Issued_Quantity = grinInventoryDto.Balance_Quantity;
                                 iqcInventoryTranctionDtos.IsStockAvailable = false;
-                                iqcInventoryTranctionDto.Issued_By = _createdBy;
-                                iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDtos.UOM = grinInventoryDto.UOM;
                                 iqcInventoryTranctionDtos.Warehouse = grinInventoryDto.Warehouse;
                                 iqcInventoryTranctionDtos.From_Location = grinInventoryDto.Location;
@@ -1406,7 +1394,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.ReferenceID = grinInventoryDto.ReferenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                 iqcInventoryTranctionDtos.ReferenceIDFrom = "OPGIQC";
                                 iqcInventoryTranctionDtos.GrinMaterialType = "OPGGRIN";
-                                iqcInventoryTranctionDtos.ShopOrderNo = "";
+                                iqcInventoryTranctionDtos.shopOrderNo = "";
                                 iqcInventoryTranctionDto.Remarks = "OpenGrinForIqcItem Done";
 
                                 string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
@@ -1670,8 +1658,6 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
                             iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
                             iqcInventoryTranctionDto.UOM = inventoryObject.uom;
-                            iqcInventoryTranctionDto.Issued_By = _createdBy;
-                            iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                             iqcInventoryTranctionDto.Warehouse = "OPGIQC";
                             iqcInventoryTranctionDto.From_Location = "OPGGRIN";
                             iqcInventoryTranctionDto.TO_Location = "OPGIQC";
@@ -1681,7 +1667,7 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                             iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                             iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
-                            iqcInventoryTranctionDto.ShopOrderNo = "";
+                            iqcInventoryTranctionDto.shopOrderNo = "";
                             iqcInventoryTranctionDto.Remarks = "OpenGrinForIqcItem Done";
 
                             string rfqSourcingPPdetailsJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
@@ -1757,8 +1743,6 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.Issued_Quantity = grinInventoryDto.Balance_Quantity;
                                 iqcInventoryTranctionDtos.IsStockAvailable = false;
                                 iqcInventoryTranctionDtos.UOM = grinInventoryDto.UOM;
-                                iqcInventoryTranctionDtos.Issued_By = _createdBy;
-                                iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDtos.Warehouse = grinInventoryDto.Warehouse;
                                 iqcInventoryTranctionDtos.From_Location = grinInventoryDto.Location;
                                 iqcInventoryTranctionDtos.TO_Location = grinInventoryDto.Location;
@@ -1768,7 +1752,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.ReferenceID = grinInventoryDto.ReferenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                 iqcInventoryTranctionDtos.ReferenceIDFrom = "OPGIQC";
                                 iqcInventoryTranctionDtos.GrinMaterialType = "OPGGRIN";
-                                iqcInventoryTranctionDtos.ShopOrderNo = "";
+                                iqcInventoryTranctionDtos.shopOrderNo = "";
                                 iqcInventoryTranctionDtos.Remarks = "OpenGrinForIqcItem Done";
 
                                 string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);

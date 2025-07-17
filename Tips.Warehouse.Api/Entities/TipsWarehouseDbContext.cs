@@ -40,7 +40,7 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<DeliveryOrderTransaction> DeliveryOrderTransactions { get; set; }
         public DbSet<ShopOrderMaterialIssueTracker> ShopOrderMaterialIssueTrackers { get; set; }
         public DbSet<BTODeliveryOrderHistory> BTODeliveryOrderHistories { get; set; }
-
+        public DbSet<InventoryTranctionforServiceItems> InventoryTranctionforServiceItems { get; set; }
         public DbSet<InvoiceAdditionalCharges> InvoiceAdditionalCharges { get; set; }
 
         public DbSet<LocationTransfer> locationTransfers { get; set; }

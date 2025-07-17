@@ -25,10 +25,8 @@ namespace Repository
         }
         public async Task<EnggBom> GetEnggBomByItemNoAndRevNo(string itemNumber, decimal revisionNumber)
         {
-            var EnggBomDetailsbyItemNumber = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == itemNumber && x.RevisionNumber == revisionNumber && x.IsActive == true)
-                               .Include(m => m.NREConsumable)
+            var EnggBomDetailsbyItemNumber = await _tipsMasterDbContext.EnggBoms.Where(x => x.ItemNumber == itemNumber && x.RevisionNumber == revisionNumber && x.IsActive == true)                               
                                .Include(t => t.EnggChildItems)
-                               .ThenInclude(x => x.EnggAlternates)
                              .FirstOrDefaultAsync();
 
             return EnggBomDetailsbyItemNumber;

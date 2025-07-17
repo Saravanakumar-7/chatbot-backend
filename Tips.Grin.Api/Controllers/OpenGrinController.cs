@@ -6,6 +6,7 @@ using AutoMapper;
 using Azure;
 using Contracts;
 using Entities;
+using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -1095,23 +1096,21 @@ namespace Tips.Grin.Api.Controllers
                 await _openGrinRepository.CreateOpenGrin(openGrinDetails);
                 _openGrinRepository.SaveAsync();
 
-                //if (openGrinDetails.OpenGrinParts != null)
-                //{
-                //    foreach (var openGrinPart in openGrinDetails.OpenGrinParts)
-                //    {
-                //        var openGrinPartId = await _openGrinPartsRepository.GetOpenGrinPartsDetailsbyId(openGrinPart.Id);
-                //        openGrinPartsId.LotNumber = openGrinDetails.OpenGrinNumber + openGrinPartId.Id;
-                //        await _openGrinPartsRepository.UpdateOpenGrinParts(openGrinPartId);
-
-                //    }
-                //}
-
+                if (openGrinDetails.OpenGrinParts != null)
+                {
+                    foreach (var openGrinPart in openGrinDetails.OpenGrinParts)
+                    {
+                        openGrinPart.LotNumber = openGrinDetails.OpenGrinNumber + openGrinPart.Id;
+                    }
+                }
+                await _openGrinRepository.UpdateOpenGrinDetails(openGrinDetails);
+                _openGrinRepository.SaveAsync();
 
                 //Create OpenGrin To Inventory And InventoryTransaction
 
-                if (openGrinPartsDtoList != null)
+                if (openGrinDetails.OpenGrinParts != null)
                 {
-                    foreach (var openGrinParts in openGrinPartsDtoList)
+                    foreach (var openGrinParts in openGrinDetails.OpenGrinParts)
                     {
                         var client = _clientFactory.CreateClient();
                         var token = HttpContext.Request.Headers["Authorization"].ToString();
@@ -1148,14 +1147,14 @@ namespace Tips.Grin.Api.Controllers
                                 inventory.Warehouse = openGrinDetail.Warehouse;
                                 inventory.Location = openGrinDetail.Location;
                                 inventory.GrinNo = openGrinDetails.OpenGrinNumber;
-                                inventory.GrinPartId = 0;
-                                inventory.PartType = openGrinParts.ItemType; // we have to take parttype from grinparts model;
-                                inventory.GrinMaterialType = "";
-                                inventory.ReferenceID = Convert.ToString(openGrinParts.Id);
+                                inventory.GrinPartId = openGrinDetails.Id;
+                                inventory.PartType = openGrinParts.ItemType; 
+                                inventory.GrinMaterialType = "OpenGrin";
+                                inventory.ReferenceID = openGrinDetails.OpenGrinNumber;
                                 inventory.ReferenceIDFrom = "OpenGrin";
                                 inventory.ShopOrderNo = "";
                                 inventory.Unit = "";
-                                inventory.LotNumber = openGrinDetails.OpenGrinNumber + openGrinParts.Id;
+                                inventory.LotNumber = openGrinParts.LotNumber;
 
 
                                 var json = JsonConvert.SerializeObject(inventory);
@@ -1176,7 +1175,7 @@ namespace Tips.Grin.Api.Controllers
                                 if (response.StatusCode != HttpStatusCode.OK) createInv = response.StatusCode;
 
 
-                                OGInventoryTranctionDto inventoryTranction = new OGInventoryTranctionDto();
+                                grinInventoryTrasactionPostDto inventoryTranction = new grinInventoryTrasactionPostDto();
 
                                 inventoryTranction.PartNumber = openGrinParts.ItemNumber;
                                 inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
@@ -1186,19 +1185,18 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryTranction.Issued_Quantity = openGrinDetail.Qty;
                                 inventoryTranction.IsStockAvailable = true;
                                 inventoryTranction.UOM = openGrinParts.UOM;
-                                inventoryTranction.Issued_By = _createdBy;
-                                inventoryTranction.Issued_DateTime = DateTime.Now;
                                 inventoryTranction.Warehouse = openGrinDetail.Warehouse;
                                 inventoryTranction.From_Location = openGrinDetail.Location;
                                 inventoryTranction.TO_Location = openGrinDetail.Location;
                                 inventoryTranction.GrinNo = openGrinDetails.OpenGrinNumber;
-                                inventoryTranction.GrinPartId = 0;
-                                inventoryTranction.PartType = openGrinParts.ItemType; // we have to take parttype from grinparts model;
+                                inventoryTranction.GrinPartId = openGrinParts.Id;
+                                inventoryTranction.PartType = openGrinParts.ItemType; 
                                 inventoryTranction.GrinMaterialType = "OpenGrin";
-                                inventoryTranction.ReferenceID = Convert.ToString(openGrinParts.Id);
+                                inventoryTranction.ReferenceID = openGrinDetails.OpenGrinNumber;
                                 inventoryTranction.ReferenceIDFrom = "OpenGrin";
-                                inventoryTranction.ShopOrderNo = "";
+                                inventoryTranction.shopOrderNo = "";
                                 inventoryTranction.Remarks = "OpenGrin Done";
+                                inventoryTranction.TransactionType = InventoryType.Inward;
 
 
                                 var jsons = JsonConvert.SerializeObject(inventoryTranction);
@@ -1209,7 +1207,7 @@ namespace Tips.Grin.Api.Controllers
                                 var token2 = HttpContext.Request.Headers["Authorization"].ToString();
 
                                 var request2 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
-                                "CreateInventoryTranction"))
+                                "CreateInventoryTranctionFromGrin"))
                                 {
                                     Content = datas
                                 };

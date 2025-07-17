@@ -21,6 +21,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<string> UpdateRfqSourcing(RfqSourcing rfqSourcing);
         Task<string> DeleteRfqSourcing(RfqSourcing rfqSourcing);
         Task<IEnumerable<SourcingSPReport>> GetSourcingSPReportWithParam(string Vendor);
+        //Task<IEnumerable<RfqSourcingVendorRemarksDetailsDto>> GetRfqSourcingVendorDetailsByRfqNo(string rfqNo);
         public void SaveAsync();
     }
 }

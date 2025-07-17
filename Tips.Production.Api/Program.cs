@@ -108,6 +108,7 @@ builder.Services.AddScoped<IMaterialIssueItemRepository, MaterialIssueItemReposi
 builder.Services.AddScoped<IOQCBinningRepository, OQCBinningRepository>();
 builder.Services.AddScoped<IAdvitaShopOrderDetailsRepository, AdvitaShopOrderDetailsRepository>();
 builder.Services.AddScoped<ITokenValidationService, TokenValidationService>();
+builder.Services.AddScoped<IMaterialIssueLocationRepository, MaterialIssueLocationRepository>();
 
 //builder.Services.AddTransient<IMaterialReturnNoteItemRepository, Mater>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

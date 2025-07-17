@@ -870,29 +870,48 @@ namespace Tips.Warehouse.Api.Controllers
                         ////Add BTO Detail Into Inventory transaction Table
                         foreach (var eachbin in bTODeliveryOrderItemsDetails.QtyDistribution)
                         {
-                            InventoryTranction inventoryTranction = new InventoryTranction();
-                            inventoryTranction.PartNumber = bTODoItemList[i].FGItemNumber;
-                            inventoryTranction.LotNumber = eachbin.LotNumber;
-                            inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
-                            inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
-                            inventoryTranction.PartType = PartType.FG;
-                            inventoryTranction.Description = bTODoItemList[i].Description;
-                            inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
-                            inventoryTranction.IsStockAvailable = true;
-                            inventoryTranction.UOM = bTODoItemList[i].UOM;
-                            inventoryTranction.Issued_DateTime = DateTime.Now;
-                            inventoryTranction.Issued_By = _createdBy;
-                            inventoryTranction.ReferenceID = bTODeliveryOrder.BTONumber;
-                            inventoryTranction.ReferenceIDFrom = "BTO Delivery Order";
-                            inventoryTranction.From_Location = eachbin.Location;
-                            inventoryTranction.TO_Location = "BTO";
-                            inventoryTranction.Warehouse = eachbin.Warehouse;
-                            inventoryTranction.Remarks = "Create BTO";
+                            //InventoryTranction inventoryTranction = new InventoryTranction();
+                            //inventoryTranction.PartNumber = bTODoItemList[i].FGItemNumber;
+                            //inventoryTranction.LotNumber = eachbin.LotNumber;
+                            //inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
+                            //inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                            //inventoryTranction.PartType = PartType.FG;
+                            //inventoryTranction.Description = bTODoItemList[i].Description;
+                            //inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
+                            //inventoryTranction.IsStockAvailable = true;
+                            //inventoryTranction.UOM = bTODoItemList[i].UOM;
+                            //inventoryTranction.Issued_DateTime = DateTime.Now;
+                            //inventoryTranction.Issued_By = _createdBy;
+                            //inventoryTranction.ReferenceID = bTODeliveryOrder.BTONumber;
+                            //inventoryTranction.ReferenceIDFrom = "BTO Delivery Order";
+                            //inventoryTranction.From_Location = eachbin.Location;
+                            //inventoryTranction.TO_Location = "BTO";
+                            //inventoryTranction.Warehouse = eachbin.Warehouse;
+                            //inventoryTranction.Remarks = "Create BTO";
 
-                            var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+                            InventoryTranction inventoryTranctionPost1 = new InventoryTranction();
+                            inventoryTranctionPost1.PartNumber = bTODoItemList[i].FGItemNumber;
+                            inventoryTranctionPost1.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                            inventoryTranctionPost1.ProjectNumber = eachbin.ProjectNumber;
+                            inventoryTranctionPost1.Description = bTODoItemList[i].Description;
+                            inventoryTranctionPost1.Issued_Quantity = eachbin.DistributingQty;
+                            inventoryTranctionPost1.LotNumber = eachbin.LotNumber;
+                            inventoryTranctionPost1.UOM = bTODoItemList[i].UOM;
+                            inventoryTranctionPost1.Unit = _unitname;
+                            inventoryTranctionPost1.IsStockAvailable = false;
+                            inventoryTranctionPost1.Warehouse = eachbin.Warehouse;
+                            inventoryTranctionPost1.From_Location = "BTO";
+                            inventoryTranctionPost1.TO_Location = eachbin.Location;
+                            inventoryTranctionPost1.PartType = bTODoItemList[i].PartType;
+                            inventoryTranctionPost1.ReferenceID = bTODeliveryOrder.BTONumber;
+                            inventoryTranctionPost1.ReferenceIDFrom = "BTO Delivery Order";
+                            inventoryTranctionPost1.Remarks = "BTO Delivery Order";
+                            inventoryTranctionPost1.TransactionType = InventoryType.Outward;
+
+                           // var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
 
 
-                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost1);
 
 
 

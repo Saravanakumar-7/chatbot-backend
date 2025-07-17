@@ -82,6 +82,31 @@ namespace Tips.SalesService.Api.Repository
 
             return rfqSourcingByRfqNo;
         }
+
+        //public async Task<IEnumerable<RfqSourcingVendorRemarksDetailsDto>> GetRfqSourcingVendorDetailsByRfqNo(string rfqNo)
+        //{
+        //    var rfqSourcingId = await _tipsSalesServiceDbContext.RfqSourcings.Where(x => x.RFQNumber == rfqNo)
+        //                      .Select(x=>x.Id)
+        //                   .FirstOrDefaultAsync();
+
+        //    var rfqSourcingItemIds = await _tipsSalesServiceDbContext.RfqSourcingItems.Where(x => x.RfqSourcingId == rfqSourcingId)
+        //                     .Select(x => x.Id)
+        //                  .ToListAsync();
+
+        //    var rfqSourcingVendorRemarksDetails = await _tipsSalesServiceDbContext.RfqSourcingVendors
+        //                            .Where(x => rfqSourcingItemIds.Contains(x.RfqSourcingItemsId) && x.Primary == true)
+        //                            .Select(x => new RfqSourcingVendorRemarksDetailsDto
+        //                            {
+        //                                VendorId = x.VendorId,
+        //                                Vendor = x.Vendor,
+        //                                Remarks = x.Remarks
+        //                            })
+        //                            .ToListAsync();
+
+
+        //    return rfqSourcingVendorRemarksDetails;
+        //}
+
         public async Task<RfqSourcingVendorDetailsDto> GetRfqSourcingVendorDetails(string ProjectNumber, string ItemNumber, string VendorId)
         {
             var rfqSourcingByRfqNo = await _tipsSalesServiceDbContext.RfqSourcings.Where(x => x.RFQNumber == ProjectNumber)
