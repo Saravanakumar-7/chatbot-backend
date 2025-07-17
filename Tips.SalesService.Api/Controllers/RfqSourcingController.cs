@@ -16,6 +16,8 @@ using MySqlX.XDevAPI;
 using NuGet.Common;
 using NPOI.Util;
 using Microsoft.AspNetCore.StaticFiles;
+using Google.Protobuf.WellKnownTypes;
+using System.Text.RegularExpressions;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -28,6 +30,7 @@ namespace Tips.SalesService.Api.Controllers
     {
         private IRfqSourcingRepository _repository;
         private IRfqEnggItemRepository _rfqEnggItemRepository;
+        private IRfqLPCostingRepository _rfqlpcostingRepository;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private IRfqRepository _rfqRepository;
@@ -35,9 +38,10 @@ namespace Tips.SalesService.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
-        public RfqSourcingController(IRfqSourcingRepository repository, IHttpClientFactory clientFactory, IRfqRepository rfqRepository, IRfqEnggItemRepository rfqEnggItemRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, ISalesServiceFileUploadRepository salesServiceFileUploadRepository)
+        public RfqSourcingController(IRfqSourcingRepository repository, IRfqLPCostingRepository rfqlpcostingRepository, IHttpClientFactory clientFactory, IRfqRepository rfqRepository, IRfqEnggItemRepository rfqEnggItemRepository, ILoggerManager logger, IMapper mapper, HttpClient httpClient, IConfiguration config, ISalesServiceFileUploadRepository salesServiceFileUploadRepository)
         {
             _repository = repository;
+            _rfqlpcostingRepository = rfqlpcostingRepository;
             _logger = logger;
             _mapper = mapper;
             _rfqRepository = rfqRepository;
@@ -240,7 +244,7 @@ namespace Tips.SalesService.Api.Controllers
                     _logger.LogError($"rfqsourcingVendor with rfqNo: {rfqNo}, hasn't been found.");
                     return Ok(serviceResponse);
                 }
-                var result =new List<RfqSourcingVendorRemarksDetailsDto>();
+                var result = new List<RfqSourcingVendorRemarksDetailsDto>();
                 //foreach(var item in rfqSourcingByRfqNo.RfqSourcingItems)
                 rfqSourcingByRfqNo.RfqSourcingItems.ForEach(f =>
                 {
@@ -252,11 +256,11 @@ namespace Tips.SalesService.Api.Controllers
                         Remarks = f.RfqSourcingVendors.Where(x => x.Primary == true).Select(x => x.Remarks).FirstOrDefault(),
                     });
                 });
-                    serviceResponse.Data = result;
-                    serviceResponse.Message = $"Returned RfqsourcingVendorDetails with rfqNo: {rfqNo}";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
+                serviceResponse.Data = result;
+                serviceResponse.Message = $"Returned RfqsourcingVendorDetails with rfqNo: {rfqNo}";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
@@ -877,24 +881,62 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        //[HttpGet]
-        //public async Task<IActionResult> GetGreatestLeadTimewithNoofDaysbyRfqNumber([FromQuery] string RfqNumber)
-        //{
-        //    ServiceResponse<LeadTimeandNoofdays> serviceResponse = new ServiceResponse<LeadTimeandNoofdays>();
-        //    try
-        //    {
-        //        var Sourcing = await _repository.GetRfqSourcingDetailsByRfqNo(RfqNumber);
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Error Occured in GetGreatestLeadTimewithNoofDaysbyRfqNumber API for RfqNumber:{RfqNumber} : \n {ex.Message} \n{ex.InnerException}");
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = $"Error Occured in GetGreatestLeadTimewithNoofDaysbyRfqNumber API for RfqNumber:{RfqNumber} : \n {ex.Message}";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    }
-        //}
+        [HttpGet]
+        public async Task<IActionResult> GetGreatestLeadTimewithNoofDaysbyRfqNumber([FromQuery] string RfqNumber)
+        {
+            ServiceResponse<LeadTimeandNoofdays> serviceResponse = new ServiceResponse<LeadTimeandNoofdays>();
+            try
+            {
+                var result = new LeadTimeandNoofdays();
+                result.itemNumberandNoofdays = new List<ItemNumberandNoofdays>();
+                var LPcosting = await _rfqlpcostingRepository.GetRfqLPCostingByRfqNumber(RfqNumber);
+                if (LPcosting == null)
+                {
+                    _logger.LogError($"Error Occured in GetGreatestLeadTimewithNoofDaysbyRfqNumber API for RfqNumber:{RfqNumber} : \n LPCosting is not completed");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Error Occured in GetGreatestLeadTimewithNoofDaysbyRfqNumber API for RfqNumber:{RfqNumber} : \n LPCosting is not completed";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return StatusCode(404, serviceResponse);
+                }
+                LPcosting.RfqLPCostingItems.ForEach(item =>
+                {
+                    ItemNumberandNoofdays itemNumberandNoofdays = new ItemNumberandNoofdays()
+                    {
+                        ItemNumber = item.ItemNumber,
+                        NoOfDays = item.NoOfDays
+                    };
+                    result.itemNumberandNoofdays.Add(itemNumberandNoofdays);
+                });
+                var Sourcing = await _repository.GetRfqSourcingDetailsByRfqNo(RfqNumber);
+                List<string> MaxLeadtime = new List<string>();
+                Sourcing.RfqSourcingItems.ForEach(i => MaxLeadtime.Add(i.RfqSourcingVendors.Where(a => a.Primary == true && a.LeadTime != null).Select(s => s.LeadTime).FirstOrDefault()));
+                MaxLeadtime = MaxLeadtime.Distinct().ToList();
+                result.LeadTime = MaxLeadtime.Select(s =>
+                {
+                    var match = Regex.Match(s, @"(\d+)\s*Days,\s*(\d+)\s*Weeks");
+                    return new
+                    {
+                        Original = s,
+                        Days = int.Parse(match.Groups[1].Value),
+                        Weeks = int.Parse(match.Groups[2].Value)
+                    };
+                }).OrderByDescending(x => x.Days).ThenByDescending(x => x.Weeks).First().Original;
+                serviceResponse.Data = result;
+                serviceResponse.Message = "GetGreatestLeadTimewithNoofDaysbyRfqNumber was successfull";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return StatusCode(200, serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetGreatestLeadTimewithNoofDaysbyRfqNumber API for RfqNumber:{RfqNumber} : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetGreatestLeadTimewithNoofDaysbyRfqNumber API for RfqNumber:{RfqNumber} : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

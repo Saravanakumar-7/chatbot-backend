@@ -68,7 +68,7 @@ namespace Tips.Master.Api.Controllers
                     {
                         if (ProductionBOMList.ContainsKey(bomitems.ItemNumber))
                         {
-                            decimal saValue = await Weighted_Calculation(bomitems.ItemNumber, ProductionBOMList[bomitems.ItemNumber], ProductionBOMList);
+                            decimal saValue = await Weighted_Calculation(bomitems.ItemNumber, ProductionBOMList[bomitems.ItemNumber], ProductionBOMList, AllPPWeight);
                             ppQtyandWeight += (saValue * bomitems.Quantity);
                         }
                     }
