@@ -18,11 +18,6 @@ namespace Tips.Grin.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public bool IsDeleted { get; set; } = false;
-
         public List<BinningItems>? BinningItems { get; set; }
-      
-
-
-
     }
 }

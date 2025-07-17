@@ -154,8 +154,7 @@ namespace Tips.Warehouse.Api
             CreateMap<LocationTransferPartNo, LocationTransferPartNoDto>().ReverseMap();
             CreateMap<LocationTransferPartNo, LocationTransferPartNoPostDto>().ReverseMap();
 
-
-            //CreateMap<Inventory, ConsumptionDto>().ReverseMap();
+            CreateMap<InventoryTranctionforServiceItems, InventoryTranctionforServiceItemsPostDto>().ReverseMap();
 
 
 

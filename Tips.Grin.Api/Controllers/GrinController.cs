@@ -1,49 +1,27 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Tips.Grin.Api.Entities.DTOs;
-using Tips.Grin.Api.Entities;
-using AutoMapper;
-using Tips.Grin.Api.Contracts;
+﻿using AutoMapper;
 using Contracts;
-using Microsoft.EntityFrameworkCore;
-using System.Net;
 using Entities;
-using Newtonsoft.Json;
-using System.Text.Json.Serialization;
-using Entities.DTOs;
-using Tips.Grin.Api.Repository;
-using System.IO;
-using System.Web;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Hosting.Server;
-using Microsoft.Extensions.Hosting.Internal;
-using Microsoft.Extensions.Hosting;
-using System;
-using Microsoft.AspNetCore.Http;
-using System.Net.Http;
-using System.Text;
-using System.Dynamic;
-using Azure.Core;
-using Microsoft.AspNetCore.StaticFiles;
+using Entities.Enums;
+using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
-using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http.Headers;
-using Org.BouncyCastle.Asn1.Ocsp;
-using Azure;
-using Mysqlx.Crud;
-using Org.BouncyCastle.Asn1.Anssi;
-using MySqlX.XDevAPI.Common;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.IdentityModel.Tokens;
 using MimeKit;
 using MimeKit.Text;
-using EmailTemplateDto = Tips.Grin.Api.Entities.DTOs.EmailTemplateDto;
-using MailKit.Security;
+using Newtonsoft.Json;
+using System.Net;
 using System.Security.Claims;
 using MySqlX.XDevAPI;
 using Newtonsoft.Json.Linq;
 using Mysqlx.Session;
 using Google.Protobuf.WellKnownTypes;
 using Mysqlx;
+using System.Text;
+using Tips.Grin.Api.Contracts;
+using Tips.Grin.Api.Entities;
+using Tips.Grin.Api.Entities.DTOs;
+using EmailTemplateDto = Tips.Grin.Api.Entities.DTOs.EmailTemplateDto;
 
 //Test
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -740,7 +718,6 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryDto.GrinMaterialType = "";
                             grinInventoryDto.ShopOrderNo = "";
 
-
                             var json = JsonConvert.SerializeObject(grinInventoryDto);
                             var data = new StringContent(json, Encoding.UTF8, "application/json");
                             var client1 = _clientFactory.CreateClient();
@@ -757,16 +734,7 @@ namespace Tips.Grin.Api.Controllers
                             {
                                 createinvResp = response.StatusCode;
                             }
-                        }
-                    }
-                }
 
-                foreach (var parts in grinPartsList)
-                {
-                    if (parts.ProjectNumbers != null)
-                    {
-                        foreach (var project in parts.ProjectNumbers)
-                        {
                             grinInventoryTrasactionPostDto grinInventoryTranctionDto = new grinInventoryTrasactionPostDto();
                             grinInventoryTranctionDto.PartNumber = parts.ItemNumber;
                             grinInventoryTranctionDto.LotNumber = parts.LotNumber;
@@ -774,8 +742,6 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryTranctionDto.Description = parts.ItemDescription;
                             grinInventoryTranctionDto.ProjectNumber = project.ProjectNumber;
                             grinInventoryTranctionDto.Issued_Quantity = Convert.ToDecimal(project.ProjectQty);
-                            grinInventoryTranctionDto.Issued_DateTime = DateTime.Now;
-                            grinInventoryTranctionDto.Issued_By = _createdBy;
                             grinInventoryTranctionDto.UOM = parts.UOM;
                             grinInventoryTranctionDto.Warehouse = "GRIN";
                             grinInventoryTranctionDto.From_Location = "GRIN";
@@ -789,22 +755,23 @@ namespace Tips.Grin.Api.Controllers
                             grinInventoryTranctionDto.shopOrderNo = "";
                             grinInventoryTranctionDto.IsStockAvailable = true;
                             grinInventoryTranctionDto.Remarks = "GRIN";
+                            grinInventoryTranctionDto.TransactionType = InventoryType.Inward;
 
-                            var json = JsonConvert.SerializeObject(grinInventoryTranctionDto);
-                            var data = new StringContent(json, Encoding.UTF8, "application/json");
-                            var client1 = _clientFactory.CreateClient();
-                            var token1 = HttpContext.Request.Headers["Authorization"].ToString();
-                            var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                            var json11 = JsonConvert.SerializeObject(grinInventoryTranctionDto);
+                            var data11 = new StringContent(json11, Encoding.UTF8, "application/json");
+                            var client11 = _clientFactory.CreateClient();
+                            var token11 = HttpContext.Request.Headers["Authorization"].ToString();
+                            var request11 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
                             "CreateInventoryTranctionFromGrin"))
                             {
-                                Content = data
+                                Content = data11
                             };
-                            request1.Headers.Add("Authorization", token1);
+                            request11.Headers.Add("Authorization", token11);
 
-                            var response = await client1.SendAsync(request1);
-                            if (response.StatusCode != HttpStatusCode.OK)
+                            var response11 = await client11.SendAsync(request11);
+                            if (response11.StatusCode != HttpStatusCode.OK)
                             {
-                                createinvTrancResp = response.StatusCode;
+                                createinvTrancResp = response11.StatusCode;
                             }
                         }
                     }
@@ -1178,7 +1145,7 @@ namespace Tips.Grin.Api.Controllers
                             {
                                 inventoryObject.warehouse = "IQC";
                                 inventoryObject.location = "IQC";
-                                inventoryObject.referenceIDFrom = "GRIN";
+                                inventoryObject.referenceIDFrom = "IQC";
                                 acceptedQty -= balanceQty;
 
                             }
@@ -1189,7 +1156,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObject.balance_Quantity = acceptedQty;
                                     inventoryObject.warehouse = "IQC";
                                     inventoryObject.location = "IQC";
-                                    inventoryObject.referenceIDFrom = "GRIN";
+                                    inventoryObject.referenceIDFrom = "IQC";
                                     flag1 = 1;
                                 }
                                 else
@@ -1202,7 +1169,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObject.balance_Quantity = acceptedQty;
                                     inventoryObject.warehouse = "IQC";
                                     inventoryObject.location = "IQC";
-                                    inventoryObject.referenceIDFrom = "GRIN";
+                                    inventoryObject.referenceIDFrom = "IQC";
                                     acceptedQty = 0;
                                 }
                             }
@@ -1222,7 +1189,6 @@ namespace Tips.Grin.Api.Controllers
                             if (response.StatusCode != HttpStatusCode.OK) updateInv = response.StatusCode;
 
                             //InventoryTranction Update Code
-
                             IQCInventoryTranctionDto iqcInventoryTranctionDto = new IQCInventoryTranctionDto();
                             iqcInventoryTranctionDto.PartNumber = inventoryObject.partNumber;
                             iqcInventoryTranctionDto.LotNumber = inventoryObject.lotNumber;
@@ -1230,8 +1196,6 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.Description = inventoryObject.description;
                             iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
                             iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
-                            iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
-                            iqcInventoryTranctionDto.Issued_By = _createdBy;
                             iqcInventoryTranctionDto.UOM = inventoryObject.uom;
                             iqcInventoryTranctionDto.Warehouse = "IQC";
                             iqcInventoryTranctionDto.From_Location = "GRIN";
@@ -1239,12 +1203,13 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo;
                             iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
                             iqcInventoryTranctionDto.PartType = inventoryObject.partType;
-                            iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;/* Convert.ToString(grinPartsDetails.Id);*/
+                            iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;
                             iqcInventoryTranctionDto.ReferenceIDFrom = "IQC";
                             iqcInventoryTranctionDto.GrinMaterialType = "GRIN";
-                            iqcInventoryTranctionDto.ShopOrderNo = "";
+                            iqcInventoryTranctionDto.shopOrderNo = "";
                             iqcInventoryTranctionDto.Remarks = "GRINIQC Done";
                             iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
+                            iqcInventoryTranctionDto.TransactionType = InventoryType.Inward;
 
                             string rfqSourcingPPdetailsJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
                             var contents = new StringContent(rfqSourcingPPdetailsJsons, Encoding.UTF8, "application/json");
@@ -1259,6 +1224,42 @@ namespace Tips.Grin.Api.Controllers
 
                             var inventoryTransResponses = await client7.SendAsync(request7);
                             if (inventoryTransResponses.StatusCode != HttpStatusCode.OK) createInvTranc = inventoryTransResponses.StatusCode;
+
+                                IQCInventoryTranctionDto GRINInventoryTranctionDto = new IQCInventoryTranctionDto();
+                                GRINInventoryTranctionDto.PartNumber = inventoryObject.partNumber;
+                                GRINInventoryTranctionDto.LotNumber = inventoryObject.lotNumber;
+                                GRINInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
+                                GRINInventoryTranctionDto.Description = inventoryObject.description;
+                                GRINInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
+                                GRINInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                                GRINInventoryTranctionDto.UOM = inventoryObject.uom;
+                                GRINInventoryTranctionDto.Warehouse = "GRIN";
+                                GRINInventoryTranctionDto.From_Location = "GRIN";
+                                GRINInventoryTranctionDto.TO_Location = "IQC";
+                                GRINInventoryTranctionDto.GrinNo = inventoryObject.grinNo;
+                                GRINInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
+                                GRINInventoryTranctionDto.PartType = inventoryObject.partType;
+                                GRINInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;
+                                GRINInventoryTranctionDto.ReferenceIDFrom = "GRIN";
+                                GRINInventoryTranctionDto.GrinMaterialType = "GRIN";
+                                GRINInventoryTranctionDto.shopOrderNo = "";
+                                GRINInventoryTranctionDto.Remarks = "GRINIQC Done";
+                                GRINInventoryTranctionDto.IsStockAvailable = false;
+                                GRINInventoryTranctionDto.TransactionType = InventoryType.Outward;
+
+                                string rfqSourcingPPdetailsJsons_1 = JsonConvert.SerializeObject(GRINInventoryTranctionDto);
+                                var contents_1 = new StringContent(rfqSourcingPPdetailsJsons_1, Encoding.UTF8, "application/json");
+                                var client7_1 = _clientFactory.CreateClient();
+                                var token7_1 = HttpContext.Request.Headers["Authorization"].ToString();
+                                var request7_1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                                "CreateInventoryTranction"))
+                                {
+                                    Content = contents_1
+                                };
+                                request7_1.Headers.Add("Authorization", token7_1);
+
+                                var inventoryTransResponses_1 = await client7_1.SendAsync(request7_1);
+                                if (inventoryTransResponses_1.StatusCode != HttpStatusCode.OK) createInvTranc = inventoryTransResponses_1.StatusCode;
 
                             if (iqcConfirmationItemsDto.RejectedQty != 0 && acceptedQty == 0 && (flag1 == 1 || flag2 == 1))
                             {
@@ -1315,9 +1316,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.Description = grinInventoryDto.Description;
                                 iqcInventoryTranctionDtos.ProjectNumber = grinInventoryDto.ProjectNumber;
                                 iqcInventoryTranctionDtos.Issued_Quantity = grinInventoryDto.Balance_Quantity;
-                                iqcInventoryTranctionDtos.IsStockAvailable = false;
-                                iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
-                                iqcInventoryTranctionDtos.Issued_By = _createdBy;
+                                iqcInventoryTranctionDtos.IsStockAvailable = true;
                                 iqcInventoryTranctionDtos.UOM = grinInventoryDto.UOM;
                                 iqcInventoryTranctionDtos.Warehouse = grinInventoryDto.Warehouse;
                                 iqcInventoryTranctionDtos.From_Location = "GRIN";
@@ -1325,11 +1324,13 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.GrinNo = grinInventoryDto.GrinNo;
                                 iqcInventoryTranctionDtos.GrinPartId = grinInventoryDto.GrinPartId;
                                 iqcInventoryTranctionDtos.PartType = grinInventoryDto.PartType;
-                                iqcInventoryTranctionDtos.ReferenceID = grinInventoryDto.GrinNo;/* Convert.ToString(grinPartsDetails.Id);*/
+                                iqcInventoryTranctionDtos.ReferenceID = grinInventoryDto.GrinNo;
                                 iqcInventoryTranctionDtos.ReferenceIDFrom = "IQC";
                                 iqcInventoryTranctionDtos.GrinMaterialType = "GRIN";
-                                iqcInventoryTranctionDtos.ShopOrderNo = "";
+                                iqcInventoryTranctionDtos.shopOrderNo = "";
                                 iqcInventoryTranctionDtos.Remarks = "GRINIQC Done";
+                                iqcInventoryTranctionDtos.TransactionType = InventoryType.Inward;
+
                                 //iqcInventoryTranctionDtos.IsStockAvailable = grinInventoryDto.is
 
                                 string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
@@ -1484,7 +1485,7 @@ namespace Tips.Grin.Api.Controllers
                             {
                                 inventoryObject.warehouse = "IQC";
                                 inventoryObject.location = "IQC";
-                                inventoryObject.referenceIDFrom = "GRIN";
+                                inventoryObject.referenceIDFrom = "IQC";
                                 acceptedQty -= balanceQty;
 
                             }
@@ -1495,7 +1496,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObject.balance_Quantity = acceptedQty;
                                     inventoryObject.warehouse = "IQC";
                                     inventoryObject.location = "IQC";
-                                    inventoryObject.referenceIDFrom = "GRIN";
+                                    inventoryObject.referenceIDFrom = "IQC";
                                     inventoryObject.isStockAvailable = false;
                                     flag1 = 1;
                                 }
@@ -1509,7 +1510,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryObject.balance_Quantity = acceptedQty;
                                     inventoryObject.warehouse = "IQC";
                                     inventoryObject.location = "IQC";
-                                    inventoryObject.referenceIDFrom = "GRIN";
+                                    inventoryObject.referenceIDFrom = "IQC";
                                     acceptedQty = 0;
                                 }
                             }
@@ -1527,7 +1528,7 @@ namespace Tips.Grin.Api.Controllers
 
                             var response = await client5.SendAsync(request5);
                             if (response.StatusCode != HttpStatusCode.OK) updateInv = response.StatusCode;
-
+                                                        
                             IQCInventoryTranctionDto iqcInventoryTranctionDto = new IQCInventoryTranctionDto();
                             iqcInventoryTranctionDto.PartNumber = inventoryObject.partNumber;
                             iqcInventoryTranctionDto.LotNumber = inventoryObject.lotNumber;
@@ -1535,8 +1536,6 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.Description = inventoryObject.description;
                             iqcInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
                             iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
-                            iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
-                            iqcInventoryTranctionDto.Issued_By = _createdBy;
                             iqcInventoryTranctionDto.UOM = inventoryObject.uom;
                             iqcInventoryTranctionDto.Warehouse = "IQC";
                             iqcInventoryTranctionDto.From_Location = "GRIN";
@@ -1544,12 +1543,13 @@ namespace Tips.Grin.Api.Controllers
                             iqcInventoryTranctionDto.GrinNo = inventoryObject.grinNo;
                             iqcInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
                             iqcInventoryTranctionDto.PartType = inventoryObject.partType;
-                            iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;/* Convert.ToString(grinPartsDetails.Id);*/
+                            iqcInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;
                             iqcInventoryTranctionDto.ReferenceIDFrom = "IQC";
                             iqcInventoryTranctionDto.GrinMaterialType = "GRIN";
-                            iqcInventoryTranctionDto.ShopOrderNo = "";
+                            iqcInventoryTranctionDto.shopOrderNo = "";
                             iqcInventoryTranctionDto.Remarks = "GRINIQC Done";
                             iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
+                            iqcInventoryTranctionDto.TransactionType = InventoryType.Inward;
 
                             string rfqSourcingPPdetailsJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
                             var contents = new StringContent(rfqSourcingPPdetailsJsons, Encoding.UTF8, "application/json");
@@ -1564,6 +1564,43 @@ namespace Tips.Grin.Api.Controllers
 
                             var inventoryTransResponses = await client7.SendAsync(request7);
                             if (inventoryTransResponses.StatusCode != HttpStatusCode.OK) createInvTranc1 = inventoryTransResponses.StatusCode;
+
+
+                            IQCInventoryTranctionDto GRINInventoryTranctionDto = new IQCInventoryTranctionDto();
+                            GRINInventoryTranctionDto.PartNumber = inventoryObject.partNumber;
+                            GRINInventoryTranctionDto.LotNumber = inventoryObject.lotNumber;
+                            GRINInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
+                            GRINInventoryTranctionDto.Description = inventoryObject.description;
+                            GRINInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
+                            GRINInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                            GRINInventoryTranctionDto.UOM = inventoryObject.uom;
+                            GRINInventoryTranctionDto.Warehouse = "GRIN";
+                            GRINInventoryTranctionDto.From_Location = "GRIN";
+                            GRINInventoryTranctionDto.TO_Location = "IQC";
+                            GRINInventoryTranctionDto.GrinNo = inventoryObject.grinNo;
+                            GRINInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
+                            GRINInventoryTranctionDto.PartType = inventoryObject.partType;
+                            GRINInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;
+                            GRINInventoryTranctionDto.ReferenceIDFrom = "GRIN";
+                            GRINInventoryTranctionDto.GrinMaterialType = "GRIN";
+                            GRINInventoryTranctionDto.shopOrderNo = "";
+                            GRINInventoryTranctionDto.Remarks = "GRINIQC Done";
+                            GRINInventoryTranctionDto.IsStockAvailable = false;
+                            GRINInventoryTranctionDto.TransactionType = InventoryType.Outward;
+
+                            string rfqSourcingPPdetailsJsons_1 = JsonConvert.SerializeObject(GRINInventoryTranctionDto);
+                            var contents_1 = new StringContent(rfqSourcingPPdetailsJsons_1, Encoding.UTF8, "application/json");
+                            var client7_1 = _clientFactory.CreateClient();
+                            var token7_1 = HttpContext.Request.Headers["Authorization"].ToString();
+                            var request7_1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                            "CreateInventoryTranction"))
+                            {
+                                Content = contents_1
+                            };
+                            request7_1.Headers.Add("Authorization", token7_1);
+
+                            var inventoryTransResponses_1 = await client7_1.SendAsync(request7_1);
+                            if (inventoryTransResponses_1.StatusCode != HttpStatusCode.OK) createInvTranc = inventoryTransResponses_1.StatusCode;
 
                             if (iqcConfirmationItemsDto.RejectedQty != 0 && acceptedQty == 0 && (flag1 == 1 || flag2 == 1))
                             {
@@ -1616,7 +1653,6 @@ namespace Tips.Grin.Api.Controllers
 
 
                                 //InventoryTranction Update Code
-
                                 IQCInventoryTranctionDto iqcInventoryTranctionDtos = new IQCInventoryTranctionDto();
                                 iqcInventoryTranctionDtos.PartNumber = grinInventoryDto.PartNumber;
                                 iqcInventoryTranctionDtos.LotNumber = grinInventoryDto.LotNumber;
@@ -1624,9 +1660,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.Description = grinInventoryDto.Description;
                                 iqcInventoryTranctionDtos.ProjectNumber = grinInventoryDto.ProjectNumber;
                                 iqcInventoryTranctionDtos.Issued_Quantity = grinInventoryDto.Balance_Quantity;
-                                iqcInventoryTranctionDtos.IsStockAvailable = false;
-                                iqcInventoryTranctionDtos.Issued_DateTime = DateTime.Now;
-                                iqcInventoryTranctionDtos.Issued_By = _createdBy;
+                                iqcInventoryTranctionDtos.IsStockAvailable = true;
                                 iqcInventoryTranctionDtos.UOM = grinInventoryDto.UOM;
                                 iqcInventoryTranctionDtos.Warehouse = grinInventoryDto.Warehouse;
                                 iqcInventoryTranctionDtos.From_Location = "GRIN";
@@ -1634,11 +1668,12 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDtos.GrinNo = grinInventoryDto.GrinNo;
                                 iqcInventoryTranctionDtos.GrinPartId = grinInventoryDto.GrinPartId;
                                 iqcInventoryTranctionDtos.PartType = grinInventoryDto.PartType;
-                                iqcInventoryTranctionDtos.ReferenceID = grinInventoryDto.GrinNo;/* Convert.ToString(grinPartsDetails.Id);*/
+                                iqcInventoryTranctionDtos.ReferenceID = grinInventoryDto.GrinNo;
                                 iqcInventoryTranctionDtos.ReferenceIDFrom = "IQC";
                                 iqcInventoryTranctionDtos.GrinMaterialType = "GRIN";
-                                iqcInventoryTranctionDtos.ShopOrderNo = "";
+                                iqcInventoryTranctionDtos.shopOrderNo = "";
                                 iqcInventoryTranctionDtos.Remarks = "GRINIQC Done";
+                                iqcInventoryTranctionDtos.TransactionType = InventoryType.Inward;
 
                                 string iqcInventoryTranctionDtoJsons = JsonConvert.SerializeObject(iqcInventoryTranctionDtos);
                                 var contents1 = new StringContent(iqcInventoryTranctionDtoJsons, Encoding.UTF8, "application/json");
@@ -1751,7 +1786,7 @@ namespace Tips.Grin.Api.Controllers
                 }
                 _logger.LogInfo($"GrinFile Successfully Created");
                 serviceResponse.Data = id_s;
-                serviceResponse.Message = " GrinFile Successfully Created";
+                serviceResponse.Message = "CreateGrinFileUpload Successfull";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

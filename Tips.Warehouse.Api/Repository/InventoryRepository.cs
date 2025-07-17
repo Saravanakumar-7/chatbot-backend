@@ -1213,6 +1213,14 @@ namespace Tips.Warehouse.Api.Repository
 
             return getInventoryDetailsById;
         }
+        public async Task<List<Inventory>> GetAllIQCInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber)
+        {
+            var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventories.Where(x => x.GrinNo == GrinNo && x.Warehouse == "IQC" && x.Location == "IQC" &&
+                                        x.GrinPartId == GrinPartsId && x.PartNumber == ItemNumber &&
+                                        x.ProjectNumber == ProjectNumber && x.IsStockAvailable == true).ToListAsync();
+
+            return getInventoryDetailsById;
+        }
         public async Task<List<Inventory>> GetIQCItemInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber)
         {
             var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventories.Where(x => x.GrinNo == GrinNo && x.Warehouse == "IQC" && x.Location == "IQC" &&
@@ -1294,7 +1302,6 @@ namespace Tips.Warehouse.Api.Repository
         }
 
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandLocationandwarehouse(string ItemNumber, string Location, string Warehouse, string projectNumber, string lotNumber)
-
         {
             var getInventoryDetailsByItemAndLoc = await _tipsWarehouseDbContext.Inventories
                 .Where(x => x.PartNumber == ItemNumber && x.Location == Location && x.Warehouse == Warehouse
@@ -1335,8 +1342,8 @@ namespace Tips.Warehouse.Api.Repository
         {
             if (MRNumber=="NULL")
             {
-                var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber
-                && x.IsStockAvailable == true && x.Location == "WIP" && x.Warehouse == "WIP" && x.shopOrderNo == ShopOrderNumber && x.ReferenceIDFrom == "Material Issue")
+                var inventoryDetail = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == ItemNumber && x.IsStockAvailable == true && x.Location == "WIP" 
+                && x.Warehouse == "WIP" && x.shopOrderNo == ShopOrderNumber && x.ReferenceIDFrom == "Material Issue")
                               .ToListAsync();
                 return inventoryDetail;
             }
@@ -1699,7 +1706,7 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<List<Inventory>> GetInventoryStockByItemAndShopOrderNo(string itemNumber, string shopordernumber)
         {
-            string[] WareLoc = { "FG", "SA" };
+            string[] WareLoc = { "FG", "SA","KIT" };
 
             var getInventoryById = await _tipsWarehouseDbContext.Inventories.Where(x => x.PartNumber == itemNumber && x.shopOrderNo == shopordernumber
                                             && x.IsStockAvailable == true && WareLoc.Contains(x.Warehouse) && WareLoc.Contains(x.Location))

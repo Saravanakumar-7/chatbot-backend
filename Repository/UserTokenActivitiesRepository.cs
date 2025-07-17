@@ -26,7 +26,7 @@ namespace Repository
                 Update(User);
                 return 0;
             }
-            else if (User.TokenIsActive == true || User.Validity > DateTime.UtcNow) return 1;
+            else if (User.TokenIsActive == true && User.Validity > DateTime.UtcNow) return 1;
             else return 0;
         }
         public async Task<UserTokenActivities?> GetUserTokenDetailsByUserId(int UserId)
@@ -42,6 +42,12 @@ namespace Repository
             var User = await TipsMasterDbContext.UserTokenActivities.Where(x => x.RegistrationId == userId).FirstOrDefaultAsync();
             User.TokenIsActive = false;
             Update(User);
+        }
+        public async Task DeactivateAllUsers()
+        {
+            var User = await TipsMasterDbContext.UserTokenActivities.Where(x => x.TokenIsActive==true || x.Validity>=DateTime.UtcNow).ToListAsync();
+            User.ForEach(a => a.TokenIsActive = false);
+            User.ForEach(a => Update(a));            
         }
         public async Task UpdateToken(int RegistrationId, string NewToken, DateTime Validity)
         {

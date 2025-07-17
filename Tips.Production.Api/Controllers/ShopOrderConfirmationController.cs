@@ -580,6 +580,46 @@ namespace Tips.Production.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetShopOrderItemNoByKITItemType()
+        {
+            ServiceResponse<IEnumerable<ShopOrderItemNoListDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderItemNoListDto>>();
+
+            try
+            {
+                var shopOrderItemNoList = await _shopOrderConfirmationRepository.GetShopOrderItemNoByKITItemType();
+                if (shopOrderItemNoList == null)
+                {
+                    _logger.LogError($"KITItemType hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"KITItemType hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    _logger.LogInfo($"Returned ShopOrderItemNo By KITItemType");
+                    var result = _mapper.Map<IEnumerable<ShopOrderItemNoListDto>>(shopOrderItemNoList);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "ShopOrderItemNoList By KITItemType  Successfully Returned";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetShopOrderItemNoByKITItemType API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetShopOrderItemNoByKITItemType API : \n {ex.Message} ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetShopOrderFGSAItemTypeDetailsByItemNo(string itemNumber)
         {
             ServiceResponse<IEnumerable<ShopOrderDetailsDto>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderDetailsDto>>();

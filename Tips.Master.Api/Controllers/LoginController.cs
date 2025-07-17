@@ -349,6 +349,31 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPut]
+        public async Task<IActionResult> DeactivateAllUsers()
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                await _repository.UserTokenActivitiesRepository.DeactivateAllUsers();
+                _repository.SaveAsync();
+                serviceResponse.Data = $"All Users Have Been Deactivated";
+                serviceResponse.Message = $"All Users Have Been Deactivated";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                _logger.LogInfo($"All Users Have Been Deactivated");
+                return StatusCode(200, serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in DeactivateAllUsers: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"Error Occured in DeactivateAllUsers: \n{ex.Message}\n{ex.InnerException}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
         //[HttpPut]
         //public async Task<IActionResult> ResetPassword(int Id, string NewPW, string ConfirmPW)
         //{

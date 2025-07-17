@@ -131,6 +131,8 @@ namespace Entities.DTOs
     {
         public string ItemNumber { set; get; }
         public string? ItemDescription { set; get; }
+        public string? Manufacturer_Mftr_PartNumber { get; set; }
+        public string? Customer_Mftr_PartNumber { get; set; }
         public decimal QtyReq { set; get; }
 
     }
@@ -143,6 +145,30 @@ namespace Entities.DTOs
         public decimal WeightedAvg { set; get; }
 
     }
+
+    public class EnggBomKitItemNumberWithQtyDto
+    {
+        public string? PartNumber { set; get; }
+        public string? MftrItemNumbers { get; set; }
+        public string? Description { set; get; }
+        public decimal KitComponentQty { set; get; }
+        public PartType PartType { set; get; }
+        public string? UOM { get; set; }
+
+        public string? Remarks { get; set; }
+
+        public string? Version { get; set; }
+
+        public string? ScrapAllowance { get; set; }
+
+        public string? ScrapAllowanceType { get; set; }
+        public string? CustomFields { get; set; }
+        public string? Designator { get; set; }
+        public string? FootPrint { get; set; }
+        public bool IsActive { get; set; }
+
+    }
+
     public class EnggBomItemDto
     {
         public string ItemNumber { get; set; }
@@ -209,6 +235,13 @@ namespace Entities.DTOs
     {
         public string? ItemNumber { get; set; }
         public decimal RevisionNumber { get; set; }
+    }
+
+    public class ProductionBomKitRevNoDto
+    {
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
+        public decimal KitRevisionNumber { get; set; }
     }
 
     public class EnggBomDetailsDto
@@ -293,5 +326,12 @@ namespace Entities.DTOs
         public bool Child_IsActive { get; set; }
         public int? Level { get; set; }
     }
+    public class EnggBomDetails
+    {
+        public string ItemNumber { set; get; }
+        public decimal RevisionNumber { get; set; }
+        public string? ItemDescription { set; get; }
+        public PartType ItemType { set; get; }
 
+    }
 }

@@ -135,6 +135,20 @@ namespace Tips.Production.Api.Repository
             return shopOrderItmNoList;
         }
 
+        public async Task<IEnumerable<ShopOrderItemNoListDto>> GetShopOrderItemNoByKITItemType()
+        {
+            var shopOrderItmNoList = await _tipsProductionDbContext.ShopOrders
+                .Where(x => x.ItemType == PartType.Kit && x.FGDoneStatus != OrderStatus.Closed && x.Status != OrderStatus.Closed && x.IsShortClosed == false)
+                .Select(s => new ShopOrderItemNoListDto()
+                {
+                    ItemNumber = s.ItemNumber,
+                    Description = s.Description
+                })
+                .ToListAsync();
+
+            return shopOrderItmNoList;
+        }
+
         public async Task<IEnumerable<ShopOrderDetailsDto>> GetShopOrderDetailsByItemNo(string itemNumber)
         {
             var shopOrderDetails = await _tipsProductionDbContext.ShopOrders

@@ -16,8 +16,10 @@ namespace Contracts
         Task<IEnumerable<ItemMaster>> GetAllFGItems();
         Task<IEnumerable<ItemMaster>> GetAllSAItems();
         Task<IEnumerable<ItemMaster>> GetAllFgSaItems();
+        Task<IEnumerable<ItemMaster>> GetAllKITItems();
         Task<IEnumerable<ItemMaster>> GetAllFgSaFruItems();
         Task<IEnumerable<ItemMaster>> GetAllSAPurchasePartItems();
+        Task<IEnumerable<ItemMaster>> GetAllKitComponentItemList();
         Task<GetDownloadUrlDtos> GetDownloadUrlDetails(long itemMasterId);
         Task<ItemMaster> GetItemMasterById(int id);
         Task<IEnumerable<ItemMaster>> GetAllActiveItemMasters();
@@ -29,7 +31,8 @@ namespace Contracts
         Task<IEnumerable<ItemMasterIdNoListDto>> GetAllItemMasterIdNoList();
         Task<IEnumerable<ItemMasterAlterMtrPartNoDto>> GetAllItemMasterMftrNoList();
         Task<List<ItemWithPartTypeDto>> GetItemPartTypeByItemNo(List<string> ItemNumberList);
-        Task<ItemMaster> GetItemMasterByItemNumber(string shopOrderNo);
+        Task<List<ItemMaster>> GetItemDetailsByItemNumberList(List<string> ItemNumbers);
+        Task<ItemMaster> GetItemMasterByItemNumber(string ItemNumber);
         Task<ItemMaster> GetItemMasterByItemNumberAndPartType(string ItemNumber, PartType partType);
         Task<bool> CheckItemMasterExists(string itemnumber);
         Task<List<ItemMasterMtrPartNoDto>> GetItemMasterByPartNo(string partNumber);
@@ -43,6 +46,7 @@ namespace Contracts
         Task<IEnumerable<ItemNoListDtos>> GetAllOnlyServiceItemsPurchasePartItemNoList();
         Task<IEnumerable<ItemNoListDtos>> GetAllPurchasePartItemNoListExcludingServiceItems();
         Task<IEnumerable<ItemNoListDtos>> GetAllIsPRRequiredStatusTruePPItemNoList();
+        Task<IEnumerable<ItemNoListDtos>> GetAllIsPRRequiredStatusTrueKITItemNoList();
         Task<IEnumerable<ItemMasterIdNoListDto>> GetAllOpenGrinStatusTrueItemMasterIdNoList();
         Task<string> GetClosedIqcItemMasterItemNo(string ItemNumber);
         Task<Dictionary<string, int?>> GetItemsImageIds(List<string> ItemNumbers);

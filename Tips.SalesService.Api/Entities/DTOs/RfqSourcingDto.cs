@@ -73,5 +73,14 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal CumulativePercent { get; set; }
         public string Grade { get; set; }
     }
-
+    public class LeadTimeandNoofdays
+    {
+        public string LeadTime { get; set; }
+        public List<ItemNumberandNoofdays> itemNumberandNoofdays { get; set; }
+    }
+    public class ItemNumberandNoofdays
+    {
+        public string ItemNumber { get; set; }
+        public int NoOfDays { get; set; }
+    }
 }

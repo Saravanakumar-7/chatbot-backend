@@ -347,8 +347,6 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
                                     iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
                                     iqcInventoryTranctionDto.UOM = inventoryObject.uom;
-                                    iqcInventoryTranctionDto.Issued_By = _createdBy;
-                                    iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                     iqcInventoryTranctionDto.Warehouse = inventoryObject.warehouse;
                                     iqcInventoryTranctionDto.From_Location = "OPGIQC";
                                     iqcInventoryTranctionDto.TO_Location = inventoryObject.location;
@@ -358,7 +356,7 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                     iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                                     iqcInventoryTranctionDto.GrinMaterialType = "OPGBinning";
-                                    iqcInventoryTranctionDto.ShopOrderNo = "";
+                                    iqcInventoryTranctionDto.shopOrderNo = "";
                                     iqcInventoryTranctionDto.Remarks = "OpenGrinForBinning Done";
 
                                     var jsonss = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
@@ -429,8 +427,6 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryTranctionObjectNew.Issued_Quantity = inventoryObjectNew.Balance_Quantity;
                                     inventoryTranctionObjectNew.IsStockAvailable = inventoryObjectNew.IsStockAvailable;
                                     inventoryTranctionObjectNew.UOM = inventoryObjectNew.UOM;
-                                    inventoryTranctionObjectNew.Issued_By = _createdBy;
-                                    inventoryTranctionObjectNew.Issued_DateTime = DateTime.Now;
                                     inventoryTranctionObjectNew.Warehouse = inventoryObjectNew.Warehouse;
                                     inventoryTranctionObjectNew.From_Location = "OPGNIQC";
                                     inventoryTranctionObjectNew.TO_Location = inventoryObjectNew.Location;
@@ -440,7 +436,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryTranctionObjectNew.ReferenceID = inventoryObjectNew.ReferenceID;
                                     inventoryTranctionObjectNew.ReferenceIDFrom = inventoryObjectNew.ReferenceIDFrom;
                                     inventoryTranctionObjectNew.GrinMaterialType = "OPGBinning";
-                                    inventoryTranctionObjectNew.ShopOrderNo = "";
+                                    inventoryTranctionObjectNew.shopOrderNo = "";
                                     inventoryTranctionObjectNew.Remarks = "OpenGrinForBinning Done";
 
                                     var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
@@ -605,8 +601,6 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
                                     iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
                                     iqcInventoryTranctionDto.UOM = inventoryObject.uom;
-                                    iqcInventoryTranctionDto.Issued_By = _createdBy;
-                                    iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                     iqcInventoryTranctionDto.Warehouse = inventoryObject.warehouse;
                                     iqcInventoryTranctionDto.From_Location = inventoryObject.location;
                                     iqcInventoryTranctionDto.TO_Location = inventoryObject.location;
@@ -616,7 +610,7 @@ namespace Tips.Grin.Api.Controllers
                                     iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                     iqcInventoryTranctionDto.ReferenceIDFrom = "OPGBinning";
                                     iqcInventoryTranctionDto.GrinMaterialType = "OPGBinning";
-                                    iqcInventoryTranctionDto.ShopOrderNo = "";
+                                    iqcInventoryTranctionDto.shopOrderNo = "";
                                     iqcInventoryTranctionDto.Remarks = "OpenGrinForBinning Done";
 
                                     var jsonss = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
@@ -686,8 +680,6 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryTranctionObjectNew.Issued_Quantity = inventoryObjectNew.Balance_Quantity;
                                     inventoryTranctionObjectNew.IsStockAvailable = inventoryObjectNew.IsStockAvailable;
                                     inventoryTranctionObjectNew.UOM = inventoryObjectNew.UOM;
-                                    inventoryTranctionObjectNew.Issued_By = _createdBy;
-                                    inventoryTranctionObjectNew.Issued_DateTime = DateTime.Now;
                                     inventoryTranctionObjectNew.Warehouse = inventoryObjectNew.Warehouse;
                                     inventoryTranctionObjectNew.From_Location = "OPGNIQC";
                                     inventoryTranctionObjectNew.TO_Location = inventoryObjectNew.Location;
@@ -697,7 +689,7 @@ namespace Tips.Grin.Api.Controllers
                                     inventoryTranctionObjectNew.ReferenceID = inventoryObjectNew.ReferenceID;
                                     inventoryTranctionObjectNew.ReferenceIDFrom = inventoryObjectNew.ReferenceIDFrom;
                                     inventoryTranctionObjectNew.GrinMaterialType = "OPGBinning";
-                                    inventoryTranctionObjectNew.ShopOrderNo = "";
+                                    inventoryTranctionObjectNew.shopOrderNo = "";
                                     inventoryTranctionObjectNew.Remarks = "OpenGrinForBinning Done";
 
                                     var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
@@ -964,8 +956,6 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
                                 iqcInventoryTranctionDto.IsStockAvailable = inventoryObject.isStockAvailable;
                                 iqcInventoryTranctionDto.UOM = inventoryObject.uom;
-                                iqcInventoryTranctionDto.Issued_By = _createdBy;
-                                iqcInventoryTranctionDto.Issued_DateTime = DateTime.Now;
                                 iqcInventoryTranctionDto.Warehouse = inventoryObject.warehouse;
                                 iqcInventoryTranctionDto.From_Location = "OPGIQC"; 
                                 iqcInventoryTranctionDto.TO_Location = inventoryObject.location;
@@ -975,7 +965,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                 iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                                 iqcInventoryTranctionDto.GrinMaterialType = "OPGBinning";
-                                iqcInventoryTranctionDto.ShopOrderNo = "";
+                                iqcInventoryTranctionDto.shopOrderNo = "";
                                 iqcInventoryTranctionDto.Remarks = "OpenGrinForBinningItem Done";
 
                                 var jsonss = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
@@ -1045,8 +1035,6 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryTranctionObjectNew.Issued_Quantity = inventoryObjectNew.Balance_Quantity;
                                 inventoryTranctionObjectNew.IsStockAvailable = inventoryObjectNew.IsStockAvailable;
                                 inventoryTranctionObjectNew.UOM = inventoryObjectNew.UOM;
-                                inventoryTranctionObjectNew.Issued_By = _createdBy;
-                                inventoryTranctionObjectNew.Issued_DateTime = DateTime.Now;
                                 inventoryTranctionObjectNew.Warehouse = inventoryObjectNew.Warehouse;
                                 inventoryTranctionObjectNew.From_Location = "OPGNIQC";
                                 inventoryTranctionObjectNew.TO_Location = inventoryObjectNew.Location;
@@ -1056,7 +1044,7 @@ namespace Tips.Grin.Api.Controllers
                                 inventoryTranctionObjectNew.ReferenceID = inventoryObjectNew.ReferenceID;
                                 inventoryTranctionObjectNew.ReferenceIDFrom = inventoryObjectNew.ReferenceIDFrom;
                                 inventoryTranctionObjectNew.GrinMaterialType = "OPGBinning";
-                                inventoryTranctionObjectNew.ShopOrderNo = "";
+                                inventoryTranctionObjectNew.shopOrderNo = "";
                                 inventoryTranctionObjectNew.Remarks = "OpenGrinForBinningItem Done";
 
                                 var jsons = JsonConvert.SerializeObject(inventoryTranctionObjectNew);
@@ -1255,7 +1243,7 @@ namespace Tips.Grin.Api.Controllers
                                 iqcInventoryTranctionDto.ReferenceID = inventoryObject.referenceID;/* Convert.ToString(openGrinForGrinItemDetails.Id);*/
                                 iqcInventoryTranctionDto.ReferenceIDFrom = inventoryObject.referenceIDFrom;
                                 iqcInventoryTranctionDto.GrinMaterialType = "OPGGRIN";
-                                iqcInventoryTranctionDto.ShopOrderNo = "";
+                                iqcInventoryTranctionDto.shopOrderNo = "";
 
                                 var jsonss = JsonConvert.SerializeObject(iqcInventoryTranctionDto);
                                 var datass = new StringContent(jsonss, Encoding.UTF8, "application/json");

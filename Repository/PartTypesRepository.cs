@@ -55,7 +55,7 @@ namespace Repository
 
         public async Task<IEnumerable<PartTypes>> GetAllPartTypes([FromQuery] SearchParames searchParams)
         {
-            var partTypeDetails = FindAll().OrderByDescending(x => x.Id)
+            var partTypeDetails = FindAll().OrderBy(x => x.Id)
           .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.PartTypeName.Contains(searchParams.SearchValue) ||
          inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 

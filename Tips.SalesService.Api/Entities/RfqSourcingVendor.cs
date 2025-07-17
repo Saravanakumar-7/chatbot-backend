@@ -38,6 +38,7 @@ namespace Tips.SalesService.Api.Entities
         public bool Primary { get; set; } = true;
         public string? PaymentTerms { get; set; }
         public string? Remarks { get; set; }
+        public string? FileIds { get; set; }
         public int RfqSourcingItemsId { get; set; }
         public RfqSourcingItems? RfqSourcingItems { get; set; }
     }

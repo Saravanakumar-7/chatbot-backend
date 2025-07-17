@@ -25,6 +25,8 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<InventoryTranction> CreateInventoryTransaction(InventoryTranction inventoryTranction)
         {
+            inventoryTranction.Issued_By = _createdBy;
+            inventoryTranction.Issued_DateTime = DateTime.Now;
             inventoryTranction.CreatedBy = _createdBy;
             inventoryTranction.CreatedOn = DateTime.Now;
             inventoryTranction.Unit = _unitname;

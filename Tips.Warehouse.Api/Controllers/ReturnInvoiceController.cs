@@ -156,7 +156,7 @@ namespace Tips.Warehouse.Api.Controllers
                         result.ReturnInvoiceAdditionalChargesDto = returnInvoiceAdditionalChargesDetails;
                     }
                     result.ReturnInvoiceItems = returnInvoiceItemDtos;
-                    
+
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned GetReturnInvoiceById Successfully";
                     serviceResponse.Success = true;
@@ -281,89 +281,111 @@ namespace Tips.Warehouse.Api.Controllers
                             var itemMasterObjectData = JsonConvert.DeserializeObject<ReturnBTONumberInvDetails>(itemMasterObjectString);
                             var itemMasterObject = itemMasterObjectData.data;
 
-                            var exInv = await _inventoryRepository.GetInventorybyItemProjectWarehouseLocation(returnInvoiceItems.FGPartNumber, eachbin.ProjectNumber, eachbin.Warehouse, eachbin.Location, eachbin.LotNumber);
-                            if (exInv == null)
-                            {
-                                Inventory inventory = new Inventory();
-                                inventory.PartNumber = returnInvoiceItemsList[i].FGPartNumber;
-                                inventory.LotNumber = eachbin.LotNumber;
-                                inventory.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
-                                inventory.Description = returnInvoiceItemsList[i].Description;
-                                inventory.ProjectNumber = eachbin.ProjectNumber;
-                                inventory.Balance_Quantity = eachbin.DistributingQty;
-                                inventory.UOM = returnInvoiceItemsList[i].UOM;
-                                inventory.Max = itemMasterObject.max;
-                                inventory.Min = itemMasterObject.min;
-                                inventory.IsStockAvailable = true;
-                                inventory.Warehouse = eachbin.Warehouse;
-                                inventory.Location = eachbin.Location;
-                                inventory.GrinNo = returnInvoiceDetails.InvoiceNumber;
-                                inventory.GrinPartId = 0;
-                                inventory.PartType = returnInvoiceItemsList[i].PartType;  /// Check this are you getting Part Type from Front End
-                                inventory.GrinMaterialType = "";
-                                inventory.ReferenceID = returnInvoiceDetails.InvoiceNumber;
-                                inventory.ReferenceIDFrom = "Return Invoice";
-                                inventory.shopOrderNo = "";
-                                //inventory.PartType = returnBtoDeliveryOrderItems.PartType;
+                            //var exInv = await _inventoryRepository.GetInventorybyItemProjectWarehouseLocation(returnInvoiceItems.FGPartNumber, eachbin.ProjectNumber, eachbin.Warehouse, eachbin.Location, eachbin.LotNumber);
+                            //if (exInv == null)
+                            //{
+                            Inventory inventory = new Inventory();
+                            inventory.PartNumber = returnInvoiceItemsList[i].FGPartNumber;
+                            inventory.LotNumber = eachbin.LotNumber;
+                            inventory.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                            inventory.Description = returnInvoiceItemsList[i].Description;
+                            inventory.ProjectNumber = eachbin.ProjectNumber;
+                            inventory.Balance_Quantity = eachbin.DistributingQty;
+                            inventory.UOM = returnInvoiceItemsList[i].UOM;
+                            inventory.Max = itemMasterObject.max;
+                            inventory.Min = itemMasterObject.min;
+                            inventory.IsStockAvailable = true;
+                            inventory.Warehouse = eachbin.Warehouse;
+                            inventory.Location = eachbin.Location;
+                            inventory.GrinNo = returnInvoiceDetails.InvoiceNumber;
+                            inventory.GrinPartId = 0;
+                            inventory.PartType = returnInvoiceItemsList[i].PartType;  /// Check this are you getting Part Type from Front End
+                            inventory.GrinMaterialType = "";
+                            inventory.ReferenceID = returnInvoiceDetails.InvoiceNumber;
+                            inventory.ReferenceIDFrom = "Return Invoice";
+                            inventory.shopOrderNo = "";
+                            //inventory.PartType = returnBtoDeliveryOrderItems.PartType;
 
-                                await _inventoryRepository.CreateInventory(inventory);
+                            await _inventoryRepository.CreateInventory(inventory);
 
-                                //add return details in to inventory table
+                            //add return details in to inventory table
 
-                                InventoryTranction inventoryTranction = new InventoryTranction();
-                                inventoryTranction.PartNumber = inventory.PartNumber;
-                                inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
-                                inventoryTranction.LotNumber = eachbin.LotNumber;
-                                inventoryTranction.MftrPartNumber = inventory.MftrPartNumber;
-                                inventoryTranction.Description = inventory.Description;
-                                inventoryTranction.Issued_Quantity = inventory.Balance_Quantity;
-                                inventoryTranction.IsStockAvailable = true;
-                                inventoryTranction.UOM = inventory.UOM;
-                                inventoryTranction.Issued_DateTime = DateTime.Now;
-                                inventoryTranction.Issued_By = _createdBy;
-                                inventoryTranction.ReferenceID = inventory.ReferenceID;
-                                inventoryTranction.ReferenceIDFrom = inventory.ReferenceIDFrom;
-                                inventoryTranction.From_Location = inventory.Location;
-                                inventoryTranction.TO_Location = inventory.Location;
-                                inventoryTranction.Warehouse = inventory.Warehouse;
-                                inventoryTranction.PartType = returnInvoiceItemsList[i].PartType;  /// Check this are you getting Part Type from Front End
-                                inventoryTranction.Remarks = "Return Invoice";
+                            //InventoryTranction inventoryTranction = new InventoryTranction();
+                            //inventoryTranction.PartNumber = inventory.PartNumber;
+                            //inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
+                            //inventoryTranction.LotNumber = eachbin.LotNumber;
+                            //inventoryTranction.MftrPartNumber = inventory.MftrPartNumber;
+                            //inventoryTranction.Description = inventory.Description;
+                            //inventoryTranction.Issued_Quantity = inventory.Balance_Quantity;
+                            //inventoryTranction.IsStockAvailable = true;
+                            //inventoryTranction.UOM = inventory.UOM;
+                            //inventoryTranction.Issued_DateTime = DateTime.Now;
+                            //inventoryTranction.Issued_By = _createdBy;
+                            //inventoryTranction.ReferenceID = inventory.ReferenceID;
+                            //inventoryTranction.ReferenceIDFrom = inventory.ReferenceIDFrom;
+                            //inventoryTranction.From_Location = inventory.Location;
+                            //inventoryTranction.TO_Location = inventory.Location;
+                            //inventoryTranction.Warehouse = inventory.Warehouse;
+                            //inventoryTranction.PartType = returnInvoiceItemsList[i].PartType;  /// Check this are you getting Part Type from Front End
+                            //inventoryTranction.Remarks = "Return Invoice";
 
-                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
+                            //await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
 
+                            InventoryTranction inventoryTranctionPost1 = new InventoryTranction();
+                            inventoryTranctionPost1.PartNumber = inventory.PartNumber;
+                            inventoryTranctionPost1.MftrPartNumber = inventory.MftrPartNumber;
+                            inventoryTranctionPost1.ProjectNumber = eachbin.ProjectNumber;
+                            inventoryTranctionPost1.Description = inventory.Description;
+                            inventoryTranctionPost1.Issued_Quantity = inventory.Balance_Quantity;
+                            inventoryTranctionPost1.LotNumber = eachbin.LotNumber;
+                            inventoryTranctionPost1.UOM = inventory.UOM;
+                            inventoryTranctionPost1.GrinMaterialType = "";
+                            inventoryTranctionPost1.Unit = _unitname;
+                            inventoryTranctionPost1.GrinNo = inventory.GrinNo;
+                            inventoryTranctionPost1.GrinPartId = inventory.GrinPartId;
+                            inventoryTranctionPost1.IsStockAvailable = true;
+                            inventoryTranctionPost1.Warehouse = inventory.Warehouse;
+                            inventoryTranctionPost1.From_Location = "Return Invoice";
+                            inventoryTranctionPost1.TO_Location = inventory.Location;
+                            inventoryTranctionPost1.PartType = returnInvoiceItemsList[i].PartType;
+                            inventoryTranctionPost1.ReferenceID = inventory.ReferenceID;
+                            inventoryTranctionPost1.ReferenceIDFrom = "Return Invoice";
+                            inventoryTranctionPost1.Remarks = "Return Invoice";
+                            inventoryTranctionPost1.TransactionType = InventoryType.Inward;
+                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost1);
 
-                            }
-                            else
-                            {
-                                //exInv.ReferenceID = returnInvoiceDetails.InvoiceNumber;
-                                //exInv.ReferenceIDFrom = "Return Invoice";
-                                exInv.IsStockAvailable = true;
-                                exInv.Balance_Quantity += eachbin.DistributingQty;
-                                await _inventoryRepository.UpdateInventory(exInv);
+                            //}
+                            //else
+                            //{
+                            //    //exInv.ReferenceID = returnInvoiceDetails.InvoiceNumber;
+                            //    //exInv.ReferenceIDFrom = "Return Invoice";
+                            //    exInv.IsStockAvailable = true;
+                            //    exInv.Balance_Quantity += eachbin.DistributingQty;
+                            //    await _inventoryRepository.UpdateInventory(exInv);
 
-                                //add return details in to inventory table
+                            //    //add return details in to inventory table
 
-                                InventoryTranction inventoryTranction = new InventoryTranction();
-                                inventoryTranction.PartNumber = exInv.PartNumber;
-                                inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
-                                inventoryTranction.LotNumber = eachbin.LotNumber;
-                                inventoryTranction.MftrPartNumber = exInv.MftrPartNumber;
-                                inventoryTranction.Description = exInv.Description;
-                                inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
-                                inventoryTranction.IsStockAvailable = true;
-                                inventoryTranction.UOM = exInv.UOM;
-                                inventoryTranction.Issued_DateTime = DateTime.Now;
-                                inventoryTranction.Issued_By = _createdBy;
-                                inventoryTranction.ReferenceID = exInv.ReferenceID;
-                                inventoryTranction.ReferenceIDFrom = exInv.ReferenceIDFrom;
-                                inventoryTranction.From_Location = "Invoice";
-                                inventoryTranction.TO_Location = exInv.Location;
-                                inventoryTranction.Remarks = "Return Invoice";
-                                inventoryTranction.Warehouse = exInv.Warehouse;
-                                inventoryTranction.PartType = exInv.PartType;  /// Check this are you getting Part Type from Front End
+                            //    InventoryTranction inventoryTranction = new InventoryTranction();
+                            //    inventoryTranction.PartNumber = exInv.PartNumber;
+                            //    inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
+                            //    inventoryTranction.LotNumber = eachbin.LotNumber;
+                            //    inventoryTranction.MftrPartNumber = exInv.MftrPartNumber;
+                            //    inventoryTranction.Description = exInv.Description;
+                            //    inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
+                            //    inventoryTranction.IsStockAvailable = true;
+                            //    inventoryTranction.UOM = exInv.UOM;
+                            //    inventoryTranction.Issued_DateTime = DateTime.Now;
+                            //    inventoryTranction.Issued_By = _createdBy;
+                            //    inventoryTranction.ReferenceID = exInv.ReferenceID;
+                            //    inventoryTranction.ReferenceIDFrom = exInv.ReferenceIDFrom;
+                            //    inventoryTranction.From_Location = "Invoice";
+                            //    inventoryTranction.TO_Location = exInv.Location;
+                            //    inventoryTranction.Remarks = "Return Invoice";
+                            //    inventoryTranction.Warehouse = exInv.Warehouse;
+                            //    inventoryTranction.PartType = exInv.PartType;  /// Check this are you getting Part Type from Front End
 
-                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
-                            }
+                            //    await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
+                            //}
 
                             _inventoryRepository.SaveAsync();
                             _inventoryTranctionRepository.SaveAsync();
@@ -490,7 +512,7 @@ namespace Tips.Warehouse.Api.Controllers
                             {
                                 if (InvDetails.SalesOrderId == returnInvoiceAdditional.SalesOrderId && InvDetails.Id == returnInvoiceAdditional.InvoiceAdditionalChargeId)
                                 {
-                                    if(InvDetails.AlreadyReturnedValue  == null)
+                                    if (InvDetails.AlreadyReturnedValue == null)
                                     {
                                         InvDetails.AlreadyReturnedValue = 0;
                                     }
@@ -597,7 +619,7 @@ namespace Tips.Warehouse.Api.Controllers
                         return StatusCode(500, serviceResponse);
                     }
                 }
-                else if(returnInvoiceItemDto.Count() > 0 && returnInvoiceAdditionalChargesDetails.Count() == 0)
+                else if (returnInvoiceItemDto.Count() > 0 && returnInvoiceAdditionalChargesDetails.Count() == 0)
                 {
                     var invoiceReturnDetails = _mapper.Map<List<BtoInvoiceReturnQtyDetailsDto>>(returnInvoiceItemDto);
                     //var response = await _httpClient.PostAsync(string.Concat(_config["SalesOrderAPI"], "ReturnInvoiceUpdateDispatchDetails"), data);
@@ -614,7 +636,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                     var response = await client.SendAsync(request);
 
-                    if (response.StatusCode != HttpStatusCode.OK )
+                    if (response.StatusCode != HttpStatusCode.OK)
                     {
                         salesOrderUpdateStatusCode = response.StatusCode;
                     }
@@ -656,8 +678,8 @@ namespace Tips.Warehouse.Api.Controllers
                         return StatusCode(500, serviceResponse);
                     }
                 }
-                    
-                
+
+
                 serviceResponse.Data = null;
                 serviceResponse.Message = "Invoice Successfully Created";
                 serviceResponse.Success = true;
