@@ -501,6 +501,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? City { get; set; }
         public string? Address { get; set; }
+        public string? State { get; set; }
         public int? ReportType { get; set; }
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
@@ -786,6 +787,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? City { get; set; }
         public string? Address { get; set; }
+        public string? State { get; set; }
         public string? TypeOfSolution { get; set; }
         public DateTime? SOFirstCreatedOn { get; set; }
         public string? SOFirstSalesOrderNumber { get; set; }
@@ -992,6 +994,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CustomerName { get; set; }
         public string? City { get; set; }
         public string? Address { get; set; }
+        public string? State { get; set; }
         public string? SalesOrderNumber { get; set; }
         public int? RevisionNumber { get; set; }
         public string? TypeOfSolution { get; set; }

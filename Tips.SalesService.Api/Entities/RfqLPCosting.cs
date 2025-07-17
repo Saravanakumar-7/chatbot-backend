@@ -15,12 +15,12 @@ namespace Tips.SalesService.Api.Entities
         public int Id { get; set; }
         public string? RfqNumber { get; set; }
         public string? CustomerName { get; set; }
+        public decimal? RevisionNumber { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-        public decimal? RevisionNumber { get; set; }
         public List<RfqLPCostingItem>? RfqLPCostingItems { get; set; }        
 
     }

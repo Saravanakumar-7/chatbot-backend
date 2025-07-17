@@ -35,6 +35,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }
         public bool Primary { get; set; }
+        public string? PaymentTerms { get; set; }
+        public string? Remarks { get; set; }
 
     }
     public class RfqSourcingVendorPostDto
@@ -70,7 +72,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }       
         public bool Primary { get; set; } = true;
-         
+        public string? PaymentTerms { get; set; }
+        public string? Remarks { get; set; }
+
     }
     public class RfqSourcingVendorUpdateDto
     {
@@ -105,6 +109,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? QuoteDate { get; set; }
         public DateTime? QuoteValidity { get; set; }
         public bool Primary { get; set; } = true;
+        public string? PaymentTerms { get; set; }
+        public string? Remarks { get; set; }
     }
     public class RfqSourcingConvertionrateDto
     {

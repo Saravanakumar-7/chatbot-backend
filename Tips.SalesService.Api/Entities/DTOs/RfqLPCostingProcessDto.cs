@@ -19,6 +19,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? LabourHrs { get; set; }
         [Precision(13, 3)]
         public decimal? LabourHrsCost { get; set; }
+        public int? NoOfDays { get; set; }
         //public string? MarkUpForProcessSteps { get; set; }       
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
@@ -32,6 +33,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? LabourHrs { get; set; }
        
         public decimal? LabourHrsCost { get; set; }
+        public int? NoOfDays { get; set; }
         //public string? MarkUpForProcessSteps { get; set; }
     }
     public class RfqLPCostingProcessDtoUpdate
@@ -56,6 +58,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? LabourHrs { get; set; }
         [Precision(13, 3)]
         public decimal? LabourHrsCost { get; set; }
+        public int? NoOfDays { get; set; }
     }
 
 

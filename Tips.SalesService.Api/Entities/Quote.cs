@@ -50,7 +50,7 @@ namespace Tips.SalesService.Api.Entities
         public decimal? GeneralDiscount { get; set; }
         
         public string? SalesPerson { get; set; }
-
+        public string? LeadTime { get; set; }
         public string Unit { get; set; }
         public string? Remarks { get; set; }
         public string? CreatedBy { get; set; }
