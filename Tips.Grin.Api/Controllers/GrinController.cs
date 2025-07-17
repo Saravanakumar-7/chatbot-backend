@@ -44,6 +44,10 @@ using Newtonsoft.Json.Linq;
 using Mysqlx.Session;
 using Google.Protobuf.WellKnownTypes;
 using Mysqlx;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using NPOI.XSSF.UserModel;
+using NPOI.SS.UserModel;
+
 
 //Test
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -556,8 +560,8 @@ namespace Tips.Grin.Api.Controllers
                         var inventoryObjectString = await inventoryObjectResult.Content.ReadAsStringAsync();
                         var inventoryObjectData = JsonConvert.DeserializeObject<InventoryDto>(inventoryObjectString);
                         var inventoryObject = inventoryObjectData.data;
-                        
-                        grinPartsItemMasterEnggDto.ProjectNumbers.ForEach(x=>x.RemainingAccptedQty=(inventoryObject.Where(y => y.ProjectNumber == x.ProjectNumber).Sum(z => z.Balance_Quantity)));
+
+                        grinPartsItemMasterEnggDto.ProjectNumbers.ForEach(x => x.RemainingAccptedQty = (inventoryObject.Where(y => y.ProjectNumber == x.ProjectNumber).Sum(z => z.Balance_Quantity)));
 
                         var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterEnggAPI"],
                             $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
@@ -671,7 +675,7 @@ namespace Tips.Grin.Api.Controllers
                     GrinParts grinParts = _mapper.Map<GrinParts>(gPart);
                     grinPartsList.Add(grinParts);
                 }
-               
+
                 grins.GrinParts = grinPartsList;
                 grins.IsGrinCompleted = true;
 
@@ -1980,6 +1984,178 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+       
+        [HttpPost]
+        public async Task<IActionResult> ExportGrinSPReportWithParamOrWithDateToExcel([FromBody] GrinReportWithParamAndDateForExcelDto grinReportWithParamAndDateForExcelDto)
+        {
+
+            ServiceResponse<Grin_ReportSP> serviceResponse = new ServiceResponse<Grin_ReportSP>();
+            try
+            {
+
+                if (grinReportWithParamAndDateForExcelDto is null)
+                {
+                    _logger.LogError("grinReportWithParamAndDateForExcelDto object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "grinReportWithParamAndDateForExcelDto object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid GrinReportWithParamAndDateForExcelDto object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                bool hasParams = !string.IsNullOrEmpty(grinReportWithParamAndDateForExcelDto.GrinNumber)
+                               || !string.IsNullOrEmpty(grinReportWithParamAndDateForExcelDto.VendorName)
+                               || !string.IsNullOrEmpty(grinReportWithParamAndDateForExcelDto.PONumber)
+                               || !string.IsNullOrEmpty(grinReportWithParamAndDateForExcelDto.KPN)
+                               || !string.IsNullOrEmpty(grinReportWithParamAndDateForExcelDto.MPN)
+                               || !string.IsNullOrEmpty(grinReportWithParamAndDateForExcelDto.Warehouse)
+                               || !string.IsNullOrEmpty(grinReportWithParamAndDateForExcelDto.Location);
+
+                bool hasDate = grinReportWithParamAndDateForExcelDto.FromDate != null || grinReportWithParamAndDateForExcelDto.ToDate != null;
+
+                if (hasParams && hasDate)
+                {
+                    _logger.LogError("Input object must contain either filter parameters or date range, not both.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or a date range, not both.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!hasParams && (grinReportWithParamAndDateForExcelDto.FromDate == null || grinReportWithParamAndDateForExcelDto.ToDate == null))
+                {
+                    _logger.LogError("Input object must contain either at least one filter parameter or both from and to dates.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or both from and to dates.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+
+                }
+
+                var GrinSPReportDetails = Enumerable.Empty<Grin_ReportSP>();
+
+                if (hasParams && !hasDate)
+                {
+                
+                    GrinSPReportDetails = await _repository.GetGrinSPReportWithParam(
+                        grinReportWithParamAndDateForExcelDto.GrinNumber,
+                        grinReportWithParamAndDateForExcelDto.VendorName,
+                        grinReportWithParamAndDateForExcelDto.PONumber,
+                        grinReportWithParamAndDateForExcelDto.KPN,
+                        grinReportWithParamAndDateForExcelDto.MPN,
+                        grinReportWithParamAndDateForExcelDto.Warehouse,
+                        grinReportWithParamAndDateForExcelDto.Location);
+                }
+
+             
+                if (!hasParams && (grinReportWithParamAndDateForExcelDto.FromDate != null && grinReportWithParamAndDateForExcelDto.ToDate != null))
+                {
+                
+                    GrinSPReportDetails = await _repository.GetGrinSPReportWithDate(
+                        grinReportWithParamAndDateForExcelDto.FromDate,
+                        grinReportWithParamAndDateForExcelDto.ToDate);
+                }
+            
+
+
+                // Create Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("GrinSPReport");
+
+                // Header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("GRIN Number");
+                headerRow.CreateCell(1).SetCellValue("Vendor Name");
+                headerRow.CreateCell(2).SetCellValue("Vendor ID");
+                headerRow.CreateCell(3).SetCellValue("Vendor Address");
+                headerRow.CreateCell(4).SetCellValue("Invoice Number");
+                headerRow.CreateCell(5).SetCellValue("Invoice Date");
+                headerRow.CreateCell(6).SetCellValue("PO Number");
+                headerRow.CreateCell(7).SetCellValue("KPN");
+                headerRow.CreateCell(8).SetCellValue("MPN");
+                headerRow.CreateCell(9).SetCellValue("Item Description");
+                headerRow.CreateCell(10).SetCellValue("Manufacture Batch Number");
+                headerRow.CreateCell(11).SetCellValue("Unit Price");
+                headerRow.CreateCell(12).SetCellValue("Qty");
+                headerRow.CreateCell(13).SetCellValue("Accepted Qty");
+                headerRow.CreateCell(14).SetCellValue("UOM");
+                headerRow.CreateCell(15).SetCellValue("SGST");
+                headerRow.CreateCell(16).SetCellValue("CGST");
+                headerRow.CreateCell(17).SetCellValue("IGST");
+                headerRow.CreateCell(18).SetCellValue("UTGST");
+                headerRow.CreateCell(19).SetCellValue("Total Value");
+                headerRow.CreateCell(20).SetCellValue("Warehouse");
+                headerRow.CreateCell(21).SetCellValue("Location");
+                headerRow.CreateCell(22).SetCellValue("Remarks");
+                headerRow.CreateCell(23).SetCellValue("GRIN Date");
+                headerRow.CreateCell(24).SetCellValue("Project Number");
+                headerRow.CreateCell(25).SetCellValue("UOC");
+                headerRow.CreateCell(26).SetCellValue("Tally Voucher");
+
+                // Populate data
+                int rowIndex = 1;
+                foreach (var item in GrinSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.GrinNumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.VendorName ?? "");
+                    row.CreateCell(2).SetCellValue(item.VendorId ?? "");
+                    row.CreateCell(3).SetCellValue(item.VendorAddress ?? "");
+                    row.CreateCell(4).SetCellValue(item.InvoiceNumber ?? "");
+                    row.CreateCell(5).SetCellValue(item.InvoiceDate.HasValue ? item.InvoiceDate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(6).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(7).SetCellValue(item.KPN ?? "");
+                    row.CreateCell(8).SetCellValue(item.MPN ?? "");
+                    row.CreateCell(9).SetCellValue(item.ItemDescription ?? "");
+                    row.CreateCell(10).SetCellValue(item.ManufactureBatchNumber ?? "");
+                    row.CreateCell(11).SetCellValue(item.UnitPrice.HasValue ? Convert.ToDouble(item.UnitPrice.Value) : 0);
+                    row.CreateCell(12).SetCellValue(item.Qty.HasValue ? Convert.ToDouble(item.Qty.Value) : 0);
+                    row.CreateCell(13).SetCellValue(item.AcceptedQty.HasValue ? Convert.ToDouble(item.AcceptedQty.Value) : 0);
+                    row.CreateCell(14).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(15).SetCellValue(item.SGST.HasValue ? Convert.ToDouble(item.SGST.Value) : 0);
+                    row.CreateCell(16).SetCellValue(item.CGST.HasValue ? Convert.ToDouble(item.CGST.Value) : 0);
+                    row.CreateCell(17).SetCellValue(item.IGST.HasValue ? Convert.ToDouble(item.IGST.Value) : 0);
+                    row.CreateCell(18).SetCellValue(item.UTGST.HasValue ? Convert.ToDouble(item.UTGST.Value) : 0);
+                    row.CreateCell(19).SetCellValue(item.totalvalue.HasValue ? Convert.ToDouble(item.totalvalue.Value) : 0);
+                    row.CreateCell(20).SetCellValue(item.Warehouse ?? "");
+                    row.CreateCell(21).SetCellValue(item.Location ?? "");
+                    row.CreateCell(22).SetCellValue(item.Remarks ?? "");
+                    row.CreateCell(23).SetCellValue(item.GrinDate.HasValue ? item.GrinDate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(24).SetCellValue(item.ProjectNumber ?? "");
+                    row.CreateCell(25).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(26).SetCellValue(item.TallyVoucher ?? "");
+                }
+
+                // Export Excel
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+                    return File(excelBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "GrinSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
+
         [HttpPost]
         public async Task<IActionResult> GetGrinSPReportWithParamForTrans([FromBody] GrinReportWithParamForTransDto grinReportWithParam)
         {
@@ -1988,7 +2164,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 var products = await _repository.GetGrinSPReportWithParamForTrans(grinReportWithParam.GrinNumber, grinReportWithParam.VendorName,
                                                                             grinReportWithParam.PONumber, grinReportWithParam.ItemNumber,
-                                                                            grinReportWithParam.MPN,grinReportWithParam.ProjectNumber);
+                                                                            grinReportWithParam.MPN, grinReportWithParam.ProjectNumber);
 
                 if (products == null)
                 {
@@ -2017,6 +2193,180 @@ namespace Tips.Grin.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ExportGrinSPReportWithParamOrWithDateToExcelForTras([FromBody] GrinReportWithParamWithdateForExcelDtoTras grinReportWithParamWithdateForExcelDtoTras)
+        {
+
+            ServiceResponse<GrinSPReportForTrans> serviceResponse = new ServiceResponse<GrinSPReportForTrans>();
+            try
+            {
+
+                if (grinReportWithParamWithdateForExcelDtoTras is null)
+                {
+                    _logger.LogError("grinReportWithParamAndDateForExcelDto object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "grinReportWithParamAndDateForExcelDto object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid GrinReportWithParamAndDateForExcelDto object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                bool hasParams = !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelDtoTras.GrinNumber)
+                               || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelDtoTras.VendorName)
+                               || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelDtoTras.PONumber)
+                               || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelDtoTras.ItemNumber)
+                               || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelDtoTras.MPN)
+                               || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelDtoTras.ProjectNumber);
+
+                bool hasDate = grinReportWithParamWithdateForExcelDtoTras.FromDate != null || grinReportWithParamWithdateForExcelDtoTras.ToDate != null;
+
+                if (hasParams && hasDate)
+                {
+                    _logger.LogError("Input object must contain either filter parameters or date range, not both.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or a date range, not both.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!hasParams && (grinReportWithParamWithdateForExcelDtoTras.FromDate == null || grinReportWithParamWithdateForExcelDtoTras.ToDate == null))
+                {
+                    _logger.LogError("Input object must contain either at least one filter parameter or both from and to dates.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or both from and to dates.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+
+                }
+
+                var GrinSPReportDetails = Enumerable.Empty<GrinSPReportForTrans>();
+
+                if (hasParams && !hasDate)
+                {
+
+                    GrinSPReportDetails = await _repository.GetGrinSPReportWithParamForTrans(
+                        grinReportWithParamWithdateForExcelDtoTras.GrinNumber,
+                        grinReportWithParamWithdateForExcelDtoTras.VendorName,
+                        grinReportWithParamWithdateForExcelDtoTras.PONumber,
+                        grinReportWithParamWithdateForExcelDtoTras.ItemNumber,
+                        grinReportWithParamWithdateForExcelDtoTras.MPN,
+                        grinReportWithParamWithdateForExcelDtoTras.ProjectNumber);
+                }
+
+
+                if (!hasParams && (grinReportWithParamWithdateForExcelDtoTras.FromDate != null && grinReportWithParamWithdateForExcelDtoTras.ToDate != null))
+                {
+
+                    GrinSPReportDetails = await _repository.GetGrinSPReportWithDateForTrans(
+                        grinReportWithParamWithdateForExcelDtoTras.FromDate,
+                        grinReportWithParamWithdateForExcelDtoTras.ToDate);
+                }
+
+
+                // Create Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("GrinSPReport");
+
+                // Header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("PO Number");
+                headerRow.CreateCell(1).SetCellValue("PO Date");
+                headerRow.CreateCell(2).SetCellValue("GRIN Number");
+                headerRow.CreateCell(3).SetCellValue("GRIN Date");
+                headerRow.CreateCell(4).SetCellValue("Gate Entry No");
+                headerRow.CreateCell(5).SetCellValue("Gate Entry Date");
+                headerRow.CreateCell(6).SetCellValue("Vendor Name");
+                headerRow.CreateCell(7).SetCellValue("Vendor ID");
+                headerRow.CreateCell(8).SetCellValue("Vendor Address");
+                headerRow.CreateCell(9).SetCellValue("Invoice Number");
+                headerRow.CreateCell(10).SetCellValue("Invoice Date");
+                headerRow.CreateCell(11).SetCellValue("Project Number");
+                headerRow.CreateCell(12).SetCellValue("Item Number");
+                headerRow.CreateCell(13).SetCellValue("Item Description");
+                headerRow.CreateCell(14).SetCellValue("MPN");
+                headerRow.CreateCell(15).SetCellValue("Manufacture Batch Number");
+                headerRow.CreateCell(16).SetCellValue("Unit Price");
+                headerRow.CreateCell(17).SetCellValue("Qty");
+                headerRow.CreateCell(18).SetCellValue("Project Accepted Qty");
+                headerRow.CreateCell(19).SetCellValue("Lot Number");
+                headerRow.CreateCell(20).SetCellValue("UOC");
+                headerRow.CreateCell(21).SetCellValue("UOM");
+                headerRow.CreateCell(22).SetCellValue("SGST");
+                headerRow.CreateCell(23).SetCellValue("CGST");
+                headerRow.CreateCell(24).SetCellValue("IGST");
+                headerRow.CreateCell(25).SetCellValue("UTGST");
+                headerRow.CreateCell(26).SetCellValue("Total Value");
+                headerRow.CreateCell(27).SetCellValue("Remarks");
+                headerRow.CreateCell(28).SetCellValue("Tally Status");
+                headerRow.CreateCell(29).SetCellValue("BE Number");
+                headerRow.CreateCell(30).SetCellValue("GRIN Accepted Qty");
+
+                // Populate data
+                int rowIndex = 1;
+                foreach (var item in GrinSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.PODate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(2).SetCellValue(item.GrinNumber ?? "");
+                    row.CreateCell(3).SetCellValue(item.GrinDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(4).SetCellValue(item.GateEntryNo ?? "");
+                    row.CreateCell(5).SetCellValue(item.GateEntryDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(6).SetCellValue(item.VendorName ?? "");
+                    row.CreateCell(7).SetCellValue(item.VendorId ?? "");
+                    row.CreateCell(8).SetCellValue(item.VendorAddress ?? "");
+                    row.CreateCell(9).SetCellValue(item.InvoiceNumber ?? "");
+                    row.CreateCell(10).SetCellValue(item.InvoiceDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(11).SetCellValue(item.ProjectNumber ?? "");
+                    row.CreateCell(12).SetCellValue(item.ItemNumber ?? "");
+                    row.CreateCell(13).SetCellValue(item.ItemDescription ?? "");
+                    row.CreateCell(14).SetCellValue(item.MPN ?? "");
+                    row.CreateCell(15).SetCellValue(item.ManufactureBatchNumber ?? "");
+                    row.CreateCell(16).SetCellValue((double)(item.UnitPrice ?? 0));
+                    row.CreateCell(17).SetCellValue((double)(item.Qty ?? 0));
+                    row.CreateCell(18).SetCellValue((double)(item.ProjectAcceptedQty ?? 0));
+                    row.CreateCell(19).SetCellValue(item.LotNumber ?? "");
+                    row.CreateCell(20).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(21).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(22).SetCellValue((double)(item.SGST ?? 0));
+                    row.CreateCell(23).SetCellValue((double)(item.CGST ?? 0));
+                    row.CreateCell(24).SetCellValue((double)(item.IGST ?? 0));
+                    row.CreateCell(25).SetCellValue((double)(item.UTGST ?? 0));
+                    row.CreateCell(26).SetCellValue((double)(item.totalvalue ?? 0));
+                    row.CreateCell(27).SetCellValue(item.Remarks ?? "");
+                    row.CreateCell(28).SetCellValue(item.TallyStatus.HasValue ? (item.TallyStatus.Value ? "Yes" : "No") : "");
+                    row.CreateCell(29).SetCellValue(item.BENumber ?? "");
+                    row.CreateCell(30).SetCellValue((double)(item.GrinAcceptedQty ?? 0));
+                }
+
+                // Export Excel
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+                    return File(excelBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "GrinSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
             }
         }
 
@@ -2062,6 +2412,188 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> ExportGrinSPReportWithParamOrWithDateToExcelForAvi([FromBody] GrinReportWithParamWithdateForExcelAviDto grinReportWithParamWithdateForExcelAviDto)
+        {
+
+            ServiceResponse<GrinSPReportForAvi> serviceResponse = new ServiceResponse<GrinSPReportForAvi>();
+            try
+            {
+
+                if (grinReportWithParamWithdateForExcelAviDto is null)
+                {
+                    _logger.LogError("grinReportWithParamAndDateForExcelDto object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "grinReportWithParamAndDateForExcelDto object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid GrinReportWithParamAndDateForExcelDto object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                bool hasParams = !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelAviDto.GrinNumber)
+                               || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelAviDto.VendorName)
+                               || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelAviDto.PONumber)
+                               || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelAviDto.ItemNumber)
+                               || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelAviDto.MPN)
+                               || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelAviDto.Warehouse)
+                               || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelAviDto.Location)
+                               || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelAviDto.ProjectNumber);
+
+                bool hasDate = grinReportWithParamWithdateForExcelAviDto.FromDate != null || grinReportWithParamWithdateForExcelAviDto.ToDate != null;
+
+                if (hasParams && hasDate)
+                {
+                    _logger.LogError("Input object must contain either filter parameters or date range, not both.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or a date range, not both.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!hasParams && (grinReportWithParamWithdateForExcelAviDto.FromDate == null || grinReportWithParamWithdateForExcelAviDto.ToDate == null))
+                {
+                    _logger.LogError("Input object must contain either at least one filter parameter or both from and to dates.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or both from and to dates.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+
+                }
+
+                var GrinSPReportDetails = Enumerable.Empty<GrinSPReportForAvi>();
+
+                if (hasParams && !hasDate)
+                {
+
+                    GrinSPReportDetails = await _repository.GetGrinSPReportWithParamForAvi(
+                        grinReportWithParamWithdateForExcelAviDto.GrinNumber,
+                        grinReportWithParamWithdateForExcelAviDto.VendorName,
+                        grinReportWithParamWithdateForExcelAviDto.PONumber,
+                        grinReportWithParamWithdateForExcelAviDto.ItemNumber,
+                        grinReportWithParamWithdateForExcelAviDto.MPN,
+                        grinReportWithParamWithdateForExcelAviDto.Warehouse,
+                        grinReportWithParamWithdateForExcelAviDto.Location, grinReportWithParamWithdateForExcelAviDto.ProjectNumber);
+                }
+
+
+                if (!hasParams && (grinReportWithParamWithdateForExcelAviDto.FromDate != null && grinReportWithParamWithdateForExcelAviDto.ToDate != null))
+                {
+
+                    GrinSPReportDetails = await _repository.GetGrinSPReportWithDateForAvi(
+                        grinReportWithParamWithdateForExcelAviDto.FromDate,
+                        grinReportWithParamWithdateForExcelAviDto.ToDate);
+                }
+
+
+
+                // Create Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("GrinSPReport");
+
+                // Header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("PO Number");
+                headerRow.CreateCell(1).SetCellValue("PO Date");
+                headerRow.CreateCell(2).SetCellValue("GRIN Number");
+                headerRow.CreateCell(3).SetCellValue("GRIN Date");
+                headerRow.CreateCell(4).SetCellValue("Gate Entry No");
+                headerRow.CreateCell(5).SetCellValue("Gate Entry Date");
+                headerRow.CreateCell(6).SetCellValue("Vendor Name");
+                headerRow.CreateCell(7).SetCellValue("Vendor ID");
+                headerRow.CreateCell(8).SetCellValue("Vendor Address");
+                headerRow.CreateCell(9).SetCellValue("Invoice Number");
+                headerRow.CreateCell(10).SetCellValue("Invoice Date");
+                headerRow.CreateCell(11).SetCellValue("Project Number");
+                headerRow.CreateCell(12).SetCellValue("Item Number");
+                headerRow.CreateCell(13).SetCellValue("Item Description");
+                headerRow.CreateCell(14).SetCellValue("MPN");
+                headerRow.CreateCell(15).SetCellValue("Manufacture Batch Number");
+                headerRow.CreateCell(16).SetCellValue("Lot Number");
+                headerRow.CreateCell(17).SetCellValue("Unit Price");
+                headerRow.CreateCell(18).SetCellValue("Qty");
+                headerRow.CreateCell(19).SetCellValue("Accepted Qty");
+                headerRow.CreateCell(20).SetCellValue("UOC");
+                headerRow.CreateCell(21).SetCellValue("UOM");
+                headerRow.CreateCell(22).SetCellValue("SGST");
+                headerRow.CreateCell(23).SetCellValue("CGST");
+                headerRow.CreateCell(24).SetCellValue("IGST");
+                headerRow.CreateCell(25).SetCellValue("UTGST");
+                headerRow.CreateCell(26).SetCellValue("Total Value");
+                headerRow.CreateCell(27).SetCellValue("Remarks");
+                headerRow.CreateCell(28).SetCellValue("Warehouse");
+                headerRow.CreateCell(29).SetCellValue("Location");
+                headerRow.CreateCell(30).SetCellValue("Project Qty");
+                headerRow.CreateCell(31).SetCellValue("Tally Status");
+                headerRow.CreateCell(32).SetCellValue("BE Number");
+
+                // Populate data
+                int rowIndex = 1;
+                foreach (var item in GrinSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.PODate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(2).SetCellValue(item.GrinNumber ?? "");
+                    row.CreateCell(3).SetCellValue(item.GrinDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(4).SetCellValue(item.GateEntryNo ?? "");
+                    row.CreateCell(5).SetCellValue(item.GateEntryDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(6).SetCellValue(item.VendorName ?? "");
+                    row.CreateCell(7).SetCellValue(item.VendorId ?? "");
+                    row.CreateCell(8).SetCellValue(item.VendorAddress ?? "");
+                    row.CreateCell(9).SetCellValue(item.InvoiceNumber ?? "");
+                    row.CreateCell(10).SetCellValue(item.InvoiceDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(11).SetCellValue(item.ProjectNumber ?? "");
+                    row.CreateCell(12).SetCellValue(item.ItemNumber ?? "");
+                    row.CreateCell(13).SetCellValue(item.ItemDescription ?? "");
+                    row.CreateCell(14).SetCellValue(item.MPN ?? "");
+                    row.CreateCell(15).SetCellValue(item.ManufactureBatchNumber ?? "");
+                    row.CreateCell(16).SetCellValue(item.LotNumber ?? "");
+                    row.CreateCell(17).SetCellValue((double)(item.UnitPrice ?? 0));
+                    row.CreateCell(18).SetCellValue((double)(item.Qty ?? 0));
+                    row.CreateCell(19).SetCellValue((double)(item.AcceptedQty ?? 0));
+                    row.CreateCell(20).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(21).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(22).SetCellValue((double)(item.SGST ?? 0));
+                    row.CreateCell(23).SetCellValue((double)(item.CGST ?? 0));
+                    row.CreateCell(24).SetCellValue((double)(item.IGST ?? 0));
+                    row.CreateCell(25).SetCellValue((double)(item.UTGST ?? 0));
+                    row.CreateCell(26).SetCellValue((double)(item.totalvalue ?? 0));
+                    row.CreateCell(27).SetCellValue(item.Remarks ?? "");
+                    row.CreateCell(28).SetCellValue(item.Warehouse ?? "");
+                    row.CreateCell(29).SetCellValue(item.Location ?? "");
+                    row.CreateCell(30).SetCellValue((double)(item.ProjectQty ?? 0));
+                    row.CreateCell(31).SetCellValue(item.TallyStatus.HasValue ? (item.TallyStatus.Value ? "Yes" : "No") : "");
+                    row.CreateCell(32).SetCellValue(item.BENumber ?? "");
+                }
+
+
+                // Export Excel
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+                    return File(excelBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "GrinSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> GetPoAndGrinUnitPriceSPReportWithParam([FromBody] PoAndGrinUnitPriceSPReportDto poAndGrinUnitPriceSPReportDto)
         {
             ServiceResponse<IEnumerable<PoAndGrinUnitPriceSPReport>> serviceResponse = new ServiceResponse<IEnumerable<PoAndGrinUnitPriceSPReport>>();
@@ -2100,6 +2632,162 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> ExportPoAndGrinUnitPriceSPReportWithParamOrDateForTransToExcel([FromBody] PoAndGrinUnitPriceSPReportWithParamAndDateDto poAndGrinUnitPriceSPReportWithParamAndDateDto)
+        {
+
+            ServiceResponse<PoAndGrinUnitPriceSPReport> serviceResponse = new ServiceResponse<PoAndGrinUnitPriceSPReport>();
+            try
+            {
+
+                if (poAndGrinUnitPriceSPReportWithParamAndDateDto is null)
+                {
+                    _logger.LogError("poAndGrinUnitPriceSPReportWithParamAndDateDto object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "poAndGrinUnitPriceSPReportWithParamAndDateDto object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid poAndGrinUnitPriceSPReportWithParamAndDateDto object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                bool hasParams = !string.IsNullOrEmpty(poAndGrinUnitPriceSPReportWithParamAndDateDto.GrinNumber)
+                               || !string.IsNullOrEmpty(poAndGrinUnitPriceSPReportWithParamAndDateDto.VendorName)
+                               || !string.IsNullOrEmpty(poAndGrinUnitPriceSPReportWithParamAndDateDto.PONumber)
+                               || !string.IsNullOrEmpty(poAndGrinUnitPriceSPReportWithParamAndDateDto.ItemNumber)
+                               || !string.IsNullOrEmpty(poAndGrinUnitPriceSPReportWithParamAndDateDto.ProjectNumber);
+
+                bool hasDate = poAndGrinUnitPriceSPReportWithParamAndDateDto.FromDate != null || poAndGrinUnitPriceSPReportWithParamAndDateDto.ToDate != null;
+
+                if (hasParams && hasDate)
+                {
+                    _logger.LogError("Input object must contain either filter parameters or date range, not both.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or a date range, not both.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!hasParams && (poAndGrinUnitPriceSPReportWithParamAndDateDto.FromDate == null || poAndGrinUnitPriceSPReportWithParamAndDateDto.ToDate == null))
+                {
+                    _logger.LogError("Input object must contain either at least one filter parameter or both from and to dates.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or both from and to dates.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+
+                }
+
+                var PoAndGrinUnitPriceList = Enumerable.Empty<PoAndGrinUnitPriceSPReport>();
+
+                if (hasParams && !hasDate)
+                {
+
+                    PoAndGrinUnitPriceList = await _repository.GetPoAndGrinUnitPriceSPReportWithParam(
+                        poAndGrinUnitPriceSPReportWithParamAndDateDto.GrinNumber,
+                        poAndGrinUnitPriceSPReportWithParamAndDateDto.VendorName,
+                        poAndGrinUnitPriceSPReportWithParamAndDateDto.PONumber,
+                        poAndGrinUnitPriceSPReportWithParamAndDateDto.ItemNumber,
+                        poAndGrinUnitPriceSPReportWithParamAndDateDto.ProjectNumber);
+                }
+
+
+                if (!hasParams && (poAndGrinUnitPriceSPReportWithParamAndDateDto.FromDate != null && poAndGrinUnitPriceSPReportWithParamAndDateDto.ToDate != null))
+                {
+
+                    PoAndGrinUnitPriceList = await _repository.GetPoAndGrinUnitPriceSPReportWithDate(
+                        poAndGrinUnitPriceSPReportWithParamAndDateDto.FromDate,
+                        poAndGrinUnitPriceSPReportWithParamAndDateDto.ToDate);
+                }
+
+
+
+                // Create Excel workbook
+                // Create Excel workbook
+                // Create Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("PoAndGrinUnitPriceReport");
+
+                // Header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("PO Number");
+                headerRow.CreateCell(1).SetCellValue("Part Number");
+                headerRow.CreateCell(2).SetCellValue("MPN");
+                headerRow.CreateCell(3).SetCellValue("Description");
+                headerRow.CreateCell(4).SetCellValue("PO Qty");
+                headerRow.CreateCell(5).SetCellValue("PO UOM");
+                headerRow.CreateCell(6).SetCellValue("PO Unit Price");
+                headerRow.CreateCell(7).SetCellValue("PO UOC");
+                headerRow.CreateCell(8).SetCellValue("GRIN Number");
+                headerRow.CreateCell(9).SetCellValue("GRIN Qty");
+                headerRow.CreateCell(10).SetCellValue("GRIN UOM");
+                headerRow.CreateCell(11).SetCellValue("GRIN Unit Price");
+                headerRow.CreateCell(12).SetCellValue("GRIN UOC");
+                headerRow.CreateCell(13).SetCellValue("Unit Price Difference");
+                headerRow.CreateCell(14).SetCellValue("Project Number");
+                headerRow.CreateCell(15).SetCellValue("Vendor Name");
+                headerRow.CreateCell(16).SetCellValue("GRIN Date");
+
+                // Populate data
+                int rowIndex = 1;
+                foreach (var item in PoAndGrinUnitPriceList)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.PartNumber ?? "");
+                    row.CreateCell(2).SetCellValue(item.MPN ?? "");
+                    row.CreateCell(3).SetCellValue(item.Description ?? "");
+                    row.CreateCell(4).SetCellValue((double)(item.POQty ?? 0));
+                    row.CreateCell(5).SetCellValue(item.POUOM ?? "");
+                    row.CreateCell(6).SetCellValue((double)(item.POUnitPrice ?? 0));
+                    row.CreateCell(7).SetCellValue(item.POUOC ?? "");
+                    row.CreateCell(8).SetCellValue(item.GrinNumber ?? "");
+                    row.CreateCell(9).SetCellValue((double)(item.GRINQty ?? 0));
+                    row.CreateCell(10).SetCellValue(item.GRINUOM ?? "");
+                    row.CreateCell(11).SetCellValue((double)(item.GRINUnitPrice ?? 0));
+                    row.CreateCell(12).SetCellValue(item.GRINUOC ?? "");
+                    row.CreateCell(13).SetCellValue((double)(item.UnitPriceDifference ?? 0));
+                    row.CreateCell(14).SetCellValue(item.projectnumber ?? "");
+                    row.CreateCell(15).SetCellValue(item.VendorName ?? "");
+                    row.CreateCell(16).SetCellValue(item.grindate?.ToString("MM/dd/yyyy") ?? "");
+                }
+
+
+
+                // Export Excel
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+                    return File(excelBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "Grin For PoAndGrinUnitPriceList.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
+
+
+
 
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetPoAndGrinUnitPriceSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
@@ -2177,6 +2865,295 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> ExportGetPurchaseInventorySPReportWithParamOrDateToExcel([FromBody] PurchaseInventorySPReportWithParamAndDateDto PurchaseInventorySPReportWithParamAndDateDto)
+        {
+
+            ServiceResponse<PurchaseInventorySPReport> serviceResponse = new ServiceResponse<PurchaseInventorySPReport>();
+            try
+            {
+
+                if (PurchaseInventorySPReportWithParamAndDateDto is null)
+                {
+                    _logger.LogError("PurchaseInventorySPReportWithParamAndDateDto object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "PurchaseInventorySPReportWithParamAndDateDto object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid PurchaseInventorySPReportWithParamAndDateDto object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                bool hasParams = !string.IsNullOrEmpty(PurchaseInventorySPReportWithParamAndDateDto.InvoiceNumber)
+                               || !string.IsNullOrEmpty(PurchaseInventorySPReportWithParamAndDateDto.GRINNumber)
+                               || !string.IsNullOrEmpty(PurchaseInventorySPReportWithParamAndDateDto.KPN)
+                               || !string.IsNullOrEmpty(PurchaseInventorySPReportWithParamAndDateDto.VendorName);
+
+                bool hasDate = PurchaseInventorySPReportWithParamAndDateDto.FromDate != null || PurchaseInventorySPReportWithParamAndDateDto.ToDate != null;
+
+                if (hasParams && hasDate)
+                {
+                    _logger.LogError("Input object must contain either filter parameters or date range, not both.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or a date range, not both.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!hasParams && (PurchaseInventorySPReportWithParamAndDateDto.FromDate == null || PurchaseInventorySPReportWithParamAndDateDto.ToDate == null))
+                {
+                    _logger.LogError("Input object must contain either at least one filter parameter or both from and to dates.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or both from and to dates.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+
+                }
+
+                var purchaseInventoryList = Enumerable.Empty<PurchaseInventorySPReport>();
+
+                if (hasParams && !hasDate)
+                {
+
+                    purchaseInventoryList = await _repository.GetPurchaseInventorySPReportWithParam(PurchaseInventorySPReportWithParamAndDateDto.InvoiceNumber,
+                        PurchaseInventorySPReportWithParamAndDateDto.GRINNumber,
+                        PurchaseInventorySPReportWithParamAndDateDto.KPN, PurchaseInventorySPReportWithParamAndDateDto.VendorName);
+                }
+
+
+                if (!hasParams && (PurchaseInventorySPReportWithParamAndDateDto.FromDate != null && PurchaseInventorySPReportWithParamAndDateDto.ToDate != null))
+                {
+
+                    purchaseInventoryList = await _repository.GetPurchaseInventorySPReportWithDate(
+                        PurchaseInventorySPReportWithParamAndDateDto.FromDate,
+                        PurchaseInventorySPReportWithParamAndDateDto.ToDate);
+                }
+
+
+
+                // Create Excel workbook
+                // Create Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("PurchaseInventoryReport");
+
+                // Header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Invoice_Date");
+                headerRow.CreateCell(1).SetCellValue("Invoice_No");
+                headerRow.CreateCell(2).SetCellValue("InvoiceNumber");
+                headerRow.CreateCell(3).SetCellValue("InvoiceDate");
+                headerRow.CreateCell(4).SetCellValue("VoucherType");
+                headerRow.CreateCell(5).SetCellValue("VendorName");
+                headerRow.CreateCell(6).SetCellValue("Address1");
+                headerRow.CreateCell(7).SetCellValue("Address2");
+                headerRow.CreateCell(8).SetCellValue("Address3");
+                headerRow.CreateCell(9).SetCellValue("SupplierPinCode");
+                headerRow.CreateCell(10).SetCellValue("State");
+                headerRow.CreateCell(11).SetCellValue("PlaceOfSupply");
+                headerRow.CreateCell(12).SetCellValue("Country");
+                headerRow.CreateCell(13).SetCellValue("GSTNNumber");
+                headerRow.CreateCell(14).SetCellValue("ConsignorFromName");
+                headerRow.CreateCell(15).SetCellValue("ConsignorFrom_Add1");
+                headerRow.CreateCell(16).SetCellValue("ConsignorFrom_Add2");
+                headerRow.CreateCell(17).SetCellValue("ConsignorFrom_Add3");
+                headerRow.CreateCell(18).SetCellValue("ConsignorFrom_State");
+                headerRow.CreateCell(19).SetCellValue("ConsignorFrom_Place");
+                headerRow.CreateCell(20).SetCellValue("ConsignorFrom_Pincode");
+                headerRow.CreateCell(21).SetCellValue("ConsignorFrom_GSTIN");
+                headerRow.CreateCell(22).SetCellValue("TinNo");
+                headerRow.CreateCell(23).SetCellValue("CSTNo");
+                headerRow.CreateCell(24).SetCellValue("GSTRegistrationType");
+                headerRow.CreateCell(25).SetCellValue("ReceiptNote_No");
+                headerRow.CreateCell(26).SetCellValue("ReceiptNote_Date");
+                headerRow.CreateCell(27).SetCellValue("OrderNo");
+                headerRow.CreateCell(28).SetCellValue("OrderDate");
+                headerRow.CreateCell(29).SetCellValue("Order_DueDate");
+                headerRow.CreateCell(30).SetCellValue("LR_No");
+                headerRow.CreateCell(31).SetCellValue("Despatch_Through");
+                headerRow.CreateCell(32).SetCellValue("Destination");
+                headerRow.CreateCell(33).SetCellValue("TermsOfPayment");
+                headerRow.CreateCell(34).SetCellValue("Other_Reference");
+                headerRow.CreateCell(35).SetCellValue("TermsOfDelivery");
+                headerRow.CreateCell(36).SetCellValue("Purchase_Ledger");
+                headerRow.CreateCell(37).SetCellValue("ItemName");
+                headerRow.CreateCell(38).SetCellValue("HSN_Code");
+                headerRow.CreateCell(39).SetCellValue("ItemDescription");
+                headerRow.CreateCell(40).SetCellValue("TaxRate");
+                headerRow.CreateCell(41).SetCellValue("BatchNo");
+                headerRow.CreateCell(42).SetCellValue("MfgDate");
+                headerRow.CreateCell(43).SetCellValue("ExpDate");
+                headerRow.CreateCell(44).SetCellValue("Qty");
+                headerRow.CreateCell(45).SetCellValue("UOM");
+                headerRow.CreateCell(46).SetCellValue("Rate");
+                headerRow.CreateCell(47).SetCellValue("Discount");
+                headerRow.CreateCell(48).SetCellValue("Amount");
+                headerRow.CreateCell(49).SetCellValue("OtherCharges_1_Ledger");
+                headerRow.CreateCell(50).SetCellValue("OtherCharges_1_Amount");
+                headerRow.CreateCell(51).SetCellValue("OtherCharges_2_Ledger");
+                headerRow.CreateCell(52).SetCellValue("OtherCharges_2_Amount");
+                headerRow.CreateCell(53).SetCellValue("OtherCharges_3_Ledger");
+                headerRow.CreateCell(54).SetCellValue("OtherCharges_3_Amount");
+                headerRow.CreateCell(55).SetCellValue("OtherCharges_4_Ledger");
+                headerRow.CreateCell(56).SetCellValue("OtherCharges_4_Amount");
+                headerRow.CreateCell(57).SetCellValue("OtherCharges_5_Ledger");
+                headerRow.CreateCell(58).SetCellValue("OtherCharges_5_Amount");
+                headerRow.CreateCell(59).SetCellValue("CSGT_Ledger");
+                headerRow.CreateCell(60).SetCellValue("CGSTAmount");
+                headerRow.CreateCell(61).SetCellValue("SGST_Ledger");
+                headerRow.CreateCell(62).SetCellValue("SGSTAmount");
+                headerRow.CreateCell(63).SetCellValue("IGST_Ledger");
+                headerRow.CreateCell(64).SetCellValue("IGSTAmount");
+                headerRow.CreateCell(65).SetCellValue("CessLedger");
+                headerRow.CreateCell(66).SetCellValue("CessAmount");
+                headerRow.CreateCell(67).SetCellValue("Roundoff_Ledger");
+                headerRow.CreateCell(68).SetCellValue("Roundoff_Amount");
+                headerRow.CreateCell(69).SetCellValue("CostCenter");
+                headerRow.CreateCell(70).SetCellValue("Godown");
+                headerRow.CreateCell(71).SetCellValue("Narration");
+                headerRow.CreateCell(72).SetCellValue("eWay_BillNo");
+                headerRow.CreateCell(73).SetCellValue("eWay_BillDate");
+                headerRow.CreateCell(74).SetCellValue("Consolidated_eWay_BillNo");
+                headerRow.CreateCell(75).SetCellValue("Consolidated_eWay_Date");
+                headerRow.CreateCell(76).SetCellValue("SubType");
+                headerRow.CreateCell(77).SetCellValue("DocumentType");
+                headerRow.CreateCell(78).SetCellValue("Statusof_eWayBill");
+                headerRow.CreateCell(79).SetCellValue("TransportMode");
+                headerRow.CreateCell(80).SetCellValue("Distance");
+                headerRow.CreateCell(81).SetCellValue("Transporter_Name");
+                headerRow.CreateCell(82).SetCellValue("Vehicle_Number");
+                headerRow.CreateCell(83).SetCellValue("Vehicle_Type");
+                headerRow.CreateCell(84).SetCellValue("Doc_or_AirWay_BillNo");
+                headerRow.CreateCell(85).SetCellValue("DocDate");
+                headerRow.CreateCell(86).SetCellValue("Transporter_ID");
+
+                // Populate data
+                int rowIndex = 1;
+                foreach (var item in purchaseInventoryList)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.Invoice_Date ?? "");
+                    row.CreateCell(1).SetCellValue(item.Invoice_No ?? "");
+                    row.CreateCell(2).SetCellValue(item.InvoiceNumber ?? "");
+                    row.CreateCell(3).SetCellValue(item.InvoiceDate?.ToString("MM-dd-yyyy") ?? "");
+                    row.CreateCell(4).SetCellValue(item.VoucherType ?? "");
+                    row.CreateCell(5).SetCellValue(item.VendorName ?? "");
+                    row.CreateCell(6).SetCellValue(item.Address1 ?? "");
+                    row.CreateCell(7).SetCellValue(item.Address2 ?? "");
+                    row.CreateCell(8).SetCellValue(item.Address3 ?? "");
+                    row.CreateCell(9).SetCellValue(item.SupplierPinCode ?? "");
+                    row.CreateCell(10).SetCellValue(item.State ?? "");
+                    row.CreateCell(11).SetCellValue(item.PlaceOfSupply ?? "");
+                    row.CreateCell(12).SetCellValue(item.Country ?? "");
+                    row.CreateCell(13).SetCellValue(item.GSTNNumber ?? "");
+                    row.CreateCell(14).SetCellValue(item.ConsignorFromName ?? "");
+                    row.CreateCell(15).SetCellValue(item.ConsignorFrom_Add1 ?? "");
+                    row.CreateCell(16).SetCellValue(item.ConsignorFrom_Add2 ?? "");
+                    row.CreateCell(17).SetCellValue(item.ConsignorFrom_Add3 ?? "");
+                    row.CreateCell(18).SetCellValue(item.ConsignorFrom_State ?? "");
+                    row.CreateCell(19).SetCellValue(item.ConsignorFrom_Place ?? "");
+                    row.CreateCell(20).SetCellValue(item.ConsignorFrom_Pincode ?? "");
+                    row.CreateCell(21).SetCellValue(item.ConsignorFrom_GSTIN ?? "");
+                    row.CreateCell(22).SetCellValue(item.TinNo ?? "");
+                    row.CreateCell(23).SetCellValue(item.CSTNo ?? "");
+                    row.CreateCell(24).SetCellValue(item.GSTRegistrationType ?? "");
+                    row.CreateCell(25).SetCellValue(item.ReceiptNote_No ?? "");
+                    row.CreateCell(26).SetCellValue(item.ReceiptNote_Date ?? "");
+                    row.CreateCell(27).SetCellValue(item.OrderNo ?? "");
+                    row.CreateCell(28).SetCellValue(item.OrderDate ?? "");
+                    row.CreateCell(29).SetCellValue(item.Order_DueDate ?? "");
+                    row.CreateCell(30).SetCellValue(item.LR_No ?? "");
+                    row.CreateCell(31).SetCellValue(item.Despatch_Through ?? "");
+                    row.CreateCell(32).SetCellValue(item.Destination ?? "");
+                    row.CreateCell(33).SetCellValue(item.TermsOfPayment ?? "");
+                    row.CreateCell(34).SetCellValue(item.Other_Reference ?? "");
+                    row.CreateCell(35).SetCellValue(item.TermsOfDelivery ?? "");
+                    row.CreateCell(36).SetCellValue(item.Purchase_Ledger ?? "");
+                    row.CreateCell(37).SetCellValue(item.ItemName ?? "");
+                    row.CreateCell(38).SetCellValue(item.HSN_Code ?? "");
+                    row.CreateCell(39).SetCellValue(item.ItemDescription ?? "");
+                    row.CreateCell(40).SetCellValue((double)(item.TaxRate ?? 0));
+                    row.CreateCell(41).SetCellValue(item.BatchNo ?? "");
+                    row.CreateCell(42).SetCellValue(item.MfgDate ?? "");
+                    row.CreateCell(43).SetCellValue(item.ExpDate ?? "");
+                    row.CreateCell(44).SetCellValue((double)(item.Qty ?? 0));
+                    row.CreateCell(45).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(46).SetCellValue((double)(item.Rate ?? 0));
+                    row.CreateCell(47).SetCellValue(item.Discount ?? "");
+                    row.CreateCell(48).SetCellValue((double)(item.Amount ?? 0));
+                    row.CreateCell(49).SetCellValue(item.OtherCharges_1_Ledger ?? "");
+                    row.CreateCell(50).SetCellValue(item.OtherCharges_1_Amount ?? "");
+                    row.CreateCell(51).SetCellValue(item.OtherCharges_2_Ledger ?? "");
+                    row.CreateCell(52).SetCellValue(item.OtherCharges_2_Amount ?? "");
+                    row.CreateCell(53).SetCellValue(item.OtherCharges_3_Ledger ?? "");
+                    row.CreateCell(54).SetCellValue(item.OtherCharges_3_Amount ?? "");
+                    row.CreateCell(55).SetCellValue(item.OtherCharges_4_Ledger ?? "");
+                    row.CreateCell(56).SetCellValue(item.OtherCharges_4_Amount ?? "");
+                    row.CreateCell(57).SetCellValue(item.OtherCharges_5_Ledger ?? "");
+                    row.CreateCell(58).SetCellValue(item.OtherCharges_5_Amount ?? "");
+                    row.CreateCell(59).SetCellValue((double)(item.CSGT_Ledger ?? 0));
+                    row.CreateCell(60).SetCellValue((double)(item.CGSTAmount ?? 0));
+                    row.CreateCell(61).SetCellValue((double)(item.SGST_Ledger ?? 0));
+                    row.CreateCell(62).SetCellValue((double)(item.SGSTAmount ?? 0));
+                    row.CreateCell(63).SetCellValue((double)(item.IGST_Ledger ?? 0));
+                    row.CreateCell(64).SetCellValue((double)(item.IGSTAmount ?? 0));
+                    row.CreateCell(65).SetCellValue(item.CessLedger ?? "");
+                    row.CreateCell(66).SetCellValue(item.CessAmount ?? "");
+                    row.CreateCell(67).SetCellValue(item.Roundoff_Ledger ?? "");
+                    row.CreateCell(68).SetCellValue(item.Roundoff_Amount ?? "");
+                    row.CreateCell(69).SetCellValue(item.CostCenter ?? "");
+                    row.CreateCell(70).SetCellValue(item.Godown ?? "");
+                    row.CreateCell(71).SetCellValue(item.Narration ?? "");
+                    row.CreateCell(72).SetCellValue(item.eWay_BillNo ?? "");
+                    row.CreateCell(73).SetCellValue(item.eWay_BillDate ?? "");
+                    row.CreateCell(74).SetCellValue(item.Consolidated_eWay_BillNo ?? "");
+                    row.CreateCell(75).SetCellValue(item.Consolidated_eWay_Date ?? "");
+                    row.CreateCell(76).SetCellValue(item.SubType ?? "");
+                    row.CreateCell(77).SetCellValue(item.DocumentType ?? "");
+                    row.CreateCell(78).SetCellValue(item.Statusof_eWayBill ?? "");
+                    row.CreateCell(79).SetCellValue(item.TransportMode ?? "");
+                    row.CreateCell(80).SetCellValue(item.Distance ?? "");
+                    row.CreateCell(81).SetCellValue(item.Transporter_Name ?? "");
+                    row.CreateCell(82).SetCellValue(item.Vehicle_Number ?? "");
+                    row.CreateCell(83).SetCellValue(item.Vehicle_Type ?? "");
+                    row.CreateCell(84).SetCellValue(item.Doc_or_AirWay_BillNo ?? "");
+                    row.CreateCell(85).SetCellValue(item.DocDate ?? "");
+                    row.CreateCell(86).SetCellValue(item.Transporter_ID ?? "");
+                }
+
+
+
+                // Export Excel
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+                    return File(excelBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "purchaseInventory.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
 
 
         [HttpGet]
@@ -3151,7 +4128,7 @@ namespace Tips.Grin.Api.Controllers
                                 }
                             }
                         }
-                        decimal? SumofEPwithtax = grinCal.Where(x=>x.Qty > 0 && x.UnitPrice > 0).Sum(x => x.EPwithTax);
+                        decimal? SumofEPwithtax = grinCal.Where(x => x.Qty > 0 && x.UnitPrice > 0).Sum(x => x.EPwithTax);
                         foreach (var gPart in grinCal)
                         {
                             if (gPart.Qty > 0 && gPart.UnitPrice > 0)
@@ -3161,7 +4138,7 @@ namespace Tips.Grin.Api.Controllers
                                     decimal? distriduteOthercostforitem = (gPart.EPwithTax / SumofEPwithtax) * othercosttotal;
                                     decimal? distriduteOthercostforitemsSingleQty = distriduteOthercostforitem / gPart.Qty;
                                     gPart.AverageCost = distriduteOthercostforitemsSingleQty + gPart.EPforSingleQty;
-                                   
+
                                 }
                                 catch (Exception ex)
                                 {
@@ -3178,7 +4155,7 @@ namespace Tips.Grin.Api.Controllers
                     }
                     catch (Exception ex)
                     {
-                        throw new Exception(grin + "\n" +ex);
+                        throw new Exception(grin + "\n" + ex);
                     }
                 }
                 _logger.LogInfo($"Successfully UpdateGRINAvgCost API");

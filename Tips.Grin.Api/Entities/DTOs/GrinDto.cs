@@ -443,6 +443,19 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string Warehouse { get; set; }
         public string Location { get; set; }
     }
+
+    public class GrinReportWithParamAndDateForExcelDto
+    {
+        public string GrinNumber { get; set; }
+        public string VendorName { get; set; }
+        public string PONumber { get; set; }
+        public string KPN { get; set; }
+        public string MPN { get; set; }
+        public string Warehouse { get; set; }
+        public string Location { get; set; }
+        public DateTime ? FromDate { get; set; }
+        public DateTime ? ToDate { get; set; }
+    }
     public class GrinReportWithParamForTransDto
     {
         public string GrinNumber { get; set; }
@@ -452,6 +465,17 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string MPN { get; set; }
         public string ProjectNumber { get; set; }
 
+    }
+    public class GrinReportWithParamWithdateForExcelDtoTras
+    {
+        public string GrinNumber { get; set; }
+        public string VendorName { get; set; }
+        public string PONumber { get; set; }
+        public string ItemNumber { get; set; }
+        public string MPN { get; set; }
+        public string ProjectNumber { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
     }
 
     public class GrinReportWithParamForAviDto
@@ -465,6 +489,20 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string Location { get; set; }
         public string ProjectNumber { get; set; }
 
+    }
+
+    public class GrinReportWithParamWithdateForExcelAviDto
+    {
+        public string GrinNumber { get; set; }
+        public string VendorName { get; set; }
+        public string PONumber { get; set; }
+        public string ItemNumber { get; set; }
+        public string MPN { get; set; }
+        public string Warehouse { get; set; }
+        public string Location { get; set; }
+        public string ProjectNumber { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
     }
     public class GrinSPReportForAvi
     {
@@ -561,6 +599,16 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? GRINNumber { get; set; }
         public string? KPN { get; set; }
         public string? VendorName { get; set; }
+    }
+
+    public class PurchaseInventorySPReportWithParamAndDateDto
+    {
+        public string? InvoiceNumber { get; set; }
+        public string? GRINNumber { get; set; }
+        public string? KPN { get; set; }
+        public string? VendorName { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
     }
     public class PurchaseInventorySPReport
     {
@@ -659,6 +707,18 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? PONumber { get; set; }
         public string? ItemNumber { get; set; }
         public string? ProjectNumber { get; set; }
+
+    }
+
+    public class PoAndGrinUnitPriceSPReportWithParamAndDateDto
+    {
+        public string? GrinNumber { get; set; }
+        public string? VendorName { get; set; }
+        public string? PONumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
 
     }
     public class PoAndGrinUnitPriceSPReport

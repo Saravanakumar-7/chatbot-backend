@@ -24,6 +24,8 @@ using Tips.Grin.Api.Entities.DTOs;
 using Tips.Grin.Api.Repository;
 using EmailTemplateDto = Tips.Grin.Api.Entities.DTOs.EmailTemplateDto;
 using System.Security.Claims;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace Tips.Grin.Api.Controllers
 {
@@ -140,6 +142,155 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> ExportIQCConfirmationSPReportWithParamOrDateToExcel([FromBody] IQCConfirmationReportWithParamAndDateDto iqcconfirmationReportWithParamAndDateDto)
+        {
+
+            ServiceResponse<IQCConfirmation_SPReport> serviceResponse = new ServiceResponse<IQCConfirmation_SPReport>();
+            try
+            {
+
+                if (iqcconfirmationReportWithParamAndDateDto is null)
+                {
+                    _logger.LogError("iqcconfirmationReportWithParamAndDateDto object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "iqcconfirmationReportWithParamAndDateDto object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid iqcconfirmationReportWithParamAndDateDto object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                bool hasParams = !string.IsNullOrEmpty(iqcconfirmationReportWithParamAndDateDto.GrinNumber)
+                               || !string.IsNullOrEmpty(iqcconfirmationReportWithParamAndDateDto.ItemNumber);
+
+                bool hasDate = iqcconfirmationReportWithParamAndDateDto.FromDate != null || iqcconfirmationReportWithParamAndDateDto.ToDate != null;
+
+                if (hasParams && hasDate)
+                {
+                    _logger.LogError("Input object must contain either filter parameters or date range, not both.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or a date range, not both.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!hasParams && (iqcconfirmationReportWithParamAndDateDto.FromDate == null || iqcconfirmationReportWithParamAndDateDto.ToDate == null))
+                {
+                    _logger.LogError("Input object must contain either at least one filter parameter or both from and to dates.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or both from and to dates.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+
+                }
+
+                var IQCConfirmationItemsList = Enumerable.Empty<IQCConfirmation_SPReport>();
+
+                if (hasParams && !hasDate)
+                {
+
+                    IQCConfirmationItemsList = await _iQCConfirmationRepository.GetIQCConfirmationSPReportWithParam(
+                        iqcconfirmationReportWithParamAndDateDto.GrinNumber,
+                        iqcconfirmationReportWithParamAndDateDto.ItemNumber);
+                }
+
+
+                if (!hasParams && (iqcconfirmationReportWithParamAndDateDto.FromDate != null && iqcconfirmationReportWithParamAndDateDto.ToDate != null))
+                {
+
+                    IQCConfirmationItemsList = await _iQCConfirmationRepository.GetIQCConfirmationSPReportWithDate(
+                        iqcconfirmationReportWithParamAndDateDto.FromDate,
+                        iqcconfirmationReportWithParamAndDateDto.ToDate);
+                }
+
+
+
+                // Create Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("IQCConfirmation");
+
+                // Header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("GRIN Number");
+                headerRow.CreateCell(1).SetCellValue("Vendor Name");
+                headerRow.CreateCell(2).SetCellValue("Invoice Number");
+                headerRow.CreateCell(3).SetCellValue("Invoice Date");
+                headerRow.CreateCell(4).SetCellValue("Invoice Value");
+                headerRow.CreateCell(5).SetCellValue("PO Number");
+                headerRow.CreateCell(6).SetCellValue("Item Description");
+                headerRow.CreateCell(7).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(8).SetCellValue("Manufacture Batch Number");
+                headerRow.CreateCell(9).SetCellValue("Unit Price");
+                headerRow.CreateCell(10).SetCellValue("Project Number");
+                headerRow.CreateCell(11).SetCellValue("Project Qty");
+                headerRow.CreateCell(12).SetCellValue("UOM");
+                headerRow.CreateCell(13).SetCellValue("Expiry Date");
+                headerRow.CreateCell(14).SetCellValue("Manufacture Date");
+                headerRow.CreateCell(15).SetCellValue("Received Qty");
+                headerRow.CreateCell(16).SetCellValue("Accepted Qty");
+                headerRow.CreateCell(17).SetCellValue("Rejected Qty");
+                headerRow.CreateCell(18).SetCellValue("Remarks");
+                headerRow.CreateCell(19).SetCellValue("Total Invoice Value");
+                headerRow.CreateCell(20).SetCellValue("AWB Number 1");
+                headerRow.CreateCell(21).SetCellValue("AWB Date 1");
+
+                // Populate data
+                int rowIndex = 1;
+                foreach (var item in IQCConfirmationItemsList)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.GrinNumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.VendorName ?? "");
+                    row.CreateCell(2).SetCellValue(item.InvoiceNumber ?? "");
+                    row.CreateCell(3).SetCellValue(item.InvoiceDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(4).SetCellValue((double)(item.InvoiceValue ?? 0));
+                    row.CreateCell(5).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(6).SetCellValue(item.ItemDescription ?? "");
+                    row.CreateCell(7).SetCellValue(item.MftrItemNumber ?? "");
+                    row.CreateCell(8).SetCellValue(item.ManufactureBatchNumber ?? "");
+                    row.CreateCell(9).SetCellValue((double)(item.UnitPrice ?? 0));
+                    row.CreateCell(10).SetCellValue(item.ProjectNumber ?? "");
+                    row.CreateCell(11).SetCellValue((double)(item.ProjectQty ?? 0));
+                    row.CreateCell(12).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(13).SetCellValue(item.ExpiryDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(14).SetCellValue(item.ManufactureDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(15).SetCellValue((double)(item.ReceivedQty ?? 0));
+                    row.CreateCell(16).SetCellValue((double)(item.AcceptedQty ?? 0));
+                    row.CreateCell(17).SetCellValue((double)(item.RejectedQty ?? 0));
+                    row.CreateCell(18).SetCellValue(item.Remarks ?? "");
+                    row.CreateCell(19).SetCellValue((double)(item.TotalInvoiceValue ?? 0));
+                    row.CreateCell(20).SetCellValue(item.AWBNumber1 ?? "");
+                    row.CreateCell(21).SetCellValue(item.AWBDate1?.ToString("MM/dd/yyyy") ?? "");
+                }
+
+
+
+                // Export Excel
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+                    return File(excelBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "IQCConfirmation.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
 
 
         [HttpPost]
@@ -181,6 +332,169 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportIQCConfirmationSPReportWithParamOrDateToExcelForTras([FromBody] IQCConfirmationReportWithParamAndDateForTransDto iqcconfirmationReportWithParamAndDateForTransDto)
+        {
+
+            ServiceResponse<IQCConfirmationSPReportForTrans> serviceResponse = new ServiceResponse<IQCConfirmationSPReportForTrans>();
+            try
+            {
+
+                if (iqcconfirmationReportWithParamAndDateForTransDto is null)
+                {
+                    _logger.LogError("iqcconfirmationReportWithParamAndDateForTransDto object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "iqcconfirmationReportWithParamAndDateForTransDto object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid iqcconfirmationReportWithParamAndDateForTransDto object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                bool hasParams = !string.IsNullOrEmpty(iqcconfirmationReportWithParamAndDateForTransDto.GrinNumber)
+                               || !string.IsNullOrEmpty(iqcconfirmationReportWithParamAndDateForTransDto.ItemNumber)
+                               || !string.IsNullOrEmpty(iqcconfirmationReportWithParamAndDateForTransDto.ProjectNumber);
+
+                bool hasDate = iqcconfirmationReportWithParamAndDateForTransDto.FromDate != null || iqcconfirmationReportWithParamAndDateForTransDto.ToDate != null;
+
+                if (hasParams && hasDate)
+                {
+                    _logger.LogError("Input object must contain either filter parameters or date range, not both.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or a date range, not both.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!hasParams && (iqcconfirmationReportWithParamAndDateForTransDto.FromDate == null || iqcconfirmationReportWithParamAndDateForTransDto.ToDate == null))
+                {
+                    _logger.LogError("Input object must contain either at least one filter parameter or both from and to dates.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or both from and to dates.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+
+                }
+
+                var IQCConfirmationItemsList = Enumerable.Empty<IQCConfirmationSPReportForTrans>();
+
+                if (hasParams && !hasDate)
+                {
+
+                    IQCConfirmationItemsList = await _iQCConfirmationRepository.GetIQCConfirmationSPReportWithParamForTrans(
+                        iqcconfirmationReportWithParamAndDateForTransDto.GrinNumber,
+                        iqcconfirmationReportWithParamAndDateForTransDto.ItemNumber, iqcconfirmationReportWithParamAndDateForTransDto.ProjectNumber);
+                }
+
+
+                if (!hasParams && (iqcconfirmationReportWithParamAndDateForTransDto.FromDate != null && iqcconfirmationReportWithParamAndDateForTransDto.ToDate != null))
+                {
+
+                    IQCConfirmationItemsList = await _iQCConfirmationRepository.GetIQCConfirmationSPReportWithDateForTrans(
+                        iqcconfirmationReportWithParamAndDateForTransDto.FromDate,
+                        iqcconfirmationReportWithParamAndDateForTransDto.ToDate);
+                }
+
+
+
+                // Create Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("IQCConfirmation");
+
+                // Header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("GRIN Number");
+                headerRow.CreateCell(1).SetCellValue("Vendor Name");
+                headerRow.CreateCell(2).SetCellValue("Invoice Number");
+                headerRow.CreateCell(3).SetCellValue("IQC Cleared Date");
+                headerRow.CreateCell(4).SetCellValue("Invoice Date");
+                headerRow.CreateCell(5).SetCellValue("Invoice Value");
+                headerRow.CreateCell(6).SetCellValue("PO Number");
+                headerRow.CreateCell(7).SetCellValue("Item Description");
+                headerRow.CreateCell(8).SetCellValue("GRIN Part No");
+                headerRow.CreateCell(9).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(10).SetCellValue("Manufacture Batch Number");
+                headerRow.CreateCell(11).SetCellValue("Lot Number");
+                headerRow.CreateCell(12).SetCellValue("Unit Price");
+                headerRow.CreateCell(13).SetCellValue("Project Number");
+                headerRow.CreateCell(14).SetCellValue("Project Qty");
+                headerRow.CreateCell(15).SetCellValue("UOM");
+                headerRow.CreateCell(16).SetCellValue("Expiry Date");
+                headerRow.CreateCell(17).SetCellValue("GRIN Qty");
+                headerRow.CreateCell(18).SetCellValue("Manufacture Date");
+                headerRow.CreateCell(19).SetCellValue("Accepted Qty");
+                headerRow.CreateCell(20).SetCellValue("Rejected Qty");
+                headerRow.CreateCell(21).SetCellValue("Status");
+                headerRow.CreateCell(22).SetCellValue("Remarks");
+                headerRow.CreateCell(23).SetCellValue("Total Invoice Value");
+                headerRow.CreateCell(24).SetCellValue("AWB Number 1");
+                headerRow.CreateCell(25).SetCellValue("AWB Date 1");
+                headerRow.CreateCell(26).SetCellValue("Received Qty");
+
+                // Populate data
+                int rowIndex = 1;
+                foreach (var item in IQCConfirmationItemsList)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.GrinNumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.VendorName ?? "");
+                    row.CreateCell(2).SetCellValue(item.InvoiceNumber ?? "");
+                    row.CreateCell(3).SetCellValue(item.IqcClearedDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(4).SetCellValue(item.InvoiceDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(5).SetCellValue((double)(item.InvoiceValue ?? 0));
+                    row.CreateCell(6).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(7).SetCellValue(item.ItemDescription ?? "");
+                    row.CreateCell(8).SetCellValue(item.GrinPartNo ?? "");
+                    row.CreateCell(9).SetCellValue(item.MftrItemNumber ?? "");
+                    row.CreateCell(10).SetCellValue(item.ManufactureBatchNumber ?? "");
+                    row.CreateCell(11).SetCellValue(item.LotNumber ?? "");
+                    row.CreateCell(12).SetCellValue((double)(item.UnitPrice ?? 0));
+                    row.CreateCell(13).SetCellValue(item.ProjectNumber ?? "");
+                    row.CreateCell(14).SetCellValue((double)(item.ProjectQty ?? 0));
+                    row.CreateCell(15).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(16).SetCellValue(item.ExpiryDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(17).SetCellValue((double)(item.GrinQty ?? 0));
+                    row.CreateCell(18).SetCellValue(item.ManufactureDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(19).SetCellValue((double)(item.AcceptedQty ?? 0));
+                    row.CreateCell(20).SetCellValue((double)(item.RejectedQty ?? 0));
+                    row.CreateCell(21).SetCellValue(item.Status?.ToString() ?? "");
+                    row.CreateCell(22).SetCellValue(item.Remarks ?? "");
+                    row.CreateCell(23).SetCellValue((double)(item.TotalInvoiceValue ?? 0));
+                    row.CreateCell(24).SetCellValue(item.AWBNumber1 ?? "");
+                    row.CreateCell(25).SetCellValue(item.AWBDate1?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(26).SetCellValue((double)(item.ReceivedQty ?? 0));
+                }
+
+
+
+
+                // Export Excel
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+                    return File(excelBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "IQC Confirmations.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> GetIQCPendingSPReportWithParamForTrans([FromBody] IQCPendingReportWithParamForTransDto iQCPendingReportWithParamForTransDto)
@@ -313,6 +627,175 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> ExportIQCConfirmationSPReportWithParamOrDateToExcelForAvi([FromBody] IQCConfirmationReportWithParamAndDateForAviDto iqcconfirmationReportWithParamAndDateForAviDto)
+        {
+
+            ServiceResponse<IQCConfirmationSPReportForAvi> serviceResponse = new ServiceResponse<IQCConfirmationSPReportForAvi>();
+            try
+            {
+
+                if (iqcconfirmationReportWithParamAndDateForAviDto is null)
+                {
+                    _logger.LogError("iqcconfirmationReportWithParamAndDateForAviDto object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "iqcconfirmationReportWithParamAndDateForAviDto object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid iqcconfirmationReportWithParamAndDateForAviDto object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                bool hasParams = !string.IsNullOrEmpty(iqcconfirmationReportWithParamAndDateForAviDto.GrinNumber)
+                               || !string.IsNullOrEmpty(iqcconfirmationReportWithParamAndDateForAviDto.ItemNumber);
+
+                bool hasDate = iqcconfirmationReportWithParamAndDateForAviDto.FromDate != null || iqcconfirmationReportWithParamAndDateForAviDto.ToDate != null;
+
+                if (hasParams && hasDate)
+                {
+                    _logger.LogError("Input object must contain either filter parameters or date range, not both.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or a date range, not both.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!hasParams && (iqcconfirmationReportWithParamAndDateForAviDto.FromDate == null || iqcconfirmationReportWithParamAndDateForAviDto.ToDate == null))
+                {
+                    _logger.LogError("Input object must contain either at least one filter parameter or both from and to dates.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or both from and to dates.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+
+                }
+
+                var IQCConfirmationItemsList = Enumerable.Empty<IQCConfirmationSPReportForAvi>();
+
+                if (hasParams && !hasDate)
+                {
+
+                    IQCConfirmationItemsList = await _iQCConfirmationRepository.GetIQCConfirmationSPReportWithParamForAvi(
+                        iqcconfirmationReportWithParamAndDateForAviDto.GrinNumber,
+                        iqcconfirmationReportWithParamAndDateForAviDto.ItemNumber, iqcconfirmationReportWithParamAndDateForAviDto.ProjectNumber);
+                }
+
+
+                if (!hasParams && (iqcconfirmationReportWithParamAndDateForAviDto.FromDate != null && iqcconfirmationReportWithParamAndDateForAviDto.ToDate != null))
+                {
+
+                    IQCConfirmationItemsList = await _iQCConfirmationRepository.GetIQCConfirmationSPReportWithDateForAvi(
+                        iqcconfirmationReportWithParamAndDateForAviDto.FromDate,
+                        iqcconfirmationReportWithParamAndDateForAviDto.ToDate);
+                }
+
+
+
+                // Create Excel workbook
+                // Create Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("IQCConfirmationReport");
+
+                // Header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("GRIN Number");
+                headerRow.CreateCell(1).SetCellValue("GRIN Cleared Date");
+                headerRow.CreateCell(2).SetCellValue("Vendor Name");
+                headerRow.CreateCell(3).SetCellValue("Invoice Number");
+                headerRow.CreateCell(4).SetCellValue("Invoice Date");
+                headerRow.CreateCell(5).SetCellValue("Invoice Value");
+                headerRow.CreateCell(6).SetCellValue("PO Number");
+                headerRow.CreateCell(7).SetCellValue("Item Description");
+                headerRow.CreateCell(8).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(9).SetCellValue("Manufacture Batch Number");
+                headerRow.CreateCell(10).SetCellValue("Lot Number");
+                headerRow.CreateCell(11).SetCellValue("Unit Price");
+                headerRow.CreateCell(12).SetCellValue("Project Number");
+                headerRow.CreateCell(13).SetCellValue("Project Qty");
+                headerRow.CreateCell(14).SetCellValue("UOM");
+                headerRow.CreateCell(15).SetCellValue("Expiry Date");
+                headerRow.CreateCell(16).SetCellValue("GRIN Qty");
+                headerRow.CreateCell(17).SetCellValue("Manufacture Date");
+                headerRow.CreateCell(18).SetCellValue("Received Qty");
+                headerRow.CreateCell(19).SetCellValue("Accepted Qty");
+                headerRow.CreateCell(20).SetCellValue("Rejected Qty");
+                headerRow.CreateCell(21).SetCellValue("Remarks");
+                headerRow.CreateCell(22).SetCellValue("IQC Cleared Date");
+                headerRow.CreateCell(23).SetCellValue("Total Invoice Value");
+                headerRow.CreateCell(24).SetCellValue("AWB Number 1");
+                headerRow.CreateCell(25).SetCellValue("AWB Date 1");
+
+                // Populate data
+                int rowIndex = 1;
+                foreach (var item in IQCConfirmationItemsList)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.GrinNumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.GrinClearedDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(2).SetCellValue(item.VendorName ?? "");
+                    row.CreateCell(3).SetCellValue(item.InvoiceNumber ?? "");
+                    row.CreateCell(4).SetCellValue(item.InvoiceDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(5).SetCellValue((double)(item.InvoiceValue ?? 0));
+                    row.CreateCell(6).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(7).SetCellValue(item.ItemDescription ?? "");
+                    row.CreateCell(8).SetCellValue(item.MftrItemNumber ?? "");
+                    row.CreateCell(9).SetCellValue(item.ManufactureBatchNumber ?? "");
+                    row.CreateCell(10).SetCellValue(item.LotNumber ?? "");
+                    row.CreateCell(11).SetCellValue((double)(item.UnitPrice ?? 0));
+                    row.CreateCell(12).SetCellValue(item.ProjectNumber ?? "");
+                    row.CreateCell(13).SetCellValue((double)(item.ProjectQty ?? 0));
+                    row.CreateCell(14).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(15).SetCellValue(item.ExpiryDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(16).SetCellValue((double)(item.GrinQty ?? 0));
+                    row.CreateCell(17).SetCellValue(item.ManufactureDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(18).SetCellValue((double)(item.ReceivedQty ?? 0));
+                    row.CreateCell(19).SetCellValue((double)(item.AcceptedQty ?? 0));
+                    row.CreateCell(20).SetCellValue((double)(item.RejectedQty ?? 0));
+                    row.CreateCell(21).SetCellValue(item.Remarks ?? "");
+                    row.CreateCell(22).SetCellValue(item.IqcClearedDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(23).SetCellValue((double)(item.TotalInvoiceValue ?? 0));
+                    row.CreateCell(24).SetCellValue(item.AWBNumber1 ?? "");
+                    row.CreateCell(25).SetCellValue(item.AWBDate1?.ToString("MM/dd/yyyy") ?? "");
+                }
+
+
+
+                // Export Excel
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+                    return File(excelBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "IQCConfirmationReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
+
+
+
+
 
         [HttpGet]
         public async Task<IActionResult> GetIQCConfirmationSPReport([FromQuery] PagingParameter pagingParameter)
