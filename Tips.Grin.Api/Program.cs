@@ -118,6 +118,10 @@ builder.Services.AddScoped<IOpenGrinForBinningRepository, OpenGrinForBinningRepo
 builder.Services.AddScoped<IOpenGrinForBinningItemsRepository, OpenGrinForBinningItemsRepository>();
 builder.Services.AddScoped<IIQCReturnToVendorRepository, IQCReturnToVendorRepository>();
 builder.Services.AddScoped<ITokenValidationService, TokenValidationService>();
+builder.Services.AddScoped<IKIT_GRINRepository, KIT_GRINRepository>();
+builder.Services.AddScoped<IKIT_GRINPartsRepository, KIT_GRINPartsRepository>();
+builder.Services.AddScoped<IKIT_IQCRepository, KIT_IQCRepository>();
+builder.Services.AddScoped<IKIT_BinningRepository, KIT_BinningRepository>();
 
 var app = builder.Build();
 app.UseSwagger();

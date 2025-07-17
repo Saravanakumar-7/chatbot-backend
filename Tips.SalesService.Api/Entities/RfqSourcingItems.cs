@@ -15,7 +15,8 @@ namespace Tips.SalesService.Api.Entities
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? ItemDescription { get; set; }
-
+        public string? Manufacturer_Mftr_PartNumber { get; set; }
+        public string? Customer_Mftr_PartNumber { get; set; }
         [Precision(13,3)]
         public decimal? QtyReq { get; set;}
 

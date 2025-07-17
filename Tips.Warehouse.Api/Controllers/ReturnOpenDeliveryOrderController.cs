@@ -542,9 +542,9 @@ namespace Tips.Warehouse.Api.Controllers
                             var itemMasterObjectData = JsonConvert.DeserializeObject<ReturnBTONumberInvDetails>(itemMasterObjectString);
                             var itemMasterObject = itemMasterObjectData.data;
 
-                            var exInv = await _inventoryRepository.GetInventorybyItemProjectWarehouseLocation(returnOpenDeliveryOrderParts.ItemNumber, eachbin.ProjectNumber, eachbin.Warehouse, eachbin.Location, eachbin.LotNumber);
-                            if (exInv == null)
-                            {
+                            //var exInv = await _inventoryRepository.GetInventorybyItemProjectWarehouseLocation(returnOpenDeliveryOrderParts.ItemNumber, eachbin.ProjectNumber, eachbin.Warehouse, eachbin.Location, eachbin.LotNumber);
+                            //if (exInv == null)
+                            //{
                                 Inventory inventory = new Inventory();
                                 inventory.PartNumber = returnOpenDeliveryOrderPartsDtoList[i].ItemNumber;
                                 inventory.LotNumber = eachbin.LotNumber;
@@ -569,75 +569,95 @@ namespace Tips.Warehouse.Api.Controllers
                                 await _inventoryRepository.CreateInventory(inventory);
                                 _inventoryRepository.SaveAsync();
 
-                                InventoryTranction inventoryTranction1 = new InventoryTranction();
-                                inventoryTranction1.PartNumber = inventory.PartNumber;
-                                inventoryTranction1.ProjectNumber = eachbin.ProjectNumber;
-                                inventoryTranction1.LotNumber = eachbin.LotNumber;
-                                inventoryTranction1.MftrPartNumber = inventory.MftrPartNumber;
-                                inventoryTranction1.Description = inventory.Description;
-                                inventoryTranction1.Issued_Quantity = eachbin.DistributingQty;
-                                inventoryTranction1.UOM = inventory.UOM;
-                                inventoryTranction1.Issued_DateTime = DateTime.Now;
-                                inventoryTranction1.Issued_By = _createdBy;
-                                inventoryTranction1.ReferenceID = inventory.ReferenceID;
-                                inventoryTranction1.ReferenceIDFrom = "Return ODO Delivery Order";
-                                inventoryTranction1.From_Location = "ODO";
-                                inventoryTranction1.TO_Location = eachbin.Location;
-                                inventoryTranction1.Remarks = "Return ODO";
-                                inventoryTranction1.Warehouse = eachbin.Warehouse;
-                                inventoryTranction1.PartType = inventory.PartType;
+                                //InventoryTranction inventoryTranction1 = new InventoryTranction();
+                                //inventoryTranction1.PartNumber = inventory.PartNumber;
+                                //inventoryTranction1.ProjectNumber = eachbin.ProjectNumber;
+                                //inventoryTranction1.LotNumber = eachbin.LotNumber;
+                                //inventoryTranction1.MftrPartNumber = inventory.MftrPartNumber;
+                                //inventoryTranction1.Description = inventory.Description;
+                                //inventoryTranction1.Issued_Quantity = eachbin.DistributingQty;
+                                //inventoryTranction1.UOM = inventory.UOM;
+                                //inventoryTranction1.Issued_DateTime = DateTime.Now;
+                                //inventoryTranction1.Issued_By = _createdBy;
+                                //inventoryTranction1.ReferenceID = inventory.ReferenceID;
+                                //inventoryTranction1.ReferenceIDFrom = "Return ODO Delivery Order";
+                                //inventoryTranction1.From_Location = "ODO";
+                                //inventoryTranction1.TO_Location = eachbin.Location;
+                                //inventoryTranction1.Remarks = "Return ODO";
+                                //inventoryTranction1.Warehouse = eachbin.Warehouse;
+                                //inventoryTranction1.PartType = inventory.PartType;
 
-                                if (returnOpenDeliveryOrderPartsDtoList[i].StockAvailable != null)
-                                {
-                                    inventoryTranction1.IsStockAvailable = true;
-                                }
-                                else
-                                {
-                                    inventoryTranction1.IsStockAvailable = false;
-                                }
+                                //if (returnOpenDeliveryOrderPartsDtoList[i].StockAvailable != null)
+                                //{
+                                //    inventoryTranction1.IsStockAvailable = true;
+                                //}
+                                //else
+                                //{
+                                //    inventoryTranction1.IsStockAvailable = false;
+                                //}
 
-                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction1);
+                                //await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction1);
+
+                                InventoryTranction inventoryTranctionPost1 = new InventoryTranction();
+                                inventoryTranctionPost1.PartNumber = inventory.PartNumber;
+                                inventoryTranctionPost1.MftrPartNumber = inventory.MftrPartNumber;
+                                inventoryTranctionPost1.ProjectNumber = eachbin.ProjectNumber;
+                                inventoryTranctionPost1.Description = inventory.Description;
+                                inventoryTranctionPost1.Issued_Quantity = eachbin.DistributingQty;
+                                inventoryTranctionPost1.LotNumber = eachbin.LotNumber;
+                                inventoryTranctionPost1.UOM = inventory.UOM;
+                                inventoryTranctionPost1.Unit = _unitname;
+                                inventoryTranctionPost1.IsStockAvailable = true;
+                                inventoryTranctionPost1.Warehouse = eachbin.Warehouse;
+                                inventoryTranctionPost1.From_Location = "ODO";
+                                inventoryTranctionPost1.TO_Location = eachbin.Location;
+                                inventoryTranctionPost1.PartType = inventory.PartType;
+                                inventoryTranctionPost1.ReferenceID = inventory.ReferenceID;
+                                inventoryTranctionPost1.ReferenceIDFrom = "Return ODO Delivery Order";
+                                inventoryTranctionPost1.Remarks = "Return ODO Delivery Order";
+                                inventoryTranctionPost1.TransactionType = InventoryType.Inward;
+                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost1);
                                 _inventoryTranctionRepository.SaveAsync();
-                            }
-                            else
-                            {
-                                //exInv.ReferenceID = returnOpenDeliveryOrderParts.ODONumber;
-                                //exInv.ReferenceIDFrom = "Return Open Delivery Order";
-                                exInv.IsStockAvailable = true;
-                                exInv.Balance_Quantity += eachbin.DistributingQty;
-                                await _inventoryRepository.UpdateInventory(exInv);
-                                _inventoryRepository.SaveAsync();
+                            //}
+                            //else
+                            //{
+                            //    //exInv.ReferenceID = returnOpenDeliveryOrderParts.ODONumber;
+                            //    //exInv.ReferenceIDFrom = "Return Open Delivery Order";
+                            //    exInv.IsStockAvailable = true;
+                            //    exInv.Balance_Quantity += eachbin.DistributingQty;
+                            //    await _inventoryRepository.UpdateInventory(exInv);
+                            //    _inventoryRepository.SaveAsync();
 
-                                InventoryTranction inventoryTranction = new InventoryTranction();
-                                inventoryTranction.PartNumber = exInv.PartNumber;
-                                inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
-                                inventoryTranction.LotNumber = eachbin.LotNumber;
-                                inventoryTranction.MftrPartNumber = exInv.MftrPartNumber;
-                                inventoryTranction.Description = exInv.Description;
-                                inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
-                                inventoryTranction.UOM = exInv.UOM;
-                                inventoryTranction.Issued_DateTime = DateTime.Now;
-                                inventoryTranction.Issued_By = _createdBy;
-                                inventoryTranction.ReferenceID = returnOpenDeliveryOrderParts.ODONumber;
-                                inventoryTranction.ReferenceIDFrom = "Return ODO Delivery Order";
-                                inventoryTranction.From_Location = "ODO";
-                                inventoryTranction.TO_Location = eachbin.Location;
-                                inventoryTranction.Remarks = "Return ODO";
-                                inventoryTranction.Warehouse = eachbin.Warehouse;
-                                inventoryTranction.PartType = exInv.PartType;
+                            //    InventoryTranction inventoryTranction = new InventoryTranction();
+                            //    inventoryTranction.PartNumber = exInv.PartNumber;
+                            //    inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
+                            //    inventoryTranction.LotNumber = eachbin.LotNumber;
+                            //    inventoryTranction.MftrPartNumber = exInv.MftrPartNumber;
+                            //    inventoryTranction.Description = exInv.Description;
+                            //    inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
+                            //    inventoryTranction.UOM = exInv.UOM;
+                            //    inventoryTranction.Issued_DateTime = DateTime.Now;
+                            //    inventoryTranction.Issued_By = _createdBy;
+                            //    inventoryTranction.ReferenceID = returnOpenDeliveryOrderParts.ODONumber;
+                            //    inventoryTranction.ReferenceIDFrom = "Return ODO Delivery Order";
+                            //    inventoryTranction.From_Location = "ODO";
+                            //    inventoryTranction.TO_Location = eachbin.Location;
+                            //    inventoryTranction.Remarks = "Return ODO";
+                            //    inventoryTranction.Warehouse = eachbin.Warehouse;
+                            //    inventoryTranction.PartType = exInv.PartType;
 
-                                if (returnOpenDeliveryOrderPartsDtoList[i].StockAvailable != null)
-                                {
-                                    inventoryTranction.IsStockAvailable = true;
-                                }
-                                else
-                                {
-                                    inventoryTranction.IsStockAvailable = false;
-                                }
+                            //    if (returnOpenDeliveryOrderPartsDtoList[i].StockAvailable != null)
+                            //    {
+                            //        inventoryTranction.IsStockAvailable = true;
+                            //    }
+                            //    else
+                            //    {
+                            //        inventoryTranction.IsStockAvailable = false;
+                            //    }
 
-                                await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
-                                _inventoryTranctionRepository.SaveAsync();
-                            }
+                            //    await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
+                            //    _inventoryTranctionRepository.SaveAsync();
+                            //}
 
                            
 

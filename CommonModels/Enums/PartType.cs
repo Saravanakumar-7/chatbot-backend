@@ -15,6 +15,8 @@ namespace Entities.Enums
         FRU,
         Phantom,
         Tools,
-        CapitalGoods
+        CapitalGoods,
+        Kit,
+        KitComponent        
     }
 }

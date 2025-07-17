@@ -671,9 +671,9 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetFGBomChildItemDetails API : \n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetFGBomChildItemDetails API for RfqNumber:{RfqNumber} : \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetFGBomChildItemDetails API : \n {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetFGBomChildItemDetails API for RfqNumber:{RfqNumber} : \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -1009,9 +1009,10 @@ namespace Tips.SalesService.Api.Controllers
                 rfqLPCostingDetail.RfqLPCostingItems = rfqLPCostingItems;
                 rfqLPCostingDetail.RevisionNumber= rfqEnggDetails.RevisionNumber;
                 RfqLPCostingDto rfqLPCostingDto = _mapper.Map<RfqLPCostingDto>(rfqLPCostingDetail);
-                
+
+                _logger.LogInfo($"Returned DetailsForRfqLPCosting with rfqNumber: {rfqNumber} Successfully");
                 serviceResponse.Data = rfqLPCostingDto;
-                serviceResponse.Message = $"Returned RfqEnggByRfqNumber with rfqNumber: {rfqNumber}";
+                serviceResponse.Message = $"Returned DetailsForRfqLPCosting with rfqNumber: {rfqNumber}";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);

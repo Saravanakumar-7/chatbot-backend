@@ -17,7 +17,7 @@ namespace Contracts
         Task<EnggBom> GetEnggBomByItemNoAndRevNo(string itemNumber,decimal revisionNumber);
         Task<EnggBom> GetEnggBomByFgPartNumber(string fgPartNumber);
         Task<EnggBom> GetLatestEnggBomVersionDetailByItemNumber(string fgPartNumber, decimal revisionNo);
-        Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom);
+        Task<EnggBom> UpdateEnggBomVersion(EnggBom enggBom, RevisionType revisionType);
         Task<IEnumerable<EnggBom>> GetAllActiveEnggBom();
         Task<IEnumerable<FGCostingSPReport>> GetFGCostingSPReportWithParam(string fgItemnumber, string shopOrderNumber);
        // Task<BomSPReport> GetBomDetailsSPReportWithParam(string itemNumber);
@@ -36,6 +36,7 @@ namespace Contracts
         Task<IEnumerable<EngineeringBom>> GetAllEnggBomVersionListByItemNumber(string itemNumber);
         Task<IEnumerable<EnggBomItemDto>> GetAllEnggBOMItemNumber();
         Task<List<EnggBomFGItemNumberWithQtyDto>> GetFGBomItemsChildDetails(List<RfqEnggitemSourcingDto> itemNumberList);
+        Task<List<EnggBomKitItemNumberWithQtyDto>> GetKitBomChildDetails(string kitItemNumber, decimal KitRevNo);
         Task<List<EnggBomFGCostItemNumberWithQtyDto>> GetFGBomItemsChildCostingDetails(string fgItemMaster);
         Task<List<EnggBomFGItemNumberWithQtyDto>> GetSABomItemsChildDetails(string SAitemnumber, decimal SAQty);//, string SAversion);
         Task<IEnumerable<CoverageEnggChildDto>> GetEnggChildItemDetails(string ItemNumber);
@@ -46,10 +47,13 @@ namespace Contracts
         Task<IEnumerable<EnggBomFGItemNumber>> GetAllEnggBomChildFGItemNoListByItemNumber(string itemNumber);
         Task<EnggBom> GetAllLatestRevAndIsReleaseEnggBom(string itemNumber);
         Task<EnggBom> GetAllLatestRevBOMIsReleaseEnggBom(string itemNumber);
+        Task<EnggBomRevSPReportDto> GetLatestkitRevNo(string kitItemNumber);
         Task<FGFinalLandedandMoqPrice> GetEngganditsPP(string FGItemNumber, decimal FGRevno, List<RfqSourcingPPdetailsforEngg> rfqSourcingPPdetails);
         Task<SAFinalLandedandMoqPrice> GetEnggFGSA(string SAItemNumber, decimal SAQty, List<RfqSourcingPPdetailsforEngg> rfqSourcingPPdetails);
         Task<List<EnggChildItem>> GetChildItemsLists();
         Task<IEnumerable<EnggBomSPReport>> GetEnggBomSPReportWithParam(int? bomId);
         Task<IEnumerable<EnggBomSPReport>> GetEnggBomRevSPReportWithParam(string itemNumber, decimal revisionNumber);
+        Task<decimal> GetLatestBOMVersionNobyItemnumber(string ItemNumber);
+        Task<List<EnggBomDetails>> GetAllParentBOMsofItemNumber(string ItemNumber);
     }
 }

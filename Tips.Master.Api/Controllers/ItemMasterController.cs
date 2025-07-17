@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Mysqlx.Crud;
 using Newtonsoft.Json;
 using Repository;
 using static System.Net.Mime.MediaTypeNames;
@@ -174,6 +175,34 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllKITItems()
+        {
+            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+
+            try
+            {
+                var getAllFGSAItemsList = await _repository.ItemMasterRepository.GetAllKITItems();
+                _logger.LogInfo("Returned all KitItems");
+
+                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(getAllFGSAItemsList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all KitItems Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         // get all fg,sa,fru item list
 
         [HttpGet]
@@ -310,6 +339,34 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllIsPRRequiredStatusTrueKITItemNoList()
+        {
+            ServiceResponse<IEnumerable<ItemNoListDtos>> serviceResponse = new ServiceResponse<IEnumerable<ItemNoListDtos>>();
+
+            try
+            {
+                var kitItemNoList = await _repository.ItemMasterRepository.GetAllIsPRRequiredStatusTrueKITItemNoList();
+                _logger.LogInfo("Returned all IsPRRequiredStatus True KITItemNumberList Successfully");
+                var result = _mapper.Map<IEnumerable<ItemNoListDtos>>(kitItemNoList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all IsPRRequiredStatusTrue KITItemNumberList Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllIsPRRequiredStatusTrueKITItemNoList API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllIsPRRequiredStatusTrueKITItemNoList API : \n {ex.Message} ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //test file path 
         //[HttpGet("{filename}")]
         //public async Task<ActionResult> GetFilePath(string filename)
@@ -775,6 +832,34 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllKitComponentItemList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+
+            try
+            {
+                var sAPurchasePartItemsList = await _repository.ItemMasterRepository.GetAllKitComponentItemList();
+                _logger.LogInfo("Returned all KitComponentItemListFromItemMaster");
+
+                var result = _mapper.Map<IEnumerable<ItemMasterDto>>(sAPurchasePartItemsList);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all KitComponentItemListFromItemMaster Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         [HttpGet]
         public async Task<IActionResult> SearchItemMasterDate([FromQuery] SearchDateParamess searchDateParam)
@@ -1231,7 +1316,7 @@ namespace Tips.Master.Api.Controllers
                 }
 
                 var itemMasterEntity = _mapper.Map<ItemMaster>(itemMasterDtoPost);
-                itemMasterEntity.Manufacture_Year = itemMasterDtoPost.Manufacture_Year?.ToString("MM/yyyy");
+                itemMasterEntity.Manufacture_Year = itemMasterDtoPost.Manufacture_Year;
                 //var itemMasterAlternate = _mapper.Map<IEnumerable<ItemmasterAlternate>>(itemMasterDtoPost.ItemmasterAlternate);
                 //var itemMasterApprovedVendor = _mapper.Map<IEnumerable<ItemMasterApprovedVendor>>(itemMasterDtoPost.ItemMasterApprovedVendor);
                 //var itemMasterRouting = _mapper.Map<IEnumerable<ItemMasterRouting>>(itemMasterDtoPost.ItemMasterRouting);
@@ -1390,7 +1475,7 @@ namespace Tips.Master.Api.Controllers
                 updateItemMasterEntity.ItemMasterWarehouse = null;
                 updateItemMasterEntity.ItemMasterSchedules = null;
                 var itemMaster = _mapper.Map(itemMasterDtoUpdate, updateItemMasterEntity);
-                itemMaster.Manufacture_Year = itemMasterDtoUpdate.Manufacture_Year?.ToString("MM/yyyy");
+                itemMaster.Manufacture_Year = itemMasterDtoUpdate.Manufacture_Year;
                 itemMaster.ItemmasterAlternate = itemMasterAlternate.ToList();
                 itemMaster.ItemMasterApprovedVendor = itemMasterApprovedVendor.ToList();
                 //itemMaster.ItemMasterFileUpload=itemMasterFileUpload.ToList();
@@ -1705,7 +1790,55 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> GetItemDetailsByItemNumberList([FromBody]List<string> ItemNumber)
+        {
+            ServiceResponse<List<ItemMasterDto>> serviceResponse = new ServiceResponse<List<ItemMasterDto>>();
 
+            try
+            {
+                var getItemMasterByItemNumber = await _repository.ItemMasterRepository.GetItemDetailsByItemNumberList(ItemNumber);
+                if (getItemMasterByItemNumber == null)
+                {
+                    var str = string.Join(", ",ItemNumber);
+                    _logger.LogError($"In the GetItemDetailsByItemNumberList API the following items where not found in the Database: {str}");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"In the GetItemDetailsByItemNumberList API the following items where not found in the Database: {str}";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var notFoundItems = ItemNumber.Except(getItemMasterByItemNumber.Select(x=>x.ItemNumber).ToList()).ToList();
+                    if (notFoundItems.Count()>0)
+                    {
+                        var str = string.Join(", ", notFoundItems);
+                        _logger.LogError($"In the GetItemDetailsByItemNumberList API the following items where not found in the Database: {str}");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"In the GetItemDetailsByItemNumberList API the following items where not found in the Database: {str}";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                        return NotFound(serviceResponse);
+                    }
+                    _logger.LogInfo($"GetItemDetailsByItemNumberList: Returning ItemMaster Details for the following items:{string.Join(", ", ItemNumber)}");                    
+                    serviceResponse.Data = _mapper.Map<List<ItemMasterDto>>(getItemMasterByItemNumber);
+                    serviceResponse.Message = $"GetItemDetailsByItemNumberList: Returning ItemMaster Details for the following items:{string.Join(", ", ItemNumber)}";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetItemDetailsByItemNumberList API for the following items:{string.Join(", ", ItemNumber)}:\n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetItemDetailsByItemNumberList API for the following items:{string.Join(", ", ItemNumber)}:\n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> GetItemMasterByItemNumber(string ItemNumber)
         {
@@ -1724,8 +1857,7 @@ namespace Tips.Master.Api.Controllers
                     return NotFound(serviceResponse);
                 }
                 else
-                {
-                    _logger.LogInfo("ItemmasterControlle" + Convert.ToString(getItemMasterByItemNumber));
+                {                    
                     _logger.LogInfo($"Returned Itemmasters with id: {ItemNumber}");
                     var result = _mapper.Map<ItemMasterDto>(getItemMasterByItemNumber);
                     serviceResponse.Data = result;

@@ -99,6 +99,52 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetLatestBOMVersionNobyItemnumber([FromQuery] string ItemNumber)
+        {
+            ServiceResponse<decimal> serviceResponse = new ServiceResponse<decimal>();
+
+            try
+            {
+                serviceResponse.Data = await _repository.EnggBomRepository.GetLatestBOMVersionNobyItemnumber(ItemNumber);
+                serviceResponse.Message = $"Returned Latest BOM Version of {ItemNumber}";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetLatestBOMVersionNobyItemnumber API for Itemnuber:{ItemNumber}: \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = 0;
+                serviceResponse.Message = $"Error Occured in GetLatestBOMVersionNobyItemnumber API for Itemnuber:{ItemNumber}: \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAllParentBOMsofItemNumber([FromQuery] string ItemNumber)
+        {
+            ServiceResponse<List<EnggBomDetails>> serviceResponse = new ServiceResponse<List<EnggBomDetails>>();
+            try
+            {
+                serviceResponse.Data = await _repository.EnggBomRepository.GetAllParentBOMsofItemNumber(ItemNumber);
+                serviceResponse.Message = $"Returned all parent boms of ItemNumber:{ItemNumber}";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllParentBOMsofItemNumber API for Itemnuber:{ItemNumber}: \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllParentBOMsofItemNumber API for Itemnuber:{ItemNumber}: \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         private async Task<List<EnggBomLevelSPReport>?> GetLevelSPReports(List<EnggBomLevelSPReport> SAspresent, int currentLevel)
         {
 
@@ -1056,7 +1102,6 @@ namespace Tips.Master.Api.Controllers
                 }
 
                 var enggBomList = _mapper.Map<EnggBom>(enggBomUpdateDto);
-
                 var enggNre = enggBomUpdateDto.BomNREConsumableUpdateDto;
                 var nreList = new List<NREConsumable>();
                 for (int i = 0; i < enggNre.Count; i++)
@@ -1066,8 +1111,6 @@ namespace Tips.Master.Api.Controllers
 
                 }
                 enggBomList.NREConsumable = nreList;
-
-
                 var enggChildItemDto = enggBomUpdateDto.EnggChildItemUpdates;
                 var enggChildItemList = new List<EnggChildItem>();
                 if (enggChildItemDto != null)
@@ -1077,26 +1120,10 @@ namespace Tips.Master.Api.Controllers
                         EnggChildItem enggChildItemDetail = _mapper.Map<EnggChildItem>(enggChildItemDto[i]);
                         enggChildItemDetail.EnggAlternates = _mapper.Map<List<EnggAlternates>>(enggChildItemDto[i].EnggAlternatesUpdateDtos);
                         enggChildItemList.Add(enggChildItemDetail);
-
                     }
                 }
                 enggBomList.EnggChildItems = enggChildItemList;
-
-                //var data = _mapper.Map(enggBomUpdateDto, enggBomList);
-                //await _repository.EnggBomRepository.UpdateEnggBomVersion(data);
-                if (revisionType == 0)
-                {
-                    enggBomList.RevisionNumber = enggBomList.RevisionNumber + Convert.ToDecimal(0.1);
-                }
-                else
-                {
-                    //int revNo =(int)enggBomList.RevisionNumber;
-                    //enggBomList.RevisionNumber = Convert.ToDecimal(revNo + 1);
-
-                    var revRound = Math.Ceiling(enggBomList.RevisionNumber + Convert.ToDecimal(0.1));
-                    enggBomList.RevisionNumber = revRound;
-                }
-                await _repository.EnggBomRepository.UpdateEnggBomVersion(enggBomList);
+                await _repository.EnggBomRepository.UpdateEnggBomVersion(enggBomList,revisionType);
                 _repository.SaveAsync();
                 _logger.LogInfo("Engineering BOM Updated successfully");
                 serviceResponse.Data = null;
@@ -1655,6 +1682,42 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetKitBomChildDetails( string kitItemNumber ,decimal KitRevNo)
+        {
+            ServiceResponse<List<EnggBomKitItemNumberWithQtyDto>> serviceResponse = new ServiceResponse<List<EnggBomKitItemNumberWithQtyDto>>();
+            
+            try
+            {
+                if (kitItemNumber is null)
+                {
+                    _logger.LogError("KitItemNumber object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "KitItemNumber object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                var kitBomDetails = await _enggBomRepository.GetKitBomChildDetails(kitItemNumber, KitRevNo);
+                serviceResponse.Data = kitBomDetails;
+                serviceResponse.Message = "List Of Kit BOM Child ItemNumber ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong Kit BOM Child ItemNumber action: {ex.Message} {ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Internal server error";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> GetFGCostingDetailsByItemNumber(List<string> fgItemNumberList)
         {
@@ -2637,6 +2700,31 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetProductionBomReleasedKitNoAndLatestVersion()
+        {
+            ServiceResponse<IEnumerable<ProductionBomKitRevNoDto>> serviceResponse = new ServiceResponse<IEnumerable<ProductionBomKitRevNoDto>>();
+            try
+            {
+                var releaseProductkitBomDetails = await _releaseProductBomRepository.GetProductionBomReleasedKitNoAndLatestVersion();
+                var result = _mapper.Map<IEnumerable<ProductionBomKitRevNoDto>>(releaseProductkitBomDetails);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all KitNoAndLatestVersion";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetKitNoAndLatestVersion action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         //[HttpGet("{itemNumber}")]
         //public async Task<IActionResult> GetAllEnggBomRevisionNumberList(string itemNumber)
         //{
@@ -2661,6 +2749,32 @@ namespace Tips.Master.Api.Controllers
         //        return StatusCode(500, serviceResponse);
         //    }
         //}
+
+        [HttpGet]
+        public async Task<IActionResult> GetLatestkitRevNo(string kitItemNumber)
+        {
+            ServiceResponse<EnggBomRevSPReportDto> serviceResponse = new ServiceResponse<EnggBomRevSPReportDto>();
+            try
+            {
+
+                var kitRevNoDetail = await _enggBomRepository.GetLatestkitRevNo(kitItemNumber);
+                var result = _mapper.Map<EnggBomRevSPReportDto>(kitRevNoDetail);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned  LatestkitRevNo";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Something went wrong inside GetLatestkitRevNo action";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAllEnggBomRevisionNumberList(string itemNumber)

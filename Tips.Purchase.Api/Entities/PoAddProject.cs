@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Tips.Purchase.Api.Entities.Enums;
 
 namespace Tips.Purchase.Api.Entities
 {
@@ -14,9 +15,10 @@ namespace Tips.Purchase.Api.Entities
         public decimal BalanceQty { get; set; }
         [Precision(13, 3)]
         public decimal ReceivedQty { get; set; }
-        public bool PoAddProjectStatus {  get; set; }
+        public PoStatus PoAddProjectStatus {  get; set; }
         public int POItemDetailId { get; set; }
         public PoItem? POItemDetail { get; set; }
+        public List<PoAddKitProject>? PoAddKitProjects { get; set; }
 
     }
 }

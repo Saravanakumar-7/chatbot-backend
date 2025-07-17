@@ -58,6 +58,7 @@ namespace Tips.Purchase.Api.Entities
         public bool IsModified { get; set; } = false;
         [DefaultValue(0)]
         public PrStatus PrStatus { get; set; }
+        public PoType PrType { get; set; }
         public string? Unit { get; set; }
 
         public string? CreatedBy { get; set; }

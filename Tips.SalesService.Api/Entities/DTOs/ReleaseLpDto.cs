@@ -12,6 +12,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ItemNumber { get; set; }
         public string? RLpItemNo { get; set; }
         public string? Description { get; set; }
+        public decimal? RevisionNumber { get; set; }
         public decimal? Qty { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
@@ -35,7 +36,6 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? PriceListName { get; set; }
         public DateTime? ValidThrough { get; set; }
         public bool? IsDiscountApplicable { get; set; }
-        public decimal? RevisionNumber { get; set; }
         public string? Unit { get; set; }
 
         public string? CreatedBy { get; set; }

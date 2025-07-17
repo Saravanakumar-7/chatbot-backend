@@ -9,6 +9,7 @@ namespace Tips.Grin.Api.Entities
         public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
+        public string? LotNumber { get; set; }
         public bool Returnable { get; set; }
         public PartType ItemType { get; set; }
         public string? UOM { get; set; }

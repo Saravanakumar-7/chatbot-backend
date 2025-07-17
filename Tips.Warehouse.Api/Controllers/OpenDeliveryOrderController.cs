@@ -13,6 +13,7 @@ using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 using System.Data;
 using Microsoft.AspNetCore.Authorization;
 using System.Text;
+using Entities.Enums;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -398,20 +399,15 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                     return BadRequest(serviceResponse);
                 }
-
                 var openDeliveryOrderparts = _mapper.Map<List<OpenDeliveryOrderParts>>(openDeliveryOrderDtoPost.OpenDeliveryOrderParts);
-
                 var openDeliveryOrderitemsList = openDeliveryOrderDtoPost.OpenDeliveryOrderParts;
-
                 var openDeliveryorder = _mapper.Map<OpenDeliveryOrder>(openDeliveryOrderDtoPost);
                 var openDeliveryOrderItemsDtoList = new List<OpenDeliveryOrderParts>();
-
                 openDeliveryorder.OpenDeliveryOrderParts = openDeliveryOrderparts;
                 var date = DateTime.Now;
                 var days = Convert.ToString(date.Day.ToString("D2"));
                 var months = Convert.ToString(date.Month.ToString("D2"));
                 var years = Convert.ToString(date.ToString("yy"));
-
                 string? odoNumber = null;
                 if (serverKey == "trasccon")
                 {
@@ -433,7 +429,6 @@ namespace Tips.Warehouse.Api.Controllers
 
                 if (openDeliveryOrderitemsList != null)
                 {
-
                     for (int i = 0; i < openDeliveryOrderitemsList.Count; i++)
                     {
                         OpenDeliveryOrderParts OpenDeliveryOrderItemsDetails = _mapper.Map<OpenDeliveryOrderParts>(openDeliveryOrderitemsList[i]);
@@ -445,67 +440,6 @@ namespace Tips.Warehouse.Api.Controllers
                         var distriution = _mapper.Map<List<OpenDeliveryOrderPartsQtyDistribution>>(openDeliveryOrderitemsList[i].QtyDistribution);
                         //Update Inventory balanced Quantity 
                         await _inventoryRepository.UpdateInventoryforODO(distriution);
-
-
-                        //Old Code [
-                        //var PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
-                        //var getInventoryFGDetailsByItemnumber = await _inventoryRepository.GetInventoryDetailsByItemNoandPartTypes(PartNumber);
-                        //decimal Quantity = Convert.ToDecimal(openDeliveryOrderitemsList[i].DispatchQty);
-
-                        //if (getInventoryFGDetailsByItemnumber != null)
-                        //{
-                        //    foreach (var item in getInventoryFGDetailsByItemnumber)
-                        //    {
-                        //        if (Quantity != 0 && item.Balance_Quantity >= Quantity)
-                        //        {
-                        //            item.Balance_Quantity = item.Balance_Quantity - Quantity;
-                        //            Quantity = 0;
-                        //            if (item.Balance_Quantity == 0)
-                        //            {
-                        //                item.IsStockAvailable = false;
-                        //            }
-
-                        //        }
-                        //        if (Quantity != 0 && item.Balance_Quantity < Quantity)
-                        //        {
-                        //            Quantity = Quantity - item.Balance_Quantity;
-                        //            item.Balance_Quantity = 0;
-                        //            item.IsStockAvailable = false;                                     
-                        //        }
-
-                        //        _inventoryRepository.UpdateInventory(item);
-                        //        _inventoryRepository.SaveAsync();
-
-                        //        if (Quantity <= 0)
-                        //        {
-                        //            break;
-                        //        }
-                        //    }
-                        //}
-                        //else
-                        //{
-                        //    Inventory inventory = new Inventory();
-                        //    inventory.PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
-                        //    inventory.MftrPartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
-                        //    inventory.Description = openDeliveryOrderItemsDtoList[i].ItemDescription;
-                        //    inventory.ProjectNumber = "";
-                        //    inventory.Balance_Quantity = openDeliveryOrderItemsDtoList[i].DispatchQty;
-                        //    inventory.UOM = openDeliveryOrderItemsDtoList[i].UOM;
-                        //    inventory.IsStockAvailable = true;
-                        //    inventory.Warehouse = openDeliveryOrderItemsDtoList[i].Warehouse;
-                        //    inventory.Location = openDeliveryOrderItemsDtoList[i].Location;
-                        //    inventory.GrinNo = openDeliveryorder.OpenDONumber;
-                        //    inventory.GrinPartId = 0;
-                        //    inventory.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
-                        //    inventory.GrinMaterialType = "";
-                        //    inventory.ReferenceID = openDeliveryorder.OpenDONumber;
-                        //    inventory.ReferenceIDFrom = "Create Open Delivery Order";
-                        //    inventory.shopOrderNo = "";
-
-                        //    await _inventoryRepository.CreateInventory(inventory);
-                        //    _inventoryRepository.SaveAsync();
-                        //}
-                        //]
 
                         var client1 = _clientFactory.CreateClient();
                         var token1 = HttpContext.Request.Headers["Authorization"].ToString();
@@ -526,28 +460,47 @@ namespace Tips.Warehouse.Api.Controllers
                         ////Add BTO Detail Into Inventory transaction Table
                         foreach (var eachbin in OpenDeliveryOrderItemsDetails.QtyDistribution)
                         {
+                            //InventoryTranction inventoryTranction = new InventoryTranction();
+                            //inventoryTranction.PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
+                            //inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                            //inventoryTranction.LotNumber = eachbin.LotNumber;
+                            //inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
+                            //inventoryTranction.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
+                            //inventoryTranction.Description = openDeliveryOrderItemsDtoList[i].ItemDescription;
+                            //inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
+                            //inventoryTranction.IsStockAvailable = true;
+                            //inventoryTranction.UOM = openDeliveryOrderItemsDtoList[i].UOM;
+                            //inventoryTranction.Issued_DateTime = DateTime.Now;
+                            //inventoryTranction.Issued_By = _createdBy;
+                            //inventoryTranction.ReferenceID = openDeliveryOrderItemsDtoList[i].ODONumber;
+                            //inventoryTranction.ReferenceIDFrom = "Open Delivery Order";
+                            //inventoryTranction.From_Location = eachbin.Location;
+                            //inventoryTranction.TO_Location = "ODO";
+                            //inventoryTranction.Warehouse = eachbin.Warehouse;
+                            //inventoryTranction.Remarks = "Create ODO";
+                            //var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+
                             InventoryTranction inventoryTranction = new InventoryTranction();
                             inventoryTranction.PartNumber = openDeliveryOrderItemsDtoList[i].ItemNumber;
-                            inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault(); ;
-                            inventoryTranction.LotNumber = eachbin.LotNumber;
+                            inventoryTranction.MftrPartNumber = itemMasterObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                             inventoryTranction.ProjectNumber = eachbin.ProjectNumber;
-                            inventoryTranction.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
                             inventoryTranction.Description = openDeliveryOrderItemsDtoList[i].ItemDescription;
                             inventoryTranction.Issued_Quantity = eachbin.DistributingQty;
-                            inventoryTranction.IsStockAvailable = true;
+                            inventoryTranction.LotNumber = eachbin.LotNumber;
                             inventoryTranction.UOM = openDeliveryOrderItemsDtoList[i].UOM;
-                            inventoryTranction.Issued_DateTime = DateTime.Now;
-                            inventoryTranction.Issued_By = _createdBy;
-                            inventoryTranction.ReferenceID = openDeliveryOrderItemsDtoList[i].ODONumber;
-                            inventoryTranction.ReferenceIDFrom = "Open Delivery Order";
+                            inventoryTranction.Unit = _unitname;
+                            inventoryTranction.IsStockAvailable = true;
+                            inventoryTranction.Warehouse = eachbin.Warehouse;
                             inventoryTranction.From_Location = eachbin.Location;
                             inventoryTranction.TO_Location = "ODO";
-                            inventoryTranction.Warehouse = eachbin.Warehouse;
-                            inventoryTranction.Remarks = "Create ODO";
-                            var inventoryTransactions = _mapper.Map<InventoryTranction>(inventoryTranction);
+                            inventoryTranction.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
+                            inventoryTranction.ReferenceID = openDeliveryOrderItemsDtoList[i].ODONumber;
+                            inventoryTranction.ReferenceIDFrom = "LocationTransferPartNo";
+                            inventoryTranction.Remarks = "LocationTransferPartNo Done";
+                            inventoryTranction.TransactionType = InventoryType.Outward;
+                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
 
-
-                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
+                           // await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTransactions);
                             //_inventoryTranctionRepository.SaveAsync();
 
                             //// Add Bto detail in to opendeliveryorderhistory table
@@ -1082,24 +1035,24 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllOpenDeliveryOrderIdNameList()
+        public async Task<IActionResult> GetAllOpenDeliveryOrderTypeList()
         {
-            ServiceResponse<IEnumerable<OpenDeliveryOrderIdNameList>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderIdNameList>>();
+            ServiceResponse<IEnumerable<OpenDeliveryOrderTypeList>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderTypeList>>();
             try
             {
-                var listOfAllOpenDeliveryOrderIdNames = await _repository.GetAllOpenDeliveryOrderIdNameList();
-                var result = _mapper.Map<IEnumerable<OpenDeliveryOrderIdNameList>>(listOfAllOpenDeliveryOrderIdNames);
+                var listOfAllOpenDeliveryOrderIdNames = await _repository.GetAllOpenDeliveryOrderTypeList();
+                var result = _mapper.Map<IEnumerable<OpenDeliveryOrderTypeList>>(listOfAllOpenDeliveryOrderIdNames);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned All listOfAllOpenDeliveryOrderIdNames";
+                serviceResponse.Message = "Returned All OpenDeliveryOrderTypes";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetAllOpenDeliveryOrderIdNameList API : \n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetAllOpenDeliveryOrderTypeList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetAllOpenDeliveryOrderIdNameList API : \n {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetAllOpenDeliveryOrderTypeList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

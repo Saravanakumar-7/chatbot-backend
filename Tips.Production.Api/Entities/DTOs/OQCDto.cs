@@ -136,6 +136,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? Description { get; set; }
         public PartType? PartType { get; set; }
         public string? ProjectNumber { get; set; }
+        public InventoryType? TransactionType { get; set; }
 
         [Precision(18, 2)]
         public decimal Issued_Quantity { get; set; }
@@ -161,6 +162,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? GrinMaterialType { get; set; } = "Bought Out";
 
         public string? Remarks { get; set; }
+        public bool IsStockAvailable { get; set; }
         public string? Warehouse { get; set; }
         public string? GrinNo { get; set; }
         public int? GrinPartId { get; set; }
