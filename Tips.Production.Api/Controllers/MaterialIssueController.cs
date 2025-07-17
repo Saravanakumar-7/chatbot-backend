@@ -807,9 +807,11 @@ namespace Tips.Production.Api.Controllers
                             //Add MaterialIssueLocations
                             var client = _clientFactory.CreateClient();
                             var token = HttpContext.Request.Headers["Authorization"].ToString();
+                            var encodedPartnumber = Uri.EscapeDataString(partnumber);
+                            var encodedProjectNo = Uri.EscapeDataString(projectNo);
 
                             var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                $"GetInventoryDetailsByItemNo?itemNumber={partnumber}&projectNo={projectNo}"));
+                                $"GetInventoryDetailsByItemNo?itemNumber={encodedPartnumber}&projectNo={encodedProjectNo}"));
                             request.Headers.Add("Authorization", token);
 
                             var inventoryObjectResult = await client.SendAsync(request);
