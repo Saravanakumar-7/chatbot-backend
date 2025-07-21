@@ -59,11 +59,27 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? GrinsForServiceItemsNumber { get; set; }
         public string? ItemNumber { get; set; }
     }
+
+    public class IQCForServiceItemsReportWithParamAndDateDto
+    {
+        public string? GrinsForServiceItemsNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+    }
     public class IQCForServiceItemsReportWithParamForTransDto
     {
         public string? GrinsForServiceItemsNumber { get; set; }
         public string? ItemNumber { get; set; }
         public string? ProjectNumber { get; set; }
+    }
+    public class IQCForServiceItemsReportWithParamAndDateForTransDto
+    {
+        public string? GrinsForServiceItemsNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
     }
     public class IQCForServiceItemsSPReport
     {

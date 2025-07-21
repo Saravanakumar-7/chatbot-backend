@@ -183,11 +183,37 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? GrinNumber { get; set; }
         public string? ItemNumber { get; set; }
     }
+
+    public class IQCConfirmationReportWithParamAndDateDto
+    {
+        public string? GrinNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+    }
+
     public class IQCConfirmationReportWithParamForTransDto
     {
         public string? GrinNumber { get; set; }
         public string? ItemNumber { get; set; }
         public string? ProjectNumber { get; set; }
+    }
+
+    public class IQCConfirmationReportWithParamAndDateForAviDto
+    {
+        public string? GrinNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+    }
+    public class IQCConfirmationReportWithParamAndDateForTransDto
+    {
+        public string? GrinNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
     }
     public class IQCPendingReportWithParamForTransDto
     {

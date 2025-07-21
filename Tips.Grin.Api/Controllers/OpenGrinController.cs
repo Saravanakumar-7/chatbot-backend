@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using Tips.Grin.Api.Contracts;
 using Tips.Grin.Api.Entities;
 using Tips.Grin.Api.Entities.DTOs;
@@ -183,13 +185,15 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+
+
         [HttpPost]
         public async Task<IActionResult> GetOpenGrinSPReportWithParam([FromBody] OpenGrinReportWithParamDto openGrinReportWithParamDto)
         {
             ServiceResponse<IEnumerable<OpenGrin_SPReport>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrin_SPReport>>();
             try
             {
-                var products = await _openGrinRepository.GetOpenGrinSPReportWithParam(openGrinReportWithParamDto.OpenGrinNumber, openGrinReportWithParamDto.SenderName, 
+                var products = await _openGrinRepository.GetOpenGrinSPReportWithParam(openGrinReportWithParamDto.OpenGrinNumber, openGrinReportWithParamDto.SenderName,
                                                                                                                                                     openGrinReportWithParamDto.ReceiptRefNo);
 
                 if (products == null)
@@ -221,6 +225,157 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> ExportGetOpenGrinSPReportWithParamOrDateToExcel([FromBody] OpenGrinReportWithParamWithDateDto openGrinReportWithParamWithDateDto)
+        {
+
+            ServiceResponse<OpenGrin_SPReport> serviceResponse = new ServiceResponse<OpenGrin_SPReport>();
+            try
+            {
+
+                if (openGrinReportWithParamWithDateDto is null)
+                {
+                    _logger.LogError("openGrinReportWithParamWithDateDto object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "openGrinReportWithParamWithDateDto object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid openGrinReportWithParamWithDateDto object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                bool hasParams = !string.IsNullOrEmpty(openGrinReportWithParamWithDateDto.OpenGrinNumber)
+                               || !string.IsNullOrEmpty(openGrinReportWithParamWithDateDto.SenderName)
+                               || !string.IsNullOrEmpty(openGrinReportWithParamWithDateDto.ReceiptRefNo);
+
+                bool hasDate = openGrinReportWithParamWithDateDto.FromDate != null || openGrinReportWithParamWithDateDto.ToDate != null;
+
+                if (hasParams && hasDate)
+                {
+                    _logger.LogError("Input object must contain either filter parameters or date range, not both.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or a date range, not both.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!hasParams && (openGrinReportWithParamWithDateDto.FromDate == null || openGrinReportWithParamWithDateDto.ToDate == null))
+                {
+                    _logger.LogError("Input object must contain either at least one filter parameter or both from and to dates.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or both from and to dates.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+
+                }
+
+                var openGrinList = Enumerable.Empty<OpenGrin_SPReport>();
+
+                if (hasParams && !hasDate)
+                {
+
+                    openGrinList = await _openGrinRepository.GetOpenGrinSPReportWithParam(
+                        openGrinReportWithParamWithDateDto.OpenGrinNumber,
+                        openGrinReportWithParamWithDateDto.SenderName, openGrinReportWithParamWithDateDto.ReceiptRefNo);
+                }
+
+
+                if (!hasParams && (openGrinReportWithParamWithDateDto.FromDate != null && openGrinReportWithParamWithDateDto.ToDate != null))
+                {
+
+                    openGrinList = await _openGrinRepository.GetOpenGrinSPReportWithDate(
+                        openGrinReportWithParamWithDateDto.FromDate,
+                        openGrinReportWithParamWithDateDto.ToDate);
+                }
+
+
+
+                // Create Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("OpenGrinReport");
+
+                // Header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("KPN");
+                headerRow.CreateCell(1).SetCellValue("Description");
+                headerRow.CreateCell(2).SetCellValue("Item Type");
+                headerRow.CreateCell(3).SetCellValue("UOM");
+                headerRow.CreateCell(4).SetCellValue("Open GRIN Number");
+                headerRow.CreateCell(5).SetCellValue("Sender Name");
+                headerRow.CreateCell(6).SetCellValue("Sender ID");
+                headerRow.CreateCell(7).SetCellValue("Receipt Ref No");
+                headerRow.CreateCell(8).SetCellValue("Reference SO Number");
+                headerRow.CreateCell(9).SetCellValue("Qty");
+                headerRow.CreateCell(10).SetCellValue("Warehouse");
+                headerRow.CreateCell(11).SetCellValue("Location");
+                headerRow.CreateCell(12).SetCellValue("Returnable");
+                headerRow.CreateCell(13).SetCellValue("Remarks");
+                headerRow.CreateCell(14).SetCellValue("Serial No");
+                headerRow.CreateCell(15).SetCellValue("Returned By");
+                headerRow.CreateCell(16).SetCellValue("Created By");
+                headerRow.CreateCell(17).SetCellValue("Created On");
+                headerRow.CreateCell(18).SetCellValue("Last Modified By");
+                headerRow.CreateCell(19).SetCellValue("Last Modified On");
+
+                // Populate data
+                int rowIndex = 1;
+                foreach (var item in openGrinList)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.KPN ?? "");
+                    row.CreateCell(1).SetCellValue(item.Description ?? "");
+                    row.CreateCell(2).SetCellValue(item.ItemType);
+                    row.CreateCell(3).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(4).SetCellValue(item.OpenGrinNumber ?? "");
+                    row.CreateCell(5).SetCellValue(item.SenderName ?? "");
+                    row.CreateCell(6).SetCellValue(item.SenderId ?? "");
+                    row.CreateCell(7).SetCellValue(item.ReceiptRefNo ?? "");
+                    row.CreateCell(8).SetCellValue(item.ReferenceSONumber ?? "");
+                    row.CreateCell(9).SetCellValue((double)(item.Qty ?? 0));
+                    row.CreateCell(10).SetCellValue(item.Warehouse ?? "");
+                    row.CreateCell(11).SetCellValue(item.Location ?? "");
+                    row.CreateCell(12).SetCellValue(Convert.ToInt32(item.Returnable) == 1 ? "true" : "false");
+                    row.CreateCell(13).SetCellValue(item.Remarks ?? "");
+                    row.CreateCell(14).SetCellValue(item.SerialNo ?? "");
+                    row.CreateCell(15).SetCellValue(item.ReturnedBy ?? "");
+                    row.CreateCell(16).SetCellValue(item.CreatedBy ?? "");
+                    row.CreateCell(17).SetCellValue(item.CreatedOn?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(18).SetCellValue(item.LastModifiedBy ?? "");
+                    row.CreateCell(19).SetCellValue(item.LastModifiedOn?.ToString("MM/dd/yyyy") ?? "");
+                }
+
+
+
+                // Export Excel
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+                    return File(excelBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "OpenGrinSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
+
         [HttpPost]
         public async Task<IActionResult> GetOpenGrinSPReportWithParamForTrans([FromBody] OpenGrinReportWithParamForTransDto openGrinReportWithParamDto)
         {
@@ -259,6 +414,156 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+
+
+        [HttpPost]
+        public async Task<IActionResult> ExportGetOpenGrinSPReportWithParamOrDateToExcelForTras([FromBody] OpenGrinReportWithParamAndDateForTransDto openGrinReportWithParamAndDateForTransDto)
+        {
+
+            ServiceResponse<OpenGrinSpReportForTrans> serviceResponse = new ServiceResponse<OpenGrinSpReportForTrans>();
+            try
+            {
+
+                if (openGrinReportWithParamAndDateForTransDto is null)
+                {
+                    _logger.LogError("openGrinReportWithParamAndDateForTransDto object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "openGrinReportWithParamAndDateForTransDto object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid openGrinReportWithParamAndDateForTransDto object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                bool hasParams = !string.IsNullOrEmpty(openGrinReportWithParamAndDateForTransDto.OpenGrinNumber)
+                               || !string.IsNullOrEmpty(openGrinReportWithParamAndDateForTransDto.SenderName)
+                               || !string.IsNullOrEmpty(openGrinReportWithParamAndDateForTransDto.ReceiptRefNo)
+                               || !string.IsNullOrEmpty(openGrinReportWithParamAndDateForTransDto.ItemNumber)
+                               || !string.IsNullOrEmpty(openGrinReportWithParamAndDateForTransDto.ProjectNumber);
+
+                bool hasDate = openGrinReportWithParamAndDateForTransDto.FromDate != null || openGrinReportWithParamAndDateForTransDto.ToDate != null;
+
+                if (hasParams && hasDate)
+                {
+                    _logger.LogError("Input object must contain either filter parameters or date range, not both.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or a date range, not both.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!hasParams && (openGrinReportWithParamAndDateForTransDto.FromDate == null || openGrinReportWithParamAndDateForTransDto.ToDate == null))
+                {
+                    _logger.LogError("Input object must contain either at least one filter parameter or both from and to dates.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or both from and to dates.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+
+                }
+
+                var openGrinList = Enumerable.Empty<OpenGrinSpReportForTrans>();
+
+                if (hasParams && !hasDate)
+                {
+
+                    openGrinList = await _openGrinRepository.GetOpenGrinSPReportWithParamForTrans(openGrinReportWithParamAndDateForTransDto.ItemNumber,
+                        openGrinReportWithParamAndDateForTransDto.OpenGrinNumber,
+                        openGrinReportWithParamAndDateForTransDto.SenderName, openGrinReportWithParamAndDateForTransDto.ReceiptRefNo, openGrinReportWithParamAndDateForTransDto.ProjectNumber);
+                }
+
+
+                if (!hasParams && (openGrinReportWithParamAndDateForTransDto.FromDate != null && openGrinReportWithParamAndDateForTransDto.ToDate != null))
+                {
+
+                    openGrinList = await _openGrinRepository.GetOpenGrinSPReportWithDateForTrans(
+                        openGrinReportWithParamAndDateForTransDto.FromDate,
+                        openGrinReportWithParamAndDateForTransDto.ToDate);
+                }
+
+
+
+                // Create Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("OpenGrinTransReport");
+
+                // Header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Open GRIN Number");
+                headerRow.CreateCell(1).SetCellValue("Open GRIN Date");
+                headerRow.CreateCell(2).SetCellValue("Sender Name");
+                headerRow.CreateCell(3).SetCellValue("Sender ID");
+                headerRow.CreateCell(4).SetCellValue("Receipt Ref No");
+                headerRow.CreateCell(5).SetCellValue("Project Number");
+                headerRow.CreateCell(6).SetCellValue("Item Number");
+                headerRow.CreateCell(7).SetCellValue("MPN");
+                headerRow.CreateCell(8).SetCellValue("Description");
+                headerRow.CreateCell(9).SetCellValue("UOM");
+                headerRow.CreateCell(10).SetCellValue("Qty");
+                headerRow.CreateCell(11).SetCellValue("Lot Number");
+                headerRow.CreateCell(12).SetCellValue("Item Type");
+                headerRow.CreateCell(13).SetCellValue("Warehouse");
+                headerRow.CreateCell(14).SetCellValue("Location");
+                headerRow.CreateCell(15).SetCellValue("Serial No");
+                headerRow.CreateCell(16).SetCellValue("Remarks");
+
+                // Populate data
+                int rowIndex = 1;
+                foreach (var item in openGrinList)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.OpenGrinNumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.OpenGrinDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(2).SetCellValue(item.SenderName ?? "");
+                    row.CreateCell(3).SetCellValue(item.SenderId ?? "");
+                    row.CreateCell(4).SetCellValue(item.ReceiptRefNo ?? "");
+                    row.CreateCell(5).SetCellValue(item.ProjectNumber ?? "");
+                    row.CreateCell(6).SetCellValue(item.ItemNumber ?? "");
+                    row.CreateCell(7).SetCellValue(item.MPN ?? "");
+                    row.CreateCell(8).SetCellValue(item.Description ?? "");
+                    row.CreateCell(9).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(10).SetCellValue((double)(item.Qty ?? 0));
+                    row.CreateCell(11).SetCellValue(item.lotNumber ?? "");
+                    row.CreateCell(12).SetCellValue(item.ItemType?.ToString() ?? "");
+                    row.CreateCell(13).SetCellValue(item.Warehouse ?? "");
+                    row.CreateCell(14).SetCellValue(item.Location ?? "");
+                    row.CreateCell(15).SetCellValue(item.SerialNo ?? "");
+                    row.CreateCell(16).SetCellValue(item.Remarks ?? "");
+                }
+
+
+
+                // Export Excel
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+                    return File(excelBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "OpenGrin.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
+
 
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetOpenGrinSPReportWithDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
@@ -335,6 +640,152 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ExportGetOpenGrinSPReportWithParamOrDateToExcelForAvi([FromBody] OpenGrinReportWithParamAndDateForAviDto openGrinReportWithParamAndDateForAviDto)
+        {
+
+            ServiceResponse<OpenGrinSpReportForTrans> serviceResponse = new ServiceResponse<OpenGrinSpReportForTrans>();
+            try
+            {
+
+                if (openGrinReportWithParamAndDateForAviDto is null)
+                {
+                    _logger.LogError("openGrinReportWithParamAndDateForAviDto object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "openGrinReportWithParamAndDateForAviDto object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid openGrinReportWithParamAndDateForAviDto object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                bool hasParams = !string.IsNullOrEmpty(openGrinReportWithParamAndDateForAviDto.OpenGrinNumber)
+                               || !string.IsNullOrEmpty(openGrinReportWithParamAndDateForAviDto.SenderName)
+                               || !string.IsNullOrEmpty(openGrinReportWithParamAndDateForAviDto.ReceiptRefNo)
+                               || !string.IsNullOrEmpty(openGrinReportWithParamAndDateForAviDto.ProjectNumber);
+
+                bool hasDate = openGrinReportWithParamAndDateForAviDto.FromDate != null || openGrinReportWithParamAndDateForAviDto.ToDate != null;
+
+                if (hasParams && hasDate)
+                {
+                    _logger.LogError("Input object must contain either filter parameters or date range, not both.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or a date range, not both.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!hasParams && (openGrinReportWithParamAndDateForAviDto.FromDate == null || openGrinReportWithParamAndDateForAviDto.ToDate == null))
+                {
+                    _logger.LogError("Input object must contain either at least one filter parameter or both from and to dates.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or both from and to dates.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+
+                }
+
+                var openGrinList = Enumerable.Empty<OpenGrinSpReportForTrans>();
+
+                if (hasParams && !hasDate)
+                {
+
+                    openGrinList = await _openGrinRepository.GetOpenGrinSPReportWithParamForAvi(openGrinReportWithParamAndDateForAviDto.OpenGrinNumber,
+                        openGrinReportWithParamAndDateForAviDto.SenderName, openGrinReportWithParamAndDateForAviDto.ReceiptRefNo, openGrinReportWithParamAndDateForAviDto.ProjectNumber);
+                }
+
+
+                if (!hasParams && (openGrinReportWithParamAndDateForAviDto.FromDate != null && openGrinReportWithParamAndDateForAviDto.ToDate != null))
+                {
+
+                    openGrinList = await _openGrinRepository.GetOpenGrinSPReportWithDateForAvi(
+                        openGrinReportWithParamAndDateForAviDto.FromDate,
+                        openGrinReportWithParamAndDateForAviDto.ToDate);
+                }
+
+
+
+                // Create Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("OpenGrinTransReport");
+
+                // Header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Open GRIN Number");
+                headerRow.CreateCell(1).SetCellValue("Open GRIN Date");
+                headerRow.CreateCell(2).SetCellValue("Sender Name");
+                headerRow.CreateCell(3).SetCellValue("Sender ID");
+                headerRow.CreateCell(4).SetCellValue("Receipt Ref No");
+                headerRow.CreateCell(5).SetCellValue("Project Number");
+                headerRow.CreateCell(6).SetCellValue("Item Number");
+                headerRow.CreateCell(7).SetCellValue("MPN");
+                headerRow.CreateCell(8).SetCellValue("Description");
+                headerRow.CreateCell(9).SetCellValue("UOM");
+                headerRow.CreateCell(10).SetCellValue("Qty");
+                headerRow.CreateCell(11).SetCellValue("Lot Number");
+                headerRow.CreateCell(12).SetCellValue("Item Type");
+                headerRow.CreateCell(13).SetCellValue("Warehouse");
+                headerRow.CreateCell(14).SetCellValue("Location");
+                headerRow.CreateCell(15).SetCellValue("Serial No");
+                headerRow.CreateCell(16).SetCellValue("Remarks");
+
+                // Populate data
+                int rowIndex = 1;
+                foreach (var item in openGrinList)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.OpenGrinNumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.OpenGrinDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(2).SetCellValue(item.SenderName ?? "");
+                    row.CreateCell(3).SetCellValue(item.SenderId ?? "");
+                    row.CreateCell(4).SetCellValue(item.ReceiptRefNo ?? "");
+                    row.CreateCell(5).SetCellValue(item.ProjectNumber ?? "");
+                    row.CreateCell(6).SetCellValue(item.ItemNumber ?? "");
+                    row.CreateCell(7).SetCellValue(item.MPN ?? "");
+                    row.CreateCell(8).SetCellValue(item.Description ?? "");
+                    row.CreateCell(9).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(10).SetCellValue((double)(item.Qty ?? 0));
+                    row.CreateCell(11).SetCellValue(item.lotNumber ?? "");
+                    row.CreateCell(12).SetCellValue(item.ItemType?.ToString() ?? "");
+                    row.CreateCell(13).SetCellValue(item.Warehouse ?? "");
+                    row.CreateCell(14).SetCellValue(item.Location ?? "");
+                    row.CreateCell(15).SetCellValue(item.SerialNo ?? "");
+                    row.CreateCell(16).SetCellValue(item.Remarks ?? "");
+                }
+
+
+
+                // Export Excel
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+                    return File(excelBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "OpenGrinSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
+
 
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetOpenGrinSPReportWithDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)

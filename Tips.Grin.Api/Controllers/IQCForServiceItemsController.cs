@@ -5,6 +5,8 @@ using Entities.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
@@ -133,6 +135,160 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+
+
+        [HttpPost]
+        public async Task<IActionResult> ExportIQCForServiceItemsSPReportWithParamOrDateToExcel([FromBody] IQCForServiceItemsReportWithParamAndDateDto IQCForServiceItemsReportWithParamAndDateDto)
+        {
+
+            ServiceResponse<IQCForServiceItemsSPReport> serviceResponse = new ServiceResponse<IQCForServiceItemsSPReport>();
+            try
+            {
+
+                if (IQCForServiceItemsReportWithParamAndDateDto is null)
+                {
+                    _logger.LogError("IQCForServiceItemsReportWithParamAndDateDto object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "IQCForServiceItemsReportWithParamAndDateDto object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid IQCForServiceItemsReportWithParamAndDateDto object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                bool hasParams = !string.IsNullOrEmpty(IQCForServiceItemsReportWithParamAndDateDto.GrinsForServiceItemsNumber)
+                               || !string.IsNullOrEmpty(IQCForServiceItemsReportWithParamAndDateDto.ItemNumber);
+
+                bool hasDate = IQCForServiceItemsReportWithParamAndDateDto.FromDate != null || IQCForServiceItemsReportWithParamAndDateDto.ToDate != null;
+
+                if (hasParams && hasDate)
+                {
+                    _logger.LogError("Input object must contain either filter parameters or date range, not both.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or a date range, not both.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!hasParams && (IQCForServiceItemsReportWithParamAndDateDto.FromDate == null || IQCForServiceItemsReportWithParamAndDateDto.ToDate == null))
+                {
+                    _logger.LogError("Input object must contain either at least one filter parameter or both from and to dates.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or both from and to dates.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+
+                }
+
+                var iqcServiceItemsList = Enumerable.Empty<IQCForServiceItemsSPReport>();
+
+                if (hasParams && !hasDate)
+                {
+
+                    iqcServiceItemsList = await _iQCForServiceItemsRepository.GetIQCForServiceItemsSPReportWithParam(
+                        IQCForServiceItemsReportWithParamAndDateDto.GrinsForServiceItemsNumber,
+                        IQCForServiceItemsReportWithParamAndDateDto.ItemNumber);
+                }
+
+
+                if (!hasParams && (IQCForServiceItemsReportWithParamAndDateDto.FromDate != null && IQCForServiceItemsReportWithParamAndDateDto.ToDate != null))
+                {
+
+                    iqcServiceItemsList = await _iQCForServiceItemsRepository.GetIQCForServiceItemsSPReportWithDate(
+                        IQCForServiceItemsReportWithParamAndDateDto.FromDate,
+                        IQCForServiceItemsReportWithParamAndDateDto.ToDate);
+                }
+
+
+
+                // Create Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("IQCServiceItemsReport");
+
+                // Header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("GRIN For Service Items Number");
+                headerRow.CreateCell(1).SetCellValue("Vendor Name");
+                headerRow.CreateCell(2).SetCellValue("Invoice Number");
+                headerRow.CreateCell(3).SetCellValue("Invoice Date");
+                headerRow.CreateCell(4).SetCellValue("Invoice Value");
+                headerRow.CreateCell(5).SetCellValue("PO Number");
+                headerRow.CreateCell(6).SetCellValue("Item Description");
+                headerRow.CreateCell(7).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(8).SetCellValue("Manufacture Batch Number");
+                headerRow.CreateCell(9).SetCellValue("Unit Price");
+                headerRow.CreateCell(10).SetCellValue("Project Number");
+                headerRow.CreateCell(11).SetCellValue("Project Qty");
+                headerRow.CreateCell(12).SetCellValue("UOM");
+                headerRow.CreateCell(13).SetCellValue("Expiry Date");
+                headerRow.CreateCell(14).SetCellValue("Manufacture Date");
+                headerRow.CreateCell(15).SetCellValue("Received Qty");
+                headerRow.CreateCell(16).SetCellValue("Accepted Qty");
+                headerRow.CreateCell(17).SetCellValue("Rejected Qty");
+                headerRow.CreateCell(18).SetCellValue("Remarks");
+                headerRow.CreateCell(19).SetCellValue("Total Invoice Value");
+                headerRow.CreateCell(20).SetCellValue("AWB Number 1");
+                headerRow.CreateCell(21).SetCellValue("AWB Date 1");
+
+                // Populate data
+                int rowIndex = 1;
+                foreach (var item in iqcServiceItemsList)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.GrinsForServiceItemsNumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.VendorName ?? "");
+                    row.CreateCell(2).SetCellValue(item.InvoiceNumber ?? "");
+                    row.CreateCell(3).SetCellValue(item.InvoiceDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(4).SetCellValue((double)(item.InvoiceValue ?? 0));
+                    row.CreateCell(5).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(6).SetCellValue(item.ItemDescription ?? "");
+                    row.CreateCell(7).SetCellValue(item.MftrItemNumber ?? "");
+                    row.CreateCell(8).SetCellValue(item.ManufactureBatchNumber ?? "");
+                    row.CreateCell(9).SetCellValue((double)(item.UnitPrice ?? 0));
+                    row.CreateCell(10).SetCellValue(item.ProjectNumber ?? "");
+                    row.CreateCell(11).SetCellValue((double)(item.ProjectQty ?? 0));
+                    row.CreateCell(12).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(13).SetCellValue(item.ExpiryDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(14).SetCellValue(item.ManufactureDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(15).SetCellValue((double)(item.ReceivedQty ?? 0));
+                    row.CreateCell(16).SetCellValue((double)(item.AcceptedQty ?? 0));
+                    row.CreateCell(17).SetCellValue((double)(item.RejectedQty ?? 0));
+                    row.CreateCell(18).SetCellValue(item.Remarks ?? "");
+                    row.CreateCell(19).SetCellValue((double)(item.TotalInvoiceValue ?? 0));
+                    row.CreateCell(20).SetCellValue(item.AWBNumber1 ?? "");
+                    row.CreateCell(21).SetCellValue(item.AWBDate1?.ToString("MM/dd/yyyy") ?? "");
+                }
+
+
+
+                // Export Excel
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+                    return File(excelBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "IQCForServiceItemsReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
         [HttpPost]
         public async Task<IActionResult> GetIQCForServiceItemsSPReportWithParamForTrans([FromBody] IQCForServiceItemsReportWithParamForTransDto iQCForServiceItemsReportWithParamDto)
         {
@@ -171,6 +327,162 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ExportIQCForServiceItemsSPReportWithParamOrDateToExcelForTras([FromBody] IQCForServiceItemsReportWithParamAndDateForTransDto IQCForServiceItemsReportWithParamAndDateForTransDto)
+        {
+
+            ServiceResponse<IQCForServiceItemsSPReport> serviceResponse = new ServiceResponse<IQCForServiceItemsSPReport>();
+            try
+            {
+
+                if (IQCForServiceItemsReportWithParamAndDateForTransDto is null)
+                {
+                    _logger.LogError("IQCForServiceItemsReportWithParamAndDateForTransDto object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "IQCForServiceItemsReportWithParamAndDateForTransDto object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid IQCForServiceItemsReportWithParamAndDateForTransDto object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                bool hasParams = !string.IsNullOrEmpty(IQCForServiceItemsReportWithParamAndDateForTransDto.GrinsForServiceItemsNumber)
+                               || !string.IsNullOrEmpty(IQCForServiceItemsReportWithParamAndDateForTransDto.ItemNumber)
+                               || !string.IsNullOrEmpty(IQCForServiceItemsReportWithParamAndDateForTransDto.ProjectNumber);
+
+                bool hasDate = IQCForServiceItemsReportWithParamAndDateForTransDto.FromDate != null || IQCForServiceItemsReportWithParamAndDateForTransDto.ToDate != null;
+
+                if (hasParams && hasDate)
+                {
+                    _logger.LogError("Input object must contain either filter parameters or date range, not both.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or a date range, not both.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!hasParams && (IQCForServiceItemsReportWithParamAndDateForTransDto.FromDate == null || IQCForServiceItemsReportWithParamAndDateForTransDto.ToDate == null))
+                {
+                    _logger.LogError("Input object must contain either at least one filter parameter or both from and to dates.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or both from and to dates.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+
+                }
+
+                var iqcServiceItemsList = Enumerable.Empty<IQCForServiceItemsSPReport>();
+
+                if (hasParams && !hasDate)
+                {
+
+                    iqcServiceItemsList = await _iQCForServiceItemsRepository.GetIQCForServiceItemsSPReportWithParamForTrans(
+                        IQCForServiceItemsReportWithParamAndDateForTransDto.GrinsForServiceItemsNumber,
+                        IQCForServiceItemsReportWithParamAndDateForTransDto.ItemNumber, IQCForServiceItemsReportWithParamAndDateForTransDto.ProjectNumber);
+                }
+
+
+                if (!hasParams && (IQCForServiceItemsReportWithParamAndDateForTransDto.FromDate != null && IQCForServiceItemsReportWithParamAndDateForTransDto.ToDate != null))
+                {
+
+                    iqcServiceItemsList = await _iQCForServiceItemsRepository.GetIQCForServiceItemsSPReportWithDate(
+                        IQCForServiceItemsReportWithParamAndDateForTransDto.FromDate,
+                        IQCForServiceItemsReportWithParamAndDateForTransDto.ToDate);
+                }
+
+
+
+                // Create Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("IQCServiceItemsReport");
+
+                // Header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("GRIN For Service Items Number");
+                headerRow.CreateCell(1).SetCellValue("Vendor Name");
+                headerRow.CreateCell(2).SetCellValue("Invoice Number");
+                headerRow.CreateCell(3).SetCellValue("Invoice Date");
+                headerRow.CreateCell(4).SetCellValue("Invoice Value");
+                headerRow.CreateCell(5).SetCellValue("PO Number");
+                headerRow.CreateCell(6).SetCellValue("Item Description");
+                headerRow.CreateCell(7).SetCellValue("Mftr Item Number");
+                headerRow.CreateCell(8).SetCellValue("Manufacture Batch Number");
+                headerRow.CreateCell(9).SetCellValue("Unit Price");
+                headerRow.CreateCell(10).SetCellValue("Project Number");
+                headerRow.CreateCell(11).SetCellValue("Project Qty");
+                headerRow.CreateCell(12).SetCellValue("UOM");
+                headerRow.CreateCell(13).SetCellValue("Expiry Date");
+                headerRow.CreateCell(14).SetCellValue("Manufacture Date");
+                headerRow.CreateCell(15).SetCellValue("Received Qty");
+                headerRow.CreateCell(16).SetCellValue("Accepted Qty");
+                headerRow.CreateCell(17).SetCellValue("Rejected Qty");
+                headerRow.CreateCell(18).SetCellValue("Remarks");
+                headerRow.CreateCell(19).SetCellValue("Total Invoice Value");
+                headerRow.CreateCell(20).SetCellValue("AWB Number 1");
+                headerRow.CreateCell(21).SetCellValue("AWB Date 1");
+
+                // Populate data
+                int rowIndex = 1;
+                foreach (var item in iqcServiceItemsList)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.GrinsForServiceItemsNumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.VendorName ?? "");
+                    row.CreateCell(2).SetCellValue(item.InvoiceNumber ?? "");
+                    row.CreateCell(3).SetCellValue(item.InvoiceDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(4).SetCellValue((double)(item.InvoiceValue ?? 0));
+                    row.CreateCell(5).SetCellValue(item.PONumber ?? "");
+                    row.CreateCell(6).SetCellValue(item.ItemDescription ?? "");
+                    row.CreateCell(7).SetCellValue(item.MftrItemNumber ?? "");
+                    row.CreateCell(8).SetCellValue(item.ManufactureBatchNumber ?? "");
+                    row.CreateCell(9).SetCellValue((double)(item.UnitPrice ?? 0));
+                    row.CreateCell(10).SetCellValue(item.ProjectNumber ?? "");
+                    row.CreateCell(11).SetCellValue((double)(item.ProjectQty ?? 0));
+                    row.CreateCell(12).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(13).SetCellValue(item.ExpiryDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(14).SetCellValue(item.ManufactureDate?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(15).SetCellValue((double)(item.ReceivedQty ?? 0));
+                    row.CreateCell(16).SetCellValue((double)(item.AcceptedQty ?? 0));
+                    row.CreateCell(17).SetCellValue((double)(item.RejectedQty ?? 0));
+                    row.CreateCell(18).SetCellValue(item.Remarks ?? "");
+                    row.CreateCell(19).SetCellValue((double)(item.TotalInvoiceValue ?? 0));
+                    row.CreateCell(20).SetCellValue(item.AWBNumber1 ?? "");
+                    row.CreateCell(21).SetCellValue(item.AWBDate1?.ToString("MM/dd/yyyy") ?? "");
+                }
+
+
+
+                // Export Excel
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+                    return File(excelBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "IQC For ServiceItems.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
+
+
+
 
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetIQCForServiceItemsSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)

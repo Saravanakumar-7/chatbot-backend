@@ -189,6 +189,35 @@ namespace Tips.Warehouse.Api.Repository
             
 
         }
+        public async Task<IEnumerable<LocationTransferSpReportForTras>> LocationTransferSPReportWithParamForTras(string FromPartNumber, string FromPartType, string FromWarehouse,
+                                                                                         string FromLocation, string FromProjectNumber,
+                                                                                         string ToPartnumber, string ToPartType,
+                                                                                         string ToWarehouse, string ToLocation, string ToProjectNumber)
+        {
+
+            var result = _tipsWarehouseDbContext
+            .Set<LocationTransferSpReportForTras>()
+            .FromSqlInterpolated($"CALL Location_Transfer_Report_withparameter_tras({FromPartNumber},{FromPartType},{FromWarehouse},{FromLocation},{FromProjectNumber},{ToPartnumber},{ToPartType},{ToWarehouse},{ToLocation},{ToProjectNumber})")
+            .ToList();
+            return result;
+
+
+        }
+
+        public async Task<IEnumerable<LocationTransferSpReportForAvi>> LocationTransferSPReportWithParamForAvi(string FromPartNumber, string FromPartType, string FromWarehouse,
+                                                                                      string FromLocation, string FromProjectNumber,
+                                                                                      string ToPartnumber, string ToPartType,
+                                                                                      string ToWarehouse, string ToLocation, string ToProjectNumber)
+        {
+
+            var result = _tipsWarehouseDbContext
+            .Set<LocationTransferSpReportForAvi>()
+            .FromSqlInterpolated($"CALL  Location_Transfer_Report_withparameter_av({FromPartNumber},{FromPartType},{FromWarehouse},{FromLocation},{FromProjectNumber},{ToPartnumber},{ToPartType},{ToWarehouse},{ToLocation},{ToProjectNumber})")
+            .ToList();
+            return result;
+
+
+        }
         public async Task<IEnumerable<MRNSPReport>> MRNSPReportWithParam(string? ProjectNumber,string? ShopOrderType,string? ShopOrderNumber,string? KPN,string? PartType)
         {
             var result = _tipsWarehouseDbContext
@@ -209,6 +238,22 @@ namespace Tips.Warehouse.Api.Repository
         {
             var results = _tipsWarehouseDbContext.Set<LocationTransferSPReport>()
                          .FromSqlInterpolated($"CALL Location_Transfer_Report_withparameter_withdate({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<LocationTransferSpReportForTras>> LocationTransferSPReportDatesForTras(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<LocationTransferSpReportForTras>()
+                         .FromSqlInterpolated($"CALL Location_Transfer_Report_withparameter_withdate_tras({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<LocationTransferSpReportForAvi>> LocationTransferSPReportDatesForAvi(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<LocationTransferSpReportForAvi>()
+                         .FromSqlInterpolated($"CALL Location_Transfer_Report_withparameter_withdate_av({FromDate},{ToDate})")
                          .ToList();
 
             return results;
