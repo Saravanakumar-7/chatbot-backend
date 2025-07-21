@@ -15,6 +15,8 @@ namespace Tips.Warehouse.Api.Entities
         public string? ToKPN { get; set; }
         public string? ToPartType { get; set; }
         public string? ToUOM { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
         public string? ToDescription { get; set; }
         public decimal? ToQty { get; set; }
         public string? ToLocation { get; set; }
