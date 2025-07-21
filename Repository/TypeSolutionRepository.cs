@@ -52,6 +52,14 @@ namespace Repository
             return typeSolutionDetails;
         }
 
+        public async Task<IEnumerable<TypeSolution>> GetAllActiveTypeSolutions([FromQuery] SearchParames searchParams)
+        {
+            var typeSolutionDetails = FindAll()
+                                       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.TypeSolutionName.Contains(searchParams.SearchValue) ||
+                                 inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))) && inv.IsActive == true);
+            return typeSolutionDetails;
+        }
+
         public async Task<TypeSolution> GetTypeSolutionById(int id)
         {
             var typeSolutionByid = await FindByCondition(x => x.Id == id).FirstOrDefaultAsync();

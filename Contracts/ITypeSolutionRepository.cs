@@ -11,6 +11,7 @@ namespace Contracts
     public  interface ITypeSolutionRepository : IRepositoryBase<TypeSolution>
     {
         Task<IEnumerable<TypeSolution>> GetAllTypeSolutions(SearchParames searchParams);
+        Task<IEnumerable<TypeSolution>> GetAllActiveTypeSolutions(SearchParames searchParams);
         Task<TypeSolution> GetTypeSolutionById(int id);
         Task<int?> CreateTypeSolution(TypeSolution typeSolution);
         Task<string> UpdateTypeSolution(TypeSolution typeSolution);
