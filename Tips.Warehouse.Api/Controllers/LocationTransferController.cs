@@ -68,7 +68,7 @@ namespace Tips.Warehouse.Api.Controllers
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
 
-                _logger.LogError("Returned all LocationTransferdetails");
+                _logger.LogInfo("Returned all LocationTransferdetails");
                 var result = _mapper.Map<IEnumerable<LocationTransferDto>>(getAllLocationTransfers);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all LocationTransfers Successfully";

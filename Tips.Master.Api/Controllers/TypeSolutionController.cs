@@ -53,6 +53,33 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveTypeSolutions([FromQuery] SearchParames searchParams)
+        {
+            ServiceResponse<IEnumerable<TypeSolutionDto>> serviceResponse = new ServiceResponse<IEnumerable<TypeSolutionDto>>();
+            try
+            {
+
+                var getAllTypeSolution = await _repository.TypeSolutionRepository.GetAllActiveTypeSolutions(searchParams);
+                _logger.LogInfo("Returned all active TypeSolution");
+                var result = _mapper.Map<IEnumerable<TypeSolutionDto>>(getAllTypeSolution);
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all Active TypeSolution Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllActiveTypeSolutions API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllActiveTypeSolutions API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetTypeSolutionById(int id)
