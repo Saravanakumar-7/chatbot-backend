@@ -6,7 +6,7 @@ namespace Tips.Grin.Api.Entities
     {
         public string? KPN { get; set; }
         public string? Description { get; set; }
-        public int ItemType { get; set; }
+        public int ? ItemType { get; set; }
         public string? UOM { get; set; }
         public string? OpenGrinNumber { get; set; }
         public string? SenderName { get; set; }

@@ -2137,6 +2137,8 @@ namespace Tips.Grin.Api.Controllers
                 headerRow.CreateCell(24).SetCellValue("Project Number");
                 headerRow.CreateCell(25).SetCellValue("UOC");
                 headerRow.CreateCell(26).SetCellValue("Tally Voucher");
+                headerRow.CreateCell(27).SetCellValue("Gate Entry Date");
+                headerRow.CreateCell(28).SetCellValue("Gate Entry No");
 
                 // Populate data
                 int rowIndex = 1;
@@ -2170,6 +2172,8 @@ namespace Tips.Grin.Api.Controllers
                     row.CreateCell(24).SetCellValue(item.ProjectNumber ?? "");
                     row.CreateCell(25).SetCellValue(item.UOC ?? "");
                     row.CreateCell(26).SetCellValue(item.TallyVoucher ?? "");
+                    row.CreateCell(27).SetCellValue(item.GateEntryDate.HasValue ? item.GateEntryDate.Value.ToString("MM/dd/yyyy") : "");
+                    row.CreateCell(28).SetCellValue(item.GateEntryNo ?? "");
                 }
 
                 // Export Excel
@@ -2384,7 +2388,7 @@ namespace Tips.Grin.Api.Controllers
                     row.CreateCell(25).SetCellValue((double)(item.UTGST ?? 0));
                     row.CreateCell(26).SetCellValue((double)(item.totalvalue ?? 0));
                     row.CreateCell(27).SetCellValue(item.Remarks ?? "");
-                    row.CreateCell(28).SetCellValue(item.TallyStatus.HasValue ? (item.TallyStatus.Value ? "Yes" : "No") : "");
+                    row.CreateCell(28).SetCellValue(item.TallyStatus.HasValue ? (item.TallyStatus.Value ? "True" : "False") : "");
                     row.CreateCell(29).SetCellValue(item.BENumber ?? "");
                     row.CreateCell(30).SetCellValue((double)(item.GrinAcceptedQty ?? 0));
                 }
@@ -2413,8 +2417,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 var products = await _repository.GetGrinSPReportWithParamForAvi(grinReportWithParam.GrinNumber, grinReportWithParam.VendorName,
                                                                             grinReportWithParam.PONumber, grinReportWithParam.ItemNumber,
-                                                                            grinReportWithParam.MPN, grinReportWithParam.Warehouse, grinReportWithParam.Location,
-                                                                            grinReportWithParam.ProjectNumber);
+                                                                            grinReportWithParam.MPN,grinReportWithParam.ProjectNumber);
 
                 if (products == null)
                 {
@@ -2479,8 +2482,6 @@ namespace Tips.Grin.Api.Controllers
                                || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelAviDto.PONumber)
                                || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelAviDto.ItemNumber)
                                || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelAviDto.MPN)
-                               || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelAviDto.Warehouse)
-                               || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelAviDto.Location)
                                || !string.IsNullOrEmpty(grinReportWithParamWithdateForExcelAviDto.ProjectNumber);
 
                 bool hasDate = grinReportWithParamWithdateForExcelAviDto.FromDate != null || grinReportWithParamWithdateForExcelAviDto.ToDate != null;
@@ -2516,8 +2517,7 @@ namespace Tips.Grin.Api.Controllers
                         grinReportWithParamWithdateForExcelAviDto.PONumber,
                         grinReportWithParamWithdateForExcelAviDto.ItemNumber,
                         grinReportWithParamWithdateForExcelAviDto.MPN,
-                        grinReportWithParamWithdateForExcelAviDto.Warehouse,
-                        grinReportWithParamWithdateForExcelAviDto.Location, grinReportWithParamWithdateForExcelAviDto.ProjectNumber);
+                       grinReportWithParamWithdateForExcelAviDto.ProjectNumber);
                 }
 
 
@@ -2565,11 +2565,9 @@ namespace Tips.Grin.Api.Controllers
                 headerRow.CreateCell(25).SetCellValue("UTGST");
                 headerRow.CreateCell(26).SetCellValue("Total Value");
                 headerRow.CreateCell(27).SetCellValue("Remarks");
-                headerRow.CreateCell(28).SetCellValue("Warehouse");
-                headerRow.CreateCell(29).SetCellValue("Location");
-                headerRow.CreateCell(30).SetCellValue("Project Qty");
-                headerRow.CreateCell(31).SetCellValue("Tally Status");
-                headerRow.CreateCell(32).SetCellValue("BE Number");
+                headerRow.CreateCell(28).SetCellValue("Project Qty");
+                headerRow.CreateCell(29).SetCellValue("Tally Status");
+                headerRow.CreateCell(30).SetCellValue("BE Number");
 
                 // Populate data
                 int rowIndex = 1;
@@ -2604,11 +2602,9 @@ namespace Tips.Grin.Api.Controllers
                     row.CreateCell(25).SetCellValue((double)(item.UTGST ?? 0));
                     row.CreateCell(26).SetCellValue((double)(item.totalvalue ?? 0));
                     row.CreateCell(27).SetCellValue(item.Remarks ?? "");
-                    row.CreateCell(28).SetCellValue(item.Warehouse ?? "");
-                    row.CreateCell(29).SetCellValue(item.Location ?? "");
-                    row.CreateCell(30).SetCellValue((double)(item.ProjectQty ?? 0));
-                    row.CreateCell(31).SetCellValue(item.TallyStatus.HasValue ? (item.TallyStatus.Value ? "Yes" : "No") : "");
-                    row.CreateCell(32).SetCellValue(item.BENumber ?? "");
+                    row.CreateCell(28).SetCellValue((double)(item.ProjectQty ?? 0));
+                    row.CreateCell(29).SetCellValue(item.TallyStatus.HasValue ? (item.TallyStatus.Value ? "True" : "False") : "");
+                    row.CreateCell(30).SetCellValue(item.BENumber ?? "");
                 }
 
 

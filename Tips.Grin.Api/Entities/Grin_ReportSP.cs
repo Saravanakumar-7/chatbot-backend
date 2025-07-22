@@ -46,5 +46,7 @@ namespace Tips.Grin.Api.Entities
         public string? ProjectNumber { get; set; }
         public string? UOC { get; set; }
         public string? TallyVoucher { get; set; }
+        public DateTime? GateEntryDate { get; set; }
+        public string? GateEntryNo { get; set; }
     }
 }

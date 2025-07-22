@@ -26,7 +26,6 @@ namespace Tips.Warehouse.Api.Entities
         public string? Remarks { get; set; }
         public DateTime? ODODate {  get; set; }
         public string? ProjectNumber { get; set; }
-        public decimal? LocationwiseReturnDispatchedQty { get; set; }
         public decimal? LocationwiseDispatchedQty { get; set; }
 
     }
