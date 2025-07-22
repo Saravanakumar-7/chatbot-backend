@@ -379,14 +379,13 @@ namespace Tips.Warehouse.Api.Repository
             string result = $"openDeliveryOrder of Detail {openDeliveryOrder.Id} is updated successfully!";
             return result;
         }
-        public async Task<IEnumerable<OpenDeliveryOrderTypeList>> GetAllOpenDeliveryOrderTypeList()
+        public async Task<IEnumerable<OpenDeliveryOrderNoList>> GetAllOpenDeliveryOrderNoList()
         {
-            IEnumerable<OpenDeliveryOrderTypeList> oDOTypeList = await _tipsWarehouseDbContext.OpenDeliveryOrders
-                                .GroupBy(g=>g.DOType)
-                               .Select(x => new OpenDeliveryOrderTypeList()
+            IEnumerable<OpenDeliveryOrderNoList> oDOTypeList = await _tipsWarehouseDbContext.OpenDeliveryOrders
+                               .Select(x => new OpenDeliveryOrderNoList()
                                {
-
-                                   ODOType = x.Key
+                                   Id = x.Id,
+                                   ODONumber = x.OpenDONumber
 
                                })
                              .ToListAsync();
