@@ -163,11 +163,11 @@ namespace Tips.Grin.Api.Repository
         }
 
         public async Task<IEnumerable<GrinSPReportForAvi>> GetGrinSPReportWithParamForAvi(string? GrinNumber, string? VendorName, string? PONumber,
-                                                                                                    string? ItemNumber, string? MPN, string? Warehouse, string? Location, string? ProjectNumber)
+                                                                                                    string? ItemNumber, string? MPN, string? ProjectNumber)
         {
             var result = _tipsGrinDbContext
             .Set<GrinSPReportForAvi>()
-            .FromSqlInterpolated($"CALL Grin_Report_withparameter_Avi({GrinNumber},{VendorName},{PONumber},{ItemNumber},{MPN},{Warehouse},{Location},{ProjectNumber})")
+            .FromSqlInterpolated($"CALL Grin_Report_withparameter_Avi({GrinNumber},{VendorName},{PONumber},{ItemNumber},{MPN},{ProjectNumber})")
             .ToList();
 
             return result;

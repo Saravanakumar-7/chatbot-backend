@@ -41,7 +41,7 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<GrinSPReportForTrans>> GetGrinSPReportWithParamForTrans(string? GrinNumber, string? VendorName, string? PONumber,
                                                                                                     string? ItemNumber, string? MPN, string? ProjectNumber);
         Task<IEnumerable<GrinSPReportForAvi>> GetGrinSPReportWithParamForAvi(string? GrinNumber, string? VendorName, string? PONumber,
-                                                                                                    string? ItemNumber, string? MPN, string? Warehouse, string? Location, string? ProjectNumber);
+                                                                                                    string? ItemNumber, string? MPN,string? ProjectNumber);
 
         Task<IEnumerable<PoAndGrinUnitPriceSPReport>> GetPoAndGrinUnitPriceSPReportWithParam(string? GrinNumber, string? VendorName, string? PONumber,
                                                                                                     string? ItemNumber, string? ProjectNumber);
