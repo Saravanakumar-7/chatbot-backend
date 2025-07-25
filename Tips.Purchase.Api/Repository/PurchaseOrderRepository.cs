@@ -1514,6 +1514,75 @@ namespace Tips.Purchase.Api.Repository
             return pONameListbyVendorName;
         }
 
+        //public async Task<IEnumerable<LatestPODetailsDto>> GetLatestPODetialsByItemNumber(string itemNumber)
+        //{
+        //    var latestPoDetails = await _tipsPurchaseDbContext.PoItems
+        //        .Where(x => x.ItemNumber == itemNumber)
+        //        .OrderByDescending(x => x.Id) 
+        //        .Take(3)
+        //        .Select(x => new LatestPODetailsDto
+        //        {
+        //            VendorName = x.PurchaseOrder.VendorName, 
+        //            PONumber = x.PurchaseOrder.PONumber,
+        //            ItemNumber = x.ItemNumber,
+        //            UnitPrice = x.UnitPrice,
+        //            Qty = x.Qty,
+        //            SGST = x.SGST,
+        //            CGST = x.CGST,
+        //            IGST = x.IGST,
+        //            UTGST = x.UTGST,
+        //            SubTotal = x.SubTotal,
+        //            TotalWithTax = x.TotalWithTax
+        //        })
+        //        .ToListAsync();
+
+        //    return latestPoDetails;
+        //}
+
+        public async Task<IEnumerable<LatestPODetailsDto>> GetLatestPODetialsByItemNumber(string itemNumber)
+        {
+            
+            var latestVersions = await _tipsPurchaseDbContext.PurchaseOrders
+                .GroupBy(po => po.PONumber)
+                .Select(g => new
+                {
+                    PoId = g.Max(po => po.Id),
+                    PONumber = g.Key,
+                })
+                .ToListAsync();
+
+            var poItems = await _tipsPurchaseDbContext.PoItems
+                .Include(x => x.PurchaseOrder)
+                .Where(x => x.ItemNumber == itemNumber)
+                .OrderByDescending(x => x.Id)
+                .ToListAsync(); 
+
+            var filteredItems = poItems
+                .Where(x => latestVersions.Any(v =>
+                    v.PONumber == x.PurchaseOrder.PONumber &&
+                    v.PoId == x.PurchaseOrder.Id))
+                .GroupBy(x => x.PurchaseOrder.PONumber)
+                .Select(g => g.First())
+                .Take(3)
+                .Select(x => new LatestPODetailsDto
+                {
+                    VendorName = x.PurchaseOrder.VendorName,
+                    PONumber = x.PurchaseOrder.PONumber,
+                    ItemNumber = x.ItemNumber,
+                    UnitPrice = x.UnitPrice,
+                    Qty = x.Qty,
+                    SGST = x.SGST,
+                    CGST = x.CGST,
+                    IGST = x.IGST,
+                    UTGST = x.UTGST,
+                    SubTotal = x.SubTotal,
+                    TotalWithTax = x.TotalWithTax
+                })
+                .ToList();
+
+            return filteredItems;
+        }
+
         public async Task<IEnumerable<PurchaseOrderItemNoListDto>> GetAllPOItemNumberListByPoNumber(string poNumber)
         {
             int pOItemNoListbyPONumber = await _tipsPurchaseDbContext.PurchaseOrders

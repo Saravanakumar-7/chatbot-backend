@@ -183,6 +183,32 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetLatestPODetialsByItemNumber(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<LatestPODetailsDto>> serviceResponse = new ServiceResponse<IEnumerable<LatestPODetailsDto>>();
+            try
+            {
+                var latestPoDetails = await _repository.GetLatestPODetialsByItemNumber(itemNumber);
+                _logger.LogInfo($"Returned Latest PurchaseOrder Details for ItemNumber: {itemNumber}");
+                serviceResponse.Data = latestPoDetails;
+                serviceResponse.Message = "Returned all Latest PurchaseOrderDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetLatestPODetialsByItemNumber API for the following PONumber:{itemNumber} \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetLatestPODetialsByItemNumber API for the following PONumber:{itemNumber} \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAllLastestPurchaseOrders([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParamess searchParamess)
         {
