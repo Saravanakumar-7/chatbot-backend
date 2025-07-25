@@ -24,7 +24,7 @@ namespace Entities.DTOs
     }
     public class ItemMasterSchedulePartsDtoUpdate
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
         public string? ItemNumber { get; set; }
         public string? Description { get; set; }
         public PartType ItemType { get; set; }

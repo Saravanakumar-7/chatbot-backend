@@ -535,6 +535,8 @@ namespace Tips.Master.Api
             CreateMap<Ranges, RangesPostDto>().ReverseMap();
             CreateMap<Ranges, RangesDto>().ReverseMap();
             CreateMap<Ranges, RangesUpdateDto>().ReverseMap();
+
+            CreateMap<ProductType, GetListofTypeSolutionByProductTypeDto>().ReverseMap();
         }
     }
 }

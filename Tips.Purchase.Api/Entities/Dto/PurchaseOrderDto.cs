@@ -555,4 +555,18 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? PartNumber { get; set; }
         public decimal KitComponentQty { get; set; }
     }
+    public class LatestPODetailsDto
+    {
+        public string? VendorName { get; set; }
+        public string? PONumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal Qty { get; set; }
+        public decimal SGST { get; set; }
+        public decimal CGST { get; set; }
+        public decimal IGST { get; set; }
+        public decimal UTGST { get; set; }
+        public decimal? SubTotal { get; set; }
+        public decimal TotalWithTax { get; set; }
+    }
 }
