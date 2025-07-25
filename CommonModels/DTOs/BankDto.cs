@@ -37,6 +37,7 @@ namespace Entities.DTOs
 
     public class BankUpdateDto
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "BankName is required")]
         [StringLength(100, ErrorMessage = "BankName can't be longer than 100 characters")]

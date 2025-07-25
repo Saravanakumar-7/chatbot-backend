@@ -23,7 +23,7 @@ namespace Entities.DTOs
     }
     public class ShipmentInstructionsDtoPost
     {
-        [Required]
+        [Required(ErrorMessage = "ShipmentInstructionsName is required")]
         public string ShipmentInstructionsName { get; set; }
         public string Description { get; set; }
         public string Remarks { get; set; }
@@ -32,8 +32,9 @@ namespace Entities.DTOs
     }
     public class ShipmentInstructionsDtoUpdate
     {
-        public int Id { get; set; }
         [Required]
+        public int Id { get; set; }
+        [Required(ErrorMessage = "ShipmentInstructionsName is required")]
         public string ShipmentInstructionsName { get; set; }
         public string Description { get; set; }
         public string Remarks { get; set; }

@@ -36,6 +36,7 @@ namespace Entities.DTOs
     }
     public class ProcessDtoUpdate
     {
+        [Required]
         public int? Id { get; set; }
         [Required(ErrorMessage = "Process is required")]
         [StringLength(100, ErrorMessage = "Process can't be longer than 100 characters")]

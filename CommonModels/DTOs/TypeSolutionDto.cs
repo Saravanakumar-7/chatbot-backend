@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace Entities.DTOs
 
     public class TypeSolutionPostDto
     {
+        [Required(ErrorMessage = "TypeSolutionName is required")]
         public string TypeSolutionName { get; set; }
         public string? Code { get; set; }
 
@@ -34,10 +36,12 @@ namespace Entities.DTOs
 
         public bool? IsActive { get; set; }
 
-    }
+    } 
     public class TypeSolutionUpdateDto
     {
+        [Required]
         public int Id { get; set; }
+        [Required(ErrorMessage = "TypeSolutionName is required")]
         public string TypeSolutionName { get; set; }
         public string? Code { get; set; }
 

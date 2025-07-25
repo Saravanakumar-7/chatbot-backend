@@ -27,6 +27,7 @@ namespace Entities.DTOs
 
     public class ProductTypePostDto
     {
+        [Required(ErrorMessage = "ProductTypeName is required")]
         public string ProductTypeName { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
@@ -38,7 +39,9 @@ namespace Entities.DTOs
     }
     public class ProductTypeUpdateDto
     {
+        [Required]
         public int Id { get; set; }
+        [Required(ErrorMessage = "ProductTypeName is required")]
         public string ProductTypeName { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }

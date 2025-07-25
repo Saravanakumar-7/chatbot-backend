@@ -34,6 +34,7 @@ namespace Entities.DTOs
     }
     public class ShipmentModeDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "ShipmentModeName is required")]
         [StringLength(100, ErrorMessage = "ShipmentModeName can't be longer than 100 characters")]

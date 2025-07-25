@@ -22,6 +22,7 @@ namespace Entities.DTOs
     }
     public class PaymentTermDtoPost
     {
+        [Required(ErrorMessage = "PaymentTerms is required")]
         public string PaymentTerms { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
@@ -33,6 +34,7 @@ namespace Entities.DTOs
     public class PaymentTermDtoUpdate
     {
         public int Id { get; set; }
+        [Required(ErrorMessage = "PaymentTerms is required")]
         public string PaymentTerms { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }

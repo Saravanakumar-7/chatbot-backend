@@ -34,6 +34,7 @@ namespace Entities.DTOs
     }
     public class NatureOfRelationshipDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "NatureOfRelationship is required")]
         [StringLength(100, ErrorMessage = "NatureOfRelationship can't be longer than 100 characters")]

@@ -35,6 +35,7 @@ namespace Entities.DTOs
     }
     public class PackingInstructionDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "PackingInstruction is required")]
         [StringLength(100, ErrorMessage = "PackingInstruction can't be longer than 100 characters")]

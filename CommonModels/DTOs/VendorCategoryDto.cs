@@ -38,6 +38,7 @@ namespace Entities.DTOs
 
     public class VendorCategoryUpdateDto
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "VendorCategoryName is required")]
         [StringLength(100, ErrorMessage = "VendorCategoryName can't be longer than 100 characters")]

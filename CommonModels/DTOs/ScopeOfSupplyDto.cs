@@ -37,6 +37,7 @@ namespace Entities.DTOs
 
     public class ScopeOfSupplyUpdateDto
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "ScopeOfSupplyName is required")]
         [StringLength(100, ErrorMessage = "ScopeOfSupplyName can't be longer than 100 characters")]

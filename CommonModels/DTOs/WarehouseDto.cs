@@ -32,7 +32,7 @@ namespace Entities.DTOs
 
     public class WarehouseDtoPost
     {
-        [Required]
+        [Required(ErrorMessage = "WarehouseName is required")]
         public string WarehouseName
         {
             get; set;
@@ -49,8 +49,9 @@ namespace Entities.DTOs
     }
     public class WarehouseDtoUpdate
     {
-        public int Id { get; set; }
         [Required]
+        public int Id { get; set; }
+        [Required(ErrorMessage = "WarehouseName is required")]
         public string WarehouseName
         {
             get; set;

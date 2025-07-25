@@ -34,6 +34,7 @@ namespace Entities.DTOs
     }
     public class GST_PercentageDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "GSTPercentage is required")]
         [StringLength(100, ErrorMessage = "GSTPercentage can't be longer than 100 characters")]

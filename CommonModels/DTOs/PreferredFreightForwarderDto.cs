@@ -34,6 +34,7 @@ namespace Entities.DTOs
     }
     public class PreferredFreightForwarderDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "PreferredFreightForwarder is required")]
         [StringLength(100, ErrorMessage = "PreferredFreightForwarder can't be longer than 100 characters")]

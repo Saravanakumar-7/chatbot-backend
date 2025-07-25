@@ -33,6 +33,7 @@ namespace Entities.DTOs
     }
     public class ExportUnitTypeDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "ExportUnitType is required")]
         [StringLength(100, ErrorMessage = "ExportUnitType can't be longer than 100 characters")]

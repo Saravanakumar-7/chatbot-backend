@@ -150,6 +150,8 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
                 var leadTimeEntity = _mapper.Map<LeadTime>(leadTimeDtoPost);
+                leadTimeEntity.Days = Convert.ToString(leadTimeDtoPost.Days);
+                leadTimeEntity.Weeks = Convert.ToString(leadTimeDtoPost.Weeks);
                 _repository.leadTimeRepository.CreateLeadTime(leadTimeEntity);
                 _repository.SaveAsync();
                 serviceResponse.Message = "Successfully Created";

@@ -29,10 +29,10 @@ namespace Entities.DTOs
     public class LocationsDtoPost
     {
         public string WarehouseId { get; set; }
-
+        [Required(ErrorMessage = "Warehouse is required")]
         public string Warehouse { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "LocationName is required")]
         public string LocationName { get; set; }
         public string Description { get; set; }
         public string Remarks { get; set; }
@@ -43,9 +43,10 @@ namespace Entities.DTOs
     {
         public int Id { get; set; }
         public string WarehouseId { get; set; }
+        [Required(ErrorMessage = "Warehouse is required")]
         public string Warehouse { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "LocationName is required")]
         public string LocationName { get; set; }
         public string Description { get; set; }
         public string Remarks { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,7 @@ namespace Entities.DTOs
     }
     public class IssuingStockPostDto
     {
+        [Required(ErrorMessage = "IssuingStockName is required")]
         public string? IssuingStockName { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
@@ -30,7 +32,9 @@ namespace Entities.DTOs
     }
     public class IssuingStockUpdateDto
     {
+        [Required]
         public int? Id { get; set; }
+        [Required(ErrorMessage = "IssuingStockName is required")]
         public string? IssuingStockName { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +25,7 @@ namespace Entities.DTOs
 
     public class RoomNamePostDto
     {
+        [Required(ErrorMessage = "RoomName is required")]
         public string RoomName { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
@@ -33,7 +35,9 @@ namespace Entities.DTOs
 
     public class RoomNameUpdateDto
     {
+        [Required]
         public int Id { get; set; }
+        [Required(ErrorMessage = "RoomName is required")]
         public string RoomName { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }

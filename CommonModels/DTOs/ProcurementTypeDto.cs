@@ -37,6 +37,7 @@ namespace Entities.DTOs
 
     public class ProcurementTypeDtoUpdate
     {
+
         public int Id { get; set; }
         [Required(ErrorMessage = "ProcurementType is required")]
         [StringLength(100, ErrorMessage = "ProcurementType can't be longer than 100 characters")]

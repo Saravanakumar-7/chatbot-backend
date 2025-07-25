@@ -27,7 +27,7 @@ namespace Entities.DTOs
     }
     public class OrderTypePostDto
     {
-        [Required]
+        [Required(ErrorMessage = "OrderTypeName is required")]
         public string OrderTypeName { get; set; }
         public string Description { get; set; }
         public string Remarks { get; set; }
@@ -38,7 +38,7 @@ namespace Entities.DTOs
     {
         [Key]
         public int Id { get; set; }
-        [Required]
+        [Required(ErrorMessage = "OrderTypeName is required")]
         public string OrderTypeName { get; set; }
         public string Description { get; set; }
         public string Remarks { get; set; }

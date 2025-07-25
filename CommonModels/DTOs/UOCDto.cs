@@ -24,7 +24,7 @@ namespace Entities.DTOs
 
     public class UOCDtoPost
     {
-        [Required]
+        [Required(ErrorMessage = "UOCType is required")]
         public string UOCType { get; set; }
         public string Description { get; set; }
         public string Remarks { get; set; }
@@ -35,8 +35,9 @@ namespace Entities.DTOs
 
     public class UOCDtoUpdate
     {
-        public int Id { get; set; }
         [Required]
+        public int Id { get; set; }
+        [Required(ErrorMessage = "UOCType is required")]
         public string UOCType { get; set; }
         public string Description { get; set; }
         public string Remarks { get; set; }

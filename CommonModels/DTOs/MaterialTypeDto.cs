@@ -37,6 +37,7 @@ namespace Entities.DTOs
 
     public class MaterialTypeDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "MaterialType is required")]
         [StringLength(100, ErrorMessage = "MaterialType can't be longer than 100 characters")]
