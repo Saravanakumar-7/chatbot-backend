@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="pragma" content="no-cache">
+    <meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="expires" content="0">
+    <title>First Quote</title>
+    <style>
+        .content {
+            max-width: 800px;
+            margin: auto;
+            padding: 0;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+    <style media="screen">
+        table {
+            border-collapse: collapse;
+            border-spacing: 0 !important
+        }
+
+        th,
+        td {
+            padding: 0 0 0 0;
+            margin-top: -10px;
+        }
+
+        /* .image {
+            background-color: black;
+        } */
+
+        .Logo {
+            /* background-color: #0d0d0d; */
+            margin: auto;
+            text-align: center;
+            padding: 20px;
+        }
+        .map {
+            background-color: black;
+        }
+
+        .link {
+            color: #8b8b8b;
+            left: 13px;
+            top: -12px;
+            position: relative;
+            font-family: poppins;
+        }
+        .link-call {
+            color: #8b8b8b;
+            left: 13px;
+            top: -7px;
+            position: relative;
+            font-family: poppins;
+        }
+        img.social {
+    width: 30px;
+    margin-right: 8px;
+}
+.social-div a{
+    text-decoration: none;
+
+}
+
+        .link-anch {
+            text-decoration: none;
+        }
+
+        .link-anch img {
+            color:white;
+        }
+        @media only screen and (max-width: 600px) {
+            .content {
+                width: 800px !important;
+
+            }
+        }
+        .content{
+            display: flex;
+flex-direction: column;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="content" style="background-image: url('{{BgImage}}'); background-color:black;background-position: top; background-size: cover;">
+        <div class="image">
+          <img src="cid:Quote_Top_Image">
+            <table>
+                <tr>
+                    <td colspan="13"
+                        style="background-image: url('{{tableBgImage}}'); background-color:black;background-position: top; background-size: cover;">
+                        <p style="color: #bfbfbf; font-family: 'Poppins', sans-serif; padding: 4rem 10rem 6rem 4rem; font-size: 0.8rem; line-height: 1.4;">
+                            Hello {{Customer Name}},<br /><br />
+
+                            We’re excited to share that your bespoke quote for the Ardeo lighting project is now ready. Crafted specifically for you, this quote reflects the tailored lighting solution designed to meet your unique vision with the utmost sophistication.
+                            Should you have any questions or need further details, please feel free to reach out. We are here to assist you and ensure that every aspect of your experience with Ardeo exceeds your expectations.
+                            <br><br>
+
+                        
+                           <span style="font-weight:700">
+                            Thank you for considering Ardeo. We look forward to the opportunity to illuminate your space with exceptional brilliance. </span>  <br/><br/>
+                            
+                            <a target="_blank" href="{{Quote Download}}">
+					<img src="cid:QuoteDownloadLogo"/>
+				</a>
+                        </p>
+                    </td>
+                </tr>
+            </table>
+            
+
+        </div>
+
+
+       
+
+        <div class="Logo">
+            <img src="cid:companyLogo"/>
+
+        </div>
+        <div class="footer">
+            <footer style="background-color: #0d0d0d; padding: 20px 0; position: relative; top: -3px;">
+                <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between;">
+                    <!-- Column 1 -->
+                    <div style="flex: 1; padding: 0 20px;margin-top:10px">
+                        <a href="tel:9392905179" class="link-anch">
+                            <img
+                                src="cid:PhoneLogo" ><span
+                                class="link-call">+91 93929 05179</span>
+                        </a>   
+                    </td>
+                    </div>
+
+                    <!-- Column 2 -->
+                    <div style="flex: 1; padding: 0 20px;margin: auto;    text-align: center;" class="social-div">
+                        <a href="https://www.instagram.com/keussmarthome">
+                            <img
+                                src="cid:InstaLogo" class="social">
+                        </a>
+                        <a href="https://www.facebook.com/keussmarthome">
+                            <img
+                                src="cid:FacebookLogo" class="social">
+                        </a>
+                        <a href="https://www.linkedin.com/company/keus-smart-home">
+                            <img
+                                src="cid:LinkedInLogo" class="social">
+                        </a>
+                    </div>
+
+                    <!-- Column 3 -->
+                    <div style="flex: 1; padding: 0 20px;position: relative;top:5px">
+                        <a href="https://www.keus.in/lighting" class="link-anch" >
+                            <img
+                                src="cid:WebLogo"><span
+                                class="link">www.keus.in/lighting</span>
+                        </a>
+                    </div>
+                </div>
+            </footer>
+
+        </div>
+    </div>
+</body>
+
+</html>
