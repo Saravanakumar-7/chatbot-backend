@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using AutoMapper;
 using Contracts;
@@ -6538,6 +6539,95 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<ActionResult> DownloadFile(string TypeofSolution, string SalesOrderNo, decimal RevNo, string FileName)
+        {
+            string obj;
+            if (TypeofSolution == "Lights" || TypeofSolution == "Upsell - Lights" || TypeofSolution == "Service - Lights")
+            {
+                obj = $@"
+                {{
+                    ""reportUnitUri"": ""/reports/Keus_GetaPcs/Sales_Lights_Book"",
+                    ""async"": true,       
+                    ""outputFormat"": ""pdf"",       
+                    ""parameters"": 
+                    {{
+                        ""reportParameter"": [
+                            {{
+                            ""name"": ""salesOrderNumber"",
+                             ""value"": [""{SalesOrderNo}""]
+                            }},
+                            {{
+                              ""name"": ""revNumber"",
+                              ""value"": [{(int)RevNo}]
+                            }}
+                          ]
+                    }}
+                }}";
+            }
+            else
+            {
+                obj = $@"
+                {{
+                     ""reportUnitUri"": ""/reports/Keus_GetaPcs/SalesQ_Book"",
+                     ""async"": true,       
+                     ""outputFormat"": ""pdf"",       
+                     ""parameters"": 
+                     {{
+                        ""reportParameter"": [
+                            {{
+                                ""name"": ""salesOrderNumber"",
+                             ""value"": [""{SalesOrderNo}""]
+                            }},
+                            {{
+                                ""name"": ""revNumber"",
+                              ""value"": [{(int)RevNo}]
+                            }}
+                         ]
+                     }}
+                }}";
+            }
+
+            var client = _clientFactory.CreateClient();
+            var token = Convert.ToBase64String(Encoding.ASCII.GetBytes($"jasperadmin:RMuhLgqwd9pIPb4"));
+            //var json = JsonConvert.SerializeObject(prj.KIT_GRIN_KITComponents.Select(x => x.PartNumber).ToList());
+            var data = new StringContent(obj, Encoding.UTF8, "application/json");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"https://reports.getapcs.com/jasperserver/rest_v2/reportExecutions")
+            {
+                Content = data
+            };
+            request.Headers.Add("Authorization", $"Basic {token}");
+            request.Headers.Add("X-Remote-Domain", "1");
+            var PostjsonObjectResult = await client.SendAsync(request);
+            using JsonDocument doc = JsonDocument.Parse(await PostjsonObjectResult.Content.ReadAsStringAsync());
+
+            string requestId = doc.RootElement.GetProperty("requestId").GetString();
+            string exportId = doc.RootElement.GetProperty("exports")[0].GetProperty("id").GetString();
+
+            var request1 = new HttpRequestMessage(HttpMethod.Get, $"https://reports.getapcs.com/jasperserver/rest_v2/reportExecutions/{requestId}/exports/{exportId}/outputResource");
+            request1.Headers.Add("Authorization", $"Basic {token}");
+            request1.Headers.Add("X-Remote-Domain", "1");
+            //request1.Headers.Add("Content-type", "application/pdf");
+            request1.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/pdf"));
+            var response1 = await client.SendAsync(request1);
+            var stream = await response1.Content.ReadAsStreamAsync();
+            return File(stream, "application/pdf", FileName + ".pdf");
+            //ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+            //var filename = Uri.UnescapeDataString(Filename);
+            //var filePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "Temp_Email", filename);
+            //var provider = new FileExtensionContentTypeProvider();
+            //if (!provider.TryGetContentType(filePath, out var ContentType))
+            //{
+            //    ContentType = "application/octet-stream";
+            //}
+            //var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+            //var DownloadFilename = filename.Split('_');
+            //var downloadFilename = string.IsNullOrWhiteSpace(DownloadFilename[1]) ? Path.GetFileName(filePath) : DownloadFilename[1];
+
+            //return File(bytes, ContentType, downloadFilename);
+
+        }
         [HttpPost]
         public async Task<IActionResult> SendEmailandWhatsAppMessageforSalesOrder([FromBody] SalesOrderEmailPostDto salesOrderEmailPostDto)
         {
@@ -6562,26 +6652,27 @@ namespace Tips.SalesService.Api.Controllers
                 var client = _clientFactory.CreateClient();
                 var token = HttpContext.Request.Headers["Authorization"].ToString();
 
-                if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation")
-                {
-                    emaildetails = $"Your Confirmed Keus Automation Sales Order - {salesorderDetails.SalesOrderNumber}: Version - {salesorderDetails.RevisionNumber}";
-                    //whatsapptemplate = "advait_sale_closed_automation";
-                    whatsapptemplate = "new_revised_lights_salesorder\r\n";
-                    FileName = "SalesOrder_Automation_Book";
-                }
-                else if (salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
-                {
-                    emaildetails = $"Your Confirmed Keus Accessories Sales Order - {salesorderDetails.SalesOrderNumber}: Version - {salesorderDetails.RevisionNumber}";
-                    whatsapptemplate = "new_revised_lights_salesorder";
-                    //whatsapptemplate = "advait_quote_automaiton";
-                    FileName = "SalesOrder_Accessories_Book";
-                }
-                else
+                //if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation")
+                if (salesorderDetails.TypeOfSolution == "Lights" || salesorderDetails.TypeOfSolution == "Upsell - Lights" || salesorderDetails.TypeOfSolution == "Service - Lights")
                 {
                     emaildetails = $"Your Confirmed Keus Lights Sales Order - {salesorderDetails.SalesOrderNumber}: Version - {salesorderDetails.RevisionNumber}";
                     whatsapptemplate = "new_revised_salesorder_ardeo";
                     //whatsapptemplate = "advait_saleclosed_light";
                     FileName = "SalesOrder_Lights_Book";
+                }
+                //else if (salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
+                //{
+                //    emaildetails = $"Your Confirmed Keus Accessories Sales Order - {salesorderDetails.SalesOrderNumber}: Version - {salesorderDetails.RevisionNumber}";
+                //    whatsapptemplate = "new_revised_lights_salesorder";
+                //    //whatsapptemplate = "advait_quote_automaiton";
+                //    FileName = "SalesOrder_Accessories_Book";
+                //}
+                else               
+                {
+                    emaildetails = $"Your Confirmed Keus Automation Sales Order - {salesorderDetails.SalesOrderNumber}: Version - {salesorderDetails.RevisionNumber}";
+                    //whatsapptemplate = "advait_sale_closed_automation";
+                    whatsapptemplate = "new_revised_lights_salesorder";
+                    FileName = "SalesOrder_Automation_Book";
                 }
                 if (emaildetails.IsNullOrEmpty())
                 {
@@ -6621,36 +6712,100 @@ namespace Tips.SalesService.Api.Controllers
                 email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
                 email.Subject = emaildetails;
                 string? body;
-
-                if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation" || salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
+                var builder = new BodyBuilder();
+                var baseUrl = $"{_config["SalesServiceBaseUrl"]}";
+                // if (salesorderDetails.TypeOfSolution == "Automation" || salesorderDetails.TypeOfSolution == "Upsell - Automation" || salesorderDetails.TypeOfSolution == "Accessories" || salesorderDetails.TypeOfSolution == "Lock")
+                if (salesorderDetails.TypeOfSolution == "Lights" || salesorderDetails.TypeOfSolution == "Upsell - Lights" || salesorderDetails.TypeOfSolution == "Service - Lights")
                 {
-                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-automation-salesorder.html");
+                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "Ardeo_SalesOrder_Template.html");
                     body = System.IO.File.ReadAllText(htmlFilePath);
-                    body = body.Replace("{{Sales-Order Number}}", salesorderDetails.SalesOrderNumber);
+                   // body = body.Replace("{{Sales-Order Number}}", salesorderDetails.SalesOrderNumber);
                     body = body.Replace("{{Customer Name}}", salesorderDetails.CustomerName);
+                    body = body.Replace("{{tableBgImage}}", $"{baseUrl}/api/Quote/DownloadImage?ImageName=Ardeo_SalesOrder_Background.png");
+                    body = body.Replace("{{BgImage}}", $"{baseUrl}/api/Quote/DownloadImage?ImageName=blankBG.jpg");
+                    body = body.Replace("{{SalesOrder Download}}", $"{baseUrl}/api/SalesOrder/DownloadFile?TypeofSolution={salesorderDetails.TypeOfSolution}&SalesOrderNo={salesorderDetails.SalesOrderNumber}&RevNo={salesorderDetails.RevisionNumber}&FileName={FileName}");
+
+                    var SalesOrderImagePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Ardeo_SalesOrder_1.png");
+                    var SalesOrder_Top_Image = builder.LinkedResources.Add(SalesOrderImagePath);
+                    SalesOrder_Top_Image.ContentId = "SalesOrder_Top_Image";
+
+                    var companyLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Ardeo_Quote_Logo.png");
+                    var companyLogo_img = builder.LinkedResources.Add(companyLogo);
+                    companyLogo_img.ContentId = "companyLogo";
+
+                    var PhoneLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Auto_Quote_Phone.png");
+                    var PhoneLogo_img = builder.LinkedResources.Add(PhoneLogo);
+                    PhoneLogo_img.ContentId = "PhoneLogo";
+
+                    var InstaLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Insta_Logo.png");
+                    var InstaLogo_img = builder.LinkedResources.Add(InstaLogo);
+                    InstaLogo_img.ContentId = "InstaLogo";
+
+                    var FacebookLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Facebook_Logo.png");
+                    var FacebookLogo_img = builder.LinkedResources.Add(FacebookLogo);
+                    FacebookLogo_img.ContentId = "FacebookLogo";
+
+                    var LinkedInLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "LinkedIn_Logo.png");
+                    var LinkedInLogo_img = builder.LinkedResources.Add(LinkedInLogo);
+                    LinkedInLogo_img.ContentId = "LinkedInLogo";
+
+                    var WebLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Web_Logo.png");
+                    var WebLogo_img = builder.LinkedResources.Add(WebLogo);
+                    WebLogo_img.ContentId = "WebLogo";
                 }
                 else
                 {
-                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-light-salesorder.html");
+                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "Automation_SalesOrder_Template.html");
                     body = System.IO.File.ReadAllText(htmlFilePath);
                     body = body.Replace("{{Customer Name}}", salesorderDetails.CustomerName);
+                    body = body.Replace("{{tableBgImage}}", $"{baseUrl}/api/Quote/DownloadImage?ImageName=Auto_Quote_Background.png");
+                    body = body.Replace("{{BgImage}}", $"{baseUrl}/api/Quote/DownloadImage?ImageName=blankBG.jpg");
+                    body = body.Replace("{{SalesOrder Download}}", $"{baseUrl}/api/SalesOrder/DownloadFile?TypeofSolution={salesorderDetails.TypeOfSolution}&SalesOrderNo={salesorderDetails.SalesOrderNumber}&RevNo={salesorderDetails.RevisionNumber}&FileName={FileName}");
+
+                    var SalesOrderImagePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Auto_SalesOrder_1.png");
+                    var SalesOrder_Top_Image = builder.LinkedResources.Add(SalesOrderImagePath);
+                    SalesOrder_Top_Image.ContentId = "SalesOrder_Top_Image";
+
+                    var companyLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Auto_Quote_KeusLogo.png");
+                    var companyLogo_img = builder.LinkedResources.Add(companyLogo);
+                    companyLogo_img.ContentId = "companyLogo";
+
+                    var PhoneLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Auto_Quote_Phone.png");
+                    var PhoneLogo_img = builder.LinkedResources.Add(PhoneLogo);
+                    PhoneLogo_img.ContentId = "PhoneLogo";
+
+                    var InstaLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Insta_Logo.png");
+                    var InstaLogo_img = builder.LinkedResources.Add(InstaLogo);
+                    InstaLogo_img.ContentId = "InstaLogo";
+
+                    var FacebookLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Facebook_Logo.png");
+                    var FacebookLogo_img = builder.LinkedResources.Add(FacebookLogo);
+                    FacebookLogo_img.ContentId = "FacebookLogo";
+
+                    var LinkedInLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "LinkedIn_Logo.png");
+                    var LinkedInLogo_img = builder.LinkedResources.Add(LinkedInLogo);
+                    LinkedInLogo_img.ContentId = "LinkedInLogo";
+
+                    var WebLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Auto_Quote_Web.jpg");
+                    var WebLogo_img = builder.LinkedResources.Add(WebLogo);
+                    WebLogo_img.ContentId = "WebLogo";
                 }
                 string base64;
-                var builder = new BodyBuilder();
+               
                 builder.HtmlBody = body;
-                using (HttpClient client1 = new HttpClient())
-                {
-                    client1.Timeout = TimeSpan.FromMinutes(5);
-                    var request2 = new HttpRequestMessage(HttpMethod.Get, salesOrderEmailPostDto.jasperfileUrl);
+                //using (HttpClient client1 = new HttpClient())
+                //{
+                //    client1.Timeout = TimeSpan.FromMinutes(5);
+                //    var request2 = new HttpRequestMessage(HttpMethod.Get, salesOrderEmailPostDto.jasperfileUrl);
 
-                    request2.Headers.Add("Authorization", "Basic amFzcGVyYWRtaW46Uk11aExncXdkOXBJUGI0");
-                    request2.Headers.Add("X-Remote-Domain", "1");
+                //    request2.Headers.Add("Authorization", "Basic amFzcGVyYWRtaW46Uk11aExncXdkOXBJUGI0");
+                //    request2.Headers.Add("X-Remote-Domain", "1");
 
-                    var response2 = await client1.SendAsync(request2);
-                    byte[] fileBytes = await response2.Content.ReadAsByteArrayAsync();
-                    //builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
-                    base64 = Convert.ToBase64String(fileBytes);
-                }
+                //    var response2 = await client1.SendAsync(request2);
+                //    byte[] fileBytes = await response2.Content.ReadAsByteArrayAsync();
+                //    //builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
+                //    base64 = Convert.ToBase64String(fileBytes);
+                //}
                 //Guid guids = Guid.NewGuid();
                 //byte[] fileContent = Convert.FromBase64String(base64);
                 //string fileName = guids.ToString() + "_" + FileName + ".pdf";
@@ -6775,8 +6930,8 @@ namespace Tips.SalesService.Api.Controllers
                     SentOn = DateTime.Now,
                     WhatsAppPhoneNos = salesOrderEmailPostDto.WhatsAppPhoneNos
                 };
-                await _salesOrderEmailsDetailsRepository.CreateSalesOrderEmailsDetails(salesOrderEmailsDetails);
-                _salesOrderEmailsDetailsRepository.SaveAsync();
+                //await _salesOrderEmailsDetailsRepository.CreateSalesOrderEmailsDetails(salesOrderEmailsDetails);
+                //_salesOrderEmailsDetailsRepository.SaveAsync();
 
                 SOEmailMessageSuccessMessage emailMessageSuccessMessage = new SOEmailMessageSuccessMessage()
                 {

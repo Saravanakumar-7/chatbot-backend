@@ -35,6 +35,14 @@ using System.Text;
 using System.Net.Http.Headers;
 using System.Collections;
 using Microsoft.AspNetCore.StaticFiles;
+using System.Security.Cryptography;
+using MySqlX.XDevAPI;
+using NuGet.Common;
+using System.Composition;
+using Microsoft.DotNet.MSIdentity.Shared;
+using System.Text.Json;
+using static Google.Apis.Requests.BatchRequest;
+using SixLabors.ImageSharp;
 
 namespace Tips.SalesService.Api.Controllers
 {
@@ -772,21 +780,109 @@ namespace Tips.SalesService.Api.Controllers
         }
         [AllowAnonymous]
         [HttpGet]
-        public async Task<ActionResult> DownloadFile(string Filename)
+        public async Task<ActionResult> DownloadImage(string ImageName)
         {
             ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
-            var filename = Uri.UnescapeDataString(Filename);
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "Temp_Email", filename);
+            var filename = Uri.UnescapeDataString(ImageName);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", ImageName);
             var provider = new FileExtensionContentTypeProvider();
             if (!provider.TryGetContentType(filePath, out var ContentType))
             {
                 ContentType = "application/octet-stream";
             }
             var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
-            var DownloadFilename = filename.Split('_');
-            var downloadFilename = string.IsNullOrWhiteSpace(DownloadFilename[1]) ? Path.GetFileName(filePath) : DownloadFilename[1];
 
-            return File(bytes, ContentType, downloadFilename);
+            return File(bytes, ContentType, Path.GetFileName(filePath));
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public async Task<ActionResult> DownloadFile(string TypeofSolution, string QuoteNo, decimal RevNo, string FileName)
+        {
+            string obj;
+            if (TypeofSolution == "Lights" || TypeofSolution == "Upsell - Lights" || TypeofSolution == "Service - Lights")
+            {
+                obj = $@"
+                {{
+                    ""reportUnitUri"": ""/reports/Keus_GetaPcs/QuoteLights_Book"",
+                    ""async"": true,       
+                    ""outputFormat"": ""pdf"",       
+                    ""parameters"": 
+                    {{
+                        ""reportParameter"": [
+                            {{
+                            ""name"": ""quoteNumber"",
+                             ""value"": [""{QuoteNo}""]
+                            }},
+                            {{
+                              ""name"": ""revNumber"",
+                              ""value"": [{(int)RevNo}]
+                            }}
+                          ]
+                    }}
+                }}";                
+            }
+            else
+            {
+                obj = $@"
+                {{
+                     ""reportUnitUri"": ""/reports/Keus_GetaPcs/Quote_Automation_Book"",
+                     ""async"": true,       
+                     ""outputFormat"": ""pdf"",       
+                     ""parameters"": 
+                     {{
+                        ""reportParameter"": [
+                            {{
+                                ""name"": ""quoteNumber"",
+                             ""value"": [""{QuoteNo}""]
+                            }},
+                            {{
+                                ""name"": ""revNumber"",
+                              ""value"": [{(int)RevNo}]
+                            }}
+                         ]
+                     }}
+                }}";    
+            }
+
+            var client = _clientFactory.CreateClient();
+            var token = Convert.ToBase64String(Encoding.ASCII.GetBytes($"jasperadmin:RMuhLgqwd9pIPb4"));
+            //var json = JsonConvert.SerializeObject(prj.KIT_GRIN_KITComponents.Select(x => x.PartNumber).ToList());
+            var data = new StringContent(obj, Encoding.UTF8, "application/json");
+            var request = new HttpRequestMessage(HttpMethod.Post, $"https://reports.getapcs.com/jasperserver/rest_v2/reportExecutions")
+            {
+                Content = data
+            };
+            request.Headers.Add("Authorization",$"Basic {token}");
+            request.Headers.Add("X-Remote-Domain", "1");
+            var PostjsonObjectResult = await client.SendAsync(request);
+            using JsonDocument doc = JsonDocument.Parse(await PostjsonObjectResult.Content.ReadAsStringAsync());
+
+            string requestId = doc.RootElement.GetProperty("requestId").GetString();
+            string exportId = doc.RootElement.GetProperty("exports")[0].GetProperty("id").GetString();
+
+            var request1 = new HttpRequestMessage(HttpMethod.Get, $"https://reports.getapcs.com/jasperserver/rest_v2/reportExecutions/{requestId}/exports/{exportId}/outputResource");
+            request1.Headers.Add("Authorization", $"Basic {token}");
+            request1.Headers.Add("X-Remote-Domain", "1");
+            //request1.Headers.Add("Content-type", "application/pdf");
+            request1.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/pdf"));
+            var response1 = await client.SendAsync(request1);
+            var stream = await response1.Content.ReadAsStreamAsync();
+            return File(stream, "application/pdf", FileName+".pdf");
+            //ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+            //var filename = Uri.UnescapeDataString(Filename);
+            //var filePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "Temp_Email", filename);
+            //var provider = new FileExtensionContentTypeProvider();
+            //if (!provider.TryGetContentType(filePath, out var ContentType))
+            //{
+            //    ContentType = "application/octet-stream";
+            //}
+            //var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+            //var DownloadFilename = filename.Split('_');
+            //var downloadFilename = string.IsNullOrWhiteSpace(DownloadFilename[1]) ? Path.GetFileName(filePath) : DownloadFilename[1];
+
+            //return File(bytes, ContentType, downloadFilename);
+
         }
         [HttpPost]
         public async Task<IActionResult> SendEmailandWhatsAppMessageforQuote([FromBody] QuoteEmailPostDto quoteEmailPostDto)
@@ -811,26 +907,27 @@ namespace Tips.SalesService.Api.Controllers
                 string? FileName;
                 var client = _clientFactory.CreateClient();
                 var token = HttpContext.Request.Headers["Authorization"].ToString();
-                if (quoteDetails.TypeOfSolution == "Automation" || quoteDetails.TypeOfSolution == "Upsell - Automation")
-                {
-                    emaildetails = "Your Keus Automation Quotation";
-                    FileName = "Quote_Automation_Book";
-                    whatsapptemplate = "new_revised_automation_quote";
-                   // whatsapptemplate = "advait_quote_automaiton";
-                }
-                else if (quoteDetails.TypeOfSolution == "Accessories" || quoteDetails.TypeOfSolution == "Lock")
-                {
-                    emaildetails = "Your Keus Accessories Quotation";
-                    FileName = "Quote_Accessories_Book";
-                    whatsapptemplate = "new_revised_automation_quote";
-                    //whatsapptemplate = "quotation_sent";
-                }
-                else
+                // if (quoteDetails.TypeOfSolution == "Automation" || quoteDetails.TypeOfSolution == "Upsell - Automation")
+                if (quoteDetails.TypeOfSolution == "Lights" || quoteDetails.TypeOfSolution == "Upsell - Lights" || quoteDetails.TypeOfSolution == "Service - Lights")
                 {
                     emaildetails = "Your Keus Lights Quotation";
                     FileName = "Quote_Lights_Book";
                     whatsapptemplate = "new_revised_lights_quote";
                     //whatsapptemplate = "advait_quote_light";
+                }
+                //else if (quoteDetails.TypeOfSolution == "Accessories" || quoteDetails.TypeOfSolution == "Lock")
+                //{
+                //    emaildetails = "Your Keus Accessories Quotation";
+                //    FileName = "Quote_Accessories_Book";
+                //    whatsapptemplate = "new_revised_automation_quote";
+                //    //whatsapptemplate = "quotation_sent";
+                //}
+                else                
+                {
+                    emaildetails = "Your Keus Automation Quotation";
+                    FileName = "Quote_Automation_Book";
+                    whatsapptemplate = "new_revised_automation_quote";
+                    // whatsapptemplate = "advait_quote_automaiton";
                 }
                 if (emaildetails.IsNullOrEmpty())
                 {
@@ -870,38 +967,125 @@ namespace Tips.SalesService.Api.Controllers
                 email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
                 email.Subject = emaildetails;
                 string? body;
-                if (quoteDetails.TypeOfSolution == "Automation" || quoteDetails.TypeOfSolution == "Upsell - Automation" || quoteDetails.TypeOfSolution == "Accessories" || quoteDetails.TypeOfSolution == "Lock")
+                var builder = new BodyBuilder();
+                var baseUrl = $"{_config["SalesServiceBaseUrl"]}";
+                // if (quoteDetails.TypeOfSolution == "Automation" || quoteDetails.TypeOfSolution == "Upsell - Automation" || quoteDetails.TypeOfSolution == "Accessories" || quoteDetails.TypeOfSolution == "Lock")
+                if (quoteDetails.TypeOfSolution == "Lights" || quoteDetails.TypeOfSolution == "Upsell - Lights" || quoteDetails.TypeOfSolution == "Service - Lights")
                 {
-                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-automation-quotation.html");
-
+                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "Ardeo_Quote_Template.html");
                     body = System.IO.File.ReadAllText(htmlFilePath);
-                    body = body.Replace("{{Quote Number}}", quoteDetails.QuoteNumber);
+                    body = body.Replace("{{Quote Download}}", $"{baseUrl}/api/Quote/DownloadFile?TypeofSolution={quoteDetails.TypeOfSolution}&QuoteNo={quoteDetails.QuoteNumber}&RevNo={quoteDetails.RevisionNumber}&FileName={FileName}");
+                    body = body.Replace("{{tableBgImage}}", $"{baseUrl}/api/Quote/DownloadImage?ImageName=Ardeo_Quote_Background.png");
+                    body = body.Replace("{{BgImage}}", $"{baseUrl}/api/Quote/DownloadImage?ImageName=blankBG.jpg");
                     body = body.Replace("{{Customer Name}}", quoteDetails.CustomerName);
+
+                    var quoteImagePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Ardeo_Quote_1.png");
+                    var Quote_Top_Image = builder.LinkedResources.Add(quoteImagePath);
+                    Quote_Top_Image.ContentId = "Quote_Top_Image";
+
+                    //var TableBackground = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Ardeo_Quote_Background.png");
+                    //var TableBackground_img = builder.LinkedResources.Add(TableBackground) as MimePart;
+                    //TableBackground_img.ContentId = "tableBgImage";
+                    //TableBackground_img.ContentDisposition = new ContentDisposition(ContentDisposition.Inline);
+                    //TableBackground_img.ContentTransferEncoding = ContentEncoding.Base64;
+
+                   
+
+                    var QuoteDownloadLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Ardeo_Quote_download.jpg");
+                    var QuoteDownloadLogo_img = builder.LinkedResources.Add(QuoteDownloadLogo);
+                    QuoteDownloadLogo_img.ContentId = "QuoteDownloadLogo";
+                    
+                    var companyLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Ardeo_Quote_Logo.png");
+                    var companyLogo_img = builder.LinkedResources.Add(companyLogo);
+                    companyLogo_img.ContentId = "companyLogo";
+                    
+                    var PhoneLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Phone_Logo.png");
+                    var PhoneLogo_img = builder.LinkedResources.Add(PhoneLogo);
+                    PhoneLogo_img.ContentId = "PhoneLogo";
+                    
+                    var InstaLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Insta_Logo.png");
+                    var InstaLogo_img = builder.LinkedResources.Add(InstaLogo);
+                    InstaLogo_img.ContentId = "InstaLogo";
+                    
+                    var FacebookLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Facebook_Logo.png");
+                    var FacebookLogo_img = builder.LinkedResources.Add(FacebookLogo);
+                    FacebookLogo_img.ContentId = "FacebookLogo"; 
+                    
+                    var LinkedInLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "LinkedIn_Logo.png");
+                    var LinkedInLogo_img = builder.LinkedResources.Add(LinkedInLogo);
+                    LinkedInLogo_img.ContentId = "LinkedInLogo"; 
+                    
+                    var WebLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Web_Logo.png");
+                    var WebLogo_img = builder.LinkedResources.Add(WebLogo);
+                    WebLogo_img.ContentId = "WebLogo";
+
+
+
+
                 }
                 else
                 {
-                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "keus-light-quotation.html");
-
+                    string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "Automation_Quote_Template.html");
                     body = System.IO.File.ReadAllText(htmlFilePath);
                     body = body.Replace("{{Customer Name}}", quoteDetails.CustomerName);
+                    body = body.Replace("{{Quote Download}}", $"{baseUrl}/api/Quote/DownloadFile?TypeofSolution={quoteDetails.TypeOfSolution}&QuoteNo={quoteDetails.QuoteNumber}&RevNo={quoteDetails.RevisionNumber}&FileName={FileName}");
+                    body = body.Replace("{{BgImage}}", $"{baseUrl}/api/Quote/DownloadImage?ImageName=blankBG.jpg");
+                    body = body.Replace("{{tableBgImage}}", $"{baseUrl}/api/Quote/DownloadImage?ImageName=Auto_Quote_Background.png");
+
+                    var quoteImagePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Auto_Quote_1.png");
+                    var Quote_Top_Image = builder.LinkedResources.Add(quoteImagePath);
+                    Quote_Top_Image.ContentId = "Quote_Top_Image";
+
+                    var QuoteDownloadLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Ardeo_Quote_download.jpg");
+                    var QuoteDownloadLogo_img = builder.LinkedResources.Add(QuoteDownloadLogo);
+                    QuoteDownloadLogo_img.ContentId = "QuoteDownloadLogo";
+
+                    var QuoteYTLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Auto_Quote_YTthundnail.png");
+                    var QuoteYTLogo_img = builder.LinkedResources.Add(QuoteYTLogo);
+                    QuoteYTLogo_img.ContentId = "QuoteYTLogo";
+
+                    var companyLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Auto_Quote_KeusLogo.png");
+                    var companyLogo_img = builder.LinkedResources.Add(companyLogo);
+                    companyLogo_img.ContentId = "companyLogo";
+
+                    var PhoneLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Auto_Quote_Phone.png");
+                    var PhoneLogo_img = builder.LinkedResources.Add(PhoneLogo);
+                    PhoneLogo_img.ContentId = "PhoneLogo";
+
+                    var InstaLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Insta_Logo.png");
+                    var InstaLogo_img = builder.LinkedResources.Add(InstaLogo);
+                    InstaLogo_img.ContentId = "InstaLogo";
+
+                    var FacebookLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Facebook_Logo.png");
+                    var FacebookLogo_img = builder.LinkedResources.Add(FacebookLogo);
+                    FacebookLogo_img.ContentId = "FacebookLogo";
+
+                    var LinkedInLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "LinkedIn_Logo.png");
+                    var LinkedInLogo_img = builder.LinkedResources.Add(LinkedInLogo);
+                    LinkedInLogo_img.ContentId = "LinkedInLogo";
+
+                    var WebLogo = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "images", "Auto_Quote_Web.jpg");
+                    var WebLogo_img = builder.LinkedResources.Add(WebLogo);
+                    WebLogo_img.ContentId = "WebLogo";
+
                 }
-                string base64;
-                var builder = new BodyBuilder();
+                //string base64;                
+
                 builder.HtmlBody = body;
-                using (HttpClient client1 = new HttpClient())
-                {
-                    client1.Timeout = TimeSpan.FromMinutes(5);
-                    var request2 = new HttpRequestMessage(HttpMethod.Get, quoteEmailPostDto.jasperfileUrl);
+                //using (HttpClient client1 = new HttpClient())
+                //{
+                //    client1.Timeout = TimeSpan.FromMinutes(5);
+                //    var request2 = new HttpRequestMessage(HttpMethod.Get, quoteEmailPostDto.jasperfileUrl);
 
-                    request2.Headers.Add("Authorization", "Basic amFzcGVyYWRtaW46Uk11aExncXdkOXBJUGI0");
-                    request2.Headers.Add("X-Remote-Domain", "1");
-                    var response2 = await client1.SendAsync(request2);
-                    response2.EnsureSuccessStatusCode();
+                //    request2.Headers.Add("Authorization", "Basic amFzcGVyYWRtaW46Uk11aExncXdkOXBJUGI0");
+                //    request2.Headers.Add("X-Remote-Domain", "1");
+                //    var response2 = await client1.SendAsync(request2);
+                //    response2.EnsureSuccessStatusCode();
 
-                    byte[] fileBytes = await response2.Content.ReadAsByteArrayAsync();
-                    //builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
-                    base64 = Convert.ToBase64String(fileBytes);
-                }
+                //    byte[] fileBytes = await response2.Content.ReadAsByteArrayAsync();
+                //    builder.Attachments.Add(FileName, fileBytes, ContentType.Parse("application/pdf"));
+                //    base64 = Convert.ToBase64String(fileBytes);
+                //}
                 //Guid guids = Guid.NewGuid();
                 //byte[] fileContent = Convert.FromBase64String(base64);
                 //string fileName = /*guids.ToString() + "_" +*/ FileName + ".pdf";
@@ -1038,8 +1222,8 @@ namespace Tips.SalesService.Api.Controllers
                     TypeOfSolution = quoteDetails.TypeOfSolution,
                     WhatsAppPhoneNos = quoteEmailPostDto.WhatsAppPhoneNos
                 };
-                await _quoteEmailsDetailsRepository.CreateQuoteEmailsDetails(quoteEmailsDetails);
-                _quoteEmailsDetailsRepository.SaveAsync();
+               // await _quoteEmailsDetailsRepository.CreateQuoteEmailsDetails(quoteEmailsDetails);
+                //_quoteEmailsDetailsRepository.SaveAsync();
 
                 QuoteEmailMessageSuccessMessage emailMessageSuccessMessage = new QuoteEmailMessageSuccessMessage()
                 {
