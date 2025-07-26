@@ -1222,8 +1222,8 @@ namespace Tips.SalesService.Api.Controllers
                     TypeOfSolution = quoteDetails.TypeOfSolution,
                     WhatsAppPhoneNos = quoteEmailPostDto.WhatsAppPhoneNos
                 };
-               // await _quoteEmailsDetailsRepository.CreateQuoteEmailsDetails(quoteEmailsDetails);
-                //_quoteEmailsDetailsRepository.SaveAsync();
+                await _quoteEmailsDetailsRepository.CreateQuoteEmailsDetails(quoteEmailsDetails);
+                _quoteEmailsDetailsRepository.SaveAsync();
 
                 QuoteEmailMessageSuccessMessage emailMessageSuccessMessage = new QuoteEmailMessageSuccessMessage()
                 {

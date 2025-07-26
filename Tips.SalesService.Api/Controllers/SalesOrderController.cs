@@ -6928,8 +6928,8 @@ namespace Tips.SalesService.Api.Controllers
                     SentOn = DateTime.Now,
                     WhatsAppPhoneNos = salesOrderEmailPostDto.WhatsAppPhoneNos
                 };
-                //await _salesOrderEmailsDetailsRepository.CreateSalesOrderEmailsDetails(salesOrderEmailsDetails);
-                //_salesOrderEmailsDetailsRepository.SaveAsync();
+                await _salesOrderEmailsDetailsRepository.CreateSalesOrderEmailsDetails(salesOrderEmailsDetails);
+                _salesOrderEmailsDetailsRepository.SaveAsync();
 
                 SOEmailMessageSuccessMessage emailMessageSuccessMessage = new SOEmailMessageSuccessMessage()
                 {
