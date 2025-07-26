@@ -23,7 +23,7 @@ namespace Entities.DTOs
     }
     public class CategoryDtoPost
     {
-        [Required]
+        [Required(ErrorMessage = "CategoryName is required")]
         public string CategoryName { get; set; }
         public string Description { get; set; }
         public bool ActiveStatus { get; set; }
@@ -32,8 +32,9 @@ namespace Entities.DTOs
     }
     public class CategoryDtoUpdate
     {
-        public int Id { get; set; }
         [Required]
+        public int Id { get; set; }
+        [Required(ErrorMessage = "CategoryName is required")]
         public string CategoryName { get; set; }
         public string Description { get; set; }
         public bool ActiveStatus { get; set; }

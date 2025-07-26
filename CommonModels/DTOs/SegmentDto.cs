@@ -24,7 +24,7 @@ namespace Entities.DTOs
 
     public class SegmentDtoPost
     {
-        [Required]
+        [Required(ErrorMessage = "SegmentName is required")]
         public string SegmentName { get; set; }
         public string Description { get; set; }
         public string Remarks { get; set; }
@@ -33,8 +33,9 @@ namespace Entities.DTOs
     }
     public class SegmentDtoUpdate
     {
-        public int Id { get; set; }
         [Required]
+        public int Id { get; set; }
+        [Required(ErrorMessage = "SegmentName is required")]
         public string SegmentName { get; set; }
         public string Description { get; set; }
         public string Remarks { get; set; }

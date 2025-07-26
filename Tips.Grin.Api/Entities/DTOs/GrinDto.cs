@@ -493,8 +493,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string PONumber { get; set; }
         public string ItemNumber { get; set; }
         public string MPN { get; set; }
-        public string Warehouse { get; set; }
-        public string Location { get; set; }
         public string ProjectNumber { get; set; }
 
     }
@@ -506,8 +504,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string PONumber { get; set; }
         public string ItemNumber { get; set; }
         public string MPN { get; set; }
-        public string Warehouse { get; set; }
-        public string Location { get; set; }
         public string ProjectNumber { get; set; }
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
@@ -542,8 +538,6 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? UTGST { get; set; }
         public decimal? totalvalue { get; set; }
         public string? Remarks { get; set; }
-        public string? Warehouse { get; set; }
-        public string? Location { get; set; }
         public decimal? ProjectQty { get; set; }
         public bool? TallyStatus { get; set; }
         public string? BENumber { get; set; }

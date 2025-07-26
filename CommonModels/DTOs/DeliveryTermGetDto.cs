@@ -24,8 +24,8 @@ namespace Entities.DTOs
 
     public class DeliveryTermPostDto
     {
-        [Required(ErrorMessage = "CustomerType is required")]
-        [StringLength(100, ErrorMessage = "CustomerType can't be longer than 100 characters")]
+        [Required(ErrorMessage = "DeliveryTermName is required")]
+        [StringLength(100, ErrorMessage = "DeliveryTermName can't be longer than 100 characters")]
         public string? DeliveryTermName { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
@@ -38,6 +38,7 @@ namespace Entities.DTOs
 
     public class DeliveryTermUpdateDto
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "DeliveryTerm is required")]
         [StringLength(100, ErrorMessage = "DeliveryTerm can't be longer than 100 characters")]

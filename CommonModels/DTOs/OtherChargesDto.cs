@@ -24,6 +24,7 @@ namespace Entities.DTOs
     }
     public class OtherChargesPostDto
     {
+        [Required(ErrorMessage = "OtherChargesName is required")]
         public string? OtherChargesName { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
@@ -32,7 +33,9 @@ namespace Entities.DTOs
     }
     public class OtherChargesUpdateDto
     {
+        [Required]
         public int? Id { get; set; }
+        [Required(ErrorMessage = "OtherChargesName is required")]
         public string? OtherChargesName { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }

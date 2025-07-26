@@ -34,6 +34,7 @@ namespace Entities.DTOs
     }
     public class TypeOfCompanyDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "TypeOfCompany is required")]
         [StringLength(100, ErrorMessage = "TypeOfCompany can't be longer than 100 characters")]

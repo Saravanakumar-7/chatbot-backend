@@ -37,6 +37,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalINameList();
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPendingPOApprovalIINameList();
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPONumberListByVendorName(string vendorName);
+        Task<IEnumerable<LatestPODetailsDto>> GetLatestPODetialsByItemNumber(string itemNumber);
         Task<IEnumerable<PurchaseOrderItemNoListDto>> GetAllPOItemNumberListByPoNumber(string poNumber);
         Task<int?> GetPONumberAutoIncrementCount(DateTime date);
         Task<PurchaseOrder> ChangePurchaseOrderVersion(PurchaseOrder purchaseOrder);

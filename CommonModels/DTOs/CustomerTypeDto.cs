@@ -37,6 +37,7 @@ namespace Entities.DTOs
 
     public class CustomerTypeDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "CustomerType is required")]
         [StringLength(100, ErrorMessage = "CustomerType can't be longer than 100 characters")]

@@ -36,6 +36,7 @@ namespace Entities.DTOs
     }
     public class CostCenterDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "CostCenterName is required")]
         [StringLength(100, ErrorMessage = "CostCenterName can't be longer than 100 characters")]

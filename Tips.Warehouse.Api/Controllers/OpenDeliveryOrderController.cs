@@ -1035,24 +1035,24 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllOpenDeliveryOrderTypeList()
+        public async Task<IActionResult> GetAllOpenDeliveryOrderNoList()
         {
-            ServiceResponse<IEnumerable<OpenDeliveryOrderTypeList>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderTypeList>>();
+            ServiceResponse<IEnumerable<OpenDeliveryOrderNoList>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderNoList>>();
             try
             {
-                var listOfAllOpenDeliveryOrderIdNames = await _repository.GetAllOpenDeliveryOrderTypeList();
-                var result = _mapper.Map<IEnumerable<OpenDeliveryOrderTypeList>>(listOfAllOpenDeliveryOrderIdNames);
+                var listOfAllOpenDeliveryOrderNo = await _repository.GetAllOpenDeliveryOrderNoList();
+                var result = _mapper.Map<IEnumerable<OpenDeliveryOrderNoList>>(listOfAllOpenDeliveryOrderNo);
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned All OpenDeliveryOrderTypes";
+                serviceResponse.Message = "Returned All OpenDeliveryOrderNumberList";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetAllOpenDeliveryOrderTypeList API : \n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetAllOpenDeliveryOrderNoList API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetAllOpenDeliveryOrderTypeList API : \n {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetAllOpenDeliveryOrderNoList API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

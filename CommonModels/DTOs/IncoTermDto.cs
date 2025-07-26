@@ -37,6 +37,7 @@ namespace Entities.DTOs
 
     public class IncoTermUpdateDto
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "IncoTerm is required")]
         [StringLength(100, ErrorMessage = "IncoTerm can't be longer than 100 characters")]

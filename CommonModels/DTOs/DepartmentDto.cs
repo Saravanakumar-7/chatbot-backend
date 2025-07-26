@@ -36,6 +36,7 @@ namespace Entities.DTOs
     }
     public class DepartmentUpdateDto
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "DepartmentName is required")]
         [StringLength(100, ErrorMessage = "DepartmentName can't be longer than 100 characters")]

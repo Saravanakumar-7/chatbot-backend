@@ -24,8 +24,8 @@ namespace Entities.DTOs
 
     public class CommodityDtoPost
     {
-       
-        [Required]
+
+        [Required(ErrorMessage = "CommodityType is required")]
         public string CommodityType { get; set; }
         public string Description { get; set; }
         public string Remarks { get; set; }
@@ -34,8 +34,9 @@ namespace Entities.DTOs
     }
     public class CommodityDtoUpdate
     {
-        public int Id { get; set; }
         [Required]
+        public int Id { get; set; }
+        [Required(ErrorMessage = "CommodityType is required")]
         public string CommodityType { get; set; }
         public string Description { get; set; }
         public string Remarks { get; set; }

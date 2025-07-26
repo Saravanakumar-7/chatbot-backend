@@ -23,7 +23,7 @@ namespace Entities.DTOs
 
     public class RiskCategoryDtoPost
     {
-        [Required]
+        [Required(ErrorMessage = "RiskCategoryName is required")]
         public string RiskCategoryName { get; set; }
         public string Description { get; set; }
         public bool ActiveStatus { get; set; }
@@ -31,8 +31,9 @@ namespace Entities.DTOs
     }
     public class RiskCategoryDtoUpdate
     {
-        public int Id { get; set; }
         [Required]
+        public int Id { get; set; }
+        [Required(ErrorMessage = "RiskCategoryName is required")]
         public string RiskCategoryName { get; set; }
         public string Description { get; set; }
         public bool ActiveStatus { get; set; }

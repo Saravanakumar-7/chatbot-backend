@@ -35,6 +35,7 @@ namespace Entities.DTOs
     }
     public class PurchaseGroupDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "PurchaseGroup is required")]
         [StringLength(100, ErrorMessage = "PurchaseGroup can't be longer than 100 characters")]

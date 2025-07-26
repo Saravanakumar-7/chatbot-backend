@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -31,7 +32,9 @@ namespace Entities.DTOs
 
     public class AdditionalChargesPostDto
     {
+        [Required(ErrorMessage = "AdditionalChargesLabelName is required")]
         public string? AdditionalChargesLabelName { get; set; }
+        [Required(ErrorMessage = "AddtionalChargesValueType is required")]
         public string? AddtionalChargesValueType { get; set; }
         public decimal? AddtionalChargesValueAmount { get; set; }
 
@@ -45,9 +48,12 @@ namespace Entities.DTOs
     }
     public class AdditionalChargesUpdateDto
     {
+        [Required]
         public int? Id { get; set; }
-
+        [Required(ErrorMessage = "AdditionalChargesLabelName is required")]
         public string? AdditionalChargesLabelName { get; set; }
+
+        [Required(ErrorMessage = "AddtionalChargesValueType is required")]
         public string? AddtionalChargesValueType { get; set; }
         public decimal? AddtionalChargesValueAmount { get; set; }
         public decimal? IGST { get; set; }

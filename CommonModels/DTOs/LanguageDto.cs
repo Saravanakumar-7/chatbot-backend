@@ -34,6 +34,7 @@ namespace Entities.DTOs
     }
     public class LanguageDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "Language is required")]
         [StringLength(100, ErrorMessage = "Language can't be longer than 100 characters")]

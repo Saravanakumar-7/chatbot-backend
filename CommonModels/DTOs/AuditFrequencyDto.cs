@@ -36,6 +36,7 @@ namespace Entities.DTOs
     }
     public class AuditFrequencyDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "AuditFrequency is required")]
         [StringLength(100, ErrorMessage = "AuditFrequency can't be longer than 100 characters")]

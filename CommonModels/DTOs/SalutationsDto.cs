@@ -35,6 +35,7 @@ namespace Entities.DTOs
 
     public class SalutationsDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "Salutation is required")]
         [StringLength(100, ErrorMessage = "Salutations can't be longer than 100 characters")]

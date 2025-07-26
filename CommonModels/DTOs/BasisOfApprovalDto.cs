@@ -36,6 +36,7 @@ namespace Entities.DTOs
 
     public class BasisOfApprovalUpdateDto
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "BasisOfApprovalName is required")]
         [StringLength(100, ErrorMessage = "BasisOfApprovalName can't be longer than 100 characters")]

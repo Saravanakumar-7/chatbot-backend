@@ -68,7 +68,7 @@ namespace Tips.Warehouse.Api.Controllers
                 Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
 
-                _logger.LogError("Returned all LocationTransferdetails");
+                _logger.LogInfo("Returned all LocationTransferdetails");
                 var result = _mapper.Map<IEnumerable<LocationTransferDto>>(getAllLocationTransfers);
                 serviceResponse.Data = result;
                 serviceResponse.Message = "Returned all LocationTransfers Successfully";
@@ -903,6 +903,93 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> LocationTransferSPReportWithParamForTras([FromBody] LocationTransferSPReportWithParamDTO locationTransferSPReport)
+        {
+            ServiceResponse<IEnumerable<LocationTransferSpReportForTras>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSpReportForTras>>();
+            try
+            {
+                var products = await _locationTransferRepository.LocationTransferSPReportWithParamForTras(locationTransferSPReport.FromPartNumber, locationTransferSPReport.FromPartType,
+                                                                     locationTransferSPReport.FromWarehouse, locationTransferSPReport.FromLocation,
+                                                                     locationTransferSPReport.FromProjectNumber, locationTransferSPReport.ToPartNumber,
+                                                                     locationTransferSPReport.ToPartType, locationTransferSPReport.ToWarehouse,
+                                                                     locationTransferSPReport.ToLocation, locationTransferSPReport.ToProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"LocationTransfer hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"LocationTransfer hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    // var result = _mapper.Map<IEnumerable<LocationTransferSPReportDTO>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned LocationTransfer Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in LocationTransferSPReportWithParamForTras API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in LocationTransferSPReportWithParamForTras API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> LocationTransferSPReportWithParamForAvi([FromBody] LocationTransferSPReportWithParamDTO locationTransferSPReport)
+        {
+            ServiceResponse<IEnumerable<LocationTransferSpReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSpReportForAvi>>();
+            try
+            {
+                var products = await _locationTransferRepository.LocationTransferSPReportWithParamForAvi(locationTransferSPReport.FromPartNumber, locationTransferSPReport.FromPartType,
+                                                                     locationTransferSPReport.FromWarehouse, locationTransferSPReport.FromLocation,
+                                                                     locationTransferSPReport.FromProjectNumber, locationTransferSPReport.ToPartNumber,
+                                                                     locationTransferSPReport.ToPartType, locationTransferSPReport.ToWarehouse,
+                                                                     locationTransferSPReport.ToLocation, locationTransferSPReport.ToProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"LocationTransfer hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"LocationTransfer hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    // var result = _mapper.Map<IEnumerable<LocationTransferSPReportDTO>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned LocationTransfer Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in LocationTransferSPReportWithParamForAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in LocationTransferSPReportWithParamForAvi API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> LocationTransferSPReportDates([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
@@ -934,6 +1021,80 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError($"Error Occured in LocationTransferSPReportDates API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error Occured in LocationTransferSPReportDates API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> LocationTransferSPReportDatesForTras([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<LocationTransferSpReportForTras>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSpReportForTras>>();
+            try
+            {
+                var products = await _locationTransferRepository.LocationTransferSPReportDatesForTras(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"LocationTransfer hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"LocationTransfer hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned LocationTransfer Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in LocationTransferSPReportDatesForTras API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in LocationTransferSPReportDatesForTras API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> LocationTransferSPReportDatesForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<LocationTransferSpReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSpReportForAvi>>();
+            try
+            {
+                var products = await _locationTransferRepository.LocationTransferSPReportDatesForAvi(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"LocationTransfer hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"LocationTransfer hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned LocationTransfer Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in LocationTransferSPReportDatesForAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in LocationTransferSPReportDatesForAvi API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

@@ -335,7 +335,7 @@ namespace Tips.Grin.Api.Controllers
                     var row = sheet.CreateRow(rowIndex++);
                     row.CreateCell(0).SetCellValue(item.KPN ?? "");
                     row.CreateCell(1).SetCellValue(item.Description ?? "");
-                    row.CreateCell(2).SetCellValue(item.ItemType);
+                    row.CreateCell(2).SetCellValue(item.ItemType.HasValue ? ((PartType)item.ItemType.Value).ToString() : "");
                     row.CreateCell(3).SetCellValue(item.UOM ?? "");
                     row.CreateCell(4).SetCellValue(item.OpenGrinNumber ?? "");
                     row.CreateCell(5).SetCellValue(item.SenderName ?? "");
@@ -345,7 +345,7 @@ namespace Tips.Grin.Api.Controllers
                     row.CreateCell(9).SetCellValue((double)(item.Qty ?? 0));
                     row.CreateCell(10).SetCellValue(item.Warehouse ?? "");
                     row.CreateCell(11).SetCellValue(item.Location ?? "");
-                    row.CreateCell(12).SetCellValue(Convert.ToInt32(item.Returnable) == 1 ? "true" : "false");
+                    row.CreateCell(12).SetCellValue(Convert.ToInt32(item.Returnable) == 1 ? "True" : "False");
                     row.CreateCell(13).SetCellValue(item.Remarks ?? "");
                     row.CreateCell(14).SetCellValue(item.SerialNo ?? "");
                     row.CreateCell(15).SetCellValue(item.ReturnedBy ?? "");
@@ -758,7 +758,7 @@ namespace Tips.Grin.Api.Controllers
                     row.CreateCell(9).SetCellValue(item.UOM ?? "");
                     row.CreateCell(10).SetCellValue((double)(item.Qty ?? 0));
                     row.CreateCell(11).SetCellValue(item.lotNumber ?? "");
-                    row.CreateCell(12).SetCellValue(item.ItemType?.ToString() ?? "");
+                    row.CreateCell(12).SetCellValue(item.ItemType.HasValue ? ((PartType)item.ItemType.Value).ToString() : "");
                     row.CreateCell(13).SetCellValue(item.Warehouse ?? "");
                     row.CreateCell(14).SetCellValue(item.Location ?? "");
                     row.CreateCell(15).SetCellValue(item.SerialNo ?? "");

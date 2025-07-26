@@ -22,7 +22,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<List<LocationDetailsDto>> GetLocationODOByItemNo(string itemNumber, string warehouse);
         Task<string> DeleteOpenDeliveryOrder(OpenDeliveryOrder openDeliveryOrder);
 
-        Task<IEnumerable<OpenDeliveryOrderTypeList>> GetAllOpenDeliveryOrderTypeList();
+        Task<IEnumerable<OpenDeliveryOrderNoList>> GetAllOpenDeliveryOrderNoList();
         Task<IEnumerable<odoLotNumberListDto>> GetODOLotNumberListByODONoAndItemNo(string odoNumber, string itemNumber);
         Task<string> GenerateODONumberAvision();
         Task<IEnumerable<OpenDeliveryOrder>> GetAllOpenDeliveryOrderWithItems(OpenDeliveryOrderSearchDto OpenDeliveryOrderSearch);

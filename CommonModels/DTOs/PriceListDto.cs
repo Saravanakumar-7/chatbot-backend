@@ -38,6 +38,7 @@ namespace Entities.DTOs
     }
     public class PriceListDtoUpdate
     {
+        [Required]
         public int Id { get; set; }
         [Required(ErrorMessage = "PriceList is required")]
         [StringLength(100, ErrorMessage = "PriceList can't be longer than 100 characters")]
