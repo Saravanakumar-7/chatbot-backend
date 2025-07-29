@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities;
+using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Tips.Production.Api.Entities.DTOs
@@ -16,7 +19,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? SalesOrderNumber { get; set; }
 
         public decimal? OpenSalesOrderQty { get; set; }
-        
+
         public decimal? ReleaseQty { get; set; }
         public decimal? RequiredQty { get; set; }
         public decimal? InitialQty { get; set; }
@@ -42,7 +45,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal? RequiredQty { get; set; }
 
     }
-    public class ShopOrderItemUpdateDto   
+    public class ShopOrderItemUpdateDto
     {
         [Required]
         public string? FGItemNumber { get; set; }
@@ -98,4 +101,24 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? SalesOrderNumber { get; set; }
         public decimal PendingSoConfirmationQty { get; set; }
     }
+    public class EnggChildItem_dto
+    {
+        public int id { get; set; }
+        public string itemNumber { get; set; }
+        public string? mftrItemNumbers { get; set; }
+        public string? uom { get; set; }
+        public decimal quantity { get; set; }
+        public string? description { get; set; }
+        public PartType partType { get; set; }
+        public string? remarks { get; set; }
+        public string? version { get; set; }
+        public string? scrapAllowance { get; set; }
+        public string? scrapAllowanceType { get; set; }
+        public string? customFields { get; set; }
+        public string? designator { get; set; }
+        public string? footPrint { get; set; }
+        public bool isActive { get; set; }
+        
+    }
+
 }
