@@ -119,8 +119,8 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-        [HttpGet("{typeSolution}")]
-        public async Task<IActionResult> GetListofTypeSolutionByProductType(string typeSolution)
+        [HttpGet]
+        public async Task<IActionResult> GetListofProductTypeByTypeOfSolution(string typeSolution)
         {
             ServiceResponse<IEnumerable<GetListofTypeSolutionByProductTypeDto>> serviceResponse = new ServiceResponse<IEnumerable<GetListofTypeSolutionByProductTypeDto>>();
 
@@ -129,30 +129,30 @@ namespace Tips.Master.Api.Controllers
                 var typeSolutionDetails = await _repository.ProductTypeRepository.GetListOfTypeSolutionByProductType(typeSolution);
                 if (typeSolutionDetails == null)
                 {
-                    _logger.LogError($"typeSolution with id: {typeSolution}, hasn't been found.");
+                    _logger.LogError($"ProductType with TypeSolution: {typeSolution}, hasn't been found.");
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"typeSolution with id: {typeSolution}, hasn't been found in db.";
+                    serviceResponse.Message = $"ProductType with TypeSolution: {typeSolution}, hasn't been found in db.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return Ok(serviceResponse);
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned typeSolution with id: {typeSolution}");
+                    _logger.LogInfo($"Returned ProductType with TypeSolution: {typeSolution}");
                     var result = _mapper.Map<IEnumerable<GetListofTypeSolutionByProductTypeDto>>(typeSolutionDetails);
                     serviceResponse.Data = result;
-                    serviceResponse.Message = "Success";
+                    serviceResponse.Message = "Returned ListOfProductType By TypeSolution";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(result);
+                    return Ok(serviceResponse);
                 }
             }
             catch (Exception ex)
 
             {
-                _logger.LogError($"Error Occured in GetListofTypeSolutionByProductType API : \n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetListofProductTypeByTypeOfSolution API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetListofTypeSolutionByProductType API : \n {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetListofProductTypeByTypeOfSolution API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

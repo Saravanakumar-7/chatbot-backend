@@ -164,4 +164,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? ConfirmationDate { get; set; }
         public decimal? ConfirmationQty { get; set; }
     }
+    public class ODORfqNumberListDto
+    {
+        public int Id { get; set; }
+        public string? RfqNumber { get; set; }
+    }
 }

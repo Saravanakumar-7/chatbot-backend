@@ -39,10 +39,10 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? VendorName { get; set; }
         public string? PONumber { get; set; }
         public DateTime? PODate { get; set; }
-        public string? PRNumber { get; set; }
-        public decimal? PRQty { get; set; }
         public int? RevisionNumber { get; set; }
         public string? ItemNumber { get; set; }
+        public decimal? ProjectQty { get; set; }
+        public decimal? projectBalanceQty { get; set; }
         public string? MftrItemNumber { get; set; }
         public string? ItemDescription { get; set; }
         public decimal? POQnty { get; set; }
@@ -100,8 +100,6 @@ namespace Tips.Purchase.Api.Entities.Dto
         public string? VendorName { get; set; }
         public string? PONumber { get; set; }
         public DateTime? PODate { get; set; }
-        public string? PRNumber { get; set; }
-        public decimal? PRQty { get; set; }
         public int? RevisionNumber { get; set; }
         public string? ItemNumber { get; set; }
         public string? MftrItemNumber { get; set; }

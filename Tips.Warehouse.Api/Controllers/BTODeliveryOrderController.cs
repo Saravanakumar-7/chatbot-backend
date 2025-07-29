@@ -992,7 +992,7 @@ namespace Tips.Warehouse.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(500, serviceResponse);
                 }
-                _logger.LogError($"CreateBTODelivaryOrder action: {response}");
+                _logger.LogInfo($"CreateBTODelivaryOrder action: {response}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = " BTODeliveryOrder Successfully Created";
                 serviceResponse.Success = true;

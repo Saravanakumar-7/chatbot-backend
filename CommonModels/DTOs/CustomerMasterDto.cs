@@ -408,4 +408,12 @@ namespace Entities.DTOs
         public string? CustomerType { get; set; }
 
     }
+    public class CustomerMasterRfqDetialsDto
+    {
+        public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerAliasName { get; set; }
+        public string? RfqNumber { get; set; }
+
+    }
 }

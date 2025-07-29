@@ -46,7 +46,7 @@ namespace Repository
 
         public async Task<IEnumerable<TypeSolution>> GetAllTypeSolutions([FromQuery] SearchParames searchParams)
         {
-            var typeSolutionDetails = FindAll()
+            var typeSolutionDetails = FindAll().OrderByDescending(x => x.Id)
                                        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.TypeSolutionName.Contains(searchParams.SearchValue) ||
                                  inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return typeSolutionDetails;

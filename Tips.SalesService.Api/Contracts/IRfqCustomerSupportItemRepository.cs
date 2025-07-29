@@ -37,6 +37,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<string>> GetRfqCsandForecastCsDetailListByItemNumber(string itemNumber);
         Task<IEnumerable<string>> GetRfqEnggandForecastCsProjectList();
         Task<IEnumerable<string>> GetRfqCsandForecastCsProjectNumberList();
+        Task<IEnumerable<string>> GetAllRfqandForecastNumberList();
 
         Task<IEnumerable<string>> GetRfqEnggandForecastCsDetailListByItemNumber(string itemNumber);
 

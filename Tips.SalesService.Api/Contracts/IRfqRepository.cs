@@ -24,6 +24,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberList();
         Task<IEnumerable<RfqNumberListDto>> GetAllRfqNumberList();
         Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberListByCustomerId(string CustomerId);
+        Task<IEnumerable<ODORfqNumberListDto>> GetAllODORfqNumberListByCustomerId(string customerId);
         Task<Rfq> RfqSourcingByRfqNumbers(string id);
         Task<Rfq> RfqCsByRfqNumbers(string id);
         Task<Rfq> RfqEnggByRfqNumbers(string id);
