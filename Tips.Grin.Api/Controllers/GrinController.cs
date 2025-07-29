@@ -665,8 +665,15 @@ namespace Tips.Grin.Api.Controllers
                     foreach (var grinPart in grins.GrinParts)
                     {
                         var grinPartsId = await _grinPartsRepository.GetGrinPartsById(grinPart.Id);
-                        grinPartsId.LotNumber = grins.GrinNumber + grinPartsId.Id;
-                        await _grinPartsRepository.UpdateGrinQty(grinPartsId);
+                        if (serverKey != "Ware")
+                        {
+                            grinPartsId.LotNumber = grins.GrinNumber + grinPartsId.Id;
+                        }
+                        else
+                        {
+                            grinPartsId.LotNumber = grins.BondNumber;
+                        }
+                            await _grinPartsRepository.UpdateGrinQty(grinPartsId);
 
                     }
                 }
