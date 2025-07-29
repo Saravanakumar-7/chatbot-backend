@@ -1285,13 +1285,32 @@ namespace Tips.Warehouse.Api.Repository
         }
 
         public async Task<IEnumerable<Inventory>> GetODOInventoryDetailsbyCustomerId(List<string> projectNumber)
-
         {
             var inventoryDetailsByProjNo = await _tipsWarehouseDbContext.Inventories
-                .Where(x =>  projectNumber.Contains(x.ProjectNumber) && x.Location == "WIP" && x.Warehouse == "WIP" && x.IsStockAvailable == true && x.Balance_Quantity > 0).ToListAsync();
+                .Where(x => projectNumber.Contains(x.ProjectNumber)
+                            && x.Location == "WIP"
+                            && x.Warehouse == "WIP"
+                            && x.IsStockAvailable == true
+                            && x.Balance_Quantity > 0)
+                .GroupBy(x => new { x.PartNumber, x.ProjectNumber,x.LotNumber }) // Grouping by both PartNumber and ProjectNumber
+                .Select(g => new Inventory
+                {
+                    PartNumber = g.Key.PartNumber,
+                    PartType = g.Max(x=>x.PartType),
+                    LotNumber = g.Key.LotNumber,
+                    ProjectNumber = g.Key.ProjectNumber,
+                    Balance_Quantity = g.Sum(x => x.Balance_Quantity),
+                    Location = "WIP",
+                    Warehouse = "WIP",
+                   
+                   
+                    // Add any other fields you want to populate explicitly
+                })
+                .ToListAsync();
 
             return inventoryDetailsByProjNo;
         }
+
 
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse, string projectNumber)
 
