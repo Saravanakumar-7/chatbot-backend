@@ -1296,6 +1296,7 @@ namespace Tips.Warehouse.Api.Repository
                 .Select(g => new Inventory
                 {
                     PartNumber = g.Key.PartNumber,
+                    Description = g.Max(x => x.Description),
                     PartType = g.Max(x=>x.PartType),
                     LotNumber = g.Key.LotNumber,
                     ProjectNumber = g.Key.ProjectNumber,
