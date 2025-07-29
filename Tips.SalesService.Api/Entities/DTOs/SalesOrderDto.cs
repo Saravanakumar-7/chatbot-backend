@@ -740,6 +740,9 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public string? CustomerId { get; set; }
         public string? CustomerName { get; set; }
+        public string? City { get; set; }
+        public string? State { get; set; }
+        public string? Address { get; set; }
         public string? PaymentMode { get; set; }
         public string? PaymentRefNo { get; set; }
         public decimal? TotalSumOfSOAmount { get; set; }
