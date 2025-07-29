@@ -2214,10 +2214,10 @@ namespace Tips.Production.Api.Controllers
 
                 }
                  
-                foreach(var child in Sachilds)
-                {
-                    var shopOrderDetails = await _shopOrderRepository.GetShopOrderByShopOrderNo(shopOrderNo);
-                }
+                //foreach(var child in Sachilds)
+                //{
+                //    var shopOrderDetails = await _shopOrderRepository.GetShopOrderByShopOrderNo(shopOrderNo);
+                //}
 
                 serviceResponse.Data = childitems;
                 serviceResponse.Message = $"GetItemShopOrderChildDetails";
