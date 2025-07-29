@@ -760,6 +760,30 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllRfqandForecastNumberList()
+        {
+            ServiceResponse<IEnumerable<string>> serviceResponse = new ServiceResponse<IEnumerable<string>>();
+            try
+            {
+                var rfqandForecastNoDetails = await _itemRepository.GetAllRfqandForecastNumberList();
+                _logger.LogInfo("Returned all RfqandForecastNoList");
+                serviceResponse.Data = rfqandForecastNoDetails;
+                serviceResponse.Message = "Returned all RfqandForecastNoList";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllRfqandForecastNumberList API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllRfqandForecastNumberList API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
 
         //GetRfqCsandForecastCsDetailListByItemNumber 
@@ -882,6 +906,43 @@ namespace Tips.SalesService.Api.Controllers
                 _logger.LogError($"Error Occured in GetAllActiveRfqNumberListByCustomerId API for the following CustomerId:{CustomerId} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error Occured in GetAllActiveRfqNumberListByCustomerId API for the following CustomerId:{CustomerId} \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllODORfqNumberListByCustomerId(string customerId)
+        {
+            ServiceResponse<IEnumerable<ODORfqNumberListDto>> serviceResponse = new ServiceResponse<IEnumerable<ODORfqNumberListDto>>();
+            try
+            {
+                var oDORfqNumberListByCustomerId = await _rfqRepository.GetAllODORfqNumberListByCustomerId(customerId);
+
+                if (oDORfqNumberListByCustomerId.Count() == 0)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"RfqNumberList with  with CustomerId: {customerId}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqNumberList with CustomerId: {customerId}, hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+
+                var result = _mapper.Map<IEnumerable<ODORfqNumberListDto>>(oDORfqNumberListByCustomerId);
+                _logger.LogInfo("Returned all ODORfqNumberList By CustomerId");
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all ODORfqNumberList By CustomerId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllODORfqNumberListByCustomerId API for the following CustomerId:{customerId} \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllODORfqNumberListByCustomerId API for the following CustomerId:{customerId} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

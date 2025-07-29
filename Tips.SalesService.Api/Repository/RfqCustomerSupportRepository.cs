@@ -266,6 +266,32 @@ namespace Tips.SalesService.Api.Repository
 
         //get list of cs and forecast number list
         //charan
+
+        public async Task<IEnumerable<string>> GetAllRfqandForecastNumberList()
+        {
+            var rfqNumber = _tipsSalesServiceDbContext.Rfqs
+                            .Select(r => r.RfqNumber)
+                            .Distinct()
+                            .ToList();
+
+            var forecastNumber = _tipsSalesServiceDbContext.ForeCasts
+                                .Select(r => r.ForeCastNumber)
+                                .Distinct()
+                                .ToList();
+
+            // Null checks to handle empty lists
+            if (rfqNumber == null)
+                rfqNumber = new List<string>();
+
+            if (forecastNumber == null)
+                forecastNumber = new List<string>();
+
+            var rfqAndForecastNumbers = rfqNumber.Union(forecastNumber).ToList();
+
+            return rfqAndForecastNumbers;
+
+        }
+
         public async Task<IEnumerable<string>> GetRfqCsandForecastCsProjectNumberList()
         {
             var rfqNumber = _tipsSalesServiceDbContext.RfqCustomerSupportItems
@@ -1092,7 +1118,34 @@ namespace Tips.SalesService.Api.Repository
             return getAllActiveRfqNumberList;
         }
 
+        public async Task<IEnumerable<ODORfqNumberListDto>> GetAllODORfqNumberListByCustomerId(string customerId)
+        {
+            var maxRevisions = await _tipsSalesServiceDbContext.Rfqs
+                .GroupBy(r => r.RfqNumber)
+                .Select(g => new
+                {
+                    RfqNumber = g.Key,
+                    MaxRevisionNumber = g.Max(r => r.RevisionNumber)
+                })
+                .ToListAsync();
 
+            var allRfqs = await _tipsSalesServiceDbContext.Rfqs.ToListAsync();
+
+            var latestRfqs = allRfqs
+                .Where(r => maxRevisions.Any(mr => mr.RfqNumber == r.RfqNumber && mr.MaxRevisionNumber == r.RevisionNumber))
+                .ToList();
+
+            var odoRfqNumberList = latestRfqs
+                .Where(r => r.CustomerId == customerId && r.IsModified == false)
+                .Select(x => new ODORfqNumberListDto
+                {
+                    Id = x.Id,
+                    RfqNumber = x.RfqNumber
+                })
+                .ToList();
+
+            return odoRfqNumberList;
+        }
 
         public async Task<Rfq> GetCustomerIdByRfqNumber(string rfqnumber)
         {

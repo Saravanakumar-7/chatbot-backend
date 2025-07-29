@@ -10,6 +10,7 @@ using System.Net;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.AspNetCore.Authorization;
+using System.Text;
 
 namespace Tips.Master.Api.Controllers
 {
@@ -22,14 +23,20 @@ namespace Tips.Master.Api.Controllers
         private ILoggerManager _logger;
         private IMapper _mapper;
         private readonly IConfiguration _config;
-        private IFileUploadRepository _fileUploadRepository;
-        public CustomerMasterController(IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper, IConfiguration config, IFileUploadRepository fileUploadRepository)
+        private IFileUploadRepository _fileUploadRepository; 
+        private readonly HttpClient _httpClient;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpClientFactory _clientFactory;
+        public CustomerMasterController(IHttpClientFactory clientFactory, HttpClient httpClient, IHttpContextAccessor httpContextAccessor, IRepositoryWrapperForMaster repository, ILoggerManager logger, IMapper mapper, IConfiguration config, IFileUploadRepository fileUploadRepository)
         {
             _repository = repository;
             _logger = logger;
             _mapper = mapper;
             _config = config;
             _fileUploadRepository = fileUploadRepository;
+            _httpClient = httpClient;
+            _httpContextAccessor = httpContextAccessor;
+            _clientFactory = clientFactory;
         }
 
         [HttpGet]
@@ -272,6 +279,131 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateCustomerMasterForWHMS([FromBody] CustomerMasterDtoPost customerMasterDtoPost)
+        {
+            ServiceResponse<CustomerMasterDto> serviceResponse = new ServiceResponse<CustomerMasterDto>();
+            string serverKey = GetServerKey();
+            try
+            {
+                if (customerMasterDtoPost is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "CustomerMasterForWHMS object sent from client is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("CustomerMasterForWHMS object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid CustomerMasterForWHMS object sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid CustomerMasterForWHMS object sent from client.");
+                    return BadRequest("Invalid model object");
+                }
+
+
+                var contacts = _mapper.Map<IEnumerable<CustomerContacts>>(customerMasterDtoPost.CustomerContacts);
+                var shippingAddresses = _mapper.Map<IEnumerable<CustomerShippingAddresses>>(customerMasterDtoPost.CustomerShippingAddresses);
+                var addresses = _mapper.Map<IEnumerable<CustomerAddresses>>(customerMasterDtoPost.CustomerAddress);
+                var related = _mapper.Map<IEnumerable<CustomerRelatedCustomer>>(customerMasterDtoPost.RelatedCustomers);
+                var banking = _mapper.Map<IEnumerable<CustomerBanking>>(customerMasterDtoPost.CustomerBankings);
+                var headcount = _mapper.Map<IEnumerable<CustomerMasterHeadCounting>>(customerMasterDtoPost.CustomerMasterHeadCountings);
+
+                var customerMaster = _mapper.Map<CustomerMaster>(customerMasterDtoPost);
+
+                customerMaster.CustomerAddresses = addresses.ToList();
+                customerMaster.CustomerContacts = contacts.ToList();
+                customerMaster.CustomerShippingAddresses = shippingAddresses.ToList();
+                customerMaster.RelatedCustomers = related.ToList();
+                customerMaster.CustomerBanking = banking.ToList();
+                customerMaster.CustomerMasterHeadCountings = headcount.ToList();
+
+                if (serverKey == "trasccon")
+                {
+                    var customerNumber = await _repository.CustomerMasterRepository.GenerateCustomerNumberAvision();
+                    customerMaster.CustomerNumber = customerNumber;
+                }
+                else if (serverKey == "avision")
+                {
+                    var customerNumber = await _repository.CustomerMasterRepository.GenerateCustomerNumberAvision();
+                    customerMaster.CustomerNumber = customerNumber;
+                }
+                else
+                {
+                    var customerex = await _repository.CustomerMasterRepository.GetCustomerbyCustomerNumber(customerMaster.CustomerNumber);
+
+                    if (customerex == 1)
+                    {
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = "CustomerNumber Already Exists";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.NotAcceptable;
+                        return StatusCode(406, serviceResponse);
+                    }
+
+                }
+                await _repository.CustomerMasterRepository.CreateCustomerMaster(customerMaster);
+
+                var customerMasterRfqDetails = new CustomerMasterRfqDetialsDto()
+                {
+                    CustomerId = customerMaster.CustomerNumber,
+                    CustomerName = customerMaster.CustomerName,
+                    CustomerAliasName = customerMaster.CustomerAliasName,
+                    RfqNumber = $"PROJ-{customerMaster.CustomerNumber}",
+                };
+
+                var json = JsonConvert.SerializeObject(customerMasterRfqDetails);
+                var data = new StringContent(json, Encoding.UTF8, "application/json");
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["RFQAPI"], "CreateRfq"))
+                {
+                    Content = data
+                };
+                request.Headers.Add("Authorization", token);
+
+                var response = await client.SendAsync(request);
+                if (response.StatusCode == HttpStatusCode.Created)
+                {
+                    _repository.SaveAsync();
+                }
+                else
+                {
+                    _logger.LogError($"Error Occured in CreateCustomerMasterForWHMS while saving Rfq API : \n {response.ReasonPhrase}");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Error Occured in CreateCustomerMasterForWHMS while saving Rfq API : \n {response.ReasonPhrase}";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+
+                var customerMasterDetails = await _repository.CustomerMasterRepository.GetCSNumberAutoIncrementCount();
+                var customerData = _mapper.Map<CustomerMasterDto>(customerMasterDetails);
+
+                _logger.LogInfo($"CreateCustomerMasterForWHMS Successfully Created");
+                serviceResponse.Data = customerData;
+                serviceResponse.Message = "CustomerMasterForWHMS Successfully Created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.Created;
+                return Created("GetCustomerMasterForWHMS", serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in CreateCustomerMasterForWHMS API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in CreateCustomerMasterForWHMS API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateCustomerMasterOtherUploads([FromBody] CustomerOtherUploadsPostDto customerOtherUploadsPostDto)
         {

@@ -1283,6 +1283,16 @@ namespace Tips.Warehouse.Api.Repository
 
             return inventoryQtyByItemNo;
         }
+
+        public async Task<IEnumerable<Inventory>> GetODOInventoryDetailsbyCustomerId(List<string> projectNumber)
+
+        {
+            var inventoryDetailsByProjNo = await _tipsWarehouseDbContext.Inventories
+                .Where(x =>  projectNumber.Contains(x.ProjectNumber) && x.Location == "WIP" && x.Warehouse == "WIP" && x.IsStockAvailable == true && x.Balance_Quantity > 0).ToListAsync();
+
+            return inventoryDetailsByProjNo;
+        }
+
         public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse, string projectNumber)
 
         {

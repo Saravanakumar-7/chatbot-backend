@@ -627,5 +627,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? Price { get; set; }
         public decimal? ClosingStockValue { get; set; }
     }
+    public class InvODORfqNumberListDto
+    {
+        public int Id { get; set; }
+        public string? RfqNumber { get; set; }
+    }
 
 }
