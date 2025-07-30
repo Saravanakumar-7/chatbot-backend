@@ -76,7 +76,6 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
         private async Task<List<OpenSalesCoverageReport>> FGLevelCoverageReport()
         {
             List<OpenSalesCoverageReport> openSalesCoverageReports = new List<OpenSalesCoverageReport>();
@@ -435,6 +434,7 @@ namespace Tips.SalesService.Api.Controllers
             }
             return openSalesCoverageReports;
         }
+
         [HttpGet]
         public async Task<IActionResult> GenerateCoverageReportForFgChildIt()
         {
@@ -518,6 +518,476 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GenerateCoverageFGLevelReportByItemumber(string itemNumber)
+        {
+
+            ServiceResponse<List<OpenSalesCoverageReport>> serviceResponse = new ServiceResponse<List<OpenSalesCoverageReport>>();
+
+            try
+            {
+                List<OpenSalesCoverageReport> openSalesCoverageReports = await FGLevelCoverageReportByItemNumber(itemNumber);
+
+                serviceResponse.Data = openSalesCoverageReports;
+                serviceResponse.Message = $"Returned CoverageReport Successfully ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GenerateCoverageFGLevelReport API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GenerateCoverageFGLevelReport API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        private async Task<List<OpenSalesCoverageReport>> FGLevelCoverageReportByItemNumber(string itemNumber)
+        {
+            List<OpenSalesCoverageReport> openSalesCoverageReports = new List<OpenSalesCoverageReport>();
+            try
+            {
+                var salesOrders = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGItemDetailsByItemNumber(itemNumber);
+
+
+                //List<(string?, decimal?)> itemNumberList = salesOrders.Select(x => (x.FGItemNumber, x.Balance_Qty)).ToList();
+
+                List<string?> itemNumberList = salesOrders.Select(x => x.FGItemNumber).ToList();
+                //change
+                var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
+                var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                // var responses = await _httpClient.PostAsync(string.Concat(_config["ItemMasterMainAPI"], "GetItemMasterPartTypeAndMinByItemNumber"), itemNoListString);
+                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ItemMasterMainAPI"],
+                             "GetItemMasterPartTypeAndMinByItemNumber"))
+                {
+                    Content = itemNoListString
+                };
+                request.Headers.Add("Authorization", token);
+
+                var responses = await client.SendAsync(request);
+                var itemNoPartTypeString = await responses.Content.ReadAsStringAsync();
+                dynamic itemNoPartTypeData = JsonConvert.DeserializeObject(itemNoPartTypeString);
+                //List<ItemNoWithPartTypeDto> itemNoWithPartType = (List<ItemNoWithPartTypeDto>)itemNoPartTypeData.data;
+
+                List<ItemNoWithPartTypeAndMinDto> itemNoWithPartTypeAndMin = new List<ItemNoWithPartTypeAndMinDto>();
+
+                //for this loop we need to check
+                foreach (var item in itemNoPartTypeData.data)
+                {
+                    ItemNoWithPartTypeAndMinDto dto = JsonConvert.DeserializeObject<ItemNoWithPartTypeAndMinDto>(item.ToString());
+                    itemNoWithPartTypeAndMin.Add(dto);
+                }
+
+                var salesOrderItemListjson = JsonConvert.SerializeObject(itemNumberList);
+                var salesOrderItemDetailsString = new StringContent(salesOrderItemListjson, Encoding.UTF8, "application/json");
+                var request1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryAPI"],
+                            "GetConsumptionInventoryByItemNotest1"))
+                {
+                    Content = salesOrderItemDetailsString
+                };
+                request1.Headers.Add("Authorization", token);
+
+                var response = await client.SendAsync(request1);
+                //var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "GetConsumptionInventoryByItemNotest1"), salesOrderItemDetailsString);
+                var inventoryObjectString = await response.Content.ReadAsStringAsync();
+                dynamic inventoryObjectData = JsonConvert.DeserializeObject(inventoryObjectString);
+                dynamic inventoryObject = inventoryObjectData.data;
+
+                foreach (var salesOrderDetails in salesOrders)
+                {
+                    if (inventoryObject != null && inventoryObject.Count > 0)
+                    {
+                        foreach (var Inventory in inventoryObject)
+                        {
+                            if (salesOrderDetails.FGItemNumber == Inventory["partNumber"]?.ToString())
+                            {
+                                if (Inventory != null)
+                                {
+                                    if (salesOrderDetails.FGItemNumber != null && salesOrderDetails.Balance_Qty != 0)
+                                    {
+                                        var coverageReport = new OpenSalesCoverageReport
+                                        {
+                                            ItemNumber = salesOrderDetails.FGItemNumber,
+                                            TotalRequiredQty = salesOrderDetails.Balance_Qty,
+                                            PartType = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
+                                            MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault(),
+                                            UOM = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.UOM).FirstOrDefault()
+                                        };
+
+                                        decimal balanceQuantity = (decimal)Inventory.balance_Quantity; ; // Convert to decimal
+                                        coverageReport.Stock = balanceQuantity;
+
+
+
+                                        PartType itemPartType = coverageReport.PartType;
+
+
+                                        if (itemPartType == PartType.TG)
+                                        {
+                                            // Calculate OpenPoQty
+                                            //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
+                                            //              "GetOpenPOTGDetailsByItemForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber));
+
+                                            var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
+                                            var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemForCoverage?itemNumber={encodedItemNumber}"));
+                                            request2.Headers.Add("Authorization", token);
+
+                                            var purchaseObjectResult = await client.SendAsync(request2);
+                                            if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
+                                            {
+                                                var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
+                                                dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
+                                                dynamic purchaseObject = purchaseObjectData.data;
+
+                                                if (purchaseObject != null)
+                                                {
+                                                    decimal OpenPoQty = (decimal)purchaseObject.balanceQty;
+                                                    coverageReport.OpenPoQty = OpenPoQty;
+                                                }
+                                                else
+                                                {
+                                                    coverageReport.OpenPoQty = 0;
+                                                }
+                                            }
+                                        }
+
+                                        //Calculate OpenRetailSOQty
+                                        var fGItemNumber = salesOrderDetails.FGItemNumber;
+
+                                        var salesOrderRetailDetails = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGRetailItemDetails(fGItemNumber);
+                                        if (salesOrderRetailDetails != null)
+                                        {
+                                            coverageReport.OpenRetailSOQty = salesOrderRetailDetails.Balance_Qty;
+                                        }
+                                        else
+                                        {
+                                            coverageReport.OpenRetailSOQty = 0;
+                                        }
+                                        // Calculate OpenSOQty
+                                        coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
+                                        // Calculate BalanceToOrder
+
+                                        var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty);
+
+                                        coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
+
+
+                                        //var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
+                                        //coverageReport.BalanceToOrder = balanceToOrderQty.HasValue && balanceToOrderQty.Value > 0 ? balanceToOrderQty.Value : 0;
+
+                                        openSalesCoverageReports.Add(coverageReport);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (salesOrderDetails.FGItemNumber != null && salesOrderDetails.Balance_Qty != 0)
+                        {
+                            var coverageReport = new OpenSalesCoverageReport
+                            {
+                                ItemNumber = salesOrderDetails.FGItemNumber,
+                                TotalRequiredQty = salesOrderDetails.Balance_Qty,
+                                PartType = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
+                                MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault(),
+                                UOM = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.UOM).FirstOrDefault()
+                            };
+
+                            decimal balanceQuantity = 0;
+                            coverageReport.Stock = 0;
+
+                            // Calculate OpenSOQty
+                            coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
+
+                            //Calculate OpenRetailSOQty
+                            var fGItemNumber = salesOrderDetails.FGItemNumber;
+
+                            var salesOrderRetailDetails = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGRetailItemDetails(fGItemNumber);
+                            coverageReport.OpenRetailSOQty = salesOrderRetailDetails.Balance_Qty;
+
+                            PartType itemPartType = coverageReport.PartType;
+
+
+                            if (itemPartType == PartType.TG)
+                            {
+                                // Calculate OpenPoQty
+                                //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
+                                //              "GetOpenPOTGDetailsByItemForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber));
+                                var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
+                                var request3 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemForCoverage?itemNumber={encodedItemNumber}"));
+                                request3.Headers.Add("Authorization", token);
+
+                                var purchaseObjectResult = await client.SendAsync(request3);
+                                if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
+                                {
+                                    var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
+                                    dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
+                                    dynamic purchaseObject = purchaseObjectData.data;
+
+                                    if (purchaseObject != null)
+                                    {
+                                        decimal OpenPoQty = (decimal)purchaseObject.balanceQty;
+                                        coverageReport.OpenPoQty = OpenPoQty;
+                                    }
+                                    else
+                                    {
+                                        coverageReport.OpenPoQty = 0;
+                                    }
+                                }
+
+                            }
+
+                            // Calculate BalanceToOrder
+
+                            var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty);
+
+                            coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
+
+                            openSalesCoverageReports.Add(coverageReport);
+                        }
+                    }
+                }
+
+                //foreach (var salesOrderDetails in salesOrders)
+                //{
+                //    bool flag = false;
+
+                //    if (inventoryObject != null && inventoryObject.Count > 0)
+                //    {
+                //        foreach (var Inventory in inventoryObject)
+                //        {
+                //            // Check if the item matches
+                //            if (salesOrderDetails.FGItemNumber == Inventory["partNumber"]?.ToString())
+                //            {
+                //                flag = true;
+
+                //                if (salesOrderDetails.FGItemNumber != null && salesOrderDetails.Balance_Qty != 0)
+                //                {
+                //                    var coverageReport = new OpenSalesCoverageReport
+                //                    {
+                //                        ItemNumber = salesOrderDetails.FGItemNumber,
+                //                        TotalRequiredQty = salesOrderDetails.Balance_Qty,
+                //                        PartType = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
+                //                        MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault(),
+                //                        UOM = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.UOM).FirstOrDefault()
+                //                    };
+
+                //                    decimal balanceQuantity = (decimal)Inventory.balance_Quantity; // Convert to decimal
+                //                    coverageReport.Stock = balanceQuantity;
+
+                //                    // Calculate OpenSOQty
+                //                    coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
+                //                    coverageReport.OpenSOQty = coverageReport.OpenSOQty <= 0 ? 0 : coverageReport.OpenSOQty;
+
+
+                //                    //Calculate OpenRetailSOQty
+                //                    var fGItemNumber = salesOrderDetails.FGItemNumber;
+
+                //                    var salesOrderRetailDetails = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGRetailItemDetails(fGItemNumber);
+                //                    coverageReport.OpenRetailSOQty = salesOrderRetailDetails.Balance_Qty;
+
+                //                    PartType itemPartType = coverageReport.PartType;
+
+                //                    // Handle the TG PartType
+                //                    if (itemPartType == PartType.TG)
+                //                    {
+                //                        var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
+                //                        var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemForCoverage?itemNumber={encodedItemNumber}"));
+                //                        request2.Headers.Add("Authorization", token);
+
+                //                        var purchaseObjectResult = await client.SendAsync(request2);
+                //                        if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
+                //                        {
+                //                            var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
+                //                            dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
+                //                            dynamic purchaseObject = purchaseObjectData.data;
+
+                //                            if (purchaseObject != null)
+                //                            {
+                //                                decimal OpenPoQty = (decimal)purchaseObject.balanceQty;
+                //                                coverageReport.OpenPoQty = OpenPoQty;
+                //                            }
+                //                            else
+                //                            {
+                //                                coverageReport.OpenPoQty = 0;
+                //                            }
+                //                        }
+                //                    }
+
+                //                    // Calculate BalanceToOrder
+                //                    var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty);
+                //                    coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
+
+                //                    openSalesCoverageReports.Add(coverageReport);
+                //                }
+                //                break; // No need to continue looping once a match is found
+                //            }
+                //        }
+                //    }
+
+                //    // If no match was found in inventory, handle this case
+                //    if (!flag)
+                //    {
+                //        if (salesOrderDetails.FGItemNumber != null && salesOrderDetails.Balance_Qty != 0)
+                //        {
+                //            var coverageReport = new OpenSalesCoverageReport
+                //            {
+                //                ItemNumber = salesOrderDetails.FGItemNumber,
+                //                TotalRequiredQty = salesOrderDetails.Balance_Qty,
+                //                PartType = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault(),
+                //                MSL = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.Min).FirstOrDefault(),
+                //                UOM = itemNoWithPartTypeAndMin.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.UOM).FirstOrDefault()
+                //            };
+
+                //            // Since no match was found, set stock to 0
+                //            coverageReport.Stock = 0;
+
+                //            // Calculate OpenSOQty
+                //            coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
+                //            coverageReport.OpenSOQty = coverageReport.OpenSOQty <= 0 ? 0 : coverageReport.OpenSOQty;
+
+
+                //            //Calculate OpenRetailSOQty
+                //            var fGItemNumber = salesOrderDetails.FGItemNumber;
+
+                //            var salesOrderRetailDetails = await _salesOrderItemsRepository.GetAllSalesOrderFGOrTGRetailItemDetails(fGItemNumber);
+                //            coverageReport.OpenRetailSOQty = salesOrderRetailDetails.Balance_Qty;
+
+                //            PartType itemPartType = coverageReport.PartType;
+
+                //            if (itemPartType == PartType.TG)
+                //            {
+                //                var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
+                //                var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemForCoverage?itemNumber={encodedItemNumber}"));
+                //                request2.Headers.Add("Authorization", token);
+
+                //                var purchaseObjectResult = await client.SendAsync(request2);
+                //                if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
+                //                {
+                //                    var purchaseObjectResults = await purchaseObjectResult.Content.ReadAsStringAsync();
+                //                    dynamic purchaseObjectData = JsonConvert.DeserializeObject(purchaseObjectResults);
+                //                    dynamic purchaseObject = purchaseObjectData.data;
+
+                //                    if (purchaseObject != null)
+                //                    {
+                //                        decimal OpenPoQty = (decimal)purchaseObject.balanceQty;
+                //                        coverageReport.OpenPoQty = OpenPoQty;
+                //                    }
+                //                    else
+                //                    {
+                //                        coverageReport.OpenPoQty = 0;
+                //                    }
+                //                }
+                //            }
+
+                //            // Calculate BalanceToOrder
+                //            var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty);
+                //            coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
+
+                //            openSalesCoverageReports.Add(coverageReport);
+                //        }
+                //    }
+                //}
+
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return openSalesCoverageReports;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GenerateCoverageReportForFgChildItemByItemNumber(string itemNumber)
+        {
+            ServiceResponse<List<CoverageReportDtoForChildItem>> serviceResponse = new ServiceResponse<List<CoverageReportDtoForChildItem>>();
+
+            try
+            {
+                List<CoverageReportDtoForChildItem> coverageReportDtoForChildItemList = new List<CoverageReportDtoForChildItem>();
+                List<OpenSalesCoverageReport> openSalesCoverageReports = await FGLevelCoverageReportByItemNumber(itemNumber);
+
+                if (openSalesCoverageReports != null && openSalesCoverageReports.Count() != 0)
+                {
+                    List<OpenSalesCoverageReport> openFGCoverageDetails = openSalesCoverageReports
+                        .Where(x => x.PartType == PartType.FG && x.BalanceToOrder > 0).ToList();
+                    if (openFGCoverageDetails != null && openFGCoverageDetails.Count() != 0)
+                    {
+                        // Child Item Required Qty from BOM
+                        List<CoverageReportChildItemReqQtyDataDto> childItemReqQtyDtos = await GetChildItemRequiredQtyFromBom(openFGCoverageDetails);
+
+                        if (childItemReqQtyDtos != null && childItemReqQtyDtos.Count() != 0)
+                        {
+                            List<string?> itemNumberList = childItemReqQtyDtos.Select(x => x.ItemNumber).ToList();
+
+
+                            var itemNoListJson = JsonConvert.SerializeObject(itemNumberList);
+                            var itemNoListString = new StringContent(itemNoListJson, Encoding.UTF8, "application/json");
+
+                            //Open Stock with WIP Quantity
+                            List<ChildItemStockWithWipDto> itemStockWithWipList = await GetStockWithWipQtyForChildItems(itemNoListString);
+
+                            //Open PO Qty for Child Items
+                            List<OpenPoQuantityDto> openPoQtyList = await GetOpenPoQtyForChildItems(itemNoListString);
+
+                            //ODO Qty Calculate
+                            //List<ODOQuantityDto> odoQtyList = await GetODOQtyForChildItemsByItemNo(itemNoListString);
+
+                            foreach (var item in childItemReqQtyDtos)
+                            {
+                                CoverageReportDtoForChildItem coverageDetailOfChildItem = new CoverageReportDtoForChildItem
+                                {
+                                    ItemNumber = item.ItemNumber,
+                                    PartType = item.PartType,
+                                    RequiredQty = item.RequiredQty,
+                                    UOM = item.UOM,
+                                    Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
+                                    WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
+                                    OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault(),
+                                    //ODOQty = odoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.ODOQty).FirstOrDefault()
+                                };
+
+                                //test
+
+
+
+                                decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
+                                   + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty /*+ coverageDetailOfChildItem.ODOQty*/);
+
+                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : balanceRequiredQty;
+
+                                coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
+                            }
+
+
+                        }
+                    }
+                }
+                serviceResponse.Data = coverageReportDtoForChildItemList;
+                serviceResponse.Message = $"Returned Child Item CoverageReport Successfully in GenerateCoverageReportForFgChildItems ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+
+                _logger.LogError($"Error Occured in GenerateCoverageReportForFgChildIt API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GenerateCoverageReportForFgChildIt API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
 
         private async Task<List<CoverageReportChildItemReqQtyDataDto>> GetChildItemRequiredQtyFromBom(List<OpenSalesCoverageReport> openFGCoverageDetails)
         {
@@ -1721,7 +2191,6 @@ namespace Tips.SalesService.Api.Controllers
             return openSalesCoverageReports;
         }
 
-
         [HttpGet]
         public async Task<IActionResult> GenerateCoverageReportForFgChildItByCustomerId(string customerId)
         {
@@ -1846,7 +2315,6 @@ namespace Tips.SalesService.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
 
         [HttpPost]
         public async Task<IActionResult> GenerateCoverageReportForFgChildItByMultipleProjectNumber([FromBody] CoverageReportProjectDto coverageReportProjectDto)

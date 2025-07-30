@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Mysqlx.Crud;
 using Newtonsoft.Json;
 using Repository;
@@ -34,13 +35,15 @@ namespace Tips.Master.Api.Controllers
         private IImageUploadRepository _imageUploadRepository;
         private IWebHostEnvironment _webHostEnvironment;
         private IEnggBomRepository _enggBomRepository;
+        //private readonly IDistributedCache _redisCache;
 
 
-        public ItemMasterController(IRepositoryWrapperForMaster repository, IEnggBomRepository enggBomRepository, IWebHostEnvironment webHostEnvironment, IConfiguration config, IImageUploadRepository imageUploadRepository, IFileUploadRepository fileUploadRepository, ILoggerManager logger, IMapper mapper)
+        public ItemMasterController(/*IDistributedCache redisCache,*/ IRepositoryWrapperForMaster repository, IEnggBomRepository enggBomRepository, IWebHostEnvironment webHostEnvironment, IConfiguration config, IImageUploadRepository imageUploadRepository, IFileUploadRepository fileUploadRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
             _config = config;
+            //_redisCache = redisCache;
             _webHostEnvironment = webHostEnvironment;
             _enggBomRepository = enggBomRepository;
             _fileUploadRepository = fileUploadRepository;
@@ -831,6 +834,63 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        //[HttpGet]
+        //public async Task<IActionResult> GetAllSAPurchasePartItems()
+        //{
+        //    ServiceResponse<IEnumerable<ItemMasterDto>> serviceResponse = new ServiceResponse<IEnumerable<ItemMasterDto>>();
+
+        //    try
+        //    {
+        //        // Define a unique cache key for this API
+        //        var cacheKey = "SAPurchasePartItems";
+
+        //        // Try to get the data from Redis cache
+        //        var cachedDataString = await _redisCache.GetStringAsync(cacheKey); // Use GetStringAsync to retrieve string data
+
+        //        if (!string.IsNullOrEmpty(cachedDataString))
+        //        {
+        //            // Deserialize the cached JSON string into the desired type
+        //            var cachedData = JsonConvert.DeserializeObject<IEnumerable<ItemMasterDto>>(cachedDataString);
+        //            _logger.LogInfo("Returned all SA & PurchasePartItemsListItemMasters from cache");
+        //            serviceResponse.Data = cachedData;
+        //            serviceResponse.Message = "Returned all SA and PurchasePartItemsListItemMasters Successfully (from cache)";
+        //            serviceResponse.Success = true;
+        //            serviceResponse.StatusCode = HttpStatusCode.OK;
+        //            return Ok(serviceResponse);
+        //        }
+
+        //        // Fetch data from the repository if not found in cache
+        //        var sAPurchasePartItemsList = await _repository.ItemMasterRepository.GetAllSAPurchasePartItems();
+        //        _logger.LogInfo("Returned all SA & PurchasePartItemsListItemMasters from database");
+
+        //        // Map the data to DTOs
+        //        var result = _mapper.Map<IEnumerable<ItemMasterDto>>(sAPurchasePartItemsList);
+
+        //        // Serialize the data to a JSON string before storing it in the cache
+        //        var serializedData = JsonConvert.SerializeObject(result);
+        //        await _redisCache.SetStringAsync(cacheKey, serializedData, new DistributedCacheEntryOptions
+        //        {
+        //            AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30) // Set cache expiration
+        //        });
+
+        //        serviceResponse.Data = result;
+        //        serviceResponse.Message = "Returned all SA and PurchasePartItemsListItemMasters Successfully";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Error Occurred in GetAllSAPurchasePartItems API: \n {ex.Message} \n{ex.InnerException}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Error Occurred in GetAllSAPurchasePartItems API: \n {ex.Message}";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+
 
         [HttpGet]
         public async Task<IActionResult> GetAllKitComponentItemList([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
