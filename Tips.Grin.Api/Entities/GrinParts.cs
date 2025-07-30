@@ -43,17 +43,17 @@ namespace Tips.Grin.Api.Entities
         [Precision(18, 3)]
         public decimal UnitPrice { get; set; }
 
-        [Required]
+       // [Required]
         [Precision(13, 3)]
-        public decimal POOrderQty { get; set; }
+        public decimal? POOrderQty { get; set; }
 
-        [Required]
+        //[Required]
         [Precision(13, 3)]
-        public decimal POBalancedQty { get; set; }
+        public decimal? POBalancedQty { get; set; }
 
-        [Required]
+        //[Required]
         [Precision(18, 3)]
-        public decimal POUnitPrice { get; set; }
+        public decimal? POUnitPrice { get; set; }
 
         [Precision(13, 3)]
         public decimal AcceptedQty { get; set; }

@@ -163,7 +163,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     {
         public string ItemDescription { get; set; }
         public string? PONumber { get; set; }
-        public int PoItemId { get; set; }
+        public int? PoItemId { get; set; }
         public string? ItemNumber { get; set; }
 
         [Precision(18, 3)]
@@ -183,17 +183,17 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(18, 3)]
         public decimal UnitPrice { get; set; }
 
-        [Required(ErrorMessage = "POOrderQty is required")]
+        //[Required(ErrorMessage = "POOrderQty is required")]
         [Precision(13, 3)]
-        public decimal POOrderQty { get; set; }
+        public decimal? POOrderQty { get; set; }
 
-        [Required(ErrorMessage = "POBalancedQty is required")]
+        //[Required(ErrorMessage = "POBalancedQty is required")]
         [Precision(13, 3)]
-        public decimal POBalancedQty { get; set; }
+        public decimal? POBalancedQty { get; set; }
 
-        [Required(ErrorMessage = "POUnitPrice is required")]
+        //[Required(ErrorMessage = "POUnitPrice is required")]
         [Precision(18, 3)]
-        public decimal POUnitPrice { get; set; }
+        public decimal? POUnitPrice { get; set; }
 
         [Precision(13, 3)]
         public decimal? WeightedAverage { get; set; }

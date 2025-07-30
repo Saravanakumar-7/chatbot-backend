@@ -28,6 +28,7 @@ using System.Security.Claims;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using Entities.Enums;
+using Mysqlx;
 
 namespace Tips.Warehouse.Api.Controllers
 {
@@ -200,6 +201,70 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError($"Error Occured in GetInventoryQtybyItemNo API for the following itemNumber:{itemNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error Occured in GetInventoryQtybyItemNo API for the following itemNumber:{itemNumber} \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetODOInventoryDetailsbyCustomerId(string customerId)
+        {
+            ServiceResponse<IEnumerable<Inventory>> serviceResponse = new ServiceResponse<IEnumerable<Inventory>>();
+            try
+            {
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                var encodedCustomerId = Uri.EscapeDataString(customerId);
+
+                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["RFQAPI"],
+                    $"GetAllODORfqNumberListByCustomerId?customerId={encodedCustomerId}"));
+                request.Headers.Add("Authorization", token);
+
+                var rfqObjectResult = await client.SendAsync(request);
+                if (rfqObjectResult.StatusCode != HttpStatusCode.OK)
+                {
+                    serviceResponse.Message = $"Error Occured in GetAllODORfqNumberListByCustomerId API for the following customerId:{encodedCustomerId}";
+                    serviceResponse.Data = null;
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Error Occured in GetAllODORfqNumberListByCustomerId API for the following customerId:{encodedCustomerId}");
+                    return Ok(serviceResponse);
+
+                }
+
+                var rfqobjectString = await rfqObjectResult.Content.ReadAsStringAsync();
+                var rfqListResponse = JsonConvert.DeserializeObject<ServiceResponse<List<InvODORfqNumberListDto>>>(rfqobjectString);
+                var rfqList = rfqListResponse.Data;
+
+                if (rfqList == null || !rfqList.Any())
+                {
+                    serviceResponse.Message = $"RfqNumberList with  with CustomerId: {customerId}, hasn't been found.";
+                    serviceResponse.Data = null;
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"RfqNumberList with CustomerId: {customerId}, hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+
+                var rfqNumbers = rfqList.Select(r => r.RfqNumber).ToList();
+                var inventoryDetailsbyCustomerId = await _inventoryRepository.GetODOInventoryDetailsbyCustomerId(rfqNumbers);
+
+                _logger.LogInfo("Returned all ODOInventoryDetails By CutomerId");
+                serviceResponse.Data = inventoryDetailsbyCustomerId;
+                serviceResponse.Message = "Returned all ODO InventoryDetails By CutomerId";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetODOInventoryDetailsbyCustomerId API for the following customerId:{customerId} \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetODOInventoryDetailsbyCustomerId API for the following customerId:{customerId} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

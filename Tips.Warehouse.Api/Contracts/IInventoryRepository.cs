@@ -70,6 +70,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<List<Inventory>> GetInventoryByItemNumber(string ItemNumber);
         Task<Inventory> GetSingleInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse);
         Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse, string projectNumber);
+        Task<IEnumerable<Inventory>> GetODOInventoryDetailsbyCustomerId(List<string> projectNumber);
         Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNoandPartTypes(string ItemNumber);
         Task<IEnumerable<Inventory>> GetInventoryDetailsWithSumOfBalQty(InventoryDetailsBalQty inventoryDetailsBalQty);
         Task<List<Inventory>> GetWIPInventoryDetailsByItemNo(string ItemNumber, string ShopOrderNumber, string? MRNumber);

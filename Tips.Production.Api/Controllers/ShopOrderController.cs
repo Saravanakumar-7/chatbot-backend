@@ -924,13 +924,13 @@ namespace Tips.Production.Api.Controllers
                     //Code to send data to Advita
                     var data = JsonConvert.SerializeObject(SalesorderList);
                     var contents1 = new StringContent(data, Encoding.UTF8, "application/json");
-                    
+
                     var client2 = _clientFactory.CreateClient();
                     var token2 = HttpContext.Request.Headers["Authorization"].ToString();
                     var request3 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["SalesOrderAPI"],
                     $"GetAllSalesOrderCustomerNames"))
                     {
-                        Content= contents1
+                        Content = contents1
                     };
                     request3.Headers.Add("Authorization", token2);
 
@@ -938,9 +938,9 @@ namespace Tips.Production.Api.Controllers
                     if (responses2.StatusCode != HttpStatusCode.OK) _logger.LogError($"Something went wrong inside GetAllSalesOrderCustomerNames");
                     var SalesObjectString = await responses2.Content.ReadAsStringAsync();
                     dynamic salesObjectData = JsonConvert.DeserializeObject(SalesObjectString);
-                   
+
                     string CustomerName = string.Join(",", salesObjectData.data);
-                   
+
                     AdvitaShopOrderDetails advitaShopOrderDetails = new AdvitaShopOrderDetails()
                     {
                         Shop_Order_No = shopOrder.ShopOrderNumber,
@@ -952,10 +952,10 @@ namespace Tips.Production.Api.Controllers
                         Shop_Order_Completion_Date = shopOrder.SOCloseDate.ToString(),
                         Customer_Name = CustomerName,
                         Remarks = "Getapcs ShopOrder",
-                        Project_Name= shopOrder.ShopOrderItems[0].ProjectNumber,
+                        Project_Name = shopOrder.ShopOrderItems[0].ProjectNumber,
                         Trans_Uploaded_By_Id = 8
                     };
-                  
+
 
                     await _advitaShopOrderDetailsRepository.CreateAdvitaShopOrderDetails(advitaShopOrderDetails);
                     _advitaShopOrderDetailsRepository.SaveAdvitaAsync();
@@ -1106,12 +1106,12 @@ namespace Tips.Production.Api.Controllers
                     }
                     else
                     {
-                            _logger.LogError($"Error Occurs inside GetProductionBomByItemAndBomVersionNo action");
-                            serviceResponse.Data = null;
-                            serviceResponse.Message = $"Error Occurs inside GetProductionBomByItemAndBomVersionNo action:";
-                            serviceResponse.Success = false;
-                            serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                            return StatusCode(500, serviceResponse);
+                        _logger.LogError($"Error Occurs inside GetProductionBomByItemAndBomVersionNo action");
+                        serviceResponse.Data = null;
+                        serviceResponse.Message = $"Error Occurs inside GetProductionBomByItemAndBomVersionNo action:";
+                        serviceResponse.Success = false;
+                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                        return StatusCode(500, serviceResponse);
                     }
                 }
 
@@ -2165,7 +2165,7 @@ namespace Tips.Production.Api.Controllers
                 _shopOrderRepository.SaveAsync();
 
                 var shopOrderDetail = await _shopOrderRepository.GetShopOrderApprovalStatusByShopOrderNo(shopOrderDetails.ShopOrderNumber);
-                if(shopOrderDetail != null)
+                if (shopOrderDetail != null)
                 {
                     await CreateMaterialIssueDetails(shopOrderDetail);
                 }
@@ -2181,6 +2181,58 @@ namespace Tips.Production.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 _logger.LogError($"Error Occured in ActivateShopOrderApproval API for the following shopOrderNo : {shopOrderNo} \n {ex.Message} \n{ex.InnerException}");
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetItemShopOrderChildDetails(string ItemNumber, decimal revisionNumber)
+        {
+            ServiceResponse<List<EnggChildItem_dto>> serviceResponse = new ServiceResponse<List<EnggChildItem_dto>>();
+
+            try
+            {
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["MasterService"],
+                    $"EngineeringBOM/GetEnggBomByItemNoAndRevNo?itemNumber={encodedItemNumber}&revisionNumber={revisionNumber}"));
+                request.Headers.Add("Authorization", token);
+                var itemBOMObjectResult = await client.SendAsync(request);
+                if (itemBOMObjectResult.StatusCode != HttpStatusCode.OK)
+                {
+
+                }
+
+                var itemBOMObjectString = await itemBOMObjectResult.Content.ReadAsStringAsync();
+                dynamic itemBOMObjectData = JsonConvert.DeserializeObject(itemBOMObjectString);
+                dynamic itemBOMObject = itemBOMObjectData.data.enggChildItemDtos;
+                List<EnggChildItem_dto> childitems = _mapper.Map<List<EnggChildItem_dto>>(itemBOMObject);
+
+                var Sachilds = childitems.Where(x => x.partType == PartType.SA).ToList();
+                if (Sachilds==null)
+                {
+
+                }
+                 
+                //foreach(var child in Sachilds)
+                //{
+                //    var shopOrderDetails = await _shopOrderRepository.GetShopOrderByShopOrderNo(shopOrderNo);
+                //}
+
+                serviceResponse.Data = childitems;
+                serviceResponse.Message = $"GetItemShopOrderChildDetails";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+               // _logger.LogError($"Error Occured in ActivateShopOrderApproval API for the following shopOrderNo : {shopOrderNo} \n {ex.Message} \n{ex.InnerException}");
+                return StatusCode(200, serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"GetItemShopOrderChildDetails";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                _logger.LogError($"GetItemShopOrderChildDetails");
                 return StatusCode(500, serviceResponse);
             }
         }

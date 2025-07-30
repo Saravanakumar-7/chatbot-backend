@@ -57,6 +57,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? Transport { get; set; }
         [Precision(13, 3)]
         public decimal? BECurrencyValue { get; set; }
+        public string? BondNumber { get; set; }
+        public DateTime? BondExpiryDate { get; set; }
         public string? GrinDocuments { get; set; }
         public bool TallyStatus { get; set; } = false;
         public string? TallyVoucher { get; set; }
@@ -125,6 +127,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? Transport { get; set; }
         [Precision(13, 3)]
         public decimal? BECurrencyValue { get; set; }
+        public string? BondNumber { get; set; }
+        public DateTime? BondExpiryDate { get; set; }
         public string? GateEntryNo { get; set; }
         public string? GrinDocuments { get; set; }
         public bool TallyStatus { get; set; } = false;
@@ -185,6 +189,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? BECurrencyValue { get; set; }
         public string? GrinDocuments { get; set; }
+        public string? BondNumber { get; set; }
+        public DateTime? BondExpiryDate { get; set; }
         public string? GateEntryNo { get; set; }
         public decimal? TotalInvoiceValue { get; set; }
         public bool TallyStatus { get; set; } = false;
@@ -364,7 +370,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? GateEntryNo { get; set; }
         public string? GrinDocuments { get; set; }
         public string? TallyVoucher { get; set; }
-
+        public string? BondNumber { get; set; }
+        public DateTime? BondExpiryDate { get; set; }
         //public string? GrinDocuments { get; set; }
 
         public string Unit { get; set; }

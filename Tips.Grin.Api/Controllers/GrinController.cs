@@ -240,9 +240,9 @@ namespace Tips.Grin.Api.Controllers
                                 MftrItemNumber = grinParts.MftrItemNumber,
                                 ManufactureBatchNumber = grinParts.ManufactureBatchNumber,
                                 UnitPrice = grinParts.UnitPrice,
-                                POOrderQty = grinParts.POOrderQty,
-                                POBalancedQty = grinParts.POBalancedQty,
-                                POUnitPrice = grinParts.POUnitPrice,
+                                POOrderQty = grinParts.POOrderQty ?? 0,
+                                POBalancedQty = grinParts.POBalancedQty ?? 0,
+                                POUnitPrice = grinParts.POUnitPrice ?? 0,
                                 AcceptedQty = grinParts.AcceptedQty,
                                 RejectedQty = grinParts.RejectedQty,
                                 AverageCost = grinParts.AverageCost,
@@ -335,9 +335,9 @@ namespace Tips.Grin.Api.Controllers
                                 MftrItemNumber = grinParts.MftrItemNumber,
                                 ManufactureBatchNumber = grinParts.ManufactureBatchNumber,
                                 UnitPrice = grinParts.UnitPrice,
-                                POOrderQty = grinParts.POOrderQty,
-                                POBalancedQty = grinParts.POBalancedQty,
-                                POUnitPrice = grinParts.POUnitPrice,
+                                POOrderQty = grinParts.POOrderQty ?? 0,
+                                POBalancedQty = grinParts.POBalancedQty ?? 0,
+                                POUnitPrice = grinParts.POUnitPrice ?? 0,
                                 AcceptedQty = grinParts.AcceptedQty,
                                 RejectedQty = grinParts.RejectedQty,
                                 AverageCost = grinParts.AverageCost,
@@ -431,9 +431,9 @@ namespace Tips.Grin.Api.Controllers
                                 MftrItemNumber = grinParts.MftrItemNumber,
                                 ManufactureBatchNumber = grinParts.ManufactureBatchNumber,
                                 UnitPrice = grinParts.UnitPrice,
-                                POOrderQty = grinParts.POOrderQty,
-                                POBalancedQty = grinParts.POBalancedQty,
-                                POUnitPrice = grinParts.POUnitPrice,
+                                POOrderQty = grinParts.POOrderQty ?? 0,
+                                POBalancedQty = grinParts.POBalancedQty ?? 0,
+                                POUnitPrice = grinParts.POUnitPrice ?? 0,
                                 AcceptedQty = grinParts.AcceptedQty,
                                 RejectedQty = grinParts.RejectedQty,
                                 AverageCost = grinParts.AverageCost,
@@ -665,8 +665,15 @@ namespace Tips.Grin.Api.Controllers
                     foreach (var grinPart in grins.GrinParts)
                     {
                         var grinPartsId = await _grinPartsRepository.GetGrinPartsById(grinPart.Id);
-                        grinPartsId.LotNumber = grins.GrinNumber + grinPartsId.Id;
-                        await _grinPartsRepository.UpdateGrinQty(grinPartsId);
+                        if (serverKey != "Ware")
+                        {
+                            grinPartsId.LotNumber = grins.GrinNumber + grinPartsId.Id;
+                        }
+                        else
+                        {
+                            grinPartsId.LotNumber = grins.BondNumber;
+                        }
+                            await _grinPartsRepository.UpdateGrinQty(grinPartsId);
 
                     }
                 }
@@ -780,73 +787,77 @@ namespace Tips.Grin.Api.Controllers
                         }
                     }
                 }
-
-                var grinPartsDetail = _mapper.Map<List<GrinUpdateQtyDetailsDto>>(grinPartsDto);
-                var jsons = JsonConvert.SerializeObject(grinPartsDetail);
-                var data1 = new StringContent(jsons, Encoding.UTF8, "application/json");
-                var client2 = _clientFactory.CreateClient();
-                var token2 = HttpContext.Request.Headers["Authorization"].ToString();
-                var request2 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
-                "UpdateBalanceQtyDetails"))
+                //
+                if (serverKey != "Ware")
                 {
-                    Content = data1
-                };
-                request2.Headers.Add("Authorization", token2);
-
-                var responses = await client2.SendAsync(request2);
-                if (responses.StatusCode != HttpStatusCode.OK)
-                {
-                    UpdatePoQty = responses.StatusCode;
-                }
-                if (grinPartsDto.Count() > 0)
-                {
-                    foreach (var grinparts in grinPartsDto)
+                    var grinPartsDetail = _mapper.Map<List<GrinUpdateQtyDetailsDto>>(grinPartsDto);
+                    var jsons = JsonConvert.SerializeObject(grinPartsDetail);
+                    var data1 = new StringContent(jsons, Encoding.UTF8, "application/json");
+                    var client2 = _clientFactory.CreateClient();
+                    var token2 = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request2 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
+                    "UpdateBalanceQtyDetails"))
                     {
-                        List<GrinUpdateProjectBalQtyDetailsDto> projectNameDtos = new List<GrinUpdateProjectBalQtyDetailsDto>();
-                        foreach (var projectNo in grinparts.ProjectNumbers)
-                        {
-                            var grinPartsProjectNoDtoDetail = _mapper.Map<GrinUpdateProjectBalQtyDetailsDto>(projectNo);
-                            grinPartsProjectNoDtoDetail.ItemNumber = grinparts.ItemNumber;
-                            grinPartsProjectNoDtoDetail.PoItemId = grinparts.PoItemId;
-                            projectNameDtos.Add(grinPartsProjectNoDtoDetail);
-                        }
+                        Content = data1
+                    };
+                    request2.Headers.Add("Authorization", token2);
 
-                        var jsonss = JsonConvert.SerializeObject(projectNameDtos);
-                        var data2 = new StringContent(jsonss, Encoding.UTF8, "application/json");
-                        var client3 = _clientFactory.CreateClient();
-                        var token3 = HttpContext.Request.Headers["Authorization"].ToString();
-                        var request3 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
-                        "UpdatePoProjectNoBalanceQtyDetails"))
+                    var responses = await client2.SendAsync(request2);
+                    if (responses.StatusCode != HttpStatusCode.OK)
+                    {
+                        UpdatePoQty = responses.StatusCode;
+                    }
+                    if (grinPartsDto.Count() > 0)
+                    {
+                        foreach (var grinparts in grinPartsDto)
                         {
-                            Content = data2
-                        };
-                        request3.Headers.Add("Authorization", token3);
+                            List<GrinUpdateProjectBalQtyDetailsDto> projectNameDtos = new List<GrinUpdateProjectBalQtyDetailsDto>();
+                            foreach (var projectNo in grinparts.ProjectNumbers)
+                            {
+                                var grinPartsProjectNoDtoDetail = _mapper.Map<GrinUpdateProjectBalQtyDetailsDto>(projectNo);
+                                grinPartsProjectNoDtoDetail.ItemNumber = grinparts.ItemNumber;
+                                grinPartsProjectNoDtoDetail.PoItemId = grinparts.PoItemId ?? 0;
+                                projectNameDtos.Add(grinPartsProjectNoDtoDetail);
+                            }
 
-                        var results = await client3.SendAsync(request3);
-                        if (results.StatusCode != HttpStatusCode.OK)
-                        {
-                            UpdatePoProjQty = results.StatusCode;
+                            var jsonss = JsonConvert.SerializeObject(projectNameDtos);
+                            var data2 = new StringContent(jsonss, Encoding.UTF8, "application/json");
+                            var client3 = _clientFactory.CreateClient();
+                            var token3 = HttpContext.Request.Headers["Authorization"].ToString();
+                            var request3 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
+                            "UpdatePoProjectNoBalanceQtyDetails"))
+                            {
+                                Content = data2
+                            };
+                            request3.Headers.Add("Authorization", token3);
+
+                            var results = await client3.SendAsync(request3);
+                            if (results.StatusCode != HttpStatusCode.OK)
+                            {
+                                UpdatePoProjQty = results.StatusCode;
+                            }
                         }
                     }
-                }
 
-                var grinPartsDetails = _mapper.Map<List<GrinQtyPoStatusUpdateDto>>(grinPartsDto);
-                var jsonCon = JsonConvert.SerializeObject(grinPartsDetails);
-                var data3 = new StringContent(jsonCon, Encoding.UTF8, "application/json");
-                var client4 = _clientFactory.CreateClient();
-                var token4 = HttpContext.Request.Headers["Authorization"].ToString();
-                var request4 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
-                "UpdatePoStatus"))
-                {
-                    Content = data3
-                };
-                request4.Headers.Add("Authorization", token4);
+                    var grinPartsDetails = _mapper.Map<List<GrinQtyPoStatusUpdateDto>>(grinPartsDto);
+                    var jsonCon = JsonConvert.SerializeObject(grinPartsDetails);
+                    var data3 = new StringContent(jsonCon, Encoding.UTF8, "application/json");
+                    var client4 = _clientFactory.CreateClient();
+                    var token4 = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request4 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["PurchaseAPI"],
+                    "UpdatePoStatus"))
+                    {
+                        Content = data3
+                    };
+                    request4.Headers.Add("Authorization", token4);
 
-                var result = await client4.SendAsync(request4);
-                if (result.StatusCode != HttpStatusCode.OK)
-                {
-                    UpdatePoStatus = result.StatusCode;
+                    var result = await client4.SendAsync(request4);
+                    if (result.StatusCode != HttpStatusCode.OK)
+                    {
+                        UpdatePoStatus = result.StatusCode;
+                    }
                 }
+                //
                 // createinvforServiceItemsResp == HttpStatusCode.OK &&
                 if (getItemmResp == HttpStatusCode.OK && UpdatePoStatus == HttpStatusCode.OK && UpdatePoQty == HttpStatusCode.OK
                     && UpdatePoProjQty == HttpStatusCode.OK && createinvTrancResp == HttpStatusCode.OK && createinvResp == HttpStatusCode.OK)
@@ -1879,7 +1890,10 @@ namespace Tips.Grin.Api.Controllers
             else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
             {
                 return "avision";
-
+            }
+            else if (serverConfiguration.GetValue<bool?>("Warehousing:EnableWare") == true)
+            {
+                return "Ware";
             }
             else
             {

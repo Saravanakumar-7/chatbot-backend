@@ -51,6 +51,8 @@ namespace Tips.Grin.Api.Entities
         public decimal? Insurance { get; set; }
         [Precision(13, 3)]
         public decimal? LoadingorUnLoading { get; set; }
+        public string? BondNumber { get; set; } 
+        public DateTime? BondExpiryDate { get; set; }
         public DateTime? GateEntryDate { get; set; }
         public string? GateEntryNo { get; set; }
         [Precision(13, 3)]
