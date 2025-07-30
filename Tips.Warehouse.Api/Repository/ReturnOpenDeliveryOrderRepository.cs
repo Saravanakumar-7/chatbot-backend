@@ -74,6 +74,22 @@ namespace Tips.Warehouse.Api.Repository
 
             return results;
         }
+        public async Task<IEnumerable<ReturnOpenDeliveryOrderSPResportForTras>> ReturnOpenDeliveryOrderSPReportDateForTras(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<ReturnOpenDeliveryOrderSPResportForTras>()
+                        .FromSqlInterpolated($"CALL Return_Open_DeliveryOrder_Report_withdate_tras({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<ReturnOpenDeliveryOrderSPResportForAvi>> ReturnOpenDeliveryOrderSPReportDateForAvi(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<ReturnOpenDeliveryOrderSPResportForAvi>()
+                        .FromSqlInterpolated($"CALL Return_Open_DeliveryOrder_Report_withdate_avi({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+        }
 
         public async Task<IEnumerable<ReturnOpenDeliveryOrderSPResport>> ReturnOpenDeliveryOrderSPReportWithParam(string? ODONumber, string? CustomerName, string? CustomerAliasName, string? LeadId, string? IssuedTo, string? Location, string? Warehouse, string? KPN, string? MPN, string? ODOType)
         {
@@ -86,10 +102,10 @@ namespace Tips.Warehouse.Api.Repository
 
         }
 
-        public async Task<IEnumerable<ReturnOpenDeliveryOrderSPResport>> ReturnOpenDeliveryOrderSPReportWithParamForTrans(string? ODONumber, string? CustomerName, string? CustomerAliasName, string? LeadId, string? IssuedTo, string? Location, string? Warehouse, string? KPN, string? MPN, string? ODOType, string? ProjectNumber)
+        public async Task<IEnumerable<ReturnOpenDeliveryOrderSPResportForTras>> ReturnOpenDeliveryOrderSPReportWithParamForTrans(string? ODONumber, string? CustomerName, string? CustomerAliasName, string? LeadId, string? IssuedTo, string? Location, string? Warehouse, string? KPN, string? MPN, string? ODOType, string? ProjectNumber)
         {
             var result = _tipsWarehouseDbContext
-            .Set<ReturnOpenDeliveryOrderSPResport>()
+            .Set<ReturnOpenDeliveryOrderSPResportForTras>()
             .FromSqlInterpolated($"CALL Return_Open_DeliveryOrder_Report_withparameters_tras({ODONumber},{CustomerName},{CustomerAliasName},{LeadId},{IssuedTo},{KPN},{MPN},{Warehouse},{Location},{ODOType},{ProjectNumber})")
             .ToList();
 

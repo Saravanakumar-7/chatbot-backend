@@ -18,6 +18,6 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<ReturnBTONumberListDto>> GetReturnBtoDeliveryOrderNumberList();
         Task<string> GetReturnBtoDeliveryOrderNoByReturnBtoNo(string returnBTONumber);
         Task<IEnumerable<ReturnDOSPReport>> ReturnDOSPReportWithParam(string? ReturnBTONumber, string? CustomerName, string? CustomerAliasName, string? Customerleadid, string? SalesOrderNumber, string? ProductType, string? TypeOfSolution, string? Warehouse, string? Location, string? KPN, string? MPN);
-        Task<IEnumerable<ReturnDOSPReport>> ReturnDOSPReportWithParamForTrans(string? ReturnBTONumber, string? CustomerName, string? CustomerAliasName, string? CustomerLeadid, string? SalesOrderNumber, string? ProductType, string? TypeOfSolution, string? Warehouse, string? Location, string? KPN, string? MPN, string? ProjectNumber);
+        Task<IEnumerable<ReturnDOSPReportForTras>> ReturnDOSPReportWithParamForTrans(string? ReturnBTONumber, string? CustomerName, string? CustomerAliasName, string? CustomerLeadid, string? SalesOrderNumber, string? ProductType, string? TypeOfSolution, string? Warehouse, string? Location, string? KPN, string? MPN, string? ProjectNumber);
     }
 }

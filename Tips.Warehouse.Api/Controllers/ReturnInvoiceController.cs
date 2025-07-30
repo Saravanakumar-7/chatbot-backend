@@ -1116,6 +1116,76 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> ReturnInvoiceSPReportDateForTras([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<ReturnInvoiceSPResportForTras>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceSPResportForTras>>();
+            try
+            {
+                var products = await _returnInvoiceRepository.ReturnInvoiceSPReportDateForTras(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ReturnInvoiceSPResportForTras hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ReturnInvoiceSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ReturnInvoiceSPResportForTras Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in ReturnInvoiceSPResportForTras API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in ReturnInvoiceSPResportForTras API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> ReturnInvoiceSPReportDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<ReturnInvoiceSPResportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceSPResportForAvi>>();
+            try 
+            {
+                var products = await _returnInvoiceRepository.ReturnInvoiceSPReportDateForAvi(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ReturnInvoiceSPResportForAvi hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ReturnInvoiceSPResportForAvi hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ReturnInvoiceSPResportForAvi Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in ReturnInvoiceSPResportForAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in ReturnInvoiceSPResportForAvi API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> ReturnInvoiceSPReportWithParameter([FromBody] ReturnInvoiceSPReportWithParamDTO returnInvoiceSPReportDTO)
         {
@@ -1156,7 +1226,7 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> ReturnInvoiceSPReportWithParameterForTrans([FromBody] ReturnInvoiceSPReportWithParamForTransDTO returnInvoiceSPReportDTO)
         {
-            ServiceResponse<IEnumerable<ReturnInvoiceSPResport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceSPResport>>();
+            ServiceResponse<IEnumerable<ReturnInvoiceSPResportForTras>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceSPResportForTras>>();
             try
             {
                 var products = await _returnInvoiceRepository.ReturnInvoiceSPReportWithParameterForTrans(returnInvoiceSPReportDTO.InvoiceNumber, returnInvoiceSPReportDTO.DoNumber,
@@ -1167,10 +1237,10 @@ namespace Tips.Warehouse.Api.Controllers
                 if (products == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ReturnInvoiceSPReport hasn't been found.";
+                    serviceResponse.Message = $"ReturnInvoiceSPResportForTras hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"ReturnInvoiceSPReport hasn't been found in db.");
+                    _logger.LogError($"ReturnInvoiceSPResportForTras hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
@@ -1178,7 +1248,7 @@ namespace Tips.Warehouse.Api.Controllers
                     //var result = _mapper.Map<IEnumerable<ReturnInvoiceSPReportDTO>>(products);
 
                     serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned ReturnInvoiceSPReport Details";
+                    serviceResponse.Message = "Returned ReturnInvoiceSPResportForTras Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);
