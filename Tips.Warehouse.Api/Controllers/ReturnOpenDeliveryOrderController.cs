@@ -925,6 +925,76 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> ReturnOpenDeliveryOrderSPReportDateForTras([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResportForTras>> serviceResponse = new ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResportForTras>>();
+            try
+            {
+                var products = await _repository.ReturnOpenDeliveryOrderSPReportDateForTras(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ReturnOpenDeliveryOrderSPResportForTras hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ReturnOpenDeliveryOrderSPResportForTras hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ReturnOpenDeliveryOrderSPResportForTras Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in ReturnOpenDeliveryOrderSPResportForTras API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in ReturnOpenDeliveryOrderSPResportForTras API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> ReturnOpenDeliveryOrderSPReportDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResportForAvi>>();
+            try
+            {
+                var products = await _repository.ReturnOpenDeliveryOrderSPReportDateForAvi(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ReturnOpenDeliveryOrderSPResportForAvi hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ReturnOpenDeliveryOrderSPResportForAvi hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ReturnOpenDeliveryOrderSPResportForAvi Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in ReturnOpenDeliveryOrderSPResportForAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in ReturnOpenDeliveryOrderSPResportForAvi API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> ReturnOpenDeliveryOrderSPReportWithParam([FromBody] ReturnOpenDeliveryOrderSPReportDTO returnOpenDeliveryOrder)
         {
@@ -966,7 +1036,7 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> ReturnOpenDeliveryOrderSPReportWithParamForTrans([FromBody] ReturnOpenDeliveryOrderSPReportForTransDTO returnOpenDeliveryOrder)
         {
-            ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResport>>();
+            ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResportForTras>> serviceResponse = new ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResportForTras>>();
             try
             {
                 var products = await _repository.ReturnOpenDeliveryOrderSPReportWithParamForTrans(returnOpenDeliveryOrder.ODONumber, 
@@ -977,18 +1047,18 @@ namespace Tips.Warehouse.Api.Controllers
                 if (products == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ReturnOpenDeliveryOrderSPReport hasn't been found.";
+                    serviceResponse.Message = $"ReturnOpenDeliveryOrderSPResportForTras hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"ReturnOpenDeliveryOrderSPReport hasn't been found in db.");
+                    _logger.LogError($"ReturnOpenDeliveryOrderSPResportForTras hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
-                    var result = _mapper.Map<IEnumerable<ReturnOpenDeliveryOrderSPResport>>(products);
+                    var result = products;
 
                     serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned ReturnOpenDeliveryOrderSPReport Details";
+                    serviceResponse.Message = "Returned ReturnOpenDeliveryOrderSPResportForTras Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);

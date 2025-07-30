@@ -178,11 +178,11 @@ namespace Tips.Master.Api.Controllers
                 }
 
                 var CompanyMaster = _mapper.Map<CompanyMaster>(companyMasterDtoPost);
-                var Contacts = _mapper.Map<IEnumerable<CompanyContacts>>(companyMasterDtoPost.CompanyContacts);
-                var Bankings = _mapper.Map<IEnumerable<CompanyBanking>>(companyMasterDtoPost.CompanyBankings);
-                var Addresses = _mapper.Map<IEnumerable<CompanyAddresses>>(companyMasterDtoPost.CompanyAddresses);
-                var Approval = _mapper.Map<IEnumerable<CompanyApproval>>(companyMasterDtoPost.CompanyApprovals);
-                var CompanymasterHeadCount = _mapper.Map<IEnumerable<CompanyMasterHeadCounting>>(companyMasterDtoPost.CompanyMasterHeadCountings);
+                //var Contacts = _mapper.Map<IEnumerable<CompanyContacts>>(companyMasterDtoPost.CompanyContacts);
+                //var Bankings = _mapper.Map<IEnumerable<CompanyBanking>>(companyMasterDtoPost.CompanyBankings);
+                //var Addresses = _mapper.Map<IEnumerable<CompanyAddresses>>(companyMasterDtoPost.CompanyAddresses);
+                //var Approval = _mapper.Map<IEnumerable<CompanyApproval>>(companyMasterDtoPost.CompanyApprovals);
+                //var CompanymasterHeadCount = _mapper.Map<IEnumerable<CompanyMasterHeadCounting>>(companyMasterDtoPost.CompanyMasterHeadCountings);
 
                 // Multi-file upload for each CompanyApproval
                 //var companyfileuploadpostdto = companyMasterDtoPost.CompanyApprovals;
@@ -198,7 +198,7 @@ namespace Tips.Master.Api.Controllers
                 //        }
                 //    }
                 //}
-
+                CompanyMaster.Advance = Convert.ToString(companyMasterDtoPost.Advance);
                 await _repository.CompanyMasterRepository.CreateCompanyMaster(CompanyMaster);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -574,7 +574,7 @@ namespace Tips.Master.Api.Controllers
                 companyMaster.CompanyBankings = Bankings.ToList();
                 companyMaster.CompanyMasterHeadCountings = CompanymasterHeadCounting.ToList();
                 companyMaster.CompanyApprovals = Approval.ToList();
-
+                companyMaster.Advance = Convert.ToString(companyMasterDtoUpdate.Advance);
                 string result = await _repository.CompanyMasterRepository.UpdateCompanyMaster(companyMaster);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();

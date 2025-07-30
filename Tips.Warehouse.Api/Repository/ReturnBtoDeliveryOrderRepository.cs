@@ -66,10 +66,10 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
-        public async Task<IEnumerable<ReturnDOSPReport>> ReturnDOSPReportWithParamForTrans(string? ReturnBTONumber, string? CustomerName, string? CustomerAliasName, string? CustomerLeadid, string? SalesOrderNumber, string? ProductType, string? TypeOfSolution, string? Warehouse, string? Location, string? KPN, string? MPN, string? ProjectNumber)
+        public async Task<IEnumerable<ReturnDOSPReportForTras>> ReturnDOSPReportWithParamForTrans(string? ReturnBTONumber, string? CustomerName, string? CustomerAliasName, string? CustomerLeadid, string? SalesOrderNumber, string? ProductType, string? TypeOfSolution, string? Warehouse, string? Location, string? KPN, string? MPN, string? ProjectNumber)
         {
             var result = _tipsWarehouseDbContext
-            .Set<ReturnDOSPReport>()
+            .Set<ReturnDOSPReportForTras>()
             .FromSqlInterpolated($"CALL returndeliveryorder_with_returntable_with_parameters_tras({ReturnBTONumber},{CustomerName},{CustomerAliasName},{CustomerLeadid},{SalesOrderNumber},{ProductType},{TypeOfSolution},{Warehouse},{Location},{KPN},{MPN},{ProjectNumber})")
             .ToList();
 

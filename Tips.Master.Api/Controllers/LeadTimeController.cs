@@ -206,7 +206,10 @@ namespace Tips.Master.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
+
                 _mapper.Map(leadTimeDtoUpdate, leadTimeEntity);
+                leadTimeEntity.Days = Convert.ToString(leadTimeDtoUpdate.Days);
+                leadTimeEntity.Weeks = Convert.ToString(leadTimeDtoUpdate.Weeks);
                 string result = await _repository.leadTimeRepository.UpdateLeadTime(leadTimeEntity);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();

@@ -173,7 +173,7 @@ namespace Tips.Warehouse.Api.Controllers
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> ReturnDOSPReportWithParamForTrans([FromBody] ReturnDOSPReportWithParamForTransDTO returnDOSPReportDTO)
         {
-            ServiceResponse<IEnumerable<ReturnDOSPReport>> serviceResponse = new ServiceResponse<IEnumerable<ReturnDOSPReport>>();
+            ServiceResponse<IEnumerable<ReturnDOSPReportForTras>> serviceResponse = new ServiceResponse<IEnumerable<ReturnDOSPReportForTras>>();
             try
             {
                 var products = await _repository.ReturnDOSPReportWithParamForTrans(returnDOSPReportDTO.ReturnBTONumber, returnDOSPReportDTO.CustomerName, returnDOSPReportDTO.CustomerAliasName,
@@ -184,16 +184,16 @@ namespace Tips.Warehouse.Api.Controllers
                 if (products == null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"ReturnDOSPReport hasn't been found.";
+                    serviceResponse.Message = $"ReturnDOSPReportForTras hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"ReturnDOSPReport hasn't been found in db.");
+                    _logger.LogError($"ReturnDOSPReportForTras hasn't been found in db.");
                     return NotFound(serviceResponse);
                 }
                 else
                 {
                     serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned ReturnDOSPReport Details";
+                    serviceResponse.Message = "Returned ReturnDOSPReportForTras Details";
                     serviceResponse.Success = true;
                     serviceResponse.StatusCode = HttpStatusCode.OK;
                     return Ok(serviceResponse);

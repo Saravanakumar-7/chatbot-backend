@@ -15,8 +15,10 @@ namespace Tips.Warehouse.Api.Contracts
         Task<int?> GetReturnOpenDeliveryOrderByODONo(string odoNumber);
         Task<PagedList<ReturnOpenDeliveryOrderSPResport>> GetReturnOpenDeliveryOrderSPResport(PagingParameter pagingParameter);
         Task<IEnumerable<ReturnOpenDeliveryOrderSPResport>> ReturnOpenDeliveryOrderSPReportDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<ReturnOpenDeliveryOrderSPResportForTras>> ReturnOpenDeliveryOrderSPReportDateForTras(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<ReturnOpenDeliveryOrderSPResportForAvi>> ReturnOpenDeliveryOrderSPReportDateForAvi(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<ReturnODONumberListDto>> GetReturnOpenDeliveryOrderNumberList();
         Task<IEnumerable<ReturnOpenDeliveryOrderSPResport>> ReturnOpenDeliveryOrderSPReportWithParam(string? ODONumber, string? CustomerName, string? CustomerAliasName, string? LeadId, string? IssuedTo, string? KPN, string? MPN, string? Warehouse, string? Location, string? ODOType);
-        Task<IEnumerable<ReturnOpenDeliveryOrderSPResport>> ReturnOpenDeliveryOrderSPReportWithParamForTrans(string? ODONumber, string? CustomerName, string? CustomerAliasName, string? LeadId, string? IssuedTo, string? Location, string? Warehouse, string? KPN, string? MPN, string? ODOType, string? ProjectNumber);
+        Task<IEnumerable<ReturnOpenDeliveryOrderSPResportForTras>> ReturnOpenDeliveryOrderSPReportWithParamForTrans(string? ODONumber, string? CustomerName, string? CustomerAliasName, string? LeadId, string? IssuedTo, string? Location, string? Warehouse, string? KPN, string? MPN, string? ODOType, string? ProjectNumber);
     }
 }
