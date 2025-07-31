@@ -112,6 +112,16 @@ namespace Tips.Warehouse.Api.Repository
             return result;
 
         }
+        public async Task<IEnumerable<ReturnOpenDeliveryOrderSPResportForAvi>> ReturnOpenDeliveryOrderSPReportWithParamForAvi(string? ODONumber, string? CustomerName, string? CustomerAliasName, string? LeadId, string? IssuedTo, string? Location, string? Warehouse, string? KPN, string? MPN, string? ODOType, string? ProjectNumber)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<ReturnOpenDeliveryOrderSPResportForAvi>()
+            .FromSqlInterpolated($"CALL Return_Open_DeliveryOrder_Report_withparameters_avi({ODONumber},{CustomerName},{CustomerAliasName},{LeadId},{IssuedTo},{KPN},{MPN},{Warehouse},{Location},{ODOType},{ProjectNumber})")
+            .ToList();
+
+            return result;
+
+        }
         public async Task<PagedList<ReturnOpenDeliveryOrderSPResport>> GetReturnOpenDeliveryOrderSPResport(PagingParameter pagingParameter)
         {
             var results = _tipsWarehouseDbContext.Set<ReturnOpenDeliveryOrderSPResport>()

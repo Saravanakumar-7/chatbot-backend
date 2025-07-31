@@ -1264,6 +1264,47 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> ReturnInvoiceSPReportWithParamForAvi([FromBody] ReturnInvoiceSPReportWithParamForAviDTO returnInvoiceSPReportDTO)
+        {
+            ServiceResponse<IEnumerable<ReturnInvoiceSPResportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<ReturnInvoiceSPResportForAvi>>();
+            try
+            {
+                var products = await _returnInvoiceRepository.ReturnInvoiceSPReportWithParameterForAvi(returnInvoiceSPReportDTO.InvoiceNumber, returnInvoiceSPReportDTO.DoNumber,
+                                                                                        returnInvoiceSPReportDTO.CustomerName, returnInvoiceSPReportDTO.CustomerAliasName,
+                                                                                        returnInvoiceSPReportDTO.SalesOrderNumber, returnInvoiceSPReportDTO.Location,
+                                                                                        returnInvoiceSPReportDTO.Warehouse, returnInvoiceSPReportDTO.KPN,
+                                                                                        returnInvoiceSPReportDTO.MPN, returnInvoiceSPReportDTO.IssuedBy, returnInvoiceSPReportDTO.ProjectNumber);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ReturnInvoiceSPResportForAvi hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ReturnInvoiceSPResportForAvi hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    //var result = _mapper.Map<IEnumerable<ReturnInvoiceSPReportDTO>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ReturnInvoiceSPResportForAvi Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in ReturnInvoiceSPReportWithParamForAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in ReturnInvoiceSPReportWithParamForAvi API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> GetReturnInvoiceNumberList()
         {

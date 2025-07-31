@@ -23,6 +23,10 @@ namespace Tips.Warehouse.Api.Contracts
                                                                                                                 string CustomerAliasName, string SalesOrderNumber,
                                                                                                                 string Location, string Warehouse, string KPN, string MPN,
                                                                                                                 string IssuedTo, string ProjectNumber);
+        Task<IEnumerable<ReturnInvoiceSPResportForAvi>> ReturnInvoiceSPReportWithParameterForAvi(string InvoiceNumber, string DoNumber, string CustomerName,
+                                                                                                          string CustomerAliasName, string SalesOrderNumber,
+                                                                                                          string Location, string Warehouse, string KPN, string MPN,
+                                                                                                          string IssuedTo, string ProjectNumber);
         Task<ReturnInvoice> GetReturnInvoiceById(int id);
         Task<IEnumerable<ReturnInvoiceNumberListDto>> GetReturnInvoiceNumberList();
     }

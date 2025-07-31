@@ -1074,6 +1074,47 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> ReturnOpenDeliveryOrderSPReportWithParamForAvi([FromBody] ReturnOpenDeliveryOrderSPReportForAviDTO returnOpenDeliveryOrder)
+        {
+            ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<ReturnOpenDeliveryOrderSPResportForAvi>>();
+            try
+            {
+                var products = await _repository.ReturnOpenDeliveryOrderSPReportWithParamForAvi(returnOpenDeliveryOrder.ODONumber,
+                                                                      returnOpenDeliveryOrder.CustomerName, returnOpenDeliveryOrder.CustomerAliasName,
+                                                                      returnOpenDeliveryOrder.LeadId, returnOpenDeliveryOrder.IssuedTo, returnOpenDeliveryOrder.Location,
+                                                                      returnOpenDeliveryOrder.Warehouse, returnOpenDeliveryOrder.KPN, returnOpenDeliveryOrder.MPN,
+                                                                      returnOpenDeliveryOrder.ODOType, returnOpenDeliveryOrder.ProjectNumber);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ReturnOpenDeliveryOrderSPResportForAvi hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ReturnOpenDeliveryOrderSPResportForAvi hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    var result = products;
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ReturnOpenDeliveryOrderSPResportForAvi Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in ReturnOpenDeliveryOrderSPReportWithParamForAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in ReturnOpenDeliveryOrderSPReportWithParamForAvi API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetReturnOpenDeliveryOrderNumberList()
