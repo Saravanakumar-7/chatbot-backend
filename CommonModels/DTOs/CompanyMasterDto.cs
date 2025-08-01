@@ -187,7 +187,7 @@ namespace Entities.DTOs
 
         //term
 
-        public string? Advance { get; set; }
+        public int? Advance { get; set; }
 
         public string? PaymentTerms { get; set; }
 
@@ -317,7 +317,7 @@ namespace Entities.DTOs
 
         //term
 
-        public string? Advance { get; set; }
+        public int? Advance { get; set; }
 
         public string? PaymentTerms { get; set; }
 

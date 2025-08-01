@@ -5,7 +5,7 @@ using Tips.Warehouse.Api.Entities.DTOs;
 
 namespace Tips.Warehouse.Api.Entities
 {
-    public class TipsWarehouseDbContext : DbContext
+    public class TipsWarehouseDbContext : DbContext 
     {
 
         public TipsWarehouseDbContext(DbContextOptions<TipsWarehouseDbContext> options) : base(options)
@@ -56,8 +56,13 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<OpenDeliveryOrderSPReport> RecievableODOs { get; set; }
         public DbSet<DailyDOReport> DailyDOReports { get; set; }
         public DbSet<ReturnInvoiceSPResport> ReturnInvoiceSPResports { get; set; }
+        public DbSet<ReturnInvoiceSPResportForTras> ReturnInvoiceSPResportForTras { get; set; }
+        public DbSet<ReturnInvoiceSPResportForAvi> ReturnInvoiceSPResportForAvi { get; set; }
         public DbSet<ReturnOpenDeliveryOrderSPResport> ReturnOpenDeliveryOrderSPResports { get; set; }
-        public DbSet<ReturnDOSPReport> ReturnDOSPReports { get; set; }
+        public DbSet<ReturnOpenDeliveryOrderSPResportForTras> ReturnOpenDeliveryOrderSPResportForTras { get; set; }
+        public DbSet<ReturnOpenDeliveryOrderSPResportForAvi> ReturnOpenDeliveryOrderSPResportForAvi { get; set; }
+        public DbSet<ReturnDOSPReport> ReturnDOSPReport { get; set; }
+        public DbSet<ReturnDOSPReportForTras> ReturnDOSPReportForTras { get; set; }
         public DbSet<InventorySPReport> InventorySPReports { get; set; }
         public DbSet<ODOMonthlyConsumptionSPReport> ODOMonthlyConsumptionSPReports { get; set; }
         public DbSet<InventoryTranctionSPReport> InventoryTranctionSPReports { get; set; }
@@ -85,8 +90,13 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<LocationTransferSpReportForAvi>().HasNoKey();
             modelBuilder.Entity<OpenDeliveryOrderSPReport>().HasNoKey();
             modelBuilder.Entity<ReturnInvoiceSPResport>().HasNoKey();
+            modelBuilder.Entity<ReturnInvoiceSPResportForTras>().HasNoKey();
+            modelBuilder.Entity<ReturnInvoiceSPResportForAvi>().HasNoKey();
             modelBuilder.Entity<ReturnOpenDeliveryOrderSPResport>().HasNoKey();
+            modelBuilder.Entity<ReturnOpenDeliveryOrderSPResportForAvi>().HasNoKey();
+            modelBuilder.Entity<ReturnOpenDeliveryOrderSPResportForTras>().HasNoKey();
             modelBuilder.Entity<ReturnDOSPReport>().HasNoKey();
+            modelBuilder.Entity<ReturnDOSPReportForTras>().HasNoKey();
             modelBuilder.Entity<MRNSPReport>().HasNoKey();
             modelBuilder.Entity<InventorySPReport>().HasNoKey();
             modelBuilder.Entity<ODOMonthlyConsumptionSPReport>().HasNoKey();

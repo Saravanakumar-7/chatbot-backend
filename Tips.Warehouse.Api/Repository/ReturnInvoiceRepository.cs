@@ -33,14 +33,26 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<ReturnInvoiceSPResport>> ReturnInvoiceSPReportWithParameterForTrans(string InvoiceNumber, string DoNumber, string CustomerName, 
+        public async Task<IEnumerable<ReturnInvoiceSPResportForTras>> ReturnInvoiceSPReportWithParameterForTrans(string InvoiceNumber, string DoNumber, string CustomerName, 
                                                                                                                 string CustomerAliasName, string SalesOrderNumber, 
                                                                                                                 string Location, string Warehouse, string KPN, string MPN, 
                                                                                                                 string IssuedTo, string ProjectNumber)
         {
             var result = _tipsWarehouseDbContext
-            .Set<ReturnInvoiceSPResport>()
+            .Set<ReturnInvoiceSPResportForTras>()
             .FromSqlInterpolated($"CALL Return_Invoice_Report_withParameter_tras({InvoiceNumber},{DoNumber},{CustomerName},{CustomerAliasName},{SalesOrderNumber},{Location},{Warehouse},{KPN},{MPN},{IssuedTo},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<ReturnInvoiceSPResportForAvi>> ReturnInvoiceSPReportWithParameterForAvi(string InvoiceNumber, string DoNumber, string CustomerName,
+                                                                                                             string CustomerAliasName, string SalesOrderNumber,
+                                                                                                             string Location, string Warehouse, string KPN, string MPN,
+                                                                                                             string IssuedTo, string ProjectNumber)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<ReturnInvoiceSPResportForAvi>()
+            .FromSqlInterpolated($"CALL Return_Invoice_Report_withParameter_avi({InvoiceNumber},{DoNumber},{CustomerName},{CustomerAliasName},{SalesOrderNumber},{Location},{Warehouse},{KPN},{MPN},{IssuedTo},{ProjectNumber})")
             .ToList();
 
             return result;
@@ -50,6 +62,22 @@ namespace Tips.Warehouse.Api.Repository
         {
             var results = _tipsWarehouseDbContext.Set<ReturnInvoiceSPResport>()
                         .FromSqlInterpolated($"CALL Return_Invoice_Report_withdate({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<ReturnInvoiceSPResportForTras>> ReturnInvoiceSPReportDateForTras(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<ReturnInvoiceSPResportForTras>()
+                        .FromSqlInterpolated($"CALL Return_Invoice_Report_withdate_tras({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<ReturnInvoiceSPResportForAvi>> ReturnInvoiceSPReportDateForAvi(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<ReturnInvoiceSPResportForAvi>()
+                        .FromSqlInterpolated($"CALL Return_Invoice_Report_withdate_avi({FromDate},{ToDate})")
                         .ToList();
 
             return results;

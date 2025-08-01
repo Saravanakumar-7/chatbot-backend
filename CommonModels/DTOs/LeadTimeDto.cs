@@ -55,10 +55,10 @@ namespace Entities.DTOs
         public int Id { get; set; }
         [Required(ErrorMessage = "Days is required")]
         [StringLength(100, ErrorMessage = "Days can't be longer than 100 characters")]
-        public string? Days { get; set; }
+        public int? Days { get; set; }
         [Required(ErrorMessage = "Weeks is required")]
         [StringLength(100, ErrorMessage = "Weeks can't be longer than 100 characters")]
-        public string? Weeks { get; set; }
+        public int? Weeks { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
         [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]

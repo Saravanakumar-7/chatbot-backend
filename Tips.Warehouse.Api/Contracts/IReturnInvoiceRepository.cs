@@ -16,11 +16,17 @@ namespace Tips.Warehouse.Api.Contracts
         Task<string> GetReturnInvoiceByInvoiceNo(string InvoiceNumber);
         Task<PagedList<ReturnInvoiceSPResport>> GetReturnInvoiceSPResport(PagingParameter pagingParameter);
         Task<IEnumerable<ReturnInvoiceSPResport>> ReturnInvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<ReturnInvoiceSPResportForTras>> ReturnInvoiceSPReportDateForTras(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<ReturnInvoiceSPResportForAvi>> ReturnInvoiceSPReportDateForAvi(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<ReturnInvoiceSPResport>> ReturnInvoiceSPReportWithParameter(string InvoiceNumber, string DoNumber, string CustomerName,string CustomerAliasName, string SalesOrderNumber, string Location, string Warehouse, string KPN, string MPN, string IssuedTo);
-        Task<IEnumerable<ReturnInvoiceSPResport>> ReturnInvoiceSPReportWithParameterForTrans(string InvoiceNumber, string DoNumber, string CustomerName,
+        Task<IEnumerable<ReturnInvoiceSPResportForTras>> ReturnInvoiceSPReportWithParameterForTrans(string InvoiceNumber, string DoNumber, string CustomerName,
                                                                                                                 string CustomerAliasName, string SalesOrderNumber,
                                                                                                                 string Location, string Warehouse, string KPN, string MPN,
                                                                                                                 string IssuedTo, string ProjectNumber);
+        Task<IEnumerable<ReturnInvoiceSPResportForAvi>> ReturnInvoiceSPReportWithParameterForAvi(string InvoiceNumber, string DoNumber, string CustomerName,
+                                                                                                          string CustomerAliasName, string SalesOrderNumber,
+                                                                                                          string Location, string Warehouse, string KPN, string MPN,
+                                                                                                          string IssuedTo, string ProjectNumber);
         Task<ReturnInvoice> GetReturnInvoiceById(int id);
         Task<IEnumerable<ReturnInvoiceNumberListDto>> GetReturnInvoiceNumberList();
     }
