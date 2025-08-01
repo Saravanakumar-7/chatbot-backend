@@ -1877,7 +1877,44 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetItemMasterDetailsByItemNumber(string ItemNumber)
+        {
+            ServiceResponse<ItemMasterDto> serviceResponse = new ServiceResponse<ItemMasterDto>();
 
+            try
+            {
+                var getItemMasterByItemNumber = await _repository.ItemMasterRepository.GetItemMasterDetailsByItemNumber(ItemNumber);
+                if (getItemMasterByItemNumber == null)
+                {
+                    _logger.LogError($"Itemmasters with id: {ItemNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Itemmasters with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Itemmasters with id: {ItemNumber}");
+                    var result = _mapper.Map<ItemMasterDto>(getItemMasterByItemNumber);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned All ItemMasterByItemNumber:";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetItemMasterDetailsByItemNumber API for the following ItemNumber : {ItemNumber} \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetItemMasterDetailsByItemNumber API for the following ItemNumber : {ItemNumber} \n {ex.Message} ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
         [HttpGet]
         public async Task<IActionResult> GetItemMasterByItemNumberAndPartType(string ItemNumber,PartType partType)
         {

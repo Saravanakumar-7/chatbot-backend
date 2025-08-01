@@ -33,6 +33,7 @@ namespace Contracts
         Task<List<ItemWithPartTypeDto>> GetItemPartTypeByItemNo(List<string> ItemNumberList);
         Task<List<ItemMaster>> GetItemDetailsByItemNumberList(List<string> ItemNumbers);
         Task<ItemMaster> GetItemMasterByItemNumber(string ItemNumber);
+        Task<ItemMaster> GetItemMasterDetailsByItemNumber(string ItemNumber);
         Task<ItemMaster> GetItemMasterByItemNumberAndPartType(string ItemNumber, PartType partType);
         Task<bool> CheckItemMasterExists(string itemnumber);
         Task<List<ItemMasterMtrPartNoDto>> GetItemMasterByPartNo(string partNumber);
