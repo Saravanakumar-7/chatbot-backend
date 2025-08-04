@@ -193,7 +193,7 @@ namespace Tips.SalesService.Api.Controllers
                         var encodedItemNo = Uri.EscapeDataString(ItemNumber);
 
                         var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterMainAPI"],
-                            $"GetItemMasterByItemNumber?ItemNumber={encodedItemNo}"));
+                            $"GetItemMasterDetailsByItemNumber?ItemNumber={encodedItemNo}"));
                         request2.Headers.Add("Authorization", token2);
 
                         var itemMasterObjectResult = await client2.SendAsync(request2);
