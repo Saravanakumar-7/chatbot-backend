@@ -198,7 +198,7 @@ namespace Tips.Master.Api.Controllers
                 //        }
                 //    }
                 //}
-                CompanyMaster.Advance = Convert.ToString(companyMasterDtoPost.Advance);
+                CompanyMaster.Advance = companyMasterDtoPost.Advance;
                 await _repository.CompanyMasterRepository.CreateCompanyMaster(CompanyMaster);
                 _repository.SaveAsync();
                 serviceResponse.Data = null;
@@ -574,7 +574,7 @@ namespace Tips.Master.Api.Controllers
                 companyMaster.CompanyBankings = Bankings.ToList();
                 companyMaster.CompanyMasterHeadCountings = CompanymasterHeadCounting.ToList();
                 companyMaster.CompanyApprovals = Approval.ToList();
-                companyMaster.Advance = Convert.ToString(companyMasterDtoUpdate.Advance);
+                companyMaster.Advance = companyMasterDtoUpdate.Advance;
                 string result = await _repository.CompanyMasterRepository.UpdateCompanyMaster(companyMaster);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
