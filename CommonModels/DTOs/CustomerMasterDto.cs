@@ -64,7 +64,7 @@ namespace Entities.DTOs
         public string? PreferredFreightForwarder { get; set; }
 
         //Terms
-        public string? Advance { get; set; }
+        public decimal? Advance { get; set; }
         public string? PaymentTerms { get; set; }
         public string? INCOTerms { get; set; }
         public string? SpecialTerms { get; set; }
@@ -191,7 +191,7 @@ namespace Entities.DTOs
         public string? PreferredFreightForwarder { get; set; }
 
         //Terms
-        public string? Advance { get; set; }
+        public decimal? Advance { get; set; }
         public string? PaymentTerms { get; set; }
         public string? INCOTerms { get; set; }
         public string? SpecialTerms { get; set; }
@@ -315,7 +315,7 @@ namespace Entities.DTOs
         public string? PreferredFreightForwarder { get; set; }
 
         //Terms
-        public string? Advance { get; set; }
+        public decimal? Advance { get; set; }
         public string? PaymentTerms { get; set; }
         public string? INCOTerms { get; set; }
         public string? SpecialTerms { get; set; }

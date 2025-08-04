@@ -51,7 +51,7 @@ namespace Entities.DTOs
 
         //term
 
-        public string? Advance { get; set; }
+        public decimal? Advance { get; set; }
 
         public string? PaymentTerms { get; set; }
 
@@ -187,7 +187,7 @@ namespace Entities.DTOs
 
         //term
 
-        public int? Advance { get; set; }
+        public decimal? Advance { get; set; }
 
         public string? PaymentTerms { get; set; }
 
@@ -317,7 +317,7 @@ namespace Entities.DTOs
 
         //term
 
-        public int? Advance { get; set; }
+        public decimal? Advance { get; set; }
 
         public string? PaymentTerms { get; set; }
 

@@ -10,8 +10,8 @@ namespace Entities.DTOs
     public class LeadTimeDto
     {
         public int? Id { get; set; }
-        public string? Days { get; set; }
-        public string? Weeks { get; set; }
+        public decimal? Days { get; set; }
+        public decimal? Weeks { get; set; }
         public string? Description { get; set; }
         public string? Remarks { get; set; }
         public bool IsActive { get; set; }
@@ -39,9 +39,9 @@ namespace Entities.DTOs
     public class LeadTimeDtoPost
     {
         [Required(ErrorMessage = "Days is required")]
-        public int? Days { get; set; }
+        public decimal? Days { get; set; }
         [Required(ErrorMessage = "Weeks is required")]
-        public int? Weeks { get; set; }
+        public decimal? Weeks { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
         [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]
@@ -55,10 +55,10 @@ namespace Entities.DTOs
         public int Id { get; set; }
         [Required(ErrorMessage = "Days is required")]
         [StringLength(100, ErrorMessage = "Days can't be longer than 100 characters")]
-        public int? Days { get; set; }
+        public decimal? Days { get; set; }
         [Required(ErrorMessage = "Weeks is required")]
         [StringLength(100, ErrorMessage = "Weeks can't be longer than 100 characters")]
-        public int? Weeks { get; set; }
+        public decimal? Weeks { get; set; }
         [StringLength(500, ErrorMessage = "Description can't be longer than 500 characters")]
         public string? Description { get; set; }
         [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]
