@@ -54,7 +54,7 @@ namespace Entities
 
         //term
 
-        public string? TermAdvance { get; set; }
+        public decimal? TermAdvance { get; set; }
 
         public string? PaymentTerms { get; set; }
 

@@ -47,7 +47,7 @@ namespace Repository
         public async Task<IEnumerable<LeadTime>> GetAllActiveLeadTime([FromQuery] SearchParames searchParams)
         {
             var leadTimeDetails = FindAll()
-        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Days.Contains(searchParams.SearchValue) ||
+        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) /*|| inv.Days.Contains(searchParams.SearchValue)*/ ||
        inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
             return leadTimeDetails;
@@ -56,7 +56,7 @@ namespace Repository
         public async Task<IEnumerable<LeadTime>> GetAllLeadTime([FromQuery] SearchParames searchParams)
         {
             var leadTimeDetails = FindAll().OrderByDescending(x => x.Id)
-        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Days.Contains(searchParams.SearchValue) ||
+        .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) /*|| inv.Days.Contains(searchParams.SearchValue)*/ ||
        inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
 
             return leadTimeDetails;

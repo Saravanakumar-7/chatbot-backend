@@ -52,7 +52,7 @@ namespace Entities
 
         //term
 
-        public string? Advance { get; set; }
+        public decimal? Advance { get; set; }
 
         public string? PaymentTerms { get; set; }
 
