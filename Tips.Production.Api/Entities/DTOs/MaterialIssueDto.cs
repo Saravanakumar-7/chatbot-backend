@@ -162,6 +162,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal? AvailableQnty { get; set; }
         public decimal? IssuedQty { get; set; }
         public decimal? BalanceIssueQnty { get; set; }
+        public decimal? LocationIssuedQty { get; set; }
         public string? lotnumber { get; set; }
         public string? Remarks { get; set; }
 
