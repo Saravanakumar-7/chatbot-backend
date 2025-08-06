@@ -20,7 +20,7 @@ namespace Tips.Production.Api.Repository
         private readonly String _createdBy;
         private readonly String _unitname;
 
-        public ShopOrderConfirmationRepository(TipsProductionDbContext repositoryContext, AdvitaTipsProductionDbContext advitaTipsProductionDbContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext,advitaTipsProductionDbContext)
+        public ShopOrderConfirmationRepository(TipsProductionDbContext repositoryContext, AdvitaTipsProductionDbContext advitaTipsProductionDbContext, IHttpContextAccessor httpContextAccessor) : base(repositoryContext, advitaTipsProductionDbContext)
         {
             _advitaTipsProductionDbContext = advitaTipsProductionDbContext;
             _tipsProductionDbContext = repositoryContext;
@@ -33,7 +33,7 @@ namespace Tips.Production.Api.Repository
 
         public async Task<long> CreateShopOrderConfirmation(ShopOrderConfirmation shopOrderConfirmation)
         {
-        
+
             shopOrderConfirmation.CreatedBy = _createdBy;
             shopOrderConfirmation.CreatedOn = DateTime.Now;
             shopOrderConfirmation.Unit = _unitname;
@@ -73,12 +73,12 @@ namespace Tips.Production.Api.Repository
 
             //return PagedList<ShopOrderConfirmation>.ToPagedList(shopOrderCOnfirmationDetails, pagingParameter.PageNumber, pagingParameter.PageSize);
 
-        } 
+        }
 
 
         public async Task<ShopOrderConfirmation> GetShopOrderConfirmationById(int id)
         {
-            var shopOrderConfirmationDetailById = await 
+            var shopOrderConfirmationDetailById = await
                             FindByCondition(x => x.Id == id)
                              .FirstOrDefaultAsync();
             return shopOrderConfirmationDetailById;
@@ -95,27 +95,28 @@ namespace Tips.Production.Api.Repository
 
         public async Task<IEnumerable<ShopOrderConfirmation>> GetAllShopOrderConfirmationByShopOrderNo(string shopOrderNo)
         {
-            var shopOrderConfirmationByShopOrderNoList = await FindByCondition(x => x.ShopOrderNumber ==shopOrderNo).ToListAsync();                
+            var shopOrderConfirmationByShopOrderNoList = await FindByCondition(x => x.ShopOrderNumber == shopOrderNo).ToListAsync();
             return shopOrderConfirmationByShopOrderNoList;
 
         }
-        
+
         public async Task<IEnumerable<ShopOrderConfirmation>> GetOpenDataForOqcByShopOrderNo(string shopOrderNo)
         {
-            var openDataForOqcByShopOrderNoList = await FindByCondition(x => x.ShopOrderNumber == shopOrderNo &&  x.IsOQCDone == ShopOrderConformationStatus.Open).ToListAsync();           
+            var openDataForOqcByShopOrderNoList = await FindByCondition(x => x.ShopOrderNumber == shopOrderNo && x.IsOQCDone == ShopOrderConformationStatus.Open).ToListAsync();
             return openDataForOqcByShopOrderNoList;
 
         }
 
         public async Task<IEnumerable<ShopOrderItemNoListDto>> GetShopOrderItemNoByFGItemType()
         {
-            var shopOrderItmNoList =await _tipsProductionDbContext.ShopOrders
+            var shopOrderItmNoList = await _tipsProductionDbContext.ShopOrders
                 .Where(x => x.ItemType == PartType.FG && x.FGDoneStatus != OrderStatus.Closed && x.Status != OrderStatus.Closed && x.IsShortClosed == false)
+                .GroupBy(a => a.ItemNumber)
                 .Select(s => new ShopOrderItemNoListDto()
-                 {
-                    ItemNumber = s.ItemNumber,
-                    Description = s.Description
-                }).Distinct()
+                {
+                    ItemNumber = s.Key,
+                    Description = s.First().Description
+                })
                 .ToListAsync();
 
             return shopOrderItmNoList;
@@ -124,11 +125,11 @@ namespace Tips.Production.Api.Repository
         public async Task<IEnumerable<ShopOrderItemNoListDto>> GetShopOrderItemNoBySAItemType()
         {
             var shopOrderItmNoList = await _tipsProductionDbContext.ShopOrders
-                .Where(x => x.ItemType == PartType.SA && x.FGDoneStatus != OrderStatus.Closed && x.Status != OrderStatus.Closed && x.IsShortClosed == false)
+                .Where(x => x.ItemType == PartType.SA && x.FGDoneStatus != OrderStatus.Closed && x.Status != OrderStatus.Closed && x.IsShortClosed == false).GroupBy(a=>a.ItemNumber)
                 .Select(s => new ShopOrderItemNoListDto()
                 {
-                    ItemNumber = s.ItemNumber,
-                    Description = s.Description
+                    ItemNumber = s.Key,
+                    Description = s.First().Description
                 })
                 .ToListAsync();
 
@@ -152,14 +153,14 @@ namespace Tips.Production.Api.Repository
         public async Task<IEnumerable<ShopOrderDetailsDto>> GetShopOrderDetailsByItemNo(string itemNumber)
         {
             var shopOrderDetails = await _tipsProductionDbContext.ShopOrders
-                .Where(x => x.ItemNumber == itemNumber && x.IsShortClosed== false)
+                .Where(x => x.ItemNumber == itemNumber && x.IsShortClosed == false && x.ShopOrderConfirmationStatus != ShopOrderConformationStatus.FullyDone)
                 .Select(s => new ShopOrderDetailsDto()
                 {
                     ShopOrderNumber = s.ShopOrderNumber,
                     ShopOrderReleaseQty = s.TotalSOReleaseQty,
                     WipQty = s.WipQty,
                     OqcQty = s.OqcQty,
-                    BOMVersion=s.BomRevisionNo
+                    BOMVersion = s.BomRevisionNo
                 })
                 .ToListAsync();
 
@@ -168,7 +169,7 @@ namespace Tips.Production.Api.Repository
         public async Task<IEnumerable<ShopOrderDetailsDto>> GetShopOrderConformationDetailsByItemNo(string itemNumber)
         {
             var shopOrderDetails = await _tipsProductionDbContext.ShopOrderConfirmations
-                .Where(x => x.ItemNumber == itemNumber).GroupBy(x => x.ShopOrderNumber)
+                .Where(x => x.ItemNumber == itemNumber && x.IsOQCDone!= ShopOrderConformationStatus.FullyDone).GroupBy(x => x.ShopOrderNumber)
                 .Select(group => new ShopOrderDetailsDto()
                 {
                     ShopOrderNumber = group.Key,
@@ -176,12 +177,12 @@ namespace Tips.Production.Api.Repository
                     WipQty = group.Sum(s => s.WipConfirmedQty),
                     OqcQty = _tipsProductionDbContext.oQCs.Where(x => x.ItemNumber == itemNumber).Count() > 0 ? _tipsProductionDbContext.oQCs.Where(o => o.ItemNumber == itemNumber && o.ShopOrderNumber == group.Key)
                     .Sum(o => o.AcceptedQty + o.RejectedQty) : 0,
-                    BOMVersion =0
+                    BOMVersion = 0
                 })
                 .ToListAsync();
 
             return shopOrderDetails;
         }
     }
-    
+
 }
