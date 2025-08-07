@@ -55,7 +55,7 @@ namespace Tips.Warehouse.Api.Controllers
 
             try
             {
-                List<ConsumptionSPReportDto> openSalesCoverageReports = await ConceptionReport(FromDate, ToDate);
+                List<ConsumptionSPReportDto> openSalesCoverageReports = await ConsumptionReport(FromDate, ToDate);
 
                 serviceResponse.Data = openSalesCoverageReports;
                 serviceResponse.Message = $"Returned ConceptionReport Successfully ";
@@ -74,9 +74,9 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        private async Task<List<ConsumptionSPReportDto>> ConceptionReport(DateTime? FromDate, DateTime? ToDate)
+        private async Task<List<ConsumptionSPReportDto>> ConsumptionReport(DateTime? FromDate, DateTime? ToDate)
         {
-            List<ConsumptionSPReportDto> conceptionReportList = new List<ConsumptionSPReportDto>();
+            List<ConsumptionSPReportDto> consumptionReportList = new List<ConsumptionSPReportDto>();
             try
             {
                 // Fetch invoice data
@@ -148,7 +148,7 @@ namespace Tips.Warehouse.Api.Controllers
                                         UOC = grin.UOC
                                     };
 
-                                    conceptionReportList.Add(reportDto);
+                                    consumptionReportList.Add(reportDto);
                                 }
                             }
                         }
@@ -162,7 +162,7 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 _logger.LogError($"Error in ConceptionReport: {ex.Message}");
             }
-            return conceptionReportList;
+            return consumptionReportList;
         }
 
 
@@ -284,6 +284,25 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        private async Task<string> GetShopOrderComsumptionDetailsBySaItemNo(string saItemNumber, string fgItemNumber)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ProductionAPI"],
+                                $"GetShopOrderComsumptionDetialsBySaItemNo?saItemNumber={saItemNumber}&fgItemNumber={fgItemNumber}"));
+
+            request.Headers.Add("Authorization", token);
+            var shopOrderResponse = await client.SendAsync(request);
+            var shopOrderString = await shopOrderResponse.Content.ReadAsStringAsync();
+            dynamic shopOrderData = JsonConvert.DeserializeObject(shopOrderString);
+
+
+            var shopOrderComsumpDto = JsonConvert.DeserializeObject<string>(shopOrderData.data.ToString());
+
+
+            return shopOrderComsumpDto;
+        }
+
         private async Task<List<GrinComsumpDto>> GetGrinComsumptionDetailsByPartNo(StringContent partNoListString)
         {
             var client = _clientFactory.CreateClient();
@@ -308,25 +327,6 @@ namespace Tips.Warehouse.Api.Controllers
             }
 
             return grinConsumpList;
-        }
-
-        private async Task<string> GetShopOrderComsumptionDetailsBySaItemNo(string saItemNumber, string fgItemNumber)
-        {
-            var client = _clientFactory.CreateClient();
-            var token = HttpContext.Request.Headers["Authorization"].ToString();
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ProductionAPI"],
-                                $"GetShopOrderComsumptionDetialsBySaItemNo?saItemNumber={saItemNumber}&fgItemNumber={fgItemNumber}"));
-
-            request.Headers.Add("Authorization", token);
-            var shopOrderResponse = await client.SendAsync(request);
-            var shopOrderString = await shopOrderResponse.Content.ReadAsStringAsync();
-            dynamic shopOrderData = JsonConvert.DeserializeObject(shopOrderString);
-
-
-            var shopOrderComsumpDto = JsonConvert.DeserializeObject<string>(shopOrderData.data.ToString());
-
-
-            return shopOrderComsumpDto;
         }
 
     }

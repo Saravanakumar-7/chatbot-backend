@@ -117,6 +117,7 @@ namespace Tips.Warehouse.Api.Repository
                                                   childItem.FGItemNumber,
                                                   childItem.InvoicedQty
                                               })
+                                              
                                               .ToListAsync();
 
             var groupedInvoiceConcepDetails = invoiceConcepDetails
