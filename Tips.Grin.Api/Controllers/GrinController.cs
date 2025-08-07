@@ -25,6 +25,7 @@ using EmailTemplateDto = Tips.Grin.Api.Entities.DTOs.EmailTemplateDto;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
+using static NPOI.HSSF.UserModel.HeaderFooter;
 
 
 //Test
@@ -1851,12 +1852,12 @@ namespace Tips.Grin.Api.Controllers
                         if (serverKey == "avision")
                         {
                             var baseUrl = $"{_config["GrinUrl"]}";
-                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/Grin/DownloadFile?Filename={fileUploadDto.FileName}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/Grin/DownloadFile?Id={fileUploadDto.Id}";
                         }
                         else
                         {
                             var baseUrl = $"{_config["GrinUrl"]}";
-                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/Grin/DownloadFile?Filename={fileUploadDto.FileName}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/Grin/DownloadFile?Id={fileUploadDto.Id}";
                         }
                         fileUploads.Add(fileUploadDto);
                     }
@@ -3519,11 +3520,11 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult> DownloadFile(string Filename)
+        public async Task<ActionResult> DownloadFile(int Id)//string Filename
         {
             ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
-
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", Filename);
+            var itemsFiles = await _documentUploadRepository.GetDownloadUrlDetails(Id.ToString());
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", itemsFiles[0].FileName);
             var provider = new FileExtensionContentTypeProvider();
             if (!provider.TryGetContentType(filePath, out var ContentType))
             {
