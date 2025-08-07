@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
+using System.Configuration;
 using System.Text.Json.Serialization;
 
 namespace Tips.Grin.Api.Entities.DTOs
@@ -19,6 +21,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     }
     public class DocumentUploadPostDto
     {
+        [RegularExpression(@"^[a-zA-Z0-9_ ]+$", ErrorMessage = "FileName can only contain letters, numbers, underscores, and spaces.")]
         public string FileName { get; set; }
         public string FileExtension { get; set; }
         public string FileByte { get; set; }
