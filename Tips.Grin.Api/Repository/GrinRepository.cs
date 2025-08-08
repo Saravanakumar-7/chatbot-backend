@@ -267,15 +267,16 @@ namespace Tips.Grin.Api.Repository
             }
         }
 
-        public async Task<List<GrinComsumpReportDto>> GetGrinComsumptionDetialsByPartNos(List<string> PartNoListString)
+        public async Task<List<GrinComsumpReportDto>> GetGrinComsumptionDetialsByPartNos(List<string> PartNoListString , List<string> lotNoListString)
         {
             var result = await _tipsGrinDbContext.GrinParts
-                .Where(x => PartNoListString.Contains(x.ItemNumber))
+                .Where(x => PartNoListString.Contains(x.ItemNumber) && lotNoListString.Contains(x.LotNumber))
                 .Select(x => new GrinComsumpReportDto
                 {
                     GrinNumber = x.Grins.GrinNumber,
                     GrinDate = x.Grins.CreatedOn,
                     VendorName = x.Grins.VendorName,
+                    LotNumber = x.LotNumber,
                     PONumber = x.PONumber,  
                     GrinQty = x.AcceptedQty,
                     GrinUnitPrice = x.UnitPrice,
@@ -287,25 +288,25 @@ namespace Tips.Grin.Api.Repository
                 })
                 .ToListAsync();
 
-            var groupedResult = result
-                .GroupBy(r => r.PartNumber)
-                .Select(group => new GrinComsumpReportDto
-                {
-                    PartNumber = group.Key, 
-                    GrinNumber = group.FirstOrDefault()?.GrinNumber,
-                    GrinDate = group.FirstOrDefault()?.GrinDate,
-                    VendorName = group.FirstOrDefault()?.VendorName,
-                    PONumber = group.FirstOrDefault()?.PONumber,
-                    GrinQty = group.Sum(x => x.GrinQty),
-                    GrinUnitPrice = group.Sum(x => x.GrinUnitPrice),
-                    Tax = group.Sum(x => x.Tax),
-                    OtherCosts = group.Sum(x => x.OtherCosts),
-                    UOM = group.FirstOrDefault()?.UOM,
-                    UOC = group.FirstOrDefault()?.UOC
-                })
-                .ToList();
+            //var groupedResult = result
+            //    .GroupBy(r => r.PartNumber)
+            //    .Select(group => new GrinComsumpReportDto
+            //    {
+            //        PartNumber = group.Key, 
+            //        GrinNumber = group.FirstOrDefault()?.GrinNumber,
+            //        GrinDate = group.FirstOrDefault()?.GrinDate,
+            //        VendorName = group.FirstOrDefault()?.VendorName,
+            //        PONumber = group.FirstOrDefault()?.PONumber,
+            //        GrinQty = group.Sum(x => x.GrinQty),
+            //        GrinUnitPrice = group.Sum(x => x.GrinUnitPrice),
+            //        Tax = group.Sum(x => x.Tax),
+            //        OtherCosts = group.Sum(x => x.OtherCosts),
+            //        UOM = group.FirstOrDefault()?.UOM,
+            //        UOC = group.FirstOrDefault()?.UOC
+            //    })
+            //    .ToList();
 
-            return groupedResult;
+            return result;
         }
 
 

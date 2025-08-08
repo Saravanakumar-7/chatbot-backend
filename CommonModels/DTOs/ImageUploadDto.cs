@@ -22,6 +22,7 @@ namespace Entities.DTOs
     }
     public class ImageUploadPostDto
     {
+        [RegularExpression(@"^[a-zA-Z0-9_ ]+$", ErrorMessage = "FileName can only contain letters, numbers, underscores, and spaces.")]
         public string FileName { get; set; }
         public string FileExtension { get; set; }
         public string? FileByte { get; set; }

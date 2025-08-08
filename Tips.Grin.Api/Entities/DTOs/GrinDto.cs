@@ -592,6 +592,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? GrinDate { get; set; }
         public string? VendorName { get; set; }
         public string? PartNumber { get; set; }
+        public string? LotNumber { get; set; }
         public string? PONumber { get; set; }
         public decimal BOENo { get; set; }
         public decimal? GrinQty { get; set; }
@@ -600,6 +601,13 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal OtherCosts { get; set; }
         public string? UOM { get; set; }
         public string? UOC { get; set; }
+
+    }
+
+    public class GrinComsumpDto
+    {
+        public List<string>? PartNumber { get; set; }
+        public List<string>? LotNumber { get; set; }
 
     }
     public class PurchaseInventorySPReportDto

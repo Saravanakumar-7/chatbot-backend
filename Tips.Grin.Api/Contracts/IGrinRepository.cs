@@ -52,6 +52,6 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<GrinSPReportForAvi>> GetGrinSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<PurchaseInventorySPReport>> GetPurchaseInventorySPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<PoAndGrinUnitPriceSPReport>> GetPoAndGrinUnitPriceSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
-        Task<List<GrinComsumpReportDto>> GetGrinComsumptionDetialsByPartNos(List<string> PartNoListString);
+        Task<List<GrinComsumpReportDto>> GetGrinComsumptionDetialsByPartNos(List<string> PartNoListString, List<string> lotNoListString);
     }
 }

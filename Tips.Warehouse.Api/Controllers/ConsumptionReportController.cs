@@ -90,22 +90,18 @@ namespace Tips.Warehouse.Api.Controllers
 
                 // Fetch shop order details based on Lot number
                 List<string?> lotNumberList = doConsumpDetails.Select(x => x.LotNumber).Distinct().ToList();
-                var lotNoListJson = JsonConvert.SerializeObject(lotNumberList);
-                var lotNoListString = new StringContent(lotNoListJson, Encoding.UTF8, "application/json");
-                List<ShopOrderComsumpDto> shopOrderConsumpDetials = await GetShopOrderComsumptionDetailsByLotNo(lotNoListString);
+                List<ShopOrderComsumpDto> shopOrderConsumpDetials = await GetShopOrderComsumptionDetailsByLotNo(lotNumberList);
 
 
                 // Fetch Somit consumption details based on Shop Order numbers
-                //List<string?> shopOrderNumberList = shopOrderConsumpDetials.Select(item => item.ShopOrderNumber).Distinct().ToList();
                 Dictionary<string, string?> shopOrderToItemNumberDict = shopOrderConsumpDetials.ToDictionary(x => x.ShopOrderNumber, x => x.ItemNumber);
                 List<SomitConsumpDto> somitConsumpDetails = await GetSomitConsumpDetailsByShopOrderNumbers(shopOrderToItemNumberDict);
 
 
-                // Fetch Grin consumption details based on Part numbers
+                // Fetch Grin consumption details based on Part numbers and LotNo
                 List<string?> partNumberList = somitConsumpDetails.Select(item => item.PartNumber).Distinct().ToList();
-                var partNoListJson = JsonConvert.SerializeObject(partNumberList);
-                var partNoListString = new StringContent(partNoListJson, Encoding.UTF8, "application/json");
-                List<GrinComsumpDto> grinConsumpDetials = await GetGrinComsumptionDetailsByPartNo(partNoListString);
+                List<string?> somitLotNoList = somitConsumpDetails.Select(item => item.LotNumber).Distinct().ToList();
+                List<GrinComsumpDto> grinConsumpDetials = await GetGrinComsumptionDetailsByPartNo(partNumberList, somitLotNoList);
 
                 // Combine data and map to the desired output format
                 foreach (var invoice in invoiceConsumpDetails)
@@ -116,7 +112,7 @@ namespace Tips.Warehouse.Api.Controllers
                         {
                             foreach (var somit in somitConsumpDetails.Where(s => s.ShopOrderNumber == shopOrder.ShopOrderNumber))
                             {
-                                foreach (var grin in grinConsumpDetials.Where(g => g.PartNumber == somit.PartNumber))
+                                foreach (var grin in grinConsumpDetials.Where(g => g.PartNumber == somit.PartNumber && g.LotNumber == somit.LotNumber))
                                 {
                                     var reportDto = new ConsumptionSPReportDto
                                     {
@@ -167,10 +163,14 @@ namespace Tips.Warehouse.Api.Controllers
 
 
 
-        private async Task<List<ShopOrderComsumpDto>> GetShopOrderComsumptionDetailsByLotNo(StringContent lotNoListString)
+        private async Task<List<ShopOrderComsumpDto>> GetShopOrderComsumptionDetailsByLotNo(List<string> lotNumberList)
         {
             var client = _clientFactory.CreateClient();
             var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+            var lotNoListJson = JsonConvert.SerializeObject(lotNumberList);
+            var lotNoListString = new StringContent(lotNoListJson, Encoding.UTF8, "application/json");
+
             var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["ProductionAPI"],
                                 $"GetShopOrderComsumptionDetialsBySaleOrderNos"))
             {
@@ -303,18 +303,31 @@ namespace Tips.Warehouse.Api.Controllers
             return shopOrderComsumpDto;
         }
 
-        private async Task<List<GrinComsumpDto>> GetGrinComsumptionDetailsByPartNo(StringContent partNoListString)
+        private async Task<List<GrinComsumpDto>> GetGrinComsumptionDetailsByPartNo(List<string> partNoListString, List<string> lotNoListString)
         {
             var client = _clientFactory.CreateClient();
             var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+            var payload = new
+            {
+                PartNoListString = partNoListString,
+                LotNoListString = lotNoListString
+            };
+
+            var jsonString = JsonConvert.SerializeObject(payload);
+            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+
             var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["GrinAPI"],
                                 $"GetGrinComsumptionDetialsByPartNos"))
             {
-                Content = partNoListString
+                Content = content
             };
 
             request.Headers.Add("Authorization", token);
             var grinResponse = await client.SendAsync(request);
+
+
+
             var grinString = await grinResponse.Content.ReadAsStringAsync();
             dynamic grinData = JsonConvert.DeserializeObject(grinString);
 

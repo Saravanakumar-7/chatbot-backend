@@ -18,6 +18,7 @@ namespace Tips.Purchase.Api.Entities.Dto
     }
     public class PRItemsDocumentUploadPostDto
     {
+        [RegularExpression(@"^[a-zA-Z0-9_ ]+$", ErrorMessage = "FileName can only contain letters, numbers, underscores, and spaces.")]
         public string FileName { get; set; }
         public string FileExtension { get; set; }
         public string? FileByte { get; set; }
