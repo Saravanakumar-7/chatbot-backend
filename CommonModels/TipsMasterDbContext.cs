@@ -119,6 +119,7 @@ namespace Entities
         public DbSet<TypeSolution> TypeSolutions { get; set; }
 
         public DbSet<FileUpload>? fileUploads { get; set; }
+        public DbSet<ReleaseFileUpload>? releasefileuploads { get; set; }
 
         public DbSet<ImageUpload>? imageUploads { get; set; }
 

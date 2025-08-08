@@ -21,6 +21,8 @@ namespace Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public string? Releasefileuploads { get; set; }
+
 
     }
     public class CostingBomDtoPost
@@ -31,6 +33,7 @@ namespace Entities.DTOs
         public PartType ItemType { get; set; }
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; }
+        public string? Releasefileuploads { get; set; }
 
     }
     public class CostingBomDtoUpdate
@@ -41,7 +44,8 @@ namespace Entities.DTOs
         public string? ItemDescription { get; set; }
         public PartType ItemType { get; set; }
         public decimal ReleaseVersion { get; set; }
-        public string ReleaseNote { get; set; } 
+        public string ReleaseNote { get; set; }
+        public string? Releasefileuploads { get; set; }
     }
         public class CostingBomItemRevisionList
     {
