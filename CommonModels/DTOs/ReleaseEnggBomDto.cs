@@ -27,6 +27,7 @@ namespace Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public string? Releasefileuploads { get; set; }
     }
     public class ReleaseEnggBomDtoPost
     {
@@ -37,6 +38,7 @@ namespace Entities.DTOs
         public PartType ItemType { get; set; }
         public decimal ReleaseVersion { get; set; }
         public string ReleaseNote { get; set; }
+        public string? Releasefileuploads { get; set; }
 
     }
     public class ReleaseEnggBomDtoUpdate
@@ -52,5 +54,6 @@ namespace Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public string? Releasefileuploads { get; set; }
     }
 }

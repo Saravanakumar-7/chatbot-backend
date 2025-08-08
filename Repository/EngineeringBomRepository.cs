@@ -1947,4 +1947,64 @@ namespace Repository
             return result;
         }
     }
+
+     public class ReleaseFileUploadDocumentRepository : RepositoryBase<ReleaseFileUpload>, IReleaseFileUploadRepository
+    {
+        private TipsMasterDbContext _tipsMasterDbContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly String _createdBy;
+        private readonly String _unitname;
+        public ReleaseFileUploadDocumentRepository(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor) : base(tipsMasterDbContext)
+        {
+            _tipsMasterDbContext = tipsMasterDbContext;
+            _httpContextAccessor = httpContextAccessor;
+            var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
+
+            _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
+            _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
+
+        }
+        public async Task<int?> CreateReleaseFileUploadDocument(ReleaseFileUpload releaseFileUpload)
+        {
+            releaseFileUpload.CreatedBy = _createdBy;
+            releaseFileUpload.CreatedOn = DateTime.Now;
+            // fileUpload.LastModifiedBy = _createdBy;
+            // fileUpload.LastModifiedOn = DateTime.Now;
+            var result = await Create(releaseFileUpload);
+            return result.Id;
+        }
+        public async Task<List<ReleaseFileUploadDto>> GetReleaseFileUploadDownloadUrlDetails(string FileIds)
+        {
+            List<ReleaseFileUploadDto> releasefileUploads = new List<ReleaseFileUploadDto>();
+            if (FileIds != null)
+            {
+                string[]? ids = FileIds.Split(',');
+
+                for (int i = 0; i < ids.Count(); i++)
+                {
+                    ReleaseFileUploadDto getDownloadDetails = await TipsMasterDbContext.releasefileuploads
+                                .Where(b => b.Id == Convert.ToInt32(ids[i]))
+                                .Select(x => new ReleaseFileUploadDto()
+                                {
+                                    Id = x.Id,
+                                    FileName = x.FileName,
+                                    FileExtension = x.FileExtension,
+                                    FilePath = x.FilePath,
+                                    FileByte = x.FileByte
+                                }).FirstOrDefaultAsync();
+                    if (getDownloadDetails != null)
+                        releasefileUploads.Add(getDownloadDetails);
+                }
+            }
+            return releasefileUploads;
+        }
+        public async Task<ReleaseFileUpload> GetReleaseFileUploadByIdAsync(int id)
+        {
+            return await TipsMasterDbContext.releasefileuploads.FirstOrDefaultAsync(x => x.Id == id);
+        }
+        public async void Delete(ReleaseFileUpload releaseFileUpload)
+        {
+            TipsMasterDbContext.releasefileuploads.Remove(releaseFileUpload);
+        }
+    }
 }

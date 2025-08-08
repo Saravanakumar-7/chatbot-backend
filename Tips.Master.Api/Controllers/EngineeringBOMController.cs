@@ -21,6 +21,7 @@ using Org.BouncyCastle.Utilities;
 using System.Collections.Generic;
 using static Mysqlx.Notice.Warning.Types;
 using MySqlX.XDevAPI;
+using Microsoft.AspNetCore.StaticFiles;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -42,7 +43,9 @@ namespace Tips.Master.Api.Controllers
         private IReleaseCostBomRepository _releaseCostBomRepository;
         private IEnggBomRepository _enggBomRepository;
         private readonly IHttpClientFactory _clientFactory;
-        public EngineeringBOMController(IHttpClientFactory clientFactory, HttpClient httpClient, IConfiguration config, IEnggBomRepository enggBomRepository, IRepositoryWrapperForMaster repository, IReleaseProductBomRepository releaseProductBomRepository, IReleaseCostBomRepository releaseCostBomRepository, IReleaseEnggBomRepository releaseEnggBomRepository, ILoggerManager logger, IMapper mapper)
+        public EngineeringBOMController(IHttpClientFactory clientFactory, HttpClient httpClient, IConfiguration config, IEnggBomRepository enggBomRepository,
+            IRepositoryWrapperForMaster repository, IReleaseProductBomRepository releaseProductBomRepository, IReleaseCostBomRepository releaseCostBomRepository,
+            IReleaseEnggBomRepository releaseEnggBomRepository, ILoggerManager logger, IMapper mapper)
         {
             _repository = repository;
             _logger = logger;
@@ -4270,6 +4273,229 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> CreateReleaseFileUpload([FromBody] List<ReleaseFileUploadPostDto> releaseFileUploadPostDtos)
+        {
+            ServiceResponse<List<string>> serviceResponse = new ServiceResponse<List<string>>();
+            try
+            {
+                if (releaseFileUploadPostDtos is null)
+                {
+                    _logger.LogError("ReleaseFileUpload object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "ReleaseFileUpload object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid ReleaseFileUpload object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                List<string?> ids = new List<string?>();
+                foreach (var fileUploadDetail in releaseFileUploadPostDtos)
+                {
+                    Guid guid = Guid.NewGuid();
+                    byte[] fileContent = Convert.FromBase64String(fileUploadDetail.FileByte);
+                    string fileName = guid.ToString() + "_" + fileUploadDetail.FileName + "." + fileUploadDetail.FileExtension;
+                    string fileExt = Path.GetExtension(fileName).ToUpper();
+
+                    string uploadFolderPath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ReleaseFileUpload", fileName);
+
+                    using (MemoryStream ms = new MemoryStream(fileContent))
+                    {
+                        ms.Position = 0;
+                        using (var fileStream = new FileStream(uploadFolderPath, FileMode.Create, FileAccess.Write))
+                        {
+                            ms.WriteTo(fileStream);
+                        }
+                    }
+
+                    var uploadedFile = new ReleaseFileUpload
+                    {
+                        FileName = fileName,
+                        FileExtension = fileExt,
+                        FilePath = uploadFolderPath,
+                        ParentId = fileUploadDetail.ReleaseFor,
+                        DocumentFrom = fileUploadDetail.ReleaseFor,
+                        FileByte = fileUploadDetail.FileByte
+                    };
+
+                    _repository.ReleaseFileUploadRepository.CreateReleaseFileUploadDocument(uploadedFile);
+                    _repository.SaveAsync();
+                    ids.Add(uploadedFile.Id.ToString());
+                }
+
+
+                serviceResponse.Data = ids;
+                serviceResponse.Message = "ReleaseFileUpload documents successfully created";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in CreateReleaseFileUpload: {ex.Message}, {ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "Something went wrong, please try again.";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }       
+        [HttpGet]
+        public async Task<IActionResult> GetReleaseDownloadUrlDetailsforItemFiles(string fileids)
+        {
+            ServiceResponse<List<ReleaseFileUploadDto>> serviceResponse = new ServiceResponse<List<ReleaseFileUploadDto>>();
+            try
+            {
+                string serverKey = GetServerKey();
+                var itemsFiles = await _repository.ReleaseFileUploadRepository.GetReleaseFileUploadDownloadUrlDetails(fileids);
+                if (itemsFiles == null)
+                {
+                    _logger.LogError($"DownloadDetail with id: {fileids}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {fileids}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid release UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid release UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<ReleaseFileUploadDto> fileUploads = new List<ReleaseFileUploadDto>();
+                if (itemsFiles != null)
+                {
+                    foreach (var fileUploadDetails in itemsFiles)
+                    {
+                        ReleaseFileUploadDto fileUploadDto = _mapper.Map<ReleaseFileUploadDto>(fileUploadDetails);
+                        var filename = Uri.EscapeDataString(fileUploadDto.FileName);
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/ItemMaster/DownloadFile?Filename={filename}";
+                        }
+                        else
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/ItemMaster/DownloadFile?Filename={filename}";
+                        }
+
+                        //fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileUploadDto.FileName);
+                        fileUploads.Add(fileUploadDto);
+                    }
+                }
+                _logger.LogInfo($"Returned DownloadDetail with id: {fileids}");
+                //var result = _mapper.Map<IEnumerable<GetDownloadUrlDtos>>(getDownloadDetailByPoNumber);
+                serviceResponse.Data = fileUploads;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetReleaseDownloadUrlDetailsforItemFiles API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetReleaseDownloadUrlDetailsforItemFiles API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<ActionResult> ReleaseDownloadFile(string Filename)
+        {
+            ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
+            var filename = Uri.UnescapeDataString(Filename);
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "ReleaseFileUpload", filename);
+            var provider = new FileExtensionContentTypeProvider();
+            if (!provider.TryGetContentType(filePath, out var ContentType))
+            {
+                ContentType = "application/octet-stream";
+            }
+            var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
+            var DownloadFilename = filename.Split('_');
+            var downloadFilename = string.IsNullOrWhiteSpace(DownloadFilename[1]) ? Path.GetFileName(filePath) : DownloadFilename[1];
+
+            return File(bytes, ContentType, downloadFilename);
+        }
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteReleaseFile(int id)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                var fileToDelete = await _repository.ReleaseFileUploadRepository.GetReleaseFileUploadByIdAsync(id);
+
+                if (fileToDelete == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"File with ID {id} not found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+
+                // Delete file from database
+                _repository.ReleaseFileUploadRepository.Delete(fileToDelete);
+                _repository.SaveAsync();
+
+                // Delete file from folder
+                if (System.IO.File.Exists(fileToDelete.FilePath))
+                {
+                    System.IO.File.Delete(fileToDelete.FilePath);
+                }
+
+                serviceResponse.Data = $"File with ID {id} deleted successfully";
+                serviceResponse.Message = "File deleted successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in DeleteReleaseFile API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in DeleteReleaseFile API for the following id : {id} \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        private string GetServerKey()
+        {
+            var serverName = Environment.MachineName;
+            var serverConfiguration = _config.GetSection("ServerConfiguration");
+
+            if (serverConfiguration.GetValue<bool?>("Server1:EnableKeus") == true)
+            {
+                return "keus";
+            }
+            else if (serverConfiguration.GetValue<bool?>("Server1:EnableAvision") == true)
+            {
+                return "avision";
+
+            }
+            else
+            {
+                return "trasccon";
+            }
+        }
         //[HttpPost] 
         //public async Task<IActionResult> GetBomDetailsSPReportWithParam([FromBody] BOMSPReportDto bomSPReportDto)
 
@@ -4309,4 +4535,5 @@ namespace Tips.Master.Api.Controllers
         //    }
         //}
     }
+
 }

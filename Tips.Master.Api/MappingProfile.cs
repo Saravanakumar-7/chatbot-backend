@@ -400,6 +400,10 @@ namespace Tips.Master.Api
             CreateMap<FileUpload, FileUploadPostDto>().ReverseMap();
             CreateMap<FileUpload, FileUploadUpdateDto>().ReverseMap();
 
+            CreateMap<EngineeringBom, ReleaseEnggBomDto>().ReverseMap();
+            CreateMap<EngineeringBom, ReleaseEnggBomDtoPost>().ReverseMap();
+            CreateMap<EngineeringBom, ReleaseEnggBomDtoUpdate>().ReverseMap();
+
             CreateMap<ImageUpload, ImageUploadDto>().ReverseMap();
             CreateMap<ImageUpload, ImageUploadPostDto>().ReverseMap();
             CreateMap<ImageUpload, ImageUploadUpdateDto>().ReverseMap();

@@ -28,6 +28,7 @@ namespace Repository
         private IProcurementTypeRepository _procurementTypeRepo;
         private IItemMasterRepository _itemMasterRepo;
         private IFileUploadRepository _fileUploadRepo;
+        private IReleaseFileUploadRepository _releaseFileUploadRepository;
         private IEnggBomRepository? _enggBomRepository;
         private ITypeSolutionRepository _typeSolutionRepository;
         private IProductTypeRepository? _productTypeRepository;
@@ -539,6 +540,17 @@ namespace Repository
                     _fileUploadRepo = new FileUploadDocumentRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _fileUploadRepo;
+            }
+        }
+        public IReleaseFileUploadRepository ReleaseFileUploadRepository
+        {
+            get
+            {
+                if (_releaseFileUploadRepository == null)
+                {
+                    _releaseFileUploadRepository = new ReleaseFileUploadDocumentRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _releaseFileUploadRepository;
             }
         }
         public IImageUploadRepository ImageUploadRepository

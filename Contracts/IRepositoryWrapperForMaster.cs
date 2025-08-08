@@ -16,6 +16,7 @@ namespace Contracts
         I_FG_Weighted_AvgCostRepository FG_Weighted_AvgCostRepository { get; }
         I_FG_Weighted_AvgCost_History_Repository FG_Weighted_AvgCost_History_Repository { get; }
         IFileUploadRepository FileUploadRepository { get; }
+        IReleaseFileUploadRepository ReleaseFileUploadRepository { get; }
         IEmailTemplateRepository EmailTemplateRepository { get; }
         IUnitRepository unitRepository { get; }
         IImageUploadRepository ImageUploadRepository { get; }
