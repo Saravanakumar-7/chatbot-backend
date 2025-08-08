@@ -192,13 +192,14 @@ namespace Tips.Warehouse.Api.Repository
             return mRNIssueTrackerDtos;
         }
 
-        public async Task<List<SomitConsumpDto>> GetSomitConsumpDetailsByShopOrderNumbers(string shopOrderNumber)
+        public async Task<List<SomitConsumpWithBOMVersionDto>> GetSomitConsumpDetailsByShopOrderNumbers(string shopOrderNumber,string fgItemNumber)
         {
             var somitConsumpDetails = await _tipsWarehouseDbContext.ShopOrderMaterialIssueTrackers
                 .Where(item => item.ShopOrderNumber == shopOrderNumber)
-                .GroupBy(item => new { item.ShopOrderNumber, item.PartNumber, item.LotNumber, item.MftrPartNumber, item.PartType, item.DataFrom, item.CreatedOn }) 
-                .Select(group => new SomitConsumpDto
+                .GroupBy(item => new { item.ShopOrderNumber, item.PartNumber, item.LotNumber, item.MftrPartNumber, item.PartType, item.DataFrom, item.CreatedOn, item.Bomversion }) 
+                .Select(group => new SomitConsumpWithBOMVersionDto
                 {
+                    FGItemNumber = fgItemNumber,
                     PartNumber = group.Key.PartNumber, 
                     MftrPartNumber = group.Key.MftrPartNumber,
                     ShopOrderNumber = group.Key.ShopOrderNumber,
@@ -207,6 +208,8 @@ namespace Tips.Warehouse.Api.Repository
                     DataFrom = group.Key.DataFrom, 
                     ConvertedToFgQty = group.Sum(item => item.ConvertedToFgQty),
                     CreatedOn = group.Key.CreatedOn,
+                    Bomversion = group.Key.Bomversion
+
                 })
                 .ToListAsync();
 

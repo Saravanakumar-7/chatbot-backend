@@ -149,4 +149,11 @@ namespace Entities.DTOs
         public bool IsActive { get; set; }
 
     }
+    public class EnggChildBomQtyDetailsDto
+    {
+        public string? ItemNumber { get; set; }
+        public PartType PartType { get; set; }
+        public decimal Quantity { get; set; }
+
+    }
 }

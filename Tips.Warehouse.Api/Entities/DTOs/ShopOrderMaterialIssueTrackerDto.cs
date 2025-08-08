@@ -60,8 +60,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal QtyUsed { get; set; }
         public string MRNumber {  get; set; }
     }
-    public class SomitConsumpDto
+
+    public class SomitConsumpWithBOMVersionDto
     {
+        public string? FGItemNumber { get; set; }
         public string? PartNumber { get; set; }
         public string? MftrPartNumber { get; set; }
         public string? ShopOrderNumber { get; set; }
@@ -70,5 +72,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? DataFrom { get; set; }
         public decimal ConvertedToFgQty { get; set; }
         public DateTime? CreatedOn { get; set; }
+        public string? InvoiceNumber { get; set; }
+        public decimal InvoicedQty { get; set; }
+        public string? BTONumber { get; set; }
+        public decimal Bomversion { get; set; }
+        public decimal? BomQty { get; set; }
     }
 }

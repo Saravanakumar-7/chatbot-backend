@@ -229,7 +229,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public DateTime? InvoiceDate { get; set; }
         public string? DONumber { get; set; }
         public string? FGItemNumber { get; set; }
-        public decimal? InvoicedQty { get; set; }
+        public decimal InvoicedQty { get; set; }
     }
     public class SalesInvoiceSPReportDto
     {

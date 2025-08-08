@@ -80,22 +80,82 @@ namespace Tips.Warehouse.Api.Controllers
             try
             {
                 // Fetch invoice data
-                var invoiceConsumpDetails = await _invoiceRepository.GetInvoiceDetialsbyDate(FromDate, ToDate);
+                //var invoiceConsumpDetails = await _invoiceRepository.GetInvoiceDetialsbyDate(FromDate, ToDate);
 
 
-                // Fetch DO details based on DO number
-                List<string?> doNumberList = invoiceConsumpDetails.Select(item => item.DONumber).Distinct().ToList();
-                var doConsumpDetails = await _bTODeliveryOrderRepository.GetDoConsumpDetailsByBTONumberList(doNumberList);
+                //// Fetch DO details based on DO number
+                //List<string?> doNumberList = invoiceConsumpDetails.Select(item => item.DONumber).Distinct().ToList();
+                //var doConsumpDetails = await _bTODeliveryOrderRepository.GetDoConsumpDetailsByBTONumberList(doNumberList);
 
 
-                // Fetch shop order details based on Lot number
-                List<string?> lotNumberList = doConsumpDetails.Select(x => x.LotNumber).Distinct().ToList();
-                List<ShopOrderComsumpDto> shopOrderConsumpDetials = await GetShopOrderComsumptionDetailsByLotNo(lotNumberList);
+                //// Fetch shop order details based on Lot number
+                //List<string?> lotNumberList = doConsumpDetails.Select(x => x.LotNumber).Distinct().ToList();
+                //List<ShopOrderComsumpDto> shopOrderConsumpDetials = await GetShopOrderComsumptionDetailsByLotNo(lotNumberList);
 
+                //var shopOrderComsumpList = (from shopOrder in shopOrderConsumpDetials
+                //                            join invoice in invoiceConsumpDetails
+                //                                on shopOrder.ItemNumber equals invoice.FGItemNumber
+                //                            select new ShopOrderComsumpDetailsDto
+                //                            {
+                //                                ShopOrderNumber = shopOrder.ShopOrderNumber,
+                //                                ItemNumber = shopOrder.ItemNumber,
+                //                                InvoiceNumber = invoice.InvoiceNumber,
+                //                                InvoicedQty = invoice.InvoicedQty,
+                //                                BTONumber = invoice.DONumber
+                //                            }).ToList();
+
+                //var shopOrderComsumpListWithItemValidation = (from invoice in invoiceConsumpDetails
+                //                                              join doDetail in doConsumpDetails
+                //                                                  on invoice.DONumber equals doDetail.BTONumber
+                //                                              join shopOrder in shopOrderConsumpDetials
+                //                                                  on new { LotNumber = doDetail.LotNumber, ItemNumber = invoice.FGItemNumber }
+                //                                                  equals new { LotNumber = shopOrder.ShopOrderNumber, ItemNumber = shopOrder.ItemNumber }
+                //                                              select new ShopOrderComsumpDetailsDto
+                //                                              {
+                //                                                  InvoiceNumber = invoice.InvoiceNumber,
+                //                                                  BTONumber = invoice.DONumber,
+                //                                                  ShopOrderNumber = shopOrder.ShopOrderNumber,
+                //                                                  ItemNumber = shopOrder.ItemNumber,
+                //                                                  InvoicedQty = invoice.InvoicedQty,
+                //                                              }).ToList();
+
+
+                var invoiceBTODetails = await _invoiceRepository.GetInvoiceBTODetailsByDate(FromDate, ToDate);
+
+
+                // Step 2: Get distinct lot numbers from invoice BTO details
+                List<string?> lotNumberList = invoiceBTODetails
+                                                .Select(x => x.LotNumber)
+                                                .Where(x => !string.IsNullOrEmpty(x))
+                                                .Distinct()
+                                                .ToList();
+
+                // Step 3: Get shop order consumption details
+                List<ShopOrderComsumpDto> shopOrderConsumpDetails = await GetShopOrderComsumptionDetailsByLotNo(lotNumberList);
+
+                // Step 4: Combine the data using LINQ join
+                var invoiceBTOShopOrderList = (from invoiceBTO in invoiceBTODetails
+                                               join shopOrder in shopOrderConsumpDetails
+                                                   on new { LotNumber = invoiceBTO.LotNumber, ItemNumber = invoiceBTO.FGItemNumber }
+                                                   equals new { LotNumber = shopOrder.ShopOrderNumber, ItemNumber = shopOrder.ItemNumber }
+                                                   into shopOrderGroup
+                                               from shopOrder in shopOrderGroup.DefaultIfEmpty()
+                                               select new InvoiceBTOShopOrderDetailsDto
+                                               {
+                                                   InvoiceNumber = invoiceBTO.InvoiceNumber,
+                                                   InvoiceDate = invoiceBTO.InvoiceDate,
+                                                   DONumber = invoiceBTO.DONumber,
+                                                   FGItemNumber = invoiceBTO.FGItemNumber,
+                                                   InvoicedQty = invoiceBTO.InvoicedQty,
+                                                   SalesOrderNumber = invoiceBTO.SalesOrderNumber,
+                                                   LotNumber = invoiceBTO.LotNumber,
+                                                   ReleaseQty = shopOrder?.ReleaseQty ?? 0,
+                                                   WipQty = shopOrder?.WipQty ?? 0
+                                               }).ToList();
 
                 // Fetch Somit consumption details based on Shop Order numbers
-                Dictionary<string, string?> shopOrderToItemNumberDict = shopOrderConsumpDetials.ToDictionary(x => x.ShopOrderNumber, x => x.ItemNumber);
-                List<SomitConsumpDto> somitConsumpDetails = await GetSomitConsumpDetailsByShopOrderNumbers(shopOrderToItemNumberDict);
+                //Dictionary<string, string?> shopOrderToItemNumberDict = shopOrderConsumpDetials.ToDictionary(x => x.ShopOrderNumber, x => x.ItemNumber);
+                List<SomitConsumpWithBOMVersionDto> somitConsumpDetails = await GetSomitConsumpDetailsByShopOrderNumbers(invoiceBTOShopOrderList);
 
 
                 // Fetch Grin consumption details based on Part numbers and LotNo
@@ -194,24 +254,27 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
 
-        private async Task<List<SomitConsumpDto>> GetSomitConsumpDetailsByShopOrderNumbers(Dictionary<string, string?> shopOrderToItemNumberDict)
+        private async Task<List<SomitConsumpWithBOMVersionDto>> GetSomitConsumpDetailsByShopOrderNumbers(List<InvoiceBTOShopOrderDetailsDto> invoiceBTOShopOrderDetailsDto)
         {
-            List<SomitConsumpDto> SomitConsumpDtoList = new List<SomitConsumpDto>();
+            List<SomitConsumpWithBOMVersionDto> SomitConsumpDtoList = new List<SomitConsumpWithBOMVersionDto>();
 
-            if (shopOrderToItemNumberDict != null && shopOrderToItemNumberDict.Count > 0)
+            if (invoiceBTOShopOrderDetailsDto != null && invoiceBTOShopOrderDetailsDto.Count > 0)
             {
-                foreach (var dic in shopOrderToItemNumberDict)
+                foreach (var invoiceBTOShopOrderDetail in invoiceBTOShopOrderDetailsDto)
                 {
-                    string shopOrderNo = dic.Key;
-                    string? fgItemNumber = dic.Value;
+                    string shopOrderNo = invoiceBTOShopOrderDetail.LotNumber;
+                    string fgItemNumber = invoiceBTOShopOrderDetail.FGItemNumber;
+                    string invoiceNumber = invoiceBTOShopOrderDetail.InvoiceNumber;
+                    decimal invoicedQty = invoiceBTOShopOrderDetail.InvoicedQty;
+                    string btoNumber = invoiceBTOShopOrderDetail.DONumber;
 
-                    await SomitConsumpDetailsForComsumptionReportByShopOrderNo(SomitConsumpDtoList, shopOrderNo, fgItemNumber);
+                    await SomitConsumpDetailsForComsumptionReportByShopOrderNo(SomitConsumpDtoList, shopOrderNo, fgItemNumber, invoiceNumber, invoicedQty, btoNumber);
                 }
             }
 
             var itemsRequiredQtyGrouped = SomitConsumpDtoList
                              .GroupBy(item => item.PartNumber) 
-                             .Select(group => new SomitConsumpDto
+                             .Select(group => new SomitConsumpWithBOMVersionDto
                              {
                                  PartNumber = group.Key, 
                                  MftrPartNumber = group.FirstOrDefault().MftrPartNumber, 
@@ -229,24 +292,27 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
 
-        private async Task SomitConsumpDetailsForComsumptionReportByShopOrderNo(List<SomitConsumpDto> SomitConsumpDtoList, string shopOrderNo, string fgItemNumber)
+        private async Task SomitConsumpDetailsForComsumptionReportByShopOrderNo(List<SomitConsumpWithBOMVersionDto> SomitConsumpDtoList, string shopOrderNo, string fgItemNumber,string invoiceNumber,decimal invoicedQty,string btoNumber)
         {
             try
             {
                 Dictionary<string, decimal> saItem = new Dictionary<string, decimal>();
 
                 var somitDetails = await _materialIssueTrackerRepository
-                      .GetSomitConsumpDetailsByShopOrderNumbers(shopOrderNo);
+                      .GetSomitConsumpDetailsByShopOrderNumbers(shopOrderNo, fgItemNumber);
+
+                var BomVersion = somitDetails.Select(x => x.Bomversion).FirstOrDefault();
+
+                List<EnggChildBomComsumpDetailsDto> enggChildBomComsumpDetailsDtos = await GetEnggBomComsumpDetailsByFgItemNoAndBOMVersion(fgItemNumber, BomVersion);
 
                 if (somitDetails != null && somitDetails.Count() > 0)
                 {
                     foreach (var somitDetail in somitDetails)
                     {
-                        List<string> itemDetails = new List<string>();
                         if (somitDetail.PartType == PartType.PurchasePart)
                         {
 
-                            SomitConsumpDto SomitConsump = new SomitConsumpDto
+                            SomitConsumpWithBOMVersionDto SomitConsump = new SomitConsumpWithBOMVersionDto
                             {
                                 PartNumber = somitDetail.PartNumber,
                                 MftrPartNumber = somitDetail.MftrPartNumber,
@@ -255,7 +321,12 @@ namespace Tips.Warehouse.Api.Controllers
                                 ShopOrderNumber = somitDetail.ShopOrderNumber,
                                 PartType = somitDetail.PartType,
                                 DataFrom = somitDetail.DataFrom,
-                                ConvertedToFgQty = somitDetail.ConvertedToFgQty
+                                ConvertedToFgQty = somitDetail.ConvertedToFgQty,
+                                InvoiceNumber = invoiceNumber,
+                                InvoicedQty = invoicedQty,
+                                BTONumber = btoNumber,
+                                Bomversion = BomVersion,
+                                BomQty = enggChildBomComsumpDetailsDtos.Where(x=>x.ItemNumber == somitDetail.PartNumber).Select(x=>x.Quantity).FirstOrDefault()
                             };
 
                             SomitConsumpDtoList.Add(SomitConsump);
@@ -271,7 +342,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                             var saShopOrderNo = await GetShopOrderComsumptionDetailsBySaItemNo(saItemNumber, fgItemNumber);
 
-                            await SomitConsumpDetailsForComsumptionReportByShopOrderNo(SomitConsumpDtoList, saShopOrderNo, fgItemNumber);
+                            await SomitConsumpDetailsForComsumptionReportByShopOrderNo(SomitConsumpDtoList, saShopOrderNo, fgItemNumber,  invoiceNumber,  invoicedQty,  btoNumber);
                         }
 
                     }
@@ -282,6 +353,30 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 _logger.LogError(ex.Message);
             }
+        }
+
+        private async Task<List<EnggChildBomComsumpDetailsDto>> GetEnggBomComsumpDetailsByFgItemNoAndBOMVersion(string fgItemNumber, decimal bomVersion)
+        {
+            var client = _clientFactory.CreateClient();
+            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"],
+                                $"GetEnggChildBomQtyDetailsByFgItemNoAndRevNo?itemNumber={fgItemNumber}&revisionNumber={bomVersion}"));
+
+            request.Headers.Add("Authorization", token);
+            var enggBomChildResponse = await client.SendAsync(request);
+            var enggBomChildString = await enggBomChildResponse.Content.ReadAsStringAsync();
+            dynamic enggBomChildData = JsonConvert.DeserializeObject(enggBomChildString);
+
+            List<EnggChildBomComsumpDetailsDto> enggChildBomComsumpDetailsDto = new List<EnggChildBomComsumpDetailsDto>();
+
+            foreach (var item in enggBomChildData.data)
+            {
+                EnggChildBomComsumpDetailsDto dto = JsonConvert.DeserializeObject<EnggChildBomComsumpDetailsDto>(item.ToString());
+                enggChildBomComsumpDetailsDto.Add(dto);
+            }
+
+
+            return enggChildBomComsumpDetailsDto;
         }
 
         private async Task<string> GetShopOrderComsumptionDetailsBySaItemNo(string saItemNumber, string fgItemNumber)
