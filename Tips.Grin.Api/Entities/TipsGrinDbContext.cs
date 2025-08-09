@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using Tips.Grin.Api.Controllers;
 using Tips.Grin.Api.Entities.DTOs;
@@ -78,6 +79,7 @@ namespace Tips.Grin.Api.Entities
             modelBuilder.Entity<OpenGrinSpReportForTrans>().HasNoKey();
             modelBuilder.Entity<IQCConfirmationSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<GrinForServiceItemsSPReport>().HasNoKey();
+            modelBuilder.Entity<KITGrinSPReport>().HasNoKey();
             modelBuilder.Entity<IQCForServiceItemsSPReport>().HasNoKey();
             modelBuilder.Entity<OpenGrinForGrinSPReport>().HasNoKey();
             modelBuilder.Entity<OpenGrinForIQCSPReport>().HasNoKey();

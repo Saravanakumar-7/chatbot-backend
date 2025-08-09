@@ -154,6 +154,14 @@ namespace Tips.Warehouse.Api.Repository
 
             return results;
         }
+        public async Task<IEnumerable<InvoiceSPReportForAvi>> InvoiceSPReportDateForAvi(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<InvoiceSPReportForAvi>()
+                         .FromSqlInterpolated($"CALL Invoice_Report_withparameter_invoicedate_avi({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
         public async Task<IEnumerable<SalesInvoiceSPReport>> SalesInvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsWarehouseDbContext.Set<SalesInvoiceSPReport>()
@@ -196,6 +204,17 @@ namespace Tips.Warehouse.Api.Repository
         {
             var result = _tipsWarehouseDbContext.Set<InvoiceSPReportForTrans>()
                             .FromSqlInterpolated($"CALL Invoice_Report_withparameter_tras({InvoiceNumber},{DONumber},{CustomerId},{CustomerName},{SalesOrderNumber},{Location},{Warehouse},{KPN},{MPN},{IssuedTo},{ProjectNumber})")
+                            .ToList();
+
+            return result;
+
+        }
+        public async Task<IEnumerable<InvoiceSPReportForAvi>> InvoiceSPReportWithParameterForAvi(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName,
+                                                                                                     string? SalesOrderNumber, string? Location,
+                                                                                                         string? Warehouse, string? KPN, string? MPN, string? IssuedTo, string? ProjectNumber)
+        {
+            var result = _tipsWarehouseDbContext.Set<InvoiceSPReportForAvi>()
+                            .FromSqlInterpolated($"CALL Invoice_Report_withparameter_avi({InvoiceNumber},{DONumber},{CustomerId},{CustomerName},{SalesOrderNumber},{Location},{Warehouse},{KPN},{MPN},{IssuedTo},{ProjectNumber})")
                             .ToList();
 
             return result;

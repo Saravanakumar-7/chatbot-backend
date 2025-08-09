@@ -19,5 +19,7 @@ namespace Tips.Grin.Api.Contracts
         Task<PagedList<KIT_GRIN>> GetAllKIT_GRIN([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams);
         Task<KIT_GRIN?> GetKIT_GrinByKIT_GrinNumber(string kIT_GrinNumber);
         Task<IEnumerable<KIT_GrinNoForKIT_IqcAndKIT_Binning>> GetAllKIT_GrinNumberForKIT_Binning();
+        Task<IEnumerable<KITGrinSPReport>> KITGrinSPReportwithparameterForAvi(string? KIT_GrinNumber, string? VendorName, string? PONumber, string? ItemNumber, string? MPN, string? Warehouse, string? Location, string? ProjectNumber);
+        Task<IEnumerable<KITGrinSPReport>> KITGrinSPReportwithDateForAvi(DateTime? FromDate, DateTime? ToDate);
     }
 }

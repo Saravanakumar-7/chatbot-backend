@@ -293,7 +293,47 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpPost] // Adjust your route as needed
+
+        [HttpPost]
+        public async Task<IActionResult> GetDoVsInvoiceSpReportSPReportsWithParam([FromBody] DoVsInvoiceInputParamDto doVsInvoiceInputParamDto)
+        {
+            ServiceResponse<IEnumerable<DoVsInvoiceSpReport>> serviceResponse = new ServiceResponse<IEnumerable<DoVsInvoiceSpReport>>();
+            try
+            {
+                var products = await _repository.GetDoVsInvoiceSpReportSPReportsWithParam(doVsInvoiceInputParamDto.InvoiceNumber, doVsInvoiceInputParamDto.ItemNumber,
+                                                                                    doVsInvoiceInputParamDto.DONumber, doVsInvoiceInputParamDto.SalesOrderNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DoVsInvoice hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"DoVsInvoice hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned DoVsInvoice Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetDoVsInvoiceSpReportSPReportsWithParam API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetDoVsInvoiceSpReportSPReportsWithParam API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+    
+
+    [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetDeliveryOrderSPReportsWithParamForAvi([FromBody] DeliveryOrderReportWithParamDTO deliveryOrderSPReport)
         {
             ServiceResponse<IEnumerable<DeliveryOrderSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<DeliveryOrderSPReportForAvi>>();

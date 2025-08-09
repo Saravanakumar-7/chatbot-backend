@@ -156,5 +156,24 @@ namespace Tips.Grin.Api.Repository
                .ThenInclude(d => d.KIT_GRIN_ProjectNumbers).ThenInclude(x => x.KIT_GRIN_KITComponents)
                .Include(d => d.KIT_GRIN_OtherCharges).AsQueryable().FirstOrDefaultAsync();
         }
+
+        public async Task<IEnumerable<KITGrinSPReport>> KITGrinSPReportwithparameterForAvi(string? KIT_GrinNumber, string? VendorName, string? PONumber, string? ItemNumber, string? MPN, string? Warehouse, string? Location, string? ProjectNumber)
+        {
+            var result = _tipsGrinDbContext.Set<KITGrinSPReport>()
+                            .FromSqlInterpolated($"CALL KIT_Grin_Report_withparameter_Avi({KIT_GrinNumber},{VendorName},{PONumber},{ItemNumber},{MPN},{Warehouse},{Location},{ProjectNumber})")
+                            .ToList();
+
+            return result;
+
+        }
+        public async Task<IEnumerable<KITGrinSPReport>> KITGrinSPReportwithDateForAvi(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsGrinDbContext.Set<KITGrinSPReport>()
+                         .FromSqlInterpolated($"CALL KIT_Grin_Report_withparameter_withdate_Avi({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
+
     }
 }
