@@ -1,4 +1,6 @@
-﻿namespace Tips.Warehouse.Api.Entities.DTOs
+﻿using Entities.Enums;
+
+namespace Tips.Warehouse.Api.Entities.DTOs
 {
     public class ConsumptionSPReportDto
     {
@@ -55,6 +57,46 @@
         public decimal OtherCosts { get; set; }
         public string? UOM { get; set; }
         public string? UOC { get; set; }
+
+    }
+    public class ShopOrderComsumpDetailsDto
+    {
+        public string? ShopOrderNumber { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? InvoiceNumber { get; set; }
+        public decimal InvoicedQty { get; set; }
+        public string? BTONumber { get; set; }
+    }
+
+    public class InvoiceBTODetailsDto
+    {
+        public string? InvoiceNumber { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public string? DONumber { get; set; }
+        public string? FGItemNumber { get; set; }
+        public decimal InvoicedQty { get; set; }
+        public string SalesOrderNumber { get; set; }
+        public string? LotNumber { get; set; } // This is the ShopOrderNumber
+    }
+
+    public class InvoiceBTOShopOrderDetailsDto
+    {
+        public string? InvoiceNumber { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public string? DONumber { get; set; }
+        public string? FGItemNumber { get; set; }
+        public decimal InvoicedQty { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? LotNumber { get; set; } // This is the ShopOrderNumber
+        // Shop order quantities from ShopOrderComsumpDto
+        public decimal ReleaseQty { get; set; }
+        public decimal WipQty { get; set; }
+    }
+    public class EnggChildBomComsumpDetailsDto
+    {
+        public string? ItemNumber { get; set; }
+        public PartType PartType { get; set; }
+        public decimal Quantity { get; set; }
 
     }
 }

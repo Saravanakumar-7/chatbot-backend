@@ -243,6 +243,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
     }
     public class DoConsumpDto
     {
+        public string? ItemNumber { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string? LotNumber { get; set; }
         public string? BTONumber { get; set; }

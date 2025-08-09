@@ -103,39 +103,66 @@ namespace Tips.Warehouse.Api.Repository
                 throw ex;
             }
         }
-        public async Task<IEnumerable<InvoiceConceptionDto>> GetInvoiceDetialsbyDate(DateTime? FromDate, DateTime? ToDate)
+        //public async Task<IEnumerable<InvoiceConceptionDto>> GetInvoiceDetialsbyDate(DateTime? FromDate, DateTime? ToDate)
+        //{
+        //    var invoiceConcepDetails = await (from invoice in _tipsWarehouseDbContext.invoices
+        //                                      join childItem in _tipsWarehouseDbContext.invoiceChildItems
+        //                                      on invoice.Id equals childItem.InvoiceId
+        //                                      where invoice.CreatedOn >= FromDate && invoice.CreatedOn <= ToDate
+        //                                      select new InvoiceConceptionDto
+        //                                      {
+        //                                          InvoiceNumber = invoice.InvoiceNumber,
+        //                                          InvoiceDate = invoice.CreatedOn,
+        //                                          DONumber = childItem.DONumber,
+        //                                          FGItemNumber = childItem.FGItemNumber,
+        //                                          InvoicedQty = childItem.InvoicedQty
+        //                                      })
+        //                            .ToListAsync();
+
+        //    return invoiceConcepDetails;
+
+        //    //var groupedInvoiceConcepDetails = invoiceConcepDetails
+        //    //    .GroupBy(x => new { x.FGItemNumber, x.DONumber })
+        //    //    .Select(group => new InvoiceConceptionDto
+        //    //    {
+        //    //        FGItemNumber = group.Key.FGItemNumber,
+        //    //        DONumber = group.Key.DONumber,
+        //    //        InvoicedQty = group.Sum(x => x.InvoicedQty),
+        //    //        InvoiceNumber = group.Select(x => x.InvoiceNumber).FirstOrDefault()
+        //    //    })
+        //    //    .ToList();
+
+        //    //return groupedInvoiceConcepDetails;
+        //}
+
+        public async Task<List<InvoiceBTODetailsDto>> GetInvoiceBTODetailsByDate(DateTime? FromDate, DateTime? ToDate)
         {
-            var invoiceConcepDetails = await (from invoice in _tipsWarehouseDbContext.invoices
-                                              join childItem in _tipsWarehouseDbContext.invoiceChildItems
-                                              on invoice.Id equals childItem.InvoiceId
-                                              where invoice.CreatedOn >= FromDate && invoice.CreatedOn <= ToDate
-                                              select new
-                                              {
-                                                  invoice.InvoiceNumber,
-                                                  invoice.CreatedOn,
-                                                  childItem.DONumber,
-                                                  childItem.FGItemNumber,
-                                                  childItem.InvoicedQty
-                                              })
-                                              
-                                              .ToListAsync();
-
-            var groupedInvoiceConcepDetails = invoiceConcepDetails
-                .GroupBy(x => new { x.FGItemNumber, x.DONumber })
-                .Select(group => new InvoiceConceptionDto
-                {
-                    FGItemNumber = group.Key.FGItemNumber,
-                    DONumber = group.Key.DONumber,
-                    InvoicedQty = group.Sum(x => x.InvoicedQty),
-                    InvoiceNumber = group.Select(x => x.InvoiceNumber).FirstOrDefault(),
-                    InvoiceDate = group.Select(x => x.CreatedOn).FirstOrDefault()
-                })
-                .ToList();
-
-            return groupedInvoiceConcepDetails;
+            var result = await (from invoice in _tipsWarehouseDbContext.invoices
+                                join childItem in _tipsWarehouseDbContext.invoiceChildItems
+                                    on invoice.Id equals childItem.InvoiceId
+                                join btoOrderItem in _tipsWarehouseDbContext.bTODeliveryOrderItems
+                                    on childItem.DONumber equals btoOrderItem.BTONumber
+                                join btoMainOrder in _tipsWarehouseDbContext.bTODeliveryOrder  // Join with main BTO table
+                                    on btoOrderItem.BTONumber equals btoMainOrder.BTONumber
+                                join btoItem in _tipsWarehouseDbContext.bTODeliveryOrderItems
+                                    on new { BTONumber = btoOrderItem.BTONumber, ItemNumber = childItem.FGItemNumber }
+                                    equals new { BTONumber = btoItem.BTONumber, ItemNumber = btoItem.FGItemNumber }
+                                join qtyDistribution in _tipsWarehouseDbContext.BtoDeliveryOrderItemQtyDistribution
+                                    on btoItem.Id equals qtyDistribution.BTODeliveryOrderItemsId
+                                where invoice.CreatedOn >= FromDate && invoice.CreatedOn <= ToDate
+                                select new InvoiceBTODetailsDto
+                                {
+                                    InvoiceNumber = invoice.InvoiceNumber,
+                                    InvoiceDate = invoice.CreatedOn,
+                                    DONumber = childItem.DONumber,
+                                    FGItemNumber = childItem.FGItemNumber,
+                                    InvoicedQty = childItem.InvoicedQty,
+                                    SalesOrderNumber = btoMainOrder.SalesOrderNumber,  // Now from main table
+                                    LotNumber = qtyDistribution.LotNumber
+                                })
+                                .ToListAsync();
+            return result;
         }
-
-
 
 
         public async Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate)

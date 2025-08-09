@@ -553,6 +553,46 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetEnggChildBomQtyDetailsByFgItemNoAndRevNo(string itemNumber, decimal revisionNumber)
+        {
+            ServiceResponse<List<EnggChildBomQtyDetailsDto>> serviceResponse = new ServiceResponse<List<EnggChildBomQtyDetailsDto>>();
+
+            try
+            {
+                var enggBomDetail = await _enggBomRepository
+                          .GetEnggChildBomQtyDetailsByFgItemNoAndRevNo(itemNumber, revisionNumber);
+
+                if (enggBomDetail == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"GetEnggChildBomQtyDetailsByFgItemNoAndRevNo hasn't been found";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"GetEnggChildBomQtyDetailsByFgItemNoAndRevNo: {itemNumber},{revisionNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = enggBomDetail;
+                    serviceResponse.Message = $"Returned GetEnggChildBomQtyDetailsByFgItemNoAndRevNo Successfully ";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetEnggChildBomQtyDetailsByFgItemNoAndRevNo API for the following itemNumber : {itemNumber} and revisionNumber:{revisionNumber}  \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetEnggChildBomQtyDetailsByFgItemNoAndRevNo API for the following itemNumber : {itemNumber} and revisionNumber:{revisionNumber}  \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GetEnggBomByItemNoAndRevNo(string itemNumber, decimal revisionNumber)
         {
             ServiceResponse<EnggBomDto> serviceResponse = new ServiceResponse<EnggBomDto>();

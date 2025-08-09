@@ -1012,6 +1012,26 @@ namespace Repository
 
             return EnggBomDetailsbyItemNumber;
         }
+
+        public async Task<List<EnggChildBomQtyDetailsDto>> GetEnggChildBomQtyDetailsByFgItemNoAndRevNo(string fgItemNumber, decimal revNo)
+        {
+
+            var enggBomId = await _tipsMasterDbContext.EnggBoms
+                            .Where(x => x.ItemNumber == fgItemNumber && x.IsActive == true && x.RevisionNumber == revNo)
+                            .Select(x => x.BOMId).FirstOrDefaultAsync();
+
+            List<EnggChildBomQtyDetailsDto> enggChildBomQtyDetailsDto = await _tipsMasterDbContext.EnggChildItems
+                                    .Where(x => x.EnggBomId == enggBomId && x.IsActive == true)
+                                    .Select(c => new EnggChildBomQtyDetailsDto()
+                                    {
+                                        ItemNumber = c.ItemNumber,
+                                        PartType = c.PartType,
+                                        Quantity = c.Quantity
+                                    })
+                                  .ToListAsync();
+
+            return enggChildBomQtyDetailsDto;
+        }
     }
 
     public class ReleaseEnggBomRepository : RepositoryBase<EngineeringBom>, IReleaseEnggBomRepository
