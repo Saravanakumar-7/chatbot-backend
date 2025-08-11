@@ -63,19 +63,25 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 
     public class SomitConsumpWithBOMVersionDto
     {
-        public string? FGItemNumber { get; set; }
-        public string? PartNumber { get; set; }
-        public string? MftrPartNumber { get; set; }
-        public string? ShopOrderNumber { get; set; }
-        public string? LotNumber { get; set; }
-        public PartType? PartType { get; set; }
-        public string? DataFrom { get; set; }
-        public decimal ConvertedToFgQty { get; set; }
-        public DateTime? CreatedOn { get; set; }
         public string? InvoiceNumber { get; set; }
         public decimal InvoicedQty { get; set; }
+        public DateTime? InvoiceDate { get; set; }
         public string? BTONumber { get; set; }
+        public string? FGItemNumber { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        public decimal ShopOrderReleaseQty { get; set; }
+        public decimal ShopOrderWipQty { get; set; }
+        public string? PartNumber { get; set; }
+        public string? MftrPartNumber { get; set; }
+        public string? LotNumber { get; set; }
+        public PartType? PartType { get; set; }
+        public decimal? IssuedQty { get; set; }
+        public decimal ConvertedToFgQty { get; set; }
+        public DateTime? SomitDate { get; set; }
+        public string? DataFrom { get; set; }
         public decimal Bomversion { get; set; }
         public decimal? BomQty { get; set; }
+        public decimal? ConsumedQtyByInvoice { get; set; }
+        public decimal? PPWipQty { get; set; }
     }
 }
