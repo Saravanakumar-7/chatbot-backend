@@ -4224,7 +4224,7 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetGrinComsumptionDetialsByPartNos(GrinComsumpDto grinComsumpDto)
+        public async Task<IActionResult> GetGrinComsumptionDetialsByPartNos([FromBody]GrinComsumpDto grinComsumpDto)
         {
             //openpurchaseorderdto
             ServiceResponse<IEnumerable<GrinComsumpReportDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinComsumpReportDto>>();

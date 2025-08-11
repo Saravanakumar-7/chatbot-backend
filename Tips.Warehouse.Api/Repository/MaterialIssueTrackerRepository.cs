@@ -206,8 +206,9 @@ namespace Tips.Warehouse.Api.Repository
                     LotNumber = group.Key.LotNumber,
                     PartType = group.Key.PartType, 
                     DataFrom = group.Key.DataFrom, 
+                    IssuedQty = group.Sum(item => item.IssuedQty),
                     ConvertedToFgQty = group.Sum(item => item.ConvertedToFgQty),
-                    CreatedOn = group.Key.CreatedOn,
+                    SomitDate = group.Key.CreatedOn,
                     Bomversion = group.Key.Bomversion
 
                 })
