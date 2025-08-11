@@ -25,6 +25,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<PagedList<InvoiceSPReport>> InvoiceSPReport(PagingParameter pagingParameter);
         Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<InvoiceSPReportForTrans>> InvoiceSPReportDateForTrans(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<InvoiceSPReportForAvi>> InvoiceSPReportDateForAvi(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<SalesInvoiceSPReport>> SalesInvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<SalesInvoiceSPReport>> SalesInvoiceSPReportWithParameter(string? InvoiceNumber, string? CustomerId, string? CustomerName, string? FGItemNumber);
         Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportWithParameter(string InvoiceNumber, string DONumber, string LeadId, string CustomerName,
@@ -32,6 +33,10 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<InvoiceSPReportForTrans>> InvoiceSPReportWithParameterForTrans(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName,
                                                                                                         string? SalesOrderNumber, string? Location,
                                                                                                        string? Warehouse, string? KPN, string? MPN, string? IssuedTo, string? ProjectNumber);
+
+        Task<IEnumerable<InvoiceSPReportForAvi>> InvoiceSPReportWithParameterForAvi(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName,
+                                                                                                string? SalesOrderNumber, string? Location,
+                                                                                               string? Warehouse, string? KPN, string? MPN, string? IssuedTo, string? ProjectNumber);
         Task<Invoice> GetInvoiceByInvoiceNumber(string InvoiceNumber);
         Task<Invoice> GetInvoiceByIdExceptClosed(int id);
         //Task<IEnumerable<InvoiceConceptionDto>> GetInvoiceDetialsbyDate(DateTime? FromDate, DateTime? ToDate);

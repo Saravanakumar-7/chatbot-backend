@@ -883,6 +883,80 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> KITGrinSPReportwithparameterForAvi([FromBody] KITGrinSPReportInputParamDto kitGrinSPReportInputParamDto)
+        {
+            ServiceResponse<IEnumerable<KITGrinSPReport>> serviceResponse = new ServiceResponse<IEnumerable<KITGrinSPReport>>();
+            try
+            {
+                var products = await _repository.KITGrinSPReportwithparameterForAvi(kitGrinSPReportInputParamDto.KIT_GrinNumber, kitGrinSPReportInputParamDto.VendorName,
+                                                                                    kitGrinSPReportInputParamDto.PONumber, kitGrinSPReportInputParamDto.ItemNumber, kitGrinSPReportInputParamDto.MPN,
+                                                                                    kitGrinSPReportInputParamDto.Warehouse, kitGrinSPReportInputParamDto.Location, kitGrinSPReportInputParamDto.ProjectNumber);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"KITGrin hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"KITGrin hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned KITGrin Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in KITGrinSPReportwithparameterAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in KITGrinSPReportwithparameterAvi API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> KITGrinSPReportwithDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<KITGrinSPReport>> serviceResponse = new ServiceResponse<IEnumerable<KITGrinSPReport>>();
+            try
+            {
+                var products = await _repository.KITGrinSPReportwithDateForAvi(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"KITGrin hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"KITGrin hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned KITGrin Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in KITGrinSPReportwithDateForAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in KITGrinSPReportwithDateForAvi API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetKIT_GRINDetailsForKIT_Binning([FromQuery] string KIT_GrinNumber)
         {

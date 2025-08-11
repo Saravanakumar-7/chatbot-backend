@@ -226,9 +226,9 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<IEnumerable<InvoiceSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSPReportForTrans>>();
             try
             {
-                var products = await _invoiceRepository.InvoiceSPReportWithParameterForTrans(invoiceSPReport.InvoiceNumber, invoiceSPReport.DONumber, 
-                                                                                    invoiceSPReport.CustomerId, invoiceSPReport.CustomerName, invoiceSPReport.SalesOrderNumber, 
-                                                                                    invoiceSPReport.Location, invoiceSPReport.Warehouse, invoiceSPReport.KPN, 
+                var products = await _invoiceRepository.InvoiceSPReportWithParameterForTrans(invoiceSPReport.InvoiceNumber, invoiceSPReport.DONumber,
+                                                                                    invoiceSPReport.CustomerId, invoiceSPReport.CustomerName, invoiceSPReport.SalesOrderNumber,
+                                                                                    invoiceSPReport.Location, invoiceSPReport.Warehouse, invoiceSPReport.KPN,
                                                                                     invoiceSPReport.MPN, invoiceSPReport.IssuedTo, invoiceSPReport.ProjectNumber);
                 if (products == null)
                 {
@@ -253,6 +253,45 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError($"Error Occured in InvoiceSPReportWithParameterForTrans API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error Occured in InvoiceSPReportWithParameterForTrans API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> InvoiceSPReportWithParameterForAvi([FromBody] InvoiceSPReportWithParamForTransDTO invoiceSPReport)
+        {
+            ServiceResponse<IEnumerable<InvoiceSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSPReportForAvi>>();
+            try
+            {
+                var products = await _invoiceRepository.InvoiceSPReportWithParameterForAvi(invoiceSPReport.InvoiceNumber, invoiceSPReport.DONumber,
+                                                                                    invoiceSPReport.CustomerId, invoiceSPReport.CustomerName, invoiceSPReport.SalesOrderNumber,
+                                                                                    invoiceSPReport.Location, invoiceSPReport.Warehouse, invoiceSPReport.KPN,
+                                                                                    invoiceSPReport.MPN, invoiceSPReport.IssuedTo, invoiceSPReport.ProjectNumber);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Invoice hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Invoice hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Invoice Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in InvoiceSPReportWithParameterForAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in InvoiceSPReportWithParameterForAvi API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -664,6 +703,41 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError($"Error Occured in InvoiceSPReportDateForTrans API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error Occured in InvoiceSPReportDateForTrans API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> InvoiceSPReportDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<InvoiceSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSPReportForAvi>>();
+            try
+            {
+                var products = await _invoiceRepository.InvoiceSPReportDateForAvi(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Invoice hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Invoice hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Invoice Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in InvoiceSPReportDateForAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in InvoiceSPReportDateForAvi API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

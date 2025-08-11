@@ -18,7 +18,6 @@
         public string? UOM { get; set; }
         public decimal? RequiredQty { get; set; }
         public decimal? IssuedQty { get; set; }
-        public decimal? BalanceIssueQnty { get; set; }
         public string? UOC { get; set; }
         public decimal? UnitPrice { get; set; }
         public string? lotnumber { get; set; }

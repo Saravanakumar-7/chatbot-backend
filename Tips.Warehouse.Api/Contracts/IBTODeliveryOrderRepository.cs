@@ -40,6 +40,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<DeliveryOrderSPReport>> GetDeliveryOrderSPReportsWithParam(string DONumber, string CustomerName, string CustomerAliasName,
                                                                                                     string CustomerID, string SalesOrderNumber, string ProductType,
                                                                                                     string Warehouse, string Location, string KPN, string MPN, string ProjectNumber);
+        Task<IEnumerable<DoVsInvoiceSpReport>> GetDoVsInvoiceSpReportSPReportsWithParam(string InvoiceNumber, string ItemNumber, string DONumber, string SalesOrderNumber);
+
         Task<IEnumerable<DeliveryOrderSPReportForTrans>> GetDeliveryOrderSPReportsWithParamForTrans(string DONumber, string CustomerName, string SalesOrderNumber, string ProductType,
                                                                                                     string Warehouse, string Location, string ItemNumber, string MPN, string ProjectNumber);
         Task<IEnumerable<DOSPReportForTrans>> GetDOSPReportsWithParamForTrans(string DONumber, string CustomerName, string SalesOrderNumber, string ProductType,
