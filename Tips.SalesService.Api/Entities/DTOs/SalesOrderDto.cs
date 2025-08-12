@@ -1011,6 +1011,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? Discount { get; set; }
         public double? DiscountValue { get; set; }
         public double? NetQuote_PostDiscount { get; set; }
+        public double? TotalAmount { get; set; }
         public decimal? TotalAmountWithInstallationCharges { get; set; }
         public decimal? TotalFinalAmount { get; set; }
     }
