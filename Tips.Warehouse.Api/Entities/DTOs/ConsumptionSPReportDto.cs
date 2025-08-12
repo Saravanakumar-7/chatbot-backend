@@ -4,6 +4,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
 {
     public class ConsumptionSPReportDto
     {
+        public int Id { get; set; }
         public string? InvoiceNumber { get; set; }
         public DateTime? InvoiceDate { get; set; }
         public string? DoNumber { get; set; }
@@ -35,8 +36,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? OtherCosts { get; set; }
         public string? UOM { get; set; }
         public string? UOC { get; set; }
+        public string? Unit { get; set; }
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
     }
-
     public class ShopOrderComsumpDto
     {
         public string? ShopOrderNumber { get; set; }

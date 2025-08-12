@@ -78,6 +78,7 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<InventoryDashboardSPReport> InventoryDashboardSPReports { get; set; }
 
         public DbSet<LocationTransferPartNo> LocationTransferPartNos { get; set; }
+        public DbSet<ConsumptionSPReport> ConsumptionSPReports { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -120,6 +120,7 @@ builder.Services.AddScoped<ILocationTransferPartNoRepository, LocationTransferPa
 builder.Services.AddScoped<IInventoryTranctionforServiceItemsRepository, InventoryTranctionforServiceItemsRepository>();
 builder.Services.AddScoped<MySqlConnection>();
 builder.Services.AddScoped<ITokenValidationService, TokenValidationService>();
+builder.Services.AddScoped<IConsumptionReportRepository, ConsumptionReportRepository>();
 
 
 

@@ -30,16 +30,18 @@ namespace Tips.Warehouse.Api.Controllers
         private IInvoiceRepository _invoiceRepository;
         private IBTODeliveryOrderRepository _bTODeliveryOrderRepository;
         private IMaterialIssueTrackerRepository _materialIssueTrackerRepository;
+        private IConsumptionReportRepository _consumptionReportReposiory;
         private ILoggerManager _logger;
         private IMapper _mapper;
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
-        public ConsumptionReportController(IMaterialIssueTrackerRepository materialIssueTrackerRepository, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IHttpClientFactory clientFactory, IInvoiceRepository invoiceRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper)
+        public ConsumptionReportController(IConsumptionReportRepository consumptionReportReposiory, IMaterialIssueTrackerRepository materialIssueTrackerRepository, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IHttpClientFactory clientFactory, IInvoiceRepository invoiceRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper)
         {
             _invoiceRepository = invoiceRepository;
             _bTODeliveryOrderRepository = bTODeliveryOrderRepository;
             _materialIssueTrackerRepository = materialIssueTrackerRepository;
+            _consumptionReportReposiory = consumptionReportReposiory;
             _logger = logger;
             _mapper = mapper;
             _httpClient = httpClient;
@@ -51,11 +53,11 @@ namespace Tips.Warehouse.Api.Controllers
         public async Task<IActionResult> GenerateConsumptionReport([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
 
-            ServiceResponse<List<ConsumptionSPReportDto>> serviceResponse = new ServiceResponse<List<ConsumptionSPReportDto>>();
+            ServiceResponse<List<ConsumptionSPReport>> serviceResponse = new ServiceResponse<List<ConsumptionSPReport>>();
 
             try
             {
-                List<ConsumptionSPReportDto> openSalesCoverageReports = await ConsumptionReport(FromDate, ToDate);
+                List<ConsumptionSPReport> openSalesCoverageReports = await ConsumptionReport(FromDate, ToDate);
 
                 serviceResponse.Data = openSalesCoverageReports;
                 serviceResponse.Message = $"Returned ConceptionReport Successfully ";
@@ -74,52 +76,11 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        private async Task<List<ConsumptionSPReportDto>> ConsumptionReport(DateTime? FromDate, DateTime? ToDate)
+        private async Task<List<ConsumptionSPReport>> ConsumptionReport(DateTime? FromDate, DateTime? ToDate)
         {
-            List<ConsumptionSPReportDto> consumptionReportList = new List<ConsumptionSPReportDto>();
+            List<ConsumptionSPReport> consumptionReportList = new List<ConsumptionSPReport>();
             try
             {
-                // Fetch invoice data
-                //var invoiceConsumpDetails = await _invoiceRepository.GetInvoiceDetialsbyDate(FromDate, ToDate);
-
-
-                //// Fetch DO details based on DO number
-                //List<string?> doNumberList = invoiceConsumpDetails.Select(item => item.DONumber).Distinct().ToList();
-                //var doConsumpDetails = await _bTODeliveryOrderRepository.GetDoConsumpDetailsByBTONumberList(doNumberList);
-
-
-                //// Fetch shop order details based on Lot number
-                //List<string?> lotNumberList = doConsumpDetails.Select(x => x.LotNumber).Distinct().ToList();
-                //List<ShopOrderComsumpDto> shopOrderConsumpDetials = await GetShopOrderComsumptionDetailsByLotNo(lotNumberList);
-
-                //var shopOrderComsumpList = (from shopOrder in shopOrderConsumpDetials
-                //                            join invoice in invoiceConsumpDetails
-                //                                on shopOrder.ItemNumber equals invoice.FGItemNumber
-                //                            select new ShopOrderComsumpDetailsDto
-                //                            {
-                //                                ShopOrderNumber = shopOrder.ShopOrderNumber,
-                //                                ItemNumber = shopOrder.ItemNumber,
-                //                                InvoiceNumber = invoice.InvoiceNumber,
-                //                                InvoicedQty = invoice.InvoicedQty,
-                //                                BTONumber = invoice.DONumber
-                //                            }).ToList();
-
-                //var shopOrderComsumpListWithItemValidation = (from invoice in invoiceConsumpDetails
-                //                                              join doDetail in doConsumpDetails
-                //                                                  on invoice.DONumber equals doDetail.BTONumber
-                //                                              join shopOrder in shopOrderConsumpDetials
-                //                                                  on new { LotNumber = doDetail.LotNumber, ItemNumber = invoice.FGItemNumber }
-                //                                                  equals new { LotNumber = shopOrder.ShopOrderNumber, ItemNumber = shopOrder.ItemNumber }
-                //                                              select new ShopOrderComsumpDetailsDto
-                //                                              {
-                //                                                  InvoiceNumber = invoice.InvoiceNumber,
-                //                                                  BTONumber = invoice.DONumber,
-                //                                                  ShopOrderNumber = shopOrder.ShopOrderNumber,
-                //                                                  ItemNumber = shopOrder.ItemNumber,
-                //                                                  InvoicedQty = invoice.InvoicedQty,
-                //                                              }).ToList();
-
-
                 var invoiceBTODetails = await _invoiceRepository.GetInvoiceBTODetailsByDate(FromDate, ToDate);
 
 
@@ -164,51 +125,56 @@ namespace Tips.Warehouse.Api.Controllers
                 List<GrinComsumpDto> grinConsumpDetials = await GetGrinComsumptionDetailsByPartNo(partNumberList, somitLotNoList);
 
                 // Combine data and map to the desired output format
-                
-                            foreach (var somit in somitConsumpDetails)
-                            {
-                                foreach (var grin in grinConsumpDetials.Where(g => g.PartNumber == somit.PartNumber && g.LotNumber == somit.LotNumber))
-                                {
-                                    var reportDto = new ConsumptionSPReportDto
-                                    {
-                                        InvoiceNumber = somit.InvoiceNumber,
-                                        InvoiceDate = somit.InvoiceDate,
-                                        InvoiceQty = somit.InvoicedQty,
-                                        DoNumber = somit.BTONumber,
-                                        FGItemNumber = somit.FGItemNumber,
-                                        WorkOrderNumber = somit.ShopOrderNumber,
-                                        WorkOrderQty = somit.ShopOrderReleaseQty,
-                                        WorkOrderWipQty = somit.ShopOrderWipQty,
-                                        WorkOrderConvertedToFGQty = somit.ConvertedToFgQty,
-                                        CusumedQty = somit.ConsumedQtyByInvoice,
-                                        PartNumber = somit.PartNumber,
-                                        MftrPartnumber = somit.MftrPartNumber,
-                                        PPLotNumber =somit.LotNumber,
-                                        PPWipQty = somit.PPWipQty,
-                                        MaterialissueDate = somit.SomitDate,
-                                        TransactionFrom = somit.DataFrom,
-                                        GrinNumber = grin.GrinNumber,
-                                        GrinDate = grin.GrinDate,
-                                        Vendor = grin.VendorName,
-                                        PoNumber = grin.PONumber,
-                                        BOENo = grin.BOENo,
-                                        GrinQty = grin.GrinQty,
-                                        UnitPrice = grin.GrinUnitPrice,
-                                        Tax = grin.Tax,
-                                        OtherCosts = grin.OtherCosts,
-                                        UOM = grin.UOM,
-                                        UOC = grin.UOC
-                                    };
 
-                                    consumptionReportList.Add(reportDto);
-                                }
-                            }
+                foreach (var somit in somitConsumpDetails)
+                {
+                    foreach (var grin in grinConsumpDetials.Where(g => g.PartNumber == somit.PartNumber && g.LotNumber == somit.LotNumber))
+                    {
+                        var reportDto = new ConsumptionSPReport
+                        {
+                            InvoiceNumber = somit.InvoiceNumber,
+                            InvoiceDate = somit.InvoiceDate,
+                            InvoiceQty = somit.InvoicedQty,
+                            DoNumber = somit.BTONumber,
+                            FGItemNumber = somit.FGItemNumber,
+                            WorkOrderNumber = somit.ShopOrderNumber,
+                            WorkOrderQty = somit.ShopOrderReleaseQty,
+                            WorkOrderWipQty = somit.ShopOrderWipQty,
+                            WorkOrderConvertedToFGQty = somit.ConvertedToFgQty,
+                            CusumedQty = somit.ConsumedQtyByInvoice,
+                            PartNumber = somit.PartNumber,
+                            MftrPartnumber = somit.MftrPartNumber,
+                            PPLotNumber = somit.LotNumber,
+                            PPWipQty = somit.PPWipQty,
+                            MaterialissueDate = somit.SomitDate,
+                            TransactionFrom = somit.DataFrom,
+                            GrinNumber = grin.GrinNumber,
+                            GrinDate = grin.GrinDate,
+                            Vendor = grin.VendorName,
+                            PoNumber = grin.PONumber,
+                            BOENo = grin.BOENo,
+                            GrinQty = grin.GrinQty,
+                            UnitPrice = grin.GrinUnitPrice,
+                            Tax = grin.Tax,
+                            OtherCosts = grin.OtherCosts,
+                            UOM = grin.UOM,
+                            UOC = grin.UOC
+                        };
+
+                        consumptionReportList.Add(reportDto);
+                    }
+                }
+                await _consumptionReportReposiory.CreateConsumptionReports(consumptionReportList);
+                _consumptionReportReposiory.SaveAsync();
+                _logger.LogInfo($"Consumption Report generated successfully with {consumptionReportList.Count} records.");
 
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error in ConsumptionReport: {ex.Message}");
+                throw;
             }
+
             return consumptionReportList;
         }
 
@@ -264,36 +230,36 @@ namespace Tips.Warehouse.Api.Controllers
                 }
             }
 
-                var itemsRequiredQtyGrouped = SomitConsumpDtoList
-                                        .GroupBy(item => item.PartNumber)
-                                        .Select(group => new SomitConsumpWithBOMVersionDto
-                                        {
-                                            FGItemNumber = group.FirstOrDefault()?.FGItemNumber,
-                                            PartNumber = group.Key,
-                                            MftrPartNumber = group.FirstOrDefault()?.MftrPartNumber,
-                                            LotNumber = group.FirstOrDefault()?.LotNumber,
-                                            SomitDate = group.FirstOrDefault()?.SomitDate,
-                                            ShopOrderNumber = group.FirstOrDefault()?.ShopOrderNumber,
-                                            PartType = group.FirstOrDefault()?.PartType,
-                                            DataFrom = group.FirstOrDefault()?.DataFrom,
+            var itemsRequiredQtyGrouped = SomitConsumpDtoList
+                                    .GroupBy(item => item.PartNumber)
+                                    .Select(group => new SomitConsumpWithBOMVersionDto
+                                    {
+                                        FGItemNumber = group.FirstOrDefault()?.FGItemNumber,
+                                        PartNumber = group.Key,
+                                        MftrPartNumber = group.FirstOrDefault()?.MftrPartNumber,
+                                        LotNumber = group.FirstOrDefault()?.LotNumber,
+                                        SomitDate = group.FirstOrDefault()?.SomitDate,
+                                        ShopOrderNumber = group.FirstOrDefault()?.ShopOrderNumber,
+                                        PartType = group.FirstOrDefault()?.PartType,
+                                        DataFrom = group.FirstOrDefault()?.DataFrom,
 
-                                            // Aggregated fields
-                                            ShopOrderReleaseQty = group.Sum(item => item.ShopOrderReleaseQty),
-                                            ShopOrderWipQty = group.Sum(item => item.ShopOrderWipQty),
-                                            ConvertedToFgQty = group.Sum(item => item.ConvertedToFgQty),
-                                            IssuedQty = group.Sum(item => item.IssuedQty),
-                                            InvoicedQty = group.Sum(item => item.InvoicedQty),
-                                            BomQty = group.Sum(item => item.BomQty),
-                                            ConsumedQtyByInvoice = group.Sum(item => item.ConsumedQtyByInvoice),
-                                            PPWipQty = group.Sum(item => item.PPWipQty),
+                                        // Aggregated fields
+                                        ShopOrderReleaseQty = group.Sum(item => item.ShopOrderReleaseQty),
+                                        ShopOrderWipQty = group.Sum(item => item.ShopOrderWipQty),
+                                        ConvertedToFgQty = group.Sum(item => item.ConvertedToFgQty),
+                                        IssuedQty = group.Sum(item => item.IssuedQty),
+                                        InvoicedQty = group.Sum(item => item.InvoicedQty),
+                                        BomQty = group.Sum(item => item.BomQty),
+                                        ConsumedQtyByInvoice = group.Sum(item => item.ConsumedQtyByInvoice),
+                                        PPWipQty = group.Sum(item => item.PPWipQty),
 
-                                            // Non-aggregated fields (take first occurrence)
-                                            InvoiceNumber = group.FirstOrDefault()?.InvoiceNumber,
-                                            InvoiceDate = group.FirstOrDefault()?.InvoiceDate,
-                                            BTONumber = group.FirstOrDefault()?.BTONumber,
-                                            Bomversion = group.FirstOrDefault().Bomversion
-                                        })
-                                        .ToList();
+                                        // Non-aggregated fields (take first occurrence)
+                                        InvoiceNumber = group.FirstOrDefault()?.InvoiceNumber,
+                                        InvoiceDate = group.FirstOrDefault()?.InvoiceDate,
+                                        BTONumber = group.FirstOrDefault()?.BTONumber,
+                                        Bomversion = group.FirstOrDefault().Bomversion
+                                    })
+                                    .ToList();
 
 
 
@@ -301,7 +267,7 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
 
-        private async Task SomitConsumpDetailsForComsumptionReportByShopOrderNo(List<SomitConsumpWithBOMVersionDto> SomitConsumpDtoList, string shopOrderNo, string fgItemNumber,string invoiceNumber,decimal invoicedQty, DateTime? invoiceDate, string btoNumber)
+        private async Task SomitConsumpDetailsForComsumptionReportByShopOrderNo(List<SomitConsumpWithBOMVersionDto> SomitConsumpDtoList, string shopOrderNo, string fgItemNumber, string invoiceNumber, decimal invoicedQty, DateTime? invoiceDate, string btoNumber)
         {
             try
             {
@@ -362,7 +328,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                             //var saShopOrderNo = await GetShopOrderComsumptionDetailsBySaItemNo(saItemNumber, fgItemNumber);
 
-                            await SomitConsumpDetailsForComsumptionReportByShopOrderNo(SomitConsumpDtoList, saShopOrderNumber, fgItemNumber,  invoiceNumber, consumedInvoiceQty,  invoiceDate, btoNumber);
+                            await SomitConsumpDetailsForComsumptionReportByShopOrderNo(SomitConsumpDtoList, saShopOrderNumber, fgItemNumber, invoiceNumber, consumedInvoiceQty, invoiceDate, btoNumber);
                         }
 
                     }
