@@ -84,6 +84,18 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? LotNumber { get; set; } // This is the ShopOrderNumber
     }
 
+    public class TGInvoiceBTODetailsDto
+    {
+        public string? InvoiceNumber { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public string? DONumber { get; set; }
+        public string? FGItemNumber { get; set; }
+        public decimal InvoicedQty { get; set; }
+        public string SalesOrderNumber { get; set; }
+        public string? LotNumber { get; set; } 
+        public PartType PartType { get; set; }
+    }
+
     public class InvoiceBTOShopOrderDetailsDto
     {
         public string? InvoiceNumber { get; set; }

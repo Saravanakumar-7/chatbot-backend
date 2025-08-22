@@ -50,6 +50,135 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GenerateTGConsumptionReport([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+
+            ServiceResponse<List<ConsumptionSPReport>> serviceResponse = new ServiceResponse<List<ConsumptionSPReport>>();
+
+            try
+            {
+                List<ConsumptionSPReport> openSalesCoverageReports = await TGConsumptionReport(FromDate, ToDate);
+
+                serviceResponse.Data = openSalesCoverageReports;
+                serviceResponse.Message = $"Returned ConceptionReport Successfully ";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GenerateConsumptionReport API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GenerateConsumptionReport API : \n {ex.Message} ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        private async Task<List<ConsumptionSPReport>> TGConsumptionReport(DateTime? FromDate, DateTime? ToDate)
+        {
+            List<ConsumptionSPReport> consumptionReportList = new List<ConsumptionSPReport>();
+            try
+            {
+                var invoiceBTODetails = await _invoiceRepository.GetInvoiceBTODetailsByDate(FromDate, ToDate);
+
+
+                // Step 2: Get distinct lot numbers from invoice BTO details
+                List<string?> lotNumberList = invoiceBTODetails
+                                                .Select(x => x.LotNumber)
+                                                .Where(x => !string.IsNullOrEmpty(x))
+                                                .Distinct()
+                                                .ToList();
+
+                // Step 3: Get shop order consumption details
+                List<ShopOrderComsumpDto> shopOrderConsumpDetails = await GetShopOrderComsumptionDetailsByLotNo(lotNumberList);
+
+                // Step 4: Combine the data using LINQ join
+                var invoiceBTOShopOrderList = (from invoiceBTO in invoiceBTODetails
+                                               join shopOrder in shopOrderConsumpDetails
+                                                   on new { LotNumber = invoiceBTO.LotNumber, ItemNumber = invoiceBTO.FGItemNumber }
+                                                   equals new { LotNumber = shopOrder.ShopOrderNumber, ItemNumber = shopOrder.ItemNumber }
+                                                   into shopOrderGroup
+                                               from shopOrder in shopOrderGroup.DefaultIfEmpty()
+                                               select new InvoiceBTOShopOrderDetailsDto
+                                               {
+                                                   InvoiceNumber = invoiceBTO.InvoiceNumber,
+                                                   InvoiceDate = invoiceBTO.InvoiceDate,
+                                                   DONumber = invoiceBTO.DONumber,
+                                                   FGItemNumber = invoiceBTO.FGItemNumber,
+                                                   InvoicedQty = invoiceBTO.InvoicedQty,
+                                                   SalesOrderNumber = invoiceBTO.SalesOrderNumber,
+                                                   LotNumber = invoiceBTO.LotNumber,
+                                                   ReleaseQty = shopOrder?.ReleaseQty ?? 0,
+                                                   WipQty = shopOrder?.WipQty ?? 0
+                                               }).ToList();
+
+                // Fetch Somit consumption details based on Shop Order numbers
+                //Dictionary<string, string?> shopOrderToItemNumberDict = shopOrderConsumpDetials.ToDictionary(x => x.ShopOrderNumber, x => x.ItemNumber);
+                List<SomitConsumpWithBOMVersionDto> somitConsumpDetails = await GetSomitConsumpDetailsByShopOrderNumbers(invoiceBTOShopOrderList);
+
+
+                // Fetch Grin consumption details based on Part numbers and LotNo
+                List<string?> partNumberList = somitConsumpDetails.Select(item => item.PartNumber).Distinct().ToList();
+                List<string?> somitLotNoList = somitConsumpDetails.Select(item => item.LotNumber).Distinct().ToList();
+                List<GrinComsumpDto> grinConsumpDetials = await GetGrinComsumptionDetailsByPartNo(partNumberList, somitLotNoList);
+
+                // Combine data and map to the desired output format
+
+                foreach (var somit in somitConsumpDetails)
+                {
+                    foreach (var grin in grinConsumpDetials.Where(g => g.PartNumber == somit.PartNumber && g.LotNumber == somit.LotNumber))
+                    {
+                        var reportDto = new ConsumptionSPReport
+                        {
+                            InvoiceNumber = somit.InvoiceNumber,
+                            InvoiceDate = somit.InvoiceDate,
+                            InvoiceQty = somit.InvoicedQty,
+                            DoNumber = somit.BTONumber,
+                            FGItemNumber = somit.FGItemNumber,
+                            WorkOrderNumber = somit.ShopOrderNumber,
+                            WorkOrderQty = somit.ShopOrderReleaseQty,
+                            WorkOrderWipQty = somit.ShopOrderWipQty,
+                            WorkOrderConvertedToFGQty = somit.ConvertedToFgQty,
+                            CusumedQty = somit.ConsumedQtyByInvoice,
+                            PartNumber = somit.PartNumber,
+                            MftrPartnumber = somit.MftrPartNumber,
+                            PPLotNumber = somit.LotNumber,
+                            PPWipQty = somit.PPWipQty,
+                            MaterialissueDate = somit.SomitDate,
+                            TransactionFrom = somit.DataFrom,
+                            GrinNumber = grin.GrinNumber,
+                            GrinDate = grin.GrinDate,
+                            Vendor = grin.VendorName,
+                            PoNumber = grin.PONumber,
+                            BOENo = grin.BOENo,
+                            GrinQty = grin.GrinQty,
+                            UnitPrice = grin.GrinUnitPrice,
+                            Tax = grin.Tax,
+                            OtherCosts = grin.OtherCosts,
+                            UOM = grin.UOM,
+                            UOC = grin.UOC
+                        };
+
+                        consumptionReportList.Add(reportDto);
+                    }
+                }
+                await _consumptionReportReposiory.CreateConsumptionReports(consumptionReportList);
+                _consumptionReportReposiory.SaveAsync();
+                _logger.LogInfo($"Consumption Report generated successfully with {consumptionReportList.Count} records.");
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in ConsumptionReport: {ex.Message}");
+                throw;
+            }
+
+            return consumptionReportList;
+        }
+
+        [HttpGet]
         public async Task<IActionResult> GenerateConsumptionReport([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
 
