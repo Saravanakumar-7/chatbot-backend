@@ -164,6 +164,35 @@ namespace Tips.Warehouse.Api.Repository
             return result;
         }
 
+        public async Task<List<InvoiceBTODetailsDto>> GetTGInvoiceBTODetailsByDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var result = await (from invoice in _tipsWarehouseDbContext.invoices
+                                join childItem in _tipsWarehouseDbContext.invoiceChildItems
+                                    on invoice.Id equals childItem.InvoiceId
+                                join btoOrderItem in _tipsWarehouseDbContext.bTODeliveryOrderItems
+                                    on childItem.DONumber equals btoOrderItem.BTONumber
+                                join btoMainOrder in _tipsWarehouseDbContext.bTODeliveryOrder  // Join with main BTO table
+                                    on btoOrderItem.BTONumber equals btoMainOrder.BTONumber
+                                join btoItem in _tipsWarehouseDbContext.bTODeliveryOrderItems
+                                    on new { BTONumber = btoOrderItem.BTONumber, ItemNumber = childItem.FGItemNumber }
+                                    equals new { BTONumber = btoItem.BTONumber, ItemNumber = btoItem.FGItemNumber }
+                                join qtyDistribution in _tipsWarehouseDbContext.BtoDeliveryOrderItemQtyDistribution
+                                    on btoItem.Id equals qtyDistribution.BTODeliveryOrderItemsId
+                                where invoice.CreatedOn >= FromDate && invoice.CreatedOn <= ToDate
+                                select new InvoiceBTODetailsDto
+                                {
+                                    InvoiceNumber = invoice.InvoiceNumber,
+                                    InvoiceDate = invoice.CreatedOn,
+                                    DONumber = childItem.DONumber,
+                                    FGItemNumber = childItem.FGItemNumber,
+                                    InvoicedQty = childItem.InvoicedQty,
+                                    SalesOrderNumber = btoMainOrder.SalesOrderNumber,  // Now from main table
+                                    LotNumber = qtyDistribution.LotNumber
+                                })
+                                .ToListAsync();
+            return result;
+        }
+
 
         public async Task<IEnumerable<InvoiceSPReport>> InvoiceSPReportDate(DateTime? FromDate, DateTime? ToDate)
         {
