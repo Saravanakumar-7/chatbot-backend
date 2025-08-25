@@ -1,4 +1,5 @@
-﻿using System.Drawing.Printing;
+﻿using Entities;
+using System.Drawing.Printing;
 
 namespace Tips.Warehouse.Api.Entities
 {
@@ -8,6 +9,11 @@ namespace Tips.Warehouse.Api.Entities
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? CustomerLeadId { get; set; }
+        public string? Description { get; set; }
+        public string? ReasonforIssuingStock { get; set; }
+        public string?  City { get; set; }
+        public string? Address { get; set; }
+        public string? State { get; set; }
         public string? IssuedTo { get; set; }
         public string? IssuedBy { get; set; }
         public string? KPNno { get; set; }
