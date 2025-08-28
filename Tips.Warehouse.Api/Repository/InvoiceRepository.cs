@@ -140,6 +140,7 @@ namespace Tips.Warehouse.Api.Repository
             var result = await (from invoice in _tipsWarehouseDbContext.invoices
                                 join childItem in _tipsWarehouseDbContext.invoiceChildItems
                                     on invoice.Id equals childItem.InvoiceId
+                                where childItem.PartType != PartType.TG
                                 join btoOrderItem in _tipsWarehouseDbContext.bTODeliveryOrderItems
                                     on childItem.DONumber equals btoOrderItem.BTONumber
                                 join btoMainOrder in _tipsWarehouseDbContext.bTODeliveryOrder  // Join with main BTO table
@@ -169,6 +170,7 @@ namespace Tips.Warehouse.Api.Repository
             var result = await (from invoice in _tipsWarehouseDbContext.invoices
                                 join childItem in _tipsWarehouseDbContext.invoiceChildItems
                                     on invoice.Id equals childItem.InvoiceId
+                                where childItem.PartType == PartType.TG
                                 join btoOrderItem in _tipsWarehouseDbContext.bTODeliveryOrderItems
                                     on childItem.DONumber equals btoOrderItem.BTONumber
                                 join btoMainOrder in _tipsWarehouseDbContext.bTODeliveryOrder  // Join with main BTO table

@@ -314,5 +314,39 @@ namespace Tips.Grin.Api.Repository
             string result = $"OpenGrin details of {openGrin.Id} is updated successfully!";
             return result;
         }
+
+        public async Task<IEnumerable<OpenGrinConsumptionDto>> GetOpenGrinConsumptionDetailsByPartNoAndLotNo(List<string> partNumbers, List<string> lotNumbers)
+        {
+            var openGrinConsumptionDetails = await (
+                from openGrin in _tipsGrinDbContext.OpenGrin
+                join openGrinPart in _tipsGrinDbContext.OpenGrinParts
+                    on openGrin.Id equals openGrinPart.OpenGrinId
+                join openGrinDetail in _tipsGrinDbContext.OpenGrinDetails
+                    on openGrinPart.Id equals openGrinDetail.OpenGrinPartsId
+                where partNumbers.Contains(openGrinPart.ItemNumber) && lotNumbers.Contains(openGrinPart.LotNumber)
+                select new OpenGrinConsumptionDto
+                {
+                    SenderName = openGrin.SenderName,
+                    OpenGrinNumber = openGrin.OpenGrinNumber,
+                    OpenGrinDate = openGrin.CreatedOn,
+                    SenderId = openGrin.SenderId,
+                    Remarks = openGrin.Remarks,
+                    ReturnedBy = openGrin.ReturnedBy,
+                    ReceiptRefNo = openGrin.ReceiptRefNo,
+                    CustomerSupplied = openGrin.CustomerSupplied,
+                    ItemNumber = openGrinPart.ItemNumber,
+                    Description = openGrinPart.Description,
+                    LotNumber = openGrinPart.LotNumber,
+                    Returnable = openGrinPart.Returnable,
+                    ItemType = openGrinPart.ItemType,
+                    UOM = openGrinPart.UOM,
+                    OpenGrinQty = openGrinDetail.Qty,
+                    SerialNo = openGrinPart.SerialNo,
+                    ReferenceSONumber = openGrinPart.ReferenceSONumber
+                }
+            ).ToListAsync();
+
+            return openGrinConsumptionDetails;
+        }
     }
 }

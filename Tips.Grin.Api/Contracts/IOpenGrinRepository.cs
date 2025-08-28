@@ -33,5 +33,6 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<OpenGrinPartSORefDto>> GetAllOpenGrinSORefDetails();
         Task<string> UpdateOpenGrinDetails(OpenGrin openGrin);
+        Task<IEnumerable<OpenGrinConsumptionDto>> GetOpenGrinConsumptionDetailsByPartNoAndLotNo(List<string> partNumbers, List<string> lotNumbers);
     }
 }

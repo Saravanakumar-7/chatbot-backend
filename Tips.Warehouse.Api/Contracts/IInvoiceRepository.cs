@@ -41,5 +41,6 @@ namespace Tips.Warehouse.Api.Contracts
         Task<Invoice> GetInvoiceByIdExceptClosed(int id);
         //Task<IEnumerable<InvoiceConceptionDto>> GetInvoiceDetialsbyDate(DateTime? FromDate, DateTime? ToDate);
         Task<List<InvoiceBTODetailsDto>> GetInvoiceBTODetailsByDate(DateTime? FromDate, DateTime? ToDate);
+        Task<List<InvoiceBTODetailsDto>> GetTGInvoiceBTODetailsByDate(DateTime? FromDate, DateTime? ToDate);
     }
 }

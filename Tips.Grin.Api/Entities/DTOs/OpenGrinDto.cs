@@ -362,4 +362,32 @@ namespace Tips.Grin.Api.Entities.DTOs
     //    //public string lastModifiedBy { get; set; }
     //    //public DateTime? lastModifiedOn { get; set; }
     //}
+
+    public class OpenGrinConsumptionRequestDto
+    {
+        public List<string> PartNumber { get; set; } = new List<string>();
+        public List<string> LotNumber { get; set; } = new List<string>();
+    }
+
+    public class OpenGrinConsumptionDto
+    {
+        public string? SenderName { get; set; }
+        public string? OpenGrinNumber { get; set; }
+        public DateTime? OpenGrinDate { get; set; }
+        public string? SenderId { get; set; }
+        public string? Remarks { get; set; }
+        public string? ReturnedBy { get; set; }
+        public string? ReceiptRefNo { get; set; }
+        public bool CustomerSupplied { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
+        public string? LotNumber { get; set; }
+        public bool Returnable { get; set; }
+        public PartType ItemType { get; set; }
+        public string? UOM { get; set; }
+        [Precision(18, 3)]
+        public decimal OpenGrinQty { get; set; }
+        public string? SerialNo { get; set; }
+        public string? ReferenceSONumber { get; set; }
+    }
 }

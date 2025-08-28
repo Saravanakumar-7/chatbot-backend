@@ -1424,5 +1424,40 @@ namespace Tips.Grin.Api.Controllers
             }
 
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GetOpenGrinComsumptionDetailsByPartNoAndLotNo([FromBody] OpenGrinConsumptionRequestDto requestDto)
+        {
+            ServiceResponse<IEnumerable<OpenGrinConsumptionDto>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinConsumptionDto>>();
+            try
+            {
+                if (requestDto?.PartNumber == null || requestDto?.LotNumber == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "PartNumber and LotNumber are required";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                var openGrinConsumptionDetails = await _openGrinRepository.GetOpenGrinConsumptionDetailsByPartNoAndLotNo(requestDto.PartNumber, requestDto.LotNumber);
+                var result = _mapper.Map<IEnumerable<OpenGrinConsumptionDto>>(openGrinConsumptionDetails);
+                
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned OpenGrin Consumption Details By PartNo and LotNo Lists";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetOpenGrinComsumptionDetailsByPartNoAndLotNo API for the following PartNoListString: {string.Join(",", requestDto?.PartNumber ?? new List<string>())} & LotNoListString: {string.Join(",", requestDto?.LotNumber ?? new List<string>())} \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetOpenGrinComsumptionDetailsByPartNoAndLotNo API \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

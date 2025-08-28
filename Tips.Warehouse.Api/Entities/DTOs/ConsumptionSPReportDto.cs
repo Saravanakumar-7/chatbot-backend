@@ -1,4 +1,5 @@
 ﻿using Entities.Enums;
+using Microsoft.EntityFrameworkCore;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {
@@ -64,6 +65,30 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? UOC { get; set; }
 
     }
+
+    public class OpenGrinComsumpDto
+    {
+        public string? SenderName { get; set; }
+        public string? OpenGrinNumber { get; set; }
+        public DateTime? OpenGrinDate { get; set; }
+        public string? SenderId { get; set; }
+        public string? Remarks { get; set; }
+        public string? ReturnedBy { get; set; }
+        public string? ReceiptRefNo { get; set; }
+        public bool CustomerSupplied { get; set; }
+        public string? ItemNumber { get; set; }
+        public string? Description { get; set; }
+        public string? LotNumber { get; set; }
+        public bool Returnable { get; set; }
+        public PartType ItemType { get; set; }
+        public string? UOM { get; set; }
+        [Precision(18, 3)]
+        public decimal OpenGrinQty { get; set; }
+        public string? SerialNo { get; set; }
+        public string? ReferenceSONumber { get; set; }
+
+    }
+
     public class ShopOrderComsumpDetailsDto
     {
         public string? ShopOrderNumber { get; set; }
@@ -115,5 +140,13 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public PartType PartType { get; set; }
         public decimal Quantity { get; set; }
 
+    }
+
+    public class ConsumptionReportRequestDto
+    {
+        public DateTime? FromDate { get; set; }
+        public DateTime? ToDate { get; set; }
+        public List<string>? PartNumbers { get; set; }
+        public List<string>? LotNumbers { get; set; }
     }
 }
