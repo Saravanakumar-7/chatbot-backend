@@ -172,6 +172,54 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public List<PurchaseOrderAdditionalChargesUpdateDto>? PurchaseOrderAdditionalCharges { get; set; }
 
     }
+    public class PurchaseOrderApprovalUpdateDto
+    {
+        public int Id { get; set; }
+        public string? PONumber { get; set; }
+        public DateTime PODate { get; set; }
+        public string? ProcurementType { get; set; }
+        public string? Currency { get; set; }
+        public string? Transports { get; set; }
+        public string? Other { get; set; }
+        public string? POFiles { get; set; }
+
+        //VendorDetails
+        public string? VendorName { get; set; }
+        public int? BillToId { get; set; }
+        public int? ShipToId { get; set; }
+        public string? VendorId { get; set; }
+        public string? VendorNumber { get; set; }
+        public string? QuotationReferenceNumber { get; set; }
+        public DateTime? QuotationDate { get; set; }
+        public string? VendorAddress { get; set; }
+        public string? CompanyAliasName { get; set; }
+        public bool TallyStatus { get; set; } = false;
+        public string? DeliveryTerms { get; set; }
+        public string? PaymentTerms { get; set; }
+        public string? ShippingMode { get; set; }
+        public string? ShipTo { get; set; }
+        public string? BillTo { get; set; }
+
+        //Terms
+        public string? RetentionPeriod { get; set; }
+        public string? SpecialTermsAndConditions { get; set; }
+        public decimal TotalAmount { get; set; }
+        public decimal? PoItemsTotal { get; set; }
+        public decimal? PoAdditionalChargesTotal { get; set; }
+        public int? ApprovalCount { get; set; }
+        public PoStatus PoStatus { get; set; }
+        public string? Unit { get; set; }
+        //public string? LastModifiedBy { get; set; }
+        //public DateTime? LastModifiedOn { get; set; }
+
+        public int ApprovalRangeId { get; set; }
+        public int? ConvertionRateId { get; set; }
+        public PoType PoType { get; set; }
+        public List<PoItemsApprovalUpdateDto>? POItems { get; set; }
+        public List<PoIncoTermApprovalUpdateDto>? POIncoTerms { get; set; }
+        public List<PurchaseOrderAdditionalChargesapprovalUpdateDto>? PurchaseOrderAdditionalCharges { get; set; }
+
+    }
     public class PurchaseOrderForShortCloseDto
     {
         public int Id { get; set; }

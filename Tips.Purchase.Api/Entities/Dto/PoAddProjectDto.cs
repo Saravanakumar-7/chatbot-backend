@@ -33,6 +33,16 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public List<PoAddKitProjectUpdateDto>? PoAddKitProjects { get; set; }
 
     }
+    public class PoAddProjectApprovalUpdateDto
+    {
+        public int Id { get; set; }
+        public string? ProjectNumber { get; set; }
+
+        [Precision(13, 3)]
+        public decimal ProjectQty { get; set; }
+        public List<PoAddKitProjectApprovalUpdateDto>? PoAddKitProjects { get; set; }
+
+    }
     public class PoAddProjectShortCloseDto
     {
         //public int Id { get; set; }

@@ -57,4 +57,22 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal ReceivedQty { get; set; }
         public PoStatus PoAddKitProjectStatus { get; set; }
     }
+    public class PoAddKitProjectApprovalUpdateDto
+    {
+        public int Id { get; set; }
+        public string? PartNumber { get; set; }
+        public string? MftrItemNumbers { get; set; }
+        public string? Description { get; set; }
+        public decimal? KitRevisionNo { get; set; }
+        public string? DrawingRevNo { get; set; }
+        public PoPartType PartType { get; set; }
+        public string? UOM { get; set; }
+        public string? ProjectNumber { get; set; }
+        public decimal KitComponentBOMQty { get; set; }
+        public decimal KitComponentQty { get; set; }
+        public decimal KitComponentUnitPrice { get; set; }
+        public decimal BalanceQty { get; set; }
+        public decimal ReceivedQty { get; set; }
+        public PoStatus PoAddKitProjectStatus { get; set; }
+    }
 }

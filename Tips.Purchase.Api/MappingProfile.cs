@@ -119,6 +119,25 @@ namespace Tips.Purchase.Api
             CreateMap<PurchaseOrderAdditionalCharges, PurchaseOrderAdditionalChargesUpdateDto>().ReverseMap();
             CreateMap<PurchaseOrderAdditionalCharges, PurchaseOrderShortCloseAdditionalChargesDto>().ReverseMap();
 
+
+
+            CreateMap<PurchaseOrderApprovalUpdateDto, PurchaseOrder>().ReverseMap();
+
+            // POItems
+            CreateMap<PoItemsApprovalUpdateDto, PoItem>().ReverseMap();
+
+            // Nested under PoItem
+            CreateMap<PoAddProjectApprovalUpdateDto, PoAddProject>().ReverseMap();
+            CreateMap<PoAddKitProjectApprovalUpdateDto, PoAddKitProject>().ReverseMap();
+            CreateMap<PoAddDeliveryScheduleApprovalUpdateDto, PoAddDeliverySchedule>().ReverseMap();
+            CreateMap<PoConfirmationDateApprovalUpdateDto, PoConfirmationDate>().ReverseMap();
+            CreateMap<PoSpecialInstructionApprovalUpdateDto, PoSpecialInstruction>().ReverseMap();
+            CreateMap<PrDetailsApprovalUpdateDto, PrDetails>().ReverseMap();
+
+            // Other top-level collections
+            CreateMap<PoIncoTermApprovalUpdateDto, PoIncoTerm>().ReverseMap();
+            CreateMap<PurchaseOrderAdditionalChargesapprovalUpdateDto, PurchaseOrderAdditionalCharges>().ReverseMap();
+
         }
     }
 }

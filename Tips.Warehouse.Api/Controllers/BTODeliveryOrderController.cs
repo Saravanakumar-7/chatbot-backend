@@ -300,8 +300,8 @@ namespace Tips.Warehouse.Api.Controllers
             ServiceResponse<IEnumerable<DoVsInvoiceSpReport>> serviceResponse = new ServiceResponse<IEnumerable<DoVsInvoiceSpReport>>();
             try
             {
-                var products = await _repository.GetDoVsInvoiceSpReportSPReportsWithParam(doVsInvoiceInputParamDto.InvoiceNumber, doVsInvoiceInputParamDto.ItemNumber,
-                                                                                    doVsInvoiceInputParamDto.DONumber, doVsInvoiceInputParamDto.SalesOrderNumber);
+                var products = await _repository.GetDoVsInvoiceSpReportSPReportsWithParam(doVsInvoiceInputParamDto.SalesOrderNumber, doVsInvoiceInputParamDto.DONumber,
+                                                         doVsInvoiceInputParamDto.ItemNumber,doVsInvoiceInputParamDto.InvoiceNumber, doVsInvoiceInputParamDto.CustomerId);
 
                 if (products == null)
                 {

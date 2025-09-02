@@ -16,6 +16,11 @@ namespace Tips.Purchase.Api.Entities.Dto
     {
         public string? IncoTermName { get; set; }
     }
+    public class PoIncoTermApprovalUpdateDto
+    {
+        public int Id { get; set; }
+        public string? IncoTermName { get; set; }
+    }
     public class PoIncoTermShortCloseDto
     {
         [Key]

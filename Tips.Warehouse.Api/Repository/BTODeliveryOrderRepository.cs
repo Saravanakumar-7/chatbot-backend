@@ -140,11 +140,11 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
-        public async Task<IEnumerable<DoVsInvoiceSpReport>> GetDoVsInvoiceSpReportSPReportsWithParam(string InvoiceNumber, string ItemNumber, string DONumber, string SalesOrderNumber)
+        public async Task<IEnumerable<DoVsInvoiceSpReport>> GetDoVsInvoiceSpReportSPReportsWithParam(string SalesOrderNumber,string DONumber, string ItemNumber,string InvoiceNumber, string CustomerId)
         {
             var result = _tipsWarehouseDbContext
             .Set<DoVsInvoiceSpReport>()
-            .FromSqlInterpolated($"CALL DO_Vs_Invoice_Report({InvoiceNumber},{ItemNumber},{DONumber},{SalesOrderNumber})")
+            .FromSqlInterpolated($"CALL DO_Vs_Invoice_Report({SalesOrderNumber},{DONumber},{ItemNumber},{InvoiceNumber},{CustomerId})")
             .ToList();
 
             return result;

@@ -2998,6 +2998,385 @@ namespace Tips.Purchase.Api.Controllers
         }
 
         [HttpPut]
+        public async Task<IActionResult> UpdateApprovalPurchaseOrder([FromBody] PurchaseOrderApprovalUpdateDto purchaseOrderUpdateDto)
+        {
+            ServiceResponse<PurchaseOrderPostDto> serviceResponse = new ServiceResponse<PurchaseOrderPostDto>();
+            try
+            {
+                string serverKey = GetServerKey();
+                if (purchaseOrderUpdateDto is null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "PurchaseOrder object is null.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("PurchaseOrder object sent from client is null.");
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid PurchaseOrder object.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid PurchaseOrder object sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                if (purchaseOrderUpdateDto.Currency != "INR" && purchaseOrderUpdateDto.ConvertionRateId == null && serverKey != "keus")
+                {
+                    serviceResponse.Message = $"Error Occured in CreatePurchaseOrder: The ConvertionRateId is required for the UOC:{purchaseOrderUpdateDto.Currency}";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError($"Error Occured in CreatePurchaseOrder: The ConvertionRateId is required for the UOC:{purchaseOrderUpdateDto.Currency}");
+                    return BadRequest(serviceResponse);
+                }
+                var purchaseOrderDetails = _mapper.Map<PurchaseOrder>(purchaseOrderUpdateDto);
+                var AmountInWords = GetTotalValueInWords(purchaseOrderDetails.TotalAmount);
+                purchaseOrderDetails.AmountInWords = AmountInWords;
+                var poItemDto = purchaseOrderUpdateDto.POItems;
+                var poItemDtoList = new List<PoItem>();
+                var poIncoTermDto = purchaseOrderUpdateDto.POIncoTerms;
+                var poIncoTermsList = new List<PoIncoTerm>();
+                var poAddKitProjectList = new List<PoAddKitProject>();
+                List<EnggBomKitItemNumberWithQtyDto>? enggBomKitDetailsDynamic = new List<EnggBomKitItemNumberWithQtyDto>();
+
+                if (poIncoTermDto != null)
+                {
+                    for (int i = 0; i < poIncoTermDto.Count; i++)
+                    {
+                        PoIncoTerm poIncoTermDetails = _mapper.Map<PoIncoTerm>(poIncoTermDto[i]);
+                        poIncoTermsList.Add(poIncoTermDetails);
+                    }
+                }
+                purchaseOrderDetails.POIncoTerms = poIncoTermsList;
+
+                var poAdditionalChargesDto = purchaseOrderUpdateDto.PurchaseOrderAdditionalCharges;
+
+                var poAdditionalChargesList = new List<PurchaseOrderAdditionalCharges>();
+                if (poAdditionalChargesDto != null)
+                {
+                    for (int i = 0; i < poAdditionalChargesDto.Count; i++)
+                    {
+                        PurchaseOrderAdditionalCharges poAdditionalChargeDetails = _mapper.Map<PurchaseOrderAdditionalCharges>(poAdditionalChargesDto[i]);
+                        poAdditionalChargesList.Add(poAdditionalChargeDetails);
+                    }
+                }
+                purchaseOrderDetails.PurchaseOrderAdditionalCharges = poAdditionalChargesList;
+
+                if (poItemDto != null)
+                {
+                    if (purchaseOrderDetails.PoType == PoType.Kit)
+                    {
+                        for (int i = 0; i < poItemDto.Count; i++)
+                        {
+                            //Implement Kit
+                            if (poItemDto[i].PartType == PoPartType.Kit)
+                            {
+                                PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+                                poItemDetails.BalanceQty = poItemDto[i].Qty;
+                                poItemDetails.PoPartsStatus = false;
+                                poItemDetails.PONumber = purchaseOrderDetails.PONumber;
+                                var poAddprojectDetails = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                                for (int j = 0; j < poAddprojectDetails.Count; j++)
+                                {
+                                    PoAddProject poaddproject = poAddprojectDetails[j];
+                                    poaddproject.BalanceQty = poaddproject.ProjectQty;
+
+                                    //Implement KitComponent
+                                    var poAddprojectDetail = _mapper.Map<List<PoAddKitProject>>(poAddprojectDetails[j].PoAddKitProjects);
+                                    for (int k = 0; k < poAddprojectDetail.Count; k++)
+                                    {
+
+                                        PoAddKitProject poAddKitProject = poAddprojectDetail[k];
+                                        poAddKitProject.DrawingRevNo = poItemDetails.drawingRevNo;
+                                        poAddKitProject.CreatedBy = _createdBy;
+                                        poAddKitProject.CreatedOn = DateTime.Now;
+
+                                    }
+                                    poAddprojectDetails[j].PoAddKitProjects = poAddprojectDetail;
+
+                                }
+                                poItemDetails.POAddprojects = poAddprojectDetails;
+                                poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
+                                poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                                //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
+                                poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
+                                poItemDtoList.Add(poItemDetails);
+                            }
+                            else
+                            {
+                                serviceResponse.Message = $"Error Occured in UpdatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                                _logger.LogError($"Error Occured in UpdatePurchaseOrder: The PoType is kit,But PoItemDto.Parttype is not Kit:{poItemDto[i].PartType}");
+                                return BadRequest(serviceResponse);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int i = 0; i < poItemDto.Count; i++)
+                        {
+                            if (poItemDto[i].PartType != PoPartType.Kit)
+                            {
+                                PoItem poItemDetails = _mapper.Map<PoItem>(poItemDto[i]);
+                                poItemDetails.BalanceQty = poItemDto[i].Qty;
+                                poItemDetails.PoPartsStatus = false;
+                                poItemDetails.PONumber = purchaseOrderDetails.PONumber;
+                                poItemDetails.POAddprojects = _mapper.Map<List<PoAddProject>>(poItemDto[i].POAddprojects);
+                                for (int j = 0; j < poItemDetails.POAddprojects.Count; j++)
+                                {
+                                    PoAddProject poaddproject = poItemDetails.POAddprojects[j];
+                                    poaddproject.BalanceQty = poaddproject.ProjectQty;
+                                }
+
+                                poItemDetails.POAddDeliverySchedules = _mapper.Map<List<PoAddDeliverySchedule>>(poItemDto[i].POAddDeliverySchedules);
+                                poItemDetails.POSpecialInstructions = _mapper.Map<List<PoSpecialInstruction>>(poItemDto[i].POSpecialInstructions);
+                                //poItemDetails.POConfirmationDates = _mapper.Map<List<PoConfirmationDate>>(poItemDto[i].POConfirmationDates);
+                                poItemDetails.PrDetails = _mapper.Map<List<PrDetails>>(poItemDto[i].PrDetails);
+                                poItemDtoList.Add(poItemDetails);
+                            }
+                            else
+                            {
+                                serviceResponse.Message = $"Error Occured in UpdatePurchaseOrder: The PoItemDto.Parttype is kit,But PoType is General:{poItemDto[i].PartType}";
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                                _logger.LogError($"Error Occured in UpdatePurchaseOrder: The PoItemDto.Parttype is kit,But PoType is General:{poItemDto[i].PartType}");
+                                return BadRequest(serviceResponse);
+                            }
+                        }
+                    }
+                }
+
+                purchaseOrderDetails.POItems = poItemDtoList;
+                await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
+
+                if (purchaseOrderUpdateDto.POItems != null)
+                {
+                    foreach (var pritem in purchaseOrderUpdateDto.POItems)
+                    {
+                        if (pritem.PrDetails != null)
+                        {
+                            foreach (var pritemdetail in pritem.PrDetails)
+                            {
+                                if (pritemdetail.PrDetailDocumentUploadUpdateDtos != null)
+                                {
+                                    foreach (var prDetailsDto in pritemdetail.PrDetailDocumentUploadUpdateDtos)
+                                    {
+                                        var prUploadDocument = await _pRItemsDocumentUploadRepository.GetUploadDocByFileName(prDetailsDto.FileName);
+                                        if (prUploadDocument != null)
+                                        {
+                                            prUploadDocument.Checked = true;
+                                            await _pRItemsDocumentUploadRepository.UpdateUploadDoc(prUploadDocument);
+                                        }
+
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (poItemDtoList != null)
+                {
+                    foreach (var poItems in poItemDtoList)
+                    {
+                        if (poItems.PrDetails != null)
+                        {
+                            foreach (var prDetails in poItems.PrDetails)
+                            {
+                                var prItemDetail = await _purchaseRequisitionItemRepository.GetPrItemByPRNo(prDetails.PRNumber, poItems.ItemNumber);
+                                if (prItemDetail != null)
+                                {
+                                    if (prDetails.ToClosePR == true) prItemDetail.PrStatus = PrStatus.Closed;
+                                    else prItemDetail.PrStatus = PrStatus.Open;
+                                    await _purchaseRequisitionItemRepository.UpdatePrItem(prItemDetail);
+                                    _purchaseRequisitionItemRepository.SaveAsync();
+                                }
+
+                                var prItemClosedStatusCount = await _purchaseRequisitionItemRepository.GetPrItemClosedStatusCount(prDetails.PRNumber);
+                                var prDetail = await _purchaseRequisitionRepository.GetPrDetailsByPrNumber(prDetails.PRNumber);
+                                prDetail.PrStatus = prItemClosedStatusCount;
+                                await _purchaseRequisitionRepository.UpdatePurchaseRequisition_ForApproval(prDetail);
+                            }
+                        }
+                    }
+                }
+
+                _repository.SaveAsync();
+                _pRItemsDocumentUploadRepository.SaveAsync();
+                _purchaseRequisitionRepository.SaveAsync();
+
+                if (serverKey == "avision")
+                {
+                    var client = _clientFactory.CreateClient();
+                    var token = HttpContext.Request.Headers["Authorization"].ToString();
+                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"],
+                           "GetEmailTemplatebyProcessType?ProcessType=CreatePurchaseOrder"));
+                    request.Headers.Add("Authorization", token);
+
+                    var response = await client.SendAsync(request);
+                    var EmailTempString = await response.Content.ReadAsStringAsync();
+                    var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                    var Operations = "From,CreatePurchaseOrder";
+                    var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailIDsAPI"], $"GetEmailIdDetailsbyOperation?Operations={Operations}"));
+                    request1.Headers.Add("Authorization", token);
+                    var response1 = await client.SendAsync(request1);
+                    var EmailTempString1 = await response1.Content.ReadAsStringAsync();
+                    var emaildetails1 = JsonConvert.DeserializeObject<EmailIDsDto>(EmailTempString1);
+
+                    var httpclientHandler = new HttpClientHandler();
+                    var httpClient = new HttpClient(httpclientHandler);
+                    //var mails = "accounts@avisionsystems.com";
+                    var mails = (emaildetails1.data.Where(x => x.operation == "CreatePurchaseOrder").Select(x => x.emailIds).FirstOrDefault()).Split(',');
+
+                    var email = new MimeMessage();
+                    email.From.Add(MailboxAddress.Parse(emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()));
+
+                    //email.From.Add(MailboxAddress.Parse("erp@avisionsystems.com"));
+                    var podate = purchaseOrderDetails.PODate.ToString().Split(" ");
+                    //email.To.Add(MailboxAddress.Parse(mails));
+                    email.To.AddRange(mails.Select(x => MailboxAddress.Parse(x)));
+
+                    email.Subject = "Purchase Order Modified Notification";
+                    string body = emaildetails.data.template;
+                    body = body.Replace("{{PO Number}}", purchaseOrderDetails.PONumber);
+                    body = body.Replace("{{PO Revision No}}", purchaseOrderDetails.RevisionNumber.ToString());
+                    body = body.Replace("{{PO Date}}", podate[0]);
+                    body = body.Replace("{{PO Value}}", purchaseOrderDetails.TotalAmount.ToString());
+                    body = body.Replace("{{Vendor Name}}", purchaseOrderDetails.VendorName.ToString());
+                    body = body.Replace("{{Approval1}}", "Awaiting");
+                    body = body.Replace("{{Approval2}}", "Awaiting");
+                    body = body.Replace("{{Approval3}}", "Awaiting");
+                    body = body.Replace("{{Approval4}}", "Awaiting");
+                    body = body.Replace("{{PO Conf}}", "Awaiting");
+                    string? ProjectNos = null;
+                    List<string>? tempProj = new List<string>();
+                    List<string>? tempPRno = new List<string>();
+                    string? PRNo = null;
+                    foreach (var item in purchaseOrderDetails.POItems)
+                    {
+
+                        if (item.POAddprojects.Count > 0)
+                            foreach (var project in item.POAddprojects)
+                            {
+                                if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                                else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                            }
+                        if (item.PrDetails.Count > 0)
+                            foreach (var pr in item.PrDetails)
+                            {
+                                if (PRNo.IsNullOrEmpty()) { PRNo = pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                                else if (!tempPRno.Contains(pr.PRNumber)) { PRNo = PRNo + ", " + pr.PRNumber; tempPRno.Add(pr.PRNumber); }
+                            }
+
+                    }
+                    body = body.Replace("{{Project No}}", ProjectNos);
+                    body = body.Replace("{{PR Numbers}}", PRNo);
+
+                    email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                    using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                    int port = (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.port).FirstOrDefault() ?? default(int));
+                    smtp.Connect((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.host).FirstOrDefault()), port, SecureSocketOptions.StartTls);
+                    smtp.Authenticate((emaildetails1.data.Where(x => x.operation == "From").Select(x => x.emailIds).FirstOrDefault()), (emaildetails1.data.Where(x => x.operation == "From").Select(x => x.password).FirstOrDefault()));
+
+                    //smtp.Connect("smtp-mail.outlook.com", 587, SecureSocketOptions.StartTls);
+                    //smtp.Authenticate("erp@avisionsystems.com", "R#9183753474150W");
+
+                    smtp.Send(email);
+                    smtp.Disconnect(true);
+
+                }
+
+                serviceResponse.Data = null;
+                serviceResponse.Message = " PurchaseOrder Successfully Updated";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in UpdatePurchaseOrder API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in UpdatePurchaseOrder API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        //[HttpPut("{id}")]
+        //public async Task<IActionResult> UpdateApprovalPurchaseOrder(int id, [FromBody] PurchaseOrderApprovalUpdateDto purchaseOrderUpdateDto)
+        //{
+        //    ServiceResponse<PurchaseOrderApprovalUpdateDto> serviceResponse = new ServiceResponse<PurchaseOrderApprovalUpdateDto>();
+
+        //    try
+        //    {
+        //        if (purchaseOrderUpdateDto is null)
+        //        {
+        //            _logger.LogError("purchaseOrderUpdateDto object sent from client is null.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Update purchaseOrderUpdateDto object is null";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        if (!ModelState.IsValid)
+        //        {
+        //            _logger.LogError("Invalid ItemMaster object sent from client.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid model object";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            return BadRequest(serviceResponse);
+        //        }
+        //        var UpdatePurchaseOrderEntity = await _repository.GetPurchaseOrderById(id);
+        //        if (UpdatePurchaseOrderEntity is null)
+        //        {
+        //            _logger.LogError($"PurchaseOrder with id: {id}, hasn't been found in db.");
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "PurchaseOrder hasn't been found in db.";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+        //            return NotFound(serviceResponse);
+        //        }
+
+        //        var PoItems = _mapper.Map<IEnumerable<PoItem>>(purchaseOrderUpdateDto.POItems);
+        //        var POIncoTerms = _mapper.Map<IEnumerable<PoIncoTerm>>(purchaseOrderUpdateDto.POIncoTerms);
+        //        var PurchaseOrderAdditionalCharges = _mapper.Map<IEnumerable<PurchaseOrderAdditionalCharges>>(purchaseOrderUpdateDto.PurchaseOrderAdditionalCharges);
+        //        UpdatePurchaseOrderEntity.POItems = null;
+        //        UpdatePurchaseOrderEntity.POIncoTerms = null;
+        //        UpdatePurchaseOrderEntity.PurchaseOrderAdditionalCharges = null;
+
+        //        var PurchaseOrder = _mapper.Map(purchaseOrderUpdateDto, UpdatePurchaseOrderEntity);
+
+        //        PurchaseOrder.POItems = PoItems.ToList();
+        //        PurchaseOrder.POIncoTerms = POIncoTerms.ToList();
+        //        PurchaseOrder.PurchaseOrderAdditionalCharges = PurchaseOrderAdditionalCharges.ToList();
+
+        //        string result = await _repository.UpdatePurchaseOrder(PurchaseOrder);
+        //        _logger.LogInfo(result);
+
+        //        _repository.SaveAsync();
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "PurchaseOrder Updated Successfully";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.OK;
+        //        return Ok(serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Error Occured in UpdateApprovalPurchaseOrder API for the following id : {id} \n {ex.Message} \n{ex.InnerException}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Error Occured in UpdateApprovalPurchaseOrder API for the following id : {id} \n {ex.Message}";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
+        [HttpPut]
         public async Task<IActionResult> ShortCloseForPurchaseOrder([FromBody] PurchaseOrderForShortCloseDto purchaseOrderUpdateDto)
         {
             ServiceResponse<PurchaseOrderPostDto> serviceResponse = new ServiceResponse<PurchaseOrderPostDto>();

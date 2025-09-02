@@ -29,5 +29,15 @@ namespace Tips.Purchase.Api.Entities.Dto
 
         public string? FileByte { get; set; }
     }
+    public class PrDetailDocumentApprovalUploadUpdateDto
+    {
+        public int Id { get; set; }
+        public string FileName { get; set; }
+
+        public string FileExtension { get; set; }
+
+        public string? FileByte { get; set; }
+    }
+
 
 }
