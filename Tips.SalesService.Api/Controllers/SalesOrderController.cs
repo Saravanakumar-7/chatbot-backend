@@ -4169,6 +4169,79 @@ namespace Tips.SalesService.Api.Controllers
 
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetLPCostingSPreport([FromBody] LPCostingSPInputParam lPCostingSPInputParam)
+        {
+            ServiceResponse<IEnumerable<LPCostingSPReport>> serviceResponse = new ServiceResponse<IEnumerable<LPCostingSPReport>>();
+            try
+            {
+                var products = await _repository.GetLPCostingSPreport(lPCostingSPInputParam.ProjectNumber);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"LPCostingSPreport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"LPCostingSPreport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned LPCostingSPreport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetLPCostingSPreport API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetLPCostingSPreport API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetLPCostingSummarySPreport([FromBody] LPCostingSPInputParam lPCostingSPInputParam)
+        {
+            ServiceResponse<IEnumerable<LPCostingSummarySPReport>> serviceResponse = new ServiceResponse<IEnumerable<LPCostingSummarySPReport>>();
+            try
+            {
+                var products = await _repository.GetLPCostingSummarySPreport(lPCostingSPInputParam.ProjectNumber);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"LPCostingSummarySPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"LPCostingSPreport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned LPCostingSummarySPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetLPCostingSummarySPreport API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetLPCostingSummarySPreport API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
         [HttpPost]
         public async Task<IActionResult> ExportSalesOrderSPReportToExcel([FromBody] SalesOrderSPReportDTO salesOrderSPReport)
         {

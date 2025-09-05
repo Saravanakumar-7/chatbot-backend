@@ -856,6 +856,10 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public string? Leadid { get; set; }
     }
+    public class LPCostingSPInputParam
+    {
+        public string? ProjectNumber { get; set; }
+    }
 
     public class FQToFSFirstSOSPReport
     {

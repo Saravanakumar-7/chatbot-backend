@@ -490,6 +490,7 @@ namespace Tips.SalesService.Api.Repository
             return result;
 
         }
+
         public async Task<IEnumerable<ForecastSalesOrderSPReportForTrans>> GetForecastSalesOrderSPReportWithParamForAvision(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus)
         {
             var result = _tipsSalesServiceDbContext
@@ -513,6 +514,25 @@ namespace Tips.SalesService.Api.Repository
         {
             var results = _tipsSalesServiceDbContext.Set<ForecastSalesOrderSPReportForTrans>()
                         .FromSqlInterpolated($"CALL Forecast_salesorder_with_date({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+
+        public async Task<IEnumerable<LPCostingSPReport>> GetLPCostingSPreport(string projectnumber)
+        {
+            var results = _tipsSalesServiceDbContext.Set<LPCostingSPReport>()
+                        .FromSqlInterpolated($"CALL LPCosting({projectnumber})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<LPCostingSummarySPReport>> GetLPCostingSummarySPreport(string projectnumber)
+        {
+            var results = _tipsSalesServiceDbContext.Set<LPCostingSummarySPReport>()
+                        .FromSqlInterpolated($"CALL LpCosting_Summary({projectnumber})")
                         .ToList();
 
             return results;
