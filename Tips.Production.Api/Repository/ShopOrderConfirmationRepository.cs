@@ -109,27 +109,37 @@ namespace Tips.Production.Api.Repository
 
         public async Task<IEnumerable<ShopOrderItemNoListDto>> GetShopOrderItemNoByFGItemType()
         {
+            //    var shopOrderItmNoList = await _tipsProductionDbContext.ShopOrders
+            //        .Where(x => x.ItemType == PartType.FG && x.FGDoneStatus != OrderStatus.Closed && x.Status != OrderStatus.Closed && x.IsShortClosed == false)
+            //        .GroupBy(a => a.ItemNumber)
+            //        .Select(s => new ShopOrderItemNoListDto()
+            //        {
+            //            ItemNumber = s.Key,
+            //            Description = s.First().Description
+            //        })
+            //        .ToListAsync();
             var shopOrderItmNoList = await _tipsProductionDbContext.ShopOrders
-                .Where(x => x.ItemType == PartType.FG && x.FGDoneStatus != OrderStatus.Closed && x.Status != OrderStatus.Closed && x.IsShortClosed == false)
-                .GroupBy(a => a.ItemNumber)
-                .Select(s => new ShopOrderItemNoListDto()
-                {
-                    ItemNumber = s.Key,
-                    Description = s.First().Description
-                })
-                .ToListAsync();
+                                    .Where(x => x.ItemType == PartType.FG && x.FGDoneStatus != OrderStatus.Closed && x.Status != OrderStatus.Closed && x.IsShortClosed == false)
+                                    .GroupBy(a => new { a.ItemNumber, a.Description })
+                                    .Select(s => new ShopOrderItemNoListDto()
+                                    {
+                                        ItemNumber = s.Key.ItemNumber,
+                                        Description = s.Key.Description
+                                    })
+                                    .ToListAsync();
 
-            return shopOrderItmNoList;
+          return shopOrderItmNoList;
         }
 
         public async Task<IEnumerable<ShopOrderItemNoListDto>> GetShopOrderItemNoBySAItemType()
         {
             var shopOrderItmNoList = await _tipsProductionDbContext.ShopOrders
-                .Where(x => x.ItemType == PartType.SA && x.FGDoneStatus != OrderStatus.Closed && x.Status != OrderStatus.Closed && x.IsShortClosed == false).GroupBy(a=>a.ItemNumber)
+                .Where(x => x.ItemType == PartType.SA && x.FGDoneStatus != OrderStatus.Closed && x.Status != OrderStatus.Closed && x.IsShortClosed == false)
+                .GroupBy(a => new { a.ItemNumber, a.Description })
                 .Select(s => new ShopOrderItemNoListDto()
                 {
-                    ItemNumber = s.Key,
-                    Description = s.First().Description
+                    ItemNumber = s.Key.ItemNumber,
+                    Description = s.Key.Description
                 })
                 .ToListAsync();
 
@@ -169,13 +179,15 @@ namespace Tips.Production.Api.Repository
         public async Task<IEnumerable<ShopOrderDetailsDto>> GetShopOrderConformationDetailsByItemNo(string itemNumber)
         {
             var shopOrderDetails = await _tipsProductionDbContext.ShopOrderConfirmations
-                .Where(x => x.ItemNumber == itemNumber && x.IsOQCDone!= ShopOrderConformationStatus.FullyDone).GroupBy(x => x.ShopOrderNumber)
+                .Where(x => x.ItemNumber == itemNumber /*&& x.IsOQCDone!= ShopOrderConformationStatus.FullyDone*/)
+                .GroupBy(x => x.ShopOrderNumber)
                 .Select(group => new ShopOrderDetailsDto()
                 {
                     ShopOrderNumber = group.Key,
                     ShopOrderReleaseQty = group.FirstOrDefault().ShopOrderReleaseQty,
                     WipQty = group.Sum(s => s.WipConfirmedQty),
-                    OqcQty = _tipsProductionDbContext.oQCs.Where(x => x.ItemNumber == itemNumber).Count() > 0 ? _tipsProductionDbContext.oQCs.Where(o => o.ItemNumber == itemNumber && o.ShopOrderNumber == group.Key)
+                    OqcQty = _tipsProductionDbContext.oQCs.Where(x => x.ItemNumber == itemNumber).Count() > 0 ? _tipsProductionDbContext.oQCs
+                    .Where(o => o.ItemNumber == itemNumber && o.ShopOrderNumber == group.Key)
                     .Sum(o => o.AcceptedQty + o.RejectedQty) : 0,
                     BOMVersion = 0
                 })

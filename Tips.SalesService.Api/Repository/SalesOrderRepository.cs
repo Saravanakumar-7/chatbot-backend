@@ -1087,7 +1087,7 @@ namespace Tips.SalesService.Api.Repository
             {
                 var projectSODetails = await _tipsSalesServiceDbContext.SalesOrders
                                 .Where(m => projectNumbers.Contains(m.ProjectNumber)
-                                && m.SOStatus != OrderStatus.Closed && m.IsShortClosed == false)
+                                && m.SOStatus != OrderStatus.Closed && m.IsShortClosed == false && m.SalesOrderStatus != SalesOrderStatus.Forecast)
                                 .Select(s => new ProjectSODetailDto()
                                 {
                                     ProjectNumber = s.ProjectNumber,
