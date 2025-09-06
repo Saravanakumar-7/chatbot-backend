@@ -165,6 +165,7 @@ namespace Tips.Warehouse.Api.Controllers
                     var fromLocation = loca.FromLocation;
                     var fromWarehouse = loca.FromWarehouse;
                     var fromPartType = loca.FromPartType;
+                    var toPartType = loca.ToPartType;
                     var toUOM = loca.ToUOM;
                     
                     var availstock = loca.AvailableStockInLocation;
@@ -174,7 +175,7 @@ namespace Tips.Warehouse.Api.Controllers
                     var token = HttpContext.Request.Headers["Authorization"].ToString();
                     var encodedItemNumber = Uri.EscapeDataString(toPartNumber);
                     var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
-                            $"GetItemMasterByItemNumberAndPartType?ItemNumber={encodedItemNumber}&PartType={fromPartType}"));
+                            $"GetItemMasterByItemNumberAndPartType?ItemNumber={encodedItemNumber}&PartType={toPartType}"));
                     request.Headers.Add("Authorization", token);
 
                     var itemDetailFromItemmaster = await client.SendAsync(request);
@@ -274,7 +275,7 @@ namespace Tips.Warehouse.Api.Controllers
                                     inventoryPost.GrinPartId = inventoryItem.GrinPartId;
                                     inventoryPost.Warehouse = fromWarehouse;
                                     inventoryPost.Location = fromLocation;
-                                    inventoryPost.PartType = fromPartType;
+                                    inventoryPost.PartType = toPartType;
                                     inventoryPost.ReferenceID = LocationTransReferId;
                                     inventoryPost.ReferenceIDFrom = "LocationTransferPartNo";
                                     await _inventoryRepository.CreateInventory(inventoryPost);
@@ -282,13 +283,13 @@ namespace Tips.Warehouse.Api.Controllers
                                     transferQty -= balQty;
 
                                     InventoryTranction inventoryTranctionPost_1 = new InventoryTranction();
-                                    inventoryTranctionPost_1.PartNumber = inventoryItem.PartNumber;
-                                    inventoryTranctionPost_1.MftrPartNumber = inventoryItem.MftrPartNumber;
-                                    inventoryTranctionPost_1.ProjectNumber = inventoryItem.ProjectNumber;
-                                    inventoryTranctionPost_1.Description = inventoryItem.Description;
+                                    inventoryTranctionPost_1.PartNumber = toPartNumber;
+                                    inventoryTranctionPost_1.MftrPartNumber = inventoryPost.MftrPartNumber;
+                                    inventoryTranctionPost_1.ProjectNumber = toProjectNumber;
+                                    inventoryTranctionPost_1.Description = toDescription;
                                     inventoryTranctionPost_1.Issued_Quantity = inventoryItem.Balance_Quantity;
                                     inventoryTranctionPost_1.LotNumber = inventoryItem.LotNumber;
-                                    inventoryTranctionPost_1.UOM = inventoryItem.UOM;
+                                    inventoryTranctionPost_1.UOM = toUOM;
                                     inventoryTranctionPost_1.GrinMaterialType = "";
                                     inventoryTranctionPost_1.shopOrderNo = inventoryItem.shopOrderNo;
                                     inventoryTranctionPost_1.Unit = inventoryItem.Unit;
@@ -298,7 +299,7 @@ namespace Tips.Warehouse.Api.Controllers
                                     inventoryTranctionPost_1.Warehouse = inventoryItem.Warehouse;
                                     inventoryTranctionPost_1.From_Location = fromLocation;
                                     inventoryTranctionPost_1.TO_Location = inventoryItem.Location;
-                                    inventoryTranctionPost_1.PartType = inventoryItem.PartType;
+                                    inventoryTranctionPost_1.PartType = toPartType;
                                     inventoryTranctionPost_1.ReferenceID = inventoryItem.ReferenceID;
                                     inventoryTranctionPost_1.ReferenceIDFrom = "LocationTransfer";
                                     inventoryTranctionPost_1.Remarks = "LocationTransfer Done";
@@ -382,7 +383,7 @@ namespace Tips.Warehouse.Api.Controllers
                                     inventoryPost.IsStockAvailable = true;
                                     inventoryPost.Warehouse = fromWarehouse;
                                     inventoryPost.Location = fromLocation;
-                                    inventoryPost.PartType = fromPartType;
+                                    inventoryPost.PartType = toPartType;
                                     inventoryPost.ReferenceID = LocationTransReferId; 
                                     inventoryPost.ReferenceIDFrom = "LocationTransferPartNo";
                                     await _inventoryRepository.CreateInventory(inventoryPost);
