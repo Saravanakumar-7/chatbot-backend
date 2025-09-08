@@ -1,4 +1,5 @@
 ﻿using Entities.DTOs;
+using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? MOQCost { get; set; }
 
+        public PartType? ItemType { get; set; }
 
     }
     public class RfqEnggItemDtoPost
@@ -71,6 +73,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? MOQCost { get; set; }
 
+        public PartType? ItemType { get; set; }
 
     }
     public class RfqEnggSourcingDto

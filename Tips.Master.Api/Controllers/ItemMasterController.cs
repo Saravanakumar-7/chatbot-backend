@@ -2337,5 +2337,46 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetItemTypeByItemNumber(string itemNumber)
+        {
+            ServiceResponse<ItemTypeDto> serviceResponse = new ServiceResponse<ItemTypeDto>();
+
+            try
+            {
+                var itemMaster = await _repository.ItemMasterRepository.GetItemMasterByItemNumber(itemNumber);
+                if (itemMaster == null)
+                {
+                    _logger.LogError($"ItemMaster with ItemNumber: {itemNumber}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ItemMaster with ItemNumber '{itemNumber}' hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+
+                var result = new ItemTypeDto
+                {
+                    ItemNumber = itemMaster.ItemNumber,
+                    ItemType = itemMaster.ItemType
+                };
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "ItemType retrieved successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetItemTypeByItemNumber API for ItemNumber: {itemNumber} \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetItemTypeByItemNumber API for ItemNumber: {itemNumber} \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

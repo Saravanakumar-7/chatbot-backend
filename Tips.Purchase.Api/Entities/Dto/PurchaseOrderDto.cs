@@ -68,6 +68,10 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public bool? InApproval { get; set; }
         public int ApprovalRangeId { get; set; }
         public PoType PoType { get; set; }
+        public string? POApprovalIRemarks { get; set; }
+        public string? POApprovalIIRemarks { get; set; }
+        public string? POApprovalIIIRemarks { get; set; }
+        public string? POApprovalIVRemarks { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -278,6 +282,10 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? POApprovedIVBy { get; set; }
         public DateTime? POApprovedIVDate { get; set; }
         public int? ApprovalCount { get; set; }
+        public string? POApprovalIRemarks { get; set; }
+        public string? POApprovalIIRemarks { get; set; }
+        public string? POApprovalIIIRemarks { get; set; }
+        public string? POApprovalIVRemarks { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -346,6 +354,10 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public string? POApprovedIVBy { get; set; }
         public DateTime? POApprovedIVDate { get; set; }
         public int? ApprovalCount { get; set; }
+        public string? POApprovalIRemarks { get; set; }
+        public string? POApprovalIIRemarks { get; set; }
+        public string? POApprovalIIIRemarks { get; set; }
+        public string? POApprovalIVRemarks { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -616,5 +628,29 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public decimal UTGST { get; set; }
         public decimal? SubTotal { get; set; }
         public decimal TotalWithTax { get; set; }
+    }
+
+    public class PurchaseOrderApprovalIDto
+    {
+        public string? PONumber { get; set; }
+        public string? POApprovalIRemarks { get; set; }
+    }
+
+    public class PurchaseOrderApprovalIIDto
+    {
+        public string? PONumber { get; set; }
+        public string? POApprovalIIRemarks { get; set; }
+    }
+
+    public class PurchaseOrderApprovalIIIDto
+    {
+        public string? PONumber { get; set; }
+        public string? POApprovalIIIRemarks { get; set; }
+    }
+
+    public class PurchaseOrderApprovalIVDto
+    {
+        public string? PONumber { get; set; }
+        public string? POApprovalIVRemarks { get; set; }
     }
 }

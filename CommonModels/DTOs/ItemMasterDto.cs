@@ -655,4 +655,10 @@ namespace Entities.DTOs
         public string UOM { get; set; }
     }
 
+    public class ItemTypeDto
+    {
+        public string ItemNumber { get; set; }
+        public PartType ItemType { get; set; }
+    }
+
 }
