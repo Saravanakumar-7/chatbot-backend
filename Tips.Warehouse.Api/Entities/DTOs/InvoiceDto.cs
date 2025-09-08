@@ -164,6 +164,13 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? IssuedTo { get; set; }
         public string? ProjectNumber { get; set; }
     }
+
+    public class InvoiceAdditionalchargeSPInputDto
+    {
+        public string? InvoiceNumber { get; set; }
+        public string? SalesOrderNumber { get; set; }
+   
+    }
     public class InvoiceSPReportForAvi
     {
         public string? InvoiceNumber { get; set; }
@@ -288,6 +295,22 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? TotalValueWithTax { get; set; }
     }
 
+    public class InvoiceAdditionalChargesSpReport
+    {
+        public string? InvoiceNumber { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public string? CustomerName { get; set; }
+        public string? IssuedBy { get; set; }
+        public string? SalesOrderNumber { get; set; }
+        public string? AdditionalChargesLabelName { get; set; }
+        public string? AddtionalChargesValueType { get; set; }
+        public decimal? AddtionalChargesValueAmount { get; set; }
+        public decimal? IGST { get; set; }
+        public decimal? CGST { get; set; }
+        public decimal? UTGST { get; set; }
+        public decimal? SGST { get; set; }
+        public decimal? Finaladditionalchargesvalue { get; set; }
+    }
 
 
 }

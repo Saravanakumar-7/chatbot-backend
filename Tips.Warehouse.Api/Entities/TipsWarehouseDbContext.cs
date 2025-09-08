@@ -116,6 +116,7 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<OpenDeliveryOrderSPReportForAvi>().HasNoKey();
             modelBuilder.Entity<DeliveryOrderSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<InvoiceSPReportForTrans>().HasNoKey();
+            modelBuilder.Entity<InvoiceAdditionalChargesSpReport>().HasNoKey();
             modelBuilder.Entity<InvoiceSPReportForAvi>().HasNoKey();
             modelBuilder.Entity<GetInventorySPReportForAvi>().HasNoKey();
             modelBuilder.Entity<InventoryBySumOfFilteringDatesSPReport>().HasNoKey();

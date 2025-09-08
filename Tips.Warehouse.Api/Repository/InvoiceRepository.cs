@@ -267,6 +267,23 @@ namespace Tips.Warehouse.Api.Repository
             return result;
 
         }
+        public async Task<IEnumerable<InvoiceAdditionalChargesSpReport>> InvoiceAdditionalChargesSPReportWithParameterForTrans(string? InvoiceNumber, string? SalesOrderNumber)
+        {
+            var result = _tipsWarehouseDbContext.Set<InvoiceAdditionalChargesSpReport>()
+                            .FromSqlInterpolated($"CALL Invoice_AdditionalCharges_Report_Withparameter_tras({InvoiceNumber},{SalesOrderNumber})")
+                            .ToList();
+
+            return result;
+
+        }
+        public async Task<IEnumerable<InvoiceAdditionalChargesSpReport>> InvoiceAdditionalChargesSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<InvoiceAdditionalChargesSpReport>()
+                         .FromSqlInterpolated($"CALL Invoice_AdditionalCharges_Report_WithDate_tras({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
         public async Task<IEnumerable<InvoiceSPReportForAvi>> InvoiceSPReportWithParameterForAvi(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName,
                                                                                                      string? SalesOrderNumber, string? Location,
                                                                                                          string? Warehouse, string? KPN, string? MPN, string? IssuedTo, string? ProjectNumber)

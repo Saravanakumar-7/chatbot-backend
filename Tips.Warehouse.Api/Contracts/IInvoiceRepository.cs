@@ -33,7 +33,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<InvoiceSPReportForTrans>> InvoiceSPReportWithParameterForTrans(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName,
                                                                                                         string? SalesOrderNumber, string? Location,
                                                                                                        string? Warehouse, string? KPN, string? MPN, string? IssuedTo, string? ProjectNumber);
-
+        Task<IEnumerable<InvoiceAdditionalChargesSpReport>> InvoiceAdditionalChargesSPReportWithParameterForTrans(string? InvoiceNumber, string? SalesOrderNumber);
+        Task<IEnumerable<InvoiceAdditionalChargesSpReport>> InvoiceAdditionalChargesSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<InvoiceSPReportForAvi>> InvoiceSPReportWithParameterForAvi(string? InvoiceNumber, string? DONumber, string? CustomerId, string? CustomerName,
                                                                                                 string? SalesOrderNumber, string? Location,
                                                                                                string? Warehouse, string? KPN, string? MPN, string? IssuedTo, string? ProjectNumber);
