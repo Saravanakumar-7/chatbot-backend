@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Tips.SalesService.Api.Entities.Enum;
 
@@ -122,6 +123,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? SGST { get; set; }
         public SoStatus SOAdditionalStatus { get; set; }
         public string? Remarks { get; set; }
+        [DefaultValue(false)]
+        public bool NowShortClosed { get; set; }
 
     }
 

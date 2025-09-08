@@ -1163,7 +1163,7 @@ namespace Tips.SalesService.Api.Controllers
                 updateData.SalesOrderAdditionalCharges = salesAdditionalChargesList;
 
                 //Update Main Level Status
-                int? soItemShortCloseCount = updateData.SalesOrdersItems?.Where(x =>  x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
+                int? soItemShortCloseCount = updateData.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
 
                 int? soItemOpenCount = updateData.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Open).Count() ?? 0;
 
@@ -1173,23 +1173,23 @@ namespace Tips.SalesService.Api.Controllers
 
                 int? soAddStatusCount = updateData.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
 
-                    if (soItemOpenCount == 0 && soAddOpenCount == 0)
-                    {
-                        updateData.SOStatus = OrderStatus.Open;
-                    }
-                    else if (soItemShortCloseCount == 0 && soAddStatusCount == 0)
-                    {
-                        updateData.SOStatus = OrderStatus.ShortClosed;
-                    }
-                    else if (soItemStatusCount == 0 && soAddStatusCount == 0)
-                    {
-                        updateData.SOStatus = OrderStatus.Closed;
-                    }
-                    else
-                    {
-                        updateData.SOStatus = OrderStatus.PartiallyClosed;
-                    }
-                
+                if (soItemOpenCount == 0 && soAddOpenCount == 0)
+                {
+                    updateData.SOStatus = OrderStatus.Open;
+                }
+                else if (soItemShortCloseCount == 0 && soAddStatusCount == 0)
+                {
+                    updateData.SOStatus = OrderStatus.ShortClosed;
+                }
+                else if (soItemStatusCount == 0 && soAddStatusCount == 0)
+                {
+                    updateData.SOStatus = OrderStatus.Closed;
+                }
+                else
+                {
+                    updateData.SOStatus = OrderStatus.PartiallyClosed;
+                }
+
 
                 string result = await _repository.UpdateSalesOrder(updateData);
                 _logger.LogInfo(result);
@@ -1334,8 +1334,6 @@ namespace Tips.SalesService.Api.Controllers
                                 salesOrderItemLevelHistory.Id = salesOrderItemLevelHistoryId;
                                 salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItems[i].Id;
                                 SalesOrderItemLevelHistoryList.Add(salesOrderItemLevelHistory);
-                                salesOrderMainLevelHistory.SalesOrderItemLevelHistory = SalesOrderItemLevelHistoryList;
-
                             }
                             else
                             {
@@ -1357,15 +1355,49 @@ namespace Tips.SalesService.Api.Controllers
                                 }
 
                                 salesOrderItemLevelHistory.SalesOrderScheduleDateHistory = SalesOrderScheduleDateHistoryList;
+                                SalesOrderItemLevelHistoryList.Add(salesOrderItemLevelHistory);
 
-                                await _salesOrderItemLevelHistoryRepository.CreateSalesOrderItemLevelHistory(salesOrderItemLevelHistory);
-                                _salesOrderItemLevelHistoryRepository.SaveAsync();
+                                //await _salesOrderItemLevelHistoryRepository.CreateSalesOrderItemLevelHistory(salesOrderItemLevelHistory);
+                                //_salesOrderItemLevelHistoryRepository.SaveAsync();
                             }
 
                         }
                     }
 
+                    var SOAdditionalChargesHistoryList = new List<SOAdditionalChargesHistory>();
+                    if (salesOrder.SalesOrderAdditionalCharges != null && salesOrder.SalesOrderAdditionalCharges.Count > 0)
+                    {
+                        for (int i = 0; i < salesOrder.SalesOrderAdditionalCharges.Count; i++)
+                        {
+                            var existingAdditionalChargeHistory = exsitingSalesOrderHistory.SOAdditionalChargesHistory.Where(x => x.SOAdditionalChargeId == salesOrder.SalesOrderAdditionalCharges[i].Id).FirstOrDefault();
+                            if (existingAdditionalChargeHistory == null)
+                            {
+                                SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(salesOrder.SalesOrderAdditionalCharges[i]);
+                                soAdditionalChargesHistory.Id = 0;
+                                soAdditionalChargesHistory.SOAdditionalChargeId = salesOrder.SalesOrderAdditionalCharges[i].Id;
+                                //await _sOAdditionalChargesHistoryRepository.CreateSOAdditionalChargesHistory(soAdditionalChargesHistory);
+                                //_sOAdditionalChargesHistoryRepository.SaveAsync();
+                                SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
+                            }
+                            else
+                            {
+                                SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(salesOrder.SalesOrderAdditionalCharges[i]);
+                                soAdditionalChargesHistory.Id = existingAdditionalChargeHistory.Id;
+                                soAdditionalChargesHistory.SOAdditionalChargeId = salesOrder.SalesOrderAdditionalCharges[i].Id;
+                                //await _sOAdditionalChargesHistoryRepository.UpdateSOAdditionalChargesHistory(soAdditionalChargesHistory);
+                                //_sOAdditionalChargesHistoryRepository.SaveAsync();
+                                SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
+                            }
 
+                            //SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos[i]);
+                            //soAdditionalChargesHistory.Id = 0;
+                            //soAdditionalChargesHistory.SOAdditionalChargeId = salesOrder.SalesOrderAdditionalCharges[i].Id;
+
+
+                        }
+                    }
+                    salesOrderMainLevelHistory.SOAdditionalChargesHistory = SOAdditionalChargesHistoryList;
+                    salesOrderMainLevelHistory.SalesOrderItemLevelHistory = SalesOrderItemLevelHistoryList;
                     await _salesOrderMainLevelHistoryRepository.UpdateSalesOrderMainLevelHistory(salesOrderMainLevelHistory);
                     _salesOrderMainLevelHistoryRepository.SaveAsync();
                 }
@@ -2232,30 +2264,28 @@ namespace Tips.SalesService.Api.Controllers
                     salesAdditionalCharges.InvoicedValue += item.InvoicedValue;
                     salesAdditionalCharges.SOAdditionalStatus = item.SOAdditionalStatus;
                     await _salesAdditionalChargesRepository.UpdateSalesAdditionalCharges(salesAdditionalCharges);
-
-
                 }
                 _salesAdditionalChargesRepository.SaveAsync();
 
                 var salesdetails = await _repository.GetSalesOrderById(soAdditionalChargeUpdateDto[0].SalesOrderId);
-                if (salesdetails.SOStatus != OrderStatus.ShortClosed)
+                //if (salesdetails.SOStatus != OrderStatus.ShortClosed)
+                //{
+                int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed && x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
+
+                int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed && x.SOAdditionalStatus!= SoStatus.ShortClosed).Count() ?? 0;
+
+                if (soItemStatusCount == 0 && soAddStatusCount == 0)
                 {
-                    int? soItemStatusCount = salesdetails.SalesOrdersItems?.Where(x => x.StatusEnum != OrderStatus.Closed && x.StatusEnum != OrderStatus.ShortClosed).Count() ?? 0;
-
-                    int? soAddStatusCount = salesdetails.SalesOrderAdditionalCharges?.Where(x => x.SOAdditionalStatus != SoStatus.Closed).Count() ?? 0;
-
-                    if (soItemStatusCount == 0 && soAddStatusCount == 0)
-                    {
-                        salesdetails.SOStatus = OrderStatus.Closed;
-                    }
-                    else
-                    {
-                        salesdetails.SOStatus = OrderStatus.PartiallyClosed;
-                    }
-
-                    await _repository.UpdateSalesOrderShortClose(salesdetails);
-                    _repository.SaveAsync();
+                    salesdetails.SOStatus = OrderStatus.Closed;
                 }
+                else
+                {
+                    salesdetails.SOStatus = OrderStatus.PartiallyClosed;
+                }
+
+                await _repository.UpdateSalesOrderShortClose(salesdetails);
+                _repository.SaveAsync();
+                //}
                 //else
                 //{
                 //    foreach (var item in soAdditionalChargeUpdateDto)
@@ -2761,7 +2791,7 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<SalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPReportForTrans>>();
             try
             {
-                var products = await _repository.GetSalesOrderSPReportWithParamForTrans(salesOrderSPResport.ProjectNumber,salesOrderSPResport.CustomerName, salesOrderSPResport.SalesOrderNumber, salesOrderSPResport.SOStatus, salesOrderSPResport.KPN);
+                var products = await _repository.GetSalesOrderSPReportWithParamForTrans(salesOrderSPResport.ProjectNumber, salesOrderSPResport.CustomerName, salesOrderSPResport.SalesOrderNumber, salesOrderSPResport.SOStatus, salesOrderSPResport.KPN);
 
                 if (products == null)
                 {
@@ -2799,9 +2829,9 @@ namespace Tips.SalesService.Api.Controllers
             try
             {
                 // Get data from repository using stored procedure
-                var reportData = await _repository.GetSalesOrderSPReportWithParamForTrans(salesOrderSPResport.ProjectNumber, 
-                                                                                                salesOrderSPResport.CustomerName, 
-                                                                                                salesOrderSPResport.SalesOrderNumber, 
+                var reportData = await _repository.GetSalesOrderSPReportWithParamForTrans(salesOrderSPResport.ProjectNumber,
+                                                                                                salesOrderSPResport.CustomerName,
+                                                                                                salesOrderSPResport.SalesOrderNumber,
                                                                                                 salesOrderSPResport.SOStatus, salesOrderSPResport.KPN);
 
                 // Create a new Excel workbook
@@ -2911,7 +2941,7 @@ namespace Tips.SalesService.Api.Controllers
             ServiceResponse<IEnumerable<SalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPReportForTrans>>();
             try
             {
-                var products = await _repository.GetSalesOrderSOStatusSPReportWithParamForTrans(salesOrderSPResport.ProjectNumber, 
+                var products = await _repository.GetSalesOrderSOStatusSPReportWithParamForTrans(salesOrderSPResport.ProjectNumber,
                     salesOrderSPResport.CustomerName, salesOrderSPResport.SalesOrderNumber, salesOrderSPResport.SOStatus, salesOrderSPResport.KPN);
 
                 if (products == null)
@@ -3326,7 +3356,7 @@ namespace Tips.SalesService.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetFQToFSFirstSOSPReportWithParam API: \n{ ex.Message} \n{ ex.InnerException}");
+                _logger.LogError($"Error Occured in GetFQToFSFirstSOSPReportWithParam API: \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error Occured in GetFQToFSFirstSOSPReportWithParam API: \n{ex.Message}";
                 serviceResponse.Success = false;
@@ -3853,7 +3883,7 @@ namespace Tips.SalesService.Api.Controllers
             {
                 _logger.LogError($"Error Occured in GetRfqSalesOrderSPReportWithParamForTrans API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message= $"Error Occured in GetRfqSalesOrderSPReportWithParamForTrans API : \n {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetRfqSalesOrderSPReportWithParamForTrans API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
@@ -6032,7 +6062,7 @@ namespace Tips.SalesService.Api.Controllers
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
                     return NotFound(serviceResponse);
                 }
-              
+
                 var salesOrderDetails = _mapper.Map<SalesOrder>(salesOrderDtoUpdate);
                 var salesOrderItemsDto = salesOrderDtoUpdate.SalesOrderItemsUpdateDtos;
                 var salesAdditionalChargesDto = salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos;
@@ -6188,13 +6218,19 @@ namespace Tips.SalesService.Api.Controllers
 
                         if (salesOrder.SalesOrderAdditionalCharges != null && salesOrder.SalesOrderAdditionalCharges.Count > 0)
                         {
-                            foreach (var SalesOrderAdditionalCharges in salesOrder.SalesOrderAdditionalCharges)
+                            if (salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos.Where(x => x.NowShortClosed == true).Count() > 0)
                             {
-                                SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(SalesOrderAdditionalCharges);
-                                soAdditionalChargesHistory.Id = 0;
-                                soAdditionalChargesHistory.SOAdditionalChargeId = SalesOrderAdditionalCharges.Id;
+                                for (int a = 0; a < salesOrder.SalesOrderAdditionalCharges.Count; a++)
+                                {
+                                    if (salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos[a].NowShortClosed == true)
+                                    {
+                                        SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(salesOrder.SalesOrderAdditionalCharges[a]);
+                                        soAdditionalChargesHistory.Id = 0;
+                                        soAdditionalChargesHistory.SOAdditionalChargeId = salesOrder.SalesOrderAdditionalCharges[a].Id;
 
-                                SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
+                                        SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
+                                    }
+                                }
                             }
                         }
 
@@ -6299,6 +6335,36 @@ namespace Tips.SalesService.Api.Controllers
                                     }
 
 
+                                }
+                            }
+                        }
+
+                        if (salesOrder.SalesOrderAdditionalCharges != null && salesOrder.SalesOrderAdditionalCharges.Count > 0)
+                        {
+                            if (salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos.Where(x => x.NowShortClosed == true).Count() > 0)
+                            {
+                                for (int a = 0; a < salesOrder.SalesOrderAdditionalCharges.Count; a++)
+                                {
+                                    if (salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos[a].NowShortClosed == true)
+                                    {
+                                        var existingAdditionalChargeHistory = exsitingSalesOrderHistory.SOAdditionalChargesHistory.Where(x => x.SOAdditionalChargeId == salesOrder.SalesOrderAdditionalCharges[a].Id).FirstOrDefault();
+                                        if (existingAdditionalChargeHistory == null)
+                                        {
+                                            SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(salesOrder.SalesOrderAdditionalCharges[a]);
+                                            soAdditionalChargesHistory.Id = 0;
+                                            soAdditionalChargesHistory.SOAdditionalChargeId = salesOrder.SalesOrderAdditionalCharges[a].Id;
+                                            await _sOAdditionalChargesHistoryRepository.CreateSOAdditionalChargesHistory(soAdditionalChargesHistory);
+                                            _sOAdditionalChargesHistoryRepository.SaveAsync();
+                                        }
+                                        else
+                                        {
+                                            SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(salesOrder.SalesOrderAdditionalCharges[a]);
+                                            soAdditionalChargesHistory.Id = existingAdditionalChargeHistory.Id;
+                                            soAdditionalChargesHistory.SOAdditionalChargeId = salesOrder.SalesOrderAdditionalCharges[a].Id;
+                                            await _sOAdditionalChargesHistoryRepository.UpdateSOAdditionalChargesHistory(soAdditionalChargesHistory);
+                                            _sOAdditionalChargesHistoryRepository.SaveAsync();
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -6411,11 +6477,31 @@ namespace Tips.SalesService.Api.Controllers
                         {
                             for (int i = 0; i < salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos.Count; i++)
                             {
-                                SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos[i]);
-                                soAdditionalChargesHistory.Id = 0;
-                                soAdditionalChargesHistory.SOAdditionalChargeId = salesOrder.SalesOrderAdditionalCharges[i].Id;
+                                var existingAdditionalChargeHistory = exsitingSalesOrderHistory.SOAdditionalChargesHistory.Where(x => x.SOAdditionalChargeId == salesOrder.SalesOrderAdditionalCharges[i].Id).FirstOrDefault();
+                                if (existingAdditionalChargeHistory == null)
+                                {
+                                    SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(salesOrder.SalesOrderAdditionalCharges[i]);
+                                    soAdditionalChargesHistory.Id = 0;
+                                    soAdditionalChargesHistory.SOAdditionalChargeId = salesOrder.SalesOrderAdditionalCharges[i].Id;
+                                    //await _sOAdditionalChargesHistoryRepository.CreateSOAdditionalChargesHistory(soAdditionalChargesHistory);
+                                    //_sOAdditionalChargesHistoryRepository.SaveAsync();
+                                    SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
+                                }
+                                else
+                                {
+                                    SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(salesOrder.SalesOrderAdditionalCharges[i]);
+                                    soAdditionalChargesHistory.Id = existingAdditionalChargeHistory.Id;
+                                    soAdditionalChargesHistory.SOAdditionalChargeId = salesOrder.SalesOrderAdditionalCharges[i].Id;
+                                    //await _sOAdditionalChargesHistoryRepository.UpdateSOAdditionalChargesHistory(soAdditionalChargesHistory);
+                                    //_sOAdditionalChargesHistoryRepository.SaveAsync();
+                                    SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
+                                }
 
-                                SOAdditionalChargesHistoryList.Add(soAdditionalChargesHistory);
+                                //SOAdditionalChargesHistory soAdditionalChargesHistory = _mapper.Map<SOAdditionalChargesHistory>(salesOrderDtoUpdate.SalesOrderAdditionalChargesUpdateDtos[i]);
+                                //soAdditionalChargesHistory.Id = 0;
+                                //soAdditionalChargesHistory.SOAdditionalChargeId = salesOrder.SalesOrderAdditionalCharges[i].Id;
+
+
                             }
                         }
 
@@ -6445,7 +6531,7 @@ namespace Tips.SalesService.Api.Controllers
                                 else
                                 {
                                     var salesOrderItemLevelHistory = _mapper.Map<SalesOrderItemLevelHistory>(salesOrderItems[i]);
-                                   // salesOrderItemLevelHistory.Id = 0;
+                                    // salesOrderItemLevelHistory.Id = 0;
                                     salesOrderItemLevelHistory.SalesOrderItemId = salesOrderItemDetails[i].Id;
                                     salesOrderItemLevelHistory.SalesOrderNumber = salesOrder.SalesOrderNumber;
                                     salesOrderItemLevelHistory.RevisionNumber = salesOrder.RevisionNumber;
@@ -6785,7 +6871,7 @@ namespace Tips.SalesService.Api.Controllers
                 //    //whatsapptemplate = "advait_quote_automaiton";
                 //    FileName = "SalesOrder_Accessories_Book";
                 //}
-                else               
+                else
                 {
                     emaildetails = $"Your Confirmed Keus Automation Sales Order - {salesorderDetails.SalesOrderNumber}: Version - {salesorderDetails.RevisionNumber}";
                     //whatsapptemplate = "advait_sale_closed_automation";
@@ -6837,7 +6923,7 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     string htmlFilePath = Path.Combine(Directory.GetCurrentDirectory(), "EmailTemplates", "Ardeo_SalesOrder_Template.html");
                     body = System.IO.File.ReadAllText(htmlFilePath);
-                   // body = body.Replace("{{Sales-Order Number}}", salesorderDetails.SalesOrderNumber);
+                    // body = body.Replace("{{Sales-Order Number}}", salesorderDetails.SalesOrderNumber);
                     body = body.Replace("{{Customer Name}}", salesorderDetails.CustomerName);
                     body = body.Replace("{{tableBgImage}}", $"{baseUrl}/api/Quote/DownloadImage?ImageName=Ardeo_SalesOrder_Background.png");
                     body = body.Replace("{{BgImage}}", $"{baseUrl}/api/Quote/DownloadImage?ImageName=blankBG.jpg");
@@ -6909,7 +6995,7 @@ namespace Tips.SalesService.Api.Controllers
                     WebLogo_img.ContentId = "WebLogo";
                 }
                 string base64;
-               
+
                 builder.HtmlBody = body;
                 //using (HttpClient client1 = new HttpClient())
                 //{

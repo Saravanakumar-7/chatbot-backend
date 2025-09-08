@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
+using Tips.Warehouse.Api.Entities.Enums;
 
 namespace Tips.SalesService.Api.Entities.DTOs
 {
@@ -67,7 +68,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(18, 3)]
         public decimal SGST { get; set; }
-        public Status SOAdditionalStatus { get; set; }
+        public SoStatus SOAdditionalStatus { get; set; }
         public Status InvoiceAdditionalStatus { get; set; }
         public int SalesAdditionalChargeId { get; set; }
 
