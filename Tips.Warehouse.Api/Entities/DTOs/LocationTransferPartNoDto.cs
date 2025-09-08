@@ -19,6 +19,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? FromUOM { get; set; }
         public string? ToUOM { get; set; }
         public PartType FromPartType { get; set; }
+        public PartType ToPartType { get; set; }
 
         [Precision(13, 3)]
         public decimal? AvailableStockInLocation { get; set; }
@@ -47,6 +48,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? FromUOM { get; set; }
         public string? ToUOM { get; set; }
         public PartType FromPartType { get; set; }
+        public PartType ToPartType { get; set; }
 
         [Precision(13, 3)]
         public decimal? AvailableStockInLocation { get; set; }
