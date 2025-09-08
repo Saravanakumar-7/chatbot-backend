@@ -1310,6 +1310,67 @@ namespace Tips.SalesService.Api.Controllers
                 {
                     _logger.LogInfo($"Returned RfqEngg with");
                     var result = _mapper.Map<RfqEnggDto>(rfqEnggByRfqNoAndRevNo);
+                    
+                    // Populate ItemType for each RfqEnggItem by calling ItemMaster API
+                    if (result.RfqEnggItems != null && result.RfqEnggItems.Any())
+                    {
+                        var client = _clientFactory.CreateClient();
+                        var token = HttpContext.Request.Headers["Authorization"].ToString();
+                        
+                        foreach (var item in result.RfqEnggItems)
+                        {
+                            if (!string.IsNullOrEmpty(item.ItemNumber))
+                            {
+                                try
+                                {
+                                    var encodedItemNumber = Uri.EscapeDataString(item.ItemNumber);
+                                    
+                                    var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterMainAPI"],
+                                        $"GetItemTypeByItemNumber?itemNumber={encodedItemNumber}"));
+                                    request.Headers.Add("Authorization", token);
+
+                                    var itemTypeResult = await client.SendAsync(request);
+                                    
+                                    if (itemTypeResult.IsSuccessStatusCode)
+                                    {
+                                        var jsonContent = await itemTypeResult.Content.ReadAsStringAsync();
+                                        var itemTypeResponse = JsonConvert.DeserializeObject<ServiceResponse<ItemTypeDto>>(jsonContent);
+                                        
+                                        if (itemTypeResponse != null && itemTypeResponse.Success && itemTypeResponse.Data != null)
+                                        {
+                                            item.ItemType = itemTypeResponse.Data.ItemType;
+                                            _logger.LogInfo($"Successfully populated ItemType '{itemTypeResponse.Data.ItemType}' for ItemNumber: {item.ItemNumber}");
+                                        }
+                                        else
+                                        {
+                                            _logger.LogError($"ItemType not found for ItemNumber: {item.ItemNumber}");
+                                            serviceResponse.Message = $"ItemType not found for ItemNumber: {item.ItemNumber}.";
+                                            serviceResponse.Success = false;
+                                            serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                            return Ok(serviceResponse);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        _logger.LogError($"Failed to get ItemType for ItemNumber: {item.ItemNumber}.");
+                                        serviceResponse.Message = $"Failed to get ItemType for ItemNumber: {item.ItemNumber}.";
+                                        serviceResponse.Success = false;
+                                        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                        return Ok(serviceResponse);
+                                    }
+                                }
+                                catch (Exception itemEx)
+                                {
+                                    _logger.LogError($"Error fetching ItemType for ItemNumber: {item.ItemNumber}. Error: {itemEx.Message}");
+                                    serviceResponse.Message = $" Error: Failed to fetch ItemType for ItemNumber: {item.ItemNumber}.";
+                                    serviceResponse.Success = false;
+                                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                                    return Ok(serviceResponse);
+                                }
+                            }
+                        }
+                    }
+                    
                     serviceResponse.Data = result;
                     serviceResponse.Message = $"Returned RfqEngg";
                     serviceResponse.Success = true;

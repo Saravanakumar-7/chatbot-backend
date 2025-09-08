@@ -47,10 +47,6 @@ namespace Tips.Purchase.Api.Entities.Dto
         public DateTime? ShortClosedOn { get; set; }
         public string? Remarks { get; set; }
         public string? drawingRevNo { get; set; }
-        public string? POApprovalIRemarks { get; set; }
-        public string? POApprovalIIRemarks { get; set; }
-        public string? POApprovalIIIRemarks { get; set; }
-        public string? POApprovalIVRemarks { get; set; }
         public List<PoAddProjectDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleDto>? POAddDeliverySchedules { get; set; }
         public List<PoConfirmationDateDto>? POConfirmationDates { get; set; }
@@ -133,10 +129,6 @@ namespace Tips.Purchase.Api.Entities.Dto
         public DateTime? ShortClosedOn { get; set; }
         public string? Remarks { get; set; }
         public string? drawingRevNo { get; set; }
-        public string? POApprovalIRemarks { get; set; }
-        public string? POApprovalIIRemarks { get; set; }
-        public string? POApprovalIIIRemarks { get; set; }
-        public string? POApprovalIVRemarks { get; set; }
         public List<PoAddProjectUpdateDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleUpdateDto>? POAddDeliverySchedules { get; set; }
         public List<PoConfirmationDateUpdateDto>? POConfirmationDates { get; set; }
@@ -180,10 +172,6 @@ namespace Tips.Purchase.Api.Entities.Dto
         public DateTime? ShortClosedOn { get; set; }
         public string? Remarks { get; set; }
         public string? drawingRevNo { get; set; }
-        public string? POApprovalIRemarks { get; set; }
-        public string? POApprovalIIRemarks { get; set; }
-        public string? POApprovalIIIRemarks { get; set; }
-        public string? POApprovalIVRemarks { get; set; }
         public List<PoAddProjectApprovalUpdateDto>? POAddprojects { get; set; }
         public List<PoAddDeliveryScheduleApprovalUpdateDto>? POAddDeliverySchedules { get; set; }
         public List<PoConfirmationDateApprovalUpdateDto>? POConfirmationDates { get; set; }

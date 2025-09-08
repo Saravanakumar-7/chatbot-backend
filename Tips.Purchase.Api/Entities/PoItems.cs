@@ -58,11 +58,6 @@ namespace Tips.Purchase.Api.Entities
         public string? ReasonforShortClose { get; set; }
         public string? Remarks { get; set; }
         public string? drawingRevNo { get; set; }  
-        public string? POApprovalIRemarks { get; set; }  
-        public string? POApprovalIIRemarks { get; set; }  
-        public string? POApprovalIIIRemarks { get; set; }  
-        public string? POApprovalIVRemarks { get; set; }  
-        
         public int PurchaseOrderId { get; set; }
         public PurchaseOrder? PurchaseOrder { get; set; }
 

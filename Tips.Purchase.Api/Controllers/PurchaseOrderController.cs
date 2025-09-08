@@ -4258,31 +4258,41 @@ namespace Tips.Purchase.Api.Controllers
             }
         }
 
-        [HttpPut("{PONumber}")]
-        public async Task<IActionResult> ActivatePurchaseOrderApprovalI(string PONumber)
+        [HttpPut]
+        public async Task<IActionResult> ActivatePurchaseOrderApprovalI([FromBody] PurchaseOrderApprovalIDto approvalDto)
         {
             ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
 
             try
             {
+                if (approvalDto == null || string.IsNullOrEmpty(approvalDto.PONumber))
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid approval data provided";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
                 string serverKey = GetServerKey();
-                var purchaseOrderDetailByPONumber = await _repository.GetAllPurchaseOrderbyPurchaseOrderNumber(PONumber);
+                var purchaseOrderDetailByPONumber = await _repository.GetAllPurchaseOrderbyPurchaseOrderNumber(approvalDto.PONumber);
                 if (purchaseOrderDetailByPONumber is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "PurchaseOrderApprovalI object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"PurchaseOrderApprovalI with string: {PONumber}, hasn't been found in db.");
+                    _logger.LogError($"PurchaseOrderApprovalI with string: {approvalDto.PONumber}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
 
                 purchaseOrderDetailByPONumber[0].POApprovalI = true;
                 purchaseOrderDetailByPONumber[0].POApprovedIBy = _createdBy;
                 purchaseOrderDetailByPONumber[0].POApprovedIDate = DateTime.Now;
+                purchaseOrderDetailByPONumber[0].POApprovalIRemarks = approvalDto.POApprovalIRemarks;
                 purchaseOrderDetailByPONumber.ForEach(x => x.InApproval = true);
                 foreach (var po in purchaseOrderDetailByPONumber) await _repository.UpdatePurchaseOrder_ForApproval(po);
-                _logger.LogInfo($"ActivatePurchaseOrderApprovalI for PO: {PONumber}");
+                _logger.LogInfo($"ActivatePurchaseOrderApprovalI for PO: {approvalDto.PONumber}");
                 _repository.SaveAsync();
                 if (serverKey == "avision")
                 {
@@ -4366,36 +4376,46 @@ namespace Tips.Purchase.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in ActivatePurchaseOrderApprovalI API for the following PONumber:{PONumber} \n {ex.Message}";
+                serviceResponse.Message = $"Error Occured in ActivatePurchaseOrderApprovalI API for the following PONumber:{approvalDto?.PONumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                _logger.LogError($"Error Occured in ActivatePurchaseOrderApprovalI API for the following PONumber:{PONumber} \n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in ActivatePurchaseOrderApprovalI API for the following PONumber:{approvalDto?.PONumber} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
 
-        [HttpPut("{PONumber}")]
-        public async Task<IActionResult> ActivatePurchaseOrderApprovalII(string PONumber)
+        [HttpPut]
+        public async Task<IActionResult> ActivatePurchaseOrderApprovalII([FromBody] PurchaseOrderApprovalIIDto approvalDto)
         {
             ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
 
             try
             {
+                if (approvalDto == null || string.IsNullOrEmpty(approvalDto.PONumber))
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid approval data provided";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
                 string serverKey = GetServerKey();
-                var purchaseOrderDetailByPONumber = await _repository.GetLastestPurchaseOrderByPONumber(PONumber);
+                var purchaseOrderDetailByPONumber = await _repository.GetLastestPurchaseOrderByPONumber(approvalDto.PONumber);
                 if (purchaseOrderDetailByPONumber is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "PurchaseOrderApprovalII object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"PurchaseOrderApprovalII with string: {PONumber}, hasn't been found in db.");
+                    _logger.LogError($"PurchaseOrderApprovalII with string: {approvalDto.PONumber}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
                 purchaseOrderDetailByPONumber.POApprovalII = true;
                 purchaseOrderDetailByPONumber.POApprovedIIBy = _createdBy;
                 purchaseOrderDetailByPONumber.POApprovedIIDate = DateTime.Now;
+                purchaseOrderDetailByPONumber.POApprovalIIRemarks = approvalDto.POApprovalIIRemarks;
                 string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailByPONumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
@@ -4556,35 +4576,45 @@ namespace Tips.Purchase.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in ActivatePurchaseOrderApprovalII API for the following PONumber:{PONumber} \n {ex.Message} ";
+                serviceResponse.Message = $"Error Occured in ActivatePurchaseOrderApprovalII API for the following PONumber:{approvalDto?.PONumber} \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Error Occured in ActivatePurchaseOrderApprovalII API for the following PONumber:{PONumber} \n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in ActivatePurchaseOrderApprovalII API for the following PONumber:{approvalDto?.PONumber} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
-        [HttpPut("{PONumber}")]
-        public async Task<IActionResult> ActivatePurchaseOrderApprovalIIIForAvision(string PONumber)
+        [HttpPut]
+        public async Task<IActionResult> ActivatePurchaseOrderApprovalIIIForAvision([FromBody] PurchaseOrderApprovalIIIDto approvalDto)
         {
             ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
 
             try
             {
+                if (approvalDto == null || string.IsNullOrEmpty(approvalDto.PONumber))
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid approval data provided";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
                 string serverKey = GetServerKey();
-                var purchaseOrderDetailByPONumber = await _repository.GetLastestPurchaseOrderByPONumber(PONumber);
+                var purchaseOrderDetailByPONumber = await _repository.GetLastestPurchaseOrderByPONumber(approvalDto.PONumber);
                 if (purchaseOrderDetailByPONumber is null)
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = "PurchaseOrderApprovalII object is null";
+                    serviceResponse.Message = "PurchaseOrderApprovalIII object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"PurchaseOrderApprovalII with string: {PONumber}, hasn't been found in db.");
+                    _logger.LogError($"PurchaseOrderApprovalIII with string: {approvalDto.PONumber}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
                 }
                 purchaseOrderDetailByPONumber.POApprovalIII = true;
                 purchaseOrderDetailByPONumber.POApprovedIIIBy = _createdBy;
                 purchaseOrderDetailByPONumber.POApprovedIIIDate = DateTime.Now;
+                purchaseOrderDetailByPONumber.POApprovalIIIRemarks = approvalDto.POApprovalIIIRemarks;
                 string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailByPONumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
@@ -4670,35 +4700,45 @@ namespace Tips.Purchase.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in ActivatePurchaseOrderApprovalIIIForAvision API for the following PONumber:{PONumber} \n {ex.Message}";
+                serviceResponse.Message = $"Error Occured in ActivatePurchaseOrderApprovalIIIForAvision API for the following PONumber:{approvalDto?.PONumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Error Occured in ActivatePurchaseOrderApprovalIIIForAvision API for the following PONumber:{PONumber} \n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in ActivatePurchaseOrderApprovalIIIForAvision API for the following PONumber:{approvalDto?.PONumber} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }
 
-        [HttpPut("{PONumber}")]
-        public async Task<IActionResult> ActivatePurchaseOrderApprovalIVForAvision(string PONumber)
+        [HttpPut]
+        public async Task<IActionResult> ActivatePurchaseOrderApprovalIVForAvision([FromBody] PurchaseOrderApprovalIVDto approvalDto)
         {
             ServiceResponse<PurchaseOrderDto> serviceResponse = new ServiceResponse<PurchaseOrderDto>();
 
             try
             {
+                if (approvalDto == null || string.IsNullOrEmpty(approvalDto.PONumber))
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid approval data provided";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
                 string serverKey = GetServerKey();
-                var purchaseOrderDetailByPONumber = await _repository.GetLastestPurchaseOrderByPONumber(PONumber);
+                var purchaseOrderDetailByPONumber = await _repository.GetLastestPurchaseOrderByPONumber(approvalDto.PONumber);
                 if (purchaseOrderDetailByPONumber is null)
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = "PurchaseOrderApprovalIV object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError($"PurchaseOrderApprovalIV with string: {PONumber}, hasn't been found in db.");
+                    _logger.LogError($"PurchaseOrderApprovalIV with string: {approvalDto.PONumber}, hasn't been found in db.");
                     return BadRequest(serviceResponse);
-                }//
+                }
                 purchaseOrderDetailByPONumber.POApprovalIV = true;
                 purchaseOrderDetailByPONumber.POApprovedIVBy = _createdBy;
                 purchaseOrderDetailByPONumber.POApprovedIVDate = DateTime.Now;
+                purchaseOrderDetailByPONumber.POApprovalIVRemarks = approvalDto.POApprovalIVRemarks;
                 string result = await _repository.UpdatePurchaseOrder_ForApproval(purchaseOrderDetailByPONumber);
                 _logger.LogInfo(result);
                 _repository.SaveAsync();
@@ -4786,10 +4826,10 @@ namespace Tips.Purchase.Api.Controllers
             catch (Exception ex)
             {
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in ActivatePurchaseOrderApprovalIVForAvision API for the following PONumber:{PONumber} \n {ex.Message}";
+                serviceResponse.Message = $"Error Occured in ActivatePurchaseOrderApprovalIVForAvision API for the following PONumber:{approvalDto?.PONumber} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Error Occured in ActivatePurchaseOrderApprovalIVForAvision API for the following PONumber:{PONumber} \n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in ActivatePurchaseOrderApprovalIVForAvision API for the following PONumber:{approvalDto?.PONumber} \n {ex.Message} \n{ex.InnerException}");
                 return StatusCode(500, serviceResponse);
             }
         }

@@ -78,6 +78,10 @@ namespace Tips.Purchase.Api.Entities
         [Precision(18, 3)]
         public decimal? PoAdditionalChargesTotal { get; set; }
         public PoType PoType { get; set; }
+        public string? POApprovalIRemarks { get; set; }
+        public string? POApprovalIIRemarks { get; set; }
+        public string? POApprovalIIIRemarks { get; set; }
+        public string? POApprovalIVRemarks { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
