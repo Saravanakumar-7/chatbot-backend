@@ -20,5 +20,10 @@
         public decimal? CostOfLable { get; set; }
     }
 
+    public class LPCostingandSummarySPReport
+    {
+        public List<LPCostingSPReport> LPCostingSPReport { get; set; }
+        public List<LPCostingSummarySPReport> LPCostingSummarySPReport { get; set; }
 
+    }
 }

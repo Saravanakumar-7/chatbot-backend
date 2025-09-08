@@ -609,7 +609,9 @@ namespace Tips.SalesService.Api.Repository
             string result = $"SalesOrder details of {salesOrder.Id} is deleted successfully!";
             return result;
         }
-        //public async Task<IEnumerable<SalesOrder>> GetAllSalesOrderWithItems(SalesOrderSearchDto salesOrderSearch)
+        //public async Task<IEnumerable<
+        //
+        //>> GetAllSalesOrderWithItems(SalesOrderSearchDto salesOrderSearch)
         // {
         //     using (var context = _tipsSalesServiceDbContext)
         //     {

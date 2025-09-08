@@ -4242,6 +4242,53 @@ namespace Tips.SalesService.Api.Controllers
 
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetLPCostingwithSummarySPreport([FromBody] LPCostingSPInputParam lPCostingSPInputParam)
+        {
+            ServiceResponse<LPCostingandSummarySPReport> serviceResponse = new ServiceResponse<LPCostingandSummarySPReport>();
+            try
+            {
+                var LPCosting = await _repository.GetLPCostingSPreport(lPCostingSPInputParam.ProjectNumber);
+                var LPCostingSummary = await _repository.GetLPCostingSummarySPreport(lPCostingSPInputParam.ProjectNumber);
+
+                if ((LPCosting == null || !LPCosting.Any()) && (LPCostingSummary == null || !LPCostingSummary.Any()))
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"LPCostingwithSummary hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"LPCostingwithSummary hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    // Wrap into your combined DTO
+                    var result = new LPCostingandSummarySPReport
+                    {
+                        LPCostingSPReport = LPCosting?.ToList() ?? new List<LPCostingSPReport>(),
+                        LPCostingSummarySPReport = LPCostingSummary?.ToList() ?? new List<LPCostingSummarySPReport>()
+                    };
+
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned LPCostingwithSummary Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetLPCostingwithSummarySPreport API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetLPCostingwithSummarySPreport API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         [HttpPost]
         public async Task<IActionResult> ExportSalesOrderSPReportToExcel([FromBody] SalesOrderSPReportDTO salesOrderSPReport)
         {
