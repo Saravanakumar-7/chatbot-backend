@@ -31,6 +31,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<PurchaseOrder> GetPurchaseOrderByPONoAndRevNo(string poNumber, int revisionNumber);
         Task<string> UpdatePurchaseOrder(PurchaseOrder purchaseOrder);
         Task<string> UpdatePurchaseOrder_ForApproval(PurchaseOrder purchaseOrder);
+        Task<string> UpdateApprovalPurchaseOrderWithReplacement(PurchaseOrder purchaseOrder);
         Task<string> DeletePurchaseOrder(PurchaseOrder purchaseOrder);
         Task<List<PONameList>> GetAllActivePurchaseOrderNameList();
         Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPurchaseOrderNameList();
