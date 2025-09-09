@@ -20,10 +20,32 @@
         public decimal? CostOfLable { get; set; }
     }
 
+    public class CommoditySourcingSpReport
+    {
+        public string? ProjectNumber { get; set; }
+        public string? Commodity { get; set; }
+        public decimal? TotalLandingPrice { get; set; }
+        public decimal? TotalMoqCost { get; set; }
+    }
+
+    public class VendorSourcingSpReport
+    {
+        public string? ProjectNumber { get; set; }
+        public string? Vendor { get; set; }
+        public decimal? TotalLandingPrice { get; set; }
+        public decimal? TotalMoqCost { get; set; }
+    }
+
+
+
+
+
     public class LPCostingandSummarySPReport
     {
         public List<LPCostingSPReport> LPCostingSPReport { get; set; }
         public List<LPCostingSummarySPReport> LPCostingSummarySPReport { get; set; }
+        public List<CommoditySourcingSpReport> CommoditySourcingSPReport { get; set; }
+        public List<VendorSourcingSpReport> VendorSourcingSpReport { get; set; }
 
     }
 }

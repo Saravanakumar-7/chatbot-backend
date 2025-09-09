@@ -538,6 +538,24 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
+        public async Task<IEnumerable<CommoditySourcingSpReport>> GetCommoditySourcingSPreport(string projectnumber)
+        {
+            var results = _tipsSalesServiceDbContext.Set<CommoditySourcingSpReport>()
+                        .FromSqlInterpolated($"CALL CommoditySourcing({projectnumber})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<VendorSourcingSpReport>> GetVendorSourcingSPreport(string projectnumber)
+        {
+            var results = _tipsSalesServiceDbContext.Set<VendorSourcingSpReport>()
+                        .FromSqlInterpolated($"CALL VendorSourcing({projectnumber})")
+                        .ToList();
+
+            return results;
+
+        }
         public async Task<IEnumerable<CustomerWiseTransactionSPReport>> GetCustomerWiseTransactionSPReportWithParam(string CustomerId)
         {
             //var result = _tipsSalesServiceDbContext
