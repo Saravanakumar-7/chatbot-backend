@@ -3149,7 +3149,7 @@ namespace Tips.Purchase.Api.Controllers
                 }
 
                 purchaseOrderDetails.POItems = poItemDtoList;
-                await _repository.UpdatePurchaseOrder(purchaseOrderDetails);
+                await _repository.UpdateApprovalPurchaseOrderWithReplacement(purchaseOrderDetails);
 
                 if (purchaseOrderUpdateDto.POItems != null)
                 {

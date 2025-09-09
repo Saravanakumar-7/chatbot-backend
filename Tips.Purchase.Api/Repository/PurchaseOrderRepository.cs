@@ -1501,6 +1501,96 @@ namespace Tips.Purchase.Api.Repository
             return result;
         }
 
+        public async Task<string> UpdateApprovalPurchaseOrderWithReplacement(PurchaseOrder purchaseOrder)
+        {
+            // Load existing PO with only POAddprojects and POAddDeliverySchedules for replacement
+            var existingPO = await _tipsPurchaseDbContext.PurchaseOrders
+                .Include(po => po.POItems)
+                    .ThenInclude(item => item.POAddprojects)
+                        .ThenInclude(project => project.PoAddKitProjects)
+                .Include(po => po.POItems)
+                    .ThenInclude(item => item.POAddDeliverySchedules)
+                .FirstOrDefaultAsync(po => po.Id == purchaseOrder.Id);
+
+            if (existingPO == null)
+            {
+                throw new Exception($"Purchase Order with ID {purchaseOrder.Id} not found");
+            }
+
+            // Apply replacement logic ONLY for POAddprojects and POAddDeliverySchedules
+            if (existingPO.POItems?.Any() == true)
+            {
+                foreach (var existingItem in existingPO.POItems)
+                {
+                    // Replace POAddprojects - complete replacement
+                    if (existingItem.POAddprojects?.Any() == true)
+                    {
+                        foreach (var project in existingItem.POAddprojects)
+                        {
+                            if (project.PoAddKitProjects?.Any() == true)
+                            {
+                                _tipsPurchaseDbContext.PoAddKitProjects.RemoveRange(project.PoAddKitProjects);
+                            }
+                        }
+                        _tipsPurchaseDbContext.PoAddProjects.RemoveRange(existingItem.POAddprojects);
+                    }
+                    
+                    // Replace POAddDeliverySchedules - complete replacement
+                    if (existingItem.POAddDeliverySchedules?.Any() == true)
+                    {
+                        _tipsPurchaseDbContext.PoAddDeliverySchedules.RemoveRange(existingItem.POAddDeliverySchedules);
+                    }
+                }
+            }
+
+            // Add new POAddprojects and POAddDeliverySchedules from incoming data
+            if (purchaseOrder.POItems?.Any() == true)
+            {
+                for (int i = 0; i < purchaseOrder.POItems.Count && i < existingPO.POItems.Count; i++)
+                {
+                    var newItem = purchaseOrder.POItems[i];
+                    var existingItem = existingPO.POItems[i];
+                    
+                    // Add new POAddprojects
+                    if (newItem.POAddprojects?.Any() == true)
+                    {
+                        foreach (var project in newItem.POAddprojects)
+                        {
+                            project.POItemDetailId = existingItem.Id;
+                            
+                            // Set proper relationships for PoAddKitProjects
+                            if (project.PoAddKitProjects?.Any() == true)
+                            {
+                                foreach (var kitProject in project.PoAddKitProjects)
+                                {
+                                    kitProject.CreatedBy = _createdBy;
+                                    kitProject.CreatedOn = DateTime.Now;
+                                }
+                            }
+                        }
+                        existingItem.POAddprojects = newItem.POAddprojects;
+                    }
+                    
+                    // Add new POAddDeliverySchedules
+                    if (newItem.POAddDeliverySchedules?.Any() == true)
+                    {
+                        foreach (var schedule in newItem.POAddDeliverySchedules)
+                        {
+                            schedule.POItemDetailId = existingItem.Id;
+                        }
+                        existingItem.POAddDeliverySchedules = newItem.POAddDeliverySchedules;
+                    }
+                }
+            }
+
+            // Use normal update for everything else (main PO properties, other child entities)
+            Update(purchaseOrder);
+            
+            string result = $"PurchaseOrder of Detail {purchaseOrder.Id} is updated successfully with POAddprojects and POAddDeliverySchedules replacement!";
+            return result;
+        }
+
+
         public async Task<IEnumerable<PurchaseOrderIdNameListDto>> GetAllPONumberListByVendorName(string vendorName)
         {
             IEnumerable<PurchaseOrderIdNameListDto> pONameListbyVendorName = await _tipsPurchaseDbContext.PurchaseOrders

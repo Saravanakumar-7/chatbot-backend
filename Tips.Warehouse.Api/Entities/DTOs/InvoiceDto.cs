@@ -1,6 +1,7 @@
 ﻿using Entities.Enums;
 using System.ComponentModel.DataAnnotations;
 using Tips.SalesService.Api.Entities.DTOs;
+using Tips.Warehouse.Api.Entities.Enums;
 
 namespace Tips.Warehouse.Api.Entities.DTOs
 {
@@ -83,7 +84,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public int SalesOrderId { get; set; }
         public decimal InvoicedValue { get; set; }
         public int SalesAdditionalChargeId { get; set; }
-        public Status SOAdditionalStatus { get; set; }
+        public SoStatus SOAdditionalStatus { get; set; }
 
     }
     public class InvoiceReportDto
