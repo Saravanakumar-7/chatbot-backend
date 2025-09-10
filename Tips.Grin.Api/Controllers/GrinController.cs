@@ -1892,10 +1892,10 @@ namespace Tips.Grin.Api.Controllers
             {
                 return "avision";
             }
-            else if (serverConfiguration.GetValue<bool?>("Warehousing:EnableWare") == true)
-            {
-                return "Ware";
-            }
+            //else if (serverConfiguration.GetValue<bool?>("Warehousing:EnableWare") == true)
+            //{
+            //    return "Ware";
+            //}
             else
             {
                 return "trasccon";
