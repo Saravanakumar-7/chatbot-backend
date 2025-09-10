@@ -181,6 +181,7 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public int Id { get; set; }
         public string? PONumber { get; set; }
         public DateTime PODate { get; set; }
+        public int? RevisionNumber { get; set; }   // Added
         public string? ProcurementType { get; set; }
         public string? Currency { get; set; }
         public string? Transports { get; set; }
@@ -197,7 +198,11 @@ namespace Tips.Purchase.Api.Entities.DTOs
         public DateTime? QuotationDate { get; set; }
         public string? VendorAddress { get; set; }
         public string? CompanyAliasName { get; set; }
+
+        public bool PoConfirmationStatus { get; set; }   // Added
         public bool TallyStatus { get; set; } = false;
+
+        //Billing&ShippingDetails
         public string? DeliveryTerms { get; set; }
         public string? PaymentTerms { get; set; }
         public string? ShippingMode { get; set; }
@@ -207,23 +212,54 @@ namespace Tips.Purchase.Api.Entities.DTOs
         //Terms
         public string? RetentionPeriod { get; set; }
         public string? SpecialTermsAndConditions { get; set; }
+        public bool IsDeleted { get; set; } = false;   // Added
+        public bool IsShortClosed { get; set; }        // Added
+        public string? ShortClosedBy { get; set; }     // Added
+        public DateTime? ShortClosedOn { get; set; }   // Added
+
         public decimal TotalAmount { get; set; }
         public decimal? PoItemsTotal { get; set; }
         public decimal? PoAdditionalChargesTotal { get; set; }
-        public int? ApprovalCount { get; set; }
-        public PoStatus PoStatus { get; set; }
-        public string? Unit { get; set; }
-        //public string? LastModifiedBy { get; set; }
-        //public DateTime? LastModifiedOn { get; set; }
 
+        //Approval details
+        public bool POApprovalI { get; set; }               // Added
+        public DateTime POApprovedIDate { get; set; }       // Added
+        public string? POApprovedIBy { get; set; }          // Added
+        public bool POApprovalII { get; set; }              // Added
+        public DateTime POApprovedIIDate { get; set; }      // Added
+        public string? POApprovedIIBy { get; set; }         // Added
+        public bool POApprovalIII { get; set; }             // Added
+        public string? POApprovedIIIBy { get; set; }        // Added
+        public DateTime? POApprovedIIIDate { get; set; }    // Added
+        public bool POApprovalIV { get; set; }              // Added
+        public string? POApprovedIVBy { get; set; }         // Added
+        public DateTime? POApprovedIVDate { get; set; }     // Added
+
+        public int? ApprovalCount { get; set; }
+        public bool? InApproval { get; set; }               // Added
         public int ApprovalRangeId { get; set; }
-        public int? ConvertionRateId { get; set; }
+        public int? ConvertionRateId { get; set; }          // Extra (was already in your DTO)
         public PoType PoType { get; set; }
+        public PoStatus PoStatus { get; set; }
+
+        //Approval remarks
+        public string? POApprovalIRemarks { get; set; }     // Added
+        public string? POApprovalIIRemarks { get; set; }    // Added
+        public string? POApprovalIIIRemarks { get; set; }   // Added
+        public string? POApprovalIVRemarks { get; set; }    // Added
+
+        public string? Unit { get; set; }
+        public string? CreatedBy { get; set; }              // Added
+        public DateTime? CreatedOn { get; set; }            // Added
+        public string? LastModifiedBy { get; set; }         // Added
+        public DateTime? LastModifiedOn { get; set; }       // Added
+
+        //Child collections
         public List<PoItemsApprovalUpdateDto>? POItems { get; set; }
         public List<PoIncoTermApprovalUpdateDto>? POIncoTerms { get; set; }
         public List<PurchaseOrderAdditionalChargesapprovalUpdateDto>? PurchaseOrderAdditionalCharges { get; set; }
-
     }
+
     public class PurchaseOrderForShortCloseDto
     {
         public int Id { get; set; }

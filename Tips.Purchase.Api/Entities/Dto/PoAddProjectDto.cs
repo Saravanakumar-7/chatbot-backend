@@ -40,6 +40,8 @@ namespace Tips.Purchase.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal ProjectQty { get; set; }
+        public decimal BalanceQty { get; set; }
+        public decimal ReceivedQty { get; set; }
         public List<PoAddKitProjectApprovalUpdateDto>? PoAddKitProjects { get; set; }
 
     }

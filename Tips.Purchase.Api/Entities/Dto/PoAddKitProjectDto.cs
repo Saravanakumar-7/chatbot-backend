@@ -74,5 +74,12 @@ namespace Tips.Purchase.Api.Entities.Dto
         public decimal BalanceQty { get; set; }
         public decimal ReceivedQty { get; set; }
         public PoStatus PoAddKitProjectStatus { get; set; }
+
+        // Added audit fields
+        public string? CreatedBy { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
     }
+
 }
