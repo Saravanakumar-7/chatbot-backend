@@ -425,6 +425,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? LatestSOSentCreatedOn { get; set; }
         public decimal? LatestSOSentDiscount { get; set; }
         public string? LatestSOSentDiscountType { get; set; }
+        public decimal?  LatestSOAdvanceReceived { get; set; }
         public decimal? LatestSOSentTaxedValue { get; set; }
         public decimal? LatestSOSentUntaxedValue { get; set; }
     }
