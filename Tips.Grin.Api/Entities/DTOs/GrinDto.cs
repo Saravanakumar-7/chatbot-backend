@@ -537,6 +537,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? UnitPrice { get; set; }
         public decimal? Qty { get; set; }
         public decimal? AcceptedQty { get; set; }
+        public decimal? RejectedQty { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }
         public decimal? SGST { get; set; }
