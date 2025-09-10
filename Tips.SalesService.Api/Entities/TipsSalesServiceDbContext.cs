@@ -158,6 +158,8 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<ForecastSalesOrderSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<LPCostingSPReport>().HasNoKey();
             modelBuilder.Entity<LPCostingSummarySPReport>().HasNoKey();
+            modelBuilder.Entity<CommoditySourcingSpReport>().HasNoKey();
+            modelBuilder.Entity<VendorSourcingSpReport>().HasNoKey();
             modelBuilder.Entity<QuoteforKeusDto>().HasNoKey();
             modelBuilder.Entity<SalesOrderforKeusDto>().HasNoKey();
             modelBuilder.Entity<QuotationSPReport>().HasNoKey();

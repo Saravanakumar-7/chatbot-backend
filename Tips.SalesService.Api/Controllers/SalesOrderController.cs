@@ -4280,8 +4280,14 @@ namespace Tips.SalesService.Api.Controllers
             {
                 var LPCosting = await _repository.GetLPCostingSPreport(lPCostingSPInputParam.ProjectNumber);
                 var LPCostingSummary = await _repository.GetLPCostingSummarySPreport(lPCostingSPInputParam.ProjectNumber);
+                var CommoditySourcing = await _repository.GetCommoditySourcingSPreport(lPCostingSPInputParam.ProjectNumber);
+                var VendorSourcing = await _repository.GetVendorSourcingSPreport(lPCostingSPInputParam.ProjectNumber);
 
-                if ((LPCosting == null || !LPCosting.Any()) && (LPCostingSummary == null || !LPCostingSummary.Any()))
+                // Check if all main datasets are empty/null
+                if ((LPCosting == null || !LPCosting.Any()) &&
+                    (LPCostingSummary == null || !LPCostingSummary.Any()) &&
+                    (CommoditySourcing == null || !CommoditySourcing.Any()) &&
+                    (VendorSourcing == null || !VendorSourcing.Any()))
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"LPCostingwithSummary hasn't been found.";
@@ -4296,7 +4302,9 @@ namespace Tips.SalesService.Api.Controllers
                     var result = new LPCostingandSummarySPReport
                     {
                         LPCostingSPReport = LPCosting?.ToList() ?? new List<LPCostingSPReport>(),
-                        LPCostingSummarySPReport = LPCostingSummary?.ToList() ?? new List<LPCostingSummarySPReport>()
+                        LPCostingSummarySPReport = LPCostingSummary?.ToList() ?? new List<LPCostingSummarySPReport>(),
+                        CommoditySourcingSPReport = CommoditySourcing?.ToList() ?? new List<CommoditySourcingSpReport>(),
+                        VendorSourcingSpReport = VendorSourcing?.ToList() ?? new List<VendorSourcingSpReport>()
                     };
 
                     serviceResponse.Data = result;
