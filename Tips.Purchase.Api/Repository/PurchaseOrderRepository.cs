@@ -1583,8 +1583,18 @@ namespace Tips.Purchase.Api.Repository
                 }
             }
 
-            // Use normal update for everything else (main PO properties, other child entities)
-            Update(purchaseOrder);
+            // Update main PO properties using the existing tracked entity
+            existingPO.PONumber = purchaseOrder.PONumber;
+            existingPO.VendorId = purchaseOrder.VendorId;
+            existingPO.VendorName = purchaseOrder.VendorName;
+            existingPO.PODate = purchaseOrder.PODate;
+            existingPO.TotalAmount = purchaseOrder.TotalAmount;
+            existingPO.AmountInWords = purchaseOrder.AmountInWords;
+            existingPO.Currency = purchaseOrder.Currency;
+            existingPO.ConvertionRateId = purchaseOrder.ConvertionRateId;
+            existingPO.PoType = purchaseOrder.PoType;
+            existingPO.LastModifiedBy = _createdBy;
+            existingPO.LastModifiedOn = DateTime.Now;
             
             string result = $"PurchaseOrder of Detail {purchaseOrder.Id} is updated successfully with POAddprojects and POAddDeliverySchedules replacement!";
             return result;
