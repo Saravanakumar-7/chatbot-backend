@@ -1,20 +1,21 @@
-﻿using System.Net;
-using System.Text;
-using AutoMapper;
+﻿using AutoMapper;
 using Contracts;
 using Entities;
 using Entities.Enums;
 using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MimeKit.Text;
 using MimeKit;
+using MimeKit.Text;
 using Newtonsoft.Json;
+using System.Drawing;
+using System.Net;
+using System.Security.Claims;
+using System.Text;
 using Tips.Production.Api.Contracts;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
-using System.Security.Claims;
 
 namespace Tips.Production.Api.Controllers
 {
@@ -277,12 +278,17 @@ namespace Tips.Production.Api.Controllers
                 var OQCQty = shopOrderDetails.OqcQty;
                 foreach (var soCon in SOConfirmations)
                 {
-                    if (soCon.WipConfirmedQty == OQCQty) { soCon.IsOQCDone = ShopOrderConformationStatus.FullyDone; break; }
-                    if (soCon.WipConfirmedQty > OQCQty) { soCon.IsOQCDone = ShopOrderConformationStatus.PartiallyDone; break; }
+                    if (soCon.WipConfirmedQty == OQCQty) { soCon.IsOQCDone = ShopOrderConformationStatus.FullyDone;
+                        _shopOrderConfirmationRepository.UpdateShopOrderConfirmation(soCon); 
+                        break; }
+                    if (soCon.WipConfirmedQty > OQCQty) { soCon.IsOQCDone = ShopOrderConformationStatus.PartiallyDone;
+                        _shopOrderConfirmationRepository.UpdateShopOrderConfirmation(soCon); 
+                        break; }
                     if (soCon.WipConfirmedQty < OQCQty) { soCon.IsOQCDone = ShopOrderConformationStatus.FullyDone; OQCQty -= soCon.WipConfirmedQty; }
+
                     _shopOrderConfirmationRepository.UpdateShopOrderConfirmation(soCon);
                 }
-              
+
                 var shopOrderItemDetail = shopOrderDetails?.ShopOrderItems?.FirstOrDefault();
                 var projectNo = shopOrderItemDetail?.ProjectNumber;
                 if (oQCCreate.ItemType == PartType.SA) //sa

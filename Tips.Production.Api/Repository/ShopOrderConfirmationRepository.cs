@@ -179,13 +179,14 @@ namespace Tips.Production.Api.Repository
         public async Task<IEnumerable<ShopOrderDetailsDto>> GetShopOrderConformationDetailsByItemNo(string itemNumber)
         {
             var shopOrderDetails = await _tipsProductionDbContext.ShopOrderConfirmations
-                .Where(x => x.ItemNumber == itemNumber /*&& x.IsOQCDone!= ShopOrderConformationStatus.FullyDone*/)
+                .Where(x => x.ItemNumber == itemNumber && x.IsOQCDone != ShopOrderConformationStatus.FullyDone)
                 .GroupBy(x => x.ShopOrderNumber)
                 .Select(group => new ShopOrderDetailsDto()
                 {
                     ShopOrderNumber = group.Key,
                     ShopOrderReleaseQty = group.FirstOrDefault().ShopOrderReleaseQty,
-                    WipQty = group.Sum(s => s.WipConfirmedQty),
+                    WipQty = _tipsProductionDbContext.ShopOrders.Where(x => x.ItemNumber == itemNumber).Count() > 0 ? _tipsProductionDbContext.ShopOrders
+                    .Where(s => s.ItemNumber == itemNumber && s.ShopOrderNumber == group.Key).Sum(s => s.WipQty):0,
                     OqcQty = _tipsProductionDbContext.oQCs.Where(x => x.ItemNumber == itemNumber).Count() > 0 ? _tipsProductionDbContext.oQCs
                     .Where(o => o.ItemNumber == itemNumber && o.ShopOrderNumber == group.Key)
                     .Sum(o => o.AcceptedQty + o.RejectedQty) : 0,
