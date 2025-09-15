@@ -999,14 +999,15 @@ namespace Tips.SalesService.Api.Controllers
                 var salesAdditionalChargesList = new List<SalesOrderAdditionalCharges>();
                 if (salesAdditionalChargesDto != null)
                 {
+                    var salesOrderAddiDetailBeforeUpdate = salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges.OrderBy(x => x.Id).ToList();
                     for (int i = 0; i < salesAdditionalChargesDto.Count; i++)
                     {
                         SalesOrderAdditionalCharges additionalChargesDetails = _mapper.Map<SalesOrderAdditionalCharges>(salesAdditionalChargesDto[i]);
-                        if (salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges != null && salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges.Count > 0)
+                        if (salesOrderAddiDetailBeforeUpdate != null && salesOrderAddiDetailBeforeUpdate.Count > 0)
                         {
-                            if (i < salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges.Count && salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges[i] != null)
+                            if (i < salesOrderAddiDetailBeforeUpdate.Count && salesOrderAddiDetailBeforeUpdate[i] != null)
                             {
-                                var oldSOAddCharges = salesOrderDetailBeforeUpdate.SalesOrderAdditionalCharges[i];
+                                var oldSOAddCharges = salesOrderAddiDetailBeforeUpdate[i];
                                 additionalChargesDetails.Id = oldSOAddCharges.Id;
                                 if (additionalChargesDetails.InvoicedValue == 0) additionalChargesDetails.SOAdditionalStatus = SoStatus.Open;
                                 else if (additionalChargesDetails.TotalValue > additionalChargesDetails.InvoicedValue && additionalChargesDetails.InvoicedValue > 0) additionalChargesDetails.SOAdditionalStatus = SoStatus.PartiallyClosed;
