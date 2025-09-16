@@ -245,6 +245,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? GrinQty { get; set; }
         public DateTime? ManufactureDate { get; set; }
         public decimal? TotalInvoiceValue { get; set; }
+        public string? AWBNumber1 { get; set; }
+        public DateTime? AWBDate1 { get; set; }
+        public bool? IQCStatus { get; set; }
 
     }
     public class RejectIQCDetails
