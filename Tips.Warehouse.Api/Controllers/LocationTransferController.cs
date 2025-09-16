@@ -302,6 +302,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                     var fromPartNumber = loca.FromPartNumber;
                     var toPartNumber = loca.ToPartNumber;
+                    var fromlotnumber = loca.FromLotNumber;
                     var fromProjectNumber = loca.FromProjectNumber;
                     var toProjectNumber = loca.ToProjectNumber;
                     var fromLocation = loca.FromLocation;
@@ -334,7 +335,7 @@ namespace Tips.Warehouse.Api.Controllers
                         var itemObject = itemData.data;
 
                         //Add Inventory table
-                        var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber);
+                        var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber, fromlotnumber);
                         if (inventoryDetails != null && inventoryDetails.Count() > 0)
                         {
                             foreach (var inventoryItem in inventoryDetails)

@@ -1313,11 +1313,11 @@ namespace Tips.Warehouse.Api.Repository
         }
 
 
-        public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse, string projectNumber)
+        public async Task<IEnumerable<Inventory>> GetInventoryDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse, string projectNumber,string lotnumber)
 
         {
             var getInventoryDetailsByItemAndLoc = await _tipsWarehouseDbContext.Inventories
-                .Where(x => x.PartNumber == ItemNumber && x.ProjectNumber == projectNumber && x.Location == Location && x.Warehouse == Warehouse && x.IsStockAvailable == true).ToListAsync();
+                .Where(x => x.PartNumber == ItemNumber && x.ProjectNumber == projectNumber && x.Location == Location && x.Warehouse == Warehouse && x.LotNumber == lotnumber && x.IsStockAvailable == true).ToListAsync();
 
             return getInventoryDetailsByItemAndLoc;
         }
