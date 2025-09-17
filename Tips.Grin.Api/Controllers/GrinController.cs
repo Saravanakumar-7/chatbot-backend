@@ -1994,6 +1994,45 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> GetBinningPendingReportSpwithparametertras([FromBody] BinningPendingReportSpInputDto Spinput)
+        {
+            ServiceResponse<IEnumerable<BinningPendingReportSp>> serviceResponse = new ServiceResponse<IEnumerable<BinningPendingReportSp>>();
+            try
+            {
+                var products = await _repository.GetBinningPendingReportSpwithparametertras(Spinput.GrinNumber,Spinput.VendorName, Spinput.PONumber,
+                                                                                             Spinput.ItemNumber, Spinput.MPN, Spinput.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"BinningPendingReportSp hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"BinningPendingReportSp hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned BinningPendingReportSp Details:{products}");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned BinningPendingReportSp Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetBinningPendingReportSpwithparametertras API : \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetBinningPendingReportSpwithparametertras API : \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
         public async Task<IActionResult> GetGrinSPReportWithParam([FromBody] GrinReportWithParamDto grinReportWithParam)
         {
             ServiceResponse<IEnumerable<Grin_ReportSP>> serviceResponse = new ServiceResponse<IEnumerable<Grin_ReportSP>>();

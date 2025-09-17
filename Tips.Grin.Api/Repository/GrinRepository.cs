@@ -112,6 +112,16 @@ namespace Tips.Grin.Api.Repository
         //    }
         //}
 
+        public async Task<IEnumerable<BinningPendingReportSp>> GetBinningPendingReportSpwithparametertras(string? GrinNumber, string? VendorName, string? PONumber, string? ItemNumber, string? MPN, string? ProjectNumber)
+        {
+            var result = _tipsGrinDbContext
+            .Set<BinningPendingReportSp>()
+            .FromSqlInterpolated($"CALL Binning_Pending_Report_withparameter_tras({GrinNumber},{VendorName},{PONumber},{ItemNumber},{MPN},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
+
         public async Task<PagedList<Grin_ReportSP>> GetGrinSPReport(PagingParameter pagingParameter)
         {
 

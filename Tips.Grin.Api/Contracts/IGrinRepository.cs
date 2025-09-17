@@ -45,6 +45,7 @@ namespace Tips.Grin.Api.Contracts
 
         Task<IEnumerable<PoAndGrinUnitPriceSPReport>> GetPoAndGrinUnitPriceSPReportWithParam(string? GrinNumber, string? VendorName, string? PONumber,
                                                                                                     string? ItemNumber, string? ProjectNumber);
+        Task<IEnumerable<BinningPendingReportSp>> GetBinningPendingReportSpwithparametertras(string? GrinNumber, string? VendorName, string? PONumber, string? ItemNumber, string? MPN, string? ProjectNumber);
         Task<PagedList<Grin_ReportSP>> GetGrinSPReport(PagingParameter pagingParameter);
         Task<PagedList<GrinSPReportForTrans>> GetGrinSPReportForTrans(PagingParameter pagingParameter);
         Task<IEnumerable<Grin_ReportSP>> GetGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
