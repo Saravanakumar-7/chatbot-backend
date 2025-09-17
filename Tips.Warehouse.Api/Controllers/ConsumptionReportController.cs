@@ -199,7 +199,8 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 List<ConsumptionSPReport> openSalesCoverageReports = await ConsumptionReport(FromDate, ToDate);
 
-                serviceResponse.Data = openSalesCoverageReports;
+                //serviceResponse.Data = openSalesCoverageReports;
+                serviceResponse.Data = null;
                 serviceResponse.Message = $"Returned ConceptionReport Successfully ";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -380,7 +381,8 @@ namespace Tips.Warehouse.Api.Controllers
                 throw;
             }
 
-            return consumptionReportList;
+            //return consumptionReportList;
+            return null;
         }
 
 

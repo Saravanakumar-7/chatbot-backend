@@ -140,17 +140,17 @@ namespace Tips.Warehouse.Api.Repository
             var result = await (from invoice in _tipsWarehouseDbContext.invoices
                                 join childItem in _tipsWarehouseDbContext.invoiceChildItems
                                     on invoice.Id equals childItem.InvoiceId
-                                where childItem.PartType != PartType.TG
+                                where childItem.PartType != PartType.TG && invoice.CreatedOn >= FromDate && invoice.CreatedOn <= ToDate
                                 join btoOrderItem in _tipsWarehouseDbContext.bTODeliveryOrderItems
-                                    on childItem.DONumber equals btoOrderItem.BTONumber
-                                join btoMainOrder in _tipsWarehouseDbContext.bTODeliveryOrder  // Join with main BTO table
-                                    on btoOrderItem.BTONumber equals btoMainOrder.BTONumber
-                                join btoItem in _tipsWarehouseDbContext.bTODeliveryOrderItems
-                                    on new { BTONumber = btoOrderItem.BTONumber, ItemNumber = childItem.FGItemNumber }
-                                    equals new { BTONumber = btoItem.BTONumber, ItemNumber = btoItem.FGItemNumber }
+                                    on new { BTONumber = childItem.DONumber, ItemNumber = childItem.FGItemNumber }
+                                    equals new { BTONumber = btoOrderItem.BTONumber, ItemNumber = btoOrderItem.FGItemNumber } into btoOrderItems
+                                from btoOrderItem in btoOrderItems.DefaultIfEmpty()
+                                join btoMainOrder in _tipsWarehouseDbContext.bTODeliveryOrder
+                                    on btoOrderItem != null ? btoOrderItem.BTONumber : childItem.DONumber equals btoMainOrder.BTONumber into btoMainOrders
+                                from btoMainOrder in btoMainOrders.DefaultIfEmpty()
                                 join qtyDistribution in _tipsWarehouseDbContext.BtoDeliveryOrderItemQtyDistribution
-                                    on btoItem.Id equals qtyDistribution.BTODeliveryOrderItemsId
-                                where invoice.CreatedOn >= FromDate && invoice.CreatedOn <= ToDate
+                                    on btoOrderItem != null ? btoOrderItem.Id : 0 equals qtyDistribution.BTODeliveryOrderItemsId into qtyDistributions
+                                from qtyDistribution in qtyDistributions.DefaultIfEmpty()
                                 select new InvoiceBTODetailsDto
                                 {
                                     InvoiceNumber = invoice.InvoiceNumber,
@@ -158,8 +158,8 @@ namespace Tips.Warehouse.Api.Repository
                                     DONumber = childItem.DONumber,
                                     FGItemNumber = childItem.FGItemNumber,
                                     InvoicedQty = childItem.InvoicedQty,
-                                    SalesOrderNumber = btoMainOrder.SalesOrderNumber,  // Now from main table
-                                    LotNumber = qtyDistribution.LotNumber
+                                    SalesOrderNumber = btoMainOrder != null ? btoMainOrder.SalesOrderNumber : null,
+                                    LotNumber = qtyDistribution != null ? qtyDistribution.LotNumber : null
                                 })
                                 .ToListAsync();
             return result;
@@ -170,17 +170,17 @@ namespace Tips.Warehouse.Api.Repository
             var result = await (from invoice in _tipsWarehouseDbContext.invoices
                                 join childItem in _tipsWarehouseDbContext.invoiceChildItems
                                     on invoice.Id equals childItem.InvoiceId
-                                where childItem.PartType == PartType.TG
+                                where childItem.PartType == PartType.TG && invoice.CreatedOn >= FromDate && invoice.CreatedOn <= ToDate
                                 join btoOrderItem in _tipsWarehouseDbContext.bTODeliveryOrderItems
-                                    on childItem.DONumber equals btoOrderItem.BTONumber
-                                join btoMainOrder in _tipsWarehouseDbContext.bTODeliveryOrder  // Join with main BTO table
-                                    on btoOrderItem.BTONumber equals btoMainOrder.BTONumber
-                                join btoItem in _tipsWarehouseDbContext.bTODeliveryOrderItems
-                                    on new { BTONumber = btoOrderItem.BTONumber, ItemNumber = childItem.FGItemNumber }
-                                    equals new { BTONumber = btoItem.BTONumber, ItemNumber = btoItem.FGItemNumber }
+                                    on new { BTONumber = childItem.DONumber, ItemNumber = childItem.FGItemNumber }
+                                    equals new { BTONumber = btoOrderItem.BTONumber, ItemNumber = btoOrderItem.FGItemNumber } into btoOrderItems
+                                from btoOrderItem in btoOrderItems.DefaultIfEmpty()
+                                join btoMainOrder in _tipsWarehouseDbContext.bTODeliveryOrder
+                                    on btoOrderItem != null ? btoOrderItem.BTONumber : childItem.DONumber equals btoMainOrder.BTONumber into btoMainOrders
+                                from btoMainOrder in btoMainOrders.DefaultIfEmpty()
                                 join qtyDistribution in _tipsWarehouseDbContext.BtoDeliveryOrderItemQtyDistribution
-                                    on btoItem.Id equals qtyDistribution.BTODeliveryOrderItemsId
-                                where invoice.CreatedOn >= FromDate && invoice.CreatedOn <= ToDate
+                                    on btoOrderItem != null ? btoOrderItem.Id : 0 equals qtyDistribution.BTODeliveryOrderItemsId into qtyDistributions
+                                from qtyDistribution in qtyDistributions.DefaultIfEmpty()
                                 select new InvoiceBTODetailsDto
                                 {
                                     InvoiceNumber = invoice.InvoiceNumber,
@@ -188,8 +188,8 @@ namespace Tips.Warehouse.Api.Repository
                                     DONumber = childItem.DONumber,
                                     FGItemNumber = childItem.FGItemNumber,
                                     InvoicedQty = childItem.InvoicedQty,
-                                    SalesOrderNumber = btoMainOrder.SalesOrderNumber,  // Now from main table
-                                    LotNumber = qtyDistribution.LotNumber
+                                    SalesOrderNumber = btoMainOrder != null ? btoMainOrder.SalesOrderNumber : null,
+                                    LotNumber = qtyDistribution != null ? qtyDistribution.LotNumber : null
                                 })
                                 .ToListAsync();
             return result;
