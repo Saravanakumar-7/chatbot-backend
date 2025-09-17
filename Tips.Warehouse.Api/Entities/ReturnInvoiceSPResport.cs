@@ -4,8 +4,9 @@ namespace Tips.Warehouse.Api.Entities
 {
     public class ReturnInvoiceSPResport
     {
+        public string? ReturnInvoiceNumber { get; set; }
         public string? InvoiceNumber { get; set; }
-        public string? Invoicedate { get; set; }
+        public string? ReturnInvoicedate { get; set; }
         public string? DONumber { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
@@ -33,7 +34,7 @@ namespace Tips.Warehouse.Api.Entities
         public decimal? DispatchQty { get; set; }
         public string? SerialNumber { get; set; }
         public decimal? ReturnQty { get; set; }
-        public string? Remarks { get; set; }
+        public string? ReasonforReturns { get; set; }
         public string? ProjectNumber { get; set; }
 
     }

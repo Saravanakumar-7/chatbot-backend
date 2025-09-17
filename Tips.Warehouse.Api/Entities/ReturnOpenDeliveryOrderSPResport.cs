@@ -9,6 +9,8 @@ namespace Tips.Warehouse.Api.Entities
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? customerLeadId { get; set; }
+        public string? Description { get; set; }
+        public string? ReasonforIssuingStock { get; set; }
         public string? City { get; set; }
         public string? State { get; set; }
         public string? Address { get; set; }
@@ -17,7 +19,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? issuedby { get; set; }
         public string? KPN { get; set; }
         public string? MPN { get; set; }
-        public string? Description { get; set; }
+        public string? ItemDescription { get; set; }
         public string? Warehouse { get; set; }
         public string? Location { get; set; }
         public string? ODOType { get; set; }
