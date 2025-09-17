@@ -10,6 +10,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? FromPartNumber { get; set; }
         public string? ToPartNumber { get; set; }
         public string? FromLotNumber { get; set; }
+        public string? ToLotNumber { get; set; }
         public string? FromLocation { get; set; }
         public string? FromDescription { get; set; }
         public string? ToDescription { get; set; }
@@ -46,6 +47,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ToPartNumber { get; set; }
 
         public string? FromLotNumber { get; set; }
+        public string? ToLotNumber { get; set; }
 
         [Required(ErrorMessage = "FromLocation is required")]
         [StringLength(500, ErrorMessage = "FromLocation can't be longer than 500 characters")]
@@ -86,6 +88,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string ToPartNumber { get; set; }
 
         public string? FromLotNumber { get; set; }
+        public string? ToLotNumber { get; set; }
 
         [Required(ErrorMessage = "FromLocation is required")]
         [StringLength(500, ErrorMessage = "FromLocation can't be longer than 500 characters")]

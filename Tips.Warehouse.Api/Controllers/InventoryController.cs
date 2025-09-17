@@ -619,14 +619,14 @@ namespace Tips.Warehouse.Api.Controllers
         //passing itemnumber and location
 
         [HttpGet]
-        public async Task<IActionResult> GetInventoryDetailsByItemnumberandLocation(string ItemNumber, string Location, string Warehouse, string projectNumber)
+        public async Task<IActionResult> GetInventoryDetailsByItemnumberandLocation(string ItemNumber, string Location, string Warehouse, string projectNumber,string lotNumber)
 
         {
             ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
 
             try
             {
-                var getInventoryDetailsByItemNoandLoc = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(ItemNumber, Location, Warehouse, projectNumber);
+                var getInventoryDetailsByItemNoandLoc = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(ItemNumber, Location, Warehouse, projectNumber, lotNumber);
                 if (getInventoryDetailsByItemNoandLoc == null)
                 {
                     serviceResponse.Data = null;
