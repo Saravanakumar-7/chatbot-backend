@@ -12,6 +12,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? FromPartNumber { get; set; }
         public string? ToPartNumber { get; set; }
         public string? FromLotNumber { get; set; }
+        public string? ToLotNumber { get; set; }
         public string? FromLocation { get; set; }
         public string? FromDescription { get; set; }
         public string? ToDescription { get; set; }

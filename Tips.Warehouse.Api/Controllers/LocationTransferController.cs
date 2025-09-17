@@ -302,7 +302,8 @@ namespace Tips.Warehouse.Api.Controllers
 
                     var fromPartNumber = loca.FromPartNumber;
                     var toPartNumber = loca.ToPartNumber;
-                    var fromlotnumber = loca.FromLotNumber;
+                    var fromLotnumber = loca.FromLotNumber;
+                    var toLotnumber = loca.ToLotNumber;
                     var fromProjectNumber = loca.FromProjectNumber;
                     var toProjectNumber = loca.ToProjectNumber;
                     var fromLocation = loca.FromLocation;
@@ -335,7 +336,7 @@ namespace Tips.Warehouse.Api.Controllers
                         var itemObject = itemData.data;
 
                         //Add Inventory table
-                        var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber, fromlotnumber);
+                        var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber, fromLotnumber);
                         if (inventoryDetails != null && inventoryDetails.Count() > 0)
                         {
                             foreach (var inventoryItem in inventoryDetails)
@@ -373,6 +374,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                                     inventoryItem.PartNumber = toPartNumber;
                                     inventoryItem.ProjectNumber = toProjectNumber;
+                                    inventoryItem.LotNumber = toLotnumber;
                                     inventoryItem.MftrPartNumber = itemObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                                     inventoryItem.Description = inventoryItem.Description;
                                     inventoryItem.UOM = inventoryItem.UOM;
@@ -450,6 +452,7 @@ namespace Tips.Warehouse.Api.Controllers
 
                                     Inventory inventoryPost = new Inventory();
                                     inventoryPost.PartNumber = toPartNumber;
+                                    inventoryPost.LotNumber = toLotnumber;
                                     inventoryPost.MftrPartNumber = itemObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
                                     inventoryPost.ProjectNumber = toProjectNumber;
                                     inventoryPost.Description = inventoryItem.Description;
@@ -462,7 +465,7 @@ namespace Tips.Warehouse.Api.Controllers
                                     inventoryPost.Unit = inventoryItem.Unit;
                                     inventoryPost.GrinNo = "";
                                     inventoryPost.GrinPartId = 0;
-                                    inventoryPost.LotNumber = inventoryItem.LotNumber;
+                                    //inventoryPost.LotNumber = inventoryItem.LotNumber;
                                     inventoryPost.IsStockAvailable = true;
                                     inventoryPost.Warehouse = toWarehouse;
                                     inventoryPost.Location = toLocation;
