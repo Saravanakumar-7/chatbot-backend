@@ -303,7 +303,7 @@ namespace Tips.Warehouse.Api.Controllers
                     var fromPartNumber = loca.FromPartNumber;
                     var toPartNumber = loca.ToPartNumber;
                     var fromLotnumber = loca.FromLotNumber;
-                    var toLotnumber = loca.ToLotNumber;
+                    var toLotnumber = loca.FromLotNumber;
                     var fromProjectNumber = loca.FromProjectNumber;
                     var toProjectNumber = loca.ToProjectNumber;
                     var fromLocation = loca.FromLocation;
