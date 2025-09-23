@@ -1095,8 +1095,7 @@ namespace Tips.Warehouse.Api.Controllers
             {
                 var products = await _repository.OpenDeliveryOrderSPReportWithParam(openDeliveryOrderSPReport.OpenDoNumber, openDeliveryOrderSPReport.CustomerName, 
                                                                                          openDeliveryOrderSPReport.CustomerAliasName, openDeliveryOrderSPReport.LeadId, 
-                                                                                openDeliveryOrderSPReport.IssuedTo, openDeliveryOrderSPReport.KPN, openDeliveryOrderSPReport.MPN, 
-                                                                                openDeliveryOrderSPReport.Warehouse, openDeliveryOrderSPReport.Location, 
+                                                                                openDeliveryOrderSPReport.IssuedTo, openDeliveryOrderSPReport.KPN, openDeliveryOrderSPReport.MPN,  
                                                                                             openDeliveryOrderSPReport.ODOtype);
 
                 if (products == null)

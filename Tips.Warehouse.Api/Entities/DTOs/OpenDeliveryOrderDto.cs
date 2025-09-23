@@ -136,8 +136,6 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? IssuedTo { get; set; }
         public string? KPN { get; set; }
         public string? MPN { get; set; }
-        public string? Warehouse { get; set; }
-        public string? Location { get; set; }
         public string? ODOtype { get; set; }
     }
     public class OpenDeliveryOrderSPReportWithParamForTransDto

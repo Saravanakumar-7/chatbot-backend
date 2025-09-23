@@ -19,8 +19,6 @@ namespace Tips.Warehouse.Api.Entities
         public string? KPNno { get; set; }
         public string? MPN { get; set; }
         public string? ItemDescription { get; set; }
-        public string? Warehouse { get; set; }
-        public string? Location { get; set; }
         public string? ODOtype { get; set; }
         public string? UOC { get; set; }
         public string? UOM { get; set; }

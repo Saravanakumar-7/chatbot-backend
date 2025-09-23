@@ -3912,13 +3912,13 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        [HttpGet] // Adjust your route as needed
-        public async Task<IActionResult> GetStockMovementSPReports()
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetStockMovementSPReports([FromBody] GetStockMovementSPInputDto getStockMovementSPInputDto)
         {
             ServiceResponse<IEnumerable<StockMovementSPReport>> serviceResponse = new ServiceResponse<IEnumerable<StockMovementSPReport>>();
             try
             {
-                var products = await _inventoryRepository.GetStockMovementSPReports();
+                var products = await _inventoryRepository.GetStockMovementSPReports(getStockMovementSPInputDto.ItemNumber);
 
                 if (products == null)
                 {

@@ -633,4 +633,9 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? RfqNumber { get; set; }
     }
 
+    public class GetStockMovementSPInputDto
+    {
+        public string? ItemNumber { get; set; }
+    }
+
 }

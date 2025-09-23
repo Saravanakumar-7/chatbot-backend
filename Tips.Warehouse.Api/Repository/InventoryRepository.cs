@@ -874,11 +874,11 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
-        public async Task<IEnumerable<StockMovementSPReport>> GetStockMovementSPReports()
+        public async Task<IEnumerable<StockMovementSPReport>> GetStockMovementSPReports( string ItemNumber)
         {
             var result = _tipsWarehouseDbContext
             .Set<StockMovementSPReport>()
-            .FromSqlInterpolated($"CALL Stock_Movement_Report()")
+            .FromSqlInterpolated($"CALL Stock_Movement_Report({ItemNumber})")
             .ToList();
 
             return result;
