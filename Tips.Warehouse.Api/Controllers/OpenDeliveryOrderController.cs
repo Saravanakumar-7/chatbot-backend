@@ -495,8 +495,8 @@ namespace Tips.Warehouse.Api.Controllers
                             inventoryTranction.TO_Location = "ODO";
                             inventoryTranction.PartType = openDeliveryOrderItemsDtoList[i].ItemType;
                             inventoryTranction.ReferenceID = openDeliveryOrderItemsDtoList[i].ODONumber;
-                            inventoryTranction.ReferenceIDFrom = "LocationTransferPartNo";
-                            inventoryTranction.Remarks = "LocationTransferPartNo Done";
+                            inventoryTranction.ReferenceIDFrom = "OpenDeliveryOrder";
+                            inventoryTranction.Remarks = "OpenDeliveryOrder Done";
                             inventoryTranction.TransactionType = InventoryType.Outward;
                             await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranction);
 
