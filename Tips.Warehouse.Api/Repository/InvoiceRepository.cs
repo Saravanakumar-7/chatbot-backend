@@ -441,6 +441,18 @@ namespace Tips.Warehouse.Api.Repository
                             .FirstOrDefaultAsync();
             return getInvoiceListById;
         }
+
+        public async Task<IEnumerable<SerialNoDetailDto>> GetSerialNoDetailByFGItemNoAndBTONo(string itemNumber, string doNumber)
+        {
+            var serialNoDetails = await _tipsWarehouseDbContext.invoiceChildItems
+                            .Where(x => x.FGItemNumber == itemNumber && x.DONumber == doNumber)
+                            .Select(x => new SerialNoDetailDto()
+                            {
+                                SerialNo = x.SerialNumber
+                            })
+                            .ToListAsync();
+            return serialNoDetails;
+        }
     }
 
     public class InvoiceChildRepository : RepositoryBase<InvoiceChildItem>, IInvoiceChildRepository

@@ -43,5 +43,6 @@ namespace Tips.Warehouse.Api.Contracts
         //Task<IEnumerable<InvoiceConceptionDto>> GetInvoiceDetialsbyDate(DateTime? FromDate, DateTime? ToDate);
         Task<List<InvoiceBTODetailsDto>> GetInvoiceBTODetailsByDate(DateTime? FromDate, DateTime? ToDate);
         Task<List<InvoiceBTODetailsDto>> GetTGInvoiceBTODetailsByDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<SerialNoDetailDto>> GetSerialNoDetailByFGItemNoAndBTONo(string itemNumber, string doNumber);
     }
 }
