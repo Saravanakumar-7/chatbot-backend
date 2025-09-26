@@ -313,5 +313,10 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? Finaladditionalchargesvalue { get; set; }
     }
 
+    public class SerialNoDetailDto
+    {
+        public string? SerialNo { get; set; }
+    }
+
 
 }
