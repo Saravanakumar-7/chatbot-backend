@@ -536,9 +536,16 @@ namespace Tips.Master.Api
             CreateMap<ApprovalRanges, ApprovalRangesDto>().ReverseMap();
             CreateMap<ApprovalRanges, ApprovalRangesPostDto>().ReverseMap();
             CreateMap<ApprovalRanges, ApprovalRangesUpdateDto>().ReverseMap();
+
             CreateMap<Ranges, RangesPostDto>().ReverseMap();
             CreateMap<Ranges, RangesDto>().ReverseMap();
             CreateMap<Ranges, RangesUpdateDto>().ReverseMap();
+
+            CreateMap<DiscountRanges, DiscountRangesDto>().ReverseMap();
+            CreateMap<DiscountRanges, DiscountRangesPostDto>().ReverseMap();
+            CreateMap<DiscountRanges, DiscountRangesUpdateDto>().ReverseMap();
+
+
 
             CreateMap<ProductType, GetListofTypeSolutionByProductTypeDto>().ReverseMap();
         }

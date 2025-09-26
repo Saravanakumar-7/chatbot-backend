@@ -157,6 +157,7 @@ namespace Contracts
         IWeightedAvgRateRepository WeightedAvgRateRepository { get; }
         IFieldInformationRepository FieldInformationRepository { get; }
         IApprovalRangesRepository ApprovalRangesRepository { get; }
+        IDiscountRangesRepository DiscountRangesRepository { get; }
         IPrioritizeRepository PrioritizeRepository { get; }
         IUserTokenActivitiesRepository UserTokenActivitiesRepository { get; }
         void SaveAsync();

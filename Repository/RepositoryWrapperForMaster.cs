@@ -133,6 +133,7 @@ namespace Repository
         private IFieldInformationRepository? _fieldInformationRepository;
         private IPrioritizeRepository? _prioritizeRepository;
         private IApprovalRangesRepository? _approvalRangesRepository;
+        private IDiscountRangesRepository? _discountRangesRepository;
         private IUserTokenActivitiesRepository _userTokenActivitiesRepository;
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor)
         {
@@ -160,7 +161,19 @@ namespace Repository
                 }
                 return _approvalRangesRepository;
             }
-        } 
+        }
+
+        public IDiscountRangesRepository DiscountRangesRepository
+        {
+            get
+            {
+                if (_discountRangesRepository == null)
+                {
+                    _discountRangesRepository = new DiscountRangesRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _discountRangesRepository;
+            }
+        }
         public IPrioritizeRepository PrioritizeRepository
         {
             get
