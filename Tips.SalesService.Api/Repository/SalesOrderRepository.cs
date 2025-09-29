@@ -529,6 +529,15 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
+        public async Task<IEnumerable<LPCostingforFGSPReport>> GetLPLPCostingforFGSPreport(string projectnumber)
+        {
+            var results = _tipsSalesServiceDbContext.Set<LPCostingforFGSPReport>()
+                        .FromSqlInterpolated($"CALL LPCostingforFG({projectnumber})")
+                        .ToList();
+
+            return results;
+
+        }
         public async Task<IEnumerable<LPCostingSummarySPReport>> GetLPCostingSummarySPreport(string projectnumber)
         {
             var results = _tipsSalesServiceDbContext.Set<LPCostingSummarySPReport>()

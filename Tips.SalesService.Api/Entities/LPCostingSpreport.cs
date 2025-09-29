@@ -3,9 +3,16 @@
     public class LPCostingSPReport
     {
         public string? ProjectNumber { get; set; }
-        public string? FGItemNumber { get; set; }
         public string? PPItemNumber { get; set; }
-        public decimal? LandedPrice { get; set; }
+        public decimal? LandingPrice { get; set; }
+        public decimal? MOQCost { get; set; }
+    }
+
+    public class LPCostingforFGSPReport
+    {
+        public string? ProjectNumber { get; set; }
+        public string? FgItemnumber { get; set; }
+        public decimal? LandingPrice { get; set; }
         public decimal? MOQCost { get; set; }
     }
 
@@ -43,6 +50,7 @@
     public class LPCostingandSummarySPReport
     {
         public List<LPCostingSPReport> LPCostingSPReport { get; set; }
+        public List<LPCostingforFGSPReport> LPCostingforFGSPReport { get; set; }
         public List<LPCostingSummarySPReport> LPCostingSummarySPReport { get; set; }
         public List<CommoditySourcingSpReport> CommoditySourcingSPReport { get; set; }
         public List<VendorSourcingSpReport> VendorSourcingSpReport { get; set; }
