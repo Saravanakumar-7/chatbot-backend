@@ -120,6 +120,7 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<RfqSalesOrderSPReportForTrans> RfqSalesOrderSPReportsForTrans { get; set; }
         public DbSet<ForecastSalesOrderSPReportForTrans> ForecastSalesOrderSPReportsForTrans { get; set; }
         public DbSet<LPCostingSPReport> LPCostingSPReport { get; set; }
+        public DbSet<LPCostingforFGSPReport> LPCostingforFGSPReport { get; set; }
         public DbSet<LPCostingSummarySPReport> LPCostingSummarySPReport { get; set; }
         public DbSet<RfqSalesOrderRoomWiseSPReport> RfqSalesOrderRoomWiseSPReports { get; set; }
         public DbSet<QuotationSPReport> QuotationSPReports { get; set; }
@@ -157,6 +158,7 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<RfqSalesOrderSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<ForecastSalesOrderSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<LPCostingSPReport>().HasNoKey();
+            modelBuilder.Entity<LPCostingforFGSPReport>().HasNoKey();
             modelBuilder.Entity<LPCostingSummarySPReport>().HasNoKey();
             modelBuilder.Entity<CommoditySourcingSpReport>().HasNoKey();
             modelBuilder.Entity<VendorSourcingSpReport>().HasNoKey();

@@ -88,6 +88,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<ForecastSalesOrderSPReport>> GetForecastSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<ForecastSalesOrderSPReportForTrans>> GetForecastSalesOrderSPReportWithDateForTransAvision(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<LPCostingSPReport>> GetLPCostingSPreport(string projectnumber);
+        Task<IEnumerable<LPCostingforFGSPReport>> GetLPLPCostingforFGSPreport(string projectnumber);
         Task<IEnumerable<LPCostingSummarySPReport>> GetLPCostingSummarySPreport(string projectnumber);
         Task<IEnumerable<CommoditySourcingSpReport>> GetCommoditySourcingSPreport(string projectnumber);
         Task<IEnumerable<VendorSourcingSpReport>> GetVendorSourcingSPreport(string projectnumber);
