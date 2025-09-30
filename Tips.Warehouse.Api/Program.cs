@@ -17,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.OpenApi.Models;
+using Tips.Warehouse.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,16 @@ builder.Services.AddHttpContextAccessor();
 //builder.Services.ConfigureMSSqlContext(builder.Configuration);
 builder.Services.ConfigureMySqlContext(builder.Configuration);
 builder.Services.AddAutoMapper(typeof(Program));
+
+// Add Memory Caching for performance optimization
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<ICacheService, MemoryCacheService>();
+
+// Add Response Compression
+builder.Services.AddResponseCompression(options =>
+{
+    options.EnableForHttps = true;
+});
 
 builder.Services.AddControllers().AddJsonOptions(opt =>
 {
@@ -128,7 +139,23 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddHttpClient();
+// Configure optimized HttpClient with connection pooling
+builder.Services.AddHttpClient(Options.DefaultName, client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+})
+.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+{
+    MaxConnectionsPerServer = 20, // Increase connection pool size
+    UseCookies = false
+});
+
+// Configure connection pooling for database
+builder.Services.Configure<DbContextOptionsBuilder>(options =>
+{
+    options.EnableServiceProviderCaching();
+    options.EnableSensitiveDataLogging(false);
+});
 
 
 //builder.Services.A
@@ -143,6 +170,9 @@ app.UseSwaggerUI();
 //}
 
 app.UseHttpsRedirection();
+
+// Enable response compression for better performance
+app.UseResponseCompression();
 
 //app.UseStaticFiles();
 

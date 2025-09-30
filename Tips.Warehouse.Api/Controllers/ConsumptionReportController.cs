@@ -18,6 +18,7 @@ using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using Entities.Enums;
+using Tips.Warehouse.Api.Services;
 
 namespace Tips.Warehouse.Api.Controllers
 {
@@ -36,7 +37,8 @@ namespace Tips.Warehouse.Api.Controllers
         private readonly HttpClient _httpClient;
         private readonly IConfiguration _config;
         private readonly IHttpClientFactory _clientFactory;
-        public ConsumptionReportController(IConsumptionReportRepository consumptionReportReposiory, IMaterialIssueTrackerRepository materialIssueTrackerRepository, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IHttpClientFactory clientFactory, IInvoiceRepository invoiceRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper)
+        private readonly ICacheService _cacheService;
+        public ConsumptionReportController(IConsumptionReportRepository consumptionReportReposiory, IMaterialIssueTrackerRepository materialIssueTrackerRepository, IBTODeliveryOrderRepository bTODeliveryOrderRepository, IHttpClientFactory clientFactory, IInvoiceRepository invoiceRepository, HttpClient httpClient, IConfiguration config, ILoggerManager logger, IMapper mapper, ICacheService cacheService)
         {
             _invoiceRepository = invoiceRepository;
             _bTODeliveryOrderRepository = bTODeliveryOrderRepository;
@@ -47,6 +49,7 @@ namespace Tips.Warehouse.Api.Controllers
             _httpClient = httpClient;
             _config = config;
             _clientFactory = clientFactory;
+            _cacheService = cacheService;
         }
 
 
@@ -82,101 +85,72 @@ namespace Tips.Warehouse.Api.Controllers
             List<ConsumptionSPReport> consumptionReportList = new List<ConsumptionSPReport>();
             try
             {
+                // Step 1: Get invoice BTO details
                 var InvoiceBTOTGDetails = await _invoiceRepository.GetTGInvoiceBTODetailsByDate(FromDate, ToDate);
+                if (!InvoiceBTOTGDetails.Any())
+                {
+                    _logger.LogInfo("No TG invoice BTO details found for the given date range.");
+                    return consumptionReportList;
+                }
 
-                // Fetch GRIN consumption details based on Part numbers and LotNo
+                // Step 2: Prepare data for parallel API calls
                 List<string?> partNumberList = InvoiceBTOTGDetails.Select(item => item.FGItemNumber).Distinct().ToList();
                 List<string?> LotNoList = InvoiceBTOTGDetails.Select(item => item.LotNumber).Distinct().ToList();
-                List<GrinComsumpDto> grinConsumpDetials = await GetGrinComsumptionDetailsByPartNo(partNumberList, LotNoList);
 
-                // Track which items were found in GRIN
-                var foundInGrinItems = new HashSet<string>();
+                // Step 3: Execute parallel API calls for better performance
+                var grinTask = GetGrinComsumptionDetailsByPartNo(partNumberList, LotNoList);
+                var missingPartNumbers = partNumberList;
+                var missingLotNumbers = LotNoList;
+                var openGrinTask = GetOpenGrinComsumptionDetailsByPartNoAndLotNo(missingPartNumbers, missingLotNumbers);
 
-                // Process GRIN data first
+                // Wait for both API calls to complete
+                await Task.WhenAll(grinTask, openGrinTask);
+
+                var grinConsumpDetials = await grinTask;
+                var openGrinConsumpDetials = await openGrinTask;
+
+                // Step 4: Create lookup dictionaries for faster data access
+                var grinLookup = grinConsumpDetials.ToLookup(g => $"{g.PartNumber}|{g.LotNumber}");
+                var openGrinLookup = openGrinConsumpDetials.ToLookup(og => $"{og.ItemNumber}|{og.LotNumber}");
+
+                // Step 5: Process invoice data efficiently
+                var processedItems = new HashSet<string>();
+
                 foreach (var invoice in InvoiceBTOTGDetails)
                 {
-                    var matchingGrinItems = grinConsumpDetials.Where(g => g.PartNumber == invoice.FGItemNumber && g.LotNumber == invoice.LotNumber).ToList();
-                    
+                    var lookupKey = $"{invoice.FGItemNumber}|{invoice.LotNumber}";
+
+                    // First try to match with GRIN data
+                    var matchingGrinItems = grinLookup[lookupKey];
+
                     if (matchingGrinItems.Any())
                     {
-                        foundInGrinItems.Add($"{invoice.FGItemNumber}|{invoice.LotNumber}");
-                        
+                        processedItems.Add(lookupKey);
+
                         foreach (var grin in matchingGrinItems)
                         {
-                            var reportDto = new ConsumptionSPReport
-                            {
-                                InvoiceNumber = invoice.InvoiceNumber,
-                                InvoiceDate = invoice.InvoiceDate,
-                                InvoiceQty = invoice.InvoicedQty,
-                                DoNumber = invoice.DONumber,
-                                FGItemNumber = invoice.FGItemNumber,
-                                PPLotNumber = invoice.LotNumber,
-                                GrinNumber = grin.GrinNumber,
-                                GrinDate = grin.GrinDate,
-                                Vendor = grin.VendorName,
-                                PoNumber = grin.PONumber,
-                                BOENo = grin.BOENo,
-                                GrinQty = grin.GrinQty,
-                                UnitPrice = grin.GrinUnitPrice,
-                                Tax = grin.Tax,
-                                OtherCosts = grin.OtherCosts,
-                                UOM = grin.UOM,
-                                UOC = grin.UOC
-                            };
-
-                            consumptionReportList.Add(reportDto);
+                            consumptionReportList.Add(CreateTGReportFromGrin(invoice, grin));
                         }
                     }
-                }
-
-                // Get missing items not found in GRIN
-                var missingItems = InvoiceBTOTGDetails
-                    .Where(invoice => !foundInGrinItems.Contains($"{invoice.FGItemNumber}|{invoice.LotNumber}"))
-                    .ToList();
-
-                if (missingItems.Any())
-                {
-                    // Fetch missing items from OpenGRIN
-                    List<string?> missingPartNumbers = missingItems.Select(item => item.FGItemNumber).Distinct().ToList();
-                    List<string?> missingLotNumbers = missingItems.Select(item => item.LotNumber).Distinct().ToList();
-                    List<OpenGrinComsumpDto> openGrinConsumpDetials = await GetOpenGrinComsumptionDetailsByPartNoAndLotNo(missingPartNumbers, missingLotNumbers);
-
-                    // Process OpenGRIN data for missing items
-                    foreach (var invoice in missingItems)
+                    else
                     {
-                        var matchingOpenGrinItems = openGrinConsumpDetials.Where(og => og.ItemNumber == invoice.FGItemNumber && og.LotNumber == invoice.LotNumber).ToList();
-                        
+                        // If not found in GRIN, try OpenGRIN
+                        var matchingOpenGrinItems = openGrinLookup[lookupKey];
+
                         foreach (var openGrin in matchingOpenGrinItems)
                         {
-                            var reportDto = new ConsumptionSPReport
-                            {
-                                InvoiceNumber = invoice.InvoiceNumber,
-                                InvoiceDate = invoice.InvoiceDate,
-                                InvoiceQty = invoice.InvoicedQty,
-                                DoNumber = invoice.DONumber,
-                                FGItemNumber = invoice.FGItemNumber,
-                                PPLotNumber = invoice.LotNumber,
-                                // Map OpenGRIN fields to GRIN structure, set null where fields don't exist
-                                GrinNumber = openGrin.OpenGrinNumber,
-                                GrinDate = openGrin.OpenGrinDate,
-                                Vendor = openGrin.SenderName, // Map SenderName to Vendor
-                                PoNumber = null, // Not available in OpenGRIN
-                                BOENo = null, // Not available in OpenGRIN
-                                GrinQty = openGrin.OpenGrinQty,
-                                UnitPrice = null, // Not available in OpenGRIN
-                                Tax = null, // Not available in OpenGRIN
-                                OtherCosts = null, // Not available in OpenGRIN
-                                UOM = openGrin.UOM,
-                                UOC = null // Not available in OpenGRIN
-                            };
-
-                            consumptionReportList.Add(reportDto);
+                            consumptionReportList.Add(CreateTGReportFromOpenGrin(invoice, openGrin));
                         }
                     }
                 }
 
-                await _consumptionReportReposiory.CreateConsumptionReports(consumptionReportList);
-                _consumptionReportReposiory.SaveAsync();
+                // Step 6: Bulk insert all records
+                if (consumptionReportList.Any())
+                {
+                    await _consumptionReportReposiory.CreateConsumptionReports(consumptionReportList);
+                     _consumptionReportReposiory.SaveAsync();
+                }
+
                 _logger.LogInfo($"TG Consumption Report generated successfully with {consumptionReportList.Count} records.");
 
             }
@@ -187,6 +161,54 @@ namespace Tips.Warehouse.Api.Controllers
             }
 
             return consumptionReportList;
+        }
+
+        private ConsumptionSPReport CreateTGReportFromGrin(InvoiceBTODetailsDto invoice, GrinComsumpDto grin)
+        {
+            return new ConsumptionSPReport
+            {
+                InvoiceNumber = invoice.InvoiceNumber,
+                InvoiceDate = invoice.InvoiceDate,
+                InvoiceQty = invoice.InvoicedQty,
+                DoNumber = invoice.DONumber,
+                FGItemNumber = invoice.FGItemNumber,
+                PPLotNumber = invoice.LotNumber,
+                GrinNumber = grin.GrinNumber,
+                GrinDate = grin.GrinDate,
+                Vendor = grin.VendorName,
+                PoNumber = grin.PONumber,
+                BOENo = grin.BOENo,
+                GrinQty = grin.GrinQty,
+                UnitPrice = grin.GrinUnitPrice,
+                Tax = grin.Tax,
+                OtherCosts = grin.OtherCosts,
+                UOM = grin.UOM,
+                UOC = grin.UOC
+            };
+        }
+
+        private ConsumptionSPReport CreateTGReportFromOpenGrin(InvoiceBTODetailsDto invoice, OpenGrinComsumpDto openGrin)
+        {
+            return new ConsumptionSPReport
+            {
+                InvoiceNumber = invoice.InvoiceNumber,
+                InvoiceDate = invoice.InvoiceDate,
+                InvoiceQty = invoice.InvoicedQty,
+                DoNumber = invoice.DONumber,
+                FGItemNumber = invoice.FGItemNumber,
+                PPLotNumber = invoice.LotNumber,
+                GrinNumber = openGrin.OpenGrinNumber,
+                GrinDate = openGrin.OpenGrinDate,
+                Vendor = openGrin.SenderName,
+                PoNumber = null,
+                BOENo = null,
+                GrinQty = openGrin.OpenGrinQty,
+                UnitPrice = null,
+                Tax = null,
+                OtherCosts = null,
+                UOM = openGrin.UOM,
+                UOC = null
+            };
         }
 
         [HttpGet]
@@ -420,57 +442,190 @@ namespace Tips.Warehouse.Api.Controllers
 
         private async Task<List<SomitConsumpWithBOMVersionDto>> GetSomitConsumpDetailsByShopOrderNumbers(List<InvoiceBTOShopOrderDetailsDto> invoiceBTOShopOrderDetailsDto)
         {
-            List<SomitConsumpWithBOMVersionDto> SomitConsumpDtoList = new List<SomitConsumpWithBOMVersionDto>();
-
-            if (invoiceBTOShopOrderDetailsDto != null && invoiceBTOShopOrderDetailsDto.Count > 0)
+            if (invoiceBTOShopOrderDetailsDto == null || !invoiceBTOShopOrderDetailsDto.Any())
             {
-                foreach (var invoiceBTOShopOrderDetail in invoiceBTOShopOrderDetailsDto)
-                {
-                    string shopOrderNo = invoiceBTOShopOrderDetail.LotNumber;
-                    string fgItemNumber = invoiceBTOShopOrderDetail.FGItemNumber;
-                    string invoiceNumber = invoiceBTOShopOrderDetail.InvoiceNumber;
-                    DateTime? invoiceDate = invoiceBTOShopOrderDetail.InvoiceDate;
-                    decimal invoicedQty = invoiceBTOShopOrderDetail.InvoicedQty;
-                    string btoNumber = invoiceBTOShopOrderDetail.DONumber;
-
-                    await SomitConsumpDetailsForComsumptionReportByShopOrderNo(SomitConsumpDtoList, shopOrderNo, fgItemNumber, invoiceNumber, invoicedQty, invoiceDate, btoNumber);
-                }
+                return new List<SomitConsumpWithBOMVersionDto>();
             }
 
+            var SomitConsumpDtoList = new List<SomitConsumpWithBOMVersionDto>();
+
+            try
+            {
+
+            // Group by FG Item Number to batch process BOM calls
+            var groupedByFGItem = invoiceBTOShopOrderDetailsDto
+                .GroupBy(x => x.FGItemNumber)
+                .ToList();
+
+            // Step 1: Get all SOMIT details in parallel batches
+            var somitTasks = invoiceBTOShopOrderDetailsDto
+                .Select(async item => new
+                {
+                    Item = item,
+                    SomitDetails = await _materialIssueTrackerRepository
+                        .GetSomitConsumpDetailsByShopOrderNumbers(item.LotNumber, item.FGItemNumber)
+                })
+                .ToList();
+
+            var somitResults = await Task.WhenAll(somitTasks);
+
+            // Step 2: Collect all unique BOM versions for batch API calls
+            var bomVersionLookup = somitResults
+                .Where(result => result.SomitDetails.Any() && result.SomitDetails.Select(x => x.Bomversion).FirstOrDefault() > 0)
+                .GroupBy(result => result.Item.FGItemNumber)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.First().SomitDetails.Select(x => x.Bomversion).FirstOrDefault()
+                );
+
+            // Step 3: Batch fetch BOM details in parallel
+            var bomTasks = bomVersionLookup
+                .Select(async kvp => new
+                {
+                    FGItemNumber = kvp.Key,
+                    BomVersion = kvp.Value,
+                    BomDetails = await GetEnggBomComsumpDetailsByFgItemNoAndBOMVersion(kvp.Key, kvp.Value)
+                })
+                .ToList();
+
+            var bomResults = await Task.WhenAll(bomTasks);
+            var bomLookup = bomResults
+                .GroupBy(x => x.FGItemNumber)
+                .ToDictionary(g => g.Key, g => g.First().BomDetails);
+
+            // Step 4: Process all somit details efficiently
+            foreach (var somitResult in somitResults)
+            {
+                var invoiceItem = somitResult.Item;
+                var somitDetails = somitResult.SomitDetails;
+
+                if (!bomLookup.TryGetValue(invoiceItem.FGItemNumber, out var bomDetails))
+                    continue;
+
+                await ProcessSomitDetailsForConsumption(
+                    SomitConsumpDtoList,
+                    somitDetails,
+                    bomDetails,
+                    invoiceItem.LotNumber,
+                    invoiceItem.FGItemNumber,
+                    invoiceItem.InvoiceNumber,
+                    invoiceItem.InvoicedQty,
+                    invoiceItem.InvoiceDate,
+                    invoiceItem.DONumber
+                );
+            }
+
+            // Step 5: Group and aggregate results
             var itemsRequiredQtyGrouped = SomitConsumpDtoList
-                                    .GroupBy(item => item.PartNumber)
-                                    .Select(group => new SomitConsumpWithBOMVersionDto
-                                    {
-                                        FGItemNumber = group.FirstOrDefault()?.FGItemNumber,
-                                        PartNumber = group.Key,
-                                        MftrPartNumber = group.FirstOrDefault()?.MftrPartNumber,
-                                        LotNumber = group.FirstOrDefault()?.LotNumber,
-                                        SomitDate = group.FirstOrDefault()?.SomitDate,
-                                        ShopOrderNumber = group.FirstOrDefault()?.ShopOrderNumber,
-                                        PartType = group.FirstOrDefault()?.PartType,
-                                        DataFrom = group.FirstOrDefault()?.DataFrom,
+                .Where(item => item.PartNumber != null)
+                .GroupBy(item => item.PartNumber)
+                .Select(group => new SomitConsumpWithBOMVersionDto
+                {
+                    FGItemNumber = group.FirstOrDefault()?.FGItemNumber,
+                    PartNumber = group.Key,
+                    MftrPartNumber = group.FirstOrDefault()?.MftrPartNumber,
+                    LotNumber = group.FirstOrDefault()?.LotNumber,
+                    SomitDate = group.FirstOrDefault()?.SomitDate,
+                    ShopOrderNumber = group.FirstOrDefault()?.ShopOrderNumber,
+                    PartType = group.FirstOrDefault()?.PartType,
+                    DataFrom = group.FirstOrDefault()?.DataFrom,
 
-                                        // Aggregated fields
-                                        ShopOrderReleaseQty = group.Sum(item => item.ShopOrderReleaseQty),
-                                        ShopOrderWipQty = group.Sum(item => item.ShopOrderWipQty),
-                                        ConvertedToFgQty = group.Sum(item => item.ConvertedToFgQty),
-                                        IssuedQty = group.Sum(item => item.IssuedQty),
-                                        InvoicedQty = group.Sum(item => item.InvoicedQty),
-                                        BomQty = group.Sum(item => item.BomQty),
-                                        ConsumedQtyByInvoice = group.Sum(item => item.ConsumedQtyByInvoice),
-                                        PPWipQty = group.Sum(item => item.PPWipQty),
+                    // Aggregated fields
+                    ShopOrderReleaseQty = group.Sum(item => item.ShopOrderReleaseQty),
+                    ShopOrderWipQty = group.Sum(item => item.ShopOrderWipQty),
+                    ConvertedToFgQty = group.Sum(item => item.ConvertedToFgQty),
+                    IssuedQty = group.Sum(item => item.IssuedQty),
+                    InvoicedQty = group.Sum(item => item.InvoicedQty),
+                    BomQty = group.Sum(item => item.BomQty),
+                    ConsumedQtyByInvoice = group.Sum(item => item.ConsumedQtyByInvoice),
+                    PPWipQty = group.Sum(item => item.PPWipQty),
 
-                                        // Non-aggregated fields (take first occurrence)
-                                        InvoiceNumber = group.FirstOrDefault()?.InvoiceNumber,
-                                        InvoiceDate = group.FirstOrDefault()?.InvoiceDate,
-                                        BTONumber = group.FirstOrDefault()?.BTONumber,
-                                        Bomversion = group.FirstOrDefault().Bomversion
-                                    })
-                                    .ToList();
-
-
+                    // Non-aggregated fields (take first occurrence)
+                    InvoiceNumber = group.FirstOrDefault()?.InvoiceNumber,
+                    InvoiceDate = group.FirstOrDefault()?.InvoiceDate,
+                    BTONumber = group.FirstOrDefault()?.BTONumber,
+                    Bomversion = group.FirstOrDefault()?.Bomversion ?? 0
+                })
+                .ToList();
 
             return itemsRequiredQtyGrouped;
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetSomitConsumpDetailsByShopOrderNumbers: {ex.Message}");
+
+                // Log details about the problematic data for debugging
+                if (ex.Message.Contains("An item with the same key has already been added"))
+                {
+                    _logger.LogError($"Duplicate key error. Invoice items count: {invoiceBTOShopOrderDetailsDto.Count}");
+                    var duplicateFGItems = invoiceBTOShopOrderDetailsDto
+                        .GroupBy(x => x.FGItemNumber)
+                        .Where(g => g.Count() > 1)
+                        .Select(g => new { FGItemNumber = g.Key, Count = g.Count() });
+
+                    foreach (var dup in duplicateFGItems)
+                    {
+                        _logger.LogError($"Duplicate FG Item: {dup.FGItemNumber}, Count: {dup.Count}");
+                    }
+                }
+
+                throw;
+            }
+        }
+
+        private async Task ProcessSomitDetailsForConsumption(
+            List<SomitConsumpWithBOMVersionDto> somitConsumpDtoList,
+            List<SomitConsumpWithBOMVersionDto> somitDetails,
+            List<EnggChildBomComsumpDetailsDto> bomDetails,
+            string shopOrderNo,
+            string fgItemNumber,
+            string invoiceNumber,
+            decimal invoicedQty,
+            DateTime? invoiceDate,
+            string btoNumber)
+        {
+            // Create BOM lookup for faster access - handle duplicates by taking first occurrence
+            var bomLookup = bomDetails
+                .GroupBy(x => x.ItemNumber)
+                .ToDictionary(g => g.Key, g => g.First().Quantity);
+
+            foreach (var somitDetail in somitDetails)
+            {
+                if (somitDetail.PartType == PartType.PurchasePart)
+                {
+                    var bomQty = bomLookup.GetValueOrDefault(somitDetail.PartNumber, 0);
+                    var consumedInvoiceQty = bomQty * invoicedQty;
+
+                    var somitConsump = new SomitConsumpWithBOMVersionDto
+                    {
+                        FGItemNumber = fgItemNumber,
+                        PartNumber = somitDetail.PartNumber,
+                        MftrPartNumber = somitDetail.MftrPartNumber,
+                        LotNumber = somitDetail.LotNumber,
+                        SomitDate = somitDetail.SomitDate,
+                        ShopOrderNumber = somitDetail.ShopOrderNumber,
+                        ShopOrderReleaseQty = somitDetail.ShopOrderReleaseQty,
+                        ShopOrderWipQty = somitDetail.ShopOrderWipQty,
+                        PartType = somitDetail.PartType,
+                        DataFrom = somitDetail.DataFrom,
+                        ConvertedToFgQty = somitDetail.ConvertedToFgQty,
+                        IssuedQty = somitDetail.IssuedQty,
+                        InvoiceNumber = invoiceNumber,
+                        InvoicedQty = invoicedQty,
+                        InvoiceDate = invoiceDate,
+                        BTONumber = btoNumber,
+                        Bomversion = somitDetail.Bomversion,
+                        BomQty = bomQty,
+                        ConsumedQtyByInvoice = consumedInvoiceQty,
+                        PPWipQty = somitDetail.IssuedQty - somitDetail.ConvertedToFgQty
+                    };
+
+                    somitConsumpDtoList.Add(somitConsump);
+                }
+                // Note: Sub-assembly processing (recursive logic) would go here if needed
+                // For now, focusing on purchase parts as per the original logic
+            }
         }
 
 
@@ -550,26 +705,33 @@ namespace Tips.Warehouse.Api.Controllers
 
         private async Task<List<EnggChildBomComsumpDetailsDto>> GetEnggBomComsumpDetailsByFgItemNoAndBOMVersion(string fgItemNumber, decimal bomVersion)
         {
-            var client = _clientFactory.CreateClient();
-            var token = HttpContext.Request.Headers["Authorization"].ToString();
-            var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"],
-                                $"GetEnggChildBomQtyDetailsByFgItemNoAndRevNo?itemNumber={fgItemNumber}&revisionNumber={bomVersion}"));
+            var cacheKey = $"BOM_{fgItemNumber}_{bomVersion}";
 
-            request.Headers.Add("Authorization", token);
-            var enggBomChildResponse = await client.SendAsync(request);
-            var enggBomChildString = await enggBomChildResponse.Content.ReadAsStringAsync();
-            dynamic enggBomChildData = JsonConvert.DeserializeObject(enggBomChildString);
-
-            List<EnggChildBomComsumpDetailsDto> enggChildBomComsumpDetailsDto = new List<EnggChildBomComsumpDetailsDto>();
-
-            foreach (var item in enggBomChildData.data)
+            return await _cacheService.GetOrSetAsync(cacheKey, async () =>
             {
-                EnggChildBomComsumpDetailsDto dto = JsonConvert.DeserializeObject<EnggChildBomComsumpDetailsDto>(item.ToString());
-                enggChildBomComsumpDetailsDto.Add(dto);
-            }
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EngineeringBomAPI"],
+                                    $"GetEnggChildBomQtyDetailsByFgItemNoAndRevNo?itemNumber={fgItemNumber}&revisionNumber={bomVersion}"));
 
+                request.Headers.Add("Authorization", token);
+                var enggBomChildResponse = await client.SendAsync(request);
+                var enggBomChildString = await enggBomChildResponse.Content.ReadAsStringAsync();
+                dynamic enggBomChildData = JsonConvert.DeserializeObject(enggBomChildString);
 
-            return enggChildBomComsumpDetailsDto;
+                List<EnggChildBomComsumpDetailsDto> enggChildBomComsumpDetailsDto = new List<EnggChildBomComsumpDetailsDto>();
+
+                if (enggBomChildData?.data != null)
+                {
+                    foreach (var item in enggBomChildData.data)
+                    {
+                        EnggChildBomComsumpDetailsDto dto = JsonConvert.DeserializeObject<EnggChildBomComsumpDetailsDto>(item.ToString());
+                        enggChildBomComsumpDetailsDto.Add(dto);
+                    }
+                }
+
+                return enggChildBomComsumpDetailsDto;
+            }, TimeSpan.FromHours(24)); // BOM data rarely changes, cache for 24 hours
         }
 
         private async Task<string> GetShopOrderComsumptionDetailsBySaItemNo(string saItemNumber, string fgItemNumber)
@@ -593,41 +755,50 @@ namespace Tips.Warehouse.Api.Controllers
 
         private async Task<List<GrinComsumpDto>> GetGrinComsumptionDetailsByPartNo(List<string> partNoListString, List<string> lotNoListString)
         {
-            var client = _clientFactory.CreateClient();
-            var token = HttpContext.Request.Headers["Authorization"].ToString();
+            // Create cache key based on sorted part and lot numbers for consistent caching
+            var sortedPartNos = partNoListString.Where(x => !string.IsNullOrEmpty(x)).OrderBy(x => x).ToList();
+            var sortedLotNos = lotNoListString.Where(x => !string.IsNullOrEmpty(x)).OrderBy(x => x).ToList();
+            var cacheKey = $"GRIN_{string.Join(",", sortedPartNos)}_{string.Join(",", sortedLotNos)}";
 
-            var payload = new
+            return await _cacheService.GetOrSetAsync(cacheKey, async () =>
             {
-                PartNumber = partNoListString,
-                LotNumber = lotNoListString
-            };
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
 
-            var jsonString = JsonConvert.SerializeObject(payload);
-            var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
+                var payload = new
+                {
+                    PartNumber = partNoListString,
+                    LotNumber = lotNoListString
+                };
 
-            var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["GrinAPI"],
-                                $"GetGrinComsumptionDetialsByPartNos"))
-            {
-                Content = content
-            };
+                var jsonString = JsonConvert.SerializeObject(payload);
+                var content = new StringContent(jsonString, Encoding.UTF8, "application/json");
 
-            request.Headers.Add("Authorization", token);
-            var grinResponse = await client.SendAsync(request);
+                var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["GrinAPI"],
+                                    $"GetGrinComsumptionDetialsByPartNos"))
+                {
+                    Content = content
+                };
 
+                request.Headers.Add("Authorization", token);
+                var grinResponse = await client.SendAsync(request);
 
+                var grinString = await grinResponse.Content.ReadAsStringAsync();
+                dynamic grinData = JsonConvert.DeserializeObject(grinString);
 
-            var grinString = await grinResponse.Content.ReadAsStringAsync();
-            dynamic grinData = JsonConvert.DeserializeObject(grinString);
+                List<GrinComsumpDto> grinConsumpList = new List<GrinComsumpDto>();
 
-            List<GrinComsumpDto> grinConsumpList = new List<GrinComsumpDto>();
+                if (grinData?.data != null)
+                {
+                    foreach (var item in grinData.data)
+                    {
+                        GrinComsumpDto dto = JsonConvert.DeserializeObject<GrinComsumpDto>(item.ToString());
+                        grinConsumpList.Add(dto);
+                    }
+                }
 
-            foreach (var item in grinData.data)
-            {
-                GrinComsumpDto dto = JsonConvert.DeserializeObject<GrinComsumpDto>(item.ToString());
-                grinConsumpList.Add(dto);
-            }
-
-            return grinConsumpList;
+                return grinConsumpList;
+            }, TimeSpan.FromMinutes(15)); // GRIN data changes more frequently, cache for 15 minutes
         }
 
         private async Task<List<OpenGrinComsumpDto>> GetOpenGrinComsumptionDetailsByPartNoAndLotNo(List<string> partNoListString, List<string> lotNoListString)
