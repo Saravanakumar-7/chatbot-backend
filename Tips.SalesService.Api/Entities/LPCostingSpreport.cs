@@ -24,6 +24,8 @@
         public double? LabourHrs { get; set; }
         public decimal? LabourHrsCost { get; set; }
         public decimal? CostOfLable { get; set; }
+        public decimal? FgCost { get; set; }
+        public decimal? ProjectCost { get; set; }
     }
 
     public class CommoditySourcingSpReport
