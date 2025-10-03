@@ -12,8 +12,7 @@
     {
         public string? ProjectNumber { get; set; }
         public string? FgItemnumber { get; set; }
-        public decimal? LandingPrice { get; set; }
-        public decimal? MOQCost { get; set; }
+        public decimal? BomversionNo { get; set; }
     }
 
     public class LPCostingSummarySPReport
