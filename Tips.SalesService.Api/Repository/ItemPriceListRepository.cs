@@ -116,7 +116,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<ItemPriceList>> GetItemPriceListByItemNo(string itemNo)
         {
-            var getItemPriceListByItemNo = await FindByCondition(x => x.ItemNumber == itemNo).ToListAsync();
+            var getItemPriceListByItemNo = await FindByCondition(x => x.ItemNumber == itemNo && x.IsActive == true).ToListAsync();
 
             return getItemPriceListByItemNo;
         }
@@ -129,7 +129,7 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<ItemPriceList> GetItemPricesByListOfItemNoAndPriceListNames(string itemNo, string priceListName)
         {
-            var itemPriceListDetails = _tipsSalesServiceDbContext.ItemPriceLists.Where(b => b.ItemNumber == itemNo);
+            var itemPriceListDetails = _tipsSalesServiceDbContext.ItemPriceLists.Where(b => b.ItemNumber == itemNo && b.IsActive == true);
             if (!string.IsNullOrEmpty(priceListName))
             {
                 itemPriceListDetails = itemPriceListDetails.Where(b => b.PriceListName == priceListName);

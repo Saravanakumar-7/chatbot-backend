@@ -68,7 +68,7 @@ namespace Repository
         public async Task<IEnumerable<PriceList>> GetAllActivePriceLists([FromQuery] SearchParames searchParams)
         {
             var priceListDetails = FindAll()
-                              .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Pricelist.Contains(searchParams.SearchValue) ||
+                              .Where(inv =>inv.IsActive == true && ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.Pricelist.Contains(searchParams.SearchValue) ||
                               inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return priceListDetails;
         }
@@ -92,7 +92,7 @@ namespace Repository
         public async Task<IEnumerable<PriceList>> GetLatestPriceListName()
         {
 
-            var itemPriceList = FindAll().OrderByDescending(d => d.CreatedOn)
+            var itemPriceList = FindAll().Where(x => x.IsActive == true).OrderByDescending(d => d.CreatedOn)
                         .ToList();
 
              return itemPriceList;

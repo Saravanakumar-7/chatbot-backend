@@ -39,19 +39,40 @@ namespace Tips.Warehouse.Api.Repository
         //    var result = await Create(consumptionSPReport);
         //    return result.Id;
         //}
-        public async Task<List<long>> CreateConsumptionReports(List<ConsumptionSPReport> consumptionSPReports)
+        public async Task<List<int>> CreateConsumptionReports(List<ConsumptionSPReport> consumptionSPReports)
         {
-            var date = DateTime.Now;
-            var resultIds = new List<long>();
-
-            foreach (var report in consumptionSPReports)
+            if (consumptionSPReports == null || !consumptionSPReports.Any())
             {
-                report.CreatedBy = _createdBy;
-                report.CreatedOn = date;
-                report.Unit = _unitname;
+                return new List<int>();
+            }
 
-                var result = await Create(report);
-                resultIds.Add(result.Id);
+            var date = DateTime.Now;
+            var resultIds = new List<int>();
+
+            // Batch processing for better performance
+            const int batchSize = 1000; // Process in batches of 1000
+            var batches = consumptionSPReports
+                .Select((report, index) => new { report, index })
+                .GroupBy(x => x.index / batchSize)
+                .Select(g => g.Select(x => x.report).ToList())
+                .ToList();
+
+            foreach (var batch in batches)
+            {
+                // Set audit fields for the entire batch
+                foreach (var report in batch)
+                {
+                    report.CreatedBy = _createdBy;
+                    report.CreatedOn = date;
+                    report.Unit = _unitname;
+                }
+
+                // Use bulk insert for better performance
+                await _tipsWarehouseDbContext.Set<ConsumptionSPReport>().AddRangeAsync(batch);
+                await _tipsWarehouseDbContext.SaveChangesAsync();
+
+                // Collect IDs from the batch
+                resultIds.AddRange(batch.Select(r => r.Id));
             }
 
             return resultIds;
