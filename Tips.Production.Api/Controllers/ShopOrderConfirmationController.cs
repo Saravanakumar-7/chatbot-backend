@@ -301,7 +301,7 @@ namespace Tips.Production.Api.Controllers
                 }
                 else
                 {
-                    _logger.LogError($"Something went wrong inside CreateShopOrderConfirmation inside http inventory action UpdateInventoryOnShopOrderConfirmation action");
+                    _logger.LogError($"Something went wrong inside CreateShopOrderConfirmation inside http inventory action UpdateInventoryOnShopOrderConfirmation action SH:{shopOrderNumber}");
                     serviceResponse.Data = null;
                     serviceResponse.Message = "Internal server error";
                     serviceResponse.Success = false;
