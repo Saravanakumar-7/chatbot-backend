@@ -50,6 +50,23 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<InventoryTranctioninternalSPReport>> GetInventoryTranctioninternalSPReportwithparam(string PartNumber,string ProjectNumber,string ReferenceID, string ReferenceIDFrom)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<InventoryTranctioninternalSPReport>()
+            .FromSqlInterpolated($"CALL inventory_transaction_internal_withparameter({PartNumber},{ProjectNumber},{ReferenceID},{ReferenceIDFrom})")
+            .ToList();
+
+            return result;
+        }
+        public async Task<IEnumerable<InventoryTranctioninternalSPReport>> GetInventoryTranctioninternalSPReportwithdate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<InventoryTranctioninternalSPReport>()
+                          .FromSqlInterpolated($"CALL inventory_transaction_internal_withdate({FromDate},{ToDate})")
+                          .ToList();
+
+            return results;
+        }
         public async Task<IEnumerable<InventoryTranction>> GetInventoryTranctionDetailsByItemNumberandLocation(string ItemNumber, string Location, string Warehouse, string projectNumber)
 
         {

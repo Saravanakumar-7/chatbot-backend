@@ -22,5 +22,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<List<InventoryTranction>> GetInventoryTranctionDetailsByItemNoandProjectNo(string ItemNumber, string ProjectNo);
         Task<IEnumerable<InventoryTranction>> GetInventoryTranctionDetailsByItemNoandLocationandwarehouse(string ItemNumber, string Location, string Warehouse, string projectNumber);
         Task<IEnumerable<InventoryTranctionSPReport>> GetInventoryTranctionSPReports();
+        Task<IEnumerable<InventoryTranctioninternalSPReport>> GetInventoryTranctioninternalSPReportwithparam(string PartNumber, string ProjectNumber, string ReferenceID, string ReferenceIDFrom);
+        Task<IEnumerable<InventoryTranctioninternalSPReport>> GetInventoryTranctioninternalSPReportwithdate(DateTime? FromDate, DateTime? ToDate);
     }
 }
