@@ -4290,6 +4290,45 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> InventorySumSPReportWithdateForTras([FromBody] GetInventorySPReportForAviDto inventorySPReportForAviDto)
+        {
+            ServiceResponse<IEnumerable<InventorySumSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventorySumSPReport>>();
+            try
+            {
+                var products = await _inventoryRepository.InventorySumSPReportWithdateForTras(inventorySPReportForAviDto.FromDate, inventorySPReportForAviDto.ToDate,
+                                                                                            inventorySPReportForAviDto.PartNumber, inventorySPReportForAviDto.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventorySumSPReportWithDate hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"InventorySumSPReportWithDate hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InventorySumSPReportWithDate Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in InventorySumSPReportWithdateForTras API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in InventorySumSPReportWithdateForTras API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetInventoryDashboardSPReportsWithParam()
         {

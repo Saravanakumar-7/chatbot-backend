@@ -614,14 +614,15 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? ReturnBtoDeliveryQty { get; set; }
         public decimal? OQCBinningQty { get; set; }
         public decimal? LocationTransferInQty { get; set; }
-        public decimal? TotalInwords { get; set; }
+        public decimal? LocationTransferRejectINQty { get; set; }
+        public decimal? TotalInwards { get; set; }
         public decimal? Value_Without_Tax_inwards { get; set; }
         public decimal? MaterialIssueQty { get; set; }
         public decimal? MaterialRequestQty { get; set; }
         public decimal? OpenDeliveryOrderQty { get; set; }
         public decimal? BtoDeliveryOrderQty { get; set; }
         public decimal? LocationTransferOutQty { get; set; }
-        public decimal? Totaloutwords { get; set; }
+        public decimal? Totaloutwards { get; set; }
         public decimal? Value_Without_Tax_Outwards { get; set; }
         public decimal? Closing_stock { get; set; }
         public decimal? Price { get; set; }

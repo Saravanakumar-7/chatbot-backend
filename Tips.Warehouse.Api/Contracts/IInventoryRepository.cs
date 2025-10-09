@@ -109,6 +109,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<Inventory>> GetInventoryWarehouseReport(string PartNumber, string Description, string Warehouse, string Location, string ProjectNumber);
         Task<IEnumerable<InventorySPReport>> InventorySPReportdate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<InventorySumSPReport>> InventorySumSPReportWithdate(DateTime? FromDate, DateTime? ToDate, string partNumber, string projectNumber);
+        Task<IEnumerable<InventorySumSPReport>> InventorySumSPReportWithdateForTras(DateTime? FromDate, DateTime? ToDate, string partNumber, string projectNumber);
         Task<IEnumerable<GetInventorySPReportForAvi>> GetInventorySPReportForAvision(DateTime? FromDate, DateTime? ToDate, string partNumber, string projectNumber);
         Task<IEnumerable<Inventory>> GetInventoryWIPReport(string PartNumber, string Description, string ProjectNumber);
         Task<IEnumerable<Inventory>> GetInventoryGrinAndIqcReport(string PartNumber, string Description, string ProjectNumber, string Warehouse, string Location);
