@@ -1398,13 +1398,13 @@ namespace Tips.SalesService.Api.Repository
                 .Where(x =>
                             (x.StatusEnum == OrderStatus.Open || x.StatusEnum == OrderStatus.PartiallyClosed) &&
                             x.BalanceQty > 0 && salesOrderIdList.Contains(x.SalesOrderId))
-                .GroupBy(x => new { x.ItemNumber, x.ProjectNumber })
+                .GroupBy(x => new { x.ItemNumber, x.ProjectNumber,x.Description,x.UOM })
                 .Select(group => new SalesOrderFGandBalanceQtyByProjectNo
                 {
                     FGItemNumber = group.Key.ItemNumber,
                     ProjectNumber = group.Key.ProjectNumber,
-                    Description = group.First().Description,
-                    UOM = group.First().UOM,
+                    Description = group.Key.Description,
+                    UOM = group.Key.UOM,
                     Balance_Qty = group.Sum(x => x.BalanceQty)
                 }).ToListAsync();
 
