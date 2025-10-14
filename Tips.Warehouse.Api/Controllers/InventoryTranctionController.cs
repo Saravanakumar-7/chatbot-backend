@@ -688,5 +688,236 @@ namespace Tips.Warehouse.Api.Controllers
         //    }
         //}
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetInventoryTranctioninternalSPReportwithparam(InventoryTranctioninternalinputparam inventoryTranctioninternalinputparam)
+        {
+            ServiceResponse<IEnumerable<InventoryTranctioninternalSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventoryTranctioninternalSPReport>>();
+            try
+            {
+                var products = await _inventoryTranctionRepository.GetInventoryTranctioninternalSPReportwithparam(inventoryTranctioninternalinputparam.PartNumber,
+                    inventoryTranctioninternalinputparam.ProjectNumber, inventoryTranctioninternalinputparam.ReferenceID, inventoryTranctioninternalinputparam.ReferenceIDFrom); 
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventoryTranctioninternalSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"InventoryTranctioninternalSPReport hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InventoryTranctionSPReports Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetInventoryTranctioninternalSPReportwithparam API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetInventoryTranctioninternalSPReportwithparam API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetInventoryTranctioninternalSPReportwithdate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<InventoryTranctioninternalSPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventoryTranctioninternalSPReport>>();
+            try
+            {
+                var products = await _inventoryTranctionRepository.GetInventoryTranctioninternalSPReportwithdate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventoryTranctioninternalSPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"InventoryTranctioninternalSPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InventoryTranctioninternalSPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetInventoryTranctioninternalSPReportwithdate API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetInventoryTranctioninternalSPReportwithdate API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> ExportInventoryTranctioninternalSPReportWithParamOrWithDateToExcel([FromBody] InventoryTranctioninternalinputparamForExcelDto inventoryTranctioninternalinputparamForExcelDto)
+        {
+            ServiceResponse<InventoryTranctioninternalSPReport> serviceResponse = new ServiceResponse<InventoryTranctioninternalSPReport>();
+            try
+            {
+                if (inventoryTranctioninternalinputparamForExcelDto is null)
+                {
+                    _logger.LogError("InventoryTranctioninternalinputparamForExcelDto object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "InventoryTranctioninternalinputparamForExcelDto object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid InventoryTranctioninternalinputparamForExcelDto object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                bool hasParams = !string.IsNullOrEmpty(inventoryTranctioninternalinputparamForExcelDto.PartNumber)
+                               || !string.IsNullOrEmpty(inventoryTranctioninternalinputparamForExcelDto.ProjectNumber)
+                               || !string.IsNullOrEmpty(inventoryTranctioninternalinputparamForExcelDto.ReferenceID)
+                               || !string.IsNullOrEmpty(inventoryTranctioninternalinputparamForExcelDto.ReferenceIDFrom);
+
+                bool hasDate = inventoryTranctioninternalinputparamForExcelDto.FromDate != null || inventoryTranctioninternalinputparamForExcelDto.ToDate != null;
+
+                if (hasParams && hasDate)
+                {
+                    _logger.LogError("Input object must contain either filter parameters or date range, not both.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or a date range, not both.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!hasParams && (inventoryTranctioninternalinputparamForExcelDto.FromDate == null || inventoryTranctioninternalinputparamForExcelDto.ToDate == null))
+                {
+                    _logger.LogError("Input object must contain either at least one filter parameter or both from and to dates.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Please provide either filter parameters or both from and to dates.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                var InventoryTranctioninternalSPReportDetails = Enumerable.Empty<InventoryTranctioninternalSPReport>();
+
+                if (hasParams && !hasDate)
+                {
+                    InventoryTranctioninternalSPReportDetails = await _inventoryTranctionRepository.GetInventoryTranctioninternalSPReportwithparam(
+                        inventoryTranctioninternalinputparamForExcelDto.PartNumber,
+                        inventoryTranctioninternalinputparamForExcelDto.ProjectNumber,
+                        inventoryTranctioninternalinputparamForExcelDto.ReferenceID,
+                        inventoryTranctioninternalinputparamForExcelDto.ReferenceIDFrom);
+                }
+
+                if (!hasParams && (inventoryTranctioninternalinputparamForExcelDto.FromDate != null && inventoryTranctioninternalinputparamForExcelDto.ToDate != null))
+                {
+                    InventoryTranctioninternalSPReportDetails = await _inventoryTranctionRepository.GetInventoryTranctioninternalSPReportwithdate(
+                        inventoryTranctioninternalinputparamForExcelDto.FromDate,
+                        inventoryTranctioninternalinputparamForExcelDto.ToDate);
+                }
+
+                // Create Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("InvTransInternalReport");
+
+                // Header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Part Number");
+                headerRow.CreateCell(1).SetCellValue("Mftr Part Number");
+                headerRow.CreateCell(2).SetCellValue("Description");
+                headerRow.CreateCell(3).SetCellValue("Project Number");
+                headerRow.CreateCell(4).SetCellValue("Issued Quantity");
+                headerRow.CreateCell(5).SetCellValue("UOM");
+                headerRow.CreateCell(6).SetCellValue("Issued DateTime");
+                headerRow.CreateCell(7).SetCellValue("Issued By");
+                headerRow.CreateCell(8).SetCellValue("Shop Order Id");
+                headerRow.CreateCell(9).SetCellValue("Reference ID");
+                headerRow.CreateCell(10).SetCellValue("Reference ID From");
+                headerRow.CreateCell(11).SetCellValue("BOM Version No");
+                headerRow.CreateCell(12).SetCellValue("From Location");
+                headerRow.CreateCell(13).SetCellValue("TO Location");
+                headerRow.CreateCell(14).SetCellValue("Modified Status");
+                headerRow.CreateCell(15).SetCellValue("Unit");
+                headerRow.CreateCell(16).SetCellValue("Grin Material Type");
+                headerRow.CreateCell(17).SetCellValue("Remarks");
+                headerRow.CreateCell(18).SetCellValue("Created By");
+                headerRow.CreateCell(19).SetCellValue("Created On");
+                headerRow.CreateCell(20).SetCellValue("Last Modified On");
+                headerRow.CreateCell(21).SetCellValue("Part Type");
+                headerRow.CreateCell(22).SetCellValue("Lot Number");
+                headerRow.CreateCell(23).SetCellValue("Is Stock Available");
+                headerRow.CreateCell(24).SetCellValue("Warehouse");
+                headerRow.CreateCell(25).SetCellValue("Grin No");
+                headerRow.CreateCell(26).SetCellValue("Grin Part Id");
+                headerRow.CreateCell(27).SetCellValue("Shop Order No");
+
+                // Populate data
+                int rowIndex = 1;
+                foreach (var item in InventoryTranctioninternalSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+                    row.CreateCell(0).SetCellValue(item.PartNumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.MftrPartNumber ?? "");
+                    row.CreateCell(2).SetCellValue(item.Description ?? "");
+                    row.CreateCell(3).SetCellValue(item.ProjectNumber ?? "");
+                    row.CreateCell(4).SetCellValue((double)(item.Issued_Quantity ?? 0));
+                    row.CreateCell(5).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(6).SetCellValue(item.Issued_DateTime?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(7).SetCellValue(item.Issued_By ?? "");
+                    row.CreateCell(8).SetCellValue(item.ShopOrderId ?? "");
+                    row.CreateCell(9).SetCellValue(item.ReferenceID ?? "");
+                    row.CreateCell(10).SetCellValue(item.ReferenceIDFrom ?? "");
+                    row.CreateCell(11).SetCellValue((double)(item.BOM_Version_No ?? 0));
+                    row.CreateCell(12).SetCellValue(item.From_Location ?? "");
+                    row.CreateCell(13).SetCellValue(item.TO_Location ?? "");
+                    row.CreateCell(14).SetCellValue(item.ModifiedStatus.HasValue ? (item.ModifiedStatus.Value ? "True" : "False") : "");
+                    row.CreateCell(15).SetCellValue(item.Unit ?? "");
+                    row.CreateCell(16).SetCellValue(item.GrinMaterialType ?? "");
+                    row.CreateCell(17).SetCellValue(item.Remarks ?? "");
+                    row.CreateCell(18).SetCellValue(item.CreatedBy ?? "");
+                    row.CreateCell(19).SetCellValue(item.CreatedOn?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(20).SetCellValue(item.LastModifiedOn?.ToString("MM/dd/yyyy") ?? "");
+                    row.CreateCell(21).SetCellValue(item.PartType?.ToString() ?? "");
+                    row.CreateCell(22).SetCellValue(item.LotNumber ?? "");
+                    row.CreateCell(23).SetCellValue(item.IsStockAvailable ? "True" : "False");
+                    row.CreateCell(24).SetCellValue(item.Warehouse ?? "");
+                    row.CreateCell(25).SetCellValue(item.GrinNo ?? "");
+                    row.CreateCell(26).SetCellValue((int)(item.GrinPartId ?? 0));
+                    row.CreateCell(27).SetCellValue(item.shopOrderNo ?? "");
+                }
+
+                // Export Excel
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+                    return File(excelBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "InvTransInternalReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
     }
 }

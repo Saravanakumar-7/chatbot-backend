@@ -66,6 +66,7 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<InventorySPReport> InventorySPReports { get; set; }
         public DbSet<ODOMonthlyConsumptionSPReport> ODOMonthlyConsumptionSPReports { get; set; }
         public DbSet<InventoryTranctionSPReport> InventoryTranctionSPReports { get; set; }
+        public DbSet<InventoryTranctioninternalSPReport> InventoryTranctioninternalSPReport { get; set; }
         public DbSet<CrossMarginSPReport> CrossMarginSPReports { get; set; }
         public DbSet<StockMovementSPReport> StockMovementSPReports { get; set; }
         public DbSet<InventoryForStockSPReport> InventoryForStockSPReports { get; set; }
@@ -102,6 +103,7 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<InventorySPReport>().HasNoKey();
             modelBuilder.Entity<ODOMonthlyConsumptionSPReport>().HasNoKey();
             modelBuilder.Entity<InventoryTranctionSPReport>().HasNoKey();
+            modelBuilder.Entity<InventoryTranctioninternalSPReport>().HasNoKey();
             modelBuilder.Entity<CrossMarginSPReport>().HasNoKey();
             modelBuilder.Entity<StockMovementSPReport>().HasNoKey();
             modelBuilder.Entity<InventoryForStockSPReport>().HasNoKey();
