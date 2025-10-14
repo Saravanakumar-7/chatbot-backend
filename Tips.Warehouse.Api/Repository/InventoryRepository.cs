@@ -1606,11 +1606,11 @@ namespace Tips.Warehouse.Api.Repository
 
             // Group by PartNumber and calculate quantities
             var itemStock = inventories
-                .GroupBy(x => x.PartNumber)
+                .GroupBy(x => new { x.PartNumber,x.ProjectNumber })
                 .Select(group => new ConsumptionChildItemForProjectListInventoryDto
                 {
-                    PartNumber = group.Key,
-                    ProjectNumber = group.First().ProjectNumber,
+                    PartNumber = group.Key.PartNumber,
+                    ProjectNumber = group.Key.ProjectNumber,
                     BalanceQuantity = group.Where(x => x.Warehouse != wipWarehouse).Sum(x => x.Balance_Quantity),
                     WipQuantity = group.Where(x => x.Warehouse == wipWarehouse).Sum(x => x.Balance_Quantity)
                 })

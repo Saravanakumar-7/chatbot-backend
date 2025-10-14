@@ -1941,7 +1941,6 @@ namespace Tips.SalesService.Api.Controllers
 
             return shoporderConWipQtyList;
         }
-
         //GenerateCoverageFGLevelReportByProjectNumber
 
 
@@ -2030,12 +2029,15 @@ namespace Tips.SalesService.Api.Controllers
 
                 foreach (var salesOrderDetails in salesOrders)
                 {
+                    bool flag = false;
+
                     if (inventoryObject != null && inventoryObject.Count > 0)
                     {
                         foreach (var Inventory in inventoryObject)
                         {
                             if (salesOrderDetails.FGItemNumber == Inventory["partNumber"]?.ToString())
                             {
+                                flag = true;
                                 if (Inventory != null)
                                 {
                                     if (salesOrderDetails.FGItemNumber != null && salesOrderDetails.Balance_Qty != 0)
@@ -2044,6 +2046,7 @@ namespace Tips.SalesService.Api.Controllers
                                         {
                                             ItemNumber = salesOrderDetails.FGItemNumber,
                                             MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
+                                            MaterialGroup = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.MaterialGroup).FirstOrDefault(),
                                             Description = salesOrderDetails.Description,
                                             ProjectNumber = salesOrderDetails.ProjectNumber,
                                             UOM = salesOrderDetails.UOM,
@@ -2051,22 +2054,18 @@ namespace Tips.SalesService.Api.Controllers
                                             PartType = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault()
                                         };
 
-                                        decimal balanceQuantity = (decimal)Inventory.balance_Quantity; ; // Convert to decimal
+                                        decimal balanceQuantity = (decimal)Inventory.balance_Quantity;  // Convert to decimal
                                         coverageReport.Stock = balanceQuantity;
 
-
+                                        // Calculate OpenSOQty
+                                        coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
+                                        coverageReport.OpenSOQty = coverageReport.OpenSOQty <= 0 ? 0 : coverageReport.OpenSOQty;
 
                                         PartType itemPartType = coverageReport.PartType;
 
-
                                         if (itemPartType == PartType.TG)
                                         {
-                                            // Calculate OpenPoQty
-                                            //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
-                                            //              "GetOpenPOTGDetailsByItemAndProjecNoForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber,
-                                            //                                                                            "&ProjectNumber=", salesOrderDetails.ProjectNumber));
                                             var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
-                                            //var encodedProjectNo = Uri.EscapeDataString(projectNumber);
                                             var encodedProjectNos = new List<string>();
                                             foreach (var projectNo in coverageReportProjectDto.ProjectNumber)
                                             {
@@ -2093,25 +2092,21 @@ namespace Tips.SalesService.Api.Controllers
                                                 }
                                             }
                                         }
-                                        // Calculate OpenSOQty
-                                        coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
+
                                         // Calculate BalanceToOrder
-
-                                        var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
-
+                                        var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty);
                                         coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
-
-
-                                        //var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
-                                        //coverageReport.BalanceToOrder = balanceToOrderQty.HasValue && balanceToOrderQty.Value > 0 ? balanceToOrderQty.Value : 0;
 
                                         openSalesCoverageReports.Add(coverageReport);
                                     }
                                 }
+                                break; // No need to continue looping once a match is found
                             }
                         }
                     }
-                    else
+
+                    // If no match was found in inventory, handle this case
+                    if (!flag)
                     {
                         if (salesOrderDetails.FGItemNumber != null && salesOrderDetails.Balance_Qty != 0)
                         {
@@ -2119,6 +2114,7 @@ namespace Tips.SalesService.Api.Controllers
                             {
                                 ItemNumber = salesOrderDetails.FGItemNumber,
                                 MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
+                                MaterialGroup = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.MaterialGroup).FirstOrDefault(),
                                 Description = salesOrderDetails.Description,
                                 ProjectNumber = salesOrderDetails.ProjectNumber,
                                 UOM = salesOrderDetails.UOM,
@@ -2126,20 +2122,18 @@ namespace Tips.SalesService.Api.Controllers
                                 PartType = itemNoWithPartType.Where(x => x.ItemNumber == salesOrderDetails.FGItemNumber).Select(i => i.PartType).FirstOrDefault()
                             };
 
-                            decimal balanceQuantity = 0;
+                            // Since no match was found, set stock to 0
                             coverageReport.Stock = 0;
 
                             // Calculate OpenSOQty
                             coverageReport.OpenSOQty = salesOrderDetails.Balance_Qty - coverageReport.Stock;
+                            coverageReport.OpenSOQty = coverageReport.OpenSOQty <= 0 ? 0 : coverageReport.OpenSOQty;
 
                             PartType itemPartType = coverageReport.PartType;
 
-
                             if (itemPartType == PartType.TG)
                             {
-
                                 var encodedItemNumber = Uri.EscapeDataString(salesOrderDetails.FGItemNumber);
-                                //var encodedProjectNo = Uri.EscapeDataString(projectNumber);
                                 var encodedProjectNos = new List<string>();
                                 foreach (var projectNo in coverageReportProjectDto.ProjectNumber)
                                 {
@@ -2148,10 +2142,6 @@ namespace Tips.SalesService.Api.Controllers
                                 var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["PurchaseAPI"], $"GetOpenPOTGDetailsByItemAndMultipleProjecNoForCoverage?itemNumber={encodedItemNumber}&ProjectNumber={encodedProjectNos}"));
                                 request2.Headers.Add("Authorization", token);
                                 var purchaseObjectResult = await client.SendAsync(request2);
-                                // Calculate OpenPoQty
-                                //var purchaseObjectResult = await _httpClient.GetAsync(string.Concat(_config["PurchaseAPI"],
-                                //"GetOpenPOTGDetailsByItemAndProjecNoForCoverage?", "itemNumber=", salesOrderDetails.FGItemNumber,
-                                //                                                                      "&ProjectNumber=", projectNumber));
 
                                 if (purchaseObjectResult != null && purchaseObjectResult.StatusCode == HttpStatusCode.OK)
                                 {
@@ -2169,13 +2159,10 @@ namespace Tips.SalesService.Api.Controllers
                                         coverageReport.OpenPoQty = 0;
                                     }
                                 }
-
                             }
 
                             // Calculate BalanceToOrder
-
-                            var balanceToOrderQty = coverageReport.OpenSOQty - (coverageReport.Stock + coverageReport.OpenPoQty);
-
+                            var balanceToOrderQty = salesOrderDetails.Balance_Qty - (coverageReport.Stock + coverageReport.OpenPoQty);
                             coverageReport.BalanceToOrder = Convert.ToDecimal(balanceToOrderQty) <= 0 ? 0 : Convert.ToDecimal(balanceToOrderQty);
 
                             openSalesCoverageReports.Add(coverageReport);
@@ -2289,7 +2276,7 @@ namespace Tips.SalesService.Api.Controllers
                                 decimal? balanceRequiredQty = coverageDetailOfChildItem.RequiredQty - (coverageDetailOfChildItem.Stock
                                    + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
 
-                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : balanceRequiredQty;
+                                coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
 
                                 coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
                             }
@@ -2378,6 +2365,7 @@ namespace Tips.SalesService.Api.Controllers
                                 {
                                     ItemNumber = item.ItemNumber,
                                     MftrItemNumber = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MftrItemNumber).FirstOrDefault(),
+                                    MaterialGroup = itemNoWithPartType.Where(x => x.ItemNumber == item.ItemNumber).Select(i => i.MaterialGroup).FirstOrDefault(),
                                     Version = item.Version,
                                     Description = item.Description,
                                     ProjectNumber = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.ProjectNumber).FirstOrDefault(),
