@@ -2,7 +2,10 @@
 {
     public enum ShopOrderType
     {
-        ShopOrder,
-        OpenShopOrder
+        //ShopOrder,
+        //OpenShopOrder
+        InHouse,
+        SubContract
+
     }
 }

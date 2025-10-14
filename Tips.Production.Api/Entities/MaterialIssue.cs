@@ -9,6 +9,7 @@ namespace Tips.Production.Api.Entities
     {
         public int Id { get; set; }
         public string? ShopOrderNumber { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
         public DateTime? ShopOrderDate { get; set; }
         public string? ItemNumber { get; set; }
         public string? ProjectType { get; set; }

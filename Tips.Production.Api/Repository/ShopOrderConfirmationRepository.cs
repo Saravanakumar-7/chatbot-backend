@@ -167,10 +167,12 @@ namespace Tips.Production.Api.Repository
                 .Select(s => new ShopOrderDetailsDto()
                 {
                     ShopOrderNumber = s.ShopOrderNumber,
+                    ShopOrderType=s.ShopOrderType,
                     ShopOrderReleaseQty = s.TotalSOReleaseQty,
                     WipQty = s.WipQty,
                     OqcQty = s.OqcQty,
                     BOMVersion = s.BomRevisionNo
+
                 })
                 .ToListAsync();
 
@@ -184,7 +186,9 @@ namespace Tips.Production.Api.Repository
                 .Select(group => new ShopOrderDetailsDto()
                 {
                     ShopOrderNumber = group.Key,
+                    ShopOrderType= group.FirstOrDefault().ShopOrderType,
                     ShopOrderReleaseQty = group.FirstOrDefault().ShopOrderReleaseQty,
+
                     WipQty = _tipsProductionDbContext.ShopOrders.Where(x => x.ItemNumber == itemNumber).Count() > 0 ? _tipsProductionDbContext.ShopOrders
                     .Where(s => s.ItemNumber == itemNumber && s.ShopOrderNumber == group.Key).Sum(s => s.WipQty):0,
                     OqcQty = _tipsProductionDbContext.oQCs.Where(x => x.ItemNumber == itemNumber).Count() > 0 ? _tipsProductionDbContext.oQCs

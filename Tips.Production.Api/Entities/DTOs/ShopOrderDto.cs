@@ -102,6 +102,13 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ShopOrderNumber { get; set; }
         public decimal TotalSOReleaseQty { get; set; }
     }
+    public class ListOfShopOrderNumberwithTypeDto
+    {
+        public int Id { get; set; }
+        public string? ShopOrderNumber { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
+        public decimal TotalSOReleaseQty { get; set; }
+    }
     public class ShopOrderSearchDto
     {
         public List<string>? ShopOrderNumber { get; set; }

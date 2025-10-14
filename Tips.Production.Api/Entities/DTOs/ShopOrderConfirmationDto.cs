@@ -33,7 +33,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+        public ShopOrderType ShopOrderType { get; set; }
     }
 
     public class ShopOrderConfirmationPostDto
@@ -52,6 +52,7 @@ namespace Tips.Production.Api.Entities.DTOs
         [Required]
         [Precision(13, 3)]
         public decimal WipConfirmedQty { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
 
         public List<ShopOrderItemConfirmationDto> shopOrderItemConfirmations { get; set; }
 
@@ -89,6 +90,7 @@ namespace Tips.Production.Api.Entities.DTOs
     public class ShopOrderDetailsDto
     {
         public string? ShopOrderNumber { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
         public decimal ShopOrderReleaseQty { get; set; }
         public decimal WipQty { get; set; }
         public decimal OqcQty { get; set; }

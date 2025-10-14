@@ -1,6 +1,7 @@
 ﻿using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
@@ -19,6 +20,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
     }
     public class OQCBinningPostDto
     {
@@ -28,6 +30,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ShopOrderNumber { get; set; }
         [Precision(13, 3)]
         public decimal ShopOrderQty { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
         public List<OQCBinningLocationPostDto>? oQCBinningLocations { get; set; }
     }
     public class OQCBinningUpdateDto 
@@ -39,6 +42,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ShopOrderNumber { get; set; }
         [Precision(13, 3)]
         public decimal ShopOrderQty { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
         public List<OQCBinningLocationUpdateDto>? oQCBinningLocations { get; set; }
 
     }

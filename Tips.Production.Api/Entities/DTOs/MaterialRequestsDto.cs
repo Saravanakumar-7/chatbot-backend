@@ -13,7 +13,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? MRNumber { get; set; }
         public string? ProjectNumber { get; set; }
         //public string? FGItemNumber { get; set; }
-        public PartType ShopOrderType { get; set; }
+        public PartType ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
         public string? IssuedBy { get; set; }
         public string? IssuedTo { get; set; }
@@ -30,6 +30,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
 
         public List<MaterialRequestItemsDto>? MaterialRequestItems { get; set; }
     }
@@ -41,10 +42,11 @@ namespace Tips.Production.Api.Entities.DTOs
 
         public string? ProjectNumber { get; set; }
   
-        public PartType ShopOrderType { get; set; }
+        public PartType ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
 
         public string? IssuedTo { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
 
 
         public List<MaterialRequestItemPostDto>? MaterialRequestItems { get; set; }
@@ -55,7 +57,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public int Id { get; set; }
         public string? ProjectNumber { get; set; }
         //public string? FGItemNumber { get; set; }
-        public PartType ShopOrderType { get; set; }
+        public PartType ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
         public string MRNumber { get; set; }
         public string? IssuedTo { get; set; }
@@ -69,7 +71,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public int Id { get; set; }
         public string? ProjectNumber { get; set; }
         //public string? FGItemNumber { get; set; }
-        public PartType ShopOrderType { get; set; }
+        public PartType ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
         public string MRNumber { get; set; }
         public string? IssuedTo { get; set; }
@@ -102,7 +104,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? MRNumber { get; set; }
         public string? ProjectNumber { get; set; }
         //public string? FGItemNumber { get; set; }
-        public PartType ShopOrderType { get; set; }
+        public PartType ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
         public string? IssuedBy { get; set; }
         public DateTime? IssuedOn { get; set; }

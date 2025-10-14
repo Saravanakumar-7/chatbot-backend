@@ -1,5 +1,6 @@
 ﻿using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities
 {
@@ -18,5 +19,6 @@ namespace Tips.Production.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
     }
 }

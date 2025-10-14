@@ -55,6 +55,7 @@ namespace Tips.Production.Api.Repository
             {
                 ItemNumber = g.Key.ItemNumber,
                 ShopOrderNumber = g.Key.ShopOrderNumber,
+                ShopOrderType = g.FirstOrDefault().ShopOrderType,
                 TotalAcceptedQty = g.Sum(x => x.ShopOrderQty)
             }).ToListAsync();
             return ShopOrderQty;

@@ -15,7 +15,7 @@ namespace Tips.Production.Api.Entities
         public string? ProjectNumber { get; set; }
         public string? FGItemNumber { get; set; }
 
-        public PartType ShopOrderType { get; set; }
+        public PartType ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
         public string? IssuedBy { get; set; }
         public DateTime? IssuedOn { get; set; }
@@ -31,6 +31,7 @@ namespace Tips.Production.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
 
         public List<MaterialRequestItems>? MaterialRequestItems { get; set; }
 

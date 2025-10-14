@@ -1,6 +1,7 @@
 ﻿using Entities.Enums;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
+using Tips.Production.Api.Entities.Enums;
 
 namespace Tips.Production.Api.Entities.DTOs
 {
@@ -25,6 +26,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
     }
     public class OQCPostDto
     {
@@ -45,6 +47,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
     }
     public class OQCUpdateDto
     {
@@ -172,6 +175,7 @@ namespace Tips.Production.Api.Entities.DTOs
     {
         public string ItemNumber { get; set; }
         public string ShopOrderNumber { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
         public decimal TotalAcceptedQty { get; set; }
     }
     public class OQCSPReportDto

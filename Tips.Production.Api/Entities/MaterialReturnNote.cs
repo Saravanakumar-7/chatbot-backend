@@ -11,7 +11,7 @@ namespace Tips.Production.Api.Entities
         public int? Id { get; set; }
         public string? MRNNumber { get; set; }
         public string? ProjectNumber { get; set; } 
-        public PartType ShopOrderType { get; set; }
+        public PartType ItemType { get; set; }
         public string? ShopOrderNumber { get; set; }
         public string? Unit { get; set; }
         public MaterialStatus MrnStatus { get; set; }
@@ -19,6 +19,7 @@ namespace Tips.Production.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public ShopOrderType ShopOrderType { get; set; }
 
         public List<MaterialReturnNoteItem>? MaterialReturnNoteItems { get; set; }
     }
