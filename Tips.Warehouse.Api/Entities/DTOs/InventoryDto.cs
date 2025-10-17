@@ -482,6 +482,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? UOM { get; set; }
         public decimal? Qty { get; set; }
         public string? UOC { get; set; }
+        public string? Commodity { get; set; }
         public decimal? UnitPrice { get; set; }
         public decimal? TotalValue { get; set; }
         public string? Warehouse { get; set; }

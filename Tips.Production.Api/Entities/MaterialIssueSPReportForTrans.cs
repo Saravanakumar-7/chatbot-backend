@@ -20,8 +20,10 @@
         public decimal? IssuedQty { get; set; }
         public string? UOC { get; set; }
         public decimal? UnitPrice { get; set; }
-        public string? lotnumber { get; set; }
+        public string? LotNumber { get; set; }
         public string? BENumber { get; set; }
-        
+        public string? Status{ get; set; }
+
+
     }
 }
