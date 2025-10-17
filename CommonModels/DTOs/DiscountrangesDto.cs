@@ -23,7 +23,6 @@ namespace Entities.DTOs
         [Required(ErrorMessage = "FromAmount is required")]
         public decimal FromAmount { get; set; }
         public decimal? ToAmount { get; set; }
-        public bool IsActive { get; set; }
         public List<DiscountUsersPostDto> DiscountUsers { get; set; }
     }
 
