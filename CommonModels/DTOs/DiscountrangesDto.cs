@@ -14,9 +14,8 @@ namespace Entities.DTOs
         [Required(ErrorMessage = "FromAmount is required")]
         public decimal FromAmount { get; set; }
         public decimal? ToAmount { get; set; }
-
-        [Required(ErrorMessage = "IsSpecialDiscountAllowed is required")]
-        public bool IsSpecialDiscountAllowed { get; set; }
+        public bool IsActive { get; set; }
+        public List<DiscountUsersDto> DiscountUsers { get; set; }
     }
 
     public class DiscountRangesPostDto
@@ -24,8 +23,8 @@ namespace Entities.DTOs
         [Required(ErrorMessage = "FromAmount is required")]
         public decimal FromAmount { get; set; }
         public decimal? ToAmount { get; set; }
-        [Required(ErrorMessage = "IsSpecialDiscountAllowed is required")]
-        public bool IsSpecialDiscountAllowed { get; set; }
+        public bool IsActive { get; set; }
+        public List<DiscountUsersPostDto> DiscountUsers { get; set; }
     }
 
     public class DiscountRangesUpdateDto
@@ -35,8 +34,7 @@ namespace Entities.DTOs
         [Required(ErrorMessage = "FromAmount is required")]
         public decimal FromAmount { get; set; }
         public decimal? ToAmount { get; set; }
-
-        [Required(ErrorMessage = "IsSpecialDiscountAllowed is required")]
-        public bool IsSpecialDiscountAllowed { get; set; }
+        public bool IsActive { get; set; }
+        public List<DiscountUsersUpdateDto> DiscountUsers { get; set; }
     }
 }

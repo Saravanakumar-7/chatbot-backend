@@ -36,6 +36,33 @@ namespace Tips.Master.Api.Controllers
             _config = config;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllDiscountRanges([FromQuery] PagingParameter pagingParameter)
+        {
+            var serviceResponse = new ServiceResponse<List<DiscountRangesDto>>();
+            try
+            {
+                var allRanges = await _repository.DiscountRangesRepository.GetAllDiscountRanges(pagingParameter);
+                var result = _mapper.Map<List<DiscountRangesDto>>(allRanges);
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all DiscountRanges successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetAllDiscountRanges API: {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occurred: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateDiscountRanges([FromBody] List<DiscountRangesPostDto> discountRangesPostDto)
         {
@@ -227,8 +254,14 @@ namespace Tips.Master.Api.Controllers
                         return NotFound(serviceResponse);
                     }
 
-                    _mapper.Map(dto, existing);
+                    // Set old record's IsActive to false
+                    existing.IsActive = false;
                     await _repository.DiscountRangesRepository.UpdateDiscountRanges(existing);
+
+                    // Create new record with incoming DTO data
+                    var newEntity = _mapper.Map<DiscountRanges>(dto);
+                    newEntity.IsActive = true;
+                    await _repository.DiscountRangesRepository.CreateDiscountRanges(newEntity);
                 }
 
                 _repository.SaveAsync();
@@ -251,32 +284,5 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
-
-        [HttpGet]
-        public async Task<IActionResult> GetAllDiscountRanges([FromQuery] PagingParameter pagingParameter)
-        {
-            var serviceResponse = new ServiceResponse<List<DiscountRangesDto>>();
-            try
-            {
-                var allRanges = await _repository.DiscountRangesRepository.GetAllDiscountRanges(pagingParameter);
-                var result = _mapper.Map<List<DiscountRangesDto>>(allRanges);
-
-                serviceResponse.Data = result;
-                serviceResponse.Message = "Returned all DiscountRanges successfully";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error in GetAllDiscountRanges API: {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occurred: {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
     }
 }

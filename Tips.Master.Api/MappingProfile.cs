@@ -546,6 +546,9 @@ namespace Tips.Master.Api
             CreateMap<DiscountRanges, DiscountRangesUpdateDto>().ReverseMap();
 
 
+            CreateMap<DiscountUsers, DiscountUsersDto>().ReverseMap();
+            CreateMap<DiscountUsers, DiscountUsersPostDto>().ReverseMap();
+            CreateMap<DiscountUsers, DiscountUsersUpdateDto>().ReverseMap();
 
             CreateMap<ProductType, GetListofTypeSolutionByProductTypeDto>().ReverseMap();
         }

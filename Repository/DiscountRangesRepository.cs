@@ -36,6 +36,7 @@ namespace Repository
         public async Task<DiscountRanges> GetDiscountRangesById(int id)
         {
             var discountRange = await FindByCondition(x => x.Id == id)
+                .Include(x => x.DiscountUsers)
                 .FirstOrDefaultAsync();
             return discountRange;
         }
@@ -45,6 +46,7 @@ namespace Repository
             var DiscountRangesbyProcurementType = await FindByCondition(x =>
                 x.FromAmount <= amount &&
                 amount <= (x.ToAmount ?? decimal.MaxValue))
+                .Include(x => x.DiscountUsers)
                 .FirstOrDefaultAsync();
 
             return DiscountRangesbyProcurementType;
@@ -53,7 +55,9 @@ namespace Repository
 
         public async Task<PagedList<DiscountRanges>> GetAllDiscountRanges(PagingParameter pagingParameter)
         {
-            var query = FindAll().OrderBy(x => x.Id);
+            var query = FindAll()
+                .Include(x => x.DiscountUsers)
+                .OrderBy(x => x.Id);
             return PagedList<DiscountRanges>.ToPagedList(
               query,
               pagingParameter.PageNumber, pagingParameter.PageSize
