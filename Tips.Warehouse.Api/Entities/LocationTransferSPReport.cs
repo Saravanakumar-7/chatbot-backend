@@ -35,6 +35,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? FromLocation { get; set; }
         public string? FromWarehouse { get; set; }
         public string? FromProjectNumber { get; set; }
+        public string? FromLotNumber { get; set; }
         public string? ToKPN { get; set; }
         public string? ToPartType { get; set; }
         public string? ToUOM { get; set; }
@@ -43,6 +44,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? ToLocation { get; set; }
         public string? ToWarehouse { get; set; }
         public string? ToProjectNumber { get; set; }
+        public string? ToLotNumber { get; set; }
         public string? Remarks { get; set; }
 
     }
