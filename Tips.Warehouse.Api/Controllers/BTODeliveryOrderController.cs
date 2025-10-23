@@ -1020,6 +1020,7 @@ namespace Tips.Warehouse.Api.Controllers
                 if ((response.StatusCode == HttpStatusCode.OK))
                 {
                     _inventoryRepository.SaveAsync();
+                    _inventoryTranctionRepository.SaveAsync();
                     _bTODeliveryOrderHistoryRepository.SaveAsync();
                     _repository.SaveAsync();
                 }
