@@ -139,5 +139,17 @@ namespace Tips.Warehouse.Api.Repository
             string result = $"returnBtoDeliveryOrder of Detail {returnBtoDeliveryOrder.Id} is updated successfully!";
             return result;
         }
+
+        public async Task<IEnumerable<SerialNoDetailDto>> GetReturnBTOSerialNoDetailsByFGItemNoAndBTONo(string itemNumber, string doNumber)
+        {
+            var serialNoDetails = await _tipsWarehouseDbContext.ReturnBtoDeliveryOrderItems
+                            .Where(x => x.FGPartNumber == itemNumber && x.BTONumber == doNumber)
+                            .Select(x => new SerialNoDetailDto()
+                            {
+                                SerialNo = x.SerialNo
+                            })
+                            .ToListAsync();
+            return serialNoDetails;
+        }
     }
 }
