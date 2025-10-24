@@ -142,12 +142,14 @@ namespace Tips.Warehouse.Api.Repository
 
         public async Task<IEnumerable<SerialNoDetailDto>> GetReturnBTOSerialNoDetailsByFGItemNoAndBTONo(string itemNumber, string doNumber)
         {
-            var serialNoDetails = await _tipsWarehouseDbContext.ReturnBtoDeliveryOrderItems
-                            .Where(x => x.FGPartNumber == itemNumber && x.BTONumber == doNumber)
-                            .Select(x => new SerialNoDetailDto()
-                            {
-                                SerialNo = x.SerialNo
-                            })
+            var serialNoDetails = await _tipsWarehouseDbContext.ReturnBtoDeliveryOrders
+                            .Where(x => x.BTONumber == doNumber)
+                            .SelectMany(x => x.ReturnBtoDeliveryOrderItems
+                                .Where(item => item.FGPartNumber == itemNumber)
+                                .Select(item => new SerialNoDetailDto()
+                                {
+                                    SerialNo = item.SerialNo
+                                }))
                             .ToListAsync();
             return serialNoDetails;
         }
