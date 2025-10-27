@@ -29,5 +29,6 @@ namespace Tips.Warehouse.Api.Contracts
                                                                                                           string IssuedTo, string ProjectNumber);
         Task<ReturnInvoice> GetReturnInvoiceById(int id);
         Task<IEnumerable<ReturnInvoiceNumberListDto>> GetReturnInvoiceNumberList();
+        Task<IEnumerable<SerialNoDetailDto>> GetReturnInvoiceSerialNoDetailByFGItemNoAndBTONo(string itemNumber, string doNumber);
     }
 }

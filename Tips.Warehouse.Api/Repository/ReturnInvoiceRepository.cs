@@ -173,5 +173,17 @@ namespace Tips.Warehouse.Api.Repository
 
             return returnInvoiceNumberList;
         }
+
+        public async Task<IEnumerable<SerialNoDetailDto>> GetReturnInvoiceSerialNoDetailByFGItemNoAndBTONo(string itemNumber, string doNumber)
+        {
+            var serialNoDetails = await _tipsWarehouseDbContext.ReturnInvoiceItems
+                            .Where(x => x.FGPartNumber == itemNumber && x.DONumber == doNumber)
+                            .Select(x => new SerialNoDetailDto()
+                            {
+                                SerialNo = x.SerialNumber
+                            })
+                            .ToListAsync();
+            return serialNoDetails;
+        }
     }
 }

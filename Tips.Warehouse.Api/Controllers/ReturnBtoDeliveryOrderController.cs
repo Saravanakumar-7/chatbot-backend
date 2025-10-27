@@ -1308,6 +1308,43 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetReturnBTOSerialNoDetailsByFGItemNoAndBTONo(string itemNumber, string doNumber)
+        {
+            ServiceResponse<IEnumerable<SerialNoDetailDto>> serviceResponse = new ServiceResponse<IEnumerable<SerialNoDetailDto>>();
+
+            try
+            {
+                var serialNoDetails = await _repository.GetReturnBTOSerialNoDetailsByFGItemNoAndBTONo(itemNumber, doNumber);
+                if (serialNoDetails == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SerialNo hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SerialNo hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = serialNoDetails;
+                    serviceResponse.Message = "Returned SerialNo Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetReturnBTOSerialNoDetailsByFGItemNoAndBTONo API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetReturnBTOSerialNoDetailsByFGItemNoAndBTONo API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
     }
 
 }
