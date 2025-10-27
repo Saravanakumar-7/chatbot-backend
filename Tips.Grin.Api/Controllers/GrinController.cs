@@ -2622,6 +2622,7 @@ namespace Tips.Grin.Api.Controllers
                 headerRow.CreateCell(28).SetCellValue("Project Qty");
                 headerRow.CreateCell(29).SetCellValue("Tally Status");
                 headerRow.CreateCell(30).SetCellValue("BE Number");
+                headerRow.CreateCell(31).SetCellValue("Currency Conversion");
 
                 // Populate data
                 int rowIndex = 1;
@@ -2659,6 +2660,7 @@ namespace Tips.Grin.Api.Controllers
                     row.CreateCell(28).SetCellValue((double)(item.ProjectQty ?? 0));
                     row.CreateCell(29).SetCellValue(item.TallyStatus.HasValue ? (item.TallyStatus.Value ? "True" : "False") : "");
                     row.CreateCell(30).SetCellValue(item.BENumber ?? "");
+                    row.CreateCell(31).SetCellValue((double)(item.CurrencyConversion ?? 0));
                 }
 
 

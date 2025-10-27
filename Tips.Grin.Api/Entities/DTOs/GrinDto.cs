@@ -549,6 +549,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? ProjectQty { get; set; }
         public bool? TallyStatus { get; set; }
         public string? BENumber { get; set; }
+        public decimal? CurrencyConversion{ get; set; }
     }
     public class GrinIQCConfirmationSaveDto
     {

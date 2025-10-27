@@ -295,7 +295,7 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
-        [HttpPost] // Adjust your route as needed
+        [HttpGet]  // Adjust your route as needed
         public async Task<IActionResult> InvoiceAdditionalChargesSPReportWithDateForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
             ServiceResponse<IEnumerable<InvoiceAdditionalChargesSpReport>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceAdditionalChargesSpReport>>();
