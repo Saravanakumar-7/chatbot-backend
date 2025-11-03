@@ -967,5 +967,43 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetTallyCustomerMastertSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<TallyCustomerMasterSpReport>> serviceResponse = new ServiceResponse<IEnumerable<TallyCustomerMasterSpReport>>();
+            try
+            {
+                var result = await _repository.CustomerMasterRepository.GetTallyCustomerMastertSPReportWithDate(FromDate, ToDate);
+
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"TallyCustomerMasterSpReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"TallyCustomerMasterSpReport hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned TallyCustomerMasterSpReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetTallyCustomerMastertSPReportWithDate API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetTallyCustomerMastertSPReportWithDate API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
     }
 }

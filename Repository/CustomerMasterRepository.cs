@@ -234,6 +234,17 @@ namespace Repository
 
             return customerMasterDetails;
         }
+
+
+        public async Task<IEnumerable<TallyCustomerMasterSpReport>> GetTallyCustomerMastertSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = TipsMasterDbContext.Set<TallyCustomerMasterSpReport>()
+                        .FromSqlInterpolated($"CALL Tally_Customer_Master({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
     }
 
     public class CustomerMasterOtherUploadsRepository : RepositoryBase<CustomerOtherUploads>, ICustomerMasterOtherUploadsRepository

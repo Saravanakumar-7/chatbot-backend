@@ -739,5 +739,42 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetTallyVendorMasterSpReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<TallyVendorMasterSpReport>> serviceResponse = new ServiceResponse<IEnumerable<TallyVendorMasterSpReport>>();
+            try
+            {
+                var result = await _repository.VendorRepository.GetTallyVendorMasterSpReportWithDate(FromDate, ToDate);
+
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"TallyVendorMasterSpReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"TallyVendorMasterSpReport hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned TallyVendorMasterSpReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetTallyVendorMasterSpReportWithDate API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetTallyVendorMasterSpReportWithDate API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Entities;
+using Entities.DTOs;
 using Entities.Helper;
 using System;
 using System.Collections.Generic;
@@ -16,5 +17,6 @@ namespace Contracts
         Task<int?> CreateCurrency(Currency currency);
         Task<string> UpdateCurrency(Currency currency);
         Task<string> DeleteCurrency(Currency currency);
+        Task<IEnumerable<TallyCurrencyMasterSPReport>> GetTallyCurrencyMastertSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
     }
 }

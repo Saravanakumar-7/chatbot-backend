@@ -166,6 +166,7 @@ namespace Entities
         public DbSet<EmailTemplate> emailtemplate { get; set; }
         public DbSet<EmailIDs> EmailIDs { get; set; }
         public DbSet<CustomerMasterLeadIdSPReport> CustomerMasterLeadIdSPReports { get; set; }
+        public DbSet<TallyCustomerMasterSpReport> TallyCustomerMasterSpReport { get; set; }
         public DbSet<SA_Weighted_AvgCost> SA_Weighted_AvgCost { get; set; }
         public DbSet<SA_Weighted_AvgCost_History> SA_Weighted_AvgCost_History { get; set; }
         public DbSet<FG_Weighted_AvgCost> FG_Weighted_AvgCost { get; set; }
@@ -181,6 +182,9 @@ namespace Entities
         public DbSet<UserTokenActivities> UserTokenActivities { get; set; }
         public DbSet<ItemMasterSchedules> ItemMasterSchedules { get; set; }
         public DbSet<ItemMasterScheduleParts> ItemMasterScheduleParts { get; set; }
+        public DbSet<TallyCurrencyMasterSPReport> TallyCurrencyMasterSPReport { get; set; }
+        public DbSet<TallyStockItemSPReport> TallyStockItemSPReport { get; set; }
+        public DbSet<TallyVendorMasterSpReport> TallyVendorMasterSpReport { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EnggBomSPReport>().HasNoKey();
@@ -192,6 +196,10 @@ namespace Entities
             modelBuilder.Entity<ReleaseProductionBomSPReport>().HasNoKey();
             modelBuilder.Entity<BomSPReport>().HasNoKey();
             modelBuilder.Entity<EnggBomLevelSPReport>().HasNoKey();
+            modelBuilder.Entity<TallyCurrencyMasterSPReport>().HasNoKey();
+            modelBuilder.Entity<TallyCustomerMasterSpReport>().HasNoKey();
+            modelBuilder.Entity<TallyStockItemSPReport>().HasNoKey();
+            modelBuilder.Entity<TallyVendorMasterSpReport>().HasNoKey();
         }
 
 

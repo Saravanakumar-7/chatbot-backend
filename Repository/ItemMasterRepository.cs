@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -727,6 +728,16 @@ namespace Repository
             return itemMasterDetails;
 
         }
+        public async Task<IEnumerable<TallyStockItemSPReport>> GetTallyStockItemSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = TipsMasterDbContext.Set<TallyStockItemSPReport>()
+                        .FromSqlInterpolated($"CALL Tally_stock_Item({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+
     }
 
     public class FileUploadDocumentRepository : RepositoryBase<FileUpload>, IFileUploadRepository

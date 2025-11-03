@@ -31,7 +31,7 @@ namespace Entities.DTOs
         [StringLength(500, ErrorMessage = "Remarks can't be longer than 500 characters")]
         public string? Remarks { get; set; }
         public bool IsActive { get; set; } = true;
-        
+
 
 
     }
@@ -50,5 +50,13 @@ namespace Entities.DTOs
         [Required(ErrorMessage = "Unit is required")]
         [StringLength(100, ErrorMessage = "Unit can't be longer than 100 characters")]
         public string Unit { get; set; }
+    }
+
+
+    public class TallyCurrencyMasterSPReport
+    {
+        public string? Name { get; set; }
+        public string? Code { get; set; }
+        public DateTime? CreatedOn { get; set; }
     }
 }
