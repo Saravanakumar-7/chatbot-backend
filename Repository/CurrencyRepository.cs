@@ -1,5 +1,6 @@
 ﻿using Contracts;
 using Entities;
+using Entities.DTOs;
 using Entities.Helper;
 using Entities.Migrations;
 using Microsoft.AspNetCore.Http;
@@ -77,5 +78,15 @@ namespace Repository
             string result = $"Currency of Detail {currency.Id} is updated successfully!";
             return result;
         }
+        public async Task<IEnumerable<TallyCurrencyMasterSPReport>> GetTallyCurrencyMastertSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = TipsMasterDbContext.Set<TallyCurrencyMasterSPReport>()
+                        .FromSqlInterpolated($"CALL Tally_Currency_Master({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+
     }
 }

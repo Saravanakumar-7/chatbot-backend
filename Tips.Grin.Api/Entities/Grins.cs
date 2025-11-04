@@ -45,20 +45,34 @@ namespace Tips.Grin.Api.Entities
 
         [Precision(13,3)]
         public decimal? TotalInvoiceValue { get; set; }
+        
+        public string? FreightVendorId { get; set; }
+        public string? FreightVendorName { get; set; }
         [Precision(13, 3)]
         public decimal? Freight { get; set; }
+        
+        public string? InsuranceVendorId { get; set; }
+        public string? InsuranceVendorName { get; set; }
         [Precision(13, 3)]
         public decimal? Insurance { get; set; }
+
+        public string? LoadingorUnLoadingVendorId { get; set; }
+        public string? LoadingorUnLoadingVendorName { get; set; }
         [Precision(13, 3)]
         public decimal? LoadingorUnLoading { get; set; }
+
         public string? BondNumber { get; set; } 
         public DateTime? BondExpiryDate { get; set; }
         public DateTime? GateEntryDate { get; set; }
         public string? GateEntryNo { get; set; }
         [Precision(13, 3)]
         public decimal? CurrencyConversion { get; set; }
+
+        public string? TransportVendorId { get; set; }
+        public string? TransportVendorName { get; set; }
         [Precision(13, 3)]
         public decimal? Transport { get; set; }
+
         [Precision(13, 3)]
         public decimal? BECurrencyValue { get; set; }
 

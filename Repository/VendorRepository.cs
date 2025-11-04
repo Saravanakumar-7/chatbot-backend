@@ -183,6 +183,15 @@ namespace Repository
             return getAllActiveVendorMasterNameList;
         }
 
+        public async Task<IEnumerable<TallyVendorMasterSpReport>> GetTallyVendorMasterSpReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = TipsMasterDbContext.Set<TallyVendorMasterSpReport>()
+                        .FromSqlInterpolated($"CALL Tally_Vendor_Master({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
     }
     public class VendorMasterOtherUploadsRepository : RepositoryBase<VendorOtherUploads>, IVendorMasterOtherUploadsRepository
     {

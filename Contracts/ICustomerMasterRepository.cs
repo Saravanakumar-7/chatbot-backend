@@ -26,5 +26,7 @@ namespace Contracts
         Task<IEnumerable<CustomerMasterLeadIdSPReport>> GetCustomerLeadIdDataOnDailyBasis(DateTime? FromDate, DateTime? ToDate);
         Task<CustomerMaster> GetCustomerMasterByCustomerNo(string customerNumber);
 
+        Task<IEnumerable<TallyCustomerMasterSpReport>> GetTallyCustomerMastertSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+
     }
 }
