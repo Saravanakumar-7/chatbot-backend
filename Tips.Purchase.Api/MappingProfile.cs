@@ -138,6 +138,12 @@ namespace Tips.Purchase.Api
             CreateMap<PoIncoTermApprovalUpdateDto, PoIncoTerm>().ReverseMap();
             CreateMap<PurchaseOrderAdditionalChargesapprovalUpdateDto, PurchaseOrderAdditionalCharges>().ReverseMap();
 
+            CreateMap<TallyPurchaseOrderSpReport, TallyPurchaseOrderSpReportDto>()
+                 .ForMember(dest => dest.POItems, opt => opt.Ignore()) // Ignore JSON string
+                 .ReverseMap()
+                 .ForMember(dest => dest.POItems, opt => opt.Ignore()); // Also ignore when reversing
+
+
         }
     }
 }

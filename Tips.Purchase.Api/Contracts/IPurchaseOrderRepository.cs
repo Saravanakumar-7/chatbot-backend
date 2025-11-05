@@ -95,6 +95,7 @@ namespace Tips.Purchase.Api.Contracts
         Task<IEnumerable<PoProjectSPReport>> GetPoProjectSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType);
         Task<IEnumerable<PoProjectSPReport>> GetPoProjectLimitSPReportwithDate(DateTime? FromDate, DateTime? ToDate, string? Approval, string? RecordType
                                                                                                     , int? Offset, int? Limit);
+        Task<IEnumerable<TallyPurchaseOrderSpReport>> GetTallyPurchaseOrderSpReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<poconfirmation_report_with_pagination_Dto>> GetPoConfirmationSPReportwithParam(string? ItemNumber, string? ProjectNumber, string? PONumber, string? VendorName, string? POStatus
                                                                                                        , string? Approval, string? RecordType);
         Task<IEnumerable<poconfirmation_report_with_pagination_Dto>> GetPoConfirmationLimitSPReportwithParam(string? ItemNumber, string? ProjectNumber, string? PONumber, string? VendorName, string? POStatus

@@ -55,6 +55,7 @@ namespace Tips.Purchase.Api.Entities
         public DbSet<PaymentSPReport> PaymentSPReports { get; set; }
         public DbSet<POInitialConfirmationDateHistory> POInitialConfirmationDateHistories { get; set; }
         public DbSet<PurchaseOrderAdditionalCharges> PurchaseOrderAdditionalCharges { get; set; }
+        public DbSet<TallyPurchaseOrderSpReport> TallyPurchaseOrderSpReport { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<PurchaseOrderSPReport>().HasNoKey();
@@ -76,6 +77,7 @@ namespace Tips.Purchase.Api.Entities
             modelBuilder.Entity<poconfirmation_report_with_pagination_Dto>().HasNoKey();
 
             modelBuilder.Entity<PaymentSPReport>().HasNoKey();
+            modelBuilder.Entity<TallyPurchaseOrderSpReport>().HasNoKey();
         }
     }
 }

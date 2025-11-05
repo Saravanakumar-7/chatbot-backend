@@ -2026,7 +2026,18 @@ namespace Tips.Purchase.Api.Repository
 
             return poproject;
         }
+        public async Task<IEnumerable<TallyPurchaseOrderSpReport>> GetTallyPurchaseOrderSpReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsPurchaseDbContext.Set<TallyPurchaseOrderSpReport>()
+                        .FromSqlInterpolated($"CALL Tally_PurchaseOrder({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
     }
+
+
 
     public class UploadDocumentRepository : RepositoryBase<DocumentUpload>, IDocumentUploadRepository
     {

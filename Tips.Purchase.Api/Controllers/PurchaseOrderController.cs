@@ -5769,7 +5769,7 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, $"Error Occured in ExportPOConfirmationReportWithDateToExcel API : \n {ex.Message}");
             }
         }
-        
+
 
         [HttpPost]
         public async Task<IActionResult> GetPoDeliverySchedulewithParam([FromQuery] PagingParameter pagingParameter, [FromQuery] string? SearchTerm, [FromBody] PurchaseOrderLimitSPReportDto paramsforPurchase)
@@ -6910,7 +6910,7 @@ namespace Tips.Purchase.Api.Controllers
                             Proj.BalanceQty -= prj.ProjectQty;
                             Proj.ReceivedQty += prj.ProjectQty;
                             if (Proj.BalanceQty == 0) Proj.PoAddProjectStatus = PoStatus.Closed;
-                            else if(Proj.BalanceQty != 0 && Proj.ReceivedQty > 0) Proj.PoAddProjectStatus = PoStatus.PartiallyClosed;
+                            else if (Proj.BalanceQty != 0 && Proj.ReceivedQty > 0) Proj.PoAddProjectStatus = PoStatus.PartiallyClosed;
                         }
                         POItem.BalanceQty -= poitem.Qty;
                         POItem.ReceivedQty += poitem.Qty;
@@ -6938,5 +6938,57 @@ namespace Tips.Purchase.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTallyPurchaseOrderSpReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<List<TallyPurchaseOrderSpReportDto>> serviceResponse = new();
+
+            try
+            {
+                var products = await _repository.GetTallyPurchaseOrderSpReportWithDate(FromDate, ToDate);
+
+                if (products == null || !products.Any())
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"No TallyPurchaseOrderSpReport records found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"No TallyPurchaseOrderSpReport records found in DB.");
+                    return NotFound(serviceResponse);
+                }
+
+                var result = products.Select(product =>
+                {
+                    var dto = _mapper.Map<TallyPurchaseOrderSpReportDto>(product);
+
+                    if (!string.IsNullOrEmpty(product.POItems))
+                    {
+                        dto.POItems = JsonConvert.DeserializeObject<List<POItemsSpDto>>(product.POItems)
+                            .OrderBy(x => x.ItemCode)
+                            .ToList();
+                    }
+
+                    return dto;
+                }).ToList();
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned TallyPurchaseOrderSpReport Details";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetTallyPurchaseOrderSpReportWithDate API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetTallyPurchaseOrderSpReportWithDate API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
     }
 }
