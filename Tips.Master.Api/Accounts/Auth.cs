@@ -54,7 +54,7 @@ namespace Accounts
             }
             DateTime Validity = DateTime.UtcNow.AddHours(8);
            // DateTime Validity = DateTime.Now.AddMinutes(5);
-            var key = _configuration["Jwt:key"];
+            var key = _configuration["Jwt:Key"];
             var tokenHandler = new JwtSecurityTokenHandler();
             var tokenKey = Encoding.ASCII.GetBytes(key);
             var tokenDescriptor = new SecurityTokenDescriptor()
