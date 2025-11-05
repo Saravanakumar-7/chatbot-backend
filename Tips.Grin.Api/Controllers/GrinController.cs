@@ -26,6 +26,8 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
 using static NPOI.HSSF.UserModel.HeaderFooter;
+using NPOI.SS.Formula.Atp;
+using NPOI.Util.ArrayExtensions;
 
 
 //Test
@@ -1740,6 +1742,104 @@ namespace Tips.Grin.Api.Controllers
                 _logger.LogError($"Error Occured in CreateIQCConfirmationItems API: \n{ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error Occured in CreateIQCConfirmationItems API: \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> SendEmailforGRIN([FromBody] GRINEmailPostDto gRINEmailPostDto)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                if (gRINEmailPostDto is null)
+                {
+                    _logger.LogError("SendEmailforGRIN object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Update Grin object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid SendEmailforGRIN object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid SendEmailforGRINobject sent from client.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                var grins = await _repository.GetGrinById(gRINEmailPostDto.GrinId);
+                if (grins is null)
+                {
+                    _logger.LogError($"SendEmailforGRIN with id: {gRINEmailPostDto.GrinId}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SendEmailforGRIN with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["MasterService"], "EmailsService/GetEmailTemplatebyProcessType?ProcessType=CreateGRIN"));
+                request.Headers.Add("Authorization", token);
+                var response = await client.SendAsync(request);
+                var EmailTempString = await response.Content.ReadAsStringAsync();
+                var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse("chethan.v@wyzmindz.com"));
+
+                email.To.AddRange(gRINEmailPostDto.SentTo.Split(',').Select(x=> MailboxAddress.Parse(x)));
+                email.Subject = emaildetails.data.subject;
+                string body = emaildetails.data.template;
+                body = body.Replace("{{GRIN Numbers}}", grins.GrinNumber);
+                body = body.Replace("{{Vendor Id}}", grins.VendorNumber);
+                body = body.Replace("{{Vendor Name}}", grins.VendorName);
+                body = body.Replace("{{Created By}}", grins.CreatedBy);
+                body = body.Replace("{{Created Dated}}", grins.CreatedOn.ToString());
+                string? ProjectNos = null;
+                List<string>? tempProj = new List<string>();
+                List<string>? tempPRno = new List<string>();
+                string? PONos = null;
+                foreach (var item in grins.GrinParts)
+                {
+                    if (item.ProjectNumbers.Count > 0)
+                        foreach (var project in item.ProjectNumbers)
+                        {
+                            if (ProjectNos.IsNullOrEmpty()) { ProjectNos = project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                            else if (!tempProj.Contains(project.ProjectNumber)) { ProjectNos = ProjectNos + ", " + project.ProjectNumber; tempProj.Add(project.ProjectNumber); }
+                        }
+
+                    if (PONos.IsNullOrEmpty()) { PONos = item.PONumber; tempPRno.Add(item.PONumber); }
+                    else if (!tempPRno.Contains(item.PONumber)) { PONos = PONos + ", " + item.PONumber; tempPRno.Add(item.PONumber); }
+                }
+                body = body.Replace("{{Project Ref No}}", ProjectNos);
+                body = body.Replace("{{PurchaseOrder Number}}", PONos);
+
+                email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
+                smtp.Authenticate("chethan.v@wyzmindz.com", "1bi4Qs6jZZZk");
+
+                smtp.Send(email);
+                smtp.Disconnect(true);
+
+
+                serviceResponse.Data = $"Email sent successfully for Grin Number:{grins.GrinNumber}";
+                serviceResponse.Message = $"Email sent successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in SendEmailforGRIN API: \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in SendEmailforGRIN API: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

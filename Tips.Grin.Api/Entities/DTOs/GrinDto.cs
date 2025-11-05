@@ -801,5 +801,9 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? grindate { get; set; }
     }
 
-
+    public class GRINEmailPostDto
+    {
+        public string SentTo { get; set; }
+        public int GrinId { get; set; }
+    }
 }
