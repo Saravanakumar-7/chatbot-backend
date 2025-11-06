@@ -1,5 +1,4 @@
-﻿using Contracts;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Tips.Tally.Api.Contracts;
 using Tips.Tally.Api.Entities;
@@ -23,6 +22,42 @@ namespace Tips.Tally.Api.Repository
         {
             var results = TipsTallyDbContext.Set<TallyVendorMasterSpReport>()
                         .FromSqlInterpolated($"CALL Tally_Vendor_Master({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<TallyCurrencyMasterSPReport>> GetTallyCurrencyMastertSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = TipsTallyDbContext.Set<TallyCurrencyMasterSPReport>()
+                        .FromSqlInterpolated($"CALL Tally_Currency_Master({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<TallyCustomerMasterSpReport>> GetTallyCustomerMastertSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = TipsTallyDbContext.Set<TallyCustomerMasterSpReport>()
+                        .FromSqlInterpolated($"CALL Tally_Customer_Master({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<TallyPurchaseOrderSpReport>> GetTallyPurchaseOrderSpReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = TipsTallyDbContext.Set<TallyPurchaseOrderSpReport>()
+                        .FromSqlInterpolated($"CALL Tally_PurchaseOrder({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<TallyStockItemSPReport>> GetTallyStockItemSPReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = TipsTallyDbContext.Set<TallyStockItemSPReport>()
+                        .FromSqlInterpolated($"CALL Tally_stock_Item({FromDate},{ToDate})")
                         .ToList();
 
             return results;
