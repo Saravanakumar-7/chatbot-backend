@@ -160,6 +160,8 @@ namespace Contracts
         IDiscountRangesRepository DiscountRangesRepository { get; }
         IPrioritizeRepository PrioritizeRepository { get; }
         IUserTokenActivitiesRepository UserTokenActivitiesRepository { get; }
+        IGLAccountsRepository GLAccountsRepository { get; }
+        IHSNRepository HSNRepository { get; }
         void SaveAsync();
         //void Save();
     }

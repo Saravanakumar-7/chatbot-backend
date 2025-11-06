@@ -120,6 +120,8 @@ builder.Services.AddEndpointsApiExplorer();
 //builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IReleaseProductBomRepository, ReleaseProductBomRepository>();
 builder.Services.AddScoped<IAdditionalChargesRepository, AdditionalChargesRepository>();
+builder.Services.AddScoped<IHSNRepository, HSNRepository>();
+builder.Services.AddScoped<IGLAccountsRepository, GLAccountRepository>();
 builder.Services.AddScoped<IReleaseCostBomRepository, ReleaseCostBomRepository>();
 builder.Services.AddScoped<IReleaseEnggBomRepository, ReleaseEnggBomRepository>();
 builder.Services.AddScoped<IEnggBomGroupRepository, EnggBomGroupRepository>();

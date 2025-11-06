@@ -185,6 +185,8 @@ namespace Entities
         public DbSet<TallyCurrencyMasterSPReport> TallyCurrencyMasterSPReport { get; set; }
         public DbSet<TallyStockItemSPReport> TallyStockItemSPReport { get; set; }
         public DbSet<TallyVendorMasterSpReport> TallyVendorMasterSpReport { get; set; }
+        public DbSet<GlAccounts> GlAccounts { get; set; }
+        public DbSet<Hsn> Hsn { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EnggBomSPReport>().HasNoKey();

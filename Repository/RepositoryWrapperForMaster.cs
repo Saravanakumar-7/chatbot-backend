@@ -135,6 +135,8 @@ namespace Repository
         private IApprovalRangesRepository? _approvalRangesRepository;
         private IDiscountRangesRepository? _discountRangesRepository;
         private IUserTokenActivitiesRepository _userTokenActivitiesRepository;
+        private IGLAccountsRepository _glaAccountsRepository;
+        private IHSNRepository _hsnRepository;
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
@@ -1429,7 +1431,28 @@ namespace Repository
                 return _formsAccessRepository;
             }
         }
-       
+        public IGLAccountsRepository GLAccountsRepository
+        {
+            get
+            {
+                if (_glaAccountsRepository == null)
+                {
+                    _glaAccountsRepository = new GLAccountRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _glaAccountsRepository;
+            }
+        }
+        public IHSNRepository HSNRepository
+        {
+            get
+            {
+                if (_hsnRepository == null)
+                {
+                    _hsnRepository = new HSNRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _hsnRepository;
+            }
+        }
         public IVendorContactRepository VendorContactRepository => throw new NotImplementedException();
 
         public IVendorAddressRepository VendorAddressRepository => throw new NotImplementedException();
