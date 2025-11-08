@@ -73,7 +73,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<SOMonthlyConsumptionSPReport>> GetSOMonthlyConsumptionSPReportWithParam(string CustomerId);
         Task<IEnumerable<CustomerWiseTransactionSPReport>> GetCustomerWiseTransactionSPReportWithParam(string CustomerId);
         Task<IEnumerable<SOMonthlyConsumptionSPReport>> GetSOMonthlyConsumptionSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
-        Task<IEnumerable<FGSalesOrderSPReport>> GetFGSalesOrderSPReportWithParam(string? SalesOrderNumber, string? ProjectNumber);
+        Task<IEnumerable<FGSalesOrderSPReportWithDate>> GetFGSalesOrderSPReportWithParam(string? SalesOrderNumber, string? ProjectNumber);
         Task<IEnumerable<FGSalesOrderSPReportWithDate>> GetFGSalesOrderSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<RfqSalesOrderSPReport>> GetRfqSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus,string CustomerId);
         Task<IEnumerable<RfqSalesOrderRoomWiseSPReport>> GetRfqSalesOrderRoomWiseSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN, string CustomerId);
