@@ -7212,7 +7212,7 @@ namespace Tips.SalesService.Api.Controllers
         public async Task<IActionResult> GetFGSalesOrderSPReportWithParam([FromBody] FGSalesOrderSPReportDto fgSalesOrder)
 
         {
-            ServiceResponse<IEnumerable<FGSalesOrderSPReport>> serviceResponse = new ServiceResponse<IEnumerable<FGSalesOrderSPReport>>();
+            ServiceResponse<IEnumerable<FGSalesOrderSPReportWithDate>> serviceResponse = new ServiceResponse<IEnumerable<FGSalesOrderSPReportWithDate>>();
             try
             {
                 var products = await _repository.GetFGSalesOrderSPReportWithParam(fgSalesOrder.SalesOrderNumber,

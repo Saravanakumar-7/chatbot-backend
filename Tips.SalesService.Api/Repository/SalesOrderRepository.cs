@@ -611,10 +611,10 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
-        public async Task<IEnumerable<FGSalesOrderSPReport>> GetFGSalesOrderSPReportWithParam(string? SalesOrderNumber, string? ProjectNumber)
+        public async Task<IEnumerable<FGSalesOrderSPReportWithDate>> GetFGSalesOrderSPReportWithParam(string? SalesOrderNumber, string? ProjectNumber)
         {
             var result = _tipsSalesServiceDbContext
-            .Set<FGSalesOrderSPReport>()
+            .Set<FGSalesOrderSPReportWithDate>()
             .FromSqlInterpolated($"CALL All_Fgs_salesorder_Report({SalesOrderNumber},{ProjectNumber})")
             .ToList();
 
