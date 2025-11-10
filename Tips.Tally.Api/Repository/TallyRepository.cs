@@ -63,5 +63,41 @@ namespace Tips.Tally.Api.Repository
             return results;
 
         }
+        public async Task<IEnumerable<TallybtodeliveryorderSpReport>> GetTallybtodeliveryorderSpReportWIthDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = TipsTallyDbContext.Set<TallybtodeliveryorderSpReport>()
+                        .FromSqlInterpolated($"CALL Tally_BTODeliveryOrder({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<TallyFGWIPMaterialIssueSpReport>> GetTallyFGWIPMaterialIssueSpReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = TipsTallyDbContext.Set<TallyFGWIPMaterialIssueSpReport>()
+                        .FromSqlInterpolated($"CALL Tally_FG_WIP_MaterialIssue({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<TallyGrinSpReport>> GetTallyGrinSpReportSpReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = TipsTallyDbContext.Set<TallyGrinSpReport>()
+                        .FromSqlInterpolated($"CALL Tally_GRIN({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<TallySalesOrderSpReport>> GetTallySalesOrderSpReportWithDate(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = TipsTallyDbContext.Set<TallySalesOrderSpReport>()
+                        .FromSqlInterpolated($"CALL Tally_SalesOrder({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
     }
 }

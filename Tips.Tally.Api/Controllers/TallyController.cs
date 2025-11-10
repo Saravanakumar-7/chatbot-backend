@@ -37,10 +37,10 @@ namespace Tips.Tally.Api.Controllers
                 if (products == null || !products.Any())
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"No TallyPurchaseOrderSpReport records found.";
+                    serviceResponse.Message = $"No TallyVendorMasterSpReportDto records found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"No TallyPurchaseOrderSpReport records found in DB.");
+                    _logger.LogError($"No TallyVendorMasterSpReportDto records found in DB.");
                     return NotFound(serviceResponse);
                 }
 
@@ -57,7 +57,7 @@ namespace Tips.Tally.Api.Controllers
                 }).ToList();
 
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned TallyPurchaseOrderSpReport Details";
+                serviceResponse.Message = "Returned TallyVendorMasterSpReportDto Details";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -85,10 +85,10 @@ namespace Tips.Tally.Api.Controllers
                 if (products == null || !products.Any())
                 {
                     serviceResponse.Data = null;
-                    serviceResponse.Message = $"No TallyPurchaseOrderSpReport records found.";
+                    serviceResponse.Message = $"No TallyCustomerMasterSpReportDto records found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"No TallyPurchaseOrderSpReport records found in DB.");
+                    _logger.LogError($"No TallyCustomerMasterSpReportDto records found in DB.");
                     return NotFound(serviceResponse);
                 }
 
@@ -105,7 +105,7 @@ namespace Tips.Tally.Api.Controllers
                 }).ToList();
 
                 serviceResponse.Data = result;
-                serviceResponse.Message = "Returned TallyPurchaseOrderSpReport Details";
+                serviceResponse.Message = "Returned TallyCustomerMasterSpReportDto Details";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
@@ -247,5 +247,186 @@ namespace Tips.Tally.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetTallybtodeliveryorderSpReportWIthDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<List<TallybtodeliveryorderSpReportDto>> serviceResponse = new();
+
+            try
+            {
+                var products = await _repository.GetTallybtodeliveryorderSpReportWIthDate(FromDate, ToDate);
+
+                if (products == null || !products.Any())
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"No TallybtodeliveryorderSpReportDto records found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"No TallybtodeliveryorderSpReportDto records found in DB.");
+                    return NotFound(serviceResponse);
+                }
+
+                var result = products.Select(product =>
+                {
+                    var dto = _mapper.Map<TallybtodeliveryorderSpReportDto>(product);
+
+                    if (!string.IsNullOrEmpty(product.SalesOrderItems))
+                    {
+                        dto.SalesOrderItems = JsonConvert.DeserializeObject<List<SalesOrderItemDto>>(product.SalesOrderItems)
+                            .ToList();
+                    }
+
+                    return dto;
+                }).ToList();
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned TallybtodeliveryorderSpReportDto Details";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in TallybtodeliveryorderSpReportWIthDate API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in TallybtodeliveryorderSpReportWIthDate API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet()] // Adjust your route as needed
+        public async Task<IActionResult> GetTallyFGWIPMaterialIssueSpReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<TallyFGWIPMaterialIssueSpReport>> serviceResponse = new ServiceResponse<IEnumerable<TallyFGWIPMaterialIssueSpReport>>();
+            try
+            {
+                var result = await _repository.GetTallyFGWIPMaterialIssueSpReportWithDate(FromDate, ToDate);
+
+                if (result == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"TallyFGWIPMaterialIssueSpReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"TallyFGWIPMaterialIssueSpReport hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned TallyFGWIPMaterialIssueSpReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in TallyFGWIPMaterialIssueSpReportWithDate API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in TallyFGWIPMaterialIssueSpReportWithDate API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetTallyGrinSpReportSpReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<List<TallyGrinSpReportDto>> serviceResponse = new();
+
+            try
+            {
+                var products = await _repository.GetTallyGrinSpReportSpReportWithDate(FromDate, ToDate);
+
+                if (products == null || !products.Any())
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"No TallyGrinSpReportDto records found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"No TallyGrinSpReportDto records found in DB.");
+                    return NotFound(serviceResponse);
+                }
+
+                var result = products.Select(product =>
+                {
+                    var dto = _mapper.Map<TallyGrinSpReportDto>(product);
+
+                    if (!string.IsNullOrEmpty(product.GRINParts))
+                    {
+                        dto.GRINParts = JsonConvert.DeserializeObject<List<GRINPartDto>>(product.GRINParts)
+                            .ToList();
+                    }
+
+                    return dto;
+                }).ToList();
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned TallyGrinSpReportSpReportWithDate Details";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in TallyGrinSpReportSpReportWithDate API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in TallyGrinSpReportSpReportWithDate API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetTallySalesOrderSpReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<List<TallySalesOrderSpReportDto>> serviceResponse = new();
+
+            try
+            {
+                var products = await _repository.GetTallySalesOrderSpReportWithDate(FromDate, ToDate);
+
+                if (products == null || !products.Any())
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"No TallySalesOrderSpReportDto records found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"No TallySalesOrderSpReportDto records found in DB.");
+                    return NotFound(serviceResponse);
+                }
+
+                var result = products.Select(product =>
+                {
+                    var dto = _mapper.Map<TallySalesOrderSpReportDto>(product);
+
+                    if (!string.IsNullOrEmpty(product.SalesOrderItems))
+                    {
+                        dto.SalesOrderItems = JsonConvert.DeserializeObject<List<SalesOrderItemDtos>>(product.SalesOrderItems)
+                            .ToList();
+                    }
+
+                    return dto;
+                }).ToList();
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned GetTallySalesOrderSpReportWithDate Details";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetTallySalesOrderSpReportWithDate API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetTallySalesOrderSpReportWithDate API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }
