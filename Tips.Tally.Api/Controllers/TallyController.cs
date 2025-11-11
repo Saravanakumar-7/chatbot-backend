@@ -29,7 +29,7 @@ namespace Tips.Tally.Api.Controllers
         [HttpGet()] // Adjust your route as needed
         public async Task<IActionResult> GetTallyVendorMasterSpReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            ServiceResponse<List<TallyVendorMasterSpReportDto>> serviceResponse = new();
+            ServiceResponse<IEnumerable<TallyVendorMasterSpReportDto>> serviceResponse = new ServiceResponse<IEnumerable<TallyVendorMasterSpReportDto>>();
             try
             {
                 var products = await _repository.GetTallyVendorMasterSpReportWithDate(FromDate, ToDate);
@@ -77,7 +77,7 @@ namespace Tips.Tally.Api.Controllers
         [HttpGet()] // Adjust your route as needed
         public async Task<IActionResult> GetTallyCustomerMastertSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            ServiceResponse<List<TallyCustomerMasterSpReportDto>> serviceResponse = new();
+            ServiceResponse<IEnumerable<TallyCustomerMasterSpReportDto>> serviceResponse = new ServiceResponse<IEnumerable<TallyCustomerMasterSpReportDto>>();
             try
             {
                 var products = await _repository.GetTallyCustomerMastertSPReportWithDate(FromDate, ToDate);
@@ -164,7 +164,7 @@ namespace Tips.Tally.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTallyPurchaseOrderSpReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            ServiceResponse<List<TallyPurchaseOrderSpReportDto>> serviceResponse = new();
+            ServiceResponse<IEnumerable<TallyPurchaseOrderSpReportDto>> serviceResponse = new ServiceResponse<IEnumerable<TallyPurchaseOrderSpReportDto>>();
 
             try
             {
@@ -250,7 +250,7 @@ namespace Tips.Tally.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTallybtodeliveryorderSpReportWIthDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            ServiceResponse<List<TallybtodeliveryorderSpReportDto>> serviceResponse = new();
+            ServiceResponse<IEnumerable<TallybtodeliveryorderSpReportDto>> serviceResponse = new ServiceResponse<IEnumerable<TallybtodeliveryorderSpReportDto>>();
 
             try
             {
@@ -335,7 +335,7 @@ namespace Tips.Tally.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetTallyGrinSpReportSpReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            ServiceResponse<List<TallyGrinSpReportDto>> serviceResponse = new();
+            ServiceResponse<IEnumerable<TallyGrinSpReportDto>> serviceResponse = new ServiceResponse<IEnumerable<TallyGrinSpReportDto>>();
 
             try
             {
@@ -343,11 +343,9 @@ namespace Tips.Tally.Api.Controllers
 
                 if (products == null || !products.Any())
                 {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"No TallyGrinSpReportDto records found.";
+                    serviceResponse.Message = "No TallyGrinSpReportDto records found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"No TallyGrinSpReportDto records found in DB.");
                     return NotFound(serviceResponse);
                 }
 
@@ -355,10 +353,17 @@ namespace Tips.Tally.Api.Controllers
                 {
                     var dto = _mapper.Map<TallyGrinSpReportDto>(product);
 
-                    if (!string.IsNullOrEmpty(product.GRINParts))
+                    try
                     {
-                        dto.GRINParts = JsonConvert.DeserializeObject<List<GRINPartDto>>(product.GRINParts)
-                            .ToList();
+                        if (!string.IsNullOrEmpty(product.GRINParts))
+                            dto.GRINParts = JsonConvert.DeserializeObject<List<GRINPartDto>>(product.GRINParts) ?? new();
+                        else
+                            dto.GRINParts = new();
+                    }
+                    catch (JsonException jex)
+                    {
+                        _logger.LogError($"Invalid JSON in GRINParts: {jex.Message}");
+                        dto.GRINParts = new();
                     }
 
                     return dto;
@@ -368,22 +373,23 @@ namespace Tips.Tally.Api.Controllers
                 serviceResponse.Message = "Returned TallyGrinSpReportSpReportWithDate Details";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
+
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in TallyGrinSpReportSpReportWithDate API : \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in TallyGrinSpReportSpReportWithDate API : \n {ex.Message}";
+                _logger.LogError($"Error Occured in API: {ex}");
+                serviceResponse.Message = $"Error: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
+
         [HttpGet]
         public async Task<IActionResult> GetTallySalesOrderSpReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            ServiceResponse<List<TallySalesOrderSpReportDto>> serviceResponse = new();
+            ServiceResponse<IEnumerable<TallySalesOrderSpReportDto>> serviceResponse = new ServiceResponse<IEnumerable<TallySalesOrderSpReportDto>>();
 
             try
             {

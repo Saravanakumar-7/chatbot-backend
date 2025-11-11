@@ -37,6 +37,7 @@ namespace Entities.DTOs
         public string? TypeOfCompany { get; set; }
         public string? ExportUnitType { get; set; }
         public bool GeneralMSME { get; set; } = true;
+        public string? VendorCode { get; set; }
         public string? SalesManager { get; set; }
         public string? SalesManagerCode { get; set; }
 
@@ -166,6 +167,7 @@ namespace Entities.DTOs
         public string? TypeOfCompany { get; set; }
         public string? ExportUnitType { get; set; }
         public bool GeneralMSME { get; set; } = true;
+        public string? VendorCode { get; set; }
         public string? SalesManager { get; set; }
         public string? SalesManagerCode { get; set; }
         public string? Region { get; set; }
@@ -290,6 +292,7 @@ namespace Entities.DTOs
         public string? TypeOfCompany { get; set; }
         public string? ExportUnitType { get; set; }
         public bool GeneralMSME { get; set; } = true;
+        public string? VendorCode { get; set; }
         public string? SalesManager { get; set; }
         public string? SalesManagerCode { get; set; }
         public string? Region { get; set; }
