@@ -24,6 +24,21 @@ namespace Tips.Tally.Api
               .ReverseMap()
               .ForMember(dest => dest.GSTINNo, opt => opt.Ignore());
 
+            CreateMap<TallybtodeliveryorderSpReport, TallybtodeliveryorderSpReportDto>()
+             .ForMember(dest => dest.SalesOrderItems, opt => opt.Ignore()) // Ignore JSON string
+             .ReverseMap()
+             .ForMember(dest => dest.SalesOrderItems, opt => opt.Ignore());
+
+            CreateMap<TallyGrinSpReport, TallyGrinSpReportDto>()
+             .ForMember(dest => dest.GRINParts, opt => opt.Ignore()) // Ignore JSON string
+             .ReverseMap()
+             .ForMember(dest => dest.GRINParts, opt => opt.Ignore());
+
+            CreateMap<TallySalesOrderSpReport, TallySalesOrderSpReportDto>()
+           .ForMember(dest => dest.SalesOrderItems, opt => opt.Ignore()) // Ignore JSON string
+           .ReverseMap()
+           .ForMember(dest => dest.SalesOrderItems, opt => opt.Ignore());
+
         }
     }
 }

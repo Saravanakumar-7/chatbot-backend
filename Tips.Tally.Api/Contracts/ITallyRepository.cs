@@ -10,5 +10,9 @@ namespace Tips.Tally.Api.Contracts
         Task<IEnumerable<TallyCustomerMasterSpReport>> GetTallyCustomerMastertSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<TallyPurchaseOrderSpReport>> GetTallyPurchaseOrderSpReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<TallyStockItemSPReport>> GetTallyStockItemSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<TallybtodeliveryorderSpReport>> GetTallybtodeliveryorderSpReportWIthDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<TallyFGWIPMaterialIssueSpReport>> GetTallyFGWIPMaterialIssueSpReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<TallyGrinSpReport>> GetTallyGrinSpReportSpReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<TallySalesOrderSpReport>> GetTallySalesOrderSpReportWithDate(DateTime? FromDate, DateTime? ToDate);
     }
 }

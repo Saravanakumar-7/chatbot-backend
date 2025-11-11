@@ -14,6 +14,10 @@ namespace Tips.Tally.Api.Entities
         public DbSet<TallyPurchaseOrderSpReport> TallyPurchaseOrderSpReport { get; set; }
         public DbSet<TallyStockItemSPReport> TallyStockItemSPReport { get; set; }
         public DbSet<TallyCustomerMasterSpReport> TallyCustomerMasterSpReport { get; set; }
+        public DbSet<TallybtodeliveryorderSpReport> TallybtodeliveryorderSpReportWIthDate { get; set; }
+        public DbSet<TallyFGWIPMaterialIssueSpReport> TallyFGWIPMaterialIssueSpReport { get; set; }
+        public DbSet<TallyGrinSpReport> TallyGrinSpReport { get; set; }
+        public DbSet<TallySalesOrderSpReport> TallySalesOrderSpReport { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,6 +26,10 @@ namespace Tips.Tally.Api.Entities
             modelBuilder.Entity<TallyPurchaseOrderSpReport>().HasNoKey();
             modelBuilder.Entity<TallyStockItemSPReport>().HasNoKey();
             modelBuilder.Entity<TallyCurrencyMasterSPReport>().HasNoKey();
+            modelBuilder.Entity<TallybtodeliveryorderSpReport>().HasNoKey();
+            modelBuilder.Entity<TallyFGWIPMaterialIssueSpReport>().HasNoKey();
+            modelBuilder.Entity<TallyGrinSpReport>().HasNoKey();
+            modelBuilder.Entity<TallySalesOrderSpReport>().HasNoKey();
 
         }
     }
