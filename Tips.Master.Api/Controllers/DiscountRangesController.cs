@@ -91,17 +91,17 @@ namespace Tips.Master.Api.Controllers
                     return BadRequest(serviceResponse);
                 }
 
-                    if (discountRangesPostDto.FromAmount <= 0)
+                    if (discountRangesPostDto.FromAmount < 0)
                     {
                         serviceResponse.Data = null;
-                        serviceResponse.Message = "FromAmount must be greater than 0";
+                        serviceResponse.Message = "FromAmount must be greater than or equal 0";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.BadRequest;
                         _logger.LogError(serviceResponse.Message);
                         return BadRequest(serviceResponse);
                     }
 
-                    if (discountRangesPostDto.ToAmount.HasValue && discountRangesPostDto.FromAmount < discountRangesPostDto.ToAmount)
+                    if (discountRangesPostDto.ToAmount.HasValue && discountRangesPostDto.FromAmount > discountRangesPostDto.ToAmount)
                     {
                         serviceResponse.Message = "FromAmount must be smaller than ToAmount (unless ToAmount is null)";
                         serviceResponse.Success = false;
