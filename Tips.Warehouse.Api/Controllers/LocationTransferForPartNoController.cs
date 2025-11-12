@@ -453,10 +453,10 @@ namespace Tips.Warehouse.Api.Controllers
                             else
                             {
                                 string partNumbersList = string.Join(", ", fromPartNumber);
-                                warningMessage = $"For these part numbers: {partNumbersList}, quantity has been fully transferred. No available stock for transfer.";
+                                warningMessage = $"For these part numbers: {partNumbersList}, quantity has been fully transferred. No available stock for PartTransfer.";
                             }
-                             _inventoryRepository.SaveAsync();
-                            _inventoryTranctionRepository.SaveAsync();
+                            // _inventoryRepository.SaveAsync();
+                            //_inventoryTranctionRepository.SaveAsync();
                         }
                         else
                         {
