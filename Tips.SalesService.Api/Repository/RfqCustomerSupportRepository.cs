@@ -913,9 +913,66 @@ namespace Tips.SalesService.Api.Repository
 
         public async Task<IEnumerable<RfqNumberListDto>> GetAllActiveRfqNumberList()
         {
-            IEnumerable<RfqNumberListDto> latestRfqs = await _tipsSalesServiceDbContext.Rfqs
-                .Where(x => x.RevisionNumber == _tipsSalesServiceDbContext.Rfqs.Where(r => r.RfqNumber == x.RfqNumber)
-                .Max(r => r.RevisionNumber)).Select(x => new RfqNumberListDto
+            // Step 1: Get all RFQs
+            var allRfqs = await _tipsSalesServiceDbContext.Rfqs.ToListAsync();
+
+            // Step 2: Filter to get latest revision for each RfqNumber (in-memory)
+            var latestRfqs = allRfqs
+                .GroupBy(r => r.RfqNumber)
+                .SelectMany(group => group.Where(r => r.RevisionNumber == group.Max(g => g.RevisionNumber)))
+                .ToList();
+
+            // Step 3: Get all RfqEnggs and RfqEnggItems in bulk
+            var rfqNumbers = latestRfqs.Select(r => r.RfqNumber).Distinct().ToList();
+            var revisionNumbers = latestRfqs.Select(r => r.RevisionNumber).Distinct().ToList();
+
+            var rfqEnggs = await _tipsSalesServiceDbContext.RfqEnggs
+                .Where(e => rfqNumbers.Contains(e.RFQNumber) && revisionNumbers.Contains((int)e.RevisionNumber))
+                .ToListAsync();
+
+            var rfqEnggIds = rfqEnggs.Select(e => e.Id).ToList();
+
+            var rfqEnggItems = rfqEnggIds.Any()
+                ? await _tipsSalesServiceDbContext.RfqEnggItems
+                    .Where(item => rfqEnggIds.Contains(item.RfqEnggId))
+                    .ToListAsync()
+                : new List<RfqEnggItem>();
+
+            // Step 4: Build result in memory with pre-fetched data
+            var result = latestRfqs.Select(x =>
+            {
+                // Find matching RfqEngg
+                var matchingEngg = rfqEnggs.FirstOrDefault(e => e.RFQNumber == x.RfqNumber && e.RevisionNumber == x.RevisionNumber);
+
+                CsRelease isEnggReleased;
+                if (matchingEngg == null)
+                {
+                    isEnggReleased = CsRelease.NotYetReleased;
+                }
+                else
+                {
+                    // Get items for this RfqEngg
+                    var enggItems = rfqEnggItems.Where(item => item.RfqEnggId == matchingEngg.Id).ToList();
+
+                    if (!enggItems.Any())
+                    {
+                        isEnggReleased = CsRelease.NotYetReleased;
+                    }
+                    else if (enggItems.All(item => item.ReleaseStatus))
+                    {
+                        isEnggReleased = CsRelease.FullyRelease;
+                    }
+                    else if (enggItems.All(item => !item.ReleaseStatus))
+                    {
+                        isEnggReleased = CsRelease.NotYetReleased;
+                    }
+                    else
+                    {
+                        isEnggReleased = CsRelease.PartiallyRelease;
+                    }
+                }
+
+                return new RfqNumberListDto
                 {
                     Id = x.Id,
                     RfqNumber = x.RfqNumber,
@@ -923,16 +980,13 @@ namespace Tips.SalesService.Api.Repository
                     CustomerName = x.CustomerName,
                     RevisionNumber = x.RevisionNumber,
                     CustomerId = x.CustomerId,
+                    IsEnggReleased = isEnggReleased
+                };
+            })
+            .OrderByDescending(x => x.Id)
+            .ToList();
 
-                    IsEnggReleased = (_tipsSalesServiceDbContext.RfqEnggs.Where(y => y.RFQNumber == x.RfqNumber && y.RevisionNumber == x.RevisionNumber).Count())==0 ? 
-                    CsRelease.NotYetReleased : _tipsSalesServiceDbContext.RfqEnggItems
-                    .Where(item => item.RfqEnggId == (_tipsSalesServiceDbContext.RfqEnggs.Where(y => y.RFQNumber == x.RfqNumber && y.RevisionNumber == x.RevisionNumber).Select(q => q.Id).FirstOrDefault()))                    
-                    .All(item => item.ReleaseStatus) ? CsRelease.FullyRelease : _tipsSalesServiceDbContext.RfqEnggItems
-                    .Where(item => item.RfqEnggId == (_tipsSalesServiceDbContext.RfqEnggs.Where(y => y.RFQNumber == x.RfqNumber && y.RevisionNumber == x.RevisionNumber).Select(q => q.Id).FirstOrDefault()))
-                    .All(item => !item.ReleaseStatus) ? CsRelease.NotYetReleased : CsRelease.PartiallyRelease
-                }).OrderByDescending(x => x.Id).ToListAsync();
-
-            return latestRfqs;
+            return result;
         }
 
         public async Task<IEnumerable<RfqNumberListDto>> GetAllRfqNumberList()
