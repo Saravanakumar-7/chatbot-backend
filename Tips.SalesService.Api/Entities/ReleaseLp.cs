@@ -48,6 +48,7 @@ namespace Tips.SalesService.Api.Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public string? Remarks { get; set; }
 
 
 

@@ -34,6 +34,7 @@ namespace Tips.SalesService.Api.Entities
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public int RfqLPCostingId { get; set; }
+        public string? Remarks { get; set; }
         public RfqLPCosting? RfqLPCosting { get; set; }
         public List<RfqLPCostingProcess>? RfqLPCostingProcesses { get; set; }
         public List<RfqLPCostingNREConsumable>? RfqLPCostingNREConsumables { get; set; }

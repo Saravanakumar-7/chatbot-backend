@@ -42,6 +42,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public string? Remarks { get; set; }
 
     }
 
@@ -79,7 +80,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
 
         [Precision(13, 3)]
         public decimal? DiscountMinus { get; set; }
-     
+        public string? Remarks { get; set; }
+
     }
 
     public class ReleaseLpDtoUpdate
@@ -118,6 +120,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         [Precision(13, 3)]
         public decimal? DiscountMinus { get; set; }
         public string Unit { get; set; }
+        public string? Remarks { get; set; }
 
     }
 }

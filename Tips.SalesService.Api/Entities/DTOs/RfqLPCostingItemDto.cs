@@ -33,6 +33,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? MOQCost { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public string? Remarks { get; set; }
         public List<RfqLPCostingProcessDto>? RfqLPCostingProcesses { get; set; }
         public List<RfqLPCostingNREConsumableDto>? RfqLPCostingNREConsumables { get; set; }
         public List<RfqLPCostingOtherChargesDto>? RfqLPCostingOtherCharges { get; set; }
@@ -57,6 +58,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? LandedPrice { get; set; }
        
         public decimal? MOQCost { get; set; }
+        public string? Remarks { get; set; }
 
         public List<RfqLPCostingProcessDtoPost>? RfqLPCostingProcesses { get; set; }
         public List<RfqLPCostingNREConsumableDtoPost>? RfqLPCostingNREConsumables { get; set; }
@@ -85,6 +87,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? LandedPrice { get; set; }
         [Precision(13, 3)]
         public decimal? MOQCost { get; set; }
+        public string? Remarks { get; set; }
         public List<RfqLPCostingProcessDtoUpdate>? RfqLPCostingProcesses { get; set; }
         public List<RfqLPCostingNREConsumableDtoUpdate>? RfqLPCostingNREConsumables { get; set; }
         public List<RfqLPCostingOtherChargesDtoUpdate>? RfqLPCostingOtherCharges { get; set; }
