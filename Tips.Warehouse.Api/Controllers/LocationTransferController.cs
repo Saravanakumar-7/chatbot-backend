@@ -300,7 +300,7 @@ namespace Tips.Warehouse.Api.Controllers
                 var createLocationTransfer = _mapper.Map<List<LocationTransfer>>(locationTransferPostDto);
                 foreach (var loca in createLocationTransfer)
                 {
-                    await _locationTransferRepository.CreateLocationTransfer(loca);
+                   
 
                     var fromPartNumber = loca.FromPartNumber;
                     var toDescription = loca.ToDescription;
@@ -343,224 +343,211 @@ namespace Tips.Warehouse.Api.Controllers
                         var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber, fromLotnumber);
                         if (inventoryDetails != null && inventoryDetails.Count() > 0)
                         {
-                            var availableStockinventoryDetails = inventoryDetails.Where(x => x.Balance_Quantity > 0).ToList();
-
-                            if (availableStockinventoryDetails.Count() > 0)
+                            var inventoryBalQty = inventoryDetails.Sum(x => x.Balance_Quantity);
+                            if (inventoryBalQty >= transferQty)
                             {
-                                var inventoryBalQty = availableStockinventoryDetails.Sum(x => x.Balance_Quantity);
-                                if (inventoryBalQty >= transferQty)
+                                foreach (var inventoryItem in inventoryDetails)
                                 {
-                                    foreach (var inventoryItem in availableStockinventoryDetails)
+                                    var LocaTransId = await _locationTransferRepository.GetLatestLocationTransferId();
+                                    string LocationTransReferId = Convert.ToString(LocaTransId + 1);
+
+                                    var balQty = inventoryItem.Balance_Quantity;
+                                    if (transferQty >= balQty)
                                     {
-                                        var LocaTransId = await _locationTransferRepository.GetLatestLocationTransferId();
-                                        string LocationTransReferId = Convert.ToString(LocaTransId + 1);
+                                        InventoryTranction inventoryTranctionPost = new InventoryTranction();
+                                        inventoryTranctionPost.PartNumber = inventoryItem.PartNumber;
+                                        inventoryTranctionPost.MftrPartNumber = inventoryItem.MftrPartNumber;
+                                        inventoryTranctionPost.ProjectNumber = inventoryItem.ProjectNumber;
+                                        inventoryTranctionPost.Description = inventoryItem.Description;
+                                        inventoryTranctionPost.LotNumber = inventoryItem.LotNumber;
+                                        inventoryTranctionPost.Issued_Quantity = inventoryItem.Balance_Quantity;
+                                        inventoryTranctionPost.UOM = inventoryItem.UOM;
+                                        inventoryTranctionPost.GrinMaterialType = "";
+                                        inventoryTranctionPost.shopOrderNo = inventoryItem.shopOrderNo;
+                                        inventoryTranctionPost.Unit = inventoryItem.Unit;
+                                        inventoryTranctionPost.GrinNo = inventoryItem.GrinNo;
+                                        inventoryTranctionPost.GrinPartId = inventoryItem.GrinPartId;
+                                        inventoryTranctionPost.IsStockAvailable = false;
+                                        inventoryTranctionPost.Warehouse = inventoryItem.Warehouse;
+                                        inventoryTranctionPost.From_Location = inventoryItem.Location;
+                                        inventoryTranctionPost.TO_Location = toLocation;
+                                        inventoryTranctionPost.PartType = inventoryItem.PartType;
+                                        inventoryTranctionPost.ReferenceID = inventoryItem.ReferenceID;
+                                        inventoryTranctionPost.ReferenceIDFrom = inventoryItem.ReferenceIDFrom;
+                                        inventoryTranctionPost.Remarks = "LocationTransfer Done";
+                                        inventoryTranctionPost.TransactionType = InventoryType.Outward;
 
-                                        var balQty = inventoryItem.Balance_Quantity;
-                                        if (transferQty >= balQty)
-                                        {
-                                            InventoryTranction inventoryTranctionPost = new InventoryTranction();
-                                            inventoryTranctionPost.PartNumber = inventoryItem.PartNumber;
-                                            inventoryTranctionPost.MftrPartNumber = inventoryItem.MftrPartNumber;
-                                            inventoryTranctionPost.ProjectNumber = inventoryItem.ProjectNumber;
-                                            inventoryTranctionPost.Description = inventoryItem.Description;
-                                            inventoryTranctionPost.LotNumber = inventoryItem.LotNumber;
-                                            inventoryTranctionPost.Issued_Quantity = inventoryItem.Balance_Quantity;
-                                            inventoryTranctionPost.UOM = inventoryItem.UOM;
-                                            inventoryTranctionPost.GrinMaterialType = "";
-                                            inventoryTranctionPost.shopOrderNo = inventoryItem.shopOrderNo;
-                                            inventoryTranctionPost.Unit = inventoryItem.Unit;
-                                            inventoryTranctionPost.GrinNo = inventoryItem.GrinNo;
-                                            inventoryTranctionPost.GrinPartId = inventoryItem.GrinPartId;
-                                            inventoryTranctionPost.IsStockAvailable = false;
-                                            inventoryTranctionPost.Warehouse = inventoryItem.Warehouse;
-                                            inventoryTranctionPost.From_Location = inventoryItem.Location;
-                                            inventoryTranctionPost.TO_Location = toLocation;
-                                            inventoryTranctionPost.PartType = inventoryItem.PartType;
-                                            inventoryTranctionPost.ReferenceID = inventoryItem.ReferenceID;
-                                            inventoryTranctionPost.ReferenceIDFrom = inventoryItem.ReferenceIDFrom;
-                                            inventoryTranctionPost.Remarks = "LocationTransfer Done";
-                                            inventoryTranctionPost.TransactionType = InventoryType.Outward;
-
-                                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost);
+                                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost);
 
 
-                                            inventoryItem.Balance_Quantity -= Convert.ToDecimal(transferQty);
-                                            inventoryItem.IsStockAvailable = false;
-                                            inventoryItem.ReferenceID = LocationTransReferId;
-                                            inventoryItem.ReferenceIDFrom = "LocationTransfer";
+                                        inventoryItem.Balance_Quantity -= Convert.ToDecimal(transferQty);
+                                        inventoryItem.IsStockAvailable = false;
+                                        inventoryItem.ReferenceID = LocationTransReferId;
+                                        inventoryItem.ReferenceIDFrom = "LocationTransfer";
 
-                                            await _inventoryRepository.UpdateInventory(inventoryItem);
-
-
-                                            Inventory inventoryPost = new Inventory();
-                                            inventoryPost.PartNumber = toPartNumber;
-                                            inventoryPost.Description = toDescription;
-                                            inventoryPost.ProjectNumber = toProjectNumber;
-                                            inventoryPost.LotNumber = toLotnumber;
-                                            inventoryPost.MftrPartNumber = itemObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
-                                            inventoryPost.UOM = toUOM;
-                                            inventoryPost.Min = inventoryItem.Min;
-                                            inventoryPost.Max = inventoryItem.Max;
-                                            inventoryPost.Balance_Quantity = Convert.ToDecimal(transferQty);
-                                            inventoryPost.GrinMaterialType = inventoryItem.GrinMaterialType;
-                                            inventoryPost.shopOrderNo = inventoryItem.shopOrderNo;
-                                            inventoryPost.Unit = inventoryItem.Unit;
-                                            inventoryPost.GrinNo = inventoryItem.GrinNo;
-                                            inventoryPost.GrinPartId = inventoryItem.GrinPartId;
-                                            inventoryPost.Warehouse = toWarehouse;
-                                            inventoryPost.Location = toLocation;
-                                            inventoryPost.PartType = toPartType;
-                                            inventoryPost.ReferenceID = LocationTransReferId;
-                                            inventoryPost.ReferenceIDFrom = "LocationTransfer";
-
-                                            await _inventoryRepository.CreateInventory(inventoryPost);
+                                        await _inventoryRepository.UpdateInventory(inventoryItem);
 
 
-                                            InventoryTranction inventoryTranctionPost_1 = new InventoryTranction();
-                                            inventoryTranctionPost_1.PartNumber = inventoryPost.PartNumber;
-                                            inventoryTranctionPost_1.MftrPartNumber = inventoryPost.MftrPartNumber;
-                                            inventoryTranctionPost_1.ProjectNumber = inventoryPost.ProjectNumber;
-                                            inventoryTranctionPost_1.Description = inventoryPost.Description;
-                                            inventoryTranctionPost_1.Issued_Quantity = inventoryPost.Balance_Quantity;
-                                            inventoryTranctionPost_1.LotNumber = inventoryPost.LotNumber;
-                                            inventoryTranctionPost_1.UOM = inventoryPost.UOM;
-                                            inventoryTranctionPost_1.GrinMaterialType = inventoryPost.GrinMaterialType;
-                                            inventoryTranctionPost_1.shopOrderNo = inventoryPost.shopOrderNo;
-                                            inventoryTranctionPost_1.Unit = inventoryPost.Unit;
-                                            inventoryTranctionPost_1.GrinNo = inventoryPost.GrinNo;
-                                            inventoryTranctionPost_1.GrinPartId = inventoryPost.GrinPartId;
-                                            inventoryTranctionPost_1.IsStockAvailable = true;
-                                            inventoryTranctionPost_1.Warehouse = inventoryPost.Warehouse;
-                                            inventoryTranctionPost_1.From_Location = fromLocation;
-                                            inventoryTranctionPost_1.TO_Location = inventoryPost.Location;
-                                            inventoryTranctionPost_1.PartType = inventoryPost.PartType;
-                                            inventoryTranctionPost_1.ReferenceID = inventoryPost.ReferenceID;
-                                            inventoryTranctionPost_1.ReferenceIDFrom = "LocationTransfer";
-                                            inventoryTranctionPost_1.Remarks = "LocationTransfer Done";
-                                            inventoryTranctionPost_1.TransactionType = InventoryType.Inward;
+                                        Inventory inventoryPost = new Inventory();
+                                        inventoryPost.PartNumber = toPartNumber;
+                                        inventoryPost.Description = toDescription;
+                                        inventoryPost.ProjectNumber = toProjectNumber;
+                                        inventoryPost.LotNumber = toLotnumber;
+                                        inventoryPost.MftrPartNumber = itemObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                        inventoryPost.UOM = toUOM;
+                                        inventoryPost.Min = inventoryItem.Min;
+                                        inventoryPost.Max = inventoryItem.Max;
+                                        inventoryPost.Balance_Quantity = Convert.ToDecimal(transferQty);
+                                        inventoryPost.GrinMaterialType = inventoryItem.GrinMaterialType;
+                                        inventoryPost.shopOrderNo = inventoryItem.shopOrderNo;
+                                        inventoryPost.Unit = inventoryItem.Unit;
+                                        inventoryPost.GrinNo = inventoryItem.GrinNo;
+                                        inventoryPost.GrinPartId = inventoryItem.GrinPartId;
+                                        inventoryPost.Warehouse = toWarehouse;
+                                        inventoryPost.Location = toLocation;
+                                        inventoryPost.PartType = toPartType;
+                                        inventoryPost.ReferenceID = LocationTransReferId;
+                                        inventoryPost.ReferenceIDFrom = "LocationTransfer";
 
-                                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost_1);
-
-                                            _inventoryTranctionRepository.SaveAsync();
-                                            _inventoryRepository.SaveAsync();
-
-                                            transferQty -= balQty;
-                                            balQty = 0;
-                                        }
-                                        else
-                                        {
-                                            inventoryItem.Balance_Quantity -= Convert.ToDecimal(transferQty);
-                                            await _inventoryRepository.UpdateInventory(inventoryItem);
-
-                                            InventoryTranction inventoryTranctionPost = new InventoryTranction();
-                                            inventoryTranctionPost.PartNumber = inventoryItem.PartNumber;
-                                            inventoryTranctionPost.MftrPartNumber = itemObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
-                                            inventoryTranctionPost.ProjectNumber = inventoryItem.ProjectNumber;
-                                            inventoryTranctionPost.Description = inventoryItem.Description;
-                                            inventoryTranctionPost.Issued_Quantity = Convert.ToDecimal(transferQty);
-                                            //inventoryTranctionPost.Issued_By = inventoryItem.LastModifiedBy;
-                                            inventoryTranctionPost.LotNumber = inventoryItem.LotNumber;
-                                            inventoryTranctionPost.UOM = inventoryItem.UOM;
-                                            inventoryTranctionPost.GrinMaterialType = "";
-                                            inventoryTranctionPost.shopOrderNo = inventoryItem.shopOrderNo;
-                                            inventoryTranctionPost.Unit = inventoryItem.Unit;
-                                            inventoryTranctionPost.GrinNo = inventoryItem.GrinNo;
-                                            inventoryTranctionPost.GrinPartId = inventoryItem.GrinPartId;
-                                            inventoryTranctionPost.IsStockAvailable = true;
-                                            inventoryTranctionPost.Warehouse = inventoryItem.Warehouse;
-                                            inventoryTranctionPost.From_Location = inventoryItem.Location;
-                                            inventoryTranctionPost.TO_Location = toLocation;
-                                            inventoryTranctionPost.PartType = inventoryItem.PartType;
-                                            inventoryTranctionPost.ReferenceID = inventoryItem.ReferenceID;
-                                            inventoryTranctionPost.ReferenceIDFrom = inventoryItem.ReferenceIDFrom;
-                                            inventoryTranctionPost.Remarks = "LocationTransfer Done";
-                                            inventoryTranctionPost.TransactionType = InventoryType.Outward;
-                                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost);
+                                        await _inventoryRepository.CreateInventory(inventoryPost);
 
 
-                                            Inventory inventoryPost = new Inventory();
-                                            inventoryPost.PartNumber = toPartNumber;
-                                            inventoryPost.LotNumber = toLotnumber;
-                                            inventoryPost.MftrPartNumber = itemObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
-                                            inventoryPost.ProjectNumber = toProjectNumber;
-                                            inventoryPost.Description = toDescription;
-                                            inventoryPost.Balance_Quantity = Convert.ToDecimal(transferQty);
-                                            inventoryPost.UOM = toUOM;
-                                            inventoryPost.Min = inventoryItem.Min;
-                                            inventoryPost.Max = inventoryItem.Max;
-                                            inventoryPost.GrinMaterialType = inventoryItem.GrinMaterialType;
-                                            inventoryPost.shopOrderNo = "";
-                                            inventoryPost.Unit = inventoryItem.Unit;
-                                            inventoryPost.GrinNo = "";
-                                            inventoryPost.GrinPartId = 0;
-                                            inventoryPost.LotNumber = toLotnumber;
-                                            inventoryPost.IsStockAvailable = true;
-                                            inventoryPost.Warehouse = toWarehouse;
-                                            inventoryPost.Location = toLocation;
-                                            inventoryPost.PartType = toPartType;
-                                            inventoryPost.ReferenceID = LocationTransReferId; /*Convert.ToString(loca.Id);*/
-                                            inventoryPost.ReferenceIDFrom = "LocationTransfer";
+                                        InventoryTranction inventoryTranctionPost_1 = new InventoryTranction();
+                                        inventoryTranctionPost_1.PartNumber = inventoryPost.PartNumber;
+                                        inventoryTranctionPost_1.MftrPartNumber = inventoryPost.MftrPartNumber;
+                                        inventoryTranctionPost_1.ProjectNumber = inventoryPost.ProjectNumber;
+                                        inventoryTranctionPost_1.Description = inventoryPost.Description;
+                                        inventoryTranctionPost_1.Issued_Quantity = inventoryPost.Balance_Quantity;
+                                        inventoryTranctionPost_1.LotNumber = inventoryPost.LotNumber;
+                                        inventoryTranctionPost_1.UOM = inventoryPost.UOM;
+                                        inventoryTranctionPost_1.GrinMaterialType = inventoryPost.GrinMaterialType;
+                                        inventoryTranctionPost_1.shopOrderNo = inventoryPost.shopOrderNo;
+                                        inventoryTranctionPost_1.Unit = inventoryPost.Unit;
+                                        inventoryTranctionPost_1.GrinNo = inventoryPost.GrinNo;
+                                        inventoryTranctionPost_1.GrinPartId = inventoryPost.GrinPartId;
+                                        inventoryTranctionPost_1.IsStockAvailable = true;
+                                        inventoryTranctionPost_1.Warehouse = inventoryPost.Warehouse;
+                                        inventoryTranctionPost_1.From_Location = fromLocation;
+                                        inventoryTranctionPost_1.TO_Location = inventoryPost.Location;
+                                        inventoryTranctionPost_1.PartType = inventoryPost.PartType;
+                                        inventoryTranctionPost_1.ReferenceID = inventoryPost.ReferenceID;
+                                        inventoryTranctionPost_1.ReferenceIDFrom = "LocationTransfer";
+                                        inventoryTranctionPost_1.Remarks = "LocationTransfer Done";
+                                        inventoryTranctionPost_1.TransactionType = InventoryType.Inward;
 
-                                            await _inventoryRepository.CreateInventory(inventoryPost);
+                                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost_1);
+
+                                        _inventoryTranctionRepository.SaveAsync();
+                                        _inventoryRepository.SaveAsync();
+
+                                        transferQty -= balQty;
+                                        balQty = 0;
+                                    }
+                                    else
+                                    {
+                                        inventoryItem.Balance_Quantity -= Convert.ToDecimal(transferQty);
+                                        await _inventoryRepository.UpdateInventory(inventoryItem);
+
+                                        InventoryTranction inventoryTranctionPost = new InventoryTranction();
+                                        inventoryTranctionPost.PartNumber = inventoryItem.PartNumber;
+                                        inventoryTranctionPost.MftrPartNumber = itemObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                        inventoryTranctionPost.ProjectNumber = inventoryItem.ProjectNumber;
+                                        inventoryTranctionPost.Description = inventoryItem.Description;
+                                        inventoryTranctionPost.Issued_Quantity = Convert.ToDecimal(transferQty);
+                                        //inventoryTranctionPost.Issued_By = inventoryItem.LastModifiedBy;
+                                        inventoryTranctionPost.LotNumber = inventoryItem.LotNumber;
+                                        inventoryTranctionPost.UOM = inventoryItem.UOM;
+                                        inventoryTranctionPost.GrinMaterialType = "";
+                                        inventoryTranctionPost.shopOrderNo = inventoryItem.shopOrderNo;
+                                        inventoryTranctionPost.Unit = inventoryItem.Unit;
+                                        inventoryTranctionPost.GrinNo = inventoryItem.GrinNo;
+                                        inventoryTranctionPost.GrinPartId = inventoryItem.GrinPartId;
+                                        inventoryTranctionPost.IsStockAvailable = true;
+                                        inventoryTranctionPost.Warehouse = inventoryItem.Warehouse;
+                                        inventoryTranctionPost.From_Location = inventoryItem.Location;
+                                        inventoryTranctionPost.TO_Location = toLocation;
+                                        inventoryTranctionPost.PartType = inventoryItem.PartType;
+                                        inventoryTranctionPost.ReferenceID = inventoryItem.ReferenceID;
+                                        inventoryTranctionPost.ReferenceIDFrom = inventoryItem.ReferenceIDFrom;
+                                        inventoryTranctionPost.Remarks = "LocationTransfer Done";
+                                        inventoryTranctionPost.TransactionType = InventoryType.Outward;
+                                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost);
 
 
-                                            InventoryTranction inventoryTranctionPost1 = new InventoryTranction();
-                                            inventoryTranctionPost1.PartNumber = inventoryPost.PartNumber;
-                                            inventoryTranctionPost1.MftrPartNumber = inventoryPost.MftrPartNumber;
-                                            inventoryTranctionPost1.ProjectNumber = inventoryPost.ProjectNumber;
-                                            inventoryTranctionPost1.Description = inventoryPost.Description;
-                                            inventoryTranctionPost1.Issued_Quantity = inventoryPost.Balance_Quantity;
-                                            inventoryTranctionPost1.LotNumber = inventoryPost.LotNumber;
-                                            inventoryTranctionPost1.UOM = inventoryPost.UOM;
-                                            inventoryTranctionPost1.GrinMaterialType = inventoryPost.GrinMaterialType;
-                                            inventoryTranctionPost1.shopOrderNo = inventoryPost.shopOrderNo;
-                                            inventoryTranctionPost1.Unit = inventoryPost.Unit;
-                                            inventoryTranctionPost1.GrinNo = inventoryPost.GrinNo;
-                                            inventoryTranctionPost1.GrinPartId = inventoryPost.GrinPartId;
-                                            inventoryTranctionPost1.IsStockAvailable = true;
-                                            inventoryTranctionPost1.Warehouse = inventoryPost.Warehouse;
-                                            inventoryTranctionPost1.From_Location = fromLocation;
-                                            inventoryTranctionPost1.TO_Location = inventoryPost.Location;
-                                            inventoryTranctionPost1.PartType = inventoryPost.PartType;
-                                            inventoryTranctionPost1.ReferenceID = inventoryPost.ReferenceID;
-                                            inventoryTranctionPost1.ReferenceIDFrom = "LocationTransfer";
-                                            inventoryTranctionPost1.Remarks = "LocationTransfer Done";
-                                            inventoryTranctionPost1.TransactionType = InventoryType.Inward;
+                                        Inventory inventoryPost = new Inventory();
+                                        inventoryPost.PartNumber = toPartNumber;
+                                        inventoryPost.LotNumber = toLotnumber;
+                                        inventoryPost.MftrPartNumber = itemObject.itemmasterAlternate.Where(x => x.isDefault == true).Select(x => x.manufacturerPartNo).FirstOrDefault();
+                                        inventoryPost.ProjectNumber = toProjectNumber;
+                                        inventoryPost.Description = toDescription;
+                                        inventoryPost.Balance_Quantity = Convert.ToDecimal(transferQty);
+                                        inventoryPost.UOM = toUOM;
+                                        inventoryPost.Min = inventoryItem.Min;
+                                        inventoryPost.Max = inventoryItem.Max;
+                                        inventoryPost.GrinMaterialType = inventoryItem.GrinMaterialType;
+                                        inventoryPost.shopOrderNo = "";
+                                        inventoryPost.Unit = inventoryItem.Unit;
+                                        inventoryPost.GrinNo = "";
+                                        inventoryPost.GrinPartId = 0;
+                                        inventoryPost.LotNumber = toLotnumber;
+                                        inventoryPost.IsStockAvailable = true;
+                                        inventoryPost.Warehouse = toWarehouse;
+                                        inventoryPost.Location = toLocation;
+                                        inventoryPost.PartType = toPartType;
+                                        inventoryPost.ReferenceID = LocationTransReferId; /*Convert.ToString(loca.Id);*/
+                                        inventoryPost.ReferenceIDFrom = "LocationTransfer";
 
-                                            await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost1);
+                                        await _inventoryRepository.CreateInventory(inventoryPost);
 
-                                            _inventoryTranctionRepository.SaveAsync();
-                                            _inventoryRepository.SaveAsync();
 
-                                            transferQty = 0;
-                                        }
-                                        if (transferQty <= 0)
-                                        {
-                                            break;
-                                        }
+                                        InventoryTranction inventoryTranctionPost1 = new InventoryTranction();
+                                        inventoryTranctionPost1.PartNumber = inventoryPost.PartNumber;
+                                        inventoryTranctionPost1.MftrPartNumber = inventoryPost.MftrPartNumber;
+                                        inventoryTranctionPost1.ProjectNumber = inventoryPost.ProjectNumber;
+                                        inventoryTranctionPost1.Description = inventoryPost.Description;
+                                        inventoryTranctionPost1.Issued_Quantity = inventoryPost.Balance_Quantity;
+                                        inventoryTranctionPost1.LotNumber = inventoryPost.LotNumber;
+                                        inventoryTranctionPost1.UOM = inventoryPost.UOM;
+                                        inventoryTranctionPost1.GrinMaterialType = inventoryPost.GrinMaterialType;
+                                        inventoryTranctionPost1.shopOrderNo = inventoryPost.shopOrderNo;
+                                        inventoryTranctionPost1.Unit = inventoryPost.Unit;
+                                        inventoryTranctionPost1.GrinNo = inventoryPost.GrinNo;
+                                        inventoryTranctionPost1.GrinPartId = inventoryPost.GrinPartId;
+                                        inventoryTranctionPost1.IsStockAvailable = true;
+                                        inventoryTranctionPost1.Warehouse = inventoryPost.Warehouse;
+                                        inventoryTranctionPost1.From_Location = fromLocation;
+                                        inventoryTranctionPost1.TO_Location = inventoryPost.Location;
+                                        inventoryTranctionPost1.PartType = inventoryPost.PartType;
+                                        inventoryTranctionPost1.ReferenceID = inventoryPost.ReferenceID;
+                                        inventoryTranctionPost1.ReferenceIDFrom = "LocationTransfer";
+                                        inventoryTranctionPost1.Remarks = "LocationTransfer Done";
+                                        inventoryTranctionPost1.TransactionType = InventoryType.Inward;
+
+                                        await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost1);
+
+                                        _inventoryTranctionRepository.SaveAsync();
+                                        _inventoryRepository.SaveAsync();
+
+                                        transferQty = 0;
+                                    }
+                                    if (transferQty <= 0)
+                                    {
+                                        break;
                                     }
                                 }
 
+                                await _locationTransferRepository.CreateLocationTransfer(loca);
                             }
-                            else
-                            {
-                                string partNumbersList = string.Join(", ", fromPartNumber);
-                                warningMessage = $"For these PartNumbers: {partNumbersList}, quantity has been fully transferred. No available stock for LocationTransfer.";
-                            }
-
-                            //_inventoryRepository.SaveAsync();
-                            //_inventoryTranctionRepository.SaveAsync();
+                           
                         }
                         else
                         {
-                            _logger.LogError($"Something went wrong inside CreateLocationTransfer action. Inventory hasn't been found in db");
-                            serviceResponse.Data = null;
-                            serviceResponse.Message = " Inventory hasn't been found";
-                            serviceResponse.Success = false;
-                            serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                            return NotFound(serviceResponse);
+                            string partNumbersList = string.Join(", ", fromPartNumber);
+                            warningMessage = $"For these PartNumbers: {partNumbersList}, quantity has been fully transferred. No available stock for LocationTransfer.";
                         }
 
+                        //_inventoryRepository.SaveAsync();
+                        //_inventoryTranctionRepository.SaveAsync();
                     }
                     else
                     {
@@ -571,16 +558,16 @@ namespace Tips.Warehouse.Api.Controllers
                         serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                         return StatusCode(500, serviceResponse);
                     }
-
                 }
+            
 
-                _locationTransferRepository.SaveAsync();
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"locationTransfer Successfully Created \n{warningMessage}";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
+            _locationTransferRepository.SaveAsync();
+            serviceResponse.Data = null;
+            serviceResponse.Message = $"locationTransfer Successfully Created \n{warningMessage}";
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = HttpStatusCode.OK;
+            return Ok(serviceResponse);
+        }
             catch (Exception ex)
             {
                 _logger.LogError($"Error Occured in CreateLocationTransfer API : \n {ex.Message} \n{ex.InnerException}");
@@ -589,810 +576,810 @@ namespace Tips.Warehouse.Api.Controllers
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
-            }
-        }
+    }
+}
 
 
-        //public async Task<IActionResult> CreateLocationTransfer([FromBody] LocationTransferPostDto locationTransferPostDto)
-        //{
-        //    ServiceResponse<LocationTransferDto> serviceResponse = new ServiceResponse<LocationTransferDto>();
+//public async Task<IActionResult> CreateLocationTransfer([FromBody] LocationTransferPostDto locationTransferPostDto)
+//{
+//    ServiceResponse<LocationTransferDto> serviceResponse = new ServiceResponse<LocationTransferDto>();
 
-        //    try
-        //    {
-        //        if (locationTransferPostDto is null)
-        //        {
-        //            _logger.LogError("locationTransfer object sent from client is null.");
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = "locationTransfer object sent from client is null.";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-        //            return BadRequest(serviceResponse);
-        //        }
-        //        if (!ModelState.IsValid)
-        //        {
-        //            _logger.LogError("Invalid locationTransfer object sent from client.");
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = "Invalid locationTransfer object sent from client.";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-        //            return BadRequest(serviceResponse);
-        //        }
-        //        var createLocationTransfer = _mapper.Map<LocationTransfer>(locationTransferPostDto);
+//    try
+//    {
+//        if (locationTransferPostDto is null)
+//        {
+//            _logger.LogError("locationTransfer object sent from client is null.");
+//            serviceResponse.Data = null;
+//            serviceResponse.Message = "locationTransfer object sent from client is null.";
+//            serviceResponse.Success = false;
+//            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+//            return BadRequest(serviceResponse);
+//        }
+//        if (!ModelState.IsValid)
+//        {
+//            _logger.LogError("Invalid locationTransfer object sent from client.");
+//            serviceResponse.Data = null;
+//            serviceResponse.Message = "Invalid locationTransfer object sent from client.";
+//            serviceResponse.Success = false;
+//            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+//            return BadRequest(serviceResponse);
+//        }
+//        var createLocationTransfer = _mapper.Map<LocationTransfer>(locationTransferPostDto);
 
-        //        await _locationTransferRepository.CreateLocationTransfer(createLocationTransfer);
-        //        _locationTransferRepository.SaveAsync();
+//        await _locationTransferRepository.CreateLocationTransfer(createLocationTransfer);
+//        _locationTransferRepository.SaveAsync();
 
-        //        var fromPartNumber = locationTransferPostDto.FromPartNumber;
-        //        var toPartNumber = locationTransferPostDto.ToPartNumber;
-        //        var fromProjectNumber = locationTransferPostDto.FromProjectNumber;
-        //        var toProjectNumber = locationTransferPostDto.ToProjectNumber;
-        //        var fromLocation = locationTransferPostDto.FromLocation;
-        //        var toLocation = locationTransferPostDto.ToLocation;
-        //        var fromWarehouse = locationTransferPostDto.FromWarehouse;
-        //        var toWarehouse = locationTransferPostDto.ToWarehouse;
-        //        var availstock = locationTransferPostDto.AvailableStockInLocation;
-        //        var transferQty = locationTransferPostDto.TransferQty;
+//        var fromPartNumber = locationTransferPostDto.FromPartNumber;
+//        var toPartNumber = locationTransferPostDto.ToPartNumber;
+//        var fromProjectNumber = locationTransferPostDto.FromProjectNumber;
+//        var toProjectNumber = locationTransferPostDto.ToProjectNumber;
+//        var fromLocation = locationTransferPostDto.FromLocation;
+//        var toLocation = locationTransferPostDto.ToLocation;
+//        var fromWarehouse = locationTransferPostDto.FromWarehouse;
+//        var toWarehouse = locationTransferPostDto.ToWarehouse;
+//        var availstock = locationTransferPostDto.AvailableStockInLocation;
+//        var transferQty = locationTransferPostDto.TransferQty;
 
-        //        var itemDetailFromItemmaster = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
-        //                            "GetItemMasterByItemNumber?", "&ItemNumber=", toPartNumber));
-        //        _logger.LogInfo("getitemmasterdata" + Convert.ToString(itemDetailFromItemmaster));
-        //        var itemDetail = await itemDetailFromItemmaster.Content.ReadAsStringAsync();
-        //        dynamic itemData = JsonConvert.DeserializeObject(itemDetail);
-        //        dynamic itemObject = itemData.data;
+//        var itemDetailFromItemmaster = await _httpClient.GetAsync(string.Concat(_config["ItemMasterAPI"],
+//                            "GetItemMasterByItemNumber?", "&ItemNumber=", toPartNumber));
+//        _logger.LogInfo("getitemmasterdata" + Convert.ToString(itemDetailFromItemmaster));
+//        var itemDetail = await itemDetailFromItemmaster.Content.ReadAsStringAsync();
+//        dynamic itemData = JsonConvert.DeserializeObject(itemDetail);
+//        dynamic itemObject = itemData.data;
 
-        //        //Add Inventory table
-        //        var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber);
-        //        if (inventoryDetails != null)
-        //        {
-        //            foreach (var inventoryItem in inventoryDetails)
-        //            {
-        //                if (transferQty >= inventoryItem.Balance_Quantity)
-        //                {
-        //                    inventoryItem.PartNumber = toPartNumber;
-        //                    inventoryItem.ProjectNumber = toProjectNumber;
-        //                    inventoryItem.MftrPartNumber = toPartNumber;
-        //                    inventoryItem.Description = itemObject.description; 
-        //                    inventoryItem.UOM = itemObject.uom;
-        //                    inventoryItem.Warehouse = toWarehouse;
-        //                    inventoryItem.Location = toLocation;
-        //                    inventoryItem.PartType = itemObject.itemType;
-        //                    inventoryItem.ReferenceID = Convert.ToString(createLocationTransfer.Id);
-        //                    inventoryItem.ReferenceIDFrom = "LocationTransfer";
-        //                    await _inventoryRepository.UpdateInventory(inventoryItem);
-        //                    _inventoryRepository.SaveAsync();
-        //                    transferQty -= inventoryItem.Balance_Quantity;
-        //                }
-        //                else
-        //                {
+//        //Add Inventory table
+//        var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber);
+//        if (inventoryDetails != null)
+//        {
+//            foreach (var inventoryItem in inventoryDetails)
+//            {
+//                if (transferQty >= inventoryItem.Balance_Quantity)
+//                {
+//                    inventoryItem.PartNumber = toPartNumber;
+//                    inventoryItem.ProjectNumber = toProjectNumber;
+//                    inventoryItem.MftrPartNumber = toPartNumber;
+//                    inventoryItem.Description = itemObject.description; 
+//                    inventoryItem.UOM = itemObject.uom;
+//                    inventoryItem.Warehouse = toWarehouse;
+//                    inventoryItem.Location = toLocation;
+//                    inventoryItem.PartType = itemObject.itemType;
+//                    inventoryItem.ReferenceID = Convert.ToString(createLocationTransfer.Id);
+//                    inventoryItem.ReferenceIDFrom = "LocationTransfer";
+//                    await _inventoryRepository.UpdateInventory(inventoryItem);
+//                    _inventoryRepository.SaveAsync();
+//                    transferQty -= inventoryItem.Balance_Quantity;
+//                }
+//                else
+//                {
 
-        //                    inventoryItem.Balance_Quantity -= transferQty;
-        //                    await _inventoryRepository.UpdateInventory(inventoryItem);
-
-
-        //                    Inventory inventoryPost = new Inventory();
-        //                    inventoryPost.PartNumber = toPartNumber;
-        //                    inventoryPost.MftrPartNumber = toPartNumber;
-        //                    inventoryPost.ProjectNumber = toProjectNumber;
-        //                    inventoryPost.Description = itemObject.description;
-        //                    inventoryPost.Balance_Quantity = transferQty;
-        //                    inventoryPost.UOM = itemObject?.uom;
-        //                    inventoryPost.GrinMaterialType = "";
-        //                    inventoryPost.shopOrderNo = "";
-        //                    inventoryPost.Unit = itemObject?.unit;
-        //                    inventoryPost.GrinNo = "";
-        //                    inventoryPost.GrinPartId = 0;
-        //                    inventoryPost.IsStockAvailable = true;
-        //                    inventoryPost.Warehouse = toWarehouse;
-        //                    inventoryPost.Location = toLocation;
-        //                    inventoryPost.PartType = itemObject.itemType;
-        //                    inventoryPost.ReferenceID = Convert.ToString(createLocationTransfer.Id);
-        //                    inventoryPost.ReferenceIDFrom = "LocationTransfer";
-        //                    await _inventoryRepository.CreateInventory(inventoryPost);
-        //                    transferQty = 0;
-
-        //                    _inventoryRepository.SaveAsync();
-        //                }
-        //                if (transferQty <= 0)
-        //                {
-        //                    break;
-        //                }
-        //            }
-        //        }
-        //        else
-        //        {
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = " Inventory hasn't been found in db.";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
-        //            return NotFound(serviceResponse);
-        //        }
-
-        //        //Add InventoryTranction table
-        //        var inventoryTranctionDetails = await _inventoryTranctionRepository.GetInventoryTranctionDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber);
-        //        if (inventoryTranctionDetails != null)
-        //        {
-        //            foreach (var inventoryTranctionItem in inventoryTranctionDetails)
-        //            {
-        //                if (transferQty >= inventoryTranctionItem.Issued_Quantity)
-        //                {
-        //                    inventoryTranctionItem.PartNumber = toPartNumber;
-        //                    inventoryTranctionItem.ProjectNumber = toProjectNumber;
-        //                    inventoryTranctionItem.MftrPartNumber = toPartNumber;
-        //                    inventoryTranctionItem.Description = itemObject.description;
-        //                    inventoryTranctionItem.UOM = itemObject.uom;
-        //                    inventoryTranctionItem.Warehouse = toWarehouse;
-        //                    inventoryTranctionItem.From_Location = fromLocation;
-        //                    inventoryTranctionItem.TO_Location = toLocation;
-        //                    inventoryTranctionItem.PartType = itemObject.itemType;
-        //                    inventoryTranctionItem.ReferenceID = Convert.ToString(createLocationTransfer.Id);
-        //                    inventoryTranctionItem.ReferenceIDFrom = "LocationTransfer";
-        //                    await _inventoryTranctionRepository.UpdateInventoryTraction(inventoryTranctionItem);
-        //                    _inventoryTranctionRepository.SaveAsync();
-        //                    transferQty -= inventoryTranctionItem.Issued_Quantity;
-        //                }
-        //                else
-        //                {
-
-        //                    inventoryTranctionItem.Issued_Quantity -= transferQty;
-        //                    await _inventoryTranctionRepository.UpdateInventoryTraction(inventoryTranctionItem);
+//                    inventoryItem.Balance_Quantity -= transferQty;
+//                    await _inventoryRepository.UpdateInventory(inventoryItem);
 
 
-        //                    InventoryTranction inventoryTranctionPost = new InventoryTranction();
-        //                    inventoryTranctionPost.PartNumber = toPartNumber;
-        //                    inventoryTranctionPost.MftrPartNumber = toPartNumber;
-        //                    inventoryTranctionPost.ProjectNumber = toProjectNumber;
-        //                    inventoryTranctionPost.Description = itemObject.description;
-        //                    inventoryTranctionPost.Issued_Quantity = transferQty;
-        //                    inventoryTranctionPost.UOM = itemObject?.uom;
-        //                    inventoryTranctionPost.GrinMaterialType = "";
-        //                    inventoryTranctionPost.shopOrderNo = "";
-        //                    inventoryTranctionPost.Unit = itemObject?.unit;
-        //                    inventoryTranctionPost.GrinNo = "";
-        //                    inventoryTranctionPost.GrinPartId = 0;
-        //                    inventoryTranctionPost.IsStockAvailable = true;
-        //                    inventoryTranctionPost.Warehouse = toWarehouse;
-        //                    inventoryTranctionPost.From_Location = fromLocation;
-        //                    inventoryTranctionPost.TO_Location = toLocation;
-        //                    inventoryTranctionPost.PartType = itemObject.itemType;
-        //                    inventoryTranctionPost.ReferenceID = Convert.ToString(createLocationTransfer.Id);
-        //                    inventoryTranctionPost.ReferenceIDFrom = "LocationTransfer";
-        //                    await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost);
-        //                    transferQty = 0;
+//                    Inventory inventoryPost = new Inventory();
+//                    inventoryPost.PartNumber = toPartNumber;
+//                    inventoryPost.MftrPartNumber = toPartNumber;
+//                    inventoryPost.ProjectNumber = toProjectNumber;
+//                    inventoryPost.Description = itemObject.description;
+//                    inventoryPost.Balance_Quantity = transferQty;
+//                    inventoryPost.UOM = itemObject?.uom;
+//                    inventoryPost.GrinMaterialType = "";
+//                    inventoryPost.shopOrderNo = "";
+//                    inventoryPost.Unit = itemObject?.unit;
+//                    inventoryPost.GrinNo = "";
+//                    inventoryPost.GrinPartId = 0;
+//                    inventoryPost.IsStockAvailable = true;
+//                    inventoryPost.Warehouse = toWarehouse;
+//                    inventoryPost.Location = toLocation;
+//                    inventoryPost.PartType = itemObject.itemType;
+//                    inventoryPost.ReferenceID = Convert.ToString(createLocationTransfer.Id);
+//                    inventoryPost.ReferenceIDFrom = "LocationTransfer";
+//                    await _inventoryRepository.CreateInventory(inventoryPost);
+//                    transferQty = 0;
 
-        //                    _inventoryTranctionRepository.SaveAsync();
-        //                }
-        //                if (transferQty <= 0)
-        //                {
-        //                    break;
-        //                }
-        //            }
-        //        }
-        //        else
-        //        {
-        //            serviceResponse.Data = null;
-        //            serviceResponse.Message = " InventoryTranction hasn't been found in db.";
-        //            serviceResponse.Success = false;
-        //            serviceResponse.StatusCode = HttpStatusCode.NotFound;
-        //            return NotFound(serviceResponse);
-        //        }
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = "locationTransfer Successfully Created";
-        //        serviceResponse.Success = true;
-        //        serviceResponse.StatusCode = HttpStatusCode.OK;
-        //        return Created("GetLocationTransferId", serviceResponse);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        _logger.LogError($"Something went wrong inside CreateLocationTransfer action: {ex.Message}");
-        //        serviceResponse.Data = null;
-        //        serviceResponse.Message = "Internal server error";
-        //        serviceResponse.Success = false;
-        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-        //        return StatusCode(500, serviceResponse);
-        //    }
-        //}
+//                    _inventoryRepository.SaveAsync();
+//                }
+//                if (transferQty <= 0)
+//                {
+//                    break;
+//                }
+//            }
+//        }
+//        else
+//        {
+//            serviceResponse.Data = null;
+//            serviceResponse.Message = " Inventory hasn't been found in db.";
+//            serviceResponse.Success = false;
+//            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+//            return NotFound(serviceResponse);
+//        }
 
-        [HttpPut]
-        public async Task<IActionResult> UpdateInventory(int id, [FromBody] InventoryDtoUpdate inventoryDtoUpdate)
+//        //Add InventoryTranction table
+//        var inventoryTranctionDetails = await _inventoryTranctionRepository.GetInventoryTranctionDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber);
+//        if (inventoryTranctionDetails != null)
+//        {
+//            foreach (var inventoryTranctionItem in inventoryTranctionDetails)
+//            {
+//                if (transferQty >= inventoryTranctionItem.Issued_Quantity)
+//                {
+//                    inventoryTranctionItem.PartNumber = toPartNumber;
+//                    inventoryTranctionItem.ProjectNumber = toProjectNumber;
+//                    inventoryTranctionItem.MftrPartNumber = toPartNumber;
+//                    inventoryTranctionItem.Description = itemObject.description;
+//                    inventoryTranctionItem.UOM = itemObject.uom;
+//                    inventoryTranctionItem.Warehouse = toWarehouse;
+//                    inventoryTranctionItem.From_Location = fromLocation;
+//                    inventoryTranctionItem.TO_Location = toLocation;
+//                    inventoryTranctionItem.PartType = itemObject.itemType;
+//                    inventoryTranctionItem.ReferenceID = Convert.ToString(createLocationTransfer.Id);
+//                    inventoryTranctionItem.ReferenceIDFrom = "LocationTransfer";
+//                    await _inventoryTranctionRepository.UpdateInventoryTraction(inventoryTranctionItem);
+//                    _inventoryTranctionRepository.SaveAsync();
+//                    transferQty -= inventoryTranctionItem.Issued_Quantity;
+//                }
+//                else
+//                {
+
+//                    inventoryTranctionItem.Issued_Quantity -= transferQty;
+//                    await _inventoryTranctionRepository.UpdateInventoryTraction(inventoryTranctionItem);
+
+
+//                    InventoryTranction inventoryTranctionPost = new InventoryTranction();
+//                    inventoryTranctionPost.PartNumber = toPartNumber;
+//                    inventoryTranctionPost.MftrPartNumber = toPartNumber;
+//                    inventoryTranctionPost.ProjectNumber = toProjectNumber;
+//                    inventoryTranctionPost.Description = itemObject.description;
+//                    inventoryTranctionPost.Issued_Quantity = transferQty;
+//                    inventoryTranctionPost.UOM = itemObject?.uom;
+//                    inventoryTranctionPost.GrinMaterialType = "";
+//                    inventoryTranctionPost.shopOrderNo = "";
+//                    inventoryTranctionPost.Unit = itemObject?.unit;
+//                    inventoryTranctionPost.GrinNo = "";
+//                    inventoryTranctionPost.GrinPartId = 0;
+//                    inventoryTranctionPost.IsStockAvailable = true;
+//                    inventoryTranctionPost.Warehouse = toWarehouse;
+//                    inventoryTranctionPost.From_Location = fromLocation;
+//                    inventoryTranctionPost.TO_Location = toLocation;
+//                    inventoryTranctionPost.PartType = itemObject.itemType;
+//                    inventoryTranctionPost.ReferenceID = Convert.ToString(createLocationTransfer.Id);
+//                    inventoryTranctionPost.ReferenceIDFrom = "LocationTransfer";
+//                    await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost);
+//                    transferQty = 0;
+
+//                    _inventoryTranctionRepository.SaveAsync();
+//                }
+//                if (transferQty <= 0)
+//                {
+//                    break;
+//                }
+//            }
+//        }
+//        else
+//        {
+//            serviceResponse.Data = null;
+//            serviceResponse.Message = " InventoryTranction hasn't been found in db.";
+//            serviceResponse.Success = false;
+//            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+//            return NotFound(serviceResponse);
+//        }
+//        serviceResponse.Data = null;
+//        serviceResponse.Message = "locationTransfer Successfully Created";
+//        serviceResponse.Success = true;
+//        serviceResponse.StatusCode = HttpStatusCode.OK;
+//        return Created("GetLocationTransferId", serviceResponse);
+//    }
+//    catch (Exception ex)
+//    {
+//        _logger.LogError($"Something went wrong inside CreateLocationTransfer action: {ex.Message}");
+//        serviceResponse.Data = null;
+//        serviceResponse.Message = "Internal server error";
+//        serviceResponse.Success = false;
+//        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+//        return StatusCode(500, serviceResponse);
+//    }
+//}
+
+[HttpPut]
+public async Task<IActionResult> UpdateInventory(int id, [FromBody] InventoryDtoUpdate inventoryDtoUpdate)
+{
+    ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+
+    try
+    {
+        if (inventoryDtoUpdate is null)
         {
-            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
-
-            try
-            {
-                if (inventoryDtoUpdate is null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Inventory object sent from client is null";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Inventory object sent from client is null.");
-                    return BadRequest(serviceResponse);
-                }
-                if (!ModelState.IsValid)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Inventory object sent from client";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError("Invalid Inventory object sent from client.");
-                    return BadRequest(serviceResponse);
-                }
-                var getInventoryById = await _inventoryRepository.GetInventoryById(id);
-                if (getInventoryById is null)
-                {
-                    _logger.LogError($"Inventory with id: {id}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = " Update Inventory with id: {id}, hasn't been found in db.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
-                }
-                var updateInventory = _mapper.Map(inventoryDtoUpdate, getInventoryById);
-
-                string result = await _inventoryRepository.UpdateInventory(updateInventory);
-                _logger.LogInfo(result);
-                _inventoryRepository.SaveAsync();
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Updated Successfully";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in UpdateInventory API for the following id:{id} \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                _logger.LogError($"Error Occured in UpdateInventory API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
-                return StatusCode(500, serviceResponse);
-            }
+            serviceResponse.Data = null;
+            serviceResponse.Message = "Inventory object sent from client is null";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+            _logger.LogError("Inventory object sent from client is null.");
+            return BadRequest(serviceResponse);
         }
-
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateLocationTransfer(int id, [FromBody] LocationTransferUpdateDto locationTransferUpdateDto)
+        if (!ModelState.IsValid)
         {
-            ServiceResponse<LocationTransferDto> serviceResponse = new ServiceResponse<LocationTransferDto>();
-
-            try
-            {
-                if (locationTransferUpdateDto is null)
-                {
-                    _logger.LogError("locationTransfer object sent from client is null.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Update locationTransfer object is null";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(serviceResponse);
-                }
-                if (!ModelState.IsValid)
-                {
-                    _logger.LogError("Invalid locationTransfer object sent from client.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = "Invalid Update locationTransfer object sent from client.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    return BadRequest(serviceResponse);
-                }
-                var getLocationTransferById = await _locationTransferRepository.GetLocationTransferById(id);
-                if (getLocationTransferById is null)
-                {
-                    _logger.LogError($"locationTransfer with id: {id}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"Update locationTransfer with id: {id}, hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
-                }
-
-                var updateData = _mapper.Map(locationTransferUpdateDto, getLocationTransferById);
-
-                string result = await _locationTransferRepository.UpdateLocationTransfer(updateData);
-                _logger.LogError(result);
-                _locationTransferRepository.SaveAsync();
-                serviceResponse.Data = null;
-                serviceResponse.Message = "LocationTransfers Updated Successfully";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Occured in UpdateLocationTransfer API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in UpdateLocationTransfer API for the following id:{id} \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
+            serviceResponse.Data = null;
+            serviceResponse.Message = "Invalid Inventory object sent from client";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+            _logger.LogError("Invalid Inventory object sent from client.");
+            return BadRequest(serviceResponse);
         }
-        [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> LocationTransferSPReportWithParam([FromBody] LocationTransferSPReportWithParamDTO locationTransferSPReport)
+        var getInventoryById = await _inventoryRepository.GetInventoryById(id);
+        if (getInventoryById is null)
         {
-            ServiceResponse<IEnumerable<LocationTransferSPReport>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSPReport>>();
-            try
-            {
-                var products = await _locationTransferRepository.LocationTransferSPReportWithParam(locationTransferSPReport.FromPartNumber, locationTransferSPReport.FromPartType,
-                                                                     locationTransferSPReport.FromWarehouse, locationTransferSPReport.FromLocation,
-                                                                     locationTransferSPReport.FromProjectNumber, locationTransferSPReport.ToPartNumber,
-                                                                     locationTransferSPReport.ToPartType, locationTransferSPReport.ToWarehouse,
-                                                                     locationTransferSPReport.ToLocation, locationTransferSPReport.ToProjectNumber);
-
-                if (products == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"LocationTransfer hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"LocationTransfer hasn't been found in db.");
-                    return NotFound(serviceResponse);
-                }
-                else
-                {
-                    // var result = _mapper.Map<IEnumerable<LocationTransferSPReportDTO>>(products);
-
-                    serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned LocationTransfer Details";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Occured in LocationTransferSPReportWithParam API : \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in LocationTransferSPReportWithParam API : \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
+            _logger.LogError($"Inventory with id: {id}, hasn't been found in db.");
+            serviceResponse.Data = null;
+            serviceResponse.Message = " Update Inventory with id: {id}, hasn't been found in db.";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+            return NotFound(serviceResponse);
         }
+        var updateInventory = _mapper.Map(inventoryDtoUpdate, getInventoryById);
+
+        string result = await _inventoryRepository.UpdateInventory(updateInventory);
+        _logger.LogInfo(result);
+        _inventoryRepository.SaveAsync();
+        serviceResponse.Data = null;
+        serviceResponse.Message = "Updated Successfully";
+        serviceResponse.Success = true;
+        serviceResponse.StatusCode = HttpStatusCode.OK;
+        return Ok(serviceResponse);
+    }
+    catch (Exception ex)
+    {
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"Error Occured in UpdateInventory API for the following id:{id} \n {ex.Message}";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        _logger.LogError($"Error Occured in UpdateInventory API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
+        return StatusCode(500, serviceResponse);
+    }
+}
 
 
-        [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> LocationTransferSPReportWithParamForTras([FromBody] LocationTransferSPReportWithParamDTO locationTransferSPReport)
+[HttpPut("{id}")]
+public async Task<IActionResult> UpdateLocationTransfer(int id, [FromBody] LocationTransferUpdateDto locationTransferUpdateDto)
+{
+    ServiceResponse<LocationTransferDto> serviceResponse = new ServiceResponse<LocationTransferDto>();
+
+    try
+    {
+        if (locationTransferUpdateDto is null)
         {
-            ServiceResponse<IEnumerable<LocationTransferSpReportForTras>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSpReportForTras>>();
-            try
-            {
-                var products = await _locationTransferRepository.LocationTransferSPReportWithParamForTras(locationTransferSPReport.FromPartNumber, locationTransferSPReport.FromPartType,
-                                                                     locationTransferSPReport.FromWarehouse, locationTransferSPReport.FromLocation,
-                                                                     locationTransferSPReport.FromProjectNumber, locationTransferSPReport.ToPartNumber,
-                                                                     locationTransferSPReport.ToPartType, locationTransferSPReport.ToWarehouse,
-                                                                     locationTransferSPReport.ToLocation, locationTransferSPReport.ToProjectNumber);
-
-                if (products == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"LocationTransfer hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"LocationTransfer hasn't been found in db.");
-                    return NotFound(serviceResponse);
-                }
-                else
-                {
-                    // var result = _mapper.Map<IEnumerable<LocationTransferSPReportDTO>>(products);
-
-                    serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned LocationTransfer Details";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Occured in LocationTransferSPReportWithParamForTras API : \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in LocationTransferSPReportWithParamForTras API : \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
+            _logger.LogError("locationTransfer object sent from client is null.");
+            serviceResponse.Data = null;
+            serviceResponse.Message = "Update locationTransfer object is null";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+            return BadRequest(serviceResponse);
         }
-
-        [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> LocationTransferSPReportWithParamForAvi([FromBody] LocationTransferSPReportWithParamDTO locationTransferSPReport)
+        if (!ModelState.IsValid)
         {
-            ServiceResponse<IEnumerable<LocationTransferSpReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSpReportForAvi>>();
-            try
-            {
-                var products = await _locationTransferRepository.LocationTransferSPReportWithParamForAvi(locationTransferSPReport.FromPartNumber, locationTransferSPReport.FromPartType,
-                                                                     locationTransferSPReport.FromWarehouse, locationTransferSPReport.FromLocation,
-                                                                     locationTransferSPReport.FromProjectNumber, locationTransferSPReport.ToPartNumber,
-                                                                     locationTransferSPReport.ToPartType, locationTransferSPReport.ToWarehouse,
-                                                                     locationTransferSPReport.ToLocation, locationTransferSPReport.ToProjectNumber);
-
-                if (products == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"LocationTransfer hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"LocationTransfer hasn't been found in db.");
-                    return NotFound(serviceResponse);
-                }
-                else
-                {
-                    // var result = _mapper.Map<IEnumerable<LocationTransferSPReportDTO>>(products);
-
-                    serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned LocationTransfer Details";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Occured in LocationTransferSPReportWithParamForAvi API : \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in LocationTransferSPReportWithParamForAvi API : \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
+            _logger.LogError("Invalid locationTransfer object sent from client.");
+            serviceResponse.Data = null;
+            serviceResponse.Message = "Invalid Update locationTransfer object sent from client.";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+            return BadRequest(serviceResponse);
         }
-
-        [HttpGet]
-        public async Task<IActionResult> LocationTransferSPReportDates([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        var getLocationTransferById = await _locationTransferRepository.GetLocationTransferById(id);
+        if (getLocationTransferById is null)
         {
-            ServiceResponse<IEnumerable<LocationTransferSPReport>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSPReport>>();
-            try
-            {
-                var products = await _locationTransferRepository.LocationTransferSPReportDates(FromDate, ToDate);
-
-                if (products == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"LocationTransfer hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"LocationTransfer hasn't been found in db.");
-                    return NotFound(serviceResponse);
-                }
-                else
-                {
-                    serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned LocationTransfer Details";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Occured in LocationTransferSPReportDates API : \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in LocationTransferSPReportDates API : \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
+            _logger.LogError($"locationTransfer with id: {id}, hasn't been found in db.");
+            serviceResponse.Data = null;
+            serviceResponse.Message = $"Update locationTransfer with id: {id}, hasn't been found.";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+            return NotFound(serviceResponse);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> LocationTransferSPReportDatesForTras([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        var updateData = _mapper.Map(locationTransferUpdateDto, getLocationTransferById);
+
+        string result = await _locationTransferRepository.UpdateLocationTransfer(updateData);
+        _logger.LogError(result);
+        _locationTransferRepository.SaveAsync();
+        serviceResponse.Data = null;
+        serviceResponse.Message = "LocationTransfers Updated Successfully";
+        serviceResponse.Success = true;
+        serviceResponse.StatusCode = HttpStatusCode.OK;
+        return Ok(serviceResponse);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error Occured in UpdateLocationTransfer API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"Error Occured in UpdateLocationTransfer API for the following id:{id} \n {ex.Message}";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        return StatusCode(500, serviceResponse);
+    }
+}
+[HttpPost] // Adjust your route as needed
+public async Task<IActionResult> LocationTransferSPReportWithParam([FromBody] LocationTransferSPReportWithParamDTO locationTransferSPReport)
+{
+    ServiceResponse<IEnumerable<LocationTransferSPReport>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSPReport>>();
+    try
+    {
+        var products = await _locationTransferRepository.LocationTransferSPReportWithParam(locationTransferSPReport.FromPartNumber, locationTransferSPReport.FromPartType,
+                                                             locationTransferSPReport.FromWarehouse, locationTransferSPReport.FromLocation,
+                                                             locationTransferSPReport.FromProjectNumber, locationTransferSPReport.ToPartNumber,
+                                                             locationTransferSPReport.ToPartType, locationTransferSPReport.ToWarehouse,
+                                                             locationTransferSPReport.ToLocation, locationTransferSPReport.ToProjectNumber);
+
+        if (products == null)
         {
-            ServiceResponse<IEnumerable<LocationTransferSpReportForTras>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSpReportForTras>>();
-            try
-            {
-                var products = await _locationTransferRepository.LocationTransferSPReportDatesForTras(FromDate, ToDate);
-
-                if (products == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"LocationTransfer hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"LocationTransfer hasn't been found in db.");
-                    return NotFound(serviceResponse);
-                }
-                else
-                {
-                    serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned LocationTransfer Details";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Occured in LocationTransferSPReportDatesForTras API : \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in LocationTransferSPReportDatesForTras API : \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
+            serviceResponse.Data = null;
+            serviceResponse.Message = $"LocationTransfer hasn't been found.";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+            _logger.LogError($"LocationTransfer hasn't been found in db.");
+            return NotFound(serviceResponse);
         }
-
-        [HttpGet]
-        public async Task<IActionResult> LocationTransferSPReportDatesForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        else
         {
-            ServiceResponse<IEnumerable<LocationTransferSpReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSpReportForAvi>>();
-            try
-            {
-                var products = await _locationTransferRepository.LocationTransferSPReportDatesForAvi(FromDate, ToDate);
+            // var result = _mapper.Map<IEnumerable<LocationTransferSPReportDTO>>(products);
 
-                if (products == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"LocationTransfer hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"LocationTransfer hasn't been found in db.");
-                    return NotFound(serviceResponse);
-                }
-                else
-                {
-                    serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned LocationTransfer Details";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Occured in LocationTransferSPReportDatesForAvi API : \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in LocationTransferSPReportDatesForAvi API : \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
+            serviceResponse.Data = products;
+            serviceResponse.Message = "Returned LocationTransfer Details";
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = HttpStatusCode.OK;
+            return Ok(serviceResponse);
         }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error Occured in LocationTransferSPReportWithParam API : \n {ex.Message} \n{ex.InnerException}");
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"Error Occured in LocationTransferSPReportWithParam API : \n {ex.Message}";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        return StatusCode(500, serviceResponse);
+    }
+}
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteLocationTransfer(int id)
+
+[HttpPost] // Adjust your route as needed
+public async Task<IActionResult> LocationTransferSPReportWithParamForTras([FromBody] LocationTransferSPReportWithParamDTO locationTransferSPReport)
+{
+    ServiceResponse<IEnumerable<LocationTransferSpReportForTras>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSpReportForTras>>();
+    try
+    {
+        var products = await _locationTransferRepository.LocationTransferSPReportWithParamForTras(locationTransferSPReport.FromPartNumber, locationTransferSPReport.FromPartType,
+                                                             locationTransferSPReport.FromWarehouse, locationTransferSPReport.FromLocation,
+                                                             locationTransferSPReport.FromProjectNumber, locationTransferSPReport.ToPartNumber,
+                                                             locationTransferSPReport.ToPartType, locationTransferSPReport.ToWarehouse,
+                                                             locationTransferSPReport.ToLocation, locationTransferSPReport.ToProjectNumber);
+
+        if (products == null)
         {
-            ServiceResponse<LocationTransferDto> serviceResponse = new ServiceResponse<LocationTransferDto>();
-
-            try
-            {
-                var getLocationTransfer = await _locationTransferRepository.GetLocationTransferById(id);
-                if (getLocationTransfer == null)
-                {
-                    _logger.LogError($"Delete LocationTransfer with id: {id}, hasn't been found in db.");
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"Delete LocationTransfer with id: {id}, hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    return NotFound(serviceResponse);
-                }
-                string result = await _locationTransferRepository.DeleteLocationTransfer(getLocationTransfer);
-                _logger.LogError(result);
-                _locationTransferRepository.SaveAsync();
-                serviceResponse.Data = null;
-                serviceResponse.Message = "LocationTransfer Deleted Successfully";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Occured in DeleteLocationTransfer API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in DeleteLocationTransfer API for the following id:{id} \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
+            serviceResponse.Data = null;
+            serviceResponse.Message = $"LocationTransfer hasn't been found.";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+            _logger.LogError($"LocationTransfer hasn't been found in db.");
+            return NotFound(serviceResponse);
         }
-
-        [HttpGet]
-        public async Task<IActionResult> GetProjectLocWareFromInventoryByItemNo(string itemNumber)
+        else
         {
-            ServiceResponse<List<LocationTransferFromDto>> serviceResponse = new ServiceResponse<List<LocationTransferFromDto>>();
-            try
-            {
-                var InventoryDetails = await _locationTransferRepository.GetProjectLocWareFromInventoryByItemNo(itemNumber);
-                if (InventoryDetails == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"Inventory Location,Project,Warehouse Details hasn't been found";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"Inventory with itemNumber: {itemNumber}, is invalid");
-                    return Ok(serviceResponse);
-                }
-                else
-                {
-                    _logger.LogInfo($"Returned Inventory Location,Project,Warehouse with Itemnumber: {itemNumber}");
-                    var result = _mapper.Map<List<LocationTransferFromDto>>(InventoryDetails);
-                    serviceResponse.Data = result;
-                    serviceResponse.Message = "Returned InventoryDetails with id Successfully";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Occured in GetProjectLocWareFromInventoryByItemNo API for the following itemNumber:{itemNumber} \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetProjectLocWareFromInventoryByItemNo API for the following itemNumber:{itemNumber} \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
+            // var result = _mapper.Map<IEnumerable<LocationTransferSPReportDTO>>(products);
+
+            serviceResponse.Data = products;
+            serviceResponse.Message = "Returned LocationTransfer Details";
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = HttpStatusCode.OK;
+            return Ok(serviceResponse);
         }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error Occured in LocationTransferSPReportWithParamForTras API : \n {ex.Message} \n{ex.InnerException}");
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"Error Occured in LocationTransferSPReportWithParamForTras API : \n {ex.Message}";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        return StatusCode(500, serviceResponse);
+    }
+}
 
+[HttpPost] // Adjust your route as needed
+public async Task<IActionResult> LocationTransferSPReportWithParamForAvi([FromBody] LocationTransferSPReportWithParamDTO locationTransferSPReport)
+{
+    ServiceResponse<IEnumerable<LocationTransferSpReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSpReportForAvi>>();
+    try
+    {
+        var products = await _locationTransferRepository.LocationTransferSPReportWithParamForAvi(locationTransferSPReport.FromPartNumber, locationTransferSPReport.FromPartType,
+                                                             locationTransferSPReport.FromWarehouse, locationTransferSPReport.FromLocation,
+                                                             locationTransferSPReport.FromProjectNumber, locationTransferSPReport.ToPartNumber,
+                                                             locationTransferSPReport.ToPartType, locationTransferSPReport.ToWarehouse,
+                                                             locationTransferSPReport.ToLocation, locationTransferSPReport.ToProjectNumber);
 
-        [HttpGet]
-        public async Task<IActionResult> GetAllLocationTransferIdNameList()
+        if (products == null)
         {
-            ServiceResponse<IEnumerable<LocationTransferIdNameList>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferIdNameList>>();
-            try
-            {
-                var listOfAllLocationTransferIdNames = await _locationTransferRepository.GetAllLocationTransferIdNameList();
-                var result = _mapper.Map<IEnumerable<LocationTransferIdNameList>>(listOfAllLocationTransferIdNames);
-                serviceResponse.Data = result;
-                serviceResponse.Message = "Returned All listOfAllLocationTransferIdNames";
-                serviceResponse.Success = true;
-                serviceResponse.StatusCode = HttpStatusCode.OK;
-                return Ok(serviceResponse);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Occured in GetAllLocationTransferIdNameList API : \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetAllLocationTransferIdNameList API : \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-
+            serviceResponse.Data = null;
+            serviceResponse.Message = $"LocationTransfer hasn't been found.";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+            _logger.LogError($"LocationTransfer hasn't been found in db.");
+            return NotFound(serviceResponse);
         }
-
-        [HttpPost]
-        public async Task<IActionResult> MRNSPReportWithParam([FromBody] MRNSPReportGetDto mRNSPReportGetDto)
+        else
         {
-            ServiceResponse<IEnumerable<MRNSPReport>> serviceResponse = new ServiceResponse<IEnumerable<MRNSPReport>>();
-            try
-            {
-                var products = await _locationTransferRepository.MRNSPReportWithParam(mRNSPReportGetDto.ProjectNumber, mRNSPReportGetDto.ShopOrderType, mRNSPReportGetDto.ShopOrderNumber, mRNSPReportGetDto.KPN, mRNSPReportGetDto.PartType);
-                if (products == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"MRN hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"MRN hasn't been found in db.");
-                    return NotFound(serviceResponse);
-                }
-                else
-                {
-                    serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned MRN Details";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Occured in MRNSPReportWithParam API : \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in MRNSPReportWithParam API : \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
-        [HttpPost]
-        public async Task<IActionResult> MRNSPReportWithParamForTrans([FromBody] MRNSPReportGetDtoForTrans mRNSPReportGetDto)
-        {
-            ServiceResponse<IEnumerable<MRNSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<MRNSPReportForTrans>>();
-            try
-            {
-                var products = await _locationTransferRepository.MRNSPReportWithParamForTrans(mRNSPReportGetDto.ProjectNumber, mRNSPReportGetDto.ShopOrderType, mRNSPReportGetDto.ShopOrderNumber,
-                                                                                                mRNSPReportGetDto.PartNumber, mRNSPReportGetDto.PartType);
-                if (products == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"MRN hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"MRN hasn't been found in db.");
-                    return NotFound(serviceResponse);
-                }
-                else
-                {
-                    serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned MRN Details";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Occured in MRNSPReportWithParamForTrans API : \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in MRNSPReportWithParamForTrans API : \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
-        [HttpGet]
-        public async Task<IActionResult> MRNSPReportDates([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
-        {
-            ServiceResponse<IEnumerable<MRNSPReport>> serviceResponse = new ServiceResponse<IEnumerable<MRNSPReport>>();
-            try
-            {
-                var products = await _locationTransferRepository.MRNSPReportDates(FromDate, ToDate);
+            // var result = _mapper.Map<IEnumerable<LocationTransferSPReportDTO>>(products);
 
-                if (products == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"MRN hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"MRN hasn't been found in db.");
-                    return NotFound(serviceResponse);
-                }
-                else
-                {
-                    serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned MRN Details";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Occured in MRNSPReportDates API : \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in MRNSPReportDates API : \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
+            serviceResponse.Data = products;
+            serviceResponse.Message = "Returned LocationTransfer Details";
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = HttpStatusCode.OK;
+            return Ok(serviceResponse);
         }
-        [HttpGet]
-        public async Task<IActionResult> MRNSPReportDatesForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
-        {
-            ServiceResponse<IEnumerable<MRNSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<MRNSPReportForTrans>>();
-            try
-            {
-                var products = await _locationTransferRepository.MRNSPReportDatesForTrans(FromDate, ToDate);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error Occured in LocationTransferSPReportWithParamForAvi API : \n {ex.Message} \n{ex.InnerException}");
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"Error Occured in LocationTransferSPReportWithParamForAvi API : \n {ex.Message}";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        return StatusCode(500, serviceResponse);
+    }
+}
 
-                if (products == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"MRN hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"MRN hasn't been found in db.");
-                    return NotFound(serviceResponse);
-                }
-                else
-                {
-                    serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned MRN Details";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Occured in MRNSPReportDatesForTrans API : \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in MRNSPReportDatesForTrans API : \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
+[HttpGet]
+public async Task<IActionResult> LocationTransferSPReportDates([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+{
+    ServiceResponse<IEnumerable<LocationTransferSPReport>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSPReport>>();
+    try
+    {
+        var products = await _locationTransferRepository.LocationTransferSPReportDates(FromDate, ToDate);
+
+        if (products == null)
+        {
+            serviceResponse.Data = null;
+            serviceResponse.Message = $"LocationTransfer hasn't been found.";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+            _logger.LogError($"LocationTransfer hasn't been found in db.");
+            return NotFound(serviceResponse);
         }
+        else
+        {
+            serviceResponse.Data = products;
+            serviceResponse.Message = "Returned LocationTransfer Details";
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = HttpStatusCode.OK;
+            return Ok(serviceResponse);
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error Occured in LocationTransferSPReportDates API : \n {ex.Message} \n{ex.InnerException}");
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"Error Occured in LocationTransferSPReportDates API : \n {ex.Message}";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        return StatusCode(500, serviceResponse);
+    }
+}
+
+[HttpGet]
+public async Task<IActionResult> LocationTransferSPReportDatesForTras([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+{
+    ServiceResponse<IEnumerable<LocationTransferSpReportForTras>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSpReportForTras>>();
+    try
+    {
+        var products = await _locationTransferRepository.LocationTransferSPReportDatesForTras(FromDate, ToDate);
+
+        if (products == null)
+        {
+            serviceResponse.Data = null;
+            serviceResponse.Message = $"LocationTransfer hasn't been found.";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+            _logger.LogError($"LocationTransfer hasn't been found in db.");
+            return NotFound(serviceResponse);
+        }
+        else
+        {
+            serviceResponse.Data = products;
+            serviceResponse.Message = "Returned LocationTransfer Details";
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = HttpStatusCode.OK;
+            return Ok(serviceResponse);
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error Occured in LocationTransferSPReportDatesForTras API : \n {ex.Message} \n{ex.InnerException}");
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"Error Occured in LocationTransferSPReportDatesForTras API : \n {ex.Message}";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        return StatusCode(500, serviceResponse);
+    }
+}
+
+[HttpGet]
+public async Task<IActionResult> LocationTransferSPReportDatesForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+{
+    ServiceResponse<IEnumerable<LocationTransferSpReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferSpReportForAvi>>();
+    try
+    {
+        var products = await _locationTransferRepository.LocationTransferSPReportDatesForAvi(FromDate, ToDate);
+
+        if (products == null)
+        {
+            serviceResponse.Data = null;
+            serviceResponse.Message = $"LocationTransfer hasn't been found.";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+            _logger.LogError($"LocationTransfer hasn't been found in db.");
+            return NotFound(serviceResponse);
+        }
+        else
+        {
+            serviceResponse.Data = products;
+            serviceResponse.Message = "Returned LocationTransfer Details";
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = HttpStatusCode.OK;
+            return Ok(serviceResponse);
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error Occured in LocationTransferSPReportDatesForAvi API : \n {ex.Message} \n{ex.InnerException}");
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"Error Occured in LocationTransferSPReportDatesForAvi API : \n {ex.Message}";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        return StatusCode(500, serviceResponse);
+    }
+}
+
+[HttpDelete("{id}")]
+public async Task<IActionResult> DeleteLocationTransfer(int id)
+{
+    ServiceResponse<LocationTransferDto> serviceResponse = new ServiceResponse<LocationTransferDto>();
+
+    try
+    {
+        var getLocationTransfer = await _locationTransferRepository.GetLocationTransferById(id);
+        if (getLocationTransfer == null)
+        {
+            _logger.LogError($"Delete LocationTransfer with id: {id}, hasn't been found in db.");
+            serviceResponse.Data = null;
+            serviceResponse.Message = $"Delete LocationTransfer with id: {id}, hasn't been found.";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+            return NotFound(serviceResponse);
+        }
+        string result = await _locationTransferRepository.DeleteLocationTransfer(getLocationTransfer);
+        _logger.LogError(result);
+        _locationTransferRepository.SaveAsync();
+        serviceResponse.Data = null;
+        serviceResponse.Message = "LocationTransfer Deleted Successfully";
+        serviceResponse.Success = true;
+        serviceResponse.StatusCode = HttpStatusCode.OK;
+        return Ok(serviceResponse);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error Occured in DeleteLocationTransfer API for the following id:{id} \n {ex.Message} \n{ex.InnerException}");
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"Error Occured in DeleteLocationTransfer API for the following id:{id} \n {ex.Message}";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        return StatusCode(500, serviceResponse);
+    }
+}
+
+[HttpGet]
+public async Task<IActionResult> GetProjectLocWareFromInventoryByItemNo(string itemNumber)
+{
+    ServiceResponse<List<LocationTransferFromDto>> serviceResponse = new ServiceResponse<List<LocationTransferFromDto>>();
+    try
+    {
+        var InventoryDetails = await _locationTransferRepository.GetProjectLocWareFromInventoryByItemNo(itemNumber);
+        if (InventoryDetails == null)
+        {
+            serviceResponse.Data = null;
+            serviceResponse.Message = $"Inventory Location,Project,Warehouse Details hasn't been found";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+            _logger.LogError($"Inventory with itemNumber: {itemNumber}, is invalid");
+            return Ok(serviceResponse);
+        }
+        else
+        {
+            _logger.LogInfo($"Returned Inventory Location,Project,Warehouse with Itemnumber: {itemNumber}");
+            var result = _mapper.Map<List<LocationTransferFromDto>>(InventoryDetails);
+            serviceResponse.Data = result;
+            serviceResponse.Message = "Returned InventoryDetails with id Successfully";
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = HttpStatusCode.OK;
+            return Ok(serviceResponse);
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error Occured in GetProjectLocWareFromInventoryByItemNo API for the following itemNumber:{itemNumber} \n {ex.Message} \n{ex.InnerException}");
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"Error Occured in GetProjectLocWareFromInventoryByItemNo API for the following itemNumber:{itemNumber} \n {ex.Message}";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        return StatusCode(500, serviceResponse);
+    }
+}
+
+
+[HttpGet]
+public async Task<IActionResult> GetAllLocationTransferIdNameList()
+{
+    ServiceResponse<IEnumerable<LocationTransferIdNameList>> serviceResponse = new ServiceResponse<IEnumerable<LocationTransferIdNameList>>();
+    try
+    {
+        var listOfAllLocationTransferIdNames = await _locationTransferRepository.GetAllLocationTransferIdNameList();
+        var result = _mapper.Map<IEnumerable<LocationTransferIdNameList>>(listOfAllLocationTransferIdNames);
+        serviceResponse.Data = result;
+        serviceResponse.Message = "Returned All listOfAllLocationTransferIdNames";
+        serviceResponse.Success = true;
+        serviceResponse.StatusCode = HttpStatusCode.OK;
+        return Ok(serviceResponse);
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error Occured in GetAllLocationTransferIdNameList API : \n {ex.Message} \n{ex.InnerException}");
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"Error Occured in GetAllLocationTransferIdNameList API : \n {ex.Message}";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        return StatusCode(500, serviceResponse);
+    }
+
+}
+
+[HttpPost]
+public async Task<IActionResult> MRNSPReportWithParam([FromBody] MRNSPReportGetDto mRNSPReportGetDto)
+{
+    ServiceResponse<IEnumerable<MRNSPReport>> serviceResponse = new ServiceResponse<IEnumerable<MRNSPReport>>();
+    try
+    {
+        var products = await _locationTransferRepository.MRNSPReportWithParam(mRNSPReportGetDto.ProjectNumber, mRNSPReportGetDto.ShopOrderType, mRNSPReportGetDto.ShopOrderNumber, mRNSPReportGetDto.KPN, mRNSPReportGetDto.PartType);
+        if (products == null)
+        {
+            serviceResponse.Data = null;
+            serviceResponse.Message = $"MRN hasn't been found.";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+            _logger.LogError($"MRN hasn't been found in db.");
+            return NotFound(serviceResponse);
+        }
+        else
+        {
+            serviceResponse.Data = products;
+            serviceResponse.Message = "Returned MRN Details";
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = HttpStatusCode.OK;
+            return Ok(serviceResponse);
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error Occured in MRNSPReportWithParam API : \n {ex.Message} \n{ex.InnerException}");
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"Error Occured in MRNSPReportWithParam API : \n {ex.Message}";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        return StatusCode(500, serviceResponse);
+    }
+}
+[HttpPost]
+public async Task<IActionResult> MRNSPReportWithParamForTrans([FromBody] MRNSPReportGetDtoForTrans mRNSPReportGetDto)
+{
+    ServiceResponse<IEnumerable<MRNSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<MRNSPReportForTrans>>();
+    try
+    {
+        var products = await _locationTransferRepository.MRNSPReportWithParamForTrans(mRNSPReportGetDto.ProjectNumber, mRNSPReportGetDto.ShopOrderType, mRNSPReportGetDto.ShopOrderNumber,
+                                                                                        mRNSPReportGetDto.PartNumber, mRNSPReportGetDto.PartType);
+        if (products == null)
+        {
+            serviceResponse.Data = null;
+            serviceResponse.Message = $"MRN hasn't been found.";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+            _logger.LogError($"MRN hasn't been found in db.");
+            return NotFound(serviceResponse);
+        }
+        else
+        {
+            serviceResponse.Data = products;
+            serviceResponse.Message = "Returned MRN Details";
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = HttpStatusCode.OK;
+            return Ok(serviceResponse);
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error Occured in MRNSPReportWithParamForTrans API : \n {ex.Message} \n{ex.InnerException}");
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"Error Occured in MRNSPReportWithParamForTrans API : \n {ex.Message}";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        return StatusCode(500, serviceResponse);
+    }
+}
+[HttpGet]
+public async Task<IActionResult> MRNSPReportDates([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+{
+    ServiceResponse<IEnumerable<MRNSPReport>> serviceResponse = new ServiceResponse<IEnumerable<MRNSPReport>>();
+    try
+    {
+        var products = await _locationTransferRepository.MRNSPReportDates(FromDate, ToDate);
+
+        if (products == null)
+        {
+            serviceResponse.Data = null;
+            serviceResponse.Message = $"MRN hasn't been found.";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+            _logger.LogError($"MRN hasn't been found in db.");
+            return NotFound(serviceResponse);
+        }
+        else
+        {
+            serviceResponse.Data = products;
+            serviceResponse.Message = "Returned MRN Details";
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = HttpStatusCode.OK;
+            return Ok(serviceResponse);
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error Occured in MRNSPReportDates API : \n {ex.Message} \n{ex.InnerException}");
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"Error Occured in MRNSPReportDates API : \n {ex.Message}";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        return StatusCode(500, serviceResponse);
+    }
+}
+[HttpGet]
+public async Task<IActionResult> MRNSPReportDatesForTrans([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+{
+    ServiceResponse<IEnumerable<MRNSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<MRNSPReportForTrans>>();
+    try
+    {
+        var products = await _locationTransferRepository.MRNSPReportDatesForTrans(FromDate, ToDate);
+
+        if (products == null)
+        {
+            serviceResponse.Data = null;
+            serviceResponse.Message = $"MRN hasn't been found.";
+            serviceResponse.Success = false;
+            serviceResponse.StatusCode = HttpStatusCode.NotFound;
+            _logger.LogError($"MRN hasn't been found in db.");
+            return NotFound(serviceResponse);
+        }
+        else
+        {
+            serviceResponse.Data = products;
+            serviceResponse.Message = "Returned MRN Details";
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = HttpStatusCode.OK;
+            return Ok(serviceResponse);
+        }
+    }
+    catch (Exception ex)
+    {
+        _logger.LogError($"Error Occured in MRNSPReportDatesForTrans API : \n {ex.Message} \n{ex.InnerException}");
+        serviceResponse.Data = null;
+        serviceResponse.Message = $"Error Occured in MRNSPReportDatesForTrans API : \n {ex.Message}";
+        serviceResponse.Success = false;
+        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        return StatusCode(500, serviceResponse);
+    }
+}
 
     }
 }
