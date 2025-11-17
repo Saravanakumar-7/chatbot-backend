@@ -401,6 +401,26 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
+        public async Task<List<SourcingSpReport>> GetSourcingSPReportWithParamtras(string RFQNumber,string ItemNumber)
+        {
+            var result = _tipsSalesServiceDbContext
+            .Set<SourcingSpReport>()
+            .FromSqlInterpolated($"CALL Sourcing_Withparameter_tras({RFQNumber},{ItemNumber})")
+            .ToList();
+
+            return result;
+
+        }
+        public async Task<IEnumerable<SourcingSpReport>> GetSourcingSpReportWithdatetras(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsSalesServiceDbContext.Set<SourcingSpReport>()
+                        .FromSqlInterpolated($"CALL Sourcing_withdate_tras({FromDate},{ToDate})")
+                        .ToList();
+
+            return results;
+
+        }
+
         public async Task<IEnumerable<RfqSalesOrderSPReport>> GetRfqSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN, string SOStatus, string CustomerId)
         {
             var result = _tipsSalesServiceDbContext

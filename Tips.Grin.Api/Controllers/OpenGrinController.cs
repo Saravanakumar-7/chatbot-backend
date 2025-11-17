@@ -139,7 +139,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetOpenGrinSPReportForTrans([FromQuery] PagingParameter pagingParameter)
         {
-            ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>>();
+            ServiceResponse<IEnumerable<OpenGrinSpReportForTrs>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinSpReportForTrs>>();
             try
             {
                 var products = await _openGrinRepository.GetOpenGrinSPReportForTrans(pagingParameter);
@@ -508,16 +508,19 @@ namespace Tips.Grin.Api.Controllers
                 headerRow.CreateCell(4).SetCellValue("Receipt Ref No");
                 headerRow.CreateCell(5).SetCellValue("Project Number");
                 headerRow.CreateCell(6).SetCellValue("Item Number");
-                headerRow.CreateCell(7).SetCellValue("MPN");
-                headerRow.CreateCell(8).SetCellValue("Description");
-                headerRow.CreateCell(9).SetCellValue("UOM");
-                headerRow.CreateCell(10).SetCellValue("Qty");
-                headerRow.CreateCell(11).SetCellValue("Lot Number");
-                headerRow.CreateCell(12).SetCellValue("Item Type");
-                headerRow.CreateCell(13).SetCellValue("Warehouse");
-                headerRow.CreateCell(14).SetCellValue("Location");
-                headerRow.CreateCell(15).SetCellValue("Serial No");
-                headerRow.CreateCell(16).SetCellValue("Remarks");
+                headerRow.CreateCell(7).SetCellValue("Returnable");
+                headerRow.CreateCell(8).SetCellValue("MPN");                // shifted
+                headerRow.CreateCell(9).SetCellValue("Description");
+                headerRow.CreateCell(10).SetCellValue("UOM");
+                headerRow.CreateCell(11).SetCellValue("Qty");
+                headerRow.CreateCell(12).SetCellValue("Lot Number");
+                headerRow.CreateCell(13).SetCellValue("Item Type");
+                headerRow.CreateCell(14).SetCellValue("Warehouse");
+                headerRow.CreateCell(15).SetCellValue("Location");
+                headerRow.CreateCell(16).SetCellValue("Serial No");
+                headerRow.CreateCell(17).SetCellValue("Remarks");    
+
+
 
                 // Populate data
                 int rowIndex = 1;
@@ -531,16 +534,19 @@ namespace Tips.Grin.Api.Controllers
                     row.CreateCell(4).SetCellValue(item.ReceiptRefNo ?? "");
                     row.CreateCell(5).SetCellValue(item.ProjectNumber ?? "");
                     row.CreateCell(6).SetCellValue(item.ItemNumber ?? "");
-                    row.CreateCell(7).SetCellValue(item.MPN ?? "");
-                    row.CreateCell(8).SetCellValue(item.Description ?? "");
-                    row.CreateCell(9).SetCellValue(item.UOM ?? "");
-                    row.CreateCell(10).SetCellValue((double)(item.Qty ?? 0));
-                    row.CreateCell(11).SetCellValue(item.lotNumber ?? "");
-                    row.CreateCell(12).SetCellValue(item.ItemType?.ToString() ?? "");
-                    row.CreateCell(13).SetCellValue(item.Warehouse ?? "");
-                    row.CreateCell(14).SetCellValue(item.Location ?? "");
-                    row.CreateCell(15).SetCellValue(item.SerialNo ?? "");
-                    row.CreateCell(16).SetCellValue(item.Remarks ?? "");
+                    row.CreateCell(7).SetCellValue(item.Returnable == true ? "Yes" : "No");   // returnable
+                    row.CreateCell(8).SetCellValue(item.MPN ?? "");                           // MPN
+                    row.CreateCell(9).SetCellValue(item.Description ?? "");
+                    row.CreateCell(10).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(11).SetCellValue((double)(item.Qty ?? 0));
+                    row.CreateCell(12).SetCellValue(item.lotNumber ?? "");
+                    row.CreateCell(13).SetCellValue(item.ItemType?.ToString() ?? "");
+                    row.CreateCell(14).SetCellValue(item.Warehouse ?? "");
+                    row.CreateCell(15).SetCellValue(item.Location ?? "");
+                    row.CreateCell(16).SetCellValue(item.SerialNo ?? "");
+                    row.CreateCell(17).SetCellValue(item.Remarks ?? "");
+              
+
                 }
 
 
@@ -605,7 +611,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> GetOpenGrinSPReportWithParamForAvi([FromBody] OpenGrinReportWithParamForAviDto openGrinReportWithParamDto)
         {
-            ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>>();
+            ServiceResponse<IEnumerable<OpenGrinSpReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinSpReportForAvi>>();
             try
             {
                 var products = await _openGrinRepository.GetOpenGrinSPReportWithParamForAvi(openGrinReportWithParamDto.OpenGrinNumber, openGrinReportWithParamDto.SenderName,
@@ -646,7 +652,7 @@ namespace Tips.Grin.Api.Controllers
         public async Task<IActionResult> ExportGetOpenGrinSPReportWithParamOrDateToExcelForAvi([FromBody] OpenGrinReportWithParamAndDateForAviDto openGrinReportWithParamAndDateForAviDto)
         {
 
-            ServiceResponse<OpenGrinSpReportForTrans> serviceResponse = new ServiceResponse<OpenGrinSpReportForTrans>();
+            ServiceResponse<OpenGrinSpReportForAvi> serviceResponse = new ServiceResponse<OpenGrinSpReportForAvi>();
             try
             {
 
@@ -697,7 +703,7 @@ namespace Tips.Grin.Api.Controllers
 
                 }
 
-                var openGrinList = Enumerable.Empty<OpenGrinSpReportForTrans>();
+                var openGrinList = Enumerable.Empty<OpenGrinSpReportForAvi>();
 
                 if (hasParams && !hasDate)
                 {
@@ -790,7 +796,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetOpenGrinSPReportWithDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
-            ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinSpReportForTrans>>();
+            ServiceResponse<IEnumerable<OpenGrinSpReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<OpenGrinSpReportForAvi>>();
             try
             {
                 var products = await _openGrinRepository.GetOpenGrinSPReportWithDateForAvi(FromDate, ToDate);

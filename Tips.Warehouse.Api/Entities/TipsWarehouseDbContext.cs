@@ -80,6 +80,7 @@ namespace Tips.Warehouse.Api.Entities
 
         public DbSet<LocationTransferPartNo> LocationTransferPartNos { get; set; }
         public DbSet<ConsumptionSPReport> ConsumptionSPReports { get; set; }
+        public DbSet<InvoiceSpReportWithoutWorkOrderNoForTras> InvoiceSpReportWithoutWorkOrderNoForTras { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -128,6 +129,7 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<InventorySumSPReport>().HasNoKey();
             modelBuilder.Entity<DOSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<DoVsInvoiceSpReport>().HasNoKey();
+            modelBuilder.Entity<InvoiceSpReportWithoutWorkOrderNoForTras>().HasNoKey();
             
 
             base.OnModelCreating(modelBuilder);

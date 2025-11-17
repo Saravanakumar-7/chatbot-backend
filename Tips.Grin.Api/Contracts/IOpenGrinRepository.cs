@@ -22,15 +22,15 @@ namespace Tips.Grin.Api.Contracts
         Task<IEnumerable<OpenGrinDataListDto>> GetAllOpenGrinDataList();
         Task<string> GenerateOpenGrinNumberForAvision();
         Task<PagedList<OpenGrin_SPReport>> GetOpenGrinSPReport(PagingParameter pagingParameter);
-        Task<PagedList<OpenGrinSpReportForTrans>> GetOpenGrinSPReportForTrans(PagingParameter pagingParameter);
+        Task<PagedList<OpenGrinSpReportForTrs>> GetOpenGrinSPReportForTrans(PagingParameter pagingParameter);
         Task<IEnumerable<OpenGrin_SPReport>> GetOpenGrinSPReportWithParam(string? openGrinNumber, string? senderName, string? receiptRefNo);
         Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithParamForTrans(string? itemNumber, string? openGrinNumber, string? senderName, string? receiptRefNo
                                                                                                                                          , string? ProjectNumber);
-        Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithParamForAvi(string? openGrinNumber, string? senderName, string? receiptRefNo
+        Task<IEnumerable<OpenGrinSpReportForAvi>> GetOpenGrinSPReportWithParamForAvi(string? openGrinNumber, string? senderName, string? receiptRefNo
                                                                                                                                          , string? ProjectNumber);
         Task<IEnumerable<OpenGrin_SPReport>> GetOpenGrinSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithDateForTrans(DateTime? FromDate, DateTime? ToDate);
-        Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<OpenGrinSpReportForAvi>> GetOpenGrinSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<OpenGrinPartSORefDto>> GetAllOpenGrinSORefDetails();
         Task<string> UpdateOpenGrinDetails(OpenGrin openGrin);
         Task<IEnumerable<OpenGrinConsumptionDto>> GetOpenGrinConsumptionDetailsByPartNoAndLotNo(List<string> partNumbers, List<string> lotNumbers);

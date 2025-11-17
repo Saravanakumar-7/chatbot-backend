@@ -95,5 +95,8 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<SalesOrderFGItemNumberDto>> GetAllSalesOrderFGItemNoListByProjectNo(string projectNo);
         Task<IEnumerable<SalesRevNoSPReportParam>> GetAllSalesRevisionSPReportWithParam(string? LeadId, string? SalesOrderNumber, string? ItemNumber);
         Task<IEnumerable<SalesRevNoSPReportParam>> GetAllSalesRevisionSPReportWithDate(DateTime? FromDate, DateTime? ToDate);
+        Task<List<SourcingSpReport>> GetSourcingSPReportWithParamtras(string RFQNumber, string ItemNumber);
+        Task<IEnumerable<SourcingSpReport>> GetSourcingSpReportWithdatetras(DateTime? FromDate, DateTime? ToDate);
+
     }
 }

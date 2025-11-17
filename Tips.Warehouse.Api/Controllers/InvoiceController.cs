@@ -259,6 +259,82 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
         [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetInvoiceSpReportWithoutWorkOrderNoWithParamForTras([FromBody] InvoiceSPReportWithParamForTransDTO invoiceSPReport)
+        {
+            ServiceResponse<IEnumerable<InvoiceSpReportWithoutWorkOrderNoForTras>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSpReportWithoutWorkOrderNoForTras>>();
+            try
+            {
+                var products = await _invoiceRepository.GetInvoiceSpReportWithoutWorkOrderNoWithParamForTras(invoiceSPReport.InvoiceNumber, invoiceSPReport.DONumber,
+                                                                                    invoiceSPReport.CustomerId, invoiceSPReport.CustomerName, invoiceSPReport.SalesOrderNumber,
+                                                                                    invoiceSPReport.Location, invoiceSPReport.Warehouse, invoiceSPReport.KPN,
+                                                                                    invoiceSPReport.MPN, invoiceSPReport.IssuedTo, invoiceSPReport.ProjectNumber);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InvoiceSpReportWithoutWorkOrderNo hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"InvoiceSpReportWithoutWorkOrderNo hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InvoiceSpReportWithoutWorkOrderNo Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetInvoiceSpReportWithoutWorkOrderNoWithParam API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetInvoiceSpReportWithoutWorkOrderNoWithParam API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetInvoiceSpReportWithoutWorkOrderNoWithInvoiceDateForTras([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<InvoiceSpReportWithoutWorkOrderNoForTras>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceSpReportWithoutWorkOrderNoForTras>>();
+            try
+            {
+                var products = await _invoiceRepository.GetInvoiceSpReportWithoutWorkOrderNoWithInvoiceDateForTras(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InvoiceSpReportWithoutWorkOrderNoForTras hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"InvoiceSpReportWithoutWorkOrderNoForTras hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InvoiceSpReportWithoutWorkOrderNoForTras Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetInvoiceSpReportWithoutWorkOrderNoWithInvoiceDateForTras API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetInvoiceSpReportWithoutWorkOrderNoWithInvoiceDateForTras API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> InvoiceAdditionalChargesSPReportWithParameterForTrans([FromBody] InvoiceAdditionalchargeSPInputDto InvoiceAdditionalcharge)
         {
             ServiceResponse<IEnumerable<InvoiceAdditionalChargesSpReport>> serviceResponse = new ServiceResponse<IEnumerable<InvoiceAdditionalChargesSpReport>>();

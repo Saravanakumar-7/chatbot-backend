@@ -7364,6 +7364,84 @@ namespace Tips.SalesService.Api.Controllers
 
         }
 
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetSourcingSPReportWithParamtras([FromBody] SourcingInputParam sourcingInputParam)
+
+        {
+            ServiceResponse<IEnumerable<SourcingSpReport>> serviceResponse = new ServiceResponse<IEnumerable<SourcingSpReport>>();
+            try
+            {
+                var products = await _repository.GetSourcingSPReportWithParamtras(sourcingInputParam.RFQNumber, sourcingInputParam.ItemNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SourcingSpReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SourcingSpReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned All SourcingSpReport Successfully");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned All SourcingSpReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetSourcingSPReportWithParamtras API : \n{ex.Message} \n{ex.InnerException}"); ;
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetSourcingSPReportWithParamtras API : \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetSourcingSpReportWithdatetras([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<SourcingSpReport>> serviceResponse = new ServiceResponse<IEnumerable<SourcingSpReport>>();
+            try
+            {
+                var products = await _repository.GetSourcingSpReportWithdatetras(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SourcingSpReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"SourcingSpReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned All SourcingSpReport Successfully");
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned All SourcingSpReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetSourcingSPReportWithParam API : \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetSourcingSPReportWithParam API : \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
         //[HttpGet]
         //public async Task<IActionResult> GetSalesOrderNoDetailsByCustomerId(string Customerid)
         //{

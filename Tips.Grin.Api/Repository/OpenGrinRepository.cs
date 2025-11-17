@@ -54,11 +54,11 @@ namespace Tips.Grin.Api.Repository
             return result;
         }
 
-        public async Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithParamForAvi(string? openGrinNumber, string? senderName, string? receiptRefNo
+        public async Task<IEnumerable<OpenGrinSpReportForAvi>> GetOpenGrinSPReportWithParamForAvi(string? openGrinNumber, string? senderName, string? receiptRefNo
                                                                                                                                          , string? ProjectNumber)
         {
             var result = _tipsGrinDbContext
-            .Set<OpenGrinSpReportForTrans>()
+            .Set<OpenGrinSpReportForAvi>()
             .FromSqlInterpolated($"CALL Open_Grin_Report_withparameter_Avi({openGrinNumber},{senderName},{receiptRefNo},{ProjectNumber})")
             .ToList();
 
@@ -82,9 +82,9 @@ namespace Tips.Grin.Api.Repository
             return results;
         }
 
-        public async Task<IEnumerable<OpenGrinSpReportForTrans>> GetOpenGrinSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate)
+        public async Task<IEnumerable<OpenGrinSpReportForAvi>> GetOpenGrinSPReportWithDateForAvi(DateTime? FromDate, DateTime? ToDate)
         {
-            var results = _tipsGrinDbContext.Set<OpenGrinSpReportForTrans>()
+            var results = _tipsGrinDbContext.Set<OpenGrinSpReportForAvi>()
                       .FromSqlInterpolated($"CALL Open_Grin_Report_withdate_Avi({FromDate},{ToDate})")
                       .ToList();
 
@@ -106,14 +106,14 @@ namespace Tips.Grin.Api.Repository
 
             return PagedList<OpenGrin_SPReport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
-        public async Task<PagedList<OpenGrinSpReportForTrans>> GetOpenGrinSPReportForTrans(PagingParameter pagingParameter)
+        public async Task<PagedList<OpenGrinSpReportForTrs>> GetOpenGrinSPReportForTrans(PagingParameter pagingParameter)
         {
 
-            var results = _tipsGrinDbContext.Set<OpenGrinSpReportForTrans>()
+            var results = _tipsGrinDbContext.Set<OpenGrinSpReportForTrs>()
                       .FromSqlInterpolated($"CALL Open_Grin_Report_tras")
                       .ToList();
 
-            return PagedList<OpenGrinSpReportForTrans>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+            return PagedList<OpenGrinSpReportForTrs>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
         }
         public async Task<string> GenerateOpenGrinNumber()
         {

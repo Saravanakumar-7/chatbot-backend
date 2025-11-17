@@ -50,6 +50,7 @@ namespace Tips.Grin.Api.Entities
         public DbSet<IQCConfirmation_SPReport> IQCConfirmation_SPReports { get; set; }
         public DbSet<GrinSPReportForTrans> GrinSPReportForTrans { get; set; }
         public DbSet<OpenGrinSpReportForTrans> OpenGrinSpReports { get; set; }
+        public DbSet<OpenGrinSpReportForTrs> OpenGrinSpReportForTrs { get; set; }
         public DbSet<IQCConfirmationSPReportForTrans> IQCConfirmationSPReportForTrans { get; set; }
         public DbSet<OpenGrinForGrin> OpenGrinForGrins { get; set; }
         public DbSet<OpenGrinForGrinItems> OpenGrinForGrinItems { get; set; }
@@ -91,6 +92,7 @@ namespace Tips.Grin.Api.Entities
             modelBuilder.Entity<GrinSPReportForAvi>().HasNoKey();
             modelBuilder.Entity<BinningSPReportAvi>().HasNoKey();
             modelBuilder.Entity<PoAndGrinUnitPriceSPReport>().HasNoKey();
+            modelBuilder.Entity<OpenGrinSpReportForTrs>().HasNoKey();
             
         }
     }
