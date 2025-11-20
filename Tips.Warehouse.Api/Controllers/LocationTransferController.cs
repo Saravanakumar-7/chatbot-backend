@@ -381,6 +381,10 @@ namespace Tips.Warehouse.Api.Controllers
 
 
                                         inventoryItem.Balance_Quantity -= Convert.ToDecimal(transferQty);
+                                        if (inventoryItem.Balance_Quantity < 0)
+                                        {
+                                            inventoryItem.Balance_Quantity = 0;
+                                        }
                                         inventoryItem.IsStockAvailable = false;
                                         inventoryItem.ReferenceID = LocationTransReferId;
                                         inventoryItem.ReferenceIDFrom = "LocationTransfer";

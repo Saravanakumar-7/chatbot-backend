@@ -231,8 +231,16 @@ namespace Tips.Warehouse.Api.Controllers
 
                                         await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost);
 
-                                        inventoryItem.Balance_Quantity -= Convert.ToDecimal(transferQty);
-                                        inventoryItem.IsStockAvailable = false;
+
+                                        inventoryItem.Balance_Quantity = Convert.ToDecimal(transferQty) - inventoryItem.Balance_Quantity;
+                                        if (inventoryItem.Balance_Quantity == 0)
+                                        {
+                                            inventoryItem.IsStockAvailable = false;
+                                        }
+                                        else
+                                        {
+                                            inventoryItem.IsStockAvailable = true;
+                                        }
                                         inventoryItem.ReferenceID = LocationTransReferId;
                                         inventoryItem.ReferenceIDFrom = "LocationTransferPartNo";
 
