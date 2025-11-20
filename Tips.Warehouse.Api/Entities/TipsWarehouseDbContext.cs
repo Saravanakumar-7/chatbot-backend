@@ -56,6 +56,7 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<OpenDeliveryOrderSPReport> RecievableODOs { get; set; }
         public DbSet<DailyDOReport> DailyDOReports { get; set; }
         public DbSet<ReturnInvoiceSPResport> ReturnInvoiceSPResports { get; set; }
+        public DbSet<ReturnInvoiceSPResportWithoutParam> ReturnInvoiceSPResportWithoutParam { get; set; }
         public DbSet<ReturnInvoiceSPResportForTras> ReturnInvoiceSPResportForTras { get; set; }
         public DbSet<ReturnInvoiceSPResportForAvi> ReturnInvoiceSPResportForAvi { get; set; }
         public DbSet<ReturnOpenDeliveryOrderSPResport> ReturnOpenDeliveryOrderSPResports { get; set; }
@@ -130,6 +131,7 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<DOSPReportForTrans>().HasNoKey();
             modelBuilder.Entity<DoVsInvoiceSpReport>().HasNoKey();
             modelBuilder.Entity<InvoiceSpReportWithoutWorkOrderNoForTras>().HasNoKey();
+            modelBuilder.Entity<ReturnInvoiceSPResportWithoutParam>().HasNoKey();
             
 
             base.OnModelCreating(modelBuilder);

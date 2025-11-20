@@ -35,6 +35,7 @@
         public string? InvoiceNumber { get; set; }
 
         public string? DoNumber { get; set; }
+        public string? LeadId { get; set; }
         public string? CustomerName { get; set; }
         public string? CustomerAliasName { get; set; }
         public string? SalesOrderNumber { get; set; }

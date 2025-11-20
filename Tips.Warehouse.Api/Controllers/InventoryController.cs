@@ -4176,6 +4176,108 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+
+        [HttpPost]
+        public async Task<IActionResult> ExportGetWIPInventorySPReportsWithParamToExcel([FromBody] InventoryWIPSPReportDto InventoryWIPReportDto)
+        {
+
+            ServiceResponse<InventoryWIPSPReport> serviceResponse = new ServiceResponse<InventoryWIPSPReport>();
+            try
+            {
+
+                if (InventoryWIPReportDto is null)
+                {
+                    _logger.LogError("InventoryWIPSPReportDto object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "InventoryWIPSPReportDto object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid InventoryWIPSPReportDto object sent from client.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid model object";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+
+              
+
+                var InventoryWIPSPReportDetails = Enumerable.Empty<InventoryWIPSPReport>();
+
+
+                InventoryWIPSPReportDetails = await _inventoryRepository.GetWIPInventorySPReportsWithParam(InventoryWIPReportDto.PartNumber, InventoryWIPReportDto.Warehouse,
+                                                                                 InventoryWIPReportDto.Location, InventoryWIPReportDto.ProjectNumber);
+
+
+
+
+                // Create Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("InventoryWIPReport");
+
+                // Header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Project Number");
+                headerRow.CreateCell(1).SetCellValue("Part Number");
+                headerRow.CreateCell(2).SetCellValue("MPN");
+                headerRow.CreateCell(3).SetCellValue("Description");
+                headerRow.CreateCell(4).SetCellValue("Part Type");
+                headerRow.CreateCell(5).SetCellValue("UOM");
+                headerRow.CreateCell(6).SetCellValue("Qty");
+                headerRow.CreateCell(7).SetCellValue("UOC");
+                headerRow.CreateCell(8).SetCellValue("Commodity");
+                headerRow.CreateCell(9).SetCellValue("Unit Price");
+                headerRow.CreateCell(10).SetCellValue("Total Value");
+                headerRow.CreateCell(11).SetCellValue("Warehouse");
+                headerRow.CreateCell(12).SetCellValue("Location");
+                headerRow.CreateCell(13).SetCellValue("Lot Number");
+                headerRow.CreateCell(14).SetCellValue("Shop Order No");
+
+                // Populate data
+                int rowIndex = 1;
+                foreach (var item in InventoryWIPSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+
+                    row.CreateCell(0).SetCellValue(item.ProjectNumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.PartNumber ?? "");
+                    row.CreateCell(2).SetCellValue(item.MPN ?? "");
+                    row.CreateCell(3).SetCellValue(item.Description ?? "");
+                    row.CreateCell(4).SetCellValue(item.PartType.HasValue ? item.PartType.Value : 0);
+                    row.CreateCell(5).SetCellValue(item.UOM ?? "");
+                    row.CreateCell(6).SetCellValue(item.Qty.HasValue ? Convert.ToDouble(item.Qty.Value) : 0);
+                    row.CreateCell(7).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(8).SetCellValue(item.Commodity ?? "");
+                    row.CreateCell(9).SetCellValue(item.UnitPrice.HasValue ? Convert.ToDouble(item.UnitPrice.Value) : 0);
+                    row.CreateCell(10).SetCellValue(item.TotalValue.HasValue ? Convert.ToDouble(item.TotalValue.Value) : 0);
+                    row.CreateCell(11).SetCellValue(item.Warehouse ?? "");
+                    row.CreateCell(12).SetCellValue(item.Location ?? "");
+                    row.CreateCell(13).SetCellValue(item.LotNumber ?? "");
+                    row.CreateCell(14).SetCellValue(item.shopOrderNo ?? "");
+                }
+
+
+                // Export Excel
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+                    return File(excelBytes,
+                                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "InventoryWIPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
+        }
+
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetInventorySPReportsWithParam([FromBody] InventorySPReportDto inventorySPReportDto)
         {

@@ -10,13 +10,31 @@
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
-        // Fields from rfqsourcingitems
         public string? ItemNumber { get; set; }
         public string? ItemDescription { get; set; }
         public decimal? QtyReq { get; set; }
         public decimal? Count { get; set; }
         public string? Manufacturer_Mftr_PartNumber { get; set; }
         public string? Customer_Mftr_PartNumber { get; set; }
+
+        public string? Vendor { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public string? UnitPricePer { get; set; }
+        public string? Currency { get; set; }
+        public string? MOQ { get; set; }
+        public string? LeadTime { get; set; }
+        public decimal? Freight { get; set; }
+        public decimal? Duties { get; set; }
+        public decimal? QuoteQty { get; set; }
+        public DateTime? QuoteDate { get; set; }
+        public DateTime? QuoteValidity { get; set; }
+        public bool? Primary { get; set; }
+        public decimal? LandingPrice { get; set; }
+        public decimal? MoqCost { get; set; }
+        public string? VendorId { get; set; }
+        public string? PaymentTerms { get; set; }
+        public string? Remarks { get; set; }
+        public string? FileIds { get; set; }
     }
 
     public class SourcingInputParam
