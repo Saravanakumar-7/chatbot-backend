@@ -23,11 +23,12 @@ namespace Tips.Warehouse.Api.Repository
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
         }
-        public async Task<IEnumerable<ReturnInvoiceSPResport>> ReturnInvoiceSPReportWithParameter(string InvoiceNumber, string DoNumber, string CustomerName, string CustomerAliasName, string SalesOrderNumber, string Location, string Warehouse, string KPN, string MPN, string IssuedTo)
+
+        public async Task<IEnumerable<ReturnInvoiceSPResport>> ReturnInvoiceSPReportWithParameter(string InvoiceNumber, string DoNumber,string LeadId, string CustomerName, string CustomerAliasName, string SalesOrderNumber, string Location, string Warehouse, string KPN, string MPN, string IssuedTo)
         {
             var result = _tipsWarehouseDbContext
             .Set<ReturnInvoiceSPResport>()
-            .FromSqlInterpolated($"CALL Return_Invoice_Report_withParameter({InvoiceNumber},{DoNumber},{CustomerName},{CustomerAliasName},{SalesOrderNumber},{Location},{Warehouse},{KPN},{MPN},{IssuedTo})")
+            .FromSqlInterpolated($"CALL Return_Invoice_Report_withParameter({InvoiceNumber},{DoNumber},{LeadId},{CustomerName},{CustomerAliasName},{SalesOrderNumber},{Location},{Warehouse},{KPN},{MPN},{IssuedTo})")
             .ToList();
 
             return result;
@@ -82,13 +83,13 @@ namespace Tips.Warehouse.Api.Repository
 
             return results;
         }
-        public async Task<PagedList<ReturnInvoiceSPResport>> GetReturnInvoiceSPResport(PagingParameter pagingParameter)
+        public async Task<PagedList<ReturnInvoiceSPResportWithoutParam>> GetReturnInvoiceSPResport(PagingParameter pagingParameter)
         {
-            var results = _tipsWarehouseDbContext.Set<ReturnInvoiceSPResport>()
+            var results = _tipsWarehouseDbContext.Set<ReturnInvoiceSPResportWithoutParam>()
                       .FromSqlInterpolated($"CALL Return_Invoice_Report")
                       .ToList();
 
-            return PagedList<ReturnInvoiceSPResport>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
+            return PagedList<ReturnInvoiceSPResportWithoutParam>.ToPagedList(results.AsQueryable(), pagingParameter.PageNumber, pagingParameter.PageSize);
 
 
         }
