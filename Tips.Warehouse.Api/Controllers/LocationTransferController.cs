@@ -401,7 +401,7 @@ namespace Tips.Warehouse.Api.Controllers
                                         inventoryPost.UOM = toUOM;
                                         inventoryPost.Min = inventoryItem.Min;
                                         inventoryPost.Max = inventoryItem.Max;
-                                        inventoryPost.Balance_Quantity = Convert.ToDecimal(transferQty);
+                                        inventoryPost.Balance_Quantity = inventoryTranctionPost.Issued_Quantity;
                                         inventoryPost.GrinMaterialType = inventoryItem.GrinMaterialType;
                                         inventoryPost.shopOrderNo = inventoryItem.shopOrderNo;
                                         inventoryPost.Unit = inventoryItem.Unit;
