@@ -232,15 +232,12 @@ namespace Tips.Warehouse.Api.Controllers
                                         await _inventoryTranctionRepository.CreateInventoryTransaction(inventoryTranctionPost);
 
 
-                                        inventoryItem.Balance_Quantity = Convert.ToDecimal(transferQty) - inventoryItem.Balance_Quantity;
-                                        if (inventoryItem.Balance_Quantity == 0)
+                                        inventoryItem.Balance_Quantity -= Convert.ToDecimal(transferQty);
+                                        if (inventoryItem.Balance_Quantity < 0)
                                         {
-                                            inventoryItem.IsStockAvailable = false;
+                                            inventoryItem.Balance_Quantity = 0;
                                         }
-                                        else
-                                        {
-                                            inventoryItem.IsStockAvailable = true;
-                                        }
+                                        inventoryItem.IsStockAvailable = false;
                                         inventoryItem.ReferenceID = LocationTransReferId;
                                         inventoryItem.ReferenceIDFrom = "LocationTransferPartNo";
 
@@ -256,7 +253,7 @@ namespace Tips.Warehouse.Api.Controllers
                                         inventoryPost.UOM = toUOM;
                                         inventoryPost.Min = inventoryItem.Min;
                                         inventoryPost.Max = inventoryItem.Max;
-                                        inventoryPost.Balance_Quantity = Convert.ToDecimal(transferQty);
+                                        inventoryPost.Balance_Quantity = inventoryTranctionPost.Issued_Quantity;
                                         inventoryPost.GrinMaterialType = inventoryItem.GrinMaterialType;
                                         inventoryPost.shopOrderNo = inventoryItem.shopOrderNo;
                                         inventoryPost.Unit = inventoryItem.Unit;
