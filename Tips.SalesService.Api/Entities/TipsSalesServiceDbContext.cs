@@ -138,6 +138,7 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<SalesOrderQtyDetailsDto> SalesOrderQtyDetailsDtos { get; set; }
         public DbSet<SalesServiceFileUpload> SalesServiceFileUpload { get; set; }
         public DbSet<SourcingSpReport> SourcingSpReport { get; set; }
+        public DbSet<SalesOrderSoStatusSPReportForTrans> SalesOrderSoStatusSPReportForTrans { get; set; }
         
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -199,6 +200,7 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<FQToFSFirstQuoteSentSPReport>().HasNoKey();
             modelBuilder.Entity<FQToFSLatestSOSPReport>().HasNoKey();
             modelBuilder.Entity<SourcingSpReport>().HasNoKey();
+            modelBuilder.Entity<SalesOrderSoStatusSPReportForTrans>().HasNoKey();
             
         }
 

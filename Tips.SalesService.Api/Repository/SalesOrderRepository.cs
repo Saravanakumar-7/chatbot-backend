@@ -191,10 +191,10 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
-        public async Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSOStatusSPReportWithParamForTrans(string ProjectNumber, string CustomerName, string SalesOrderNumber, string SOStatus, string KPN)
+        public async Task<IEnumerable<SalesOrderSoStatusSPReportForTrans>> GetSalesOrderSOStatusSPReportWithParamForTrans(string ProjectNumber, string CustomerName, string SalesOrderNumber, string SOStatus, string KPN)
         {
             var result = _tipsSalesServiceDbContext
-            .Set<SalesOrderSPReportForTrans>()
+            .Set<SalesOrderSoStatusSPReportForTrans>()
             .FromSqlInterpolated($"CALL SalesOrder_withparameter_Report_tras_SOStatus({ProjectNumber},{CustomerName},{SalesOrderNumber},{SOStatus},{KPN})")
             .ToList();
 

@@ -50,7 +50,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<IEnumerable<InitialAdvanceCustomerSPReport>> GetInitialAdvanceCollectionTrackerForCustomerIdSPReport(string CustomerId);
         Task<IEnumerable<SalesOrderSPReport>> GetSalesOrderSPReportWithParam(string CustomerName, string SalesOrderNumber, string KPN);
         Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSPReportWithParamForTrans(string ProjectNumber, string CustomerName, string SalesOrderNumber, string SOStatus, string KPN);
-        Task<IEnumerable<SalesOrderSPReportForTrans>> GetSalesOrderSOStatusSPReportWithParamForTrans(string ProjectNumber, string CustomerName, string SalesOrderNumber, string SOStatus, string KPN);
+        Task<IEnumerable<SalesOrderSoStatusSPReportForTrans>> GetSalesOrderSOStatusSPReportWithParamForTrans(string ProjectNumber, string CustomerName, string SalesOrderNumber, string SOStatus, string KPN);
         Task<IEnumerable<SalesOrderQtyDetailsDto>> GetSalesOrderQtySPReportWithParam(string itemNo, decimal bomQty);
         Task<List<SalesOrderDashboardSPReport>> GetSalesOrderDashboardSPReportWithParam(string Bucket_Id);
         Task<List<TransactionDashboardSPReport>> GetTransactionDashboardSPReportWithParam();

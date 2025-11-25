@@ -2939,7 +2939,7 @@ namespace Tips.SalesService.Api.Controllers
         public async Task<IActionResult> GetSalesOrderSOStatusSPReportWithParamForTrans([FromBody] SalesOrderSPReportForTransDTO salesOrderSPResport)
 
         {
-            ServiceResponse<IEnumerable<SalesOrderSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSPReportForTrans>>();
+            ServiceResponse<IEnumerable<SalesOrderSoStatusSPReportForTrans>> serviceResponse = new ServiceResponse<IEnumerable<SalesOrderSoStatusSPReportForTrans>>();
             try
             {
                 var products = await _repository.GetSalesOrderSOStatusSPReportWithParamForTrans(salesOrderSPResport.ProjectNumber,
