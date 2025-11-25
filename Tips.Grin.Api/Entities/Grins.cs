@@ -88,7 +88,7 @@ namespace Tips.Grin.Api.Entities
 
         public bool TallyStatus { get; set; } = false;
         public string? TallyVoucher { get; set; }
-        
+        public DateTime? TallyDate { get; set; }
         public string Unit { get; set; }
 
         public string? CreatedBy { get; set; }

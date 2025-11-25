@@ -192,7 +192,7 @@ namespace Tips.Warehouse.Api.Controllers
                         var itemObject = itemData.data;
 
                         //Add Inventory table
-                        var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLotNumber(fromPartNumber, fromProjectNumber, fromLotnumber);
+                        var inventoryDetails = await _inventoryRepository.GetInventoryDetailsByItemNumberandLocation(fromPartNumber, fromLocation, fromWarehouse, fromProjectNumber, fromLotnumber);
                         if (inventoryDetails != null && inventoryDetails.Count() > 0)
                         {
                             var inventoryBalQty = inventoryDetails.Sum(x => x.Balance_Quantity);
