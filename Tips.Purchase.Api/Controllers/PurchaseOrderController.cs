@@ -3674,10 +3674,10 @@ namespace Tips.Purchase.Api.Controllers
                     poProjectNos.ReceivedQty = item.ProjectQty;
                     if (poProjectNos.BalanceQty >= dispatchedQty)
                     {
-                        if (poProjectNos.BalanceQty == dispatchedQty)
-                        {
-                            //poProjectNos.PoAddProjectStatus = true;
-                        }
+                        //if (poProjectNos.BalanceQty == dispatchedQty)
+                        //{
+                        //    //poProjectNos.PoAddProjectStatus = true;
+                        //}
                         poProjectNos.BalanceQty -= dispatchedQty;
                         dispatchedQty = 0;
                         break;
