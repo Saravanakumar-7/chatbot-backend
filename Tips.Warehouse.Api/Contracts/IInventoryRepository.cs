@@ -58,6 +58,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<ConsumptionInventoryDto> GetConsumptionInventoryByItemNoAndProjectNo(string itemNumber, string projectNumber);
         Task<Inventory> GetInventoryDetailsByGrinNo(string GrinNo, string ItemNumber, string ProjectNumber);
         Task<Inventory> GetInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber);
+        Task<Inventory> GetInventoryDetailsByProjectNoandLotNo(string ProjectNumber, string LotNumber);
         Task<IEnumerable<GetInventoryListByItemNo>> GetInventoryListByItemNo(string ItemNumber );
         Task<Inventory> GetInventoryDetailsByItemNoProjectNoUnitWarehouseAndLocation(string itemNumber, string projectNumber, string unit, string warehouse, string location);
         Task<IEnumerable<Inventory>> GetAllInventoryWithItems(InventorySearchDto inventorySearch);
@@ -116,6 +117,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<Inventory>> GetInventoryOpenGrinForGrinAndOpenGrinForIQCReport(string PartNumber, string Description, string ProjectNumber, string Warehouse, string Location);
         Task<IEnumerable<Inventory>> GetInventoryNotUseableReport(string PartNumber, string Description, string ProjectNumber, string Warehouse, string Location);
         Task<Inventory> GetIQCInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber);
+        Task<Inventory> GetIQCInventoryDetailsByProjectNoandLotNumber(string ProjectNumber, string LotNumber);
         Task<Inventory> GetOPGIQCInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber);
         Task<List<Inventory>> GetIQCItemInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber);
         Task<List<Inventory>> GetAllIQCInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber);

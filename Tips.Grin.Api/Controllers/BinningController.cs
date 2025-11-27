@@ -612,6 +612,7 @@ namespace Tips.Grin.Api.Controllers
                         {
 
                             var grinId = binningsItem.GrinPartId;
+                            var grinPartDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinId);
 
                             //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
                             //"GetItemMasterByItemNumber?", "&ItemNumber=", binningsItem.ItemNumber));
@@ -650,10 +651,32 @@ namespace Tips.Grin.Api.Controllers
                                 var grinPartsIds = binningsItem.GrinPartId;
                                 var projectNos = location.ProjectNumber;
                                 var encodedprojectNos = Uri.EscapeDataString(projectNos);
+                                var lotNumber = grinPartDetails.LotNumber;
+                                if (string.IsNullOrWhiteSpace(lotNumber))
+                                {
+                                    var errorMessage = $"Lot Number not found for Grin Part Id: {grinPartId}";
+
+                                    _logger.LogError(errorMessage);
+
+                                    serviceResponse.Data = null;
+                                    serviceResponse.Message = errorMessage;
+                                    serviceResponse.Success = false;
+                                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+
+                                    return BadRequest(serviceResponse);
+                                }
+
+                                var encodedlotNumber = Uri.EscapeDataString(lotNumber);
+
+
 
                                 var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                    $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
+                                   $"GetIQCInventoryDetailsByProjectNoandLotNumber?ProjectNumber={encodedprojectNos}&LotNumber={encodedlotNumber}"));
                                 request1.Headers.Add("Authorization", token1);
+
+                                //var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                                //    $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
+                                //request1.Headers.Add("Authorization", token1);
 
                                 var inventoryObjectResult = await client1.SendAsync(request1);
                                 //if (inventoryObjectResult.StatusCode != HttpStatusCode.OK) getInvGrinId = inventoryObjectResult.StatusCode;
@@ -898,6 +921,7 @@ namespace Tips.Grin.Api.Controllers
 
 
                             var grinId = binningsItem.GrinPartId;
+                            var grinPartDetails = await _grinPartsRepository.GetGrinPartsDetailsbyGrinPartId(grinId);
 
                             //var itemMasterObjectResult = await _httpClient.GetAsync(string.Concat(_config["ItemMasterEnggAPI"],
                             //"GetItemMasterByItemNumber?", "&ItemNumber=", binningsItem.ItemNumber));
@@ -935,10 +959,35 @@ namespace Tips.Grin.Api.Controllers
                                 var grinPartsIds = binningsItem.GrinPartId;
                                 var projectNos = location.ProjectNumber;
                                 var encodedprojectNos = Uri.EscapeDataString(projectNos);
+                                var lotNumber = grinPartDetails.LotNumber;
+                                if (string.IsNullOrWhiteSpace(lotNumber))
+                                {
+                                    var errorMessage = $"Lot Number not found for Grin Part Id: {grinPartId}";
+
+                                    _logger.LogError(errorMessage);
+
+                                    serviceResponse.Data = null;
+                                    serviceResponse.Message = errorMessage;
+                                    serviceResponse.Success = false;
+                                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+
+                                    return BadRequest(serviceResponse);
+                                }
+
+                                var encodedlotNumber = Uri.EscapeDataString(lotNumber);
+
+
 
                                 var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                    $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
+                                   $"GetIQCInventoryDetailsByProjectNoandLotNumber?ProjectNumber={encodedprojectNos}&LotNumber={encodedlotNumber}"));
                                 request1.Headers.Add("Authorization", token1);
+
+
+
+
+                                //var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                                //    $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
+                                //request1.Headers.Add("Authorization", token1);
 
                                 var inventoryObjectResult = await client1.SendAsync(request1);
 
@@ -1518,10 +1567,33 @@ namespace Tips.Grin.Api.Controllers
                             var grinPartsIds = binningsItemsDto.GrinPartId;
                             var projectNos = location.ProjectNumber;
                             var encodedprojectNos = Uri.EscapeDataString(projectNos);
+                            var lotNumber = grinPartDetails.LotNumber;
+
+                            if (string.IsNullOrWhiteSpace(lotNumber))
+                            {
+                                var errorMessage = $"Lot Number not found for Grin Part Id: {grinPartId}";
+
+                                _logger.LogError(errorMessage);
+
+                                serviceResponse.Data = null;
+                                serviceResponse.Message = errorMessage;
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+
+                                return BadRequest(serviceResponse);
+                            }
+                            var encodedlotNumber = Uri.EscapeDataString(lotNumber);
+
+
 
                             var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
+                               $"GetIQCInventoryDetailsByProjectNoandLotNumber?ProjectNumber={encodedprojectNos}&LotNumber={encodedlotNumber}"));
                             request1.Headers.Add("Authorization", token1);
+
+
+                            //var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                            //    $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
+                            //request1.Headers.Add("Authorization", token1);
 
                             var inventoryObjectResult = await client1.SendAsync(request1);
                             if (inventoryObjectResult.StatusCode == HttpStatusCode.OK)
@@ -1826,10 +1898,34 @@ namespace Tips.Grin.Api.Controllers
                             var grinPartsIds = binningsItemsDto.GrinPartId;
                             var projectNos = location.ProjectNumber;
                             var encodedprojectNos = Uri.EscapeDataString(projectNos);
+                            var lotNumber = grinPartDetails.LotNumber;
+
+                            if (string.IsNullOrWhiteSpace(lotNumber))
+                            {
+                                var errorMessage = $"Lot Number not found for Grin Part Id: {grinPartId}";
+
+                                _logger.LogError(errorMessage);
+
+                                serviceResponse.Data = null;
+                                serviceResponse.Message = errorMessage;
+                                serviceResponse.Success = false;
+                                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+
+                                return BadRequest(serviceResponse);
+                            }
+
+                            var encodedlotNumber = Uri.EscapeDataString(lotNumber);
+
+
 
                             var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
-                                $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
+                               $"GetIQCInventoryDetailsByProjectNoandLotNumber?ProjectNumber={encodedprojectNos}&LotNumber={encodedlotNumber}"));
                             request1.Headers.Add("Authorization", token1);
+
+
+                            //var request1 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["InventoryAPI"],
+                            //    $"GetIQCInventoryDetailsByGrinNoandGrinId?GrinNo={encodedgrinNo}&GrinPartsId={grinPartsIds}&ItemNumber={encodedItemNo}&ProjectNumber={encodedprojectNos}"));
+                            //request1.Headers.Add("Authorization", token1);
 
                             var inventoryObjectResult = await client1.SendAsync(request1);
                             if (inventoryObjectResult.StatusCode == HttpStatusCode.OK)

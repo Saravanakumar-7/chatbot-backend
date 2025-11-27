@@ -1212,6 +1212,14 @@ namespace Tips.Warehouse.Api.Repository
 
             return getInventoryDetailsById;
         }
+        public async Task<Inventory> GetInventoryDetailsByProjectNoandLotNo( string ProjectNumber,string LotNumber)
+        {
+            var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventories.Where(x => 
+                                        x.ProjectNumber == ProjectNumber && x.LotNumber==LotNumber && x.IsStockAvailable == true)
+                          .FirstOrDefaultAsync();
+
+            return getInventoryDetailsById;
+        }
         public async Task<Inventory> GetIQCInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber)
         {
             var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventories.Where(x => x.GrinNo == GrinNo && x.Warehouse == "IQC" && x.Location == "IQC" &&
@@ -1221,6 +1229,15 @@ namespace Tips.Warehouse.Api.Repository
 
             return getInventoryDetailsById;
         }
+        public async Task<Inventory> GetIQCInventoryDetailsByProjectNoandLotNumber(string ProjectNumber,string LotNumber)
+        {
+            var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventories.Where(x => x.ProjectNumber == ProjectNumber && x.Warehouse == "IQC" && x.Location == "IQC" &&
+                                        x.LotNumber == LotNumber && x.IsStockAvailable == true)
+                          .FirstOrDefaultAsync();
+
+            return getInventoryDetailsById;
+        }
+
         public async Task<List<Inventory>> GetAllIQCInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber)
         {
             var getInventoryDetailsById = await _tipsWarehouseDbContext.Inventories.Where(x => x.GrinNo == GrinNo && x.Warehouse == "IQC" && x.Location == "IQC" &&

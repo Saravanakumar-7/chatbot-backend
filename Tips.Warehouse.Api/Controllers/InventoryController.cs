@@ -378,6 +378,45 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetInventoryDetailsByProjectNoandLotNo( string ProjectNumber,string LotNumber)
+
+        {
+            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+
+            try
+            {
+                var getInventoryDetailsByGrinNoandGrinId = await _inventoryRepository.GetInventoryDetailsByProjectNoandLotNo(ProjectNumber,LotNumber);
+                if (getInventoryDetailsByGrinNoandGrinId == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory with GRIN:   ProjNo:{ProjectNumber} ,LotNumber:{LotNumber} hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with GRIN: ProjNo:{ProjectNumber} ,LotNumber:{LotNumber} hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with id: {ProjectNumber},{LotNumber}");
+                    var result = _mapper.Map<InventoryDto>(getInventoryDetailsByGrinNoandGrinId);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned Inventory with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetInventoryDetailsByProjectNoandLotNo API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetInventoryDetailsByProjectNoandLotNo API : \n {ex.Message} ";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetIQCInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber)
@@ -418,6 +457,47 @@ namespace Tips.Warehouse.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetIQCInventoryDetailsByProjectNoandLotNumber(string ProjectNumber, string LotNumber)
+
+        {
+            ServiceResponse<InventoryDto> serviceResponse = new ServiceResponse<InventoryDto>();
+
+            try
+            {
+                var getInventoryDetailsByGrinNoandGrinId = await _inventoryRepository.GetIQCInventoryDetailsByProjectNoandLotNumber(ProjectNumber,LotNumber);
+                if (getInventoryDetailsByGrinNoandGrinId == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Inventory with id: {ProjectNumber},{LotNumber}, hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Inventory with id: {ProjectNumber},{LotNumber}, hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned Inventory with id:{ProjectNumber},{LotNumber}");
+                    var result = _mapper.Map<InventoryDto>(getInventoryDetailsByGrinNoandGrinId);
+                    serviceResponse.Data = result;
+                    serviceResponse.Message = "Returned Inventory with id Successfully";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetIQCInventoryDetailsByProjectNoandLotNumber API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetIQCInventoryDetailsByProjectNoandLotNumber API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAllIQCInventoryDetailsByGrinNoandGrinId(string GrinNo, int GrinPartsId, string ItemNumber, string ProjectNumber)
         {
