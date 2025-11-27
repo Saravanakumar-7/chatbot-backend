@@ -2043,7 +2043,7 @@ namespace Tips.Grin.Api.Controllers
 
                 var grinList = _mapper.Map<Grins>(grinDto);
 
-                var grinPartsDto = grinList.GrinParts;
+                var grinPartsDto = updategrin.GrinParts;
                 var grinCal = _mapper.Map<List<GrinPartscalculationofAvgcost>>(grinPartsDto);
                 var GrinpartsList = new List<GrinParts>();
                 decimal? othercosttotal = 1;
