@@ -126,6 +126,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? TypeOfSolution { get; set; }
         public string? ProductType { get; set; }
         public DateTime? entrydate { get; set; }
+        public string? PaymentType { get; set; }
     }
 
     public class FirstAdvanceReceivedEntryLevelSPResport
@@ -146,6 +147,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? CreatedBy { get; set; }
         public string? PaymentMode { get; set; }
         public string? PaymentRefNo { get; set; }
+        public string? PaymentType { get; set; }
     }
 
     public class LatestAdvanceReceivedEntryLevelSPResport
@@ -162,6 +164,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? TotalSumOfSOAmount { get; set; }
         public decimal? AdvanceReceived { get; set; }
         public decimal? Percentage_of_Adv_rec { get; set; }
+        public string? PaymentType { get; set; }
     }
 
 }
