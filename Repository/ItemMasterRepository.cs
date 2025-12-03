@@ -621,7 +621,7 @@ namespace Repository
                              .FirstOrDefaultAsync();
             return getItemMasterByItemNo;
         }
-        public async Task<ItemMaster> GetItemMasterByItemNumberAny(string ItemNumber)
+        public async Task<ItemMaster> GetAnyItemMasterByItemNumber(string ItemNumber)
         {
             var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == ItemNumber)
                  // .Include(c => c.FileUpload)

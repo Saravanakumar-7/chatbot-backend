@@ -1939,13 +1939,13 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetItemMasterByItemNumberAny(string ItemNumber)
+        public async Task<IActionResult> GetAnyItemMasterByItemNumber(string ItemNumber)
         {
             ServiceResponse<ItemMasterDto> serviceResponse = new ServiceResponse<ItemMasterDto>();
 
             try
             {
-                var getItemMasterByItemNumber = await _repository.ItemMasterRepository.GetItemMasterByItemNumberAny(ItemNumber);
+                var getItemMasterByItemNumber = await _repository.ItemMasterRepository.GetAnyItemMasterByItemNumber(ItemNumber);
                 if (getItemMasterByItemNumber == null)
                 {
                     _logger.LogError($"Itemmasters with id: {ItemNumber}, hasn't been found in db.");
@@ -1968,9 +1968,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetItemMasterByItemNumberAny API for the following ItemNumber : {ItemNumber} \n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetAnyItemMasterByItemNumber API for the following ItemNumber : {ItemNumber} \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetItemMasterByItemNumberAny API for the following ItemNumber : {ItemNumber} \n {ex.Message} ";
+                serviceResponse.Message = $"Error Occured in GetAnyItemMasterByItemNumber API for the following ItemNumber : {ItemNumber} \n {ex.Message} ";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
