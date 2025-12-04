@@ -4478,8 +4478,7 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(35).SetCellValue("MSL");
                 headerRow.CreateCell(36).SetCellValue("STD");
                 headerRow.CreateCell(37).SetCellValue("SValue");
-                headerRow.CreateCell(38).SetCellValue("InstallationCharges");
-                headerRow.CreateCell(39).SetCellValue("ArchitectName");
+                headerRow.CreateCell(38).SetCellValue("ArchitectName");
 
 
 
@@ -4526,8 +4525,7 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(35).SetCellValue(Convert.ToDouble(item.MSL));
                     row.CreateCell(36).SetCellValue(Convert.ToDouble(item.StdCost));
                     row.CreateCell(37).SetCellValue(Convert.ToDouble(item.SValue));
-                    row.CreateCell(38).SetCellValue(Convert.ToDouble(item.InstallationCharges));
-                    row.CreateCell(39).SetCellValue(item.ArchitectName); // ✅ Shifted to 39 to maintain alignment
+                    row.CreateCell(38).SetCellValue(item.ArchitectName); // ✅ Shifted to 39 to maintain alignment
 
 
                 }
@@ -4593,11 +4591,10 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(27).SetCellValue("Dispatch Qty");
                 headerRow.CreateCell(28).SetCellValue("Balance Qty");
                 headerRow.CreateCell(29).SetCellValue("Indent Qnty");
-                headerRow.CreateCell(30).SetCellValue("InstallationCharges");
-                headerRow.CreateCell(31).SetCellValue("City");
-                headerRow.CreateCell(32).SetCellValue("Address");
-                headerRow.CreateCell(33).SetCellValue("State");
-                headerRow.CreateCell(34).SetCellValue("ArchitectName");
+                headerRow.CreateCell(30).SetCellValue("City");
+                headerRow.CreateCell(31).SetCellValue("Address");
+                headerRow.CreateCell(32).SetCellValue("State");
+                headerRow.CreateCell(33).SetCellValue("ArchitectName");
 
 
                 // Populate data rows
@@ -4635,11 +4632,10 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(27).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
                     row.CreateCell(28).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
                     row.CreateCell(29).SetCellValue(Convert.ToDouble(item.indent_qnty)); // Assuming BalanceQty is decimal
-                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.InstallationCharges)); // Assuming BalanceQty is decimal
-                    row.CreateCell(31).SetCellValue(item.City);
-                    row.CreateCell(32).SetCellValue(item.Address);
-                    row.CreateCell(33).SetCellValue(item.State);
-                    row.CreateCell(34).SetCellValue(item.ArchitectName);
+                    row.CreateCell(30).SetCellValue(item.City);
+                    row.CreateCell(31).SetCellValue(item.Address);
+                    row.CreateCell(32).SetCellValue(item.State);
+                    row.CreateCell(33).SetCellValue(item.ArchitectName);
                 }
 
 
