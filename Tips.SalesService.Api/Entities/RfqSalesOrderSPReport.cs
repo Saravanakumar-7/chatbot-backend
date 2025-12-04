@@ -41,9 +41,9 @@
         public decimal? MSL { get; set; }
         public decimal? StdCost { get; set; }
         public decimal? SValue { get; set; }
-        public decimal? InstallationCharges { get; set; }
         public string? ArchitectName { get; set; }
         
 
     }
 }
+

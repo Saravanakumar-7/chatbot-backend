@@ -621,6 +621,20 @@ namespace Repository
                              .FirstOrDefaultAsync();
             return getItemMasterByItemNo;
         }
+        public async Task<ItemMaster> GetAnyItemMasterByItemNumber(string ItemNumber)
+        {
+            var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == ItemNumber)
+                 // .Include(c => c.FileUpload)
+                 // .Include(x => x.ImageUpload)
+                 .Include(t => t.ItemmasterAlternate)
+                                .Include(x => x.ItemMasterApprovedVendor)
+                                //.Include(m => m.ItemMasterFileUpload)
+                                .Include(s => s.ItemMasterRouting)
+                                .Include(p => p.ItemMasterWarehouse)
+                                .Include(M => M.ItemMasterSchedules).ThenInclude(x => x.ItemMasterScheduleParts)
+                             .FirstOrDefaultAsync();
+            return getItemMasterByItemNo;
+        }
         public async Task<ItemMaster> GetItemMasterDetailsByItemNumber(string ItemNumber)
         {
             var getItemMasterByItemNo = await FindByCondition(x => x.ItemNumber == ItemNumber)
