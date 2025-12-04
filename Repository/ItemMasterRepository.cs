@@ -738,6 +738,22 @@ namespace Repository
 
         }
 
+        public async Task<string> GetIsActiveItemMastersByItemNumberList(List<string> itemNumbers)
+        {
+            // Check each item number to see if it exists and is active
+            foreach (var itemNumber in itemNumbers)
+            {
+                var itemMaster = await FindByCondition(x => x.ItemNumber == itemNumber)
+                    .FirstOrDefaultAsync();
+
+                if (itemMaster.IsActive == false)
+                {
+                    return itemNumber; // Item doesn't exist
+                }
+            }
+            return null; // All items are active
+        }
+
     }
 
     public class FileUploadDocumentRepository : RepositoryBase<FileUpload>, IFileUploadRepository

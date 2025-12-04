@@ -223,7 +223,7 @@ namespace Tips.Grin.Api.Entities.DTOs
     }
     public class GrinPartsUpdateDto
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
 
         [Required(ErrorMessage = "ItemDescription is required")]
         public string ItemDescription { get; set; }

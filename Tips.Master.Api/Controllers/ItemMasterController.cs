@@ -2415,5 +2415,52 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GetIsActiveItemMastersByItemNumberList(List<string> itemNumbers)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+
+            try
+            {
+                if (itemNumbers == null || !itemNumbers.Any())
+                {
+                    _logger.LogError("Item number list is null or empty.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Item number list is null or empty";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+
+                var isActiveItemMasters = await _repository.ItemMasterRepository.GetIsActiveItemMastersByItemNumberList(itemNumbers);
+
+                if (isActiveItemMasters != null)
+                {
+                    _logger.LogError($"Item Number: {isActiveItemMasters} is either inactive.");
+                    serviceResponse.Data = isActiveItemMasters;
+                    serviceResponse.Message = $"Item Number '{isActiveItemMasters}' is either inactive";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+
+                _logger.LogInfo("All Item Numbers are active");
+                serviceResponse.Data = null;
+                serviceResponse.Message = "All Item Numbers are active";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetIsActiveItemMastersByItemNumberList API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetIsActiveItemMastersByItemNumberList API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }
