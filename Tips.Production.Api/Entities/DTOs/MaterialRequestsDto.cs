@@ -167,6 +167,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? Uom { get; set; }
         public DateTime? MRDate { get; set; }
         public int? MrStatus { get; set; }
+        public string? LotNumber {get; set; }
     }
     public class MaterialIssueAgainstMRSPReportForkeus
     {
