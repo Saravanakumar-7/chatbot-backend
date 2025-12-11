@@ -4492,8 +4492,7 @@ namespace Tips.Grin.Api.Controllers
         private void AddPdfContent(Document doc, byte[] imageBytes,string Pagedetails)
         {
             // Add text
-            doc.Add(new Paragraph(Pagedetails)
-                .SetFontSize(10));
+            doc.Add(new Paragraph(Pagedetails).SetFontSize(10).SimulateBold());
 
             if (imageBytes != null && imageBytes.Length > 0)
             {
@@ -4501,7 +4500,7 @@ namespace Tips.Grin.Api.Controllers
                 Image img = new Image(imgData);
 
                 // Fixed size → 0.7 inch = 0.7 * 72 = 50.4 pt
-                float imgSize = 0.7f * 72f; // 0.7 inch = 50.4 pt
+                float imgSize = 1f * 72f; // 0.7 inch = 50.4 pt
                 img.SetWidth(imgSize);
                 img.SetHeight(imgSize);
 
