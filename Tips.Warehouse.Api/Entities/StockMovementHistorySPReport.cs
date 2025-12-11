@@ -6,6 +6,7 @@
         public decimal? GrinQty { get; set; }
         public decimal? OpenGrinQty { get; set; }
         public decimal? RDoQty { get; set; }
+        public decimal? RIvQty { get; set; }
         public decimal? RODOQTY { get; set; }
         public decimal? MaterialReturnQty { get; set; }
         public decimal? InwardsLocationTransfer { get; set; }
