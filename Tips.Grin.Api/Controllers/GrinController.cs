@@ -4459,9 +4459,9 @@ namespace Tips.Grin.Api.Controllers
                 {
                     foreach (var projectDetails in part.ProjectNumbers)
                     {
-                        string qrDetails = $"GRIN Number: {grinDetails.GrinNumber},\nPO Number: {part.PONumber},\nLot Number: {part.LotNumber},\nProject Number: {projectDetails.ProjectNumber},\nPart Number: {part.ItemNumber},\nVendor Name: {grinDetails.VendorName}";
+                        string qrDetails = $"GRIN Number: {grinDetails.GrinNumber},\nPO Number: {part.PONumber},\nLot Number: {part.LotNumber},\nPart Number: {part.ItemNumber},\nProject Number: {projectDetails.ProjectNumber},\nVendor Name: {grinDetails.VendorName}";
 
-                        string pageDetails = $"GRIN Number: {grinDetails.GrinNumber},\nPO Number: {part.PONumber},\nLot Number: {part.LotNumber},\nProject Number: {projectDetails.ProjectNumber},\nPart Number: {part.ItemNumber},\nQuantity: {projectDetails.ProjectQty},\nVendor Name: {grinDetails.VendorName}";
+                        string pageDetails = $"GRIN Number: {grinDetails.GrinNumber},\nPO Number: {part.PONumber},\nLot Number: {part.LotNumber},\nPart Number: {part.ItemNumber},\nProject Number: {projectDetails.ProjectNumber},\nProject Quantity: {projectDetails.ProjectQty},\nVendor Name: {grinDetails.VendorName}";
 
                         QRCodeGenerator qrGenerator = new QRCodeGenerator();
                         QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrDetails, QRCodeGenerator.ECCLevel.Q);
