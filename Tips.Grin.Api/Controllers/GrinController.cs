@@ -4422,5 +4422,23 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        /*[HttpGet]
+        public async Task<IActionResult> GenerateQRCodeLablesForGRIN([FromQuery] int GRINId)
+        {
+            ServiceResponse<IEnumerable<GrinComsumpReportDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinComsumpReportDto>>();
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetGrinComsumptionDetialsByPartNos API for the following PartNoListString: {grinComsumpDto.PartNumber} & LotNoListString: {grinComsumpDto.LotNumber} \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetGrinComsumptionDetialsByPartNos API for the following PartNoListString: {grinComsumpDto.PartNumber} & LotNoListString: {grinComsumpDto.LotNumber} \n{ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }*/
     }
 }
