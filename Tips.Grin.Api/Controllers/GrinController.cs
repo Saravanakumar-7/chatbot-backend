@@ -3,6 +3,10 @@ using Contracts;
 using Entities;
 using Entities.Enums;
 using Google.Protobuf.WellKnownTypes;
+using iText.Kernel.Geom;
+using iText.Kernel.Pdf;
+using iText.Layout;
+using iText.Layout.Element;
 using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +24,7 @@ using NPOI.SS.Formula.Atp;
 using NPOI.SS.UserModel;
 using NPOI.Util.ArrayExtensions;
 using NPOI.XSSF.UserModel;
+using QRCoder;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
@@ -1276,41 +1281,41 @@ namespace Tips.Grin.Api.Controllers
                             var inventoryTransResponses = await client7.SendAsync(request7);
                             if (inventoryTransResponses.StatusCode != HttpStatusCode.OK) createInvTranc = inventoryTransResponses.StatusCode;
 
-                                IQCInventoryTranctionDto GRINInventoryTranctionDto = new IQCInventoryTranctionDto();
-                                GRINInventoryTranctionDto.PartNumber = inventoryObject.partNumber;
-                                GRINInventoryTranctionDto.LotNumber = inventoryObject.lotNumber;
-                                GRINInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
-                                GRINInventoryTranctionDto.Description = inventoryObject.description;
-                                GRINInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
-                                GRINInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
-                                GRINInventoryTranctionDto.UOM = inventoryObject.uom;
-                                GRINInventoryTranctionDto.Warehouse = "GRIN";
-                                GRINInventoryTranctionDto.From_Location = "GRIN";
-                                GRINInventoryTranctionDto.TO_Location = "IQC";
-                                GRINInventoryTranctionDto.GrinNo = inventoryObject.grinNo;
-                                GRINInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
-                                GRINInventoryTranctionDto.PartType = inventoryObject.partType;
-                                GRINInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;
-                                GRINInventoryTranctionDto.ReferenceIDFrom = "GRIN";
-                                GRINInventoryTranctionDto.GrinMaterialType = "GRIN";
-                                GRINInventoryTranctionDto.shopOrderNo = "";
-                                GRINInventoryTranctionDto.Remarks = "GRINIQC Done";
-                                GRINInventoryTranctionDto.IsStockAvailable = false;
-                                GRINInventoryTranctionDto.TransactionType = InventoryType.Outward;
+                            IQCInventoryTranctionDto GRINInventoryTranctionDto = new IQCInventoryTranctionDto();
+                            GRINInventoryTranctionDto.PartNumber = inventoryObject.partNumber;
+                            GRINInventoryTranctionDto.LotNumber = inventoryObject.lotNumber;
+                            GRINInventoryTranctionDto.MftrPartNumber = inventoryObject.mftrPartNumber;
+                            GRINInventoryTranctionDto.Description = inventoryObject.description;
+                            GRINInventoryTranctionDto.ProjectNumber = inventoryObject.projectNumber;
+                            GRINInventoryTranctionDto.Issued_Quantity = inventoryObject.balance_Quantity;
+                            GRINInventoryTranctionDto.UOM = inventoryObject.uom;
+                            GRINInventoryTranctionDto.Warehouse = "GRIN";
+                            GRINInventoryTranctionDto.From_Location = "GRIN";
+                            GRINInventoryTranctionDto.TO_Location = "IQC";
+                            GRINInventoryTranctionDto.GrinNo = inventoryObject.grinNo;
+                            GRINInventoryTranctionDto.GrinPartId = inventoryObject.grinPartId;
+                            GRINInventoryTranctionDto.PartType = inventoryObject.partType;
+                            GRINInventoryTranctionDto.ReferenceID = inventoryObject.grinNo;
+                            GRINInventoryTranctionDto.ReferenceIDFrom = "GRIN";
+                            GRINInventoryTranctionDto.GrinMaterialType = "GRIN";
+                            GRINInventoryTranctionDto.shopOrderNo = "";
+                            GRINInventoryTranctionDto.Remarks = "GRINIQC Done";
+                            GRINInventoryTranctionDto.IsStockAvailable = false;
+                            GRINInventoryTranctionDto.TransactionType = InventoryType.Outward;
 
-                                string rfqSourcingPPdetailsJsons_1 = JsonConvert.SerializeObject(GRINInventoryTranctionDto);
-                                var contents_1 = new StringContent(rfqSourcingPPdetailsJsons_1, Encoding.UTF8, "application/json");
-                                var client7_1 = _clientFactory.CreateClient();
-                                var token7_1 = HttpContext.Request.Headers["Authorization"].ToString();
-                                var request7_1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
-                                "CreateInventoryTranction"))
-                                {
-                                    Content = contents_1
-                                };
-                                request7_1.Headers.Add("Authorization", token7_1);
+                            string rfqSourcingPPdetailsJsons_1 = JsonConvert.SerializeObject(GRINInventoryTranctionDto);
+                            var contents_1 = new StringContent(rfqSourcingPPdetailsJsons_1, Encoding.UTF8, "application/json");
+                            var client7_1 = _clientFactory.CreateClient();
+                            var token7_1 = HttpContext.Request.Headers["Authorization"].ToString();
+                            var request7_1 = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["InventoryTranctionAPI"],
+                            "CreateInventoryTranction"))
+                            {
+                                Content = contents_1
+                            };
+                            request7_1.Headers.Add("Authorization", token7_1);
 
-                                var inventoryTransResponses_1 = await client7_1.SendAsync(request7_1);
-                                if (inventoryTransResponses_1.StatusCode != HttpStatusCode.OK) createInvTranc = inventoryTransResponses_1.StatusCode;
+                            var inventoryTransResponses_1 = await client7_1.SendAsync(request7_1);
+                            if (inventoryTransResponses_1.StatusCode != HttpStatusCode.OK) createInvTranc = inventoryTransResponses_1.StatusCode;
 
                             if (iqcConfirmationItemsDto.RejectedQty != 0 && acceptedQty == 0 && (flag1 == 1 || flag2 == 1))
                             {
@@ -1579,7 +1584,7 @@ namespace Tips.Grin.Api.Controllers
 
                             var response = await client5.SendAsync(request5);
                             if (response.StatusCode != HttpStatusCode.OK) updateInv = response.StatusCode;
-                                                        
+
                             IQCInventoryTranctionDto iqcInventoryTranctionDto = new IQCInventoryTranctionDto();
                             iqcInventoryTranctionDto.PartNumber = inventoryObject.partNumber;
                             iqcInventoryTranctionDto.LotNumber = inventoryObject.lotNumber;
@@ -1825,7 +1830,7 @@ namespace Tips.Grin.Api.Controllers
                 var email = new MimeMessage();
                 email.From.Add(MailboxAddress.Parse("chethan.v@wyzmindz.com"));
 
-                email.To.AddRange(gRINEmailPostDto.SentTo.Split(',').Select(x=> MailboxAddress.Parse(x)));
+                email.To.AddRange(gRINEmailPostDto.SentTo.Split(',').Select(x => MailboxAddress.Parse(x)));
                 email.Subject = emaildetails.data.subject;
                 string body = emaildetails.data.template;
                 body = body.Replace("{{GRIN Numbers}}", grins.GrinNumber);
@@ -1909,8 +1914,8 @@ namespace Tips.Grin.Api.Controllers
                     Guid guids = Guid.NewGuid();
                     byte[] fileContent = Convert.FromBase64String(FileUploadDetail.FileByte);
                     string fileName = guids.ToString() + "_" + FileUploadDetail.FileName + "." + FileUploadDetail.FileExtension;
-                    string FileExt = Path.GetExtension(fileName).ToUpper();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", fileName);
+                    string FileExt = System.IO.Path.GetExtension(fileName).ToUpper();
+                    string filePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", fileName);
                     using (MemoryStream ms = new MemoryStream(fileContent))
                     {
                         ms.Position = 0;
@@ -2132,7 +2137,7 @@ namespace Tips.Grin.Api.Controllers
             ServiceResponse<IEnumerable<BinningPendingReportSp>> serviceResponse = new ServiceResponse<IEnumerable<BinningPendingReportSp>>();
             try
             {
-                var products = await _repository.GetBinningPendingReportSpwithparametertras(Spinput.GrinNumber,Spinput.VendorName, Spinput.PONumber,
+                var products = await _repository.GetBinningPendingReportSpwithparametertras(Spinput.GrinNumber, Spinput.VendorName, Spinput.PONumber,
                                                                                              Spinput.ItemNumber, Spinput.MPN, Spinput.ProjectNumber);
 
                 if (products == null)
@@ -2206,7 +2211,7 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
-       
+
         [HttpPost]
         public async Task<IActionResult> ExportGrinSPReportWithParamOrWithDateToExcel([FromBody] GrinReportWithParamAndDateForExcelDto grinReportWithParamAndDateForExcelDto)
         {
@@ -2269,7 +2274,7 @@ namespace Tips.Grin.Api.Controllers
 
                 if (hasParams && !hasDate)
                 {
-                
+
                     GrinSPReportDetails = await _repository.GetGrinSPReportWithParam(
                         grinReportWithParamAndDateForExcelDto.GrinNumber,
                         grinReportWithParamAndDateForExcelDto.VendorName,
@@ -2280,15 +2285,15 @@ namespace Tips.Grin.Api.Controllers
                         grinReportWithParamAndDateForExcelDto.Location);
                 }
 
-             
+
                 if (!hasParams && (grinReportWithParamAndDateForExcelDto.FromDate != null && grinReportWithParamAndDateForExcelDto.ToDate != null))
                 {
-                
+
                     GrinSPReportDetails = await _repository.GetGrinSPReportWithDate(
                         grinReportWithParamAndDateForExcelDto.FromDate,
                         grinReportWithParamAndDateForExcelDto.ToDate);
                 }
-            
+
 
 
                 // Create Excel workbook
@@ -2604,7 +2609,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 var products = await _repository.GetGrinSPReportWithParamForAvi(grinReportWithParam.GrinNumber, grinReportWithParam.VendorName,
                                                                             grinReportWithParam.PONumber, grinReportWithParam.ItemNumber,
-                                                                            grinReportWithParam.MPN,grinReportWithParam.ProjectNumber);
+                                                                            grinReportWithParam.MPN, grinReportWithParam.ProjectNumber);
 
                 if (products == null)
                 {
@@ -3698,7 +3703,7 @@ namespace Tips.Grin.Api.Controllers
         {
             ServiceResponse<FileContentResult> serviceResponse = new ServiceResponse<FileContentResult>();
             var itemsFiles = await _documentUploadRepository.GetDownloadUrlDetails(Id.ToString());
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", itemsFiles[0].FileName);
+            var filePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", itemsFiles[0].FileName);
             var provider = new FileExtensionContentTypeProvider();
             if (!provider.TryGetContentType(filePath, out var ContentType))
             {
@@ -3706,7 +3711,7 @@ namespace Tips.Grin.Api.Controllers
             }
             var bytes = await System.IO.File.ReadAllBytesAsync(filePath);
 
-            return File(bytes, ContentType, Path.GetFileName(filePath));
+            return File(bytes, ContentType, System.IO.Path.GetFileName(filePath));
         }
 
         [HttpGet]
@@ -3832,10 +3837,10 @@ namespace Tips.Grin.Api.Controllers
                 {
                     var fileContent = uploadDoc.FileByte;
                     string fileName = uploadDoc.FileName + "." + uploadDoc.FileExtension;
-                    string FileExt = Path.GetExtension(fileName).ToUpper();
+                    string FileExt = System.IO.Path.GetExtension(fileName).ToUpper();
 
                     Guid guid = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", guid.ToString() + "_" + fileName);
+                    string filePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", guid.ToString() + "_" + fileName);
                     using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(fileContent)))
                     {
                         ms.Position = 0;
@@ -3905,10 +3910,10 @@ namespace Tips.Grin.Api.Controllers
                 {
                     var fileContent = cocUpload.FileByte;
                     string fileName = cocUpload.FileName + "." + cocUpload.FileExtension;
-                    string FileExt = Path.GetExtension(fileName).ToUpper();
+                    string FileExt = System.IO.Path.GetExtension(fileName).ToUpper();
 
                     Guid guid = Guid.NewGuid();
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload", guid.ToString() + "_" + fileName);
+                    string filePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload", guid.ToString() + "_" + fileName);
                     using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(fileContent)))
                     {
                         ms.Position = 0;
@@ -3957,7 +3962,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 var documentUploadDetails = await _documentUploadRepository.GetUploadDocById(id);
                 var fileName = documentUploadDetails.FileName;
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload", /*guid.ToString() + "_" */ fileName);
+                string filePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinCoCUpload", /*guid.ToString() + "_" */ fileName);
                 if (System.IO.File.Exists(filePath))
                 {
                     System.IO.File.Delete(filePath);
@@ -4003,7 +4008,7 @@ namespace Tips.Grin.Api.Controllers
             {
                 var documentUploadDetails = await _documentUploadRepository.GetUploadDocById(id);
                 var fileName = documentUploadDetails.FileName;
-                string filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", /*guid.ToString() + "_" */ fileName);
+                string filePath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Upload", "GrinDocument", /*guid.ToString() + "_" */ fileName);
                 if (System.IO.File.Exists(filePath))
                 {
                     System.IO.File.Delete(filePath);
@@ -4398,7 +4403,7 @@ namespace Tips.Grin.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetGrinComsumptionDetialsByPartNos([FromBody]GrinComsumpDto grinComsumpDto)
+        public async Task<IActionResult> GetGrinComsumptionDetialsByPartNos([FromBody] GrinComsumpDto grinComsumpDto)
         {
             //openpurchaseorderdto
             ServiceResponse<IEnumerable<GrinComsumpReportDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinComsumpReportDto>>();
@@ -4422,23 +4427,93 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-        /*[HttpGet]
+        [HttpGet]
         public async Task<IActionResult> GenerateQRCodeLablesForGRIN([FromQuery] int GRINId)
         {
-            ServiceResponse<IEnumerable<GrinComsumpReportDto>> serviceResponse = new ServiceResponse<IEnumerable<GrinComsumpReportDto>>();
             try
             {
+                var grinDetails = await _repository.GetGrinById(GRINId);
 
+                if (grinDetails == null)
+                {
+                    _logger.LogError($"Error Occured in GenerateQRCodeLablesForGRIN API: GRIN details Not Found for the Grin Id:{GRINId}");
+                    return NotFound($"Error Occured in GenerateQRCodeLablesForGRIN API: GRIN details Not Found for the Grin Id:{GRINId}");
+                }
+
+                float width = 100 * 2.83465f;   // 283.465 pt
+                float height = 50 * 2.83465f;   // 141.7325 pt
+
+                using var ms = new MemoryStream();
+
+                PdfWriter writer = new PdfWriter(ms);
+                PdfDocument pdf = new PdfDocument(writer);
+
+                // Create document with custom page size
+                PageSize customSize = new PageSize(width, height);
+                Document document = new Document(pdf, customSize);
+                float margin = 2 * 2.83465f;  // 2mm → pt
+                document.SetMargins(margin, margin, margin, margin);
+
+                int page_no = 1;
+                foreach (var part in grinDetails.GrinParts)
+                {
+                    foreach (var projectDetails in part.ProjectNumbers)
+                    {
+                        string qrDetails = $"GRIN Number: {grinDetails.GrinNumber},\nPO Number: {part.PONumber},\nLot Number: {part.LotNumber},\nProject Number: {projectDetails.ProjectNumber},\nPart Number: {part.ItemNumber},\nVendor Name: {grinDetails.VendorName}";
+
+                        string pageDetails = $"GRIN Number: {grinDetails.GrinNumber},\nPO Number: {part.PONumber},\nLot Number: {part.LotNumber},\nProject Number: {projectDetails.ProjectNumber},\nPart Number: {part.ItemNumber},\nQuantity: {projectDetails.ProjectQty},\nVendor Name: {grinDetails.VendorName}";
+
+                        QRCodeGenerator qrGenerator = new QRCodeGenerator();
+                        QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrDetails, QRCodeGenerator.ECCLevel.Q);
+                        PngByteQRCode pngByteQRCode = new PngByteQRCode(qrCodeData);
+                        byte[] qrCodeAsPngByteArr = pngByteQRCode.GetGraphic(20);
+
+                        if(page_no==1) AddPdfContent(document, qrCodeAsPngByteArr, pageDetails);
+                        else
+                        {
+                            pdf.AddNewPage(customSize);
+                            document.Add(new AreaBreak());
+                            AddPdfContent(document, qrCodeAsPngByteArr, pageDetails);
+                        }
+                        page_no++;
+                    }
+                }
+              
+                document.Close();
+
+                return File(ms.ToArray(), "application/pdf", "Label.pdf");
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetGrinComsumptionDetialsByPartNos API for the following PartNoListString: {grinComsumpDto.PartNumber} & LotNoListString: {grinComsumpDto.LotNumber} \n{ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetGrinComsumptionDetialsByPartNos API for the following PartNoListString: {grinComsumpDto.PartNumber} & LotNoListString: {grinComsumpDto.LotNumber} \n{ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
+                _logger.LogError($"Error Occured in GenerateQRCodeLablesForGRIN API for Grin Id:{GRINId} : \n{ex.Message} \n{ex.InnerException}");
+                return StatusCode(500, $"Error Occured in GenerateQRCodeLablesForGRIN API for Grin Id:{GRINId}: {ex.Message}");
             }
-        }*/
+        }
+        private void AddPdfContent(Document doc, byte[] imageBytes,string Pagedetails)
+        {
+            // Add text
+            doc.Add(new Paragraph(Pagedetails)
+                .SetFontSize(10));
+
+            if (imageBytes != null && imageBytes.Length > 0)
+            {
+                var imgData = iText.IO.Image.ImageDataFactory.Create(imageBytes);
+                Image img = new Image(imgData);
+
+                // Fixed size → 0.7 inch = 0.7 * 72 = 50.4 pt
+                float imgSize = 0.7f * 72f; // 0.7 inch = 50.4 pt
+                img.SetWidth(imgSize);
+                img.SetHeight(imgSize);
+
+                float pageW = doc.GetPdfDocument().GetDefaultPageSize().GetWidth();
+                float pageH = doc.GetPdfDocument().GetDefaultPageSize().GetHeight();
+
+                // Place at top-right (inside 2mm margin)
+                float margin = 2 * 2.83465f; // 2mm
+                img.SetFixedPosition(pageW - imgSize - margin, pageH - imgSize - margin);
+
+                doc.Add(img);
+            }
+        }
     }
 }
