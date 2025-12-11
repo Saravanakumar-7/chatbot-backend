@@ -4514,21 +4514,14 @@ namespace Tips.Grin.Api.Controllers
             // Try to fit the paragraph, reduce font size if needed
             while (fontSize >= minFontSize)
             {
-                para = new Paragraph(pageDetails)
-            .SetFontSize(fontSize)
-            .SimulateBold()
-            .SetKeepTogether(true);
+                para = new Paragraph(pageDetails).SetFontSize(fontSize).SimulateBold().SetKeepTogether(true);
 
                 // Simulate layout
                 var renderer = para.CreateRendererSubTree().SetParent(doc.GetRenderer());
-                var layoutArea = new iText.Layout.Layout.LayoutArea(1, new iText.Kernel.Geom.Rectangle(
-                    margin, margin, availableWidth, availableHeight
-                ));
+                var layoutArea = new iText.Layout.Layout.LayoutArea(1, new iText.Kernel.Geom.Rectangle(margin, margin, availableWidth, availableHeight));
                 result = renderer.Layout(new iText.Layout.Layout.LayoutContext(layoutArea));
 
-                if (result.GetStatus() == iText.Layout.Layout.LayoutResult.FULL ||
-            result.GetStatus() == iText.Layout.Layout.LayoutResult.PARTIAL)
-                    break;
+                if (result.GetStatus() == iText.Layout.Layout.LayoutResult.FULL || result.GetStatus() == iText.Layout.Layout.LayoutResult.PARTIAL) break;
 
                 fontSize -= 0.5f; // Reduce font size and try again
             }
