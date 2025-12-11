@@ -4468,7 +4468,7 @@ namespace Tips.Grin.Api.Controllers
                         PngByteQRCode pngByteQRCode = new PngByteQRCode(qrCodeData);
                         byte[] qrCodeAsPngByteArr = pngByteQRCode.GetGraphic(20);
 
-                        if(page_no==1) AddPdfContent(document, qrCodeAsPngByteArr, pageDetails);
+                        if (page_no == 1) AddPdfContent(document, qrCodeAsPngByteArr, pageDetails);
                         else
                         {
                             pdf.AddNewPage(customSize);
@@ -4478,7 +4478,7 @@ namespace Tips.Grin.Api.Controllers
                         page_no++;
                     }
                 }
-              
+
                 document.Close();
 
                 return File(ms.ToArray(), "application/pdf", "Label.pdf");
@@ -4489,30 +4489,68 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, $"Error Occured in GenerateQRCodeLablesForGRIN API for Grin Id:{GRINId}: {ex.Message}");
             }
         }
-        private void AddPdfContent(Document doc, byte[] imageBytes,string Pagedetails)
+        private void AddPdfContent(Document doc, byte[] imageBytes, string pageDetails)
         {
-            // Add text
-            doc.Add(new Paragraph(Pagedetails).SetFontSize(10).SimulateBold());
+            float defaultFontSize = 10f;
+            float minFontSize = 6f;
+            float fontSize = defaultFontSize;
 
+            // Calculate available height for the paragraph
+            float pageHeight = doc.GetPdfDocument().GetDefaultPageSize().GetHeight();
+            float pageWidth = doc.GetPdfDocument().GetDefaultPageSize().GetWidth();
+            float margin = 2 * 2.83465f; // 2mm in points
+            float imgSize = 1f * 72f; // 1 inch = 72pt
+            float availableHeight = pageHeight - margin;
+            float availableWidth = pageWidth - margin;
+
+            // Reserve space for QR image if present
+            if (imageBytes != null && imageBytes.Length > 0)
+            {
+                availableWidth -= imgSize;
+            }
+
+            Paragraph para = null;
+            iText.Layout.Layout.LayoutResult result = null;
+            // Try to fit the paragraph, reduce font size if needed
+            while (fontSize >= minFontSize)
+            {
+                para = new Paragraph(pageDetails)
+            .SetFontSize(fontSize)
+            .SimulateBold()
+            .SetKeepTogether(true);
+
+                // Simulate layout
+                var renderer = para.CreateRendererSubTree().SetParent(doc.GetRenderer());
+                var layoutArea = new iText.Layout.Layout.LayoutArea(1, new iText.Kernel.Geom.Rectangle(
+                    margin, margin, availableWidth, availableHeight
+                ));
+                result = renderer.Layout(new iText.Layout.Layout.LayoutContext(layoutArea));
+
+                if (result.GetStatus() == iText.Layout.Layout.LayoutResult.FULL ||
+            result.GetStatus() == iText.Layout.Layout.LayoutResult.PARTIAL)
+                    break;
+
+                fontSize -= 0.5f; // Reduce font size and try again
+            }
+
+            if (result == null || (result.GetStatus() != iText.Layout.Layout.LayoutResult.FULL && result.GetStatus() != iText.Layout.Layout.LayoutResult.PARTIAL))
+            {
+                throw new Exception("The content data is exceeding the label size. Please reduce the content.");
+            }
+
+            doc.Add(para);
+
+            // Add QR image
             if (imageBytes != null && imageBytes.Length > 0)
             {
                 var imgData = iText.IO.Image.ImageDataFactory.Create(imageBytes);
                 Image img = new Image(imgData);
-
-                // Fixed size → 0.7 inch = 0.7 * 72 = 50.4 pt
-                float imgSize = 1f * 72f; // 0.7 inch = 50.4 pt
                 img.SetWidth(imgSize);
                 img.SetHeight(imgSize);
-
-                float pageW = doc.GetPdfDocument().GetDefaultPageSize().GetWidth();
-                float pageH = doc.GetPdfDocument().GetDefaultPageSize().GetHeight();
-
-                // Place at top-right (inside 2mm margin)
-                float margin = 2 * 2.83465f; // 2mm
-                img.SetFixedPosition(pageW - imgSize - margin, pageH - imgSize - margin);
-
+                img.SetFixedPosition(pageWidth - imgSize - margin, pageHeight - imgSize - margin);
                 doc.Add(img);
             }
         }
+
     }
 }
