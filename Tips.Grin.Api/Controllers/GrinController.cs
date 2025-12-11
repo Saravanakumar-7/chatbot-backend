@@ -4535,7 +4535,7 @@ namespace Tips.Grin.Api.Controllers
 
             if (result == null || (result.GetStatus() != iText.Layout.Layout.LayoutResult.FULL && result.GetStatus() != iText.Layout.Layout.LayoutResult.PARTIAL))
             {
-                throw new Exception("The content data is exceeding the label size. Please reduce the content.");
+                throw new OverflowException("The content data is exceeding the label size. Please reduce the content.");
             }
 
             doc.Add(para);
