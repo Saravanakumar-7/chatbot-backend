@@ -4328,7 +4328,7 @@ namespace Tips.Master.Api.Controllers
                         FileByte = fileUploadDetail.FileByte
                     };
 
-                    _repository.ReleaseFileUploadRepository.CreateReleaseFileUploadDocument(uploadedFile);
+                    await _repository.ReleaseFileUploadRepository.CreateReleaseFileUploadDocument(uploadedFile);
                     _repository.SaveAsync();
                     ids.Add(uploadedFile.Id.ToString());
                 }
@@ -4342,9 +4342,9 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error in CreateReleaseFileUpload: {ex.Message}, {ex.InnerException}");
+                _logger.LogError($"Error in CreateReleaseFileUpload: \n{ex.Message} \n {ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = "Something went wrong, please try again.";
+                serviceResponse.Message = $"Error in CreateReleaseFileUpload: \n{ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
