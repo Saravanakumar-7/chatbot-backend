@@ -10,9 +10,14 @@ namespace Tips.Tally.Api
         {
             // CreateMap<DiscountUsers, DiscountUsersUpdateDto>().ReverseMap();
             CreateMap<TallyPurchaseOrderSpReport, TallyPurchaseOrderSpReportDto>()
-                .ForMember(dest => dest.POItems, opt => opt.Ignore()) // Ignore JSON string
-                .ReverseMap()
-                .ForMember(dest => dest.POItems, opt => opt.Ignore());
+              .ForMember(dest => dest.POData, opt => opt.Ignore())
+              .ForMember(dest => dest.GSTIN_No, opt => opt.Ignore());
+
+            CreateMap<TallyPurchaseOrderSpReportDto, TallyPurchaseOrderSpReport>()
+                .ForMember(dest => dest.POData, opt => opt.Ignore())
+                .ForMember(dest => dest.GSTIN_No, opt => opt.Ignore());
+
+
 
             CreateMap<TallyCustomerMasterSpReport, TallyCustomerMasterSpReportDto>()
               .ForMember(dest => dest.GSTINNo, opt => opt.Ignore()) // Ignore JSON string
@@ -25,9 +30,9 @@ namespace Tips.Tally.Api
               .ForMember(dest => dest.GSTINNo, opt => opt.Ignore());
 
             CreateMap<TallybtodeliveryorderSpReport, TallybtodeliveryorderSpReportDto>()
-             .ForMember(dest => dest.SalesOrderItems, opt => opt.Ignore()) // Ignore JSON string
+             .ForMember(dest => dest.SalesOrderData, opt => opt.Ignore()) // Ignore JSON string
              .ReverseMap()
-             .ForMember(dest => dest.SalesOrderItems, opt => opt.Ignore());
+             .ForMember(dest => dest.SalesOrderData, opt => opt.Ignore());
 
             CreateMap<TallyGrinSpReport, TallyGrinSpReportDto>()
              .ForMember(dest => dest.GRINParts, opt => opt.Ignore()) // Ignore JSON string

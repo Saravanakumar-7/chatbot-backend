@@ -19,7 +19,7 @@ namespace Tips.Tally.Api.Entities.DTOs
         public string? GST_Type { get; set; }
 
         // JSON string from DB
-        public string? SalesOrderItems { get; set; }
+        public string? SalesOrderData { get; set; }
     }
 
     public class TallybtodeliveryorderSpReportDto
@@ -38,15 +38,13 @@ namespace Tips.Tally.Api.Entities.DTOs
         public string? GSTIN_No { get; set; }
         public string? GST_Type { get; set; }
 
-        public List<SalesOrderItemDto>? SalesOrderItems { get; set; }
+        public List<SalesOrderItemDto>? SalesOrderData { get; set; }
     }
 
     // Level 1: Each sales order item
     public class SalesOrderItemDto
     {
         public string? UOM { get; set; }
-
-        [JsonProperty("GST%")]
         public string? GSTPercent { get; set; }
 
         public decimal? Rate { get; set; }

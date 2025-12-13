@@ -131,7 +131,7 @@ namespace Tips.Tally.Api.Controllers
             {
                 var result = await _repository.GetTallyCurrencyMastertSPReportWithDate(FromDate, ToDate);
 
-                if (result == null)
+                if (result == null || !result.Any())
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"TallyCurrencyMasterSPReport hasn't been found.";
@@ -168,9 +168,9 @@ namespace Tips.Tally.Api.Controllers
 
             try
             {
-                var products = await _repository.GetTallyPurchaseOrderSpReportWithDate(FromDate, ToDate);
+                var reports = await _repository.GetTallyPurchaseOrderSpReportWithDate(FromDate, ToDate);
 
-                if (products == null || !products.Any())
+                if (reports == null || !reports.Any())
                 {
                     serviceResponse.Data = null;
                     serviceResponse.Message = $"No TallyPurchaseOrderSpReport records found.";
@@ -180,14 +180,23 @@ namespace Tips.Tally.Api.Controllers
                     return NotFound(serviceResponse);
                 }
 
-                var result = products.Select(product =>
+                var result = reports.Select(report =>
                 {
-                    var dto = _mapper.Map<TallyPurchaseOrderSpReportDto>(product);
+                    var dto = _mapper.Map<TallyPurchaseOrderSpReportDto>(report);
 
-                    if (!string.IsNullOrEmpty(product.POItems))
+                    // ✅ Deserialize GSTIN_No JSON
+                    if (!string.IsNullOrWhiteSpace(report.GSTIN_No))
                     {
-                        dto.POItems = JsonConvert.DeserializeObject<List<POItemsSpDto>>(product.POItems)
-                            .OrderBy(x => x.ItemCode)
+                        dto.GSTIN_No = JsonConvert
+                            .DeserializeObject<List<GSTINNoDtos>>(report.GSTIN_No);
+                    }
+
+                    // ✅ Deserialize POData JSON
+                    if (!string.IsNullOrWhiteSpace(report.POData))
+                    {
+                        dto.POData = JsonConvert
+                            .DeserializeObject<List<PODataDtos>>(report.POData)
+                            ?.OrderBy(x => x.ItemCode)
                             .ToList();
                     }
 
@@ -270,9 +279,9 @@ namespace Tips.Tally.Api.Controllers
                 {
                     var dto = _mapper.Map<TallybtodeliveryorderSpReportDto>(product);
 
-                    if (!string.IsNullOrEmpty(product.SalesOrderItems))
+                    if (!string.IsNullOrEmpty(product.SalesOrderData))
                     {
-                        dto.SalesOrderItems = JsonConvert.DeserializeObject<List<SalesOrderItemDto>>(product.SalesOrderItems)
+                        dto.SalesOrderData = JsonConvert.DeserializeObject<List<SalesOrderItemDto>>(product.SalesOrderData)
                             .ToList();
                     }
 
