@@ -55,7 +55,16 @@ namespace Repository
 
         public async Task<PagedList<DiscountRanges>> GetAllDiscountRanges(PagingParameter pagingParameter)
         {
-            var query = FindAll().Where(x=>x.IsActive == true)
+            var query = FindAll().Include(x => x.DiscountUsers).OrderBy(x => x.Id);
+            return PagedList<DiscountRanges>.ToPagedList(
+              query,
+              pagingParameter.PageNumber, pagingParameter.PageSize
+            );
+        }
+
+        public async Task<PagedList<DiscountRanges>> GetAllActiveDiscount(PagingParameter pagingParameter)
+        {
+            var query = FindAll().Where(x => x.IsActive == true)
                 .Include(x => x.DiscountUsers)
                 .OrderBy(x => x.Id);
             return PagedList<DiscountRanges>.ToPagedList(
@@ -70,9 +79,6 @@ namespace Repository
                 .Where(x => x.IsActive)
                 .ToListAsync();
         }
-
-
-
         public async Task UpdateDiscountRanges(DiscountRanges discountRanges)
         {
             Update(discountRanges);

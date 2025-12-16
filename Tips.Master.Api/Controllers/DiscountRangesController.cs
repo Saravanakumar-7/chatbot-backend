@@ -62,6 +62,32 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+        [HttpGet]
+        public async Task<IActionResult> GetAllActiveDiscountRanges([FromQuery] PagingParameter pagingParameter)
+        {
+            var serviceResponse = new ServiceResponse<List<DiscountRangesDto>>();
+            try
+            {
+                var allRanges = await _repository.DiscountRangesRepository.GetAllActiveDiscount(pagingParameter);
+                var result = _mapper.Map<List<DiscountRangesDto>>(allRanges);
+
+                serviceResponse.Data = result;
+                serviceResponse.Message = "Returned all DiscountRanges successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetAllDiscountRanges API: {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occurred: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
 
         [HttpPost]
