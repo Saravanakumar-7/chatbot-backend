@@ -315,40 +315,80 @@ namespace Tips.Warehouse.Api.Repository
             return result;
 
         }
-        public async Task<PagedList<Invoice>> GetAllInvoices([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
-        {
-            var getAllInvoiceList = _tipsWarehouseDbContext.invoices
-                .OrderByDescending(x => x.Id)
-                .Where(inv =>
-                    (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
-                    inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
-                    inv.CustomerAliasName.Contains(searchParams.SearchValue) ||
-                    inv.CustomerId.Contains(searchParams.SearchValue) ||
-                    inv.CustomerName.Contains(searchParams.SearchValue) ||
-                    inv.CompanyName.Contains(searchParams.SearchValue) ||
-                    inv.invoiceChildItems.Any(child => child.DONumber.Contains(searchParams.SearchValue)))) // Include searching by DoNumber in invoiceChildItems
-                .Include(k => k.invoiceChildItems)
-                .Include(p => p.InvoiceAdditionalCharges);
 
-            return PagedList<Invoice>.ToPagedList(getAllInvoiceList, pagingParameter.PageNumber, pagingParameter.PageSize);
+        public async Task<PagedList<Invoice>> GetAllInvoices(  PagingParameter pagingParameter, SearchParams searchParams)
+        {
+            var query = _tipsWarehouseDbContext.invoices
+                .AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(searchParams.SearchValue))
+            {
+                var search = searchParams.SearchValue;
+
+                // 🔍 Step 1: find invoice ids using DONumber
+                var invoiceIdsFromChild = _tipsWarehouseDbContext.invoiceChildItems
+                    .Where(c => c.DONumber == search) // exact match
+                    .Select(c => c.InvoiceId);
+
+                // 🔍 Step 2: apply search on invoice
+                query = query.Where(inv =>
+                    inv.InvoiceNumber.Contains(search) ||
+                    inv.CustomerAliasName.Contains(search) ||
+                    inv.CustomerId.Contains(search) ||
+                    inv.CustomerName.Contains(search) ||
+                    inv.CompanyName.Contains(search) ||
+                    invoiceIdsFromChild.Contains(inv.Id) // 👈 DONumber support
+                );
+            }
+
+            // 📦 Step 3: load child items
+            query = query
+                .OrderByDescending(x => x.Id)
+                .Include(i => i.invoiceChildItems)
+                .Include(i => i.InvoiceAdditionalCharges);
+
+             return PagedList<Invoice>.ToPagedList(
+                query,
+                pagingParameter.PageNumber,
+                pagingParameter.PageSize
+            );
         }
 
-    
-    //public async Task<PagedList<Invoice>> GetAllInvoices([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
-    //{
+      
+        //public async Task<PagedList<Invoice>> GetAllInvoices([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        //{
+        //    var getAllInvoiceList = _tipsWarehouseDbContext.invoices
+        //        .OrderByDescending(x => x.Id)
+        //        .Where(inv =>
+        //            (string.IsNullOrWhiteSpace(searchParams.SearchValue) ||
+        //            inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
+        //            inv.CustomerAliasName.Contains(searchParams.SearchValue) ||
+        //            inv.CustomerId.Contains(searchParams.SearchValue) ||
+        //            inv.CustomerName.Contains(searchParams.SearchValue) ||
+        //            inv.CompanyName.Contains(searchParams.SearchValue) ||
+        //            inv.invoiceChildItems.Any(child => child.DONumber.Contains(searchParams.SearchValue)))) // Include searching by DoNumber in invoiceChildItems
+        //        .Include(k => k.invoiceChildItems)
+        //        .Include(p => p.InvoiceAdditionalCharges);
 
-    //    var getAllInvoiceList = FindAll().OrderByDescending(x => x.Id)
-    //       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
-    //        inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
-    //        || inv.CompanyName.Contains(searchParams.SearchValue))))
-    //        .Include(k => k.invoiceChildItems)
-    //        .Include(p => p.InvoiceAdditionalCharges);
+        //    return PagedList<Invoice>.ToPagedList(getAllInvoiceList, pagingParameter.PageNumber, pagingParameter.PageSize);
+        //}
 
-    //    return PagedList<Invoice>.ToPagedList(getAllInvoiceList, pagingParameter.PageNumber, pagingParameter.PageSize);
 
-    //}
+        //public async Task<PagedList<Invoice>> GetAllInvoices([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParams searchParams)
+        //{
 
-    public async Task<IEnumerable<Invoice>> SearchInvoiceDate([FromQuery] SearchsDateParms searchsDateParms)
+        //    var getAllInvoiceList = FindAll().OrderByDescending(x => x.Id)
+        //       .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.InvoiceNumber.Contains(searchParams.SearchValue) ||
+        //        inv.CustomerAliasName.Contains(searchParams.SearchValue) || inv.CustomerName.Contains(searchParams.SearchValue)
+        //        || inv.CompanyName.Contains(searchParams.SearchValue))))
+        //        .Include(k => k.invoiceChildItems)
+        //        .Include(p => p.InvoiceAdditionalCharges);
+
+        //    return PagedList<Invoice>.ToPagedList(getAllInvoiceList, pagingParameter.PageNumber, pagingParameter.PageSize);
+
+        //}
+
+        public async Task<IEnumerable<Invoice>> SearchInvoiceDate([FromQuery] SearchsDateParms searchsDateParms)
         {
             var invoiceDetails = _tipsWarehouseDbContext.invoices
             .Where(inv => ((inv.CreatedOn >= searchsDateParms.SearchFromDate &&
