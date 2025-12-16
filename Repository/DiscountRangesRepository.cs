@@ -63,6 +63,14 @@ namespace Repository
               pagingParameter.PageNumber, pagingParameter.PageSize
             );
         }
+        public async Task<List<DiscountRanges>> GetAllActiveDiscountRanges()
+        {
+            return await FindAll()
+                .AsNoTracking()
+                .Where(x => x.IsActive)
+                .ToListAsync();
+        }
+
 
 
         public async Task UpdateDiscountRanges(DiscountRanges discountRanges)

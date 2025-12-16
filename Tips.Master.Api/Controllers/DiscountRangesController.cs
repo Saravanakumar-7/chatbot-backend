@@ -63,6 +63,7 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+
         [HttpPost]
         public async Task<IActionResult> CreateDiscountRanges([FromBody] DiscountRangesPostDto discountRangesPostDto)
         {
@@ -72,60 +73,73 @@ namespace Tips.Master.Api.Controllers
             {
                 if (discountRangesPostDto is null)
                 {
-                    serviceResponse.Data = null;
                     serviceResponse.Message = "DiscountRanges object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError(serviceResponse.Message);
                     return BadRequest(serviceResponse);
                 }
-               
 
                 if (!ModelState.IsValid)
                 {
-                    serviceResponse.Data = null;
                     serviceResponse.Message = "Invalid DiscountRanges object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                    _logger.LogError(serviceResponse.Message);
                     return BadRequest(serviceResponse);
                 }
 
-                    if (discountRangesPostDto.FromAmount < 0)
-                    {
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = "FromAmount must be greater than or equal 0";
-                        serviceResponse.Success = false;
-                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                        _logger.LogError(serviceResponse.Message);
-                        return BadRequest(serviceResponse);
-                    }
+                if (discountRangesPostDto.FromAmount < 0)
+                {
+                    serviceResponse.Message = "FromAmount must be greater than or equal to 0";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
 
-                    if (discountRangesPostDto.ToAmount.HasValue && discountRangesPostDto.FromAmount > discountRangesPostDto.ToAmount)
-                    {
-                        serviceResponse.Message = "FromAmount must be smaller than ToAmount (unless ToAmount is null)";
-                        serviceResponse.Success = false;
-                        serviceResponse.StatusCode = HttpStatusCode.BadRequest;
-                        return BadRequest(serviceResponse);
-                    }
+                if (discountRangesPostDto.ToAmount.HasValue &&
+                    discountRangesPostDto.FromAmount > discountRangesPostDto.ToAmount)
+                {
+                    serviceResponse.Message =
+                        "FromAmount must be smaller than ToAmount (unless ToAmount is null)";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
 
-                    var existingRange = await _repository.DiscountRangesRepository.GetDiscountRangesByAmount(discountRangesPostDto.FromAmount);
-                    if (existingRange != null)
-                    {
-                        serviceResponse.Data = null;
-                        serviceResponse.Message = "A range already exists starting from this FromAmount";
-                        serviceResponse.Success = false;
-                        serviceResponse.StatusCode = HttpStatusCode.Conflict;
-                        _logger.LogError(serviceResponse.Message);
-                        return BadRequest(serviceResponse);
-                    }
-                    var entity = _mapper.Map<DiscountRanges>(discountRangesPostDto);
-                    await _repository.DiscountRangesRepository.CreateDiscountRanges(entity);
-     
-                _repository.SaveAsync();
+                // 🔹 STEP 1: Deactivate ALL active records
+                var activeRanges =
+                    await _repository.DiscountRangesRepository.GetAllActiveDiscountRanges();
 
-                serviceResponse.Data = null;
-                serviceResponse.Message = "Successfully Created";
+                if (activeRanges.Any())
+                {
+                    foreach (var range in activeRanges)
+                    {
+                        range.IsActive = false;
+                        await _repository.DiscountRangesRepository
+                            .UpdateDiscountRanges(range); // awaited
+                    }
+                   
+                }
+
+                // 🔹 STEP 2: Create new active record
+                var newDiscountRange = new DiscountRanges
+                {
+                    FromAmount = discountRangesPostDto.FromAmount,
+                    ToAmount = discountRangesPostDto.ToAmount,
+                    IsActive = true,
+                    DiscountUsers = discountRangesPostDto.DiscountUsers?
+                        .Select(du => new DiscountUsers
+                        {
+                            UserId = du.UserId,
+                            UserName = du.UserName
+                        }).ToList()
+                };
+
+                await _repository.DiscountRangesRepository
+                    .CreateDiscountRanges(newDiscountRange);
+
+                 _repository.SaveAsync(); // ✅ MUST await
+
+                serviceResponse.Message = "DiscountRanges successfully created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.Created;
 
@@ -133,14 +147,94 @@ namespace Tips.Master.Api.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occurred in CreateDiscountRanges API: {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
+                _logger.LogError($"Error in CreateDiscountRanges API: {ex.Message}\n{ex.InnerException}");
                 serviceResponse.Message = $"Error Occurred: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+
+        //[HttpPost]
+        //public async Task<IActionResult> CreateDiscountRanges([FromBody] DiscountRangesPostDto discountRangesPostDto)
+        //{
+        //    var serviceResponse = new ServiceResponse<string>();
+
+        //    try
+        //    {
+        //        if (discountRangesPostDto is null)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "DiscountRanges object sent from client is null";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            _logger.LogError(serviceResponse.Message);
+        //            return BadRequest(serviceResponse);
+        //        }
+
+
+        //        if (!ModelState.IsValid)
+        //        {
+        //            serviceResponse.Data = null;
+        //            serviceResponse.Message = "Invalid DiscountRanges object sent from client";
+        //            serviceResponse.Success = false;
+        //            serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //            _logger.LogError(serviceResponse.Message);
+        //            return BadRequest(serviceResponse);
+        //        }
+
+        //            if (discountRangesPostDto.FromAmount < 0)
+        //            {
+        //                serviceResponse.Data = null;
+        //                serviceResponse.Message = "FromAmount must be greater than or equal 0";
+        //                serviceResponse.Success = false;
+        //                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //                _logger.LogError(serviceResponse.Message);
+        //                return BadRequest(serviceResponse);
+        //            }
+
+        //            if (discountRangesPostDto.ToAmount.HasValue && discountRangesPostDto.FromAmount > discountRangesPostDto.ToAmount)
+        //            {
+        //                serviceResponse.Message = "FromAmount must be smaller than ToAmount (unless ToAmount is null)";
+        //                serviceResponse.Success = false;
+        //                serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+        //                return BadRequest(serviceResponse);
+        //            }
+
+        //            var existingRange = await _repository.DiscountRangesRepository.GetDiscountRangesByAmount(discountRangesPostDto.FromAmount);
+        //            if (existingRange != null)
+        //            {
+        //                serviceResponse.Data = null;
+        //                serviceResponse.Message = "A range already exists starting from this FromAmount";
+        //                serviceResponse.Success = false;
+        //                serviceResponse.StatusCode = HttpStatusCode.Conflict;
+        //                _logger.LogError(serviceResponse.Message);
+        //                return BadRequest(serviceResponse);
+        //            }
+        //            var entity = _mapper.Map<DiscountRanges>(discountRangesPostDto);
+        //            await _repository.DiscountRangesRepository.CreateDiscountRanges(entity);
+
+        //        _repository.SaveAsync();
+
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = "Successfully Created";
+        //        serviceResponse.Success = true;
+        //        serviceResponse.StatusCode = HttpStatusCode.Created;
+
+        //        return Created("CreateDiscountRanges", serviceResponse);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        _logger.LogError($"Error Occurred in CreateDiscountRanges API: {ex.Message} \n{ex.InnerException}");
+        //        serviceResponse.Data = null;
+        //        serviceResponse.Message = $"Error Occurred: {ex.Message}";
+        //        serviceResponse.Success = false;
+        //        serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+        //        return StatusCode(500, serviceResponse);
+        //    }
+        //}
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDiscountRangesById(int id)

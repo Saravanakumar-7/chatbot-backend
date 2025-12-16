@@ -15,6 +15,7 @@ namespace Contracts
         Task<DiscountRanges> GetDiscountRangesById(int id);
         Task<DiscountRanges> GetDiscountRangesByAmount(decimal amount);
         Task<PagedList<DiscountRanges>> GetAllDiscountRanges(PagingParameter pagingParameter);
+        Task<List<DiscountRanges>> GetAllActiveDiscountRanges();
         Task UpdateDiscountRanges(DiscountRanges discountRanges);
     }
 }
