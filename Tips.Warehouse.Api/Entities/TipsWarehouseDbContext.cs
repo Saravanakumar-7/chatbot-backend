@@ -52,6 +52,8 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<LocationTransferSPReport> RecievableLocationTransfers { get; set; }
         public DbSet<LocationTransferSpReportForTras> LocationTransferSpReportForTras { get; set; }
         public DbSet<LocationTransferSpReportForAvi> LocationTransferSpReportForAvi { get; set; }
+        public DbSet<InvLocationtransferUnitPriceDateSpForAvi> InvLocationtransferUnitPriceDateSpForAvi { get; set; }
+        public DbSet<InvLocationtransferUnitPriceSpWithParamForAvi> InvLocationtransferUnitPriceSpWithParamForAvi { get; set; }
         public DbSet<MRNSPReport> MRNSPReports { get; set; }        
         public DbSet<OpenDeliveryOrderSPReport> RecievableODOs { get; set; }
         public DbSet<DailyDOReport> DailyDOReports { get; set; }
@@ -132,6 +134,8 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<DoVsInvoiceSpReport>().HasNoKey();
             modelBuilder.Entity<InvoiceSpReportWithoutWorkOrderNoForTras>().HasNoKey();
             modelBuilder.Entity<ReturnInvoiceSPResportWithoutParam>().HasNoKey();
+            modelBuilder.Entity<InvLocationtransferUnitPriceDateSpForAvi>().HasNoKey();
+            modelBuilder.Entity<InvLocationtransferUnitPriceSpWithParamForAvi>().HasNoKey();
             
 
             base.OnModelCreating(modelBuilder);

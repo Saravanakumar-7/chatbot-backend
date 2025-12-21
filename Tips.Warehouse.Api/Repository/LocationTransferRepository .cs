@@ -258,6 +258,23 @@ namespace Tips.Warehouse.Api.Repository
 
             return results;
         }
+        public async Task<IEnumerable<InvLocationtransferUnitPriceDateSpForAvi>> InventoryWithLocationtransferUnitPriceSPReportDatesAvi(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<InvLocationtransferUnitPriceDateSpForAvi>()
+                         .FromSqlInterpolated($"CALL inventory_with_locationtransfer_UnitPrice_date_Avi({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<InvLocationtransferUnitPriceSpWithParamForAvi>> InventoryWithLocationtransferUnitPriceSPReportWithParamAvi(string? PartNumber, string? Description, string? Warehouse, string? Location, string? ProjectNumber)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<InvLocationtransferUnitPriceSpWithParamForAvi>()
+            .FromSqlInterpolated($"CALL inventory_with_locationtransfer_UnitPrice_parameter_Avi({PartNumber},{Description},{Warehouse},{Location},{ProjectNumber})")
+            .ToList();
+            return result;
+        }
+
         public async Task<IEnumerable<MRNSPReport>> MRNSPReportDates(DateTime? FromDate, DateTime? ToDate)
         {
             var results = _tipsWarehouseDbContext.Set<MRNSPReport>()

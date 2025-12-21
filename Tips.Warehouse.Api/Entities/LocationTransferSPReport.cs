@@ -69,4 +69,54 @@ namespace Tips.Warehouse.Api.Entities
         public string? Remarks { get; set; }
 
     }
+
+    public class InvLocationtransferUnitPriceDateSpForAvi
+    {
+       
+            public string? PartNumber { get; set; }
+            public string? MftrPartNumber { get; set; }
+            public string? Description { get; set; }
+            public int? PartType { get; set; }
+            public string? ProjectNumber { get; set; }
+            public string? UOM { get; set; }
+            public string? LotNumber { get; set; }
+            public decimal? Balance_Quantity { get; set; }
+            public string? Warehouse { get; set; }
+            public string? Location { get; set; }
+            public decimal? Max { get; set; }
+            public decimal? Min { get; set; }
+            public DateTime? CreatedOn { get; set; }
+            public string? MaterialGroup { get; set; }
+            public decimal? UnitPrice { get; set; }
+        
+
+    }
+    public class InvLocationtransferUnitPriceSpWithParamForAvi
+    {
+
+        public string? PartNumber { get; set; }
+        public string? MftrPartNumber { get; set; }
+        public string? Description { get; set; }
+        public int? PartType { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? UOM { get; set; }
+        public string? LotNumber { get; set; }
+        public decimal? Balance_Quantity { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public decimal? Max { get; set; }
+        public decimal? Min { get; set; }
+        public string? MaterialGroup { get; set; }
+        public decimal? UnitPrice { get; set; }
+    }
+    public class InventoryFilterParams
+    {
+        public string? PartNumber { get; set; }
+        public string? Description { get; set; }
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public string? ProjectNumber { get; set; }
+    }
+
+
 }

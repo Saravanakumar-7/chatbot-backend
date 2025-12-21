@@ -25,6 +25,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<LocationTransferSPReport>> LocationTransferSPReportDates(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<LocationTransferSpReportForTras>> LocationTransferSPReportDatesForTras(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<LocationTransferSpReportForAvi>> LocationTransferSPReportDatesForAvi(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<InvLocationtransferUnitPriceDateSpForAvi>> InventoryWithLocationtransferUnitPriceSPReportDatesAvi(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<InvLocationtransferUnitPriceSpWithParamForAvi>> InventoryWithLocationtransferUnitPriceSPReportWithParamAvi(string? PartNumber, string? Description, string? Warehouse, string? Location, string? ProjectNumber);
         Task<IEnumerable<MRNSPReport>> MRNSPReportWithParam(string? ProjectNumber, string? ShopOrderType, string? ShopOrderNumber, string? KPN, string? PartType);
         Task<IEnumerable<MRNSPReportForTrans>> MRNSPReportWithParamForTrans(string? ProjectNumber, string? ShopOrderType, string? ShopOrderNumber, string? PartNumber, string? PartType);
         Task<IEnumerable<MRNSPReportForTrans>> MRNSPReportDatesForTrans(DateTime? FromDate, DateTime? ToDate);
