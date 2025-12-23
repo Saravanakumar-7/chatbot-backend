@@ -2237,5 +2237,117 @@ namespace Tips.Production.Api.Controllers
         //        return StatusCode(500, serviceResponse);
         //    }
         //}
+
+        [HttpPost]
+        public async Task<IActionResult> SendEmailforShopOrder(int ShopOrderId)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                
+                var shopOrder = await _shopOrderRepository.GetShopOrderById(ShopOrderId);
+                if (shopOrder is null)
+                {
+                    _logger.LogError($"SendEmailforShopOrder with id: {ShopOrderId}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"SendEmailforShopOrder with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                               
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+                var request = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreateShopOrder"));
+                request.Headers.Add("Authorization", token);
+                var response = await client.SendAsync(request);
+                _logger.LogInfo($"GetEmailTemplatebyProcessType is doing");
+                if (response.StatusCode != HttpStatusCode.OK)
+                    _logger.LogError($"Something went wrong inside GetEmailTemplatebyProcessType During Email action");
+                var EmailTempString = await response.Content.ReadAsStringAsync();
+                var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+               
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse("admin_getapcs@idamtat.in"));
+                               
+                email.To.Add(MailboxAddress.Parse("prasanna.d@gmail.com"));
+                //email.To.AddRange(shoporderEmailPostDto.SentTo.Split(',').Select(x => MailboxAddress.Parse(x)));
+
+                email.Subject = emaildetails.data.subject;
+                string body = emaildetails.data.template;
+                body = body.Replace("{{ShopOrderNo}}", shopOrder.ShopOrderNumber);
+                List<string>? SalesorderList = new List<string>();
+                string? salesorderNos = null;
+                foreach (var item in shopOrder.ShopOrderItems)
+                {
+                    if (salesorderNos == null)
+                    {
+                        salesorderNos = item.SalesOrderNumber;
+                        SalesorderList.Add(item.SalesOrderNumber);
+                    }
+                    else
+                    {
+                        if (!SalesorderList.Contains(item.SalesOrderNumber))
+                        {
+                            salesorderNos = salesorderNos + "," + item.SalesOrderNumber;
+                            SalesorderList.Add(item.SalesOrderNumber);
+                        }
+                    }
+                }
+
+                body = body.Replace("{{SalesOrderNo}}", salesorderNos);
+                body = body.Replace("{{CreatedBy}}", shopOrder.CreatedBy);
+                body = body.Replace("{{ProjectNo}}", shopOrder.ShopOrderItems[0].ProjectNumber);
+                body = body.Replace("{{Sl.No}}", "1");
+                body = body.Replace("{{ItemNumbers}}", shopOrder.ItemNumber);
+                body = body.Replace("{{ItemDesc}}", shopOrder.Description);
+                body = body.Replace("{{RevNo}}", shopOrder.BomRevisionNo.ToString());
+                body = body.Replace("{{Qty}}", shopOrder.TotalSOReleaseQty.ToString());
+                var ItemNumber = shopOrder.ItemNumber;
+                var encodedItemNumber = Uri.EscapeDataString(ItemNumber);
+                var request2 = new HttpRequestMessage(HttpMethod.Get, string.Concat(_config["ItemMasterAPI"],
+                    $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+                request2.Headers.Add("Authorization", token);
+                var itemMasterObjectResult = await client.SendAsync(request2);
+                if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                    _logger.LogError($"Something went wrong inside GetItemMasterByItemNumber During Email action");
+                var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                dynamic itemMasterObject = itemMasterObjectData.data;
+                string uom = itemMasterObject.uom;
+                body = body.Replace("{{UOM}}", uom);
+
+                var temp = shopOrder.SOCloseDate.ToString("dd/MM/yyyy").Split(" ");
+                body = body.Replace("{{SOCloseDate}}", temp[0]);
+
+                email.Body = new TextPart(TextFormat.Html) { Text = body };
+                _logger.LogInfo($"SmtpClient is doing");
+
+                using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
+                smtp.Authenticate("admin_getapcs@idamtat.in", "9xkJrtyHrUq0");
+                smtp.Send(email);
+                smtp.Disconnect(true);
+
+
+                serviceResponse.Data = $"Email sent successfully for ShopOrder Number:{shopOrder.ShopOrderNumber}";
+                serviceResponse.Message = $"Email sent successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in SendEmailforShopOrder API: \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in SendEmailforShopOrder API: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
     }
 }
