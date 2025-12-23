@@ -714,7 +714,7 @@ namespace Tips.Production.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateShopOrder([FromBody] ShopOrderPostDto shopOrderPostDto)
         {
-            ServiceResponse<ShopOrderPostDto> serviceResponse = new ServiceResponse<ShopOrderPostDto>();
+            ServiceResponse<int> serviceResponse = new ServiceResponse<int>();
 
             try
             {
@@ -723,7 +723,7 @@ namespace Tips.Production.Api.Controllers
                 if (shopOrderPostDto == null)
                 {
                     _logger.LogError("ShopOrder object sent from client is null.");
-                    serviceResponse.Data = null;
+                    serviceResponse.Data = 0;
                     serviceResponse.Message = "ShopOrder object is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
@@ -732,7 +732,7 @@ namespace Tips.Production.Api.Controllers
                 if (!ModelState.IsValid)
                 {
                     _logger.LogError("Invalid ShopOrder object sent from client.");
-                    serviceResponse.Data = null;
+                    serviceResponse.Data = 0;
                     serviceResponse.Message = "Invalid ShopOrder object";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
@@ -775,7 +775,7 @@ namespace Tips.Production.Api.Controllers
                             if (responses.StatusCode != HttpStatusCode.OK)
                             {
                                 _logger.LogError($"Something went wrong inside CreateShopOrder action");
-                                serviceResponse.Data = null;
+                                serviceResponse.Data = 0;
                                 serviceResponse.Message = $"Something went wrong in sales Order update";
                                 serviceResponse.Success = false;
                                 serviceResponse.StatusCode = HttpStatusCode.NotFound;
@@ -960,7 +960,7 @@ namespace Tips.Production.Api.Controllers
                     await _advitaShopOrderDetailsRepository.CreateAdvitaShopOrderDetails(advitaShopOrderDetails);
                     _advitaShopOrderDetailsRepository.SaveAdvitaAsync();
                 }
-                serviceResponse.Data = null;
+                serviceResponse.Data = shopOrder.Id;
                 serviceResponse.Message = "ShopOrder Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -969,7 +969,7 @@ namespace Tips.Production.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Error Occured in CreateShopOrder API : \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
+                serviceResponse.Data = 0;
                 serviceResponse.Message = $"Error Occured in CreateShopOrder API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
