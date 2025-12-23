@@ -254,4 +254,5 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal ReleaseQty { get; set; }
         public decimal WipQty { get; set; }
     }
+   
 }
