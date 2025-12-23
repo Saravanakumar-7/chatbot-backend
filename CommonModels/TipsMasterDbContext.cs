@@ -202,6 +202,8 @@ namespace Entities
             modelBuilder.Entity<TallyCustomerMasterSpReport>().HasNoKey();
             modelBuilder.Entity<TallyStockItemSPReport>().HasNoKey();
             modelBuilder.Entity<TallyVendorMasterSpReport>().HasNoKey();
+            modelBuilder.Entity<BomLatestRevisionDataSp>().HasNoKey();
+            modelBuilder.Entity<BomReportwithallRevisionsSp>().HasNoKey();
         }
 
 

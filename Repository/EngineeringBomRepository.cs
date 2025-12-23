@@ -1431,6 +1431,26 @@ namespace Repository
             return result;
 
         }
+        public async Task<IEnumerable<BomLatestRevisionDataSp>> GetBomLatestRevisionDataSpForGeeYes(string? ItemNumber)
+        {
+            var result = _tipsMasterDbContext
+            .Set<BomLatestRevisionDataSp>()
+            .FromSqlInterpolated($"CALL Bom_LatestRevision_Data({ItemNumber})")
+            .ToList();
+
+            return result;
+
+        }
+        public async Task<IEnumerable<BomReportwithallRevisionsSp>> GetBomReportWithAllRevisionsSpForGeeYes(string? ItemNumber, decimal? RevisionNumber)
+        {
+            var result = _tipsMasterDbContext
+            .Set<BomReportwithallRevisionsSp>()
+            .FromSqlInterpolated($"CALL Bom_Report_with_all_Revisions({ItemNumber},{RevisionNumber})")
+            .ToList();
+
+            return result;
+
+        }
 
         public async Task<IEnumerable<ProductionBom>> GetAllProductionBomVersionListByItemNumber(string itemNumber)
         {
