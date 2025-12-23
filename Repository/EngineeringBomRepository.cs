@@ -369,6 +369,31 @@ namespace Repository
 
         }
 
+        public async Task<IEnumerable<EnggBomItemDtoWithRevisions>> GetAllEnggBOMItemNumberWithRevisionNumbers(string ItemNumber)
+        {
+            var result = await _tipsMasterDbContext.EnggBoms
+                .Where(x => x.IsActive==true && x.ItemNumber==ItemNumber)
+                .GroupBy(x => x.ItemNumber)
+                .Select(g => new EnggBomItemDtoWithRevisions
+                {
+                    ItemNumber = g.Key,
+                    revisionNumbers = g
+                        .Select(r => new RevisionNumbers
+                        {
+                            RevisionNumber = r.RevisionNumber
+                        })
+                        .Distinct()
+                        .ToList()
+                })
+                .ToListAsync();
+
+            return result;
+        }
+
+
+
+
+
         //public async Task<IEnumerable<FGItemNumberListDto>> GetAllEnggBOMDetailsByItemNumber(string fgItemNumber)
         //{
         //    var enggBomItemDetails = await _tipsMasterDbContext.EnggChildItems

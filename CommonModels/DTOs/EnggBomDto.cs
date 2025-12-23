@@ -174,6 +174,19 @@ namespace Entities.DTOs
         public string ItemNumber { get; set; }
 
     }
+
+    public class EnggBomItemDtoWithRevisions
+    {
+        public string ItemNumber { get; set; }
+
+        public List<RevisionNumbers> revisionNumbers { get; set; }
+
+    }
+
+    public class RevisionNumbers {
+        public decimal? RevisionNumber { get; set; }
+    }
+
     public class EnggBomCoverageDto
     {
         public string? ItemNumber { get; set; }

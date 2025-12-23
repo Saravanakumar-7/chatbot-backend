@@ -1652,6 +1652,36 @@ namespace Tips.Master.Api.Controllers
 
 
 
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllEnggBOMItemNumberWithRevisionNumbers(string itemNumber)
+        {
+            ServiceResponse<IEnumerable<EnggBomItemDtoWithRevisions>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomItemDtoWithRevisions>>();
+            try
+            {
+                var listOfBomItem = await _repository.EnggBomRepository.GetAllEnggBOMItemNumberWithRevisionNumbers(itemNumber);
+
+                _logger.LogInfo("Returned all EnggBomItemDtoWithRevisions");
+                var bomDtoDetails = _mapper.Map<IEnumerable<EnggBomItemDtoWithRevisions>>(listOfBomItem);
+                serviceResponse.Data = bomDtoDetails;
+                serviceResponse.Message = "Returned all Engineering EnggBomItemDtoWithRevisions Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllEnggBOMItemNumberWithRevisionNumbers API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllEnggBOMItemNumberWithRevisionNumbers API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+
         //aravind
         //[HttpPost]
         //public async Task<IActionResult> GetFGBomItemsChildDetails([FromBody] List<string> itemNumber)
