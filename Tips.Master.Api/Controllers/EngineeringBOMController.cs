@@ -4273,6 +4273,94 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+
+
+
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetBomLatestRevisionDataSpForGeeYes([FromBody] ReleaseProductionBomSPReportDto releaseProductionBomSPReportDto)
+
+        {
+            ServiceResponse<IEnumerable<BomLatestRevisionDataSp>> serviceResponse = new ServiceResponse<IEnumerable<BomLatestRevisionDataSp>>();
+            try
+            {
+                var products = await _releaseProductBomRepository.GetBomLatestRevisionDataSpForGeeYes(releaseProductionBomSPReportDto.ItemNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"BomLatestRevisionDataSp hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"BomLatestRevisionDataSp hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned BomLatestRevisionDataSp Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetBomLatestRevisionDataSpForGeeYes API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetBomLatestRevisionDataSpForGeeYes API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+
+
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetBomReportWithAllRevisionsSpForGeeYes([FromBody] BomReportwithallRevisionsSpInput bomReportwithallRevisionsSpInput)
+
+        {
+            ServiceResponse<IEnumerable<BomReportwithallRevisionsSp>> serviceResponse = new ServiceResponse<IEnumerable<BomReportwithallRevisionsSp>>();
+            try
+            {
+                var products = await _releaseProductBomRepository.GetBomReportWithAllRevisionsSpForGeeYes(bomReportwithallRevisionsSpInput.ItemNumber, bomReportwithallRevisionsSpInput.RevisionNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"BomReportwithallRevisionsSp hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"BomReportwithallRevisionsSp hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned BomReportwithallRevisionsSp Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetBomReportWithAllRevisionsSpForGeeYes API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetBomReportWithAllRevisionsSpForGeeYes API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+
+
         [HttpPost]
         public async Task<IActionResult> CreateReleaseFileUpload([FromBody] List<ReleaseFileUploadPostDto> releaseFileUploadPostDtos)
         {
