@@ -370,8 +370,8 @@ namespace Repository
         }
         public async Task<IEnumerable<EnggBomItemDto>> GetAllEnggBOMPPItemNumbers()
         {
-            IEnumerable<EnggBomItemDto> getAllEnggBomItems = await _tipsMasterDbContext.EnggBoms
-                .Where(x => x.IsActive == true && x.ItemType==PartType.PurchasePart)
+            IEnumerable<EnggBomItemDto> getAllEnggBomItems = await _tipsMasterDbContext.EnggChildItems
+                .Where(x => x.IsActive == true && x.PartType==PartType.PurchasePart)
             .Select(c => new EnggBomItemDto()
             {
                 ItemNumber = c.ItemNumber,
