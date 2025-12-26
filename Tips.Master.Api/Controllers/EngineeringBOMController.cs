@@ -29,7 +29,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class EngineeringBOMController : ControllerBase
     {
 
