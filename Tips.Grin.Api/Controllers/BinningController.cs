@@ -1265,6 +1265,7 @@ namespace Tips.Grin.Api.Controllers
                                     var binningDetails = _mapper.Map<List<BinningLocationDto>>(binItem.binningLocations);
                                     binningItemDtos.binningLocations = binningDetails;
                                     binningItemDtos.ReceivedQty = grinItem.Qty;
+                                    binningItemDtos.Description = grinItem.ItemDescription;
                                     binningItemDtos.AcceptedQty = grinItem.AcceptedQty;
                                     binningItemDtos.RejectedQty = grinItem.RejectedQty;
                                     binningItemList.Add(binningItemDtos);
