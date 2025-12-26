@@ -368,8 +368,32 @@ namespace Repository
             return getAllEnggBomItems;
 
         }
+        public async Task<IEnumerable<EnggBomItemDto>> GetAllEnggBOMPPItemNumbers()
+        {
+            IEnumerable<EnggBomItemDto> getAllEnggBomItems = await _tipsMasterDbContext.EnggBoms
+                .Where(x => x.IsActive == true && x.ItemType==PartType.PurchasePart)
+            .Select(c => new EnggBomItemDto()
+            {
+                ItemNumber = c.ItemNumber,
+            }).Distinct()
+           .ToListAsync();
+            return getAllEnggBomItems;
 
-        public async Task<IEnumerable<EnggBomItemDtoWithRevisions>> GetAllEnggBOMItemNumberWithRevisionNumbers(string ItemNumber)
+        }
+        public async Task<IEnumerable<EnggBomItemDto>> GetAllEnggBOMFGItemNumbers()
+        {
+            IEnumerable<EnggBomItemDto> getAllEnggBomItems = await _tipsMasterDbContext.EnggBoms
+                .Where(x => x.IsActive == true &&x.ItemType== PartType.FG)
+            .Select(c => new EnggBomItemDto()
+            {
+                ItemNumber = c.ItemNumber,
+            }).Distinct()
+           .ToListAsync();
+            return getAllEnggBomItems;
+
+        }
+
+        public async Task<IEnumerable<EnggBomItemDtoWithRevisions>> GetAllRevisionNumbersByEnggBOMItemNumber(string ItemNumber)
         {
             var result = await _tipsMasterDbContext.EnggBoms
                 .Where(x => x.IsActive==true && x.ItemNumber==ItemNumber)

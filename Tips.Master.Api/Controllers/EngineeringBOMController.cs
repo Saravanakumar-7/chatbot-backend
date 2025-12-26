@@ -29,7 +29,7 @@ namespace Tips.Master.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class EngineeringBOMController : ControllerBase
     {
 
@@ -1650,16 +1650,69 @@ namespace Tips.Master.Api.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllEnggBOMPPItemNumbers()
+        {
+            ServiceResponse<IEnumerable<EnggBomItemDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomItemDto>>();
+            try
+            {
+                var listOfBomItem = await _repository.EnggBomRepository.GetAllEnggBOMPPItemNumbers();
 
+                _logger.LogInfo("Returned all EnggBomsItems");
+                var bomDtoDetails = _mapper.Map<IEnumerable<EnggBomItemDto>>(listOfBomItem);
+                serviceResponse.Data = bomDtoDetails;
+                serviceResponse.Message = "Returned all Engineering pp BomItems Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllEnggBOMPPItemNumbers API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllEnggBOMPPItemNumbers API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
 
 
         [HttpGet]
-        public async Task<IActionResult> GetAllEnggBOMItemNumberWithRevisionNumbers(string itemNumber)
+        public async Task<IActionResult> GetAllEnggBOMFGItemNumbers()
+        {
+            ServiceResponse<IEnumerable<EnggBomItemDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomItemDto>>();
+            try
+            {
+                var listOfBomItem = await _repository.EnggBomRepository.GetAllEnggBOMFGItemNumbers();
+
+                _logger.LogInfo("Returned all EnggBomsItems");
+                var bomDtoDetails = _mapper.Map<IEnumerable<EnggBomItemDto>>(listOfBomItem);
+                serviceResponse.Data = bomDtoDetails;
+                serviceResponse.Message = "Returned all Engineering FG BomItems Successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetAllEnggBOMFGItemNumbers API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetAllEnggBOMFGItemNumbers API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllRevisionNumbersByEnggBOMItemNumber(string itemNumber)
         {
             ServiceResponse<IEnumerable<EnggBomItemDtoWithRevisions>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomItemDtoWithRevisions>>();
             try
             {
-                var listOfBomItem = await _repository.EnggBomRepository.GetAllEnggBOMItemNumberWithRevisionNumbers(itemNumber);
+                var listOfBomItem = await _repository.EnggBomRepository.GetAllRevisionNumbersByEnggBOMItemNumber(itemNumber);
 
                 _logger.LogInfo("Returned all EnggBomItemDtoWithRevisions");
                 var bomDtoDetails = _mapper.Map<IEnumerable<EnggBomItemDtoWithRevisions>>(listOfBomItem);
