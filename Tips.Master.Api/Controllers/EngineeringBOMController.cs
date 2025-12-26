@@ -1651,26 +1651,26 @@ namespace Tips.Master.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllEnggBOMPPItemNumbers()
+        public async Task<IActionResult> GetAllEnggChildItemNumbers()
         {
             ServiceResponse<IEnumerable<EnggBomItemDto>> serviceResponse = new ServiceResponse<IEnumerable<EnggBomItemDto>>();
             try
             {
-                var listOfBomItem = await _repository.EnggBomRepository.GetAllEnggBOMPPItemNumbers();
+                var listOfBomItem = await _repository.EnggBomRepository.GetAllEnggChildItemNumbers();
 
                 _logger.LogInfo("Returned all EnggBomsItems");
                 var bomDtoDetails = _mapper.Map<IEnumerable<EnggBomItemDto>>(listOfBomItem);
                 serviceResponse.Data = bomDtoDetails;
-                serviceResponse.Message = "Returned all Engineering pp BomItems Successfully";
+                serviceResponse.Message = "Returned all  BomchildItemnumbers Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
                 return Ok(serviceResponse);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error Occured in GetAllEnggBOMPPItemNumbers API : \n {ex.Message} \n{ex.InnerException}");
+                _logger.LogError($"Error Occured in GetAllEnggChildItemNumbers API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetAllEnggBOMPPItemNumbers API : \n {ex.Message}";
+                serviceResponse.Message = $"Error Occured in GetAllEnggChildItemNumbers API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

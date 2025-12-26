@@ -36,7 +36,7 @@ namespace Contracts
         Task<IEnumerable<EngineeringBom>> GetAllEnggBomVersionListByItemNumber(string itemNumber);
         Task<IEnumerable<EnggBomItemDto>> GetAllEnggBOMItemNumber();
         Task<IEnumerable<EnggBomItemDto>> GetAllEnggBOMFGItemNumbers();
-        Task<IEnumerable<EnggBomItemDto>> GetAllEnggBOMPPItemNumbers();
+        Task<IEnumerable<EnggBomItemDto>> GetAllEnggChildItemNumbers();
         Task<IEnumerable<EnggBomItemDtoWithRevisions>> GetAllRevisionNumbersByEnggBOMItemNumber(string ItemNumber);
         Task<List<EnggBomFGItemNumberWithQtyDto>> GetFGBomItemsChildDetails(List<RfqEnggitemSourcingDto> itemNumberList);
         Task<List<EnggBomKitItemNumberWithQtyDto>> GetKitBomChildDetails(string kitItemNumber, decimal KitRevNo);
