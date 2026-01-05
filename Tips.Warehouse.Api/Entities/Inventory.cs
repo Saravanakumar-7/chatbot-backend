@@ -27,6 +27,7 @@ namespace Tips.Warehouse.Api.Entities
         public string? ReferenceID { get; set; }
         public string? ReferenceIDFrom { get; set; }
         public string? shopOrderNo { get; set; }
+        public string? BatchNo { get; set; }
         public string? SerialNo { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }

@@ -29,6 +29,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ReferenceID { get; set; }
         public string? ReferenceIDFrom { get; set; }
         public string? ShopOrderNo { get; set; }
+        public string? BatchNo { get; set; }
         public string? SerialNo { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -98,6 +99,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? ReferenceID { get; set; }
         public string? ReferenceIDFrom { get; set; }
         public string? ShopOrderNo { get; set; }
+        public string? BatchNo { get; set; }
         public string? SerialNo { get; set; }
         public string Unit { get; set; }
     }
@@ -542,6 +544,7 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         [Required]
         public string? ReferenceIDFrom { get; set; }
         public string? ShopOrderNo { get; set; }
+        public string? BatchNo { get; set; }
         public string? SerialNo { get; set; }
 
     }

@@ -52,6 +52,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? Location { get; set; }
         [Precision(13, 3)]
         public decimal Quantity { get; set; }
+        public string? BatchNo { get; set; }
         public string? SerialNo { get; set; }
     }
     public class OQCBinningLocationDto
@@ -61,6 +62,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? Location { get; set; }
         [Precision(13, 3)]
         public decimal Quantity { get; set; }
+        public string? BatchNo { get; set; }
         public string? SerialNo { get; set; }
         public string? Unit { get; set; }
         public string? CreatedBy { get; set; }
@@ -75,6 +77,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? Location { get; set; }
         [Precision(13, 3)]
         public decimal Quantity { get; set; }
+        public string? BatchNo { get; set; }
         public string? SerialNo { get; set; }
     }
     public class OQCBinningInventoryDto
@@ -132,6 +135,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? ReferenceID { get; set; }
         public string? ReferenceIDFrom { get; set; }
         public string? ShopOrderNo { get; set; }
+        public string? BatchNo { get; set; }
         public string? SerialNo { get; set; }
         public string? Unit { get; set; }
     }
