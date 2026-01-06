@@ -355,6 +355,43 @@ namespace Tips.Production.Api.Controllers
             }
         }
 
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetMaterialIssueAgainstMaterialRequestSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReport>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReport>>();
+            try
+            {
+                var products = await _materialRequestRepository.GetMaterialIssueAgainstMaterialRequestSPReportWithDate(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"MaterialIssueAgainstMaterialRequest hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"MaterialIssueAgainstMaterialRequest hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned MaterialIssueAgainstMaterialRequest Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetMaterialIssueAgainstMaterialRequestSPReportWithDate API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetMaterialIssueAgainstMaterialRequestSPReportWithDate API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpPost]
         public async Task<IActionResult> GetMaterialIssueAgainstMaterialRequestSPReportWithParamForAvi([FromBody] MaterialIssueAgainstMaterialRequestReportWithParamDto materialIssueAgainstMaterialRequestReportWithParamDto)
         {
@@ -393,46 +430,6 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
-
-        [HttpGet] // Adjust your route as needed
-        public async Task<IActionResult> GetMaterialIssueAgainstMaterialRequestSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
-        {
-            ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReport>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReport>>();
-            try
-            {
-                var products = await _materialRequestRepository.GetMaterialIssueAgainstMaterialRequestSPReportWithDate(FromDate, ToDate);
-
-                if (products == null)
-                {
-                    serviceResponse.Data = null;
-                    serviceResponse.Message = $"MaterialIssueAgainstMaterialRequest hasn't been found.";
-                    serviceResponse.Success = false;
-                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
-                    _logger.LogError($"MaterialIssueAgainstMaterialRequest hasn't been found in db.");
-                    return NotFound(serviceResponse);
-                }
-                else
-                {
-                    serviceResponse.Data = products;
-                    serviceResponse.Message = "Returned MaterialIssueAgainstMaterialRequest Details";
-                    serviceResponse.Success = true;
-                    serviceResponse.StatusCode = HttpStatusCode.OK;
-                    return Ok(serviceResponse);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error Occured in GetMaterialIssueAgainstMaterialRequestSPReportWithDate API : \n {ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
-                serviceResponse.Message = $"Error Occured in GetMaterialIssueAgainstMaterialRequestSPReportWithDate API : \n {ex.Message}";
-                serviceResponse.Success = false;
-                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
-                return StatusCode(500, serviceResponse);
-            }
-        }
-
-
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetMaterialIssueAgainstMaterialRequestSPReportWithDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
