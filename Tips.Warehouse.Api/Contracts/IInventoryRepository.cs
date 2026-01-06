@@ -100,6 +100,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<StockMovementHistorySPReport>> GetStockMovementHistorySPReportsWithDate(DateTime? FromDate, DateTime? ToDate, string ItemNumber);
         Task<IEnumerable<InventorySPReport>> GetInventorySPReportsWithParam(string PartNumber, string Description, string Warehouse,
                                                                                                    string Location, string ProjectNumber);
+        Task<IEnumerable<InventorySPReportForGeeyes>> GetInventorySPReportsWithParamForGeeYes(string PartNumber, string Description, string Warehouse,
+                                                                                           string Location, string ProjectNumber);
         Task<IEnumerable<InventorySPReport>> GetWareproInventoryWithLocationTranferSPReportsWithParam(string PartNumber, string Description, string Warehouse,
                                                                                                   string Location, string ProjectNumber);
         Task<IEnumerable<TrascationKPNWSPReport>> GetTrascationKPNWSPReportsWithParam(string KPN);
@@ -109,6 +111,7 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<StockMovementSPReport>> GetStockMovementSPReports( string ItemNumber);
         Task<IEnumerable<Inventory>> GetInventoryWarehouseReport(string PartNumber, string Description, string Warehouse, string Location, string ProjectNumber);
         Task<IEnumerable<InventorySPReport>> InventorySPReportdate(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<InventorySPReportForGeeyes>> InventorySPReportdateForGs(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<InventorySumSPReport>> InventorySumSPReportWithdate(DateTime? FromDate, DateTime? ToDate, string partNumber, string projectNumber);
         Task<IEnumerable<InventorySumSPReport>> InventorySumSPReportWithdateForTras(DateTime? FromDate, DateTime? ToDate, string partNumber, string projectNumber);
         Task<IEnumerable<GetInventorySPReportForAvi>> GetInventorySPReportForAvision(DateTime? FromDate, DateTime? ToDate, string partNumber, string projectNumber);

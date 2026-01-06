@@ -4397,6 +4397,45 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetInventorySPReportsWithParamForGs([FromBody] InventorySPReportDto inventorySPReportDto)
+        {
+            ServiceResponse<IEnumerable<InventorySPReportForGeeyes>> serviceResponse = new ServiceResponse<IEnumerable<InventorySPReportForGeeyes>>();
+            try
+            {
+                var products = await _inventoryRepository.GetInventorySPReportsWithParamForGeeYes(inventorySPReportDto.PartNumber, inventorySPReportDto.Description,
+                                                                                    inventorySPReportDto.Warehouse, inventorySPReportDto.Location,
+                                                                                    inventorySPReportDto.ProjectNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventorySPReportForGeeyes hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"InventorySPReportForGeeyes hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InventorySPReportForGeeyes Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetInventorySPReportsWithParamForGeeYes API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetInventorySPReportsWithParamForGeeYes API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> InventorySPReportdate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
@@ -4428,6 +4467,43 @@ namespace Tips.Warehouse.Api.Controllers
                 _logger.LogError($"Error Occured in InventorySPReportdate API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error Occured in InventorySPReportdate API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> InventorySPReportdateForGs([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<InventorySPReportForGeeyes>> serviceResponse = new ServiceResponse<IEnumerable<InventorySPReportForGeeyes>>();
+            try
+            {
+                var products = await _inventoryRepository.InventorySPReportdateForGs(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventorySPReportForGeeyes hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"InventorySPReportForGeeyes hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InventorySPReportForGeeyes Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in InventorySPReportdateForGs API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in InventorySPReportdateForGs API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

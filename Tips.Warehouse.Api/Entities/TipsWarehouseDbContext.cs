@@ -67,6 +67,7 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<ReturnDOSPReport> ReturnDOSPReport { get; set; }
         public DbSet<ReturnDOSPReportForTras> ReturnDOSPReportForTras { get; set; }
         public DbSet<InventorySPReport> InventorySPReports { get; set; }
+        public DbSet<InventorySPReportForGeeyes> InventorySPReportForGeeyes { get; set; }
         public DbSet<ODOMonthlyConsumptionSPReport> ODOMonthlyConsumptionSPReports { get; set; }
         public DbSet<InventoryTranctionSPReport> InventoryTranctionSPReports { get; set; }
         public DbSet<InventoryTranctioninternalSPReport> InventoryTranctioninternalSPReport { get; set; }
@@ -136,6 +137,7 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<ReturnInvoiceSPResportWithoutParam>().HasNoKey();
             modelBuilder.Entity<InvLocationtransferUnitPriceDateSpForAvi>().HasNoKey();
             modelBuilder.Entity<InvLocationtransferUnitPriceSpWithParamForAvi>().HasNoKey();
+            modelBuilder.Entity<InventorySPReportForGeeyes>().HasNoKey();
             
 
             base.OnModelCreating(modelBuilder);

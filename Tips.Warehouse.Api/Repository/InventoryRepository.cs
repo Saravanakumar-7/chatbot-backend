@@ -920,6 +920,16 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<InventorySPReportForGeeyes>> GetInventorySPReportsWithParamForGeeYes(string PartNumber, string Description, string Warehouse,
+                                                                                                 string Location, string ProjectNumber)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<InventorySPReportForGeeyes>()
+            .FromSqlInterpolated($"CALL inventory_with_locationtranfer_parameter_gs({PartNumber},{Description},{Warehouse},{Location},{ProjectNumber})")
+            .ToList();
+
+            return result;
+        }
 
         public async Task<IEnumerable<InventoryWIPSPReport>> GetWIPInventorySPReportsWithParam(string PartNumber, string Warehouse,
                                                                                                    string Location, string ProjectNumber)
@@ -1154,6 +1164,14 @@ namespace Tips.Warehouse.Api.Repository
         {
             var results = _tipsWarehouseDbContext.Set<InventorySPReport>()
                          .FromSqlInterpolated($"CALL inventory_with_locationtransfer_date({FromDate},{ToDate})")
+                         .ToList();
+
+            return results;
+        }
+        public async Task<IEnumerable<InventorySPReportForGeeyes>> InventorySPReportdateForGs(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<InventorySPReportForGeeyes>()
+                         .FromSqlInterpolated($"CALL inventory_with_locationtransfer_date_gs({FromDate},{ToDate})")
                          .ToList();
 
             return results;
