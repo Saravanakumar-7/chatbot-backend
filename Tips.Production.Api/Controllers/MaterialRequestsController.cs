@@ -316,7 +316,6 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
-
         [HttpPost]
         public async Task<IActionResult> GetMaterialIssueAgainstMaterialRequestSPReportWithParam([FromBody] MaterialIssueAgainstMaterialRequestReportWithParamDto materialIssueAgainstMaterialRequestReportWithParamDto)
         {
@@ -355,6 +354,47 @@ namespace Tips.Production.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+        [HttpPost]
+        public async Task<IActionResult> GetMaterialIssueAgainstMaterialRequestSPReportWithParamForAvi([FromBody] MaterialIssueAgainstMaterialRequestReportWithParamDto materialIssueAgainstMaterialRequestReportWithParamDto)
+        {
+            ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReportForAvi>>();
+            try
+            {
+                var products = await _materialRequestRepository.GetMaterialIssueAgainstMaterialRequestSPReportWithParamForAvi(materialIssueAgainstMaterialRequestReportWithParamDto.MRNumber,
+                                                                            materialIssueAgainstMaterialRequestReportWithParamDto.ProjectType, materialIssueAgainstMaterialRequestReportWithParamDto.ProjectNumber,
+                                                                            materialIssueAgainstMaterialRequestReportWithParamDto.ShopOrderNumber, materialIssueAgainstMaterialRequestReportWithParamDto.KPN);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"MaterialIssueAgainstMRSPReportForAvi hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"MaterialIssueAgainstMRSPReportForAvi hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned MaterialIssueAgainstMaterialRequest Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetMaterialIssueAgainstMaterialRequestSPReportWithParamForAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetMaterialIssueAgainstMaterialRequestSPReportWithParamForAvi API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetMaterialIssueAgainstMaterialRequestSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
@@ -386,6 +426,44 @@ namespace Tips.Production.Api.Controllers
                 _logger.LogError($"Error Occured in GetMaterialIssueAgainstMaterialRequestSPReportWithDate API : \n {ex.Message} \n{ex.InnerException}");
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error Occured in GetMaterialIssueAgainstMaterialRequestSPReportWithDate API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetMaterialIssueAgainstMaterialRequestSPReportWithDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReportForAvi>> serviceResponse = new ServiceResponse<IEnumerable<MaterialIssueAgainstMRSPReportForAvi>>();
+            try
+            {
+                var products = await _materialRequestRepository.GetMaterialIssueAgainstMaterialRequestSPReportWithDateForAvi(FromDate, ToDate);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"MaterialIssueAgainstMRSPReportForAvi hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"MaterialIssueAgainstMRSPReportForAvi hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned MaterialIssueAgainstMRSPReportForAvi Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetMaterialIssueAgainstMaterialRequestSPReportWithDateForAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetMaterialIssueAgainstMaterialRequestSPReportWithDateForAvi API : \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);

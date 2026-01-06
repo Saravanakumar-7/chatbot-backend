@@ -47,6 +47,7 @@ namespace Tips.Production.Api.Entities
         public DbSet<OQCAndOQCBinningSPReport> OQCAndOQCBinningSPReports { get; set; }
         public DbSet<PickListDTO> PickListDTOs { get; set; }
         public DbSet<MaterialIssueAgainstMRSPReport> MaterialIssueAgainstMRSPReports { get; set; }
+        public DbSet<MaterialIssueAgainstMRSPReportForAvi> MaterialIssueAgainstMRSPReportForAvi { get; set; }
         public DbSet<MaterialIssueLocation> MaterialIssueLocations { get; set; }
         public DbSet<MaterialIssueSPReportForTrans> MaterialIssueSPReportForTrans { get; set; }
         public DbSet<ShopOrderNumberSPReportForAvi> ShopOrderNumberSPReportForAvi { get; set; }
@@ -69,6 +70,7 @@ namespace Tips.Production.Api.Entities
             modelBuilder.Entity<OQCPendingForTrans>().HasNoKey();
             modelBuilder.Entity<MaterialIssueAgainstMRSPReportForkeus>().HasNoKey();
             modelBuilder.Entity<MaterialIssueSPReportForAvision>().HasNoKey();
+            modelBuilder.Entity<MaterialIssueAgainstMRSPReportForAvi>().HasNoKey();
             
 
             // Other entity configurations can be added here
