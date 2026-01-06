@@ -35,7 +35,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public int? GrinPartId { get; set; }
         public PartType PartType { get; set; }
         public string? shopOrderNo { get; set; }
-
+        public string? BatchNo { get; set; }
+        public string? SerialNo { get; set; }
         public string? CreatedBy { get; set; }
 
         public DateTime CreatedOn { get; set; }
@@ -77,6 +78,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public string? GrinNo { get; set; }
         public int? GrinPartId { get; set; }
         public string? shopOrderNo { get; set; }
+        public string? BatchNo { get; set; }
+        public string? SerialNo { get; set; }
 
     }
 
@@ -111,6 +114,8 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public int? GrinPartId { get; set; }
         public PartType PartType { get; set; }
         public string? shopOrderNo { get; set; }
+        public string? BatchNo { get; set; }
+        public string? SerialNo { get; set; }
 
 
     }

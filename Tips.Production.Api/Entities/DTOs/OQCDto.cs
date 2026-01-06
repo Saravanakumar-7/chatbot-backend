@@ -170,6 +170,8 @@ namespace Tips.Production.Api.Entities.DTOs
         public string? GrinNo { get; set; }
         public int? GrinPartId { get; set; }
         public string? shopOrderNo { get; set; }
+        public string? BatchNo { get; set; }
+        public string? SerialNo { get; set; }
     }
     public class OQCStock
     {

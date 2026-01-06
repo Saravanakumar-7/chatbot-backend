@@ -2270,8 +2270,9 @@ namespace Tips.Production.Api.Controllers
                
                 var email = new MimeMessage();
                 email.From.Add(MailboxAddress.Parse("admin_getapcs@idamtat.in"));
-                               
-                email.To.Add(MailboxAddress.Parse("prasanna.d@gmail.com"));
+
+                // email.To.Add(MailboxAddress.Parse("prasanna.d@gmail.com"));
+                email.To.Add(MailboxAddress.Parse("prasanna@geeyesind.com"));
                 //email.To.AddRange(shoporderEmailPostDto.SentTo.Split(',').Select(x => MailboxAddress.Parse(x)));
 
                 email.Subject = emaildetails.data.subject;

@@ -82,7 +82,7 @@ namespace Tips.Production.Api.Controllers
                     int flag = 0;
                     foreach (var ex in oqcBinningLocationList)
                     {
-                        if (loc.Warehouse == ex.Warehouse && loc.Location == ex.Location)
+                        if (loc.Warehouse == ex.Warehouse && loc.Location == ex.Location && loc.BatchNo == ex.BatchNo)
                         {
                             ex.Quantity = ex.Quantity + loc.Quantity;
                             flag = 1;
@@ -177,6 +177,7 @@ namespace Tips.Production.Api.Controllers
                     newinv.Location = loc.Location;
                     newinv.Balance_Quantity = loc.Quantity;
                     newinv.SerialNo = loc.SerialNo;
+                    newinv.BatchNo = loc.BatchNo;
                     var json = JsonConvert.SerializeObject(newinv);
                     var data = new StringContent(json, Encoding.UTF8, "application/json");
                     // var response = await _httpClient.PostAsync(string.Concat(_config["InventoryAPI"], "CreateInventory"), data);
@@ -250,6 +251,8 @@ namespace Tips.Production.Api.Controllers
                     inventoryTranction.Remarks = "OQCBinning Done";
                     inventoryTranction.IsStockAvailable = true;
                     inventoryTranction.TransactionType = InventoryType.Inward;
+                    inventoryTranction.BatchNo = newinv.BatchNo;
+                    inventoryTranction.SerialNo = newinv.SerialNo;
 
                     var json2 = JsonConvert.SerializeObject(inventoryTranction);
                     var data2 = new StringContent(json2, Encoding.UTF8, "application/json");

@@ -45,6 +45,8 @@ namespace Tips.Warehouse.Api.Entities
         public string? GrinNo { get; set; }
         public int? GrinPartId { get; set; }
         public string? shopOrderNo { get; set; }
+        public string? BatchNo { get; set; }
+        public string? SerialNo { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
