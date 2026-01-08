@@ -567,6 +567,50 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? Totaloutwords { get; set; }
         public decimal? Closing_stock { get; set; }
     }
+    public class InventoryBySumOfFilteringDatesSPReportForKeus
+    {
+        public string? PartNumber { get; set; }
+
+        // DOUBLE
+        public double? Opening_Stock { get; set; }
+
+        // DECIMAL
+        public decimal? GrinBinningQty { get; set; }
+
+        // DOUBLE
+        public double? OQCBinningQty { get; set; }
+
+        // DECIMAL
+        public decimal? OpenGrinQty { get; set; }
+
+        public decimal? MaterialReturnQty { get; set; }
+
+        public decimal? ReturnInvoiceQty { get; set; }
+
+        public decimal? ReturnOpenDeliveryQty { get; set; }
+
+        public decimal? ReturnBtoDeliveryQty { get; set; }
+
+        public decimal? MaterialIssueQty { get; set; }
+
+        public decimal? MaterialRequestIssueQty { get; set; }
+
+        public decimal? OpenDeliveryOrderQty { get; set; }
+
+        public decimal? BtoDeliveryOrderQty { get; set; }
+
+        public decimal? LocationTransferQtyInwards { get; set; }
+
+        public decimal? LocationTransferQtyOutwards { get; set; }
+
+        // DOUBLE
+        public double? TotalInwords { get; set; }
+
+        // DECIMAL
+        public decimal? Totaloutwords { get; set; }
+
+        public decimal? Closing_Stock { get; set; }
+    }
     public class InventoryBySumOfFilteringDatesSPReportDto
     {
         public DateTime FromDate { get; set; }

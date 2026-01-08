@@ -1246,6 +1246,328 @@ namespace Tips.SalesService.Api.Controllers
             }
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetQuotationSPReportWithParamForKeus([FromBody] QuoteSPResportParamDTO quoteSPReportDto)
+
+        {
+            ServiceResponse<IEnumerable<QuotationSPReportForKeus>> serviceResponse = new ServiceResponse<IEnumerable<QuotationSPReportForKeus>>();
+            try
+            {
+                var products = await _repository.GetQuotationSPReportWithParamForKeus(quoteSPReportDto.CustomerId, quoteSPReportDto.QuoteNumber, quoteSPReportDto.QuotationVersionNo);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Quotation hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Quotation hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Quotation Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetQuotationSPReportWithParamForKeus API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetQuotationSPReportWithParamForKeus API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> ExportQuotationRFQSPReportWithParamToExcelForKeus([FromBody] QuoteSPResportParamDTO quoteSPReportDto)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var quotationSPReportDetails = await _repository.GetQuotationSPReportWithParamForKeus(quoteSPReportDto.CustomerId, quoteSPReportDto.QuoteNumber, quoteSPReportDto.QuotationVersionNo);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("QuotationSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Quote Number");
+                headerRow.CreateCell(1).SetCellValue("Quotation Version No");
+                headerRow.CreateCell(2).SetCellValue("RFQ Number");
+                headerRow.CreateCell(3).SetCellValue("Customer ID");
+                headerRow.CreateCell(4).SetCellValue("Customer Name");
+                headerRow.CreateCell(5).SetCellValue("Lead ID");
+                headerRow.CreateCell(6).SetCellValue("City");
+                headerRow.CreateCell(7).SetCellValue("State");
+                headerRow.CreateCell(8).SetCellValue("Address");
+                headerRow.CreateCell(9).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(10).SetCellValue("Product Type");
+                headerRow.CreateCell(11).SetCellValue("Item Type");
+                headerRow.CreateCell(12).SetCellValue("Sales Person");
+                headerRow.CreateCell(13).SetCellValue("Material Group");
+                headerRow.CreateCell(14).SetCellValue("Quote Created On");
+                headerRow.CreateCell(15).SetCellValue("Quote Last Modified By");
+                headerRow.CreateCell(16).SetCellValue("Quote Last Modified On");
+                headerRow.CreateCell(17).SetCellValue("Quote Sent On");
+                headerRow.CreateCell(18).SetCellValue("Room Name");
+                headerRow.CreateCell(19).SetCellValue("KPN");
+                headerRow.CreateCell(20).SetCellValue("KPN Description");
+                headerRow.CreateCell(21).SetCellValue("UOC");
+                headerRow.CreateCell(22).SetCellValue("UOM");
+                headerRow.CreateCell(23).SetCellValue("Price List");
+                headerRow.CreateCell(24).SetCellValue("Unit Price");
+                headerRow.CreateCell(25).SetCellValue("Basic Amount");
+                headerRow.CreateCell(26).SetCellValue("Discount Type");
+                headerRow.CreateCell(27).SetCellValue("Discount");
+                headerRow.CreateCell(28).SetCellValue("SGST");
+                headerRow.CreateCell(29).SetCellValue("CGST");
+                headerRow.CreateCell(30).SetCellValue("IGST");
+                headerRow.CreateCell(31).SetCellValue("UTGST");
+                headerRow.CreateCell(32).SetCellValue("Item Price List");
+                headerRow.CreateCell(33).SetCellValue("Total Amount");
+                headerRow.CreateCell(34).SetCellValue("Total Final Amount");
+                headerRow.CreateCell(35).SetCellValue("Total Additional Charges");
+                headerRow.CreateCell(36).SetCellValue("Order Qty");
+                headerRow.CreateCell(37).SetCellValue("Installation Charges");
+
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in quotationSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+
+                    row.CreateCell(0).SetCellValue(item.QuoteNumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.QuotationVersionNo.HasValue ? Convert.ToDouble(item.QuotationVersionNo.Value) : 0);
+                    row.CreateCell(2).SetCellValue(item.RfqNumber ?? "");
+                    row.CreateCell(3).SetCellValue(item.CustomerId ?? "");
+                    row.CreateCell(4).SetCellValue(item.CustomerName ?? "");
+                    row.CreateCell(5).SetCellValue(item.LeadId ?? "");
+                    row.CreateCell(6).SetCellValue(item.City ?? "");
+                    row.CreateCell(7).SetCellValue(item.State ?? "");
+                    row.CreateCell(8).SetCellValue(item.Address ?? "");
+                    row.CreateCell(9).SetCellValue(item.TypeOfSolution ?? "");
+                    row.CreateCell(10).SetCellValue(item.ProductType ?? "");
+                    row.CreateCell(11).SetCellValue(item.ItemType ?? "");
+                    row.CreateCell(12).SetCellValue(item.SalesPerson ?? "");
+                    row.CreateCell(13).SetCellValue(item.MaterialGroup ?? "");
+
+                    row.CreateCell(14).SetCellValue(item.QuoteCreatedOn?.ToString("MM-dd-yyyy HH:mm:ss") ?? "");
+                    row.CreateCell(15).SetCellValue(item.QuoteLastModifiedBy ?? "");
+                    row.CreateCell(16).SetCellValue(item.QuoteLastModifiedOn?.ToString("MM-dd-yyyy HH:mm:ss") ?? "");
+                    row.CreateCell(17).SetCellValue(item.QuoteSentOn?.ToString("MM-dd-yyyy HH:mm:ss") ?? "");
+
+                    row.CreateCell(18).SetCellValue(item.RoomName ?? "");
+                    row.CreateCell(19).SetCellValue(item.KPN ?? "");
+                    row.CreateCell(20).SetCellValue(item.KPNDescription ?? "");
+                    row.CreateCell(21).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(22).SetCellValue(item.Uom ?? "");
+                    row.CreateCell(23).SetCellValue(item.PriceList ?? "");
+
+                    row.CreateCell(24).SetCellValue(item.UnitPrice.HasValue ? Convert.ToDouble(item.UnitPrice.Value) : 0);
+                    row.CreateCell(25).SetCellValue(item.BasicAmount.HasValue ? Convert.ToDouble(item.BasicAmount.Value) : 0);
+                    row.CreateCell(26).SetCellValue(item.DiscountType ?? "");
+                    row.CreateCell(27).SetCellValue(item.Discount.HasValue ? Convert.ToDouble(item.Discount.Value) : 0);
+
+                    row.CreateCell(28).SetCellValue(item.SGST.HasValue ? Convert.ToDouble(item.SGST.Value) : 0);
+                    row.CreateCell(29).SetCellValue(item.CGST.HasValue ? Convert.ToDouble(item.CGST.Value) : 0);
+                    row.CreateCell(30).SetCellValue(item.IGST.HasValue ? Convert.ToDouble(item.IGST.Value) : 0);
+                    row.CreateCell(31).SetCellValue(item.UTGST.HasValue ? Convert.ToDouble(item.UTGST.Value) : 0);
+
+                    row.CreateCell(32).SetCellValue(item.itempricelist.HasValue ? Convert.ToDouble(item.itempricelist.Value) : 0);
+                    row.CreateCell(33).SetCellValue(item.TotalAmount.HasValue ? Convert.ToDouble(item.TotalAmount.Value) : 0);
+                    row.CreateCell(34).SetCellValue(item.TotalFinalAmount.HasValue ? Convert.ToDouble(item.TotalFinalAmount.Value) : 0);
+                    row.CreateCell(35).SetCellValue(item.TotalAdditionalCharges.HasValue ? Convert.ToDouble(item.TotalAdditionalCharges.Value) : 0);
+                    row.CreateCell(36).SetCellValue(item.OrderQty.HasValue ? Convert.ToDouble(item.OrderQty.Value) : 0);
+                    row.CreateCell(37).SetCellValue(item.InstallationCharges.HasValue ? Convert.ToDouble(item.InstallationCharges.Value) : 0);
+                }
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "QuotationSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred in ExportQuotationRFQSPReportToExcel in API: {ex.Message}");
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetQuotationSPReportWithDateForKeus([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<QuotationSPReportForKeus>> serviceResponse = new ServiceResponse<IEnumerable<QuotationSPReportForKeus>>();
+            try
+            {
+                var products = await _repository.GetQuotationSPReportWithDateForKeus(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Quotation hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"Quotation hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned Quotation Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetQuotationSPReportWithDateForKeus API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetQuotationSPReportWithDateForKeus API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ExportQuotationWithDateSPReportToExcelForKeus([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            try
+            {
+                // Get data from repository using stored procedure
+                var quotationSPReportDetails = await _repository.GetQuotationSPReportWithDateForKeus(FromDate, ToDate);
+
+                // Create a new Excel workbook
+                IWorkbook workbook = new XSSFWorkbook();
+                ISheet sheet = workbook.CreateSheet("QuotationSPReport");
+
+                // Set header row
+                var headerRow = sheet.CreateRow(0);
+                headerRow.CreateCell(0).SetCellValue("Quote Number");
+                headerRow.CreateCell(1).SetCellValue("Quotation Version No");
+                headerRow.CreateCell(2).SetCellValue("RFQ Number");
+                headerRow.CreateCell(3).SetCellValue("Customer ID");
+                headerRow.CreateCell(4).SetCellValue("Customer Name");
+                headerRow.CreateCell(5).SetCellValue("Lead ID");
+                headerRow.CreateCell(6).SetCellValue("City");
+                headerRow.CreateCell(7).SetCellValue("State");
+                headerRow.CreateCell(8).SetCellValue("Address");
+                headerRow.CreateCell(9).SetCellValue("Type Of Solution");
+                headerRow.CreateCell(10).SetCellValue("Product Type");
+                headerRow.CreateCell(11).SetCellValue("Item Type");
+                headerRow.CreateCell(12).SetCellValue("Sales Person");
+                headerRow.CreateCell(13).SetCellValue("Material Group");
+                headerRow.CreateCell(14).SetCellValue("Quote Created On");
+                headerRow.CreateCell(15).SetCellValue("Quote Last Modified By");
+                headerRow.CreateCell(16).SetCellValue("Quote Last Modified On");
+                headerRow.CreateCell(17).SetCellValue("Quote Sent On");
+                headerRow.CreateCell(18).SetCellValue("Room Name");
+                headerRow.CreateCell(19).SetCellValue("KPN");
+                headerRow.CreateCell(20).SetCellValue("KPN Description");
+                headerRow.CreateCell(21).SetCellValue("UOC");
+                headerRow.CreateCell(22).SetCellValue("UOM");
+                headerRow.CreateCell(23).SetCellValue("Price List");
+                headerRow.CreateCell(24).SetCellValue("Unit Price");
+                headerRow.CreateCell(25).SetCellValue("Basic Amount");
+                headerRow.CreateCell(26).SetCellValue("Discount Type");
+                headerRow.CreateCell(27).SetCellValue("Discount");
+                headerRow.CreateCell(28).SetCellValue("SGST");
+                headerRow.CreateCell(29).SetCellValue("CGST");
+                headerRow.CreateCell(30).SetCellValue("IGST");
+                headerRow.CreateCell(31).SetCellValue("UTGST");
+                headerRow.CreateCell(32).SetCellValue("Item Price List");
+                headerRow.CreateCell(33).SetCellValue("Total Amount");
+                headerRow.CreateCell(34).SetCellValue("Total Final Amount");
+                headerRow.CreateCell(35).SetCellValue("Total Additional Charges");
+                headerRow.CreateCell(36).SetCellValue("Order Qty");
+                headerRow.CreateCell(37).SetCellValue("Installation Charges");
+
+
+                // Populate data rows
+                int rowIndex = 1;
+                foreach (var item in quotationSPReportDetails)
+                {
+                    var row = sheet.CreateRow(rowIndex++);
+
+                    row.CreateCell(0).SetCellValue(item.QuoteNumber ?? "");
+                    row.CreateCell(1).SetCellValue(item.QuotationVersionNo.HasValue ? Convert.ToDouble(item.QuotationVersionNo.Value) : 0);
+                    row.CreateCell(2).SetCellValue(item.RfqNumber ?? "");
+                    row.CreateCell(3).SetCellValue(item.CustomerId ?? "");
+                    row.CreateCell(4).SetCellValue(item.CustomerName ?? "");
+                    row.CreateCell(5).SetCellValue(item.LeadId ?? "");
+                    row.CreateCell(6).SetCellValue(item.City ?? "");
+                    row.CreateCell(7).SetCellValue(item.State ?? "");
+                    row.CreateCell(8).SetCellValue(item.Address ?? "");
+                    row.CreateCell(9).SetCellValue(item.TypeOfSolution ?? "");
+                    row.CreateCell(10).SetCellValue(item.ProductType ?? "");
+                    row.CreateCell(11).SetCellValue(item.ItemType ?? "");
+                    row.CreateCell(12).SetCellValue(item.SalesPerson ?? "");
+                    row.CreateCell(13).SetCellValue(item.MaterialGroup ?? "");
+
+                    row.CreateCell(14).SetCellValue(item.QuoteCreatedOn?.ToString("MM-dd-yyyy HH:mm:ss") ?? "");
+                    row.CreateCell(15).SetCellValue(item.QuoteLastModifiedBy ?? "");
+                    row.CreateCell(16).SetCellValue(item.QuoteLastModifiedOn?.ToString("MM-dd-yyyy HH:mm:ss") ?? "");
+                    row.CreateCell(17).SetCellValue(item.QuoteSentOn?.ToString("MM-dd-yyyy HH:mm:ss") ?? "");
+
+                    row.CreateCell(18).SetCellValue(item.RoomName ?? "");
+                    row.CreateCell(19).SetCellValue(item.KPN ?? "");
+                    row.CreateCell(20).SetCellValue(item.KPNDescription ?? "");
+                    row.CreateCell(21).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(22).SetCellValue(item.Uom ?? "");
+                    row.CreateCell(23).SetCellValue(item.PriceList ?? "");
+
+                    row.CreateCell(24).SetCellValue(item.UnitPrice.HasValue ? Convert.ToDouble(item.UnitPrice.Value) : 0);
+                    row.CreateCell(25).SetCellValue(item.BasicAmount.HasValue ? Convert.ToDouble(item.BasicAmount.Value) : 0);
+                    row.CreateCell(26).SetCellValue(item.DiscountType ?? "");
+                    row.CreateCell(27).SetCellValue(item.Discount.HasValue ? Convert.ToDouble(item.Discount.Value) : 0);
+
+                    row.CreateCell(28).SetCellValue(item.SGST.HasValue ? Convert.ToDouble(item.SGST.Value) : 0);
+                    row.CreateCell(29).SetCellValue(item.CGST.HasValue ? Convert.ToDouble(item.CGST.Value) : 0);
+                    row.CreateCell(30).SetCellValue(item.IGST.HasValue ? Convert.ToDouble(item.IGST.Value) : 0);
+                    row.CreateCell(31).SetCellValue(item.UTGST.HasValue ? Convert.ToDouble(item.UTGST.Value) : 0);
+
+                    row.CreateCell(32).SetCellValue(item.itempricelist.HasValue ? Convert.ToDouble(item.itempricelist.Value) : 0);
+                    row.CreateCell(33).SetCellValue(item.TotalAmount.HasValue ? Convert.ToDouble(item.TotalAmount.Value) : 0);
+                    row.CreateCell(34).SetCellValue(item.TotalFinalAmount.HasValue ? Convert.ToDouble(item.TotalFinalAmount.Value) : 0);
+                    row.CreateCell(35).SetCellValue(item.TotalAdditionalCharges.HasValue ? Convert.ToDouble(item.TotalAdditionalCharges.Value) : 0);
+                    row.CreateCell(36).SetCellValue(item.OrderQty.HasValue ? Convert.ToDouble(item.OrderQty.Value) : 0);
+                    row.CreateCell(37).SetCellValue(item.InstallationCharges.HasValue ? Convert.ToDouble(item.InstallationCharges.Value) : 0);
+                }
+
+
+
+                // Save Excel workbook to a memory stream
+                using (var memoryStream = new MemoryStream())
+                {
+                    workbook.Write(memoryStream);
+                    var excelBytes = memoryStream.ToArray();
+
+                    // Send Excel file as a response
+                    return File(excelBytes, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "QuotationSPReport.xlsx");
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred in ExportQuotationWithDateSPReportToExcel API: {ex.Message}");
+            }
+        }
+
+
 
         [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetQuotationSPReportWithParam([FromBody] QuoteSPResportParamDTO quoteSPReportDto)
@@ -1321,6 +1643,9 @@ namespace Tips.SalesService.Api.Controllers
             }
 
         }
+
+
+
         [HttpGet]
         public async Task<IActionResult> ExportQuotationWithDateSPReportToExcel([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
@@ -1346,28 +1671,38 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(8).SetCellValue("Address");
                 headerRow.CreateCell(9).SetCellValue("Type Of Solution");
                 headerRow.CreateCell(10).SetCellValue("Product Type");
-                headerRow.CreateCell(11).SetCellValue("Material Group");
-                headerRow.CreateCell(12).SetCellValue("Quote Created On");
-                headerRow.CreateCell(13).SetCellValue("Quote Sent On");
-                headerRow.CreateCell(14).SetCellValue("Room Name");
-                headerRow.CreateCell(15).SetCellValue("KPN");
-                headerRow.CreateCell(16).SetCellValue("KPN Description");
-                headerRow.CreateCell(17).SetCellValue("UOC");
-                headerRow.CreateCell(18).SetCellValue("UOM");
-                headerRow.CreateCell(19).SetCellValue("Price List");
-                headerRow.CreateCell(20).SetCellValue("Unit Price");
-                headerRow.CreateCell(21).SetCellValue("Basic Amount");
-                headerRow.CreateCell(22).SetCellValue("Discount Type");
-                headerRow.CreateCell(23).SetCellValue("Total Final Amount");
-                headerRow.CreateCell(24).SetCellValue("TotalAdditionalCharges");
-                headerRow.CreateCell(25).SetCellValue("OrderQty");
-                headerRow.CreateCell(26).SetCellValue("InstallationCharges");
+                headerRow.CreateCell(11).SetCellValue("Item Type");
+                headerRow.CreateCell(12).SetCellValue("Sales Person");
+                headerRow.CreateCell(13).SetCellValue("Material Group");
+                headerRow.CreateCell(14).SetCellValue("Quote Created On");
+                headerRow.CreateCell(15).SetCellValue("Quote Sent On");
+                headerRow.CreateCell(16).SetCellValue("Room Name");
+                headerRow.CreateCell(17).SetCellValue("KPN");
+                headerRow.CreateCell(18).SetCellValue("KPN Description");
+                headerRow.CreateCell(19).SetCellValue("UOC");
+                headerRow.CreateCell(20).SetCellValue("UOM");
+                headerRow.CreateCell(21).SetCellValue("Price List");
+                headerRow.CreateCell(22).SetCellValue("Unit Price");
+                headerRow.CreateCell(23).SetCellValue("Basic Amount");
+                headerRow.CreateCell(24).SetCellValue("Discount Type");
+                headerRow.CreateCell(25).SetCellValue("Discount");
+                headerRow.CreateCell(26).SetCellValue("SGST");
+                headerRow.CreateCell(27).SetCellValue("CGST");
+                headerRow.CreateCell(28).SetCellValue("IGST");
+                headerRow.CreateCell(29).SetCellValue("UTGST");
+                headerRow.CreateCell(30).SetCellValue("Item Price List");
+                headerRow.CreateCell(31).SetCellValue("Total Amount");
+                headerRow.CreateCell(32).SetCellValue("Total Final Amount");
+                headerRow.CreateCell(33).SetCellValue("Total Additional Charges");
+                headerRow.CreateCell(34).SetCellValue("Order Qty");
+                headerRow.CreateCell(35).SetCellValue("Installation Charges");
 
                 // Populate data rows
                 int rowIndex = 1;
                 foreach (var item in quotationSPReportDetails)
                 {
                     var row = sheet.CreateRow(rowIndex++);
+
                     row.CreateCell(0).SetCellValue(item.QuoteNumber ?? "");
                     row.CreateCell(1).SetCellValue(item.QuotationVersionNo.HasValue ? Convert.ToDouble(item.QuotationVersionNo.Value) : 0);
                     row.CreateCell(2).SetCellValue(item.RfqNumber ?? "");
@@ -1375,28 +1710,42 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(4).SetCellValue(item.CustomerName ?? "");
                     row.CreateCell(5).SetCellValue(item.LeadId ?? "");
                     row.CreateCell(6).SetCellValue(item.City ?? "");
-                    row.CreateCell(7).SetCellValue(item.Address ?? "");
-                    row.CreateCell(8).SetCellValue(item.State ?? "");
+                    row.CreateCell(7).SetCellValue(item.State ?? "");
+                    row.CreateCell(8).SetCellValue(item.Address ?? "");
                     row.CreateCell(9).SetCellValue(item.TypeOfSolution ?? "");
                     row.CreateCell(10).SetCellValue(item.ProductType ?? "");
-                    row.CreateCell(11).SetCellValue(item.MaterialGroup ?? "");
-                    row.CreateCell(12).SetCellValue(item.QuoteCreatedOn.HasValue ? item.QuoteCreatedOn.Value.ToString("MM-dd-yyyy HH:mm:ss") : "");
-                    row.CreateCell(13).SetCellValue(item.QuoteSentOn.HasValue ? item.QuoteSentOn.Value.ToString("MM-dd-yyyy HH:mm:ss") : "");
-                    row.CreateCell(14).SetCellValue(item.RoomName ?? "");
-                    row.CreateCell(15).SetCellValue(item.KPN ?? "");
-                    row.CreateCell(16).SetCellValue(item.KPNDescription ?? "");
-                    row.CreateCell(17).SetCellValue(item.UOC ?? "");
-                    row.CreateCell(18).SetCellValue(item.Uom ?? "");
-                    row.CreateCell(19).SetCellValue(item.PriceList ?? "");
-                    row.CreateCell(20).SetCellValue(item.UnitPrice.HasValue ? Convert.ToDouble(item.UnitPrice.Value) : 0);
-                    row.CreateCell(21).SetCellValue(item.BasicAmount.HasValue ? Convert.ToDouble(item.BasicAmount.Value) : 0);
-                    row.CreateCell(22).SetCellValue(item.DiscountType ?? "");
-                    row.CreateCell(23).SetCellValue(item.TotalFinalAmount.HasValue ? Convert.ToDouble(item.TotalFinalAmount.Value) : 0);
-                    row.CreateCell(24).SetCellValue(item.TotalAdditionalCharges.HasValue ? Convert.ToDouble(item.TotalAdditionalCharges.Value) : 0);
-                    row.CreateCell(25).SetCellValue(item.OrderQty.HasValue ? Convert.ToDouble(item.OrderQty.Value) : 0);
-                    row.CreateCell(26).SetCellValue(item.InstallationCharges.HasValue ? Convert.ToDouble(item.InstallationCharges.Value) : 0);
+                    row.CreateCell(11).SetCellValue(item.ItemType ?? "");
+                    row.CreateCell(12).SetCellValue(item.SalesPerson ?? "");
+                    row.CreateCell(13).SetCellValue(item.MaterialGroup ?? "");
 
+                    row.CreateCell(14).SetCellValue(item.QuoteCreatedOn?.ToString("MM-dd-yyyy HH:mm:ss") ?? "");
+                    row.CreateCell(15).SetCellValue(item.QuoteSentOn?.ToString("MM-dd-yyyy HH:mm:ss") ?? "");
+
+                    row.CreateCell(16).SetCellValue(item.RoomName ?? "");
+                    row.CreateCell(17).SetCellValue(item.KPN ?? "");
+                    row.CreateCell(18).SetCellValue(item.KPNDescription ?? "");
+                    row.CreateCell(19).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(20).SetCellValue(item.Uom ?? "");
+                    row.CreateCell(21).SetCellValue(item.PriceList ?? "");
+
+                    row.CreateCell(22).SetCellValue(item.UnitPrice.HasValue ? Convert.ToDouble(item.UnitPrice.Value) : 0);
+                    row.CreateCell(23).SetCellValue(item.BasicAmount.HasValue ? Convert.ToDouble(item.BasicAmount.Value) : 0);
+                    row.CreateCell(24).SetCellValue(item.DiscountType ?? "");
+                    row.CreateCell(25).SetCellValue(item.Discount.HasValue ? Convert.ToDouble(item.Discount.Value) : 0);
+
+                    row.CreateCell(26).SetCellValue(item.SGST.HasValue ? Convert.ToDouble(item.SGST.Value) : 0);
+                    row.CreateCell(27).SetCellValue(item.CGST.HasValue ? Convert.ToDouble(item.CGST.Value) : 0);
+                    row.CreateCell(28).SetCellValue(item.IGST.HasValue ? Convert.ToDouble(item.IGST.Value) : 0);
+                    row.CreateCell(29).SetCellValue(item.UTGST.HasValue ? Convert.ToDouble(item.UTGST.Value) : 0);
+
+                    row.CreateCell(30).SetCellValue(item.itempricelist.HasValue ? Convert.ToDouble(item.itempricelist.Value) : 0);
+                    row.CreateCell(31).SetCellValue(item.TotalAmount.HasValue ? Convert.ToDouble(item.TotalAmount.Value) : 0);
+                    row.CreateCell(32).SetCellValue(item.TotalFinalAmount.HasValue ? Convert.ToDouble(item.TotalFinalAmount.Value) : 0);
+                    row.CreateCell(33).SetCellValue(item.TotalAdditionalCharges.HasValue ? Convert.ToDouble(item.TotalAdditionalCharges.Value) : 0);
+                    row.CreateCell(34).SetCellValue(item.OrderQty.HasValue ? Convert.ToDouble(item.OrderQty.Value) : 0);
+                    row.CreateCell(35).SetCellValue(item.InstallationCharges.HasValue ? Convert.ToDouble(item.InstallationCharges.Value) : 0);
                 }
+
 
 
                 // Save Excel workbook to a memory stream
@@ -1435,26 +1784,36 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(4).SetCellValue("Customer Name");
                 headerRow.CreateCell(5).SetCellValue("Lead ID");
                 headerRow.CreateCell(6).SetCellValue("City");
-                headerRow.CreateCell(7).SetCellValue("Address");
-                headerRow.CreateCell(8).SetCellValue("State");
+                headerRow.CreateCell(7).SetCellValue("State");
+                headerRow.CreateCell(8).SetCellValue("Address");
                 headerRow.CreateCell(9).SetCellValue("Type Of Solution");
                 headerRow.CreateCell(10).SetCellValue("Product Type");
-                headerRow.CreateCell(11).SetCellValue("Material Group");
-                headerRow.CreateCell(12).SetCellValue("Quote Created On");
-                headerRow.CreateCell(13).SetCellValue("Quote Sent On");
-                headerRow.CreateCell(14).SetCellValue("Room Name");
-                headerRow.CreateCell(15).SetCellValue("KPN");
-                headerRow.CreateCell(16).SetCellValue("KPN Description");
-                headerRow.CreateCell(17).SetCellValue("UOC");
-                headerRow.CreateCell(18).SetCellValue("UOM");
-                headerRow.CreateCell(19).SetCellValue("Price List");
-                headerRow.CreateCell(20).SetCellValue("Unit Price");
-                headerRow.CreateCell(21).SetCellValue("Basic Amount");
-                headerRow.CreateCell(22).SetCellValue("Discount Type");
-                headerRow.CreateCell(23).SetCellValue("Total Final Amount");
-                headerRow.CreateCell(24).SetCellValue("TotalAdditionalCharges");
-                headerRow.CreateCell(25).SetCellValue("OrderQty");
-                headerRow.CreateCell(26).SetCellValue("InstallationCharges");
+                headerRow.CreateCell(11).SetCellValue("Item Type");
+                headerRow.CreateCell(12).SetCellValue("Sales Person");
+                headerRow.CreateCell(13).SetCellValue("Material Group");
+                headerRow.CreateCell(14).SetCellValue("Quote Created On");
+                headerRow.CreateCell(15).SetCellValue("Quote Sent On");
+                headerRow.CreateCell(16).SetCellValue("Room Name");
+                headerRow.CreateCell(17).SetCellValue("KPN");
+                headerRow.CreateCell(18).SetCellValue("KPN Description");
+                headerRow.CreateCell(19).SetCellValue("UOC");
+                headerRow.CreateCell(20).SetCellValue("UOM");
+                headerRow.CreateCell(21).SetCellValue("Price List");
+                headerRow.CreateCell(22).SetCellValue("Unit Price");
+                headerRow.CreateCell(23).SetCellValue("Basic Amount");
+                headerRow.CreateCell(24).SetCellValue("Discount Type");
+                headerRow.CreateCell(25).SetCellValue("Discount");
+                headerRow.CreateCell(26).SetCellValue("SGST");
+                headerRow.CreateCell(27).SetCellValue("CGST");
+                headerRow.CreateCell(28).SetCellValue("IGST");
+                headerRow.CreateCell(29).SetCellValue("UTGST");
+                headerRow.CreateCell(30).SetCellValue("Item Price List");
+                headerRow.CreateCell(31).SetCellValue("Total Amount");
+                headerRow.CreateCell(32).SetCellValue("Total Final Amount");
+                headerRow.CreateCell(33).SetCellValue("Total Additional Charges");
+                headerRow.CreateCell(34).SetCellValue("Order Qty");
+                headerRow.CreateCell(35).SetCellValue("Installation Charges");
+
 
 
                 // Populate data rows
@@ -1462,6 +1821,7 @@ namespace Tips.SalesService.Api.Controllers
                 foreach (var item in quotationSPReportDetails)
                 {
                     var row = sheet.CreateRow(rowIndex++);
+
                     row.CreateCell(0).SetCellValue(item.QuoteNumber ?? "");
                     row.CreateCell(1).SetCellValue(item.QuotationVersionNo.HasValue ? Convert.ToDouble(item.QuotationVersionNo.Value) : 0);
                     row.CreateCell(2).SetCellValue(item.RfqNumber ?? "");
@@ -1469,28 +1829,42 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(4).SetCellValue(item.CustomerName ?? "");
                     row.CreateCell(5).SetCellValue(item.LeadId ?? "");
                     row.CreateCell(6).SetCellValue(item.City ?? "");
-                    row.CreateCell(7).SetCellValue(item.Address ?? "");
-                    row.CreateCell(8).SetCellValue(item.State ?? "");
+                    row.CreateCell(7).SetCellValue(item.State ?? "");
+                    row.CreateCell(8).SetCellValue(item.Address ?? "");
                     row.CreateCell(9).SetCellValue(item.TypeOfSolution ?? "");
                     row.CreateCell(10).SetCellValue(item.ProductType ?? "");
-                    row.CreateCell(11).SetCellValue(item.MaterialGroup ?? "");
-                    row.CreateCell(12).SetCellValue(item.QuoteCreatedOn.HasValue ? item.QuoteCreatedOn.Value.ToString("MM-dd-yyyy HH:mm:ss") : "");
-                    row.CreateCell(13).SetCellValue(item.QuoteSentOn.HasValue ? item.QuoteSentOn.Value.ToString("MM-dd-yyyy HH:mm:ss") : "");
-                    row.CreateCell(14).SetCellValue(item.RoomName ?? "");
-                    row.CreateCell(15).SetCellValue(item.KPN ?? "");
-                    row.CreateCell(16).SetCellValue(item.KPNDescription ?? "");
-                    row.CreateCell(17).SetCellValue(item.UOC ?? "");
-                    row.CreateCell(18).SetCellValue(item.Uom ?? "");
-                    row.CreateCell(19).SetCellValue(item.PriceList ?? "");
-                    row.CreateCell(20).SetCellValue(item.UnitPrice.HasValue ? Convert.ToDouble(item.UnitPrice.Value) : 0);
-                    row.CreateCell(21).SetCellValue(item.BasicAmount.HasValue ? Convert.ToDouble(item.BasicAmount.Value) : 0);
-                    row.CreateCell(22).SetCellValue(item.DiscountType ?? "");
-                    row.CreateCell(23).SetCellValue(item.TotalFinalAmount.HasValue ? Convert.ToDouble(item.TotalFinalAmount.Value) : 0);
-                    row.CreateCell(24).SetCellValue(item.TotalAdditionalCharges.HasValue ? Convert.ToDouble(item.TotalAdditionalCharges.Value) : 0);
-                    row.CreateCell(25).SetCellValue(item.OrderQty.HasValue ? Convert.ToDouble(item.OrderQty.Value) : 0);
-                    row.CreateCell(26).SetCellValue(item.InstallationCharges.HasValue ? Convert.ToDouble(item.InstallationCharges.Value) : 0);
+                    row.CreateCell(11).SetCellValue(item.ItemType ?? "");
+                    row.CreateCell(12).SetCellValue(item.SalesPerson ?? "");
+                    row.CreateCell(13).SetCellValue(item.MaterialGroup ?? "");
 
+                    row.CreateCell(14).SetCellValue(item.QuoteCreatedOn?.ToString("MM-dd-yyyy HH:mm:ss") ?? "");
+                    row.CreateCell(15).SetCellValue(item.QuoteSentOn?.ToString("MM-dd-yyyy HH:mm:ss") ?? "");
+
+                    row.CreateCell(16).SetCellValue(item.RoomName ?? "");
+                    row.CreateCell(17).SetCellValue(item.KPN ?? "");
+                    row.CreateCell(18).SetCellValue(item.KPNDescription ?? "");
+                    row.CreateCell(19).SetCellValue(item.UOC ?? "");
+                    row.CreateCell(20).SetCellValue(item.Uom ?? "");
+                    row.CreateCell(21).SetCellValue(item.PriceList ?? "");
+
+                    row.CreateCell(22).SetCellValue(item.UnitPrice.HasValue ? Convert.ToDouble(item.UnitPrice.Value) : 0);
+                    row.CreateCell(23).SetCellValue(item.BasicAmount.HasValue ? Convert.ToDouble(item.BasicAmount.Value) : 0);
+                    row.CreateCell(24).SetCellValue(item.DiscountType ?? "");
+                    row.CreateCell(25).SetCellValue(item.Discount.HasValue ? Convert.ToDouble(item.Discount.Value) : 0);
+
+                    row.CreateCell(26).SetCellValue(item.SGST.HasValue ? Convert.ToDouble(item.SGST.Value) : 0);
+                    row.CreateCell(27).SetCellValue(item.CGST.HasValue ? Convert.ToDouble(item.CGST.Value) : 0);
+                    row.CreateCell(28).SetCellValue(item.IGST.HasValue ? Convert.ToDouble(item.IGST.Value) : 0);
+                    row.CreateCell(29).SetCellValue(item.UTGST.HasValue ? Convert.ToDouble(item.UTGST.Value) : 0);
+
+                    row.CreateCell(30).SetCellValue(item.itempricelist.HasValue ? Convert.ToDouble(item.itempricelist.Value) : 0);
+                    row.CreateCell(31).SetCellValue(item.TotalAmount.HasValue ? Convert.ToDouble(item.TotalAmount.Value) : 0);
+                    row.CreateCell(32).SetCellValue(item.TotalFinalAmount.HasValue ? Convert.ToDouble(item.TotalFinalAmount.Value) : 0);
+                    row.CreateCell(33).SetCellValue(item.TotalAdditionalCharges.HasValue ? Convert.ToDouble(item.TotalAdditionalCharges.Value) : 0);
+                    row.CreateCell(34).SetCellValue(item.OrderQty.HasValue ? Convert.ToDouble(item.OrderQty.Value) : 0);
+                    row.CreateCell(35).SetCellValue(item.InstallationCharges.HasValue ? Convert.ToDouble(item.InstallationCharges.Value) : 0);
                 }
+
 
 
                 // Save Excel workbook to a memory stream

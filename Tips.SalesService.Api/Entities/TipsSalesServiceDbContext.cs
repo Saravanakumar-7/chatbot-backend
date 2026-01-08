@@ -124,6 +124,7 @@ namespace Tips.SalesService.Api.Entities
         public DbSet<LPCostingSummarySPReport> LPCostingSummarySPReport { get; set; }
         public DbSet<RfqSalesOrderRoomWiseSPReport> RfqSalesOrderRoomWiseSPReports { get; set; }
         public DbSet<QuotationSPReport> QuotationSPReports { get; set; }
+        public DbSet<QuotationSPReportForKeus> QuotationSPReportForKeus { get; set; }
         public DbSet<SalesOrderMainLevelHistory> SalesOrderMainLevelHistories { get; set; }
         public DbSet<SOAdditionalChargesHistory> SOAdditionalChargesHistories { get; set; }
         public DbSet<SalesOrderItemLevelHistory> SalesOrderItemLevelHistories { get; set; }
@@ -201,6 +202,7 @@ namespace Tips.SalesService.Api.Entities
             modelBuilder.Entity<FQToFSLatestSOSPReport>().HasNoKey();
             modelBuilder.Entity<SourcingSpReport>().HasNoKey();
             modelBuilder.Entity<SalesOrderSoStatusSPReportForTrans>().HasNoKey();
+            modelBuilder.Entity<QuotationSPReportForKeus>().HasNoKey();
             
         }
 

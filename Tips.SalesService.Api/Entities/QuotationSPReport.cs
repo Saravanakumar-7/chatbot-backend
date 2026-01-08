@@ -39,4 +39,46 @@
         public decimal? OrderQty { get; set; }
         public decimal? InstallationCharges { get; set; }
     }
+
+    public class QuotationSPReportForKeus
+    {
+        public string? QuoteNumber { get; set; }
+        public decimal? QuotationVersionNo { get; set; }
+        public string? RfqNumber { get; set; }
+        public string? CustomerId { get; set; }
+        public string? CustomerName { get; set; }
+        public string? LeadId { get; set; }
+        public string? City { get; set; }
+        public string? State { get; set; }
+        public string? Address { get; set; }
+        public string? TypeOfSolution { get; set; }
+        public string? ProductType { get; set; }
+        public string? ItemType { get; set; }
+        public string? SalesPerson { get; set; }
+        public string? MaterialGroup { get; set; }
+        public DateTime? QuoteCreatedOn { get; set; }
+        public string? QuoteLastModifiedBy { get; set; }
+        public DateTime? QuoteLastModifiedOn { get; set; }
+        public DateTime? QuoteSentOn { get; set; }
+        public string? RoomName { get; set; }
+        public string? KPN { get; set; }
+        public string? KPNDescription { get; set; }
+        public string? UOC { get; set; }
+        public string? Uom { get; set; }
+        public string? PriceList { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public decimal? BasicAmount { get; set; }
+        public string? DiscountType { get; set; }
+        public decimal? Discount { get; set; }
+        public decimal? SGST { get; set; }
+        public decimal? CGST { get; set; }
+        public decimal? IGST { get; set; }
+        public decimal? UTGST { get; set; }
+        public decimal? itempricelist { get; set; }
+        public decimal? TotalAmount { get; set; }
+        public decimal? TotalFinalAmount { get; set; }
+        public decimal? TotalAdditionalCharges { get; set; }
+        public decimal? OrderQty { get; set; }
+        public decimal? InstallationCharges { get; set; }
+    }
 }

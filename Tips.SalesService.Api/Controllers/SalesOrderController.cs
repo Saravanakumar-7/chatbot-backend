@@ -3654,13 +3654,13 @@ namespace Tips.SalesService.Api.Controllers
         }
 
         [HttpPost] // Adjust your route as needed
-        public async Task<IActionResult> GetCustomerWiseTransactionSPReportWithParam([FromBody] SOMonthlyConsumptionDto customerWiseTransactionSPReport)
+        public async Task<IActionResult> GetCustomerWiseTransactionSPReportWithParam([FromBody] CustomerWiseTransactionDto customerWiseTransactionSPReport)
 
         {
             ServiceResponse<IEnumerable<CustomerWiseTransactionSPReport>> serviceResponse = new ServiceResponse<IEnumerable<CustomerWiseTransactionSPReport>>();
             try
             {
-                var products = await _repository.GetCustomerWiseTransactionSPReportWithParam(customerWiseTransactionSPReport.CustomerId);
+                var products = await _repository.GetCustomerWiseTransactionSPReportWithParam(customerWiseTransactionSPReport.CustomerId,customerWiseTransactionSPReport.TypeOfSolution);
 
                 if (products == null)
                 {

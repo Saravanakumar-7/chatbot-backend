@@ -495,10 +495,16 @@ namespace Tips.SalesService.Api.Entities.DTOs
     {
         public string? CustomerId { get; set; }
     }
+    public class CustomerWiseTransactionDto
+    {
+        public string? CustomerId { get; set; }
+        public string? TypeOfSolution { get; set; }
+    }
     public class CustomerWiseTransactionSPReport
     {
         public string? CustomerId { get; set; }
         public string? CustomerName { get; set; }
+        public string? TypeOfSolution { get; set; }
         public string? City { get; set; }
         public string? Address { get; set; }
         public string? State { get; set; }
@@ -1051,6 +1057,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? ProductType { get; set; }
         public DateTime? created_date { get; set; }
         public string? CreatedBy { get; set; }
+        public string? LastModifiedBy { get; set; }
+        public DateTime? LastModifiedOn { get; set; }
         public string? OrderType { get; set; }
         public string? KPN { get; set; }
         public decimal? UnitPrice { get; set; }

@@ -4180,6 +4180,44 @@ namespace Tips.Warehouse.Api.Controllers
         }
 
         [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> GetInventoryBySumOfFilteringDatesSPReportsWithParamForKeus([FromBody] InventoryBySumOfFilteringDatesSPReportDto inventoryBySumOfFilteringDatesSPReportDto)
+        {
+            ServiceResponse<IEnumerable<InventoryBySumOfFilteringDatesSPReportForKeus>> serviceResponse = new ServiceResponse<IEnumerable<InventoryBySumOfFilteringDatesSPReportForKeus>>();
+            try
+            {
+                var products = await _inventoryRepository.GetInventoryBySumOfFilteringDatesSPReportsWithParamForKeus(inventoryBySumOfFilteringDatesSPReportDto.FromDate, inventoryBySumOfFilteringDatesSPReportDto.ToDate,
+                                                                                        inventoryBySumOfFilteringDatesSPReportDto.PartNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"InventoryBySumOfFilteringDatesSPReports hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    _logger.LogError($"InventoryBySumOfFilteringDatesSPReports hasn't been found in db.");
+                    return Ok(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned InventoryBySumOfFilteringDatesSPReports Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetInventoryBySumOfFilteringDatesSPReportsWithParamForKeus API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetInventoryBySumOfFilteringDatesSPReportsWithParamForKeus API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost] // Adjust your route as needed
         public async Task<IActionResult> GetWareproInventoryWithLocationTranferSPReportsWithParam([FromBody] InventorySPReportDto inventorySPReportDto)
         {
             ServiceResponse<IEnumerable<InventorySPReport>> serviceResponse = new ServiceResponse<IEnumerable<InventorySPReport>>();

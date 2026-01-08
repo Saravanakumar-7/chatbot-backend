@@ -31,6 +31,8 @@ namespace Tips.SalesService.Api.Contracts
         Task<Quote> GetQuoteByQuoteNumberAndRevNo(string quoteNumber, int? revno);
         Task<IEnumerable<QuoteNoDto>> GetClosedQuoteDetailsByQuoteNo(string quoteNo);
         Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithParam(string? CustomerId, string? QuoteNumber, string? QuotationVersionNo);
+        Task<IEnumerable<QuotationSPReportForKeus>> GetQuotationSPReportWithParamForKeus(string? CustomerId, string? QuoteNumber, string? QuotationVersionNo);
+        Task<IEnumerable<QuotationSPReportForKeus>> GetQuotationSPReportWithDateForKeus(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<QuoteSPReport>> GetQuoteSPReport(string CustomerName, string CustomerId, string RfqNumber);
         Task<IEnumerable<SoSummaryQuotationDto>> GetSoSummaryQuotationSPReportWithParam(string FirstQuotenumber, string SOLatestSalesOrderSentNumber, string Leadid,
                                                                                                            string CustomerName, string TypeOfSolution, string ProductType);
