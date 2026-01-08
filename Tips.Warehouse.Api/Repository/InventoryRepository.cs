@@ -989,6 +989,15 @@ namespace Tips.Warehouse.Api.Repository
 
             return result;
         }
+        public async Task<IEnumerable<InventoryBySumOfFilteringDatesSPReportForKeus>> GetInventoryBySumOfFilteringDatesSPReportsWithParamForKeus(DateTime fromDate, DateTime toDate, string partNumber)
+        {
+            var result = _tipsWarehouseDbContext
+            .Set<InventoryBySumOfFilteringDatesSPReportForKeus>()
+            .FromSqlInterpolated($"CALL InventoryBy_SumOF_Filtering_Dates_keus({fromDate},{toDate},{partNumber})")
+            .ToList();
+
+            return result;
+        }
 
         public async Task<IEnumerable<Inventory>> GetInventoryWarehouseReport(string PartNumber, string Description, string Warehouse, string Location, string ProjectNumber)
         {

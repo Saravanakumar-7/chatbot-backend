@@ -111,7 +111,26 @@ namespace Tips.SalesService.Api.Repository
 
         }
 
-        public async Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithParam(string? CustomerId,string? QuoteNumber,string? QuotationVersionNo)
+        public async Task<IEnumerable<QuotationSPReportForKeus>> GetQuotationSPReportWithParamForKeus(string? CustomerId, string? QuoteNumber, string? QuotationVersionNo)
+        {
+            var result = await _tipsSalesServiceDbContext
+            .Set<QuotationSPReportForKeus>()
+            .FromSqlInterpolated($"CALL quotation_report_with_parameter_keus({CustomerId},{QuoteNumber},{QuotationVersionNo})")
+            .ToListAsync();
+
+            return result;
+
+        }
+        public async Task<IEnumerable<QuotationSPReportForKeus>> GetQuotationSPReportWithDateForKeus(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = await _tipsSalesServiceDbContext.Set<QuotationSPReportForKeus>()
+                        .FromSqlInterpolated($"CALL quotation_report_with_date_keus({FromDate},{ToDate})")
+                        .ToListAsync();
+
+            return results;
+
+        }
+        public async Task<IEnumerable<QuotationSPReport>> GetQuotationSPReportWithParam(string? CustomerId, string? QuoteNumber, string? QuotationVersionNo)
         {
             var result = await _tipsSalesServiceDbContext
             .Set<QuotationSPReport>()

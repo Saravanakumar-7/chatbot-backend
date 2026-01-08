@@ -80,6 +80,7 @@ namespace Tips.Warehouse.Api.Entities
         public DbSet<ReturnInvoiceAdditionalCharge> ReturnInvoiceAdditionalCharges { get; set; }
         public DbSet<StockMovementHistorySPReport> StockMovementHistorySPReports { get; set; }
         public DbSet<InventoryBySumOfFilteringDatesSPReport> InventoryBySumOfFilteringDatesSPReports { get; set; }
+        public DbSet<InventoryBySumOfFilteringDatesSPReportForKeus> InventoryBySumOfFilteringDatesSPReportForKeus { get; set; }
         public DbSet<InventoryDashboardSPReport> InventoryDashboardSPReports { get; set; }
 
         public DbSet<LocationTransferPartNo> LocationTransferPartNos { get; set; }
@@ -138,6 +139,7 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<InvLocationtransferUnitPriceDateSpForAvi>().HasNoKey();
             modelBuilder.Entity<InvLocationtransferUnitPriceSpWithParamForAvi>().HasNoKey();
             modelBuilder.Entity<InventorySPReportForGeeyes>().HasNoKey();
+            modelBuilder.Entity<InventoryBySumOfFilteringDatesSPReportForKeus>().HasNoKey();
             
 
             base.OnModelCreating(modelBuilder);

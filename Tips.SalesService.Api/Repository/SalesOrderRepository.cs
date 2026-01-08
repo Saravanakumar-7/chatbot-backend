@@ -585,7 +585,7 @@ namespace Tips.SalesService.Api.Repository
             return results;
 
         }
-        public async Task<IEnumerable<CustomerWiseTransactionSPReport>> GetCustomerWiseTransactionSPReportWithParam(string CustomerId)
+        public async Task<IEnumerable<CustomerWiseTransactionSPReport>> GetCustomerWiseTransactionSPReportWithParam(string CustomerId, string TypeOfSolution)
         {
             //var result = _tipsSalesServiceDbContext
             //.Set<CustomerWiseTransactionSPReport>()
@@ -593,7 +593,7 @@ namespace Tips.SalesService.Api.Repository
             //.ToList();
             var result = await _tipsSalesServiceDbContext
                         .Set<CustomerWiseTransactionSPReport>()
-                        .FromSqlInterpolated($"CALL CustomerWise_Transaction_Report_WithParameter({CustomerId})")
+                        .FromSqlInterpolated($"CALL CustomerWise_Transaction_Report_WithParameter({CustomerId},{TypeOfSolution})")
                         .AsNoTracking()
                         .ToListAsync();
 
