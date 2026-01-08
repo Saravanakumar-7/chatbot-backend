@@ -43,7 +43,8 @@ namespace Entities.DTOs
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+        public string? Manufacturer_Mftr_PartNumber { get; set; }
+        public string? Customer_Mftr_PartNumber { get; set; }
         public List<EnggAlternatesDto>? EnggAlternatesDtos { get; set; }
 
 
@@ -70,6 +71,8 @@ namespace Entities.DTOs
         public string? FootPrint { get; set; }
         [DefaultValue(true)]
         public bool IsActive { get; set; }
+        public string? Manufacturer_Mftr_PartNumber { get; set; }
+        public string? Customer_Mftr_PartNumber { get; set; }
         public List<EnggAlternatesPostDto>? EnggAlternatesPostDtos { get; set; }
 
     }
@@ -133,7 +136,8 @@ namespace Entities.DTOs
 
         [DefaultValue(true)]
         public bool IsActive { get; set; }
-        
+        public string? Manufacturer_Mftr_PartNumber { get; set; }
+        public string? Customer_Mftr_PartNumber { get; set; }
         public List<EnggAlternatesUpdateDto>? EnggAlternatesUpdateDtos { get; set; }
 
 

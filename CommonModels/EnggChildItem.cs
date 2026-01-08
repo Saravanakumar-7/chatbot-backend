@@ -44,7 +44,8 @@ namespace Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
-
+        public string? Manufacturer_Mftr_PartNumber { get; set; }
+        public string? Customer_Mftr_PartNumber { get; set; }
         public int EnggBomId { get; set; }
         public EnggBom? EnggBom { get; set; }
 
