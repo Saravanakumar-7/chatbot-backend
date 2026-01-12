@@ -158,6 +158,26 @@ namespace Tips.Warehouse.Api.Repository
 
             return results;
         }
+        public async Task<IEnumerable<OpenDeliveryOrderReturnableSP>> OpenDeliveryOrderReturnableDataWithparameterAvi(string OpenDONumber, string ItemNumber)
+        {
+
+            var result = _tipsWarehouseDbContext
+            .Set<OpenDeliveryOrderReturnableSP>()
+            .FromSqlInterpolated($"CALL Open_Delivery_Order_Returnable_Data_Withparameter_avi({OpenDONumber},{ItemNumber})")
+            .ToList();
+
+            return result;
+
+
+        }
+        public async Task<IEnumerable<OpenDeliveryOrderReturnableSP>> OpenDeliveryOrderReturnableDataWithDateAvi(DateTime? FromDate, DateTime? ToDate)
+        {
+            var results = _tipsWarehouseDbContext.Set<OpenDeliveryOrderReturnableSP>()
+                          .FromSqlInterpolated($"CALL Open_Delivery_Order_Returnable_Data_WithDate_avi({FromDate},{ToDate})")
+                          .ToList();
+
+            return results;
+        }
 
         public async Task<IEnumerable<OpenDeliveryOrderSPReportForAvi>> OpenDeliveryOrderSPReportDateForAvi(DateTime? FromDate, DateTime? ToDate)
         {
@@ -176,6 +196,8 @@ namespace Tips.Warehouse.Api.Repository
 
             return results;
         }
+
+
         public async Task<IEnumerable<ODOMonthlyConsumptionSPReport>> GetODOMonthlyConsumptionSPReportWithParam(string CustomerId)
         {
             var result = _tipsWarehouseDbContext

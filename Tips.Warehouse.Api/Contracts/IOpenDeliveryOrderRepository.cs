@@ -37,6 +37,8 @@ namespace Tips.Warehouse.Api.Contracts
         Task<IEnumerable<OpenDeliveryOrderSPReportForAvi>> OpenDeliveryOrderSPReportWithParamForAvi(string OpenDONumber, string VendorName, string ItemNumber, string ODOType);
         Task<IEnumerable<OpenDeliveryOrderSPReport>> OpenDeliveryOrderSPReportDates(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<OpenDeliveryOrderSPReportForTrans>> OpenDeliveryOrderSPReportDateForTrans(DateTime? FromDate, DateTime? ToDate);
+        Task<IEnumerable<OpenDeliveryOrderReturnableSP>> OpenDeliveryOrderReturnableDataWithparameterAvi(string OpenDONumber, string ItemNumber);
+        Task<IEnumerable<OpenDeliveryOrderReturnableSP>> OpenDeliveryOrderReturnableDataWithDateAvi(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<OpenDeliveryOrderSPReportForAvi>> OpenDeliveryOrderSPReportDateForAvi(DateTime? FromDate, DateTime? ToDate);
         Task<IEnumerable<ODOMonthlyConsumptionSPReport>> GetODOMonthlyConsumptionSPReportWithParam(string CustomerId);
         Task<IEnumerable<ODOMonthlyConsumptionSPReport>> GetODOMonthlyConsumptionSPReportWithDate(DateTime? FromDate, DateTime? ToDate);

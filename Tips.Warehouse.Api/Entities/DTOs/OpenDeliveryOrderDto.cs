@@ -212,5 +212,43 @@ namespace Tips.Warehouse.Api.Entities.DTOs
         public decimal? ODOQty { get; set; }
 
     }
+    public class OpenDeliveryOrderReturnableSP
+    {
+        // odo
+        public string? OpenDONumber { get; set; }
+        public string? CustomerName { get; set; }
+        public string? CustomerId { get; set; }
+        public string? OpenDODescription { get; set; }
+        public DateTime? CreatedOn { get; set; }
+        public string? CreatedBy { get; set; }
+
+        // odp
+        public string? ItemNumber { get; set; }
+        public string? ItemDescription { get; set; }
+        public decimal? Min { get; set; }
+        public decimal? Max { get; set; }
+        public string? MPN { get; set; }
+        public decimal? UnitPrice { get; set; }
+        public decimal? InitialDispatchQty { get; set; }
+
+        // odpd
+        public string? Warehouse { get; set; }
+        public string? Location { get; set; }
+        public decimal? ODODistributingQty { get; set; }
+
+        // rdp / rdpd
+        public decimal? AlreadyReturnQty { get; set; }
+        public decimal? ReturnDistributingQty { get; set; }
+
+        // calculated
+        public decimal? BalanceQty { get; set; }
+    }
+
+    public class ODOReturnableSPInput
+    {
+        public string? OpenDoNumber { get; set; }
+        public string? ItemNumber { get; set; }
+
+    }
 
 }

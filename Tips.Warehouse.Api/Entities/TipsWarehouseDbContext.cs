@@ -140,6 +140,7 @@ namespace Tips.Warehouse.Api.Entities
             modelBuilder.Entity<InvLocationtransferUnitPriceSpWithParamForAvi>().HasNoKey();
             modelBuilder.Entity<InventorySPReportForGeeyes>().HasNoKey();
             modelBuilder.Entity<InventoryBySumOfFilteringDatesSPReportForKeus>().HasNoKey();
+            modelBuilder.Entity<OpenDeliveryOrderReturnableSP>().HasNoKey();
             
 
             base.OnModelCreating(modelBuilder);

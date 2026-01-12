@@ -1254,6 +1254,82 @@ namespace Tips.Warehouse.Api.Controllers
             }
         }
 
+        [HttpPost] // Adjust your route as needed
+        public async Task<IActionResult> OpenDeliveryOrderReturnableDataWithparameterAvi([FromBody] ODOReturnableSPInput oDOReturnableSPInput)
+
+        {
+            ServiceResponse<IEnumerable<OpenDeliveryOrderReturnableSP>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderReturnableSP>>();
+            try
+            {
+                var products = await _repository.OpenDeliveryOrderReturnableDataWithparameterAvi(oDOReturnableSPInput.OpenDoNumber,oDOReturnableSPInput.ItemNumber);
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OpenDeliveryOrderReturnableSP hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OpenDeliveryOrderReturnableSP hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    //var result = _mapper.Map<IEnumerable<OpenDeliveryOrderSPReport>>(products);
+
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OpenDeliveryOrderSPReportDto Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in OpenDeliveryOrderReturnableDataWithparameterAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in OpenDeliveryOrderReturnableDataWithparameterAvi API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> OpenDeliveryOrderReturnableDataWithDateAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
+        {
+            ServiceResponse<IEnumerable<OpenDeliveryOrderReturnableSP>> serviceResponse = new ServiceResponse<IEnumerable<OpenDeliveryOrderReturnableSP>>();
+            try
+            {
+                var products = await _repository.OpenDeliveryOrderReturnableDataWithDateAvi(FromDate, ToDate);
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"OpenDeliveryOrderReturnableSP hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"OpenDeliveryOrderReturnableSP hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned OpenDeliveryOrderReturnableSP Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in OpenDeliveryOrderReturnableDataWithDateAvi API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in OpenDeliveryOrderReturnableDataWithDateAvi API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetODOMonthlyConsumptionSPReportWithDate([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
