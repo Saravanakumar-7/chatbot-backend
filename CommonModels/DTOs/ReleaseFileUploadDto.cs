@@ -37,4 +37,10 @@ namespace Entities.DTOs
         public string? FileByte { get; set; }
 
     }
+    public class ReleaseFileUploadInputParam
+    {
+        public string ItemNumber { get; set; }
+        public decimal ReleaseVersion { get; set; }
+
+    }
 }

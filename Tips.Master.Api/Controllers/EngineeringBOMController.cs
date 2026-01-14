@@ -1,27 +1,28 @@
-﻿using Entities.DTOs;
-using Entities;
-using Microsoft.AspNetCore.Mvc;
-using NuGet.Protocol.Core.Types;
-using AutoMapper;
+﻿using AutoMapper;
 using Contracts;
-using Microsoft.EntityFrameworkCore;
-using Entities.Migrations;
-using System.Net;
-using Newtonsoft.Json;
-using Repository;
-using NuGet.Packaging;
-using System.Net.Http;
+using Entities;
+using Entities.DTOs;
 using Entities.Enums;
-using System;
-using MySqlX.XDevAPI.Common;
-using Microsoft.IdentityModel.Tokens;
+using Entities.Migrations;
 using Microsoft.AspNetCore.Authorization;
-using NLog.Fluent;
-using Org.BouncyCastle.Utilities;
-using System.Collections.Generic;
-using static Mysqlx.Notice.Warning.Types;
-using MySqlX.XDevAPI;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Razor.Language;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using MySqlX.XDevAPI;
+using MySqlX.XDevAPI.Common;
+using Newtonsoft.Json;
+using NLog.Fluent;
+using NuGet.Packaging;
+using NuGet.Protocol.Core.Types;
+using Org.BouncyCastle.Utilities;
+using Repository;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using static Mysqlx.Notice.Warning.Types;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -4587,6 +4588,241 @@ namespace Tips.Master.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
+
+        [HttpPost]
+        public async Task<IActionResult> GetEngineeringBomReleaseFilesByItemAndRevision([FromBody]ReleaseFileUploadInputParam releaseFileUploadInputParam)
+        {
+            ServiceResponse<List<ReleaseFileUploadDto>> serviceResponse = new ServiceResponse<List<ReleaseFileUploadDto>>();
+            try
+            {
+                if (releaseFileUploadInputParam is null)
+                {
+                    _logger.LogError("releaseFileUploadInputParam object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "releaseFileUploadInputParam object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                var fileids = await _releaseEnggBomRepository.GetReleasedEngineeringBomFileUploadsIds(releaseFileUploadInputParam.ItemNumber,releaseFileUploadInputParam.ReleaseVersion);
+
+                string serverKey = GetServerKey();
+                var itemsFiles = await _repository.ReleaseFileUploadRepository.GetReleaseFileUploadDownloadUrlDetails(fileids);
+                if (itemsFiles == null)
+                {
+                    _logger.LogError($"DownloadDetail with id: {fileids}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {fileids}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid release UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid release UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<ReleaseFileUploadDto> fileUploads = new List<ReleaseFileUploadDto>();
+                if (itemsFiles != null)
+                {
+                    foreach (var fileUploadDetails in itemsFiles)
+                    {
+                        ReleaseFileUploadDto fileUploadDto = _mapper.Map<ReleaseFileUploadDto>(fileUploadDetails);
+                        var filename = Uri.EscapeDataString(fileUploadDto.FileName);
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/EngineeringBOM/ReleaseDownloadFile?Filename={filename}";
+                        }
+                        else
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/EngineeringBOM/ReleaseDownloadFile?Filename={filename}";
+                        }
+
+                        //fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileUploadDto.FileName);
+                        fileUploads.Add(fileUploadDto);
+                    }
+                }
+                _logger.LogInfo($"Returned DownloadDetail with id: {fileids}");
+                //var result = _mapper.Map<IEnumerable<GetDownloadUrlDtos>>(getDownloadDetailByPoNumber);
+                serviceResponse.Data = fileUploads;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetEngineeringBomReleaseFilesByItemAndRevision API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetEngineeringBomReleaseFilesByItemAndRevision API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> GetCostingBomReleaseFilesByItemAndRevision([FromBody] ReleaseFileUploadInputParam releaseFileUploadInputParam)
+        {
+            ServiceResponse<List<ReleaseFileUploadDto>> serviceResponse = new ServiceResponse<List<ReleaseFileUploadDto>>();
+            try
+            {
+                if (releaseFileUploadInputParam is null)
+                {
+                    _logger.LogError("releaseFileUploadInputParam object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "releaseFileUploadInputParam object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                var fileids = await _repository.ReleaseCostBomRepository.GetReleasedCostBomFileUploadsIds(releaseFileUploadInputParam.ItemNumber, releaseFileUploadInputParam.ReleaseVersion);
+
+                string serverKey = GetServerKey();
+                var itemsFiles = await _repository.ReleaseFileUploadRepository.GetReleaseFileUploadDownloadUrlDetails(fileids);
+                if (itemsFiles == null)
+                {
+                    _logger.LogError($"DownloadDetail with id: {fileids}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {fileids}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid release UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid release UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<ReleaseFileUploadDto> fileUploads = new List<ReleaseFileUploadDto>();
+                if (itemsFiles != null)
+                {
+                    foreach (var fileUploadDetails in itemsFiles)
+                    {
+                        ReleaseFileUploadDto fileUploadDto = _mapper.Map<ReleaseFileUploadDto>(fileUploadDetails);
+                        var filename = Uri.EscapeDataString(fileUploadDto.FileName);
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/EngineeringBOM/ReleaseDownloadFile?Filename={filename}";
+                        }
+                        else
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/EngineeringBOM/ReleaseDownloadFile?Filename={filename}";
+                        }
+
+                        //fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileUploadDto.FileName);
+                        fileUploads.Add(fileUploadDto);
+                    }
+                }
+                _logger.LogInfo($"Returned DownloadDetail with id: {fileids}");
+                //var result = _mapper.Map<IEnumerable<GetDownloadUrlDtos>>(getDownloadDetailByPoNumber);
+                serviceResponse.Data = fileUploads;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetCostingBomReleaseFilesByItemAndRevision API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetCostingBomReleaseFilesByItemAndRevision API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> GetProductionBomReleaseFilesByItemAndRevision([FromBody] ReleaseFileUploadInputParam releaseFileUploadInputParam)
+        {
+            ServiceResponse<List<ReleaseFileUploadDto>> serviceResponse = new ServiceResponse<List<ReleaseFileUploadDto>>();
+            try
+            {
+                if (releaseFileUploadInputParam is null)
+                {
+                    _logger.LogError("releaseFileUploadInputParam object sent from client is null.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "releaseFileUploadInputParam object is null";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(serviceResponse);
+                }
+                var fileids = await _repository.ReleaseProductBomRepository.GetReleasedProductionBomFileUploadsIds(releaseFileUploadInputParam.ItemNumber, releaseFileUploadInputParam.ReleaseVersion);
+
+                string serverKey = GetServerKey();
+                var itemsFiles = await _repository.ReleaseFileUploadRepository.GetReleaseFileUploadDownloadUrlDetails(fileids);
+                if (itemsFiles == null)
+                {
+                    _logger.LogError($"DownloadDetail with id: {fileids}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"DownloadDetail with id: {fileids}, hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+                if (!ModelState.IsValid)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Invalid release UploadDocument.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.BadRequest;
+                    _logger.LogError("Invalid release UploadDocument sent from client.");
+                    return BadRequest(serviceResponse);
+                }
+                List<ReleaseFileUploadDto> fileUploads = new List<ReleaseFileUploadDto>();
+                if (itemsFiles != null)
+                {
+                    foreach (var fileUploadDetails in itemsFiles)
+                    {
+                        ReleaseFileUploadDto fileUploadDto = _mapper.Map<ReleaseFileUploadDto>(fileUploadDetails);
+                        var filename = Uri.EscapeDataString(fileUploadDto.FileName);
+                        if (serverKey == "avision")
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/apigateway/tips/EngineeringBOM/ReleaseDownloadFile?Filename={filename}";
+                        }
+                        else
+                        {
+                            var baseUrl = $"{_config["ItemMasterBaseUrl"]}";
+                            fileUploadDto.DownloadUrl = $"{baseUrl}/api/EngineeringBOM/ReleaseDownloadFile?Filename={filename}";
+                        }
+
+                        //fileUploadDto.FilePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", "FileUpload", fileUploadDto.FileName);
+                        fileUploads.Add(fileUploadDto);
+                    }
+                }
+                _logger.LogInfo($"Returned DownloadDetail with id: {fileids}");
+                //var result = _mapper.Map<IEnumerable<GetDownloadUrlDtos>>(getDownloadDetailByPoNumber);
+                serviceResponse.Data = fileUploads;
+                serviceResponse.Message = "Success";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetProductionBomReleaseFilesByItemAndRevision API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetProductionBomReleaseFilesByItemAndRevision API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<ActionResult> ReleaseDownloadFile(string Filename)
         {

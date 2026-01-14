@@ -18,6 +18,7 @@ namespace Contracts
         Task<string> UpdateReleaseEnggBom(EngineeringBom releaseEnggBom);
         Task<string> DeleteReleaseEnggBom(EngineeringBom releaseEnggBom);
         Task<EngineeringBom> ReleasedEnggBomByItemAndRevisionNumber(string itemNumber, decimal revisionNumber);
+        Task<string?> GetReleasedEngineeringBomFileUploadsIds(string itemNumber, decimal revisionNumber);
         Task<EngineeringBom> ReleasedEnggProductionByItemAndRevisionNumber(string itemNumber, decimal revisionNumber);
     }
 }

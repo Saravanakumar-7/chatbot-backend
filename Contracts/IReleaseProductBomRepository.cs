@@ -25,6 +25,7 @@ namespace Contracts
         Task<IEnumerable<ProductionBomRevisionNumber>> GetAllProductionBomFGListByItemNumber(string itemNumber);
         Task<ProductionBomRevisionNumberAndQty> GetAllProductionBomSAListByItemNumber(string itemNumber); 
         Task<EnggBom> GetProductionBomByItemAndBomVersionNo(string itemNumber, decimal bomVersionNo);
+        Task<string?> GetReleasedProductionBomFileUploadsIds(string itemNumber, decimal bomRevisonNumber);
         Task<Dictionary<string, decimal>> GetFGsAndLatestVersion();
         Task<Dictionary<string, decimal>> GetSAsAndLatestVersionbyItemNo(string itemNumber);
         Task<IEnumerable<ReleaseProductionBomSPReport>> GetBOMReleaseSPReportWithParamForTrans(string? ItemNumber);

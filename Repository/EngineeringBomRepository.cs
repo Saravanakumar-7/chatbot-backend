@@ -1033,6 +1033,7 @@ namespace Repository
 
             return releaseEnggBom;
         }
+     
 
         //public async Task<IEnumerable<EngineeringBom>> GetAllEnggBomVersionListByItemNumber(string itemNumber)
         //{
@@ -1171,6 +1172,17 @@ namespace Repository
 
             return releaseEnggBom;
         }
+        public async Task<string?> GetReleasedEngineeringBomFileUploadsIds(string itemNumber, decimal revisionNumber)
+        {
+            var releaseFileUploads = await _tipsMasterDbContext.EngineeringBoms
+                .Where(x =>
+                    x.ItemNumber == itemNumber &&
+                    x.ReleaseVersion == revisionNumber)
+                .Select(x => x.Releasefileuploads)
+                .FirstOrDefaultAsync();
+
+            return releaseFileUploads;
+        }
         public async Task<EngineeringBom> ReleasedEnggProductionByItemAndRevisionNumber(string itemNumber, decimal revisionNumber)
         {
             var releaseProductBom = await _tipsMasterDbContext.EngineeringBoms
@@ -1243,6 +1255,16 @@ namespace Repository
             releaseCostBom.IsReleaseProductCompleted = true;
 
             return releaseCostBom;
+        }
+        public async Task<string?> GetReleasedCostBomFileUploadsIds(string itemNumber, decimal revisionNumber)
+        {
+            var releaseFileUploads = await _tipsMasterDbContext.CostingBoms
+            .Where(x => x.ItemNumber == itemNumber && x.ReleaseVersion == revisionNumber && x.IsActive == true)
+            .Select(x => x.Releasefileuploads)
+            .FirstOrDefaultAsync();
+
+
+            return releaseFileUploads;
         }
         public async Task<PagedList<CostingBom>> GetAllCostingBom([FromQuery] PagingParameter pagingParameter, [FromQuery] SearchParames searchParams)
         {
@@ -1449,6 +1471,16 @@ namespace Repository
                                   .FirstOrDefaultAsync();
 
             return productionBomDetail;
+        }
+
+        public async Task<string?> GetReleasedProductionBomFileUploadsIds(string itemNumber, decimal bomRevisonNumber)
+        {
+            var releaseFileUploads = await _tipsMasterDbContext.ProductionBoms
+                                    .Where(x => x.ItemNumber == itemNumber && x.ReleaseVersion == bomRevisonNumber && x.IsActive == true)
+                                    .Select(x => x.Releasefileuploads)
+                                  .FirstOrDefaultAsync();
+
+            return releaseFileUploads;
         }
 
         //public async Task<decimal> GetLatestProductionBomByItemNumber(string itemNumber)
