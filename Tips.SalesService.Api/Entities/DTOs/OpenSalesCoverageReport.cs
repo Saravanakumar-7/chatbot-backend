@@ -42,4 +42,24 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? TotalRequiredQty { get; set; }
         //public string? Status { get; set; }
     }
+
+    public class ForcastOpenSalesCoverageReportByProjectNumber
+    {
+        public string? ItemNumber { get; set; }
+        public string? MftrItemNumber { get; set; }
+        public string? Description { get; set; }
+        public string? MaterialGroup { get; set; }
+        public string? ProjectNumber { get; set; }
+        public string? UOM { get; set; }
+        public PartType PartType { get; set; }
+        public decimal? OpenSOQty { get; set; }
+        public decimal Stock { get; set; }
+        public decimal OpenPoQty { get; set; }
+        public decimal ShopOrderConWipQty { get; set; }
+        public decimal BalanceToOrder { get; set; }
+        public decimal? TotalRequiredQty { get; set; }
+        public DateTime? ScheduleDate { get; set; }
+        public decimal? ScheduleQty { get; set; }
+        //public string? Status { get; set; }
+    }
 }

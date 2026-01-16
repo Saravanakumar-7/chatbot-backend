@@ -23,6 +23,7 @@ namespace Tips.SalesService.Api.Contracts
         Task<SalesOrderItems> GetSalesOrderItemDetailsById(int soItemId);
         Task<List<SalesOrderFGandBalanceQtyByProjectNo>> GetAllSalesOrderFGOrTGItemDetailsByProjectNo(string projectNo);
         Task<List<SalesOrderFGandBalanceQtyByProjectNo>> GetAllSalesOrderFGOrTGItemDetailsByMultipleProjectNo(List<string> projectNos);
+        Task<List<SalesOrderFGandBalanceQtyByProjectNo>> GetAllSalesOrderFGOrTGItemDetailsByMultipleProjectNoWithSchedule(List<string?> projectNos);
         Task<List<SalesOrderFGandBalanceQtyByCustomerName>> GetAllSalesOrderFGOrTGItemDetailsByCustomerId(string customerId);
         Task<List<SalesOrderFGandBalanceQtyByProjectNo>> GetAllSalesOrderFGOrTGItemDetailsByProjectNoAndItemNo(string projectNo, string itemNumber);
         Task<SalesOrderRetailFGandBalanceQty> GetAllSalesOrderFGOrTGRetailItemDetails(string fGItemNumber);

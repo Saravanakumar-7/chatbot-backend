@@ -24,6 +24,18 @@ namespace Entities.DTOs
         public PartType PartType { get; set; }
         public decimal RequiredQty { get; set; }
     }
+    public class BomForcastCoverageReportChildItemReqQtyByProjectNoDto
+    {
+        public string ItemNumber { get; set; }
+        public string MftrItemNumber { get; set; }
+        public string Version { get; set; }
+        public string Description { get; set; }
+        public string UOM { get; set; }
+        public PartType PartType { get; set; }
+        public decimal RequiredQty { get; set; }
+        public DateTime? ScheduleDate { get; set; }
+        public decimal? ScheduleQty { get; set; }
+    }
     public class BomCoverageReportSAChildItemReqQtyByProjectNoDto
     {
         public string ItemNumber { get; set; }
@@ -56,6 +68,20 @@ namespace Entities.DTOs
         public decimal OpenPoQty { get; set; }
         public decimal BalanceToOrder { get; set; }
         public decimal? TotalRequiredQty { get; set; }
+        //public string? Status { get; set; }
+    }
+    public class ForcastOpenSalesCoverageReportByprojectNoDto
+    {
+        public string? ItemNumber { get; set; }
+        public string? ProjectNumber { get; set; }
+        public PartType PartType { get; set; }
+        public decimal? OpenSOQty { get; set; }
+        public decimal Stock { get; set; }
+        public decimal OpenPoQty { get; set; }
+        public decimal BalanceToOrder { get; set; }
+        public decimal? TotalRequiredQty { get; set; }
+        public DateTime? ScheduleDate { get; set; }
+        public decimal? ScheduleQty { get; set; }
         //public string? Status { get; set; }
     }
     public class CoverageReportChildItemReqQtysDto
