@@ -4585,16 +4585,18 @@ namespace Tips.SalesService.Api.Controllers
                 headerRow.CreateCell(21).SetCellValue("CGST");
                 headerRow.CreateCell(22).SetCellValue("IGST");
                 headerRow.CreateCell(23).SetCellValue("UTGST");
-                headerRow.CreateCell(24).SetCellValue("ItemPriceList");
-                headerRow.CreateCell(25).SetCellValue("Total Amount");
-                headerRow.CreateCell(26).SetCellValue("Order Qty");
-                headerRow.CreateCell(27).SetCellValue("Dispatch Qty");
-                headerRow.CreateCell(28).SetCellValue("Balance Qty");
-                headerRow.CreateCell(29).SetCellValue("Indent Qnty");
-                headerRow.CreateCell(30).SetCellValue("City");
-                headerRow.CreateCell(31).SetCellValue("Address");
-                headerRow.CreateCell(32).SetCellValue("State");
-                headerRow.CreateCell(33).SetCellValue("ArchitectName");
+                headerRow.CreateCell(24).SetCellValue("SOStatus");
+                headerRow.CreateCell(25).SetCellValue("ItemPriceList");
+                headerRow.CreateCell(26).SetCellValue("Total Amount");
+                headerRow.CreateCell(27).SetCellValue("Order Qty");
+                headerRow.CreateCell(28).SetCellValue("Dispatch Qty");
+                headerRow.CreateCell(29).SetCellValue("Balance Qty");
+                headerRow.CreateCell(30).SetCellValue("Indent Qnty");
+                headerRow.CreateCell(31).SetCellValue("City");
+                headerRow.CreateCell(32).SetCellValue("Address");
+                headerRow.CreateCell(33).SetCellValue("State");
+                headerRow.CreateCell(34).SetCellValue("ArchitectName");
+
 
 
                 // Populate data rows
@@ -4623,19 +4625,21 @@ namespace Tips.SalesService.Api.Controllers
                     row.CreateCell(18).SetCellValue(item.DiscountType);
                     row.CreateCell(19).SetCellValue(item.Discount);
                     row.CreateCell(20).SetCellValue(Convert.ToDouble(item.SGST)); // Assuming SGST is decimal
-                    row.CreateCell(21).SetCellValue(Convert.ToDouble(item.CGST)); // Assuming CGST is decimal
-                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.IGST)); // Assuming IGST is decimal
-                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.UTGST)); // Assuming UTGST is decimal
-                    row.CreateCell(24).SetCellValue(Convert.ToDouble(item.itempricelist)); // Assuming itempricelist is decimal
-                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.TotalAmount)); // Assuming TotalAmount is decimal
-                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.OrderQty)); // Assuming OrderQty is decimal
-                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.DispatchQty)); // Assuming DispatchQty is decimal
-                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.BalanceQty)); // Assuming BalanceQty is decimal
-                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.indent_qnty)); // Assuming BalanceQty is decimal
-                    row.CreateCell(30).SetCellValue(item.City);
-                    row.CreateCell(31).SetCellValue(item.Address);
-                    row.CreateCell(32).SetCellValue(item.State);
-                    row.CreateCell(33).SetCellValue(item.ArchitectName);
+                    row.CreateCell(21).SetCellValue(Convert.ToDouble(item.CGST));
+                    row.CreateCell(22).SetCellValue(Convert.ToDouble(item.IGST));
+                    row.CreateCell(23).SetCellValue(Convert.ToDouble(item.UTGST));
+                    row.CreateCell(24).SetCellValue(Convert.ToInt32(item.SOStatus));
+                    row.CreateCell(25).SetCellValue(Convert.ToDouble(item.itempricelist));
+                    row.CreateCell(26).SetCellValue(Convert.ToDouble(item.TotalAmount));
+                    row.CreateCell(27).SetCellValue(Convert.ToDouble(item.OrderQty));
+                    row.CreateCell(28).SetCellValue(Convert.ToDouble(item.DispatchQty));
+                    row.CreateCell(29).SetCellValue(Convert.ToDouble(item.BalanceQty));
+                    row.CreateCell(30).SetCellValue(Convert.ToDouble(item.indent_qnty));
+                    row.CreateCell(31).SetCellValue(item.City);
+                    row.CreateCell(32).SetCellValue(item.Address);
+                    row.CreateCell(33).SetCellValue(item.State);
+                    row.CreateCell(34).SetCellValue(item.ArchitectName);
+
                 }
 
 
