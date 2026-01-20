@@ -134,6 +134,8 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal? BalanceToManufacture { get; set; }
         public DateTime? ScheduleDate { get; set; }
         public decimal? ScheduleQty { get; set; }
+        public decimal? TotalCoverageQty { get; set; }
+        public decimal? ShortageQty { get; set; }
 
     }
 

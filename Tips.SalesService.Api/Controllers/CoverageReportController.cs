@@ -2732,6 +2732,7 @@ namespace Tips.SalesService.Api.Controllers
                                     UOM = item.UOM,
                                     PartType = item.PartType,
                                     RequiredQty = Math.Round(item.RequiredQty, MidpointRounding.AwayFromZero),
+                                    //itemBalanceQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault()
                                     Stock = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.BalanceQuantity).FirstOrDefault(),
                                     WipQty = itemStockWithWipList?.Where(x => x.PartNumber == item.ItemNumber).Select(x => x.WipQuantity).FirstOrDefault(),
                                     //OpenPoQty = openPoQtyList?.Where(x => x.ItemNumber == item.ItemNumber).Select(x => x.OpenPoQty).FirstOrDefault()
@@ -2757,6 +2758,13 @@ namespace Tips.SalesService.Api.Controllers
                                    + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
 
                                 coverageDetailOfChildItem.BalanceToOrder = balanceRequiredQty <= 0 ? 0 : Math.Round(balanceRequiredQty.Value, MidpointRounding.AwayFromZero);
+
+                                decimal? totalRequiredQty = coverageDetailOfChildItem.ScheduleQty - (coverageDetailOfChildItem.Stock
+                                  + coverageDetailOfChildItem.OpenPoQty + coverageDetailOfChildItem.WipQty);
+
+                                coverageDetailOfChildItem.TotalCoverageQty = totalRequiredQty;
+
+                                coverageDetailOfChildItem.ShortageQty = totalRequiredQty;
 
                                 coverageReportDtoForChildItemList.Add(coverageDetailOfChildItem);
                             }
@@ -2790,7 +2798,7 @@ namespace Tips.SalesService.Api.Controllers
             var openFGCoverageDetailsString = new StringContent(openFGCoverageDetailsJson, Encoding.UTF8, "application/json");
             //var response = await _httpClient.PostAsync(string.Concat(_config["EngineeringBomAPI"], "GetBomDetailsForCoverageReport"), openFGCoverageDetailsString);
             var request = new HttpRequestMessage(HttpMethod.Post, string.Concat(_config["EngineeringBomAPI"],
-                           "GetBomDetailsByProjectNoForCoverageReport"))
+                           "GetBomDetailsByProjectNoForForcastCoverageReport"))
             {
                 Content = openFGCoverageDetailsString
             };
