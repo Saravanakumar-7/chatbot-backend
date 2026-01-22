@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using NPOI.POIFS.Properties;
+using System.ComponentModel.DataAnnotations.Schema;
 using Tips.SalesService.Api.Entities.Dto;
 
 namespace Tips.SalesService.Api.Entities.DTOs
@@ -16,6 +17,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string PaymentMode { get; set; }
         public string PaymentType { get; set; }
         public string PaymentRefNo { get; set; }
+        public DateTime? NextPaymentDate { get; set; }
         public string Unit { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
@@ -35,6 +37,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string PaymentMode { get; set; }
         public string PaymentType { get; set; }
         public string PaymentRefNo { get; set; }
+        public DateTime? NextPaymentDate { get; set; }
         public List<SOBreakDownPostDto>? SOBreakDown { get; set; }
 
     }
@@ -51,6 +54,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string PaymentMode { get; set; }
         public string PaymentType { get; set; }
         public string PaymentRefNo { get; set; }
+        public DateTime? NextPaymentDate { get; set; }
         public string Unit { get; set; }
         public List<SOBreakDownUpdateDto>? SOBreakDown { get; set; }
 
