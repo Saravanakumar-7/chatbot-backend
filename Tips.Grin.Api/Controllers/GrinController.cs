@@ -592,7 +592,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateGrin([FromBody] GrinPostDto grinPostDto)
         {
-            ServiceResponse<GrinDto> serviceResponse = new ServiceResponse<GrinDto>();
+            ServiceResponse<int> serviceResponse = new ServiceResponse<int>();
 
             try
             {
@@ -601,7 +601,7 @@ namespace Tips.Grin.Api.Controllers
                 if (grinPostDto is null)
                 {
                     _logger.LogError("Grin object sent from client is null.");
-                    serviceResponse.Data = null;
+                    serviceResponse.Data = 0;
                     serviceResponse.Message = "Grin object sent from client is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
@@ -610,7 +610,7 @@ namespace Tips.Grin.Api.Controllers
                 if (!ModelState.IsValid)
                 {
                     _logger.LogError("Invalid Grin object sent from client.");
-                    serviceResponse.Data = null;
+                    serviceResponse.Data = 0;
                     serviceResponse.Message = "Invalid Grin object sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
@@ -961,7 +961,7 @@ namespace Tips.Grin.Api.Controllers
                     else
                     {
                         _logger.LogError($"Something went wrong inside Create CreateGrin action: Other Service Calling");
-                        serviceResponse.Data = null;
+                        serviceResponse.Data = 0;
                         serviceResponse.Message = "Saving Failed";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
@@ -1035,14 +1035,14 @@ namespace Tips.Grin.Api.Controllers
                     var inactiveItemResponse = JsonConvert.DeserializeObject<ServiceResponse<string>>(responseContent);
 
                     _logger.LogError($"Item Number: {inactiveItemResponse.Data} is inactive");
-                    serviceResponse.Data = null;
+                    serviceResponse.Data = 0;
                     serviceResponse.Message = $"Item Number '{inactiveItemResponse.Data}' is inactive";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(500, serviceResponse);
 
                 }
-                serviceResponse.Data = null;
+                serviceResponse.Data = grins.Id;
                 serviceResponse.Message = "Grin Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -1052,7 +1052,7 @@ namespace Tips.Grin.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Error Occured in CreateGrin API: \n{ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
+                serviceResponse.Data = 0;
                 serviceResponse.Message = $"Error Occured in CreateGrin API: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;

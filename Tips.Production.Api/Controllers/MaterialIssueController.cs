@@ -1451,8 +1451,10 @@ namespace Tips.Production.Api.Controllers
                 // Build email
                 var email = new MimeMessage();
                 email.From.Add(MailboxAddress.Parse("admin_getapcs@idamtat.in"));
-                email.To.Add(MailboxAddress.Parse("santhosh.ganesa@wyzmindz.com"));
-                //email.To.Add(MailboxAddress.Parse("prasanna@geeyesind.com"));
+                email.To.Add(MailboxAddress.Parse("ppc@geeyesind.com"));
+                email.To.Add(MailboxAddress.Parse("prasanna@geeyesind.com"));
+
+                //email.To.Add(MailboxAddress.Parse("santhosh.ganesa@wyzmindz.com"));
 
                 email.Subject = emaildetails.data.subject ?? "Material Issue Report";
                 string body = emaildetails.data.template.Trim();
