@@ -33,4 +33,43 @@ namespace Tips.Production.Api.Entities
         public string? UOM { get; set; }
         public string? Remarks { get; set; }
     }
+
+    public class ShopOrderScrapQtySPReport
+    {
+        public string? MRNNumber { get; set; }
+
+        public string? ProjectNumber { get; set; }
+
+        public string? ShopOrderNumber { get; set; }
+
+        public string? ItemNumber { get; set; }
+
+        public string? ItemDescription { get; set; }
+
+        public string? MftrPartNumber { get; set; }
+
+        public int? PartType { get; set; }
+
+        public decimal? ScrapQty { get; set; }
+
+        public string? Warehouse { get; set; }
+
+        public string? Location { get; set; }
+
+        public decimal? Qty { get; set; }
+
+        public decimal? inventory_balanceqty { get; set; }
+
+        public string? UOM { get; set; }
+
+        public string? LotNumber { get; set; }
+
+        public decimal? Max { get; set; }
+
+        public decimal? Min { get; set; }
+
+        public string? MaterialGroup { get; set; }
+    }
+
+
 }

@@ -113,6 +113,43 @@ namespace Tips.Production.Api.Controllers
             return Ok(products);
         }
 
+        [HttpGet] // Adjust your route as needed
+        public async Task<IActionResult> GetShopOrderScrapQtySPReport()
+        {
+            ServiceResponse<IEnumerable<ShopOrderScrapQtySPReport>> serviceResponse = new ServiceResponse<IEnumerable<ShopOrderScrapQtySPReport>>();
+            try
+            {
+                var products = await _shopOrderRepository.GetShopOrderScrapQtySPReport();
+
+                if (products == null)
+                {
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"ShopOrderScrapQtySPReport hasn't been found.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    _logger.LogError($"ShopOrderScrapQtySPReport hasn't been found in db.");
+                    return NotFound(serviceResponse);
+                }
+                else
+                {
+                    serviceResponse.Data = products;
+                    serviceResponse.Message = "Returned ShopOrderScrapQtySPReport Details";
+                    serviceResponse.Success = true;
+                    serviceResponse.StatusCode = HttpStatusCode.OK;
+                    return Ok(serviceResponse);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in GetShopOrderScrapQtySPReport API : \n {ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occured in GetShopOrderScrapQtySPReport API : \n {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetShopOrderNumberSPReportForTrans([FromQuery] PagingParameter pagingParameter)
         {

@@ -55,6 +55,7 @@ namespace Tips.Production.Api.Entities
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ShopOrderNumberSPReport>().HasNoKey();
+            modelBuilder.Entity<ShopOrderScrapQtySPReport>().HasNoKey();
             modelBuilder.Entity<MaterialIssueSPReport>().HasNoKey();
             modelBuilder.Entity<MaterialRequestSPReport>().HasNoKey();
             modelBuilder.Entity<OQCSPReport>().HasNoKey();

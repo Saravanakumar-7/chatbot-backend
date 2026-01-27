@@ -42,6 +42,7 @@ namespace Tips.Production.Api.Contracts
         Task<string> GenerateSONumber();
         Task<string> GenerateSONumberForKeus();
         Task<IEnumerable<ShopOrderNumberSPReport>> ShopOrderNumberSPReport();
+        Task<IEnumerable<ShopOrderScrapQtySPReport>> GetShopOrderScrapQtySPReport();
         Task<PagedList<ShopOrderSPReportForTrans>> GetShopOrderNumberSPReportForTrans(PagingParameter pagingParameter);
         Task<IEnumerable<ShopOrderNumberSPReport>> GetShopOrderSPReportWithParam(string? shopOrderNo, string? projectType,
                                                                                                   string? projectNo, string? salesOrderNo, string? KPN, string? MPN);

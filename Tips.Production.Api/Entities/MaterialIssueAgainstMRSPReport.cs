@@ -13,6 +13,7 @@ namespace Tips.Production.Api.Entities
         public string? indent_qnty { get; set; }
         public string? KPN { get; set; }
         public string? MPN { get; set; }
+        public string? CustomerPartNumber { get; set; }
         public string? Description { get; set; }
         public decimal? Qty { get; set; }
         public string? Uom { get; set; }

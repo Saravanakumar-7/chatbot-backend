@@ -162,6 +162,7 @@ namespace Tips.Production.Api.Entities.DTOs
         public decimal? RequestQty { get; set; }
         public string? Itemnumber { get; set; }
         public string? MPN { get; set; }
+        public string? CustomerPartNumber { get; set; }
         public string? Description { get; set; }
         public decimal? IssuedQty { get; set; }
         public string? Uom { get; set; }

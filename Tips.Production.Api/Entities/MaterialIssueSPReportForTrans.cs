@@ -12,6 +12,7 @@
         public string? ItemNumberchildlevel { get; set; }
         public int? Childparttype { get; set; }
         public string? latestMPN { get; set; }
+        public string? CustomerPartNumber { get; set; }
         public decimal? BOMversion { get; set; }
         public string? SalesOrderNumber { get; set; }
         public string? Description { get; set; }

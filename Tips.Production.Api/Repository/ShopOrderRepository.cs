@@ -60,6 +60,13 @@ namespace Tips.Production.Api.Repository
 
             return results;
         }
+        public async Task<IEnumerable<ShopOrderScrapQtySPReport>> GetShopOrderScrapQtySPReport()
+        {
+            var results = _tipsProductionDbContext.Set<ShopOrderScrapQtySPReport>()
+                        .FromSqlInterpolated($"CALL Shop_Order_Scrap_Qty")
+                        .ToList();
+            return results;
+        }
         public async Task<PagedList<ShopOrderSPReportForTrans>> GetShopOrderNumberSPReportForTrans(PagingParameter pagingParameter)
         {
             var results = _tipsProductionDbContext.Set<ShopOrderSPReportForTrans>()
