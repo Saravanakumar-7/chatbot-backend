@@ -130,6 +130,7 @@ namespace Entities
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public string? CompanyName { get; set; }
 
         public List<CustomerAddresses>? CustomerAddresses { get; set; }
 

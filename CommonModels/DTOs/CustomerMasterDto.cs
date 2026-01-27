@@ -134,6 +134,8 @@ namespace Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
 
+        public string? CompanyName { get; set; }
+
         public List<CustomerAddressesDto>? CustomerAddresses { get; set; }
         public List<CustomerRelatedCustomerDto>? RelatedCustomers { get; set; }
 
@@ -258,6 +260,7 @@ namespace Entities.DTOs
         public string? AuditFrequency { get; set; }
         public string? CustomerApprove { get; set; }
         public bool IsActive { get; set; } = true;
+        public string? CompanyName { get; set; }
 
         public List<CustomerAddressesDtoPost>? CustomerAddress { get; set; }
         public List<CustomerRelatedCustomerPostDto>? RelatedCustomers { get; set; }
@@ -391,6 +394,7 @@ namespace Entities.DTOs
         //public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
+        public string? CompanyName { get; set; }
 
         public List<CustomerAddressesDtoUpdate>? CustomerAddress { get; set; }
         public List<CustomerRelatedCustomerUpdateDto>? RelatedCustomers { get; set; }
