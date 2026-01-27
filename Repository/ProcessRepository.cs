@@ -48,7 +48,7 @@ namespace Repository
         public async Task<IEnumerable<Process>> GetAllActiveProcesses([FromQuery] SearchParames searchParams)
         {
             var processDetails = FindAll()
-                             .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProcessName.Contains(searchParams.SearchValue) ||
+                             .Where(inv =>inv.IsActive && ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.ProcessName.Contains(searchParams.SearchValue) ||
                                     inv.Unit.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return processDetails;
         }

@@ -102,6 +102,7 @@ namespace Repository
         private ICommodityRepository? _commodityRepo;
         private ILocationsRepository? _locationsRepo;
         private IProcessRepository? _processRepo;
+        private IBatchRepository? _BatchRepo;
         private IPartTypesRepository? _parttypesRepo;
         private IDemoStatusRepository? _demoStatusRepo;
         private ILeadStatusRepository? _leadStatusRepo;
@@ -738,6 +739,17 @@ namespace Repository
                     _processRepo = new ProcessRepository(_tipsMasterDbContext, _httpContextAccessor);
                 }
                 return _processRepo;
+            }
+        }
+        public IBatchRepository BatchRepository
+        {
+            get
+            {
+                if (_BatchRepo == null)
+                {
+                    _BatchRepo = new BatchRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _BatchRepo;
             }
         }
         public IPreferredFreightForwarderRepository PreferredFreightForwarderRepository

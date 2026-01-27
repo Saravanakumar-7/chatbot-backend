@@ -3,8 +3,12 @@ using AutoMapper.Execution;
 using Contracts;
 using Entities;
 using Entities.DTOs;
+using Entities.Enums;
+using MailKit.Security;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MimeKit;
+using MimeKit.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Utilities;
@@ -18,6 +22,7 @@ using Tips.Production.Api.Entities;
 using Tips.Production.Api.Entities.DTOs;
 using Tips.Production.Api.Entities.Enums;
 using Tips.Production.Api.Repository;
+using EmailTemplateDto = Tips.Production.Api.Entities.DTOs.EmailTemplateDto;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -970,13 +975,13 @@ namespace Tips.Production.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> IssueMaterialIssue(int id, [FromBody] IssueMaterialIssueUpdateDto materialIssueUpdateDto)
         {
-            ServiceResponse<MaterialIssueUpdateDto> serviceResponse = new ServiceResponse<MaterialIssueUpdateDto>();
+            ServiceResponse<int> serviceResponse = new ServiceResponse<int>();
 
             try
             {
                 if (materialIssueUpdateDto is null)
                 {
-                    serviceResponse.Data = null;
+                    serviceResponse.Data = 0;
                     serviceResponse.Message = "MaterialIssue object sent from client is null";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
@@ -985,7 +990,7 @@ namespace Tips.Production.Api.Controllers
                 }
                 if (!ModelState.IsValid)
                 {
-                    serviceResponse.Data = null;
+                    serviceResponse.Data = 0;
                     serviceResponse.Message = "Invalid MaterialIssue object sent from client";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
@@ -996,7 +1001,7 @@ namespace Tips.Production.Api.Controllers
                 if (materialIssueDetailsById is null)
                 {
                     _logger.LogError($"MaterialIssue with id: {id}, hasn't been found in db.");
-                    serviceResponse.Data = null;
+                    serviceResponse.Data = 0;
                     serviceResponse.Message = " Update MaterialIssue with id hasn't been found.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.NotFound;
@@ -1006,7 +1011,7 @@ namespace Tips.Production.Api.Controllers
 
                 if (allMaterialIssueItems == null)
                 {
-                    serviceResponse.Data = null;
+                    serviceResponse.Data = 0;
                     serviceResponse.Message = "Internal Server Error!";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
@@ -1090,14 +1095,14 @@ namespace Tips.Production.Api.Controllers
                 else
                 {
                     _logger.LogError($"Something went wrong inside UpdateMaterialIssue action. Inventory update action UpdateInventoryOnMaterialIssue failed! ");
-                    serviceResponse.Data = null;
+                    serviceResponse.Data = 0;
                     serviceResponse.Message = "Internal server error";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(500, serviceResponse);
                 }
 
-                serviceResponse.Data = null;
+                serviceResponse.Data = materialIssueDetailsById.Id;
                 serviceResponse.Message = "MaterialIssue Updated Successfully";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -1105,7 +1110,7 @@ namespace Tips.Production.Api.Controllers
             }
             catch (Exception ex)
             {
-                serviceResponse.Data = null;
+                serviceResponse.Data = 0;
                 serviceResponse.Message = $"Error Occured in IssueMaterialIssue API for the following id : {id} \n {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.BadRequest;
@@ -1386,5 +1391,141 @@ namespace Tips.Production.Api.Controllers
         //        return StatusCode(500, serviceResponse);
         //    }
         //}
+        [HttpPost]
+        public async Task<IActionResult> SendEmailForMaterialIssue(int MaterialIssueId)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                var materialIssue = await _materialIssueRepository.GetMaterialIssueById(MaterialIssueId);
+                if (materialIssue is null)
+                {
+                    _logger.LogError($"SendEmailForMaterialIssue with id: {MaterialIssueId}, hasn't been found in db.");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = $"Material Issue with id hasn't been found in db.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    return NotFound(serviceResponse);
+                }
+
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                // Get email template
+                var request = new HttpRequestMessage(HttpMethod.Get,
+                    string.Concat(_config["EmailAPI"], "GetEmailTemplatebyProcessType?ProcessType=CreateMaterialIssue"));
+                request.Headers.Add("Authorization", token);
+                var response = await client.SendAsync(request);
+                _logger.LogInfo($"GetEmailTemplatebyProcessType for CreateMaterialIssue is doing");
+
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    _logger.LogError($"Something went wrong inside GetEmailTemplatebyProcessType During Email action");
+                    serviceResponse.Data = null;
+                    serviceResponse.Message = "Failed to get email template.";
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                    return StatusCode(500, serviceResponse);
+                }
+
+                var emailTempString = await response.Content.ReadAsStringAsync();
+                var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(emailTempString);
+
+                // Get Item Master details
+                var encodedItemNumber = Uri.EscapeDataString(materialIssue.ItemNumber);
+                var itemRequest = new HttpRequestMessage(HttpMethod.Get,
+                    string.Concat(_config["ItemMasterAPI"], $"GetItemMasterByItemNumber?ItemNumber={encodedItemNumber}"));
+                itemRequest.Headers.Add("Authorization", token);
+                var itemMasterObjectResult = await client.SendAsync(itemRequest);
+
+                if (itemMasterObjectResult.StatusCode != HttpStatusCode.OK)
+                    _logger.LogError($"Something went wrong inside GetItemMasterByItemNumber During Email action");
+
+                var itemMasterObjectString = await itemMasterObjectResult.Content.ReadAsStringAsync();
+                dynamic itemMasterObjectData = JsonConvert.DeserializeObject(itemMasterObjectString);
+                dynamic itemMasterObject = itemMasterObjectData.data;
+                PartType partTypeEnum = itemMasterObject.itemType;
+                string itemType = partTypeEnum.ToString();
+                //string itemType = itemMasterObject.itemType;
+
+                // Build email
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse("admin_getapcs@idamtat.in"));
+                email.To.Add(MailboxAddress.Parse("ppc@geeyesind.com"));
+                email.To.Add(MailboxAddress.Parse("prasanna@geeyesind.com"));
+
+                //email.To.Add(MailboxAddress.Parse("santhosh.ganesa@wyzmindz.com"));
+
+                email.Subject = emaildetails.data.subject ?? "Material Issue Report";
+                string body = emaildetails.data.template.Trim();
+
+                // Replace template placeholders - Header details
+                body = body.Replace("{{ShopOrderNumber}}", materialIssue.ShopOrderNumber ?? "N/A");
+                body = body.Replace("{{ItemNumber}}", materialIssue.ItemNumber ?? "N/A");
+                body = body.Replace("{{ItemType}}", itemType);  // Now comes from materialIssue table
+                body = body.Replace("{{ProjectNumber}}", materialIssue.materialIssueItems?.FirstOrDefault()?.ProjectNumber ?? "N/A");
+                body = body.Replace("{{CurrentDate}}", DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss"));
+
+                // Build item rows with UOM before Required Qty
+                StringBuilder itemRows = new StringBuilder();
+                if (materialIssue.materialIssueItems != null && materialIssue.materialIssueItems.Any())
+                {
+                    int slNo = 1;
+                    foreach (var item in materialIssue.materialIssueItems)
+                    {
+                        decimal requiredQty = item.RequiredQty;
+                        decimal issuedQty = item.IssuedQty;
+                        decimal balanceToIssue = requiredQty - issuedQty;
+
+                        itemRows.Append("<tr>");
+                        itemRows.Append($"<td style='text-align: center; border: 1px solid black; padding: 5px;'>{slNo}</td>");
+                        itemRows.Append($"<td style='border: 1px solid black; padding: 5px;'>{item.PartNumber ?? "N/A"}</td>");
+                        itemRows.Append($"<td style='border: 1px solid black; padding: 5px;'>{item.Description ?? "N/A"}</td>");
+                        itemRows.Append($"<td style='text-align: center; border: 1px solid black; padding: 5px;'>{item.UOM ?? "N/A"}</td>");  // UOM moved before quantities
+                        itemRows.Append($"<td style='text-align: center; border: 1px solid black; padding: 5px;'>{requiredQty.ToString("N2")}</td>");
+                        itemRows.Append($"<td style='text-align: center; border: 1px solid black; padding: 5px;'>{issuedQty.ToString("N2")}</td>");
+                        itemRows.Append($"<td style='text-align: center; border: 1px solid black; padding: 5px;'>{balanceToIssue.ToString("N2")}</td>");
+                        itemRows.Append("</tr>");
+
+                        slNo++;
+                    }
+                }
+                else
+                {
+                    itemRows.Append("<tr><td colspan='7' style='text-align:center; border: 1px solid black; padding: 5px;'>No items found</td></tr>");
+                }
+
+                body = body.Replace("{{ItemRows}}", itemRows.ToString());
+
+                // Debug log
+                _logger.LogInfo($"Email body length: {body.Length}, First 200 chars: {body.Substring(0, Math.Min(200, body.Length))}");
+
+                email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                _logger.LogInfo($"SmtpClient is sending MaterialIssueReport email");
+
+                // Send email
+                using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
+                smtp.Authenticate("admin_getapcs@idamtat.in", "9xkJrtyHrUq0");
+                smtp.Send(email);
+                smtp.Disconnect(true);
+
+                serviceResponse.Data = $"Material Issue Report email sent successfully for ShopOrder Number: {materialIssue.ShopOrderNumber}";
+                serviceResponse.Message = $"Email sent successfully";
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occurred in SendEmailForMaterialIssue API: \n{ex.Message} \n{ex.InnerException}");
+                serviceResponse.Data = null;
+                serviceResponse.Message = $"Error Occurred in SendEmailForMaterialIssue API: {ex.Message}";
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                return StatusCode(500, serviceResponse);
+            }
+        }
     }
 }

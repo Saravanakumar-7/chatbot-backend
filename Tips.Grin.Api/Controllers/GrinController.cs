@@ -592,7 +592,7 @@ namespace Tips.Grin.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateGrin([FromBody] GrinPostDto grinPostDto)
         {
-            ServiceResponse<GrinDto> serviceResponse = new ServiceResponse<GrinDto>();
+            ServiceResponse<int> serviceResponse = new ServiceResponse<int>();
 
             try
             {
@@ -601,7 +601,7 @@ namespace Tips.Grin.Api.Controllers
                 if (grinPostDto is null)
                 {
                     _logger.LogError("Grin object sent from client is null.");
-                    serviceResponse.Data = null;
+                    serviceResponse.Data = 0;
                     serviceResponse.Message = "Grin object sent from client is null.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
@@ -610,7 +610,7 @@ namespace Tips.Grin.Api.Controllers
                 if (!ModelState.IsValid)
                 {
                     _logger.LogError("Invalid Grin object sent from client.");
-                    serviceResponse.Data = null;
+                    serviceResponse.Data = 0;
                     serviceResponse.Message = "Invalid Grin object sent from client.";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.BadRequest;
@@ -961,7 +961,7 @@ namespace Tips.Grin.Api.Controllers
                     else
                     {
                         _logger.LogError($"Something went wrong inside Create CreateGrin action: Other Service Calling");
-                        serviceResponse.Data = null;
+                        serviceResponse.Data = 0;
                         serviceResponse.Message = "Saving Failed";
                         serviceResponse.Success = false;
                         serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
@@ -1035,14 +1035,14 @@ namespace Tips.Grin.Api.Controllers
                     var inactiveItemResponse = JsonConvert.DeserializeObject<ServiceResponse<string>>(responseContent);
 
                     _logger.LogError($"Item Number: {inactiveItemResponse.Data} is inactive");
-                    serviceResponse.Data = null;
+                    serviceResponse.Data = 0;
                     serviceResponse.Message = $"Item Number '{inactiveItemResponse.Data}' is inactive";
                     serviceResponse.Success = false;
                     serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                     return StatusCode(500, serviceResponse);
 
                 }
-                serviceResponse.Data = null;
+                serviceResponse.Data = grins.Id;
                 serviceResponse.Message = "Grin Successfully Created";
                 serviceResponse.Success = true;
                 serviceResponse.StatusCode = HttpStatusCode.OK;
@@ -1052,7 +1052,7 @@ namespace Tips.Grin.Api.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Error Occured in CreateGrin API: \n{ex.Message} \n{ex.InnerException}");
-                serviceResponse.Data = null;
+                serviceResponse.Data = 0;
                 serviceResponse.Message = $"Error Occured in CreateGrin API: {ex.Message}";
                 serviceResponse.Success = false;
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
@@ -3519,6 +3519,114 @@ namespace Tips.Grin.Api.Controllers
             }
         }
 
+        [HttpPost("GrinId")]
+        public async Task<IActionResult> SendEmailforGrinById(int GrinId)
+        {
+            ServiceResponse<string> serviceResponse = new ServiceResponse<string>();
+            try
+            {
+                // 1️⃣ Get GRIN
+                var grins = await _repository.GetGrinById(GrinId);
+                if (grins is null)
+                {
+                    _logger.LogError($"SendEmailforGRIN with id: {GrinId}, hasn't been found in db.");
+                    serviceResponse.Success = false;
+                    serviceResponse.StatusCode = HttpStatusCode.NotFound;
+                    serviceResponse.Message = "SendEmailforGRIN id not found.";
+                    return NotFound(serviceResponse);
+                }
+
+                // 2️⃣ Get Email Template (CreateGRIN)
+                var client = _clientFactory.CreateClient();
+                var token = HttpContext.Request.Headers["Authorization"].ToString();
+
+                var request = new HttpRequestMessage(
+                    HttpMethod.Get,
+                    $"{_config["EmailAPI"]}GetEmailTemplatebyProcessType?ProcessType=CreateGRIN"
+                );
+                request.Headers.Add("Authorization", token);
+
+                var response = await client.SendAsync(request);
+                _logger.LogInfo("GetEmailTemplatebyProcessType is doing");
+                if (response.StatusCode != HttpStatusCode.OK)
+                    _logger.LogError("Something went wrong inside GetEmailTemplatebyProcessType");
+
+                var EmailTempString = await response.Content.ReadAsStringAsync();
+                var emaildetails = JsonConvert.DeserializeObject<EmailTemplateDto>(EmailTempString);
+
+                // 3️⃣ Build Email (SAME as ShopOrder)
+                var email = new MimeMessage();
+                email.From.Add(MailboxAddress.Parse("admin_getapcs@idamtat.in"));
+                email.To.Add(MailboxAddress.Parse("ppc@geeyesind.com"));
+                email.To.Add(MailboxAddress.Parse("prasanna@geeyesind.com"));
+
+                email.Subject = emaildetails.data.subject;
+                string body = emaildetails.data.template;
+
+                // 4️⃣ BODY – CreateGRIN logic only
+                body = body.Replace("{{GRIN Numbers}}", grins.GrinNumber);
+                body = body.Replace("{{Vendor Id}}", grins.VendorNumber);
+                body = body.Replace("{{Vendor Name}}", grins.VendorName);
+                body = body.Replace("{{Created By}}", grins.CreatedBy);
+                body = body.Replace("{{Created Dated}}", grins.CreatedOn.ToString());
+
+                string? projectNos = null;
+                string? poNos = null;
+                List<string> tempProj = new();
+                List<string> tempPO = new();
+
+                foreach (var item in grins.GrinParts)
+                {
+                    foreach (var project in item.ProjectNumbers)
+                    {
+                        if (!tempProj.Contains(project.ProjectNumber))
+                        {
+                            projectNos = projectNos == null
+                                ? project.ProjectNumber
+                                : projectNos + ", " + project.ProjectNumber;
+                            tempProj.Add(project.ProjectNumber);
+                        }
+                    }
+
+                    if (!tempPO.Contains(item.PONumber))
+                    {
+                        poNos = poNos == null
+                            ? item.PONumber
+                            : poNos + ", " + item.PONumber;
+                        tempPO.Add(item.PONumber);
+                    }
+                }
+
+                body = body.Replace("{{Project Ref No}}", projectNos);
+                body = body.Replace("{{PurchaseOrder Number}}", poNos);
+
+                email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+                // 5️⃣ SMTP – SAME as ShopOrder
+                using var smtp = new MailKit.Net.Smtp.SmtpClient();
+                smtp.Connect("smtppro.zoho.com", 587, SecureSocketOptions.StartTls);
+                smtp.Authenticate("admin_getapcs@idamtat.in", "9xkJrtyHrUq0");
+                smtp.Send(email);
+                smtp.Disconnect(true);
+
+                // 6️⃣ Response
+                serviceResponse.Success = true;
+                serviceResponse.StatusCode = HttpStatusCode.OK;
+                serviceResponse.Message = $"Email sent successfully for GRIN Number : {grins.GrinNumber}";
+                serviceResponse.Data = grins.GrinNumber;
+                return Ok(serviceResponse);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error Occured in SendEmailforGRIN API:\n{ex.Message}");
+                serviceResponse.Success = false;
+                serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
+                serviceResponse.Message = ex.Message;
+                return StatusCode(500, serviceResponse);
+            }
+        }
+
+
         [HttpGet] // Adjust your route as needed
         public async Task<IActionResult> GetGrinSPReportWithDateForAvi([FromQuery] DateTime? FromDate, [FromQuery] DateTime? ToDate)
         {
@@ -4401,6 +4509,7 @@ namespace Tips.Grin.Api.Controllers
                 return StatusCode(500, serviceResponse);
             }
         }
+
 
         [HttpPost]
         public async Task<IActionResult> GetGrinComsumptionDetialsByPartNos([FromBody] GrinComsumpDto grinComsumpDto)

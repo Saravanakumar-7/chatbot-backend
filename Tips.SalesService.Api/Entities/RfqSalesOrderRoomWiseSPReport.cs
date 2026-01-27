@@ -29,6 +29,7 @@
         public decimal? CGST { get; set; }
         public decimal? IGST { get; set; }
         public decimal? UTGST { get; set; }
+        public int? SOStatus { get; set; }
         public decimal? itempricelist { get; set; }
         public decimal? TotalAmount { get; set; }
         public decimal? OrderQty { get; set; }

@@ -17,6 +17,7 @@ namespace Tips.Grin.Api.Entities
         public string? MPN { get; set; }
         public string? ItemDescription { get; set; }
         public string? ManufactureBatchNumber { get; set; }
+        public string? LotNumber { get; set; }
 
         [Precision(18, 3)]
         public decimal? UnitPrice { get; set; }

@@ -1431,6 +1431,94 @@ namespace Tips.SalesService.Api.Repository
             return openSalesOrderQty;
 
         }
+
+        //public async Task<List<SalesOrderFGandBalanceQtyByProjectNo>> GetAllSalesOrderFGOrTGItemDetailsByMultipleProjectNoWithSchedule(List<string?> projectNos)
+        //{
+        //    var salesOrderIdList = await _tipsSalesServiceDbContexts.SalesOrders
+        //        .Where(so => (so.SalesOrderStatus == SalesOrderStatus.BuildToPrint || so.SalesOrderStatus == SalesOrderStatus.Forecast) &&
+        //                     (so.SOStatus == OrderStatus.Open || so.SOStatus == OrderStatus.PartiallyClosed) &&
+        //                     so.IsShortClosed == false && projectNos.Contains(so.ProjectNumber) // &&
+        //                                                                                //so.ConfirmStatus == true && so.ApproveStatus == true
+        //                     ).Select(x => x.Id).ToListAsync();
+
+        //    var openSalesOrderQty = await _tipsSalesServiceDbContexts.SalesOrdersItems
+        //        .Where(x =>
+        //                    (x.StatusEnum == OrderStatus.Open || x.StatusEnum == OrderStatus.PartiallyClosed) &&
+        //                    x.BalanceQty > 0 && salesOrderIdList.Contains(x.SalesOrderId))
+        //        .Include(x => x.ScheduleDates)
+        //        .SelectMany(x => x.ScheduleDates.DefaultIfEmpty(), (item, schedule) => new { item, schedule })
+        //        .GroupBy(x => new {
+        //            x.item.ItemNumber,
+        //            x.item.ProjectNumber,
+        //            x.item.Description,
+        //            x.item.UOM,
+        //            ScheduleDate = x.schedule != null ? x.schedule.Date : (DateTime?)null,
+        //            ScheduleQty = x.schedule != null ? x.schedule.Quantity : (decimal?)null
+        //        })
+        //        .Select(group => new SalesOrderFGandBalanceQtyByProjectNo
+        //        {
+        //            FGItemNumber = group.Key.ItemNumber,
+        //            ProjectNumber = group.Key.ProjectNumber,
+        //            Description = group.Key.Description,
+        //            UOM = group.Key.UOM,
+        //            Balance_Qty = group.Sum(x => x.item.BalanceQty),
+        //            ScheduleDate = group.Key.ScheduleDate,
+        //            ScheduleQty = group.Key.ScheduleQty
+        //        }).ToListAsync();
+
+        //    return openSalesOrderQty;
+
+        //}
+        public async Task<List<SalesOrderFGandBalanceQtyByProjectNo>> GetAllSalesOrderFGOrTGItemDetailsByMultipleProjectNoWithSchedule(List<string?> projectNos)
+        {
+            var openSalesOrderQty = await _tipsSalesServiceDbContexts.SalesOrdersItems
+                .Where(x =>
+                    (x.StatusEnum == OrderStatus.Open || x.StatusEnum == OrderStatus.PartiallyClosed) &&
+                    x.BalanceQty > 0 &&
+                    projectNos.Contains(x.SalesOrder.ProjectNumber) &&
+                    (x.SalesOrder.SalesOrderStatus == SalesOrderStatus.BuildToPrint ||
+                     x.SalesOrder.SalesOrderStatus == SalesOrderStatus.Forecast) &&
+                    (x.SalesOrder.SOStatus == OrderStatus.Open ||
+                     x.SalesOrder.SOStatus == OrderStatus.PartiallyClosed) &&
+                    x.SalesOrder.IsShortClosed == false
+                )
+                .SelectMany(
+                    item => item.ScheduleDates.DefaultIfEmpty(),
+                    (item, schedule) => new SalesOrderFGandBalanceQtyByProjectNo
+                    {
+                        FGItemNumber = item.ItemNumber,
+                        ProjectNumber = item.ProjectNumber,
+                        Description = item.Description,
+                        PartType = item.PartType,
+                        UOM = item.UOM,
+                        Balance_Qty = item.BalanceQty,
+                        ScheduleDate = schedule != null ? schedule.Date : (DateTime?)null,
+                        ScheduleQty = schedule != null ? schedule.Quantity : (decimal?)null
+                    }
+                )
+                .GroupBy(x => new {
+                    x.FGItemNumber,
+                    x.ProjectNumber,
+                    x.Description,
+                    x.PartType,
+                    x.UOM,
+                    x.ScheduleDate,
+                })
+                .Select(group => new SalesOrderFGandBalanceQtyByProjectNo
+                {
+                    FGItemNumber = group.Key.FGItemNumber,
+                    ProjectNumber = group.Key.ProjectNumber,
+                    Description = group.Key.Description,
+                    PartType = group.Key.PartType,
+                    UOM = group.Key.UOM,
+                    Balance_Qty = group.Sum(x => x.Balance_Qty),
+                    ScheduleDate = group.Key.ScheduleDate,
+                    ScheduleQty = group.Sum(x => x.ScheduleQty),
+                })
+                .ToListAsync();
+
+            return openSalesOrderQty;
+        }
         public async Task<List<SalesOrderFGandBalanceQtyByCustomerName>> GetAllSalesOrderFGOrTGItemDetailsByCustomerId(string customerId)
         {
             var salesOrderIds = await _tipsSalesServiceDbContexts.SalesOrders

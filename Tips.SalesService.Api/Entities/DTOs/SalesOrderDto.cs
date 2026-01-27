@@ -457,6 +457,18 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public decimal RequiredQty { get; set; }
 
     }
+    public class ForcastCoverageReportChildItemReqQtyDataByProjectNoDto
+    {
+        public string ItemNumber { get; set; }
+        public string MftrItemNumber { get; set; }
+        public string Version { get; set; }
+        public string Description { get; set; }
+        public string UOM { get; set; }
+        public PartType PartType { get; set; }
+        public decimal RequiredQty { get; set; }
+        public DateTime? ScheduleDate { get; set; }
+        public decimal? ScheduleQty { get; set; }
+    }
     public class CoverageReportSAChildItemReqQtyDataByProjectNoDto
     {
         public string ItemNumber { get; set; }

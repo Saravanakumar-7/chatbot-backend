@@ -452,6 +452,8 @@ namespace Tips.SalesService.Api.Entities.Dto
         public string? ProjectNumber { get; set; }
         public decimal Balance_Qty { get; set; }
         public PartType PartType { get; set; }
+        public DateTime? ScheduleDate { get; set; }
+        public decimal? ScheduleQty { get; set; }
 
 
     }
