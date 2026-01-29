@@ -597,7 +597,11 @@ namespace Tips.Grin.Api.Controllers
             try
             {
                 string serverKey = GetServerKey();
-
+                if (serverKey == "keus")
+                {
+                    var payload = JsonConvert.SerializeObject(grinPostDto);
+                    _logger.LogInfo($"GRIN Creation API Hit @ {DateTime.Now}: {payload}");
+                }
                 if (grinPostDto is null)
                 {
                     _logger.LogError("Grin object sent from client is null.");
