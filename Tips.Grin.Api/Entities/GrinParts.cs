@@ -97,7 +97,7 @@ namespace Tips.Grin.Api.Entities
         public DateTime? LastModifiedOn { get; set; }
         public string? SerialNo { get; set; }
         public decimal? InvoiceQty { get; set; }
-        public decimal? InvoiceUnitPrice { get; set; }
+        public string? InvoiceUOM { get; set; }
         public int GrinsId { get; set; }
         public Grins? Grins { get; set; }
 

@@ -110,7 +110,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public string? LastModifiedBy { get; set; }
         public DateTime? LastModifiedOn { get; set; }
         public decimal? InvoiceQty { get; set; }
-        public decimal? InvoiceUnitPrice { get; set; }
+        public string? InvoiceUOM { get; set; }
         public List<ProjectNumbersDto>? ProjectNumbers { get; set; }
 
 
@@ -153,7 +153,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? UTGST { get; set; }
         public decimal? Duties { get; set; }
         public decimal? InvoiceQty { get; set; }
-        public decimal? InvoiceUnitPrice { get; set; }
+        public string? InvoiceUOM { get; set; }
         public string? CreatedBy { get; set; }
         public DateTime? CreatedOn { get; set; }
         public string? LastModifiedBy { get; set; }
@@ -219,6 +219,8 @@ namespace Tips.Grin.Api.Entities.DTOs
         public decimal? UTGST { get; set; }
         public decimal? Duties { get; set; }
         public string? SerialNo { get; set; }
+        public decimal? InvoiceQty { get; set; }
+        public string? InvoiceUOM { get; set; }
         public List<ProjectNumbersDtoPost>? ProjectNumbers { get; set; }
     }
     public class GrinPartsUpdateDto
@@ -284,7 +286,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         public DateTime? LastModifiedOn { get; set; }
         public string? SerialNo { get; set; }
         public decimal? InvoiceQty { get; set; }
-        public decimal? InvoiceUnitPrice { get; set; }
+        public string? InvoiceUOM { get; set; }
         public List<ProjectNumbersDtoUpdate>? ProjectNumbers { get; set; }
     }
     //for this model code we are going to reduce balance qty in po while create grin parts
@@ -410,7 +412,7 @@ namespace Tips.Grin.Api.Entities.DTOs
         //public bool IsReachItem { get; set; }
         //public List<DocumentUpload>? FileUpload { get; set; }
         public decimal? InvoiceQty { get; set; }
-        public decimal? InvoiceUnitPrice { get; set; }
+        public string? InvoiceUOM { get; set; }
     }
     public class GrinPartsReportDto
     {
