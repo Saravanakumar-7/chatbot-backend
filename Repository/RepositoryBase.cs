@@ -14,21 +14,18 @@ namespace Repository
             TipsMasterDbContext = repositoryContext;
         }
         public  IQueryable<T> FindAll()
-        {
-
+        { 
             var result =  TipsMasterDbContext.Set<T>().AsNoTracking();
             return result;
         }
         public  IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression)
         {
-            
             var result =  TipsMasterDbContext.Set<T>().Where(expression).AsNoTracking();
             return result;
         }
-        public async Task<T> Create(T entity) {
-            
-            var result = await TipsMasterDbContext.Set<T>().AddAsync(entity);
-            
+        public async Task<T> Create(T entity)
+        {     
+            var result = await TipsMasterDbContext.Set<T>().AddAsync(entity);     
             return result.Entity;
         }
         public void Update(T entity)

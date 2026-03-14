@@ -943,6 +943,7 @@ namespace Tips.SalesService.Api.Entities.DTOs
         public string? LatestSOQuoteNumber { get; set; }
     }
 
+    [Keyless]
     public class SalesOrderSPReportForTrans
     {
         public string? SalesOrderNumber { get; set; }

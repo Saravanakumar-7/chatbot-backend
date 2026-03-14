@@ -138,6 +138,7 @@ namespace Repository
         private IUserTokenActivitiesRepository _userTokenActivitiesRepository;
         private IGLAccountsRepository _glaAccountsRepository;
         private IHSNRepository _hsnRepository;
+        private IEmployeeDetailsRepository _empDetails;
         public RepositoryWrapperForMaster(TipsMasterDbContext tipsMasterDbContext, IHttpContextAccessor httpContextAccessor)
         {
             _tipsMasterDbContext = tipsMasterDbContext;
@@ -1465,6 +1466,18 @@ namespace Repository
                 return _hsnRepository;
             }
         }
+
+        public IEmployeeDetailsRepository EmployeeDetailsRepository
+        {
+            get
+            {
+                if (_empDetails == null)
+                {
+                    _empDetails = new EmployeeDetailsRepository(_tipsMasterDbContext, _httpContextAccessor);
+                }
+                return _empDetails;
+            }
+        }
         public IVendorContactRepository VendorContactRepository => throw new NotImplementedException();
 
         public IVendorAddressRepository VendorAddressRepository => throw new NotImplementedException();
@@ -1511,6 +1524,7 @@ namespace Repository
         public ICompanyApprovalRepository CompanyApprovalRepository => throw new NotImplementedException();
 
         public IUserRepository userRepository => throw new NotImplementedException();
+
 
 
         //public IEnggBomNREConsumableRepository EnggBomNREConsumableRepository => throw new NotImplementedException();

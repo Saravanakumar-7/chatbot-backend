@@ -102,7 +102,7 @@ namespace Tips.Master.Api.Controllers
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned owner with id: {id}");
+                    _logger.LogInfo($"Returned owner with id: {id}");   
                     var result = _mapper.Map<UOCDto>(UOC);
                     serviceResponse.Data = result;
                     serviceResponse.Message = "Returned owner with id Successfully";

@@ -188,6 +188,7 @@ namespace Entities
         public DbSet<GlAccounts> GlAccounts { get; set; }
         public DbSet<Hsn> Hsn { get; set; }
         public DbSet<Batch> Batches { get; set; }
+        public DbSet<EmployeeDetails> EmployeeDetails { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<EnggBomSPReport>().HasNoKey();

@@ -163,6 +163,7 @@ namespace Contracts
         IUserTokenActivitiesRepository UserTokenActivitiesRepository { get; }
         IGLAccountsRepository GLAccountsRepository { get; }
         IHSNRepository HSNRepository { get; }
+        IEmployeeDetailsRepository EmployeeDetailsRepository { get; }
         void SaveAsync();
         //void Save();
     }

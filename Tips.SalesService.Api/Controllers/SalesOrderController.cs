@@ -601,6 +601,9 @@ namespace Tips.SalesService.Api.Controllers
                 serviceResponse.Data = null;
                 serviceResponse.Message = $"Error Occured in GetSalesOrderDetailsWithOutClosedAdditionalChargesById API for the following id:{id} \n {ex.Message}";
                 serviceResponse.Success = false;
+
+
+
                 serviceResponse.StatusCode = HttpStatusCode.InternalServerError;
                 return StatusCode(500, serviceResponse);
             }

@@ -51,7 +51,7 @@ namespace Tips.Production.Api.Entities
         public DbSet<MaterialIssueLocation> MaterialIssueLocations { get; set; }
         public DbSet<MaterialIssueSPReportForTrans> MaterialIssueSPReportForTrans { get; set; }
         public DbSet<ShopOrderNumberSPReportForAvi> ShopOrderNumberSPReportForAvi { get; set; }
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ShopOrderNumberSPReport>().HasNoKey();

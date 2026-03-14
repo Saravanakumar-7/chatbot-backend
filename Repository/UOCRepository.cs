@@ -21,7 +21,6 @@ namespace Repository
         {
             _httpContextAccessor = httpContextAccessor;
             var jwtClaims = _httpContextAccessor.HttpContext.User.Claims;
-
             _createdBy = jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name) != null ? jwtClaims.FirstOrDefault(c => c.Type == ClaimTypes.Name).Value : "Admin";
             _unitname = jwtClaims.FirstOrDefault(c => c.Type == "UnitName")?.Value ?? "Hyderabad";
 
@@ -54,7 +53,7 @@ namespace Repository
 
         public async Task<IEnumerable<UOC>> GetAllUOC([FromQuery] SearchParames searchParams)
         {
-            var uocDetails = FindAll()
+            var uocDetails = FindAll()  
            .Where(inv => ((string.IsNullOrWhiteSpace(searchParams.SearchValue) || inv.UOCType.Contains(searchParams.SearchValue) ||
           inv.Remarks.Contains(searchParams.SearchValue) || inv.Description.Contains(searchParams.SearchValue))));
             return uocDetails;

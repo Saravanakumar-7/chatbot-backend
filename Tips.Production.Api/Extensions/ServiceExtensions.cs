@@ -1,14 +1,15 @@
-﻿using LoggerService;
+﻿using Contracts;
+using Entities;
+using LoggerService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Contracts;
+using Microsoft.IdentityModel.Tokens;
+using MySql.EntityFrameworkCore.Extensions;
+using MySql.EntityFrameworkCore.Infrastructure.Internal;
+using System.Text;
 using Tips.Production.Api.Entities;
 using Tips.Production.Api.Repository;
-using Entities;
-using MySql.EntityFrameworkCore.Extensions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace Tips.Production.Api.Extensions
 {
@@ -50,9 +51,17 @@ namespace Tips.Production.Api.Extensions
 
             var connectionString = config["MySqlconnection:connectionString"];
             var connectionString_1 = config["MySqlconnection:connectionString_1"];
-            services.AddDbContext<TipsProductionDbContext>(o => o.UseMySQL(connectionString));
-            services.AddDbContext<AdvitaTipsProductionDbContext>(o => o.UseMySQL(connectionString_1));
-        }
+            services.AddDbContext<TipsProductionDbContext>(o =>
+            o.UseMySQL(connectionString, mysqlOptions =>
+            {
+                mysqlOptions.CommandTimeout(300);
+            }));
+                services.AddDbContext<AdvitaTipsProductionDbContext>(o =>
+            o.UseMySQL(connectionString, mysqlOptions =>
+            {
+                mysqlOptions.CommandTimeout(300);
+            }));
+            }
 
         public class MysqlEntityFrameworkDesignTimeServices : IDesignTimeServices
         {

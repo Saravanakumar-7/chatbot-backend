@@ -563,6 +563,10 @@ namespace Tips.Master.Api
             CreateMap<Hsn, HsnDto>().ReverseMap();
             CreateMap<Hsn, HsnPostDto>().ReverseMap();
             CreateMap<Hsn, HsnUpdateDto>().ReverseMap();
+
+            CreateMap<EmployeeDetails, EmployeeDetailsDto>().ReverseMap();
+            CreateMap<EmployeeDetails, EmployeeDetailsPostDto>().ReverseMap();
+            CreateMap<EmployeeDetails, EmployeeDetailsUpdateDto>().ReverseMap();
         }
     }
 }

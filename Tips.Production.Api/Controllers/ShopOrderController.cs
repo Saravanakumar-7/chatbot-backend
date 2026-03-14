@@ -32,7 +32,7 @@ namespace Tips.Production.Api.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class ShopOrderController : ControllerBase
     {
         private IShopOrderRepository _shopOrderRepository;
