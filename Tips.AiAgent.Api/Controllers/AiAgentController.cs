@@ -117,10 +117,21 @@ namespace Tips.AiAgent.Api.Controllers
                     });
                 }
 
+                // Finish / Polite closing detection
+                var finishKeywords = new[] { "no thanks", "no, thanks", "no thank you", "nothing else", "finish", "no more", "done", "that's it", "thanks", "thank you" };
+                if (finishKeywords.Any(k => lower.Contains(k)))
+                {
+                    return Ok(new ChatResponse
+                    {
+                        Text = "You're very welcome! 😊<br/><br/>If you need any more reports in the future, just let me know. Have a great day! 👋",
+                        IsBot = true
+                    });
+                }
+
                 // Smart Fallback (Direct & Scalable)
                 return Ok(new ChatResponse
                 {
-                    Text = "I'm sorry, I don't recognize that command. 🧐<br/><br/>" +
+                    Text = "I'm sorry, I didn't recognize that command. 🧐<br/><br/>" +
                            "Please <strong>type the correct keywords</strong> or the report name so I can help you accurately.<br/><br/>" +
                            "You can try typing <strong>\"Reports\"</strong> to see what I can generate, or type <strong>\"Help\"</strong> for a quick guide.",
                     IsBot = true
